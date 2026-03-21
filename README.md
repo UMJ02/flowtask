@@ -19,3 +19,10 @@ Base v9.1 con multi-empresa, roles avanzados, dashboard por organización e invi
 - permisos granulares por acción
 - pantalla `/app/organization/roles`
 - migration `0014_roles_permissions.sql`
+
+
+## v9.3
+- módulo de clientes por organización
+- dashboard por cliente
+- páginas /app/clients y /app/clients/[id]
+- migration 0015_clients_workspace.sql

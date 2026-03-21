@@ -3,6 +3,7 @@ import { CollaborationMetrics } from "@/components/dashboard/collaboration-metri
 import { DeadlineLanes } from "@/components/dashboard/deadline-lanes";
 import { ClientMetrics } from "@/components/dashboard/client-metrics";
 import { DepartmentMetrics } from "@/components/dashboard/department-metrics";
+import { ClientPortfolio } from "@/components/dashboard/client-portfolio";
 import { ProjectHealth } from "@/components/dashboard/project-health";
 import { OrganizationOverview } from "@/components/dashboard/organization-overview";
 import { QuickActions } from "@/components/dashboard/quick-actions";
@@ -13,9 +14,10 @@ import { UpcomingItems } from "@/components/dashboard/upcoming-items";
 import { UserWorkload } from "@/components/dashboard/user-workload";
 import { getDashboardData } from "@/lib/queries/dashboard";
 import { getOrganizationContext } from "@/lib/queries/organization";
+import { getClientDashboardItems } from "@/lib/queries/clients";
 
 export default async function DashboardPage() {
-  const [data, organizationContext] = await Promise.all([getDashboardData(), getOrganizationContext()]);
+  const [data, organizationContext, clientItems] = await Promise.all([getDashboardData(), getOrganizationContext(), getClientDashboardItems()]);
 
   return (
     <div className="space-y-4">
@@ -44,6 +46,7 @@ export default async function DashboardPage() {
         <CollaborationMetrics items={data?.collaborationMetrics ?? []} />
       </div>
       <UrgentProjects items={data?.urgentProjects ?? []} />
+      <ClientPortfolio items={clientItems} />
       <StickyBoard
         recentTasks={data?.recentTasks ?? []}
         recentProjects={data?.recentProjects ?? []}

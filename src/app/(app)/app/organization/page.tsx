@@ -20,7 +20,7 @@ export default async function OrganizationPage() {
       <Card>
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Organización activa</p>
         <h1 className="mt-1 text-2xl font-bold text-slate-900">{context?.activeOrganization?.name ?? "Sin organización activa"}</h1>
-        <p className="mt-2 text-sm text-slate-600">Esta vista concentra la operación multi-empresa: equipos, permisos por cliente y roles avanzados por organización.</p>
+        <p className="mt-2 text-sm text-slate-600">Esta vista concentra la operación multi-empresa: equipos, clientes, permisos por cliente y roles avanzados por organización.</p>
       </Card>
 
       <OrganizationMetricsPanel metrics={metrics} />
