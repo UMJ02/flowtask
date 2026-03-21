@@ -13,7 +13,6 @@ export interface ClientPermissionSummary {
   canManageMembers: boolean;
 }
 
-
 export interface OrganizationInviteSummary {
   id: string;
   email: string;
@@ -36,4 +35,20 @@ export interface OrganizationMetricSummary {
     member: number;
     viewer: number;
   };
+}
+
+export interface PermissionDefinitionSummary {
+  key: string;
+  label: string;
+  description: string;
+  category: "tasks" | "projects" | "clients" | "team" | "reports";
+}
+
+export interface OrganizationRoleTemplateSummary {
+  id: string;
+  name: string;
+  description: string;
+  isSystem: boolean;
+  memberCount: number;
+  permissions: string[];
 }

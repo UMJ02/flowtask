@@ -3,14 +3,16 @@ import { ClientPermissionsPanel } from "@/components/organization/client-permiss
 import { OrganizationInvitesPanel } from "@/components/organization/organization-invites-panel";
 import { OrganizationMembersPanel } from "@/components/organization/organization-members-panel";
 import { OrganizationMetricsPanel } from "@/components/organization/organization-metrics-panel";
-import { getOrganizationContext, getOrganizationInvites, getOrganizationMetrics } from "@/lib/queries/organization";
+import { OrganizationRolesPanel } from "@/components/organization/organization-roles-panel";
+import { getOrganizationContext, getOrganizationInvites, getOrganizationMetrics, getOrganizationRolesAndPermissions } from "@/lib/queries/organization";
 
 export default async function OrganizationPage() {
   const context = await getOrganizationContext();
   const activeOrganizationId = context?.activeOrganization?.id ?? null;
-  const [invites, metrics] = await Promise.all([
+  const [invites, metrics, rolesData] = await Promise.all([
     getOrganizationInvites(activeOrganizationId),
     getOrganizationMetrics(activeOrganizationId),
+    getOrganizationRolesAndPermissions(activeOrganizationId),
   ]);
 
   return (
@@ -22,6 +24,7 @@ export default async function OrganizationPage() {
       </Card>
 
       <OrganizationMetricsPanel metrics={metrics} />
+      <OrganizationRolesPanel roles={rolesData.roleTemplates} permissions={rolesData.permissionDefinitions} />
       <OrganizationMembersPanel organizations={context?.organizations ?? []} />
       <OrganizationInvitesPanel organizationId={activeOrganizationId} invites={invites} />
       <ClientPermissionsPanel items={context?.clientPermissions ?? []} />

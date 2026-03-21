@@ -12,3 +12,10 @@ Base v9.1 con multi-empresa, roles avanzados, dashboard por organización e invi
 1. `npm install`
 2. corre las migrations en `supabase/migrations`
 3. `npm run dev`
+
+
+## v9.2
+- roles dinámicos por organización
+- permisos granulares por acción
+- pantalla `/app/organization/roles`
+- migration `0014_roles_permissions.sql`

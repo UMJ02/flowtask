@@ -109,3 +109,69 @@ export async function getOrganizationMetrics(organizationId?: string | null) {
     roleBreakdown,
   };
 }
+
+
+export async function getOrganizationRolesAndPermissions(organizationId?: string | null) {
+  if (!organizationId) {
+    return {
+      roleTemplates: [],
+      permissionDefinitions: [],
+      membersByRole: [],
+    };
+  }
+
+  const supabase = await createClient();
+  const [roleTemplatesRes, rolePermissionsRes, permissionDefsRes, membersRes] = await Promise.all([
+    supabase
+      .from("organization_role_templates")
+      .select("id,name,description,is_system")
+      .eq("organization_id", organizationId)
+      .order("is_system", { ascending: false })
+      .order("name", { ascending: true }),
+    supabase
+      .from("organization_role_permissions")
+      .select("role_template_id, permission_key")
+      .eq("organization_id", organizationId),
+    supabase
+      .from("organization_permission_definitions")
+      .select("key,label,description,category")
+      .order("category", { ascending: true })
+      .order("label", { ascending: true }),
+    supabase
+      .from("organization_members")
+      .select("role")
+      .eq("organization_id", organizationId),
+  ]);
+
+  const counts = new Map()
+  for (const row of membersRes.data ?? []) {
+    counts.set(row.role, (counts.get(row.role) ?? 0) + 1);
+  }
+
+  const permissionsByRole = new Map();
+  for (const row of rolePermissionsRes.data ?? []) {
+    const arr = permissionsByRole.get(row.role_template_id) ?? [];
+    arr.push(row.permission_key);
+    permissionsByRole.set(row.role_template_id, arr);
+  }
+
+  const roleTemplates = (roleTemplatesRes.data ?? []).map((row) => ({
+    id: row.id as string,
+    name: row.name as string,
+    description: (row.description as string | null) ?? "",
+    isSystem: !!row.is_system,
+    memberCount: counts.get(row.name) ?? 0,
+    permissions: (permissionsByRole.get(row.id as string) ?? []).sort(),
+  }));
+
+  return {
+    roleTemplates,
+    permissionDefinitions: (permissionDefsRes.data ?? []).map((row) => ({
+      key: row.key as string,
+      label: row.label as string,
+      description: (row.description as string | null) ?? "",
+      category: row.category as "tasks" | "projects" | "clients" | "team" | "reports",
+    })),
+    membersByRole: Array.from(counts.entries()).map(([role, count]) => ({ role, count })),
+  };
+}
