@@ -12,15 +12,18 @@ import {
   getTaskComments,
 } from "@/lib/queries/tasks";
 import { getTaskAttachments } from "@/lib/queries/attachments";
+import { getTaskActivity } from "@/lib/queries/activity";
+import { ActivityTimeline } from "@/components/activity/activity-timeline";
 
 export default async function TaskDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const [task, comments, options, assignees, attachments] = await Promise.all([
+  const [task, comments, options, assignees, attachments, activity] = await Promise.all([
     getTaskById(id),
     getTaskComments(id),
     getAssignableUsers(id),
     getTaskAssignees(id),
     getTaskAttachments(id),
+    getTaskActivity(id),
   ]);
 
   if (!task) notFound();
@@ -42,7 +45,10 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ id:
         <TaskAssigneesPanel taskId={task.id} options={options} assignees={assignees} />
         <TaskCommentsLive taskId={task.id} comments={comments} />
       </div>
-      <EntityAttachments entityType="task" entityId={task.id} attachments={attachments} />
+      <div className="grid gap-4 lg:grid-cols-2">
+        <EntityAttachments entityType="task" entityId={task.id} attachments={attachments} />
+        <ActivityTimeline items={activity} title="Bitácora de la tarea" description="Cambios, estados y seguimiento reciente." />
+      </div>
     </div>
   );
 }

@@ -7,6 +7,8 @@ import { PROJECT_STATUSES } from "@/lib/constants/project-status";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
+import { logActivity } from "@/lib/activity/log-client";
+import { createClientNotification } from "@/lib/notifications/create-client-notification";
 
 interface ProjectStatusFormProps {
   projectId: string;
@@ -32,6 +34,9 @@ export function ProjectStatusForm({ projectId, status, dueDate, shareEnabled, sh
     setIsSaving(true);
 
     const supabase = createClient();
+    const { data: authData } = await supabase.auth.getUser();
+    const user = authData.user;
+
     const { error: updateError } = await supabase
       .from("projects")
       .update({
@@ -46,6 +51,23 @@ export function ProjectStatusForm({ projectId, status, dueDate, shareEnabled, sh
       setError(updateError.message);
       setIsSaving(false);
       return;
+    }
+
+    if (user) {
+      await logActivity(supabase, {
+        entityType: "project",
+        entityId: projectId,
+        action: "project_status_changed",
+        metadata: { status: currentStatus },
+      });
+      await createClientNotification(supabase, {
+        userId: user.id,
+        title: "Proyecto actualizado",
+        body: `El proyecto cambió a ${currentStatus}.`,
+        kind: "info",
+        entityType: "project",
+        entityId: projectId,
+      });
     }
 
     setMessage("Proyecto actualizado.");

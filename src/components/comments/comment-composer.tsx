@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { logActivity } from "@/lib/activity/log-client";
+import { createClientNotification } from "@/lib/notifications/create-client-notification";
 
 interface CommentComposerProps {
   taskId?: string;
@@ -32,17 +34,40 @@ export function CommentComposer({ taskId, projectId }: CommentComposerProps) {
       return;
     }
 
-    const { error: insertError } = await supabase.from("comments").insert({
-      author_id: user.id,
-      task_id: taskId ?? null,
-      project_id: projectId ?? null,
-      content,
-    });
+    const { data: inserted, error: insertError } = await supabase
+      .from("comments")
+      .insert({
+        author_id: user.id,
+        task_id: taskId ?? null,
+        project_id: projectId ?? null,
+        content,
+      })
+      .select("id")
+      .single();
 
     if (insertError) {
       setError(insertError.message);
       setIsSaving(false);
       return;
+    }
+
+    const parentEntityType = taskId ? "task" : "project";
+    const parentEntityId = taskId ?? projectId ?? inserted?.id;
+    if (parentEntityId) {
+      await logActivity(supabase, {
+        entityType: parentEntityType,
+        entityId: parentEntityId,
+        action: "comment_added",
+        metadata: { title: content.slice(0, 80) },
+      });
+      await createClientNotification(supabase, {
+        userId: user.id,
+        title: "Nuevo comentario registrado",
+        body: content.slice(0, 120),
+        kind: "success",
+        entityType: parentEntityType,
+        entityId: parentEntityId,
+      });
     }
 
     setContent("");

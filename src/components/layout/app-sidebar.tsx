@@ -6,6 +6,7 @@ const links = [
   { href: "/app/completed", label: "Finalizadas" },
   { href: "/app/projects", label: "Proyectos" },
   { href: "/app/reminders", label: "Recordatorios" },
+  { href: "/app/notifications", label: "Notificaciones" },
   { href: "/app/reports", label: "Reportes" },
   { href: "/contact", label: "Contacto" },
   { href: "/app/settings", label: "Configuración" },

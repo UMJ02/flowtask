@@ -16,6 +16,8 @@ import {
   getProjectTasks,
 } from "@/lib/queries/projects";
 import { getProjectAttachments, getProjectSectionPermissions } from "@/lib/queries/attachments";
+import { getProjectActivity } from "@/lib/queries/activity";
+import { ActivityTimeline } from "@/components/activity/activity-timeline";
 
 export default async function ProjectDetailPage({
   params,
@@ -27,7 +29,7 @@ export default async function ProjectDetailPage({
   const { id } = await params;
   const filters = (await searchParams) ?? {};
   const currentQuery = new URLSearchParams(Object.entries(filters).flatMap(([key, value]) => typeof value === "string" && value.length > 0 ? [[key, value]] : [])).toString();
-  const [project, comments, members, tasks, clientMetrics, attachments, permissions] = await Promise.all([
+  const [project, comments, members, tasks, clientMetrics, attachments, permissions, activity] = await Promise.all([
     getProjectById(id),
     getProjectComments(id),
     getProjectMembers(id),
@@ -35,6 +37,7 @@ export default async function ProjectDetailPage({
     getProjectClientMetrics(id),
     getProjectAttachments(id),
     getProjectSectionPermissions(id),
+    getProjectActivity(id),
   ]);
 
   if (!project) notFound();
@@ -57,7 +60,10 @@ export default async function ProjectDetailPage({
         <ProjectMembers projectId={project.id} members={members} />
       </div>
       <ProjectClientMetrics items={clientMetrics} />
-      <EntityAttachments entityType="project" entityId={project.id} attachments={attachments} />
+      <div className="grid gap-4 lg:grid-cols-2">
+        <EntityAttachments entityType="project" entityId={project.id} attachments={attachments} />
+        <ActivityTimeline items={activity} title="Bitácora del proyecto" description="Trazabilidad y cambios recientes del proyecto." />
+      </div>
       <ProjectSectionPermissions projectId={project.id} members={members} permissions={permissions} />
       <ProjectCommentsLive projectId={project.id} comments={comments} />
     </div>

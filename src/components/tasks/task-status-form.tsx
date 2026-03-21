@@ -7,6 +7,8 @@ import { TASK_STATUSES } from "@/lib/constants/task-status";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
+import { logActivity } from "@/lib/activity/log-client";
+import { createClientNotification } from "@/lib/notifications/create-client-notification";
 
 interface TaskStatusFormProps {
   taskId: string;
@@ -32,6 +34,9 @@ export function TaskStatusForm({ taskId, status, dueDate, shareEnabled, shareTok
     setIsSaving(true);
 
     const supabase = createClient();
+    const { data: authData } = await supabase.auth.getUser();
+    const user = authData.user;
+
     const { error: updateError } = await supabase
       .from("tasks")
       .update({
@@ -46,6 +51,23 @@ export function TaskStatusForm({ taskId, status, dueDate, shareEnabled, shareTok
       setError(updateError.message);
       setIsSaving(false);
       return;
+    }
+
+    if (user) {
+      await logActivity(supabase, {
+        entityType: "task",
+        entityId: taskId,
+        action: "task_status_changed",
+        metadata: { status: currentStatus },
+      });
+      await createClientNotification(supabase, {
+        userId: user.id,
+        title: "Estado de tarea actualizado",
+        body: `La tarea cambió a ${currentStatus}.`,
+        kind: "info",
+        entityType: "task",
+        entityId: taskId,
+      });
     }
 
     setMessage("Cambios guardados.");

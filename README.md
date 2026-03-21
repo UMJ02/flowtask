@@ -97,3 +97,10 @@ Use the hooks in detail views to trigger `router.refresh()` or invalidate your l
 - Adjuntos por tarea y proyecto usando bucket `attachments`.
 - Permisos por sección para proyectos (`overview`, `tasks`, `comments`, `members`, `files`, `reports`).
 - Migration nueva: `0005_attachments_and_section_permissions.sql`.
+
+
+## v8.0
+- Bitácora de actividad en tareas y proyectos.
+- Centro de notificaciones dentro de `/app/notifications`.
+- Timeline visual con actividad reciente.
+- Migration `0006_activity_notifications.sql`.
