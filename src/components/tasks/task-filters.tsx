@@ -11,12 +11,14 @@ interface TaskFiltersProps {
     status?: string;
     department?: string;
     due?: string;
+    view?: string;
   };
 }
 
 export function TaskFilters({ filters }: TaskFiltersProps) {
   return (
     <form className="grid gap-3 rounded-[24px] bg-white p-4 shadow-soft md:grid-cols-5" method="get">
+      {!!filters.view && <input type="hidden" name="view" value={filters.view} />}
       <Input defaultValue={filters.q ?? ""} name="q" placeholder="Buscar tarea" />
       <Select defaultValue={filters.status ?? ""} name="status">
         <option value="">Todos los estados</option>

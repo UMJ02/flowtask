@@ -7,7 +7,7 @@ import { getTasks } from "@/lib/queries/tasks";
 export default async function TasksPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ q?: string; status?: string; department?: string; due?: string }>;
+  searchParams?: Promise<{ q?: string; status?: string; department?: string; due?: string; view?: string }>;
 }) {
   const filters = (await searchParams) ?? {};
   const tasks = await getTasks(filters);
@@ -24,7 +24,7 @@ export default async function TasksPage({
         </Link>
       </div>
       <TaskFilters filters={filters} />
-      <TaskWorkspace tasks={tasks} />
+      <TaskWorkspace tasks={tasks} filters={filters} />
     </div>
   );
 }

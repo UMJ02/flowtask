@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { TaskKanbanBoard } from "@/components/tasks/task-kanban-board";
 import { TaskList } from "@/components/tasks/task-list";
 import { Button } from "@/components/ui/button";
@@ -14,19 +15,31 @@ type TaskItem = {
 };
 
 type ViewMode = "kanban" | "list" | "both";
-const STORAGE_KEY = "flowtask.tasks.view";
 
-export function TaskWorkspace({ tasks }: { tasks: TaskItem[] }) {
-  const [view, setView] = useState<ViewMode>("both");
+export function TaskWorkspace({
+  tasks,
+  filters,
+}: {
+  tasks: TaskItem[];
+  filters?: { q?: string; status?: string; department?: string; due?: string; view?: string };
+}) {
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const router = useRouter();
 
-  useEffect(() => {
-    const saved = window.localStorage.getItem(STORAGE_KEY) as ViewMode | null;
-    if (saved === "kanban" || saved === "list" || saved === "both") setView(saved);
-  }, []);
+  const view: ViewMode = useMemo(() => {
+    const candidate = filters?.view ?? searchParams.get("view") ?? "both";
+    return candidate === "kanban" || candidate === "list" || candidate === "both" ? candidate : "both";
+  }, [filters?.view, searchParams]);
 
   const updateView = (next: ViewMode) => {
-    setView(next);
-    window.localStorage.setItem(STORAGE_KEY, next);
+    const params = new URLSearchParams(searchParams.toString());
+    if (next === "both") {
+      params.delete("view");
+    } else {
+      params.set("view", next);
+    }
+    router.replace(`${pathname}?${params.toString()}`);
   };
 
   return (
@@ -34,7 +47,7 @@ export function TaskWorkspace({ tasks }: { tasks: TaskItem[] }) {
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-[24px] bg-white p-4 shadow-soft">
         <div>
           <h2 className="text-lg font-semibold text-slate-900">Vista de trabajo</h2>
-          <p className="text-sm text-slate-500">Cambia entre Kanban, listado o ambos. Se guarda en este navegador.</p>
+          <p className="text-sm text-slate-500">La vista queda persistida en la URL para compartir filtros y contexto.</p>
         </div>
         <div className="flex flex-wrap gap-2">
           <Button type="button" variant={view === "kanban" ? "primary" : "secondary"} onClick={() => updateView("kanban")}>Kanban</Button>

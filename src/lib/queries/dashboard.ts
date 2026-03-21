@@ -30,6 +30,8 @@ export async function getDashboardData() {
     { data: departmentRows },
     { data: clientRows },
     { data: urgentProjects },
+    { data: assignmentRows },
+    { data: collaboratorRows },
   ] = await Promise.all([
     supabase.from("tasks").select("id", { count: "exact", head: true }).eq("owner_id", user.id).neq("status", "concluido"),
     supabase.from("projects").select("id", { count: "exact", head: true }).eq("owner_id", user.id).neq("status", "completado"),
@@ -87,13 +89,26 @@ export async function getDashboardData() {
       .eq("owner_id", user.id)
       .neq("status", "completado")
       .not("due_date", "is", null)
+      .gte("due_date", today.toISOString().slice(0, 10))
       .lte("due_date", in7Days.toISOString().slice(0, 10))
       .order("due_date", { ascending: true })
       .limit(5),
+    supabase
+      .from("task_assignees")
+      .select("profiles!task_assignees_user_id_fkey ( full_name ), tasks!inner ( owner_id, status )")
+      .eq("tasks.owner_id", user.id)
+      .neq("tasks.status", "concluido"),
+    supabase
+      .from("project_members")
+      .select("profiles!project_members_user_id_fkey ( full_name ), projects!inner ( owner_id )")
+      .eq("projects.owner_id", user.id),
   ]);
 
   const departmentTotals = new Map<string, { code: string; name: string; total: number }>();
   const clientTotals = new Map<string, { name: string; total: number }>();
+  const userWorkload = new Map<string, { name: string; total: number }>();
+  const collaborationMetrics = new Map<string, { name: string; total: number }>();
+
   for (const row of departmentRows ?? []) {
     const dept = Array.isArray(row.departments) ? row.departments[0] : row.departments;
     if (!dept?.code) continue;
@@ -109,6 +124,22 @@ export async function getDashboardData() {
     clientTotals.set(row.client_name, current);
   }
 
+  for (const row of assignmentRows ?? []) {
+    const profile = Array.isArray(row.profiles) ? row.profiles[0] : row.profiles;
+    const name = profile?.full_name?.trim() || "Sin nombre";
+    const current = userWorkload.get(name) ?? { name, total: 0 };
+    current.total += 1;
+    userWorkload.set(name, current);
+  }
+
+  for (const row of collaboratorRows ?? []) {
+    const profile = Array.isArray(row.profiles) ? row.profiles[0] : row.profiles;
+    const name = profile?.full_name?.trim() || "Sin nombre";
+    const current = collaborationMetrics.get(name) ?? { name, total: 0 };
+    current.total += 1;
+    collaborationMetrics.set(name, current);
+  }
+
   return {
     activeTasks: activeTasks ?? 0,
     activeProjects: activeProjects ?? 0,
@@ -120,6 +151,8 @@ export async function getDashboardData() {
     collaborativeProjects: collaborativeProjects ?? 0,
     departmentMetrics: Array.from(departmentTotals.values()).sort((a, b) => b.total - a.total),
     clientMetrics: Array.from(clientTotals.values()).sort((a, b) => b.total - a.total).slice(0, 5),
+    userWorkload: Array.from(userWorkload.values()).sort((a, b) => b.total - a.total).slice(0, 5),
+    collaborationMetrics: Array.from(collaborationMetrics.values()).sort((a, b) => b.total - a.total).slice(0, 5),
     urgentProjects: urgentProjects ?? [],
     recentTasks: recentTasks ?? [],
     recentProjects: recentProjects ?? [],

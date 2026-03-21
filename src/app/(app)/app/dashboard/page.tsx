@@ -1,4 +1,5 @@
 import { BoardOverview } from "@/components/dashboard/board-overview";
+import { CollaborationMetrics } from "@/components/dashboard/collaboration-metrics";
 import { DeadlineLanes } from "@/components/dashboard/deadline-lanes";
 import { ClientMetrics } from "@/components/dashboard/client-metrics";
 import { DepartmentMetrics } from "@/components/dashboard/department-metrics";
@@ -8,6 +9,7 @@ import { RecentActivity } from "@/components/dashboard/recent-activity";
 import { StickyBoard } from "@/components/dashboard/sticky-board";
 import { UrgentProjects } from "@/components/dashboard/urgent-projects";
 import { UpcomingItems } from "@/components/dashboard/upcoming-items";
+import { UserWorkload } from "@/components/dashboard/user-workload";
 import { getDashboardData } from "@/lib/queries/dashboard";
 
 export default async function DashboardPage() {
@@ -33,10 +35,12 @@ export default async function DashboardPage() {
           collaborativeProjects={data?.collaborativeProjects ?? 0}
         />
       </div>
-      <div className="grid gap-4 xl:grid-cols-[0.95fr_1.05fr]">
+      <div className="grid gap-4 xl:grid-cols-3">
         <ClientMetrics items={data?.clientMetrics ?? []} />
-        <UrgentProjects items={data?.urgentProjects ?? []} />
+        <UserWorkload items={data?.userWorkload ?? []} />
+        <CollaborationMetrics items={data?.collaborationMetrics ?? []} />
       </div>
+      <UrgentProjects items={data?.urgentProjects ?? []} />
       <StickyBoard
         recentTasks={data?.recentTasks ?? []}
         recentProjects={data?.recentProjects ?? []}
