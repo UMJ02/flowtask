@@ -7,6 +7,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { MarkNotificationReadButton } from "@/components/notifications/mark-notification-read-button";
 import { MarkAllNotificationsReadButton } from "@/components/notifications/mark-all-notifications-read-button";
+import { ArchiveReadNotificationsButton } from "@/components/notifications/archive-read-notifications-button";
 import { useNotificationsRealtime, type LiveNotification, type NotificationDelivery } from "@/hooks/use-notifications-realtime";
 import { useNotificationsState } from "@/components/notifications/notifications-provider";
 import { formatDate } from "@/lib/utils/dates";
@@ -171,6 +172,7 @@ export function NotificationsLivePanel({
     [visibleNotifications],
   );
   const unreadVisibleIds = useMemo(() => visibleNotifications.filter((item) => !item.is_read).map((item) => item.id), [visibleNotifications]);
+  const readVisibleIds = useMemo(() => visibleNotifications.filter((item) => item.is_read).map((item) => item.id), [visibleNotifications]);
 
   return (
     <div className="space-y-6">
@@ -200,6 +202,12 @@ export function NotificationsLivePanel({
                 onMarked={() => {
                   setNotifications((current) => current.map((row) => (unreadVisibleIds.includes(row.id) ? { ...row, is_read: true } : row)));
                   markAllAsRead(unreadVisibleIds.length);
+                }}
+              />
+              <ArchiveReadNotificationsButton
+                disabled={!readVisibleIds.length}
+                onArchived={() => {
+                  setNotifications((current) => current.filter((row) => !readVisibleIds.includes(row.id)));
                 }}
               />
             </div>

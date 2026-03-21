@@ -151,3 +151,11 @@ Use the hooks in detail views to trigger `router.refresh()` or invalidate your l
 - Reintentos automáticos para entregas fallidas según `NOTIFICATION_MAX_ATTEMPTS` y `NOTIFICATION_RETRY_DELAY_MINUTES`.
 - Script nuevo: `npm run retry-failed-deliveries`.
 - Migration nueva: `0011_notification_delivery_retries.sql`.
+
+
+## v8.9
+
+- Filtros avanzados en notificaciones para entregas `fallidas`, `pendientes` y `enviadas`.
+- Búsqueda optimizada con índice local para mejorar rendimiento cuando el centro de notificaciones crece.
+- Acción rápida para archivar notificaciones ya leídas.
+- Refactor ligero en el centro de notificaciones para mantener la experiencia estable sobre la base v8.8.
