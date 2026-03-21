@@ -5,11 +5,14 @@ import type { RealtimePostgresInsertPayload, RealtimePostgresUpdatePayload } fro
 import { createClient } from "@/lib/supabase/client";
 
 export type NotificationDelivery = {
+  notification_id?: string;
   channel: string;
   status: string;
   attempted_at: string;
   delivered_at: string | null;
   error_message: string | null;
+  attempt_number?: number | null;
+  retry_after?: string | null;
 };
 
 export type LiveNotification = {
@@ -31,9 +34,10 @@ type Options = {
   enabled?: boolean;
   onInsert?: (row: LiveNotification) => void;
   onUpdate?: (row: LiveNotification) => void;
+  onDeliveryInsert?: (delivery: NotificationDelivery & { notification_id: string }) => void;
 };
 
-export function useNotificationsRealtime({ userId, enabled = true, onInsert, onUpdate }: Options) {
+export function useNotificationsRealtime({ userId, enabled = true, onInsert, onUpdate, onDeliveryInsert }: Options) {
   useEffect(() => {
     if (!enabled || !userId || process.env.NEXT_PUBLIC_ENABLE_REALTIME !== "true") return;
 
@@ -64,10 +68,22 @@ export function useNotificationsRealtime({ userId, enabled = true, onInsert, onU
           onUpdate?.(payload.new as LiveNotification);
         },
       )
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "notification_deliveries",
+          filter: `user_id=eq.${userId}`,
+        },
+        (payload) => {
+          onDeliveryInsert?.(payload.new as NotificationDelivery & { notification_id: string });
+        },
+      )
       .subscribe();
 
     return () => {
       void supabase.removeChannel(channel);
     };
-  }, [enabled, onInsert, onUpdate, userId]);
+  }, [enabled, onDeliveryInsert, onInsert, onUpdate, userId]);
 }

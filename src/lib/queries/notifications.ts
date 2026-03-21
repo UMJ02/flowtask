@@ -25,7 +25,7 @@ export async function getNotificationsPageData() {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    return { userId: "", notifications: [], assignedTasks: [], triggeredReminders: [], unreadCount: 0, digestPreview: null };
+    return { userId: "", notifications: [], assignedTasks: [], triggeredReminders: [], unreadCount: 0, digestPreview: null, deliverySummary: { total: 0, sent: 0, failed: 0, pending: 0 } };
   }
 
   const since = subDays(new Date(), 7).toISOString();
@@ -62,12 +62,12 @@ export async function getNotificationsPageData() {
   ]);
 
   const notificationIds = (notifications ?? []).map((item) => item.id);
-  let deliveriesByNotificationId: Record<string, { channel: string; status: string; attempted_at: string; delivered_at: string | null; error_message: string | null }[]> = {};
+  let deliveriesByNotificationId: Record<string, { channel: string; status: string; attempted_at: string; delivered_at: string | null; error_message: string | null; attempt_number?: number | null; retry_after?: string | null }[]> = {};
 
   if (notificationIds.length) {
     const { data: deliveries } = await supabase
       .from('notification_deliveries')
-      .select('notification_id, channel, status, attempted_at, delivered_at, error_message')
+      .select('notification_id, channel, status, attempted_at, delivered_at, error_message, attempt_number, retry_after')
       .in('notification_id', notificationIds)
       .order('attempted_at', { ascending: false });
 
@@ -78,6 +78,15 @@ export async function getNotificationsPageData() {
     }, {} as Record<string, any[]>);
   }
 
+
+  const deliverySummary = Object.values(deliveriesByNotificationId).flat().reduce((acc, item: any) => {
+    acc.total += 1;
+    if (item.status === 'sent') acc.sent += 1;
+    else if (item.status === 'failed') acc.failed += 1;
+    else acc.pending += 1;
+    return acc;
+  }, { total: 0, sent: 0, failed: 0, pending: 0 });
+
   return {
     userId: user.id,
     notifications: (notifications ?? []).map((item: any) => ({ ...item, deliveries: deliveriesByNotificationId[item.id] ?? [] })),
@@ -85,5 +94,6 @@ export async function getNotificationsPageData() {
     triggeredReminders: triggeredReminders ?? [],
     unreadCount: unreadCount ?? 0,
     digestPreview: latestDigest ?? null,
+    deliverySummary,
   };
 }

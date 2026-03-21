@@ -143,3 +143,11 @@ Use the hooks in detail views to trigger `router.refresh()` or invalidate your l
   - `npm run process-daily-digest`
 - Estado de entrega por canal en `/app/notifications`
 - Migration nueva: `0010_notification_delivery_queue.sql`
+
+
+## v8.8
+
+- Monitor de entregas en tiempo real dentro de `/app/notifications`.
+- Reintentos automáticos para entregas fallidas según `NOTIFICATION_MAX_ATTEMPTS` y `NOTIFICATION_RETRY_DELAY_MINUTES`.
+- Script nuevo: `npm run retry-failed-deliveries`.
+- Migration nueva: `0011_notification_delivery_retries.sql`.

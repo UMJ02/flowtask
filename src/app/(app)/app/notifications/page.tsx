@@ -11,6 +11,7 @@ export default async function NotificationsPage() {
       assignedTasks={data.assignedTasks as any}
       triggeredReminders={data.triggeredReminders as any}
       digestPreview={data.digestPreview as any}
+      deliverySummary={data.deliverySummary as any}
     />
   );
 }
