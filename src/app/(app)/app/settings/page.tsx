@@ -1,6 +1,10 @@
 import { Card } from "@/components/ui/card";
+import { NotificationPreferencesForm } from "@/components/notifications/notification-preferences-form";
+import { getNotificationPreferences } from "@/lib/queries/notification-preferences";
 
-export default function SettingsPage() {
+export default async function SettingsPage() {
+  const preferences = await getNotificationPreferences();
+
   return (
     <div className="space-y-4">
       <Card>
@@ -9,6 +13,8 @@ export default function SettingsPage() {
           Administra personalización del tablero, notificaciones, enlaces compartidos y permisos por proyecto.
         </p>
       </Card>
+
+      {preferences ? <NotificationPreferencesForm initialPreferences={preferences} /> : null}
 
       <Card>
         <h2 className="text-lg font-semibold text-slate-900">Permisos por proyecto</h2>

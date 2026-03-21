@@ -1,11 +1,21 @@
 "use client";
 
-import { createContext, useCallback, useContext, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Bell } from "lucide-react";
 import { useNotificationsRealtime, type LiveNotification } from "@/hooks/use-notifications-realtime";
 
 type ToastItem = Pick<LiveNotification, "id" | "title" | "body" | "kind">;
+type DeliveryFrequency = "immediate" | "daily";
+
+type ClientNotificationPreferences = {
+  enable_task: boolean;
+  enable_project: boolean;
+  enable_comment: boolean;
+  enable_reminder: boolean;
+  enable_toasts: boolean;
+  delivery_frequency: DeliveryFrequency;
+};
 
 type NotificationsContextValue = {
   unreadCount: number;
@@ -14,7 +24,24 @@ type NotificationsContextValue = {
   setUnreadCount: (value: number) => void;
 };
 
+const DEFAULT_PREFERENCES: ClientNotificationPreferences = {
+  enable_task: true,
+  enable_project: true,
+  enable_comment: true,
+  enable_reminder: true,
+  enable_toasts: true,
+  delivery_frequency: "immediate",
+};
+
 const NotificationsContext = createContext<NotificationsContextValue | null>(null);
+
+function isEnabledByType(item: LiveNotification, preferences: ClientNotificationPreferences) {
+  if (item.entity_type === "task") return preferences.enable_task;
+  if (item.entity_type === "project") return preferences.enable_project;
+  if (item.entity_type === "comment") return preferences.enable_comment;
+  if (item.entity_type === "reminder") return preferences.enable_reminder;
+  return true;
+}
 
 export function NotificationsProvider({
   children,
@@ -27,6 +54,32 @@ export function NotificationsProvider({
 }) {
   const [unreadCount, setUnreadCount] = useState(initialUnreadCount);
   const [toasts, setToasts] = useState<ToastItem[]>([]);
+  const [preferences, setPreferences] = useState<ClientNotificationPreferences>(DEFAULT_PREFERENCES);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function loadPreferences() {
+      try {
+        const response = await fetch('/api/notification-preferences/me', { cache: 'no-store' });
+        if (!response.ok) return;
+        const result = await response.json();
+        if (!cancelled && result?.data) {
+          setPreferences({
+            enable_task: Boolean(result.data.enable_task),
+            enable_project: Boolean(result.data.enable_project),
+            enable_comment: Boolean(result.data.enable_comment),
+            enable_reminder: Boolean(result.data.enable_reminder),
+            enable_toasts: Boolean(result.data.enable_toasts),
+            delivery_frequency: result.data.delivery_frequency === 'daily' ? 'daily' : 'immediate',
+          });
+        }
+      } catch {}
+    }
+    void loadPreferences();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const pushToast = useCallback((item: ToastItem) => {
     setToasts((current) => {
@@ -41,8 +94,11 @@ export function NotificationsProvider({
   useNotificationsRealtime({
     userId,
     onInsert: (row) => {
+      if (!isEnabledByType(row, preferences)) return;
       if (!row.is_read) setUnreadCount((current) => current + 1);
-      pushToast({ id: row.id, title: row.title, body: row.body, kind: row.kind });
+      if (preferences.enable_toasts && preferences.delivery_frequency === 'immediate') {
+        pushToast({ id: row.id, title: row.title, body: row.body, kind: row.kind });
+      }
     },
     onUpdate: (row) => {
       if (row.is_read) {

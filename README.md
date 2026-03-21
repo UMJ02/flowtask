@@ -119,3 +119,10 @@ Use the hooks in detail views to trigger `router.refresh()` or invalidate your l
 - badge de notificaciones también en sidebar
 - botón para marcar visibles como leídas
 - filtros por tipo dentro del centro de notificaciones
+
+
+## v8.5
+- preferencias de notificaciones por usuario
+- activación por tipo (tareas, proyectos, comentarios, recordatorios)
+- frecuencia inmediata o resumen diario
+- base lista para canal email y WhatsApp desde configuración
