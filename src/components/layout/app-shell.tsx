@@ -1,8 +1,8 @@
-import { AppFooter } from "@/components/layout/app-footer";
-import { AppHeader } from "@/components/layout/app-header";
-import { AppSidebar } from "@/components/layout/app-sidebar";
-import { NotificationsProvider } from "@/components/notifications/notifications-provider";
-import type { OrganizationSummary } from "@/types/organization";
+import { AppFooter } from '@/components/layout/app-footer';
+import { AppHeader } from '@/components/layout/app-header';
+import { AppSidebar } from '@/components/layout/app-sidebar';
+import { NotificationsProvider } from '@/components/notifications/notifications-provider';
+import type { OrganizationSummary } from '@/types/organization';
 
 export function AppShell({
   userEmail,
@@ -21,12 +21,12 @@ export function AppShell({
 }) {
   return (
     <NotificationsProvider userId={userId} initialUnreadCount={unreadCount}>
-      <div className="min-h-screen bg-slate-50 p-4 md:p-6">
-        <div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-[260px_minmax(0,1fr)]">
+      <div className="min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#f0fdf4_100%)] p-3 md:p-6">
+        <div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-[300px_minmax(0,1fr)]">
           <AppSidebar />
           <div className="space-y-4">
             <AppHeader userEmail={userEmail} organizations={organizations} activeOrganization={activeOrganization} />
-            <main>{children}</main>
+            <main className="space-y-4">{children}</main>
             <AppFooter />
           </div>
         </div>
