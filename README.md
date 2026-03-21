@@ -91,3 +91,9 @@ Use the hooks in detail views to trigger `router.refresh()` or invalidate your l
 - Vista lista para imprimir y guardar en PDF desde `/app/reports/print`
 - Gestión más fina de permisos en miembros de proyecto (`owner`, `editor`, `viewer`)
 - Migration nueva: `supabase/migrations/0004_project_member_roles.sql`
+
+
+## v7.9
+- Adjuntos por tarea y proyecto usando bucket `attachments`.
+- Permisos por sección para proyectos (`overview`, `tasks`, `comments`, `members`, `files`, `reports`).
+- Migration nueva: `0005_attachments_and_section_permissions.sql`.

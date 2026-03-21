@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { TaskAssigneesPanel } from "@/components/tasks/task-assignees-panel";
+import { EntityAttachments } from "@/components/attachments/entity-attachments";
 import { TaskCommentsLive } from "@/components/tasks/task-comments-live";
 import { TaskDetailSummary } from "@/components/tasks/task-detail-summary";
 import { TaskSharePanel } from "@/components/tasks/task-share-panel";
@@ -10,14 +11,16 @@ import {
   getTaskById,
   getTaskComments,
 } from "@/lib/queries/tasks";
+import { getTaskAttachments } from "@/lib/queries/attachments";
 
 export default async function TaskDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const [task, comments, options, assignees] = await Promise.all([
+  const [task, comments, options, assignees, attachments] = await Promise.all([
     getTaskById(id),
     getTaskComments(id),
     getAssignableUsers(id),
     getTaskAssignees(id),
+    getTaskAttachments(id),
   ]);
 
   if (!task) notFound();
@@ -39,6 +42,7 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ id:
         <TaskAssigneesPanel taskId={task.id} options={options} assignees={assignees} />
         <TaskCommentsLive taskId={task.id} comments={comments} />
       </div>
+      <EntityAttachments entityType="task" entityId={task.id} attachments={attachments} />
     </div>
   );
 }
