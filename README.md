@@ -83,3 +83,11 @@ Use the hooks in detail views to trigger `router.refresh()` or invalidate your l
 - Tablero Kanban en `/app/tasks` con arrastre y cambio rápido de estado.
 - Métricas por departamento en dashboard.
 - Salud de proyectos con cierre y carga colaborativa.
+
+
+## v7.8
+
+- Exportación CSV de tareas y proyectos desde `/app/reports`
+- Vista lista para imprimir y guardar en PDF desde `/app/reports/print`
+- Gestión más fina de permisos en miembros de proyecto (`owner`, `editor`, `viewer`)
+- Migration nueva: `supabase/migrations/0004_project_member_roles.sql`
