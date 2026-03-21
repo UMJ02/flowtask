@@ -1,6 +1,23 @@
 import { subDays } from "date-fns";
 import { createClient } from "@/lib/supabase/server";
 
+export async function getUnreadNotificationsCount() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return 0;
+
+  const { count } = await supabase
+    .from("notifications")
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", user.id)
+    .eq("is_read", false);
+
+  return count ?? 0;
+}
+
 export async function getNotificationsPageData() {
   const supabase = await createClient();
   const {
@@ -8,7 +25,7 @@ export async function getNotificationsPageData() {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    return { notifications: [], assignedTasks: [], triggeredReminders: [], unreadCount: 0 };
+    return { userId: "", notifications: [], assignedTasks: [], triggeredReminders: [], unreadCount: 0 };
   }
 
   const since = subDays(new Date(), 7).toISOString();
@@ -16,7 +33,7 @@ export async function getNotificationsPageData() {
   const [{ data: notifications }, { data: assignedTasks }, { data: triggeredReminders }, { count: unreadCount }] = await Promise.all([
     supabase
       .from("notifications")
-      .select("id, title, body, kind, entity_type, entity_id, is_read, created_at, read_at")
+      .select("id, user_id, title, body, kind, entity_type, entity_id, is_read, created_at, read_at")
       .eq("user_id", user.id)
       .order("created_at", { ascending: false })
       .limit(30),
@@ -38,6 +55,7 @@ export async function getNotificationsPageData() {
   ]);
 
   return {
+    userId: user.id,
     notifications: notifications ?? [],
     assignedTasks: assignedTasks ?? [],
     triggeredReminders: triggeredReminders ?? [],

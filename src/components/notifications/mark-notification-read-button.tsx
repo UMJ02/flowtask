@@ -1,21 +1,25 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 
-export function MarkNotificationReadButton({ id, isRead }: { id: string; isRead: boolean }) {
-  const router = useRouter();
+type Props = {
+  id: string;
+  isRead: boolean;
+  onMarked?: () => void;
+};
+
+export function MarkNotificationReadButton({ id, isRead, onMarked }: Props) {
   const [loading, setLoading] = useState(false);
 
   const handleClick = async () => {
     if (isRead) return;
     setLoading(true);
     const supabase = createClient();
-    await supabase.from("notifications").update({ is_read: true }).eq("id", id);
+    const { error } = await supabase.from("notifications").update({ is_read: true }).eq("id", id);
     setLoading(false);
-    router.refresh();
+    if (!error) onMarked?.();
   };
 
   return (

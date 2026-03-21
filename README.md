@@ -104,3 +104,12 @@ Use the hooks in detail views to trigger `router.refresh()` or invalidate your l
 - Centro de notificaciones dentro de `/app/notifications`.
 - Timeline visual con actividad reciente.
 - Migration `0006_activity_notifications.sql`.
+
+
+## v8.1
+
+- Notificaciones en tiempo real sin refresh en `/app/notifications`
+- Badge en el header con cantidad de no leídas
+- Toasts visuales cuando entra una notificación nueva
+- `scripts/process-reminders.ts` ahora crea notificaciones internas y puede disparar webhooks opcionales para email o WhatsApp
+- Nueva migration: `0007_notifications_realtime.sql`

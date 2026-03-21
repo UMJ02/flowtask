@@ -1,0 +1,64 @@
+"use client";
+
+import { useEffect } from "react";
+import type { RealtimePostgresInsertPayload, RealtimePostgresUpdatePayload } from "@supabase/supabase-js";
+import { createClient } from "@/lib/supabase/client";
+
+export type LiveNotification = {
+  id: string;
+  user_id: string;
+  title: string;
+  body: string | null;
+  kind: string;
+  entity_type: string | null;
+  entity_id: string | null;
+  is_read: boolean;
+  created_at: string;
+  read_at: string | null;
+};
+
+type Options = {
+  userId?: string;
+  enabled?: boolean;
+  onInsert?: (row: LiveNotification) => void;
+  onUpdate?: (row: LiveNotification) => void;
+};
+
+export function useNotificationsRealtime({ userId, enabled = true, onInsert, onUpdate }: Options) {
+  useEffect(() => {
+    if (!enabled || !userId || process.env.NEXT_PUBLIC_ENABLE_REALTIME !== "true") return;
+
+    const supabase = createClient();
+    const channel = supabase
+      .channel(`notifications:${userId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "notifications",
+          filter: `user_id=eq.${userId}`,
+        },
+        (payload: RealtimePostgresInsertPayload<LiveNotification>) => {
+          onInsert?.(payload.new as LiveNotification);
+        },
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "notifications",
+          filter: `user_id=eq.${userId}`,
+        },
+        (payload: RealtimePostgresUpdatePayload<LiveNotification>) => {
+          onUpdate?.(payload.new as LiveNotification);
+        },
+      )
+      .subscribe();
+
+    return () => {
+      void supabase.removeChannel(channel);
+    };
+  }, [enabled, onInsert, onUpdate, userId]);
+}
