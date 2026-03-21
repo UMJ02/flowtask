@@ -12,6 +12,7 @@ const links = [
   { href: "/app/completed", label: "Finalizadas" },
   { href: "/app/projects", label: "Proyectos" },
   { href: "/app/clients", label: "Clientes" },
+  { href: "/app/admin", label: "Admin SaaS" },
   { href: "/app/reminders", label: "Recordatorios" },
   { href: "/app/notifications", label: "Notificaciones", isNotifications: true },
   { href: "/app/reports", label: "Reportes" },

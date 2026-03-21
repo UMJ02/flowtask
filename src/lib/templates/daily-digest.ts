@@ -35,7 +35,9 @@ ${greeting}
 
 Aquí tienes el resumen diario con los cambios más relevantes registrados en FlowTask.
 
-${params.items.slice(0,10).map((item)=>`- ${item.title}${item.body ? ` — ${item.body}` : ''} (${new Date(item.created_at).toLocaleString('es-CR')})`).join('
-') || '- Sin movimientos recientes.'}`;
+${params.items
+    .slice(0, 10)
+    .map((item) => `- ${item.title}${item.body ? ` — ${item.body}` : ''} (${new Date(item.created_at).toLocaleString('es-CR')})`)
+    .join('\n') || '- Sin movimientos recientes.'}`;
   return { title, html, text };
 }
