@@ -4,6 +4,14 @@ import { useEffect } from "react";
 import type { RealtimePostgresInsertPayload, RealtimePostgresUpdatePayload } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
 
+export type NotificationDelivery = {
+  channel: string;
+  status: string;
+  attempted_at: string;
+  delivered_at: string | null;
+  error_message: string | null;
+};
+
 export type LiveNotification = {
   id: string;
   user_id: string;
@@ -15,6 +23,7 @@ export type LiveNotification = {
   is_read: boolean;
   created_at: string;
   read_at: string | null;
+  deliveries?: NotificationDelivery[];
 };
 
 type Options = {
@@ -40,7 +49,7 @@ export function useNotificationsRealtime({ userId, enabled = true, onInsert, onU
           filter: `user_id=eq.${userId}`,
         },
         (payload: RealtimePostgresInsertPayload<LiveNotification>) => {
-          onInsert?.(payload.new as LiveNotification);
+          onInsert?.({ ...(payload.new as LiveNotification), deliveries: [] });
         },
       )
       .on(

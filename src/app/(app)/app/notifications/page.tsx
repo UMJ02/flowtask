@@ -7,9 +7,10 @@ export default async function NotificationsPage() {
   return (
     <NotificationsLivePanel
       userId={data.userId}
-      initialNotifications={data.notifications}
+      initialNotifications={data.notifications as any}
       assignedTasks={data.assignedTasks as any}
       triggeredReminders={data.triggeredReminders as any}
+      digestPreview={data.digestPreview as any}
     />
   );
 }

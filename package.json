@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "0.8.6",
+  "version": "0.8.7",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -9,7 +9,9 @@
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "process-reminders": "npx tsx scripts/process-reminders.ts",
-    "check": "npm run typecheck"
+    "check": "npm run typecheck",
+    "process-notification-deliveries": "npx tsx scripts/process-notification-deliveries.ts",
+    "process-daily-digest": "npx tsx scripts/process-daily-digest.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

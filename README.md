@@ -133,3 +133,13 @@ Use the hooks in detail views to trigger `router.refresh()` or invalidate your l
 - botón de prueba de notificación
 - vista previa de resumen diario
 - migration 0009_notification_quiet_hours.sql
+
+
+## v8.7
+
+- Resumen diario real con plantilla base en `src/lib/templates/daily-digest.ts`
+- Scripts nuevos:
+  - `npm run process-notification-deliveries`
+  - `npm run process-daily-digest`
+- Estado de entrega por canal en `/app/notifications`
+- Migration nueva: `0010_notification_delivery_queue.sql`

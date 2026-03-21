@@ -25,12 +25,12 @@ export async function getNotificationsPageData() {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    return { userId: "", notifications: [], assignedTasks: [], triggeredReminders: [], unreadCount: 0 };
+    return { userId: "", notifications: [], assignedTasks: [], triggeredReminders: [], unreadCount: 0, digestPreview: null };
   }
 
   const since = subDays(new Date(), 7).toISOString();
 
-  const [{ data: notifications }, { data: assignedTasks }, { data: triggeredReminders }, { count: unreadCount }] = await Promise.all([
+  const [{ data: notifications }, { data: assignedTasks }, { data: triggeredReminders }, { count: unreadCount }, { data: latestDigest }] = await Promise.all([
     supabase
       .from("notifications")
       .select("id, user_id, title, body, kind, entity_type, entity_id, is_read, created_at, read_at")
@@ -52,13 +52,38 @@ export async function getNotificationsPageData() {
       .order("sent_at", { ascending: false })
       .limit(10),
     supabase.from("notifications").select("id", { count: "exact", head: true }).eq("user_id", user.id).eq("is_read", false),
+    supabase
+      .from('daily_notification_digests')
+      .select('id, digest_date, status, total_notifications, summary_title, summary_body, processed_at')
+      .eq('user_id', user.id)
+      .order('digest_date', { ascending: false })
+      .limit(1)
+      .maybeSingle(),
   ]);
+
+  const notificationIds = (notifications ?? []).map((item) => item.id);
+  let deliveriesByNotificationId: Record<string, { channel: string; status: string; attempted_at: string; delivered_at: string | null; error_message: string | null }[]> = {};
+
+  if (notificationIds.length) {
+    const { data: deliveries } = await supabase
+      .from('notification_deliveries')
+      .select('notification_id, channel, status, attempted_at, delivered_at, error_message')
+      .in('notification_id', notificationIds)
+      .order('attempted_at', { ascending: false });
+
+    deliveriesByNotificationId = (deliveries ?? []).reduce((acc, item: any) => {
+      acc[item.notification_id] = acc[item.notification_id] ?? [];
+      acc[item.notification_id].push(item);
+      return acc;
+    }, {} as Record<string, any[]>);
+  }
 
   return {
     userId: user.id,
-    notifications: notifications ?? [],
+    notifications: (notifications ?? []).map((item: any) => ({ ...item, deliveries: deliveriesByNotificationId[item.id] ?? [] })),
     assignedTasks: assignedTasks ?? [],
     triggeredReminders: triggeredReminders ?? [],
     unreadCount: unreadCount ?? 0,
+    digestPreview: latestDigest ?? null,
   };
 }
