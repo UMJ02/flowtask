@@ -26,3 +26,10 @@ Base v9.1 con multi-empresa, roles avanzados, dashboard por organización e invi
 - dashboard por cliente
 - páginas /app/clients y /app/clients/[id]
 - migration 0015_clients_workspace.sql
+
+
+## v9.4
+- facturación por organización
+- límites por plan (usuarios, proyectos, storage)
+- vista /app/organization/billing
+- base lista para Stripe

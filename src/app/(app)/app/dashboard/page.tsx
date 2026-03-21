@@ -6,6 +6,7 @@ import { DepartmentMetrics } from "@/components/dashboard/department-metrics";
 import { ClientPortfolio } from "@/components/dashboard/client-portfolio";
 import { ProjectHealth } from "@/components/dashboard/project-health";
 import { OrganizationOverview } from "@/components/dashboard/organization-overview";
+import { OrganizationPlanWidget } from "@/components/dashboard/organization-plan-widget";
 import { QuickActions } from "@/components/dashboard/quick-actions";
 import { RecentActivity } from "@/components/dashboard/recent-activity";
 import { StickyBoard } from "@/components/dashboard/sticky-board";
@@ -15,9 +16,10 @@ import { UserWorkload } from "@/components/dashboard/user-workload";
 import { getDashboardData } from "@/lib/queries/dashboard";
 import { getOrganizationContext } from "@/lib/queries/organization";
 import { getClientDashboardItems } from "@/lib/queries/clients";
+import { getOrganizationBillingSummary } from "@/lib/queries/billing";
 
 export default async function DashboardPage() {
-  const [data, organizationContext, clientItems] = await Promise.all([getDashboardData(), getOrganizationContext(), getClientDashboardItems()]);
+  const [data, organizationContext, clientItems, billingSummary] = await Promise.all([getDashboardData(), getOrganizationContext(), getClientDashboardItems(), getOrganizationBillingSummary()]);
 
   return (
     <div className="space-y-4">
@@ -27,6 +29,7 @@ export default async function DashboardPage() {
         completedTasks={data?.completedTasks ?? 0}
       />
       <OrganizationOverview activeOrganization={organizationContext?.activeOrganization ?? null} organizations={organizationContext?.organizations ?? []} clientPermissions={organizationContext?.clientPermissions ?? []} />
+      <OrganizationPlanWidget summary={billingSummary} />
       <DeadlineLanes
         overdueTasks={data?.overdueTasks ?? 0}
         dueSoonTasks={data?.dueSoonTasks ?? 0}

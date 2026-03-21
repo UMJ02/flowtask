@@ -7,6 +7,7 @@ const links = [
   { href: "/app/dashboard", label: "Dashboard" },
   { href: "/app/organization", label: "Organización" },
   { href: "/app/organization/roles", label: "Roles" },
+  { href: "/app/organization/billing", label: "Facturación" },
   { href: "/app/tasks", label: "Tareas" },
   { href: "/app/completed", label: "Finalizadas" },
   { href: "/app/projects", label: "Proyectos" },

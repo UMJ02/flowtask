@@ -4,15 +4,18 @@ import { OrganizationInvitesPanel } from "@/components/organization/organization
 import { OrganizationMembersPanel } from "@/components/organization/organization-members-panel";
 import { OrganizationMetricsPanel } from "@/components/organization/organization-metrics-panel";
 import { OrganizationRolesPanel } from "@/components/organization/organization-roles-panel";
+import { OrganizationBillingSummary } from "@/components/organization/organization-billing-summary";
+import { getOrganizationBillingSummary } from "@/lib/queries/billing";
 import { getOrganizationContext, getOrganizationInvites, getOrganizationMetrics, getOrganizationRolesAndPermissions } from "@/lib/queries/organization";
 
 export default async function OrganizationPage() {
   const context = await getOrganizationContext();
   const activeOrganizationId = context?.activeOrganization?.id ?? null;
-  const [invites, metrics, rolesData] = await Promise.all([
+  const [invites, metrics, rolesData, billingSummary] = await Promise.all([
     getOrganizationInvites(activeOrganizationId),
     getOrganizationMetrics(activeOrganizationId),
     getOrganizationRolesAndPermissions(activeOrganizationId),
+    getOrganizationBillingSummary(activeOrganizationId),
   ]);
 
   return (
@@ -24,6 +27,7 @@ export default async function OrganizationPage() {
       </Card>
 
       <OrganizationMetricsPanel metrics={metrics} />
+      <OrganizationBillingSummary summary={billingSummary} />
       <OrganizationRolesPanel roles={rolesData.roleTemplates} permissions={rolesData.permissionDefinitions} />
       <OrganizationMembersPanel organizations={context?.organizations ?? []} />
       <OrganizationInvitesPanel organizationId={activeOrganizationId} invites={invites} />

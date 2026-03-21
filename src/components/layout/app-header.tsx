@@ -9,7 +9,7 @@ export function AppHeader({ userEmail, organizations = [], activeOrganization = 
       <div>
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">FlowTask</p>
         <h1 className="text-lg font-semibold text-slate-900">Panel principal</h1>
-        <p className="text-xs text-slate-500">Multi-empresa activo · roles dinámicos y permisos por cliente</p>
+        <p className="text-xs text-slate-500">Multi-empresa activo · roles, clientes y suscripción por organización</p>
       </div>
       <div className="flex items-center gap-3">
         <OrganizationSwitcher organizations={organizations} activeOrganization={activeOrganization} />
