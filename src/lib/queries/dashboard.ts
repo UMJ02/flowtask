@@ -11,6 +11,15 @@ export async function getDashboardData() {
     return null;
   }
 
+  const { data: memberships } = await supabase
+    .from("organization_members")
+    .select("organization_id")
+    .eq("user_id", user.id)
+    .order("is_default", { ascending: false })
+    .limit(1);
+
+  const activeOrganizationId = memberships?.[0]?.organization_id ?? null;
+
   const today = new Date();
   const in3Days = addDays(today, 3);
   const in7Days = addDays(today, 7);
@@ -34,35 +43,35 @@ export async function getDashboardData() {
     { data: assignmentRows },
     { data: collaboratorRows },
   ] = await Promise.all([
-    supabase.from("tasks").select("id", { count: "exact", head: true }).eq("owner_id", user.id).neq("status", "concluido"),
-    supabase.from("projects").select("id", { count: "exact", head: true }).eq("owner_id", user.id).neq("status", "completado"),
-    supabase.from("tasks").select("id", { count: "exact", head: true }).eq("owner_id", user.id).eq("status", "concluido"),
-    supabase.from("tasks").select("id", { count: "exact", head: true }).eq("owner_id", user.id).eq("status", "en_espera"),
+    supabase.from("tasks").select("id", { count: "exact", head: true }).or(activeOrganizationId ? `organization_id.eq.${activeOrganizationId},owner_id.eq.${user.id}` : `owner_id.eq.${user.id}`).neq("status", "concluido"),
+    supabase.from("projects").select("id", { count: "exact", head: true }).or(activeOrganizationId ? `organization_id.eq.${activeOrganizationId},owner_id.eq.${user.id}` : `owner_id.eq.${user.id}`).neq("status", "completado"),
+    supabase.from("tasks").select("id", { count: "exact", head: true }).or(activeOrganizationId ? `organization_id.eq.${activeOrganizationId},owner_id.eq.${user.id}` : `owner_id.eq.${user.id}`).eq("status", "concluido"),
+    supabase.from("tasks").select("id", { count: "exact", head: true }).or(activeOrganizationId ? `organization_id.eq.${activeOrganizationId},owner_id.eq.${user.id}` : `owner_id.eq.${user.id}`).eq("status", "en_espera"),
     supabase
       .from("tasks")
       .select("id", { count: "exact", head: true })
-      .eq("owner_id", user.id)
+      .or(activeOrganizationId ? `organization_id.eq.${activeOrganizationId},owner_id.eq.${user.id}` : `owner_id.eq.${user.id}`)
       .neq("status", "concluido")
       .lt("due_date", today.toISOString().slice(0, 10)),
     supabase
       .from("tasks")
       .select("id", { count: "exact", head: true })
-      .eq("owner_id", user.id)
+      .or(activeOrganizationId ? `organization_id.eq.${activeOrganizationId},owner_id.eq.${user.id}` : `owner_id.eq.${user.id}`)
       .neq("status", "concluido")
       .gte("due_date", today.toISOString().slice(0, 10))
       .lte("due_date", in3Days.toISOString().slice(0, 10)),
-    supabase.from("projects").select("id", { count: "exact", head: true }).eq("owner_id", user.id).eq("status", "completado"),
-    supabase.from("projects").select("id", { count: "exact", head: true }).eq("owner_id", user.id).eq("is_collaborative", true),
+    supabase.from("projects").select("id", { count: "exact", head: true }).or(activeOrganizationId ? `organization_id.eq.${activeOrganizationId},owner_id.eq.${user.id}` : `owner_id.eq.${user.id}`).eq("status", "completado"),
+    supabase.from("projects").select("id", { count: "exact", head: true }).or(activeOrganizationId ? `organization_id.eq.${activeOrganizationId},owner_id.eq.${user.id}` : `owner_id.eq.${user.id}`).eq("is_collaborative", true),
     supabase
       .from("tasks")
       .select("id,title,status,due_date,client_name")
-      .eq("owner_id", user.id)
+      .or(activeOrganizationId ? `organization_id.eq.${activeOrganizationId},owner_id.eq.${user.id}` : `owner_id.eq.${user.id}`)
       .order("created_at", { ascending: false })
       .limit(8),
     supabase
       .from("projects")
       .select("id,title,status,due_date,client_name")
-      .eq("owner_id", user.id)
+      .or(activeOrganizationId ? `organization_id.eq.${activeOrganizationId},owner_id.eq.${user.id}` : `owner_id.eq.${user.id}`)
       .order("created_at", { ascending: false })
       .limit(6),
     supabase
@@ -76,22 +85,22 @@ export async function getDashboardData() {
     supabase
       .from("tasks")
       .select("department_id, departments ( code, name )")
-      .eq("owner_id", user.id)
+      .or(activeOrganizationId ? `organization_id.eq.${activeOrganizationId},owner_id.eq.${user.id}` : `owner_id.eq.${user.id}`)
       .neq("status", "concluido"),
     supabase
       .from("tasks")
       .select("client_name,status")
-      .eq("owner_id", user.id)
+      .or(activeOrganizationId ? `organization_id.eq.${activeOrganizationId},owner_id.eq.${user.id}` : `owner_id.eq.${user.id}`)
       .not("client_name", "is", null),
     supabase
       .from("projects")
       .select("client_name,status")
-      .eq("owner_id", user.id)
+      .or(activeOrganizationId ? `organization_id.eq.${activeOrganizationId},owner_id.eq.${user.id}` : `owner_id.eq.${user.id}`)
       .not("client_name", "is", null),
     supabase
       .from("projects")
       .select("id,title,status,due_date,client_name")
-      .eq("owner_id", user.id)
+      .or(activeOrganizationId ? `organization_id.eq.${activeOrganizationId},owner_id.eq.${user.id}` : `owner_id.eq.${user.id}`)
       .neq("status", "completado")
       .not("due_date", "is", null)
       .gte("due_date", today.toISOString().slice(0, 10))

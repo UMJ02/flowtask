@@ -159,3 +159,13 @@ Use the hooks in detail views to trigger `router.refresh()` or invalidate your l
 - Búsqueda optimizada con índice local para mejorar rendimiento cuando el centro de notificaciones crece.
 - Acción rápida para archivar notificaciones ya leídas.
 - Refactor ligero en el centro de notificaciones para mantener la experiencia estable sobre la base v8.8.
+
+
+## Multi-empresa, roles avanzados y permisos por cliente
+
+Esta base agrega soporte inicial para organizaciones (`organizations`), miembros por organización (`organization_members`), clientes (`clients`) y permisos por cliente (`client_permissions`). Corre la migration `0012_organizations_multi_tenant.sql` para habilitar:
+
+- multi-empresa
+- roles `admin_global`, `manager`, `member`, `viewer`
+- dashboards por organización
+- permisos por cliente

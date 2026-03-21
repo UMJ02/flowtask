@@ -4,6 +4,7 @@ import { DeadlineLanes } from "@/components/dashboard/deadline-lanes";
 import { ClientMetrics } from "@/components/dashboard/client-metrics";
 import { DepartmentMetrics } from "@/components/dashboard/department-metrics";
 import { ProjectHealth } from "@/components/dashboard/project-health";
+import { OrganizationOverview } from "@/components/dashboard/organization-overview";
 import { QuickActions } from "@/components/dashboard/quick-actions";
 import { RecentActivity } from "@/components/dashboard/recent-activity";
 import { StickyBoard } from "@/components/dashboard/sticky-board";
@@ -11,9 +12,10 @@ import { UrgentProjects } from "@/components/dashboard/urgent-projects";
 import { UpcomingItems } from "@/components/dashboard/upcoming-items";
 import { UserWorkload } from "@/components/dashboard/user-workload";
 import { getDashboardData } from "@/lib/queries/dashboard";
+import { getOrganizationContext } from "@/lib/queries/organization";
 
 export default async function DashboardPage() {
-  const data = await getDashboardData();
+  const [data, organizationContext] = await Promise.all([getDashboardData(), getOrganizationContext()]);
 
   return (
     <div className="space-y-4">
@@ -22,6 +24,7 @@ export default async function DashboardPage() {
         activeTasks={data?.activeTasks ?? 0}
         completedTasks={data?.completedTasks ?? 0}
       />
+      <OrganizationOverview activeOrganization={organizationContext?.activeOrganization ?? null} organizations={organizationContext?.organizations ?? []} clientPermissions={organizationContext?.clientPermissions ?? []} />
       <DeadlineLanes
         overdueTasks={data?.overdueTasks ?? 0}
         dueSoonTasks={data?.dueSoonTasks ?? 0}
