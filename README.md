@@ -126,3 +126,10 @@ Use the hooks in detail views to trigger `router.refresh()` or invalidate your l
 - activación por tipo (tareas, proyectos, comentarios, recordatorios)
 - frecuencia inmediata o resumen diario
 - base lista para canal email y WhatsApp desde configuración
+
+
+## v8.6
+- horas silenciosas para notificaciones
+- botón de prueba de notificación
+- vista previa de resumen diario
+- migration 0009_notification_quiet_hours.sql

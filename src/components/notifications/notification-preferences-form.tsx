@@ -30,6 +30,10 @@ function ToggleRow({
   );
 }
 
+function hourLabel(hour: number) {
+  return `${hour.toString().padStart(2, "0")}:00`;
+}
+
 export function NotificationPreferencesForm({ initialPreferences }: Props) {
   const [state, setState] = useState(initialPreferences);
   const [message, setMessage] = useState<string | null>(null);
@@ -67,7 +71,7 @@ export function NotificationPreferencesForm({ initialPreferences }: Props) {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h2 className="text-lg font-semibold text-slate-900">Preferencias de notificaciones</h2>
-            <p className="mt-1 text-sm text-slate-500">Activa o desactiva los tipos de aviso y define si los quieres inmediatos o en resumen diario.</p>
+            <p className="mt-1 text-sm text-slate-500">Activa o desactiva avisos, define frecuencia y controla cuándo quieres menos interrupciones.</p>
           </div>
           <button
             type="button"
@@ -120,7 +124,7 @@ export function NotificationPreferencesForm({ initialPreferences }: Props) {
               </div>
               <p className="mt-2 text-sm text-slate-500">
                 {disabledByDigest
-                  ? "En resumen diario se prioriza consolidar avisos y reducir ruido en tiempo real."
+                  ? "En resumen diario se consolidan avisos y se reduce el ruido en tiempo real."
                   : "En inmediato verás notificaciones en vivo y toasts dentro de la app."}
               </p>
             </div>
@@ -134,7 +138,7 @@ export function NotificationPreferencesForm({ initialPreferences }: Props) {
               >
                 {Array.from({ length: 24 }).map((_, hour) => (
                   <option key={hour} value={hour}>
-                    {hour.toString().padStart(2, "0")}:00
+                    {hourLabel(hour)}
                   </option>
                 ))}
               </select>
@@ -157,6 +161,67 @@ export function NotificationPreferencesForm({ initialPreferences }: Props) {
                 <li>• Email / WhatsApp: opcional, quedan listos para tu siguiente integración.</li>
               </ul>
             </div>
+          </div>
+        </Card>
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-2">
+        <Card>
+          <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Horas silenciosas</h3>
+          <div className="mt-4 space-y-4">
+            <ToggleRow
+              label="Activar horas silenciosas"
+              description="Evita toasts en vivo dentro del horario que definas. Las notificaciones siguen entrando al centro interno."
+              checked={state.quiet_hours_enabled}
+              onChange={(value) => updateField("quiet_hours_enabled", value)}
+            />
+            <div className="grid gap-3 sm:grid-cols-2">
+              <label className="block">
+                <p className="text-sm font-semibold text-slate-900">Inicio</p>
+                <select
+                  className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700"
+                  value={state.quiet_hours_start}
+                  onChange={(event) => updateField("quiet_hours_start", Number(event.target.value))}
+                  disabled={!state.quiet_hours_enabled}
+                >
+                  {Array.from({ length: 24 }).map((_, hour) => (
+                    <option key={hour} value={hour}>{hourLabel(hour)}</option>
+                  ))}
+                </select>
+              </label>
+              <label className="block">
+                <p className="text-sm font-semibold text-slate-900">Fin</p>
+                <select
+                  className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700"
+                  value={state.quiet_hours_end}
+                  onChange={(event) => updateField("quiet_hours_end", Number(event.target.value))}
+                  disabled={!state.quiet_hours_enabled}
+                >
+                  {Array.from({ length: 24 }).map((_, hour) => (
+                    <option key={hour} value={hour}>{hourLabel(hour)}</option>
+                  ))}
+                </select>
+              </label>
+            </div>
+            <div className="rounded-2xl bg-slate-50 p-4 text-sm text-slate-600">
+              <p className="font-semibold text-slate-900">Vista previa</p>
+              <p className="mt-1">
+                {state.quiet_hours_enabled
+                  ? `Los toasts quedarán en silencio de ${hourLabel(state.quiet_hours_start)} a ${hourLabel(state.quiet_hours_end)}.`
+                  : "No hay horario silencioso activo. Los toasts se mostrarán de inmediato según tus preferencias."}
+              </p>
+            </div>
+          </div>
+        </Card>
+
+        <Card>
+          <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Resumen diario</h3>
+          <div className="mt-4 space-y-3 rounded-2xl bg-slate-50 p-4 text-sm text-slate-600">
+            <p className="font-semibold text-slate-900">Cómo se verá</p>
+            <p>• Tareas nuevas asignadas durante el día.</p>
+            <p>• Cambios relevantes en proyectos colaborativos.</p>
+            <p>• Comentarios recientes y recordatorios disparados.</p>
+            <p className="pt-2 text-xs text-slate-500">Horario actual configurado: {hourLabel(state.daily_digest_hour)}.</p>
           </div>
         </Card>
       </div>

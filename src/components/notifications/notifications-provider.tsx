@@ -15,6 +15,9 @@ type ClientNotificationPreferences = {
   enable_reminder: boolean;
   enable_toasts: boolean;
   delivery_frequency: DeliveryFrequency;
+  quiet_hours_enabled: boolean;
+  quiet_hours_start: number;
+  quiet_hours_end: number;
 };
 
 type NotificationsContextValue = {
@@ -31,6 +34,9 @@ const DEFAULT_PREFERENCES: ClientNotificationPreferences = {
   enable_reminder: true,
   enable_toasts: true,
   delivery_frequency: "immediate",
+  quiet_hours_enabled: false,
+  quiet_hours_start: 22,
+  quiet_hours_end: 7,
 };
 
 const NotificationsContext = createContext<NotificationsContextValue | null>(null);
@@ -41,6 +47,16 @@ function isEnabledByType(item: LiveNotification, preferences: ClientNotification
   if (item.entity_type === "comment") return preferences.enable_comment;
   if (item.entity_type === "reminder") return preferences.enable_reminder;
   return true;
+}
+
+function isWithinQuietHours(preferences: ClientNotificationPreferences, date = new Date()) {
+  if (!preferences.quiet_hours_enabled) return false;
+  const hour = date.getHours();
+  const start = preferences.quiet_hours_start;
+  const end = preferences.quiet_hours_end;
+  if (start === end) return true;
+  if (start < end) return hour >= start && hour < end;
+  return hour >= start || hour < end;
 }
 
 export function NotificationsProvider({
@@ -71,6 +87,9 @@ export function NotificationsProvider({
             enable_reminder: Boolean(result.data.enable_reminder),
             enable_toasts: Boolean(result.data.enable_toasts),
             delivery_frequency: result.data.delivery_frequency === 'daily' ? 'daily' : 'immediate',
+            quiet_hours_enabled: Boolean(result.data.quiet_hours_enabled),
+            quiet_hours_start: Number.isFinite(Number(result.data.quiet_hours_start)) ? Number(result.data.quiet_hours_start) : 22,
+            quiet_hours_end: Number.isFinite(Number(result.data.quiet_hours_end)) ? Number(result.data.quiet_hours_end) : 7,
           });
         }
       } catch {}
@@ -96,7 +115,11 @@ export function NotificationsProvider({
     onInsert: (row) => {
       if (!isEnabledByType(row, preferences)) return;
       if (!row.is_read) setUnreadCount((current) => current + 1);
-      if (preferences.enable_toasts && preferences.delivery_frequency === 'immediate') {
+      if (
+        preferences.enable_toasts &&
+        preferences.delivery_frequency === 'immediate' &&
+        !isWithinQuietHours(preferences)
+      ) {
         pushToast({ id: row.id, title: row.title, body: row.body, kind: row.kind });
       }
     },

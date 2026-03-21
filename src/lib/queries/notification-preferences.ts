@@ -11,6 +11,9 @@ export type NotificationPreferences = {
   enable_whatsapp: boolean;
   delivery_frequency: "immediate" | "daily";
   daily_digest_hour: number;
+  quiet_hours_enabled: boolean;
+  quiet_hours_start: number;
+  quiet_hours_end: number;
 };
 
 export const DEFAULT_NOTIFICATION_PREFERENCES: Omit<NotificationPreferences, "user_id"> = {
@@ -23,6 +26,9 @@ export const DEFAULT_NOTIFICATION_PREFERENCES: Omit<NotificationPreferences, "us
   enable_whatsapp: false,
   delivery_frequency: "immediate",
   daily_digest_hour: 8,
+  quiet_hours_enabled: false,
+  quiet_hours_start: 22,
+  quiet_hours_end: 7,
 };
 
 export async function getNotificationPreferences() {
@@ -33,7 +39,7 @@ export async function getNotificationPreferences() {
 
   const { data } = await supabase
     .from("notification_preferences")
-    .select("user_id, enable_task, enable_project, enable_comment, enable_reminder, enable_toasts, enable_email, enable_whatsapp, delivery_frequency, daily_digest_hour")
+    .select("user_id, enable_task, enable_project, enable_comment, enable_reminder, enable_toasts, enable_email, enable_whatsapp, delivery_frequency, daily_digest_hour, quiet_hours_enabled, quiet_hours_start, quiet_hours_end")
     .eq("user_id", user.id)
     .maybeSingle();
 

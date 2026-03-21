@@ -1,5 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { NotificationPreferencesForm } from "@/components/notifications/notification-preferences-form";
+import { TestNotificationButton } from "@/components/notifications/test-notification-button";
 import { getNotificationPreferences } from "@/lib/queries/notification-preferences";
 
 export default async function SettingsPage() {
@@ -15,6 +16,7 @@ export default async function SettingsPage() {
       </Card>
 
       {preferences ? <NotificationPreferencesForm initialPreferences={preferences} /> : null}
+      <TestNotificationButton />
 
       <Card>
         <h2 className="text-lg font-semibold text-slate-900">Permisos por proyecto</h2>
