@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { MarkNotificationReadButton } from "@/components/notifications/mark-notification-read-button";
@@ -9,6 +10,7 @@ import { useNotificationsState } from "@/components/notifications/notifications-
 import { formatDate } from "@/lib/utils/dates";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { isToday, isYesterday, parseISO } from "date-fns";
+import { NOTIFICATION_FILTERS, isNotificationFilterKey, useNotificationFilters, type NotificationFilterKey } from "@/hooks/use-notification-filters";
 
 type AssignedTask = {
   id: string;
@@ -23,28 +25,7 @@ type TriggeredReminder = {
   project_id: string | null;
 };
 
-type FilterKey = "all" | "unread" | "task" | "project" | "comment" | "reminder";
 type GroupKey = "today" | "yesterday" | "earlier";
-
-const FILTERS: { value: FilterKey; label: string }[] = [
-  { value: "all", label: "Todas" },
-  { value: "unread", label: "No leídas" },
-  { value: "task", label: "Tareas" },
-  { value: "project", label: "Proyectos" },
-  { value: "comment", label: "Comentarios" },
-  { value: "reminder", label: "Recordatorios" },
-];
-
-function matchesFilter(item: LiveNotification, filter: FilterKey) {
-  if (filter === "all") return true;
-  if (filter === "unread") return !item.is_read;
-  return item.entity_type === filter;
-}
-
-
-function isFilterKey(value: string | null): value is FilterKey {
-  return Boolean(value && FILTERS.some((filter) => filter.value === value));
-}
 
 function getGroupKey(createdAt: string): GroupKey {
   const date = parseISO(createdAt);
@@ -58,6 +39,15 @@ const GROUP_LABELS: Record<GroupKey, string> = {
   yesterday: "Ayer",
   earlier: "Anteriores",
 };
+
+function buildNotificationHref(item: LiveNotification) {
+  if (!item.entity_id) return null;
+  if (item.entity_type === "task") return `/app/tasks/${item.entity_id}`;
+  if (item.entity_type === "project") return `/app/projects/${item.entity_id}`;
+  if (item.entity_type === "comment" && item.kind?.toLowerCase().includes("project")) return `/app/projects/${item.entity_id}`;
+  if (item.entity_type === "comment") return `/app/tasks/${item.entity_id}`;
+  return null;
+}
 
 export function NotificationsLivePanel({
   userId,
@@ -74,14 +64,16 @@ export function NotificationsLivePanel({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const initialFilterFromUrl = searchParams.get("filter");
+  const initialSearchFromUrl = searchParams.get("q") ?? "";
   const [notifications, setNotifications] = useState(initialNotifications);
-  const [activeFilter, setActiveFilter] = useState<FilterKey>(isFilterKey(initialFilterFromUrl) ? initialFilterFromUrl : "all");
+  const [activeFilter, setActiveFilter] = useState<NotificationFilterKey>(isNotificationFilterKey(initialFilterFromUrl) ? initialFilterFromUrl : "all");
+  const [searchQuery, setSearchQuery] = useState(initialSearchFromUrl);
   const { unreadCount, markOneAsRead, markAllAsRead } = useNotificationsState();
 
   useNotificationsRealtime({
     userId,
     onInsert: (row) => {
-      setNotifications((current) => [row, ...current.filter((item) => item.id !== row.id)].slice(0, 50));
+      setNotifications((current) => [row, ...current.filter((item) => item.id !== row.id)].slice(0, 100));
     },
     onUpdate: (row) => {
       setNotifications((current) => current.map((item) => (item.id === row.id ? row : item)));
@@ -90,28 +82,37 @@ export function NotificationsLivePanel({
 
   useEffect(() => {
     const filterFromUrl = searchParams.get("filter");
-    if (isFilterKey(filterFromUrl) && filterFromUrl !== activeFilter) {
+    const q = searchParams.get("q") ?? "";
+    if (isNotificationFilterKey(filterFromUrl) && filterFromUrl !== activeFilter) {
       setActiveFilter(filterFromUrl);
-      return;
     }
     if (!filterFromUrl && activeFilter !== "all") {
       setActiveFilter("all");
     }
-  }, [activeFilter, searchParams]);
+    if (q !== searchQuery) setSearchQuery(q);
+  }, [activeFilter, searchParams, searchQuery]);
 
-  const setFilter = (value: FilterKey) => {
-    setActiveFilter(value);
+  const syncUrl = (nextFilter: NotificationFilterKey, nextQuery: string) => {
     const params = new URLSearchParams(searchParams.toString());
-    if (value === "all") params.delete("filter");
-    else params.set("filter", value);
+    if (nextFilter === "all") params.delete("filter");
+    else params.set("filter", nextFilter);
+    if (nextQuery.trim()) params.set("q", nextQuery.trim());
+    else params.delete("q");
     const query = params.toString();
     router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
   };
 
-  const visibleNotifications = useMemo(
-    () => notifications.filter((item) => matchesFilter(item, activeFilter)),
-    [activeFilter, notifications],
-  );
+  const setFilter = (value: NotificationFilterKey) => {
+    setActiveFilter(value);
+    syncUrl(value, searchQuery);
+  };
+
+  const onSearchChange = (value: string) => {
+    setSearchQuery(value);
+    syncUrl(activeFilter, value);
+  };
+
+  const visibleNotifications = useNotificationFilters(notifications, activeFilter, searchQuery);
 
   const groupedNotifications = useMemo(() => {
     return visibleNotifications.reduce<Record<GroupKey, LiveNotification[]>>((acc, item) => {
@@ -184,22 +185,30 @@ export function NotificationsLivePanel({
             </div>
           </div>
 
-          <div className="mt-4 flex flex-wrap gap-2">
-            {FILTERS.map((filter) => {
-              const isActive = filter.value === activeFilter;
-              return (
-                <button
-                  key={filter.value}
-                  type="button"
-                  onClick={() => setFilter(filter.value)}
-                  className={isActive
-                    ? "rounded-full bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white"
-                    : "rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50"}
-                >
-                  {filter.label}
-                </button>
-              );
-            })}
+          <div className="mt-4 grid gap-3 md:grid-cols-[1fr_auto]">
+            <input
+              value={searchQuery}
+              onChange={(event) => onSearchChange(event.target.value)}
+              placeholder="Buscar por texto, cliente o proyecto..."
+              className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 outline-none ring-0 placeholder:text-slate-400 focus:border-slate-300"
+            />
+            <div className="flex flex-wrap gap-2">
+              {NOTIFICATION_FILTERS.map((filter) => {
+                const isActive = filter.value === activeFilter;
+                return (
+                  <button
+                    key={filter.value}
+                    type="button"
+                    onClick={() => setFilter(filter.value)}
+                    className={isActive
+                      ? "rounded-full bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white"
+                      : "rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50"}
+                  >
+                    {filter.label}
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           <div className="mt-4 space-y-5">
@@ -212,29 +221,39 @@ export function NotificationsLivePanel({
                     <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500">{GROUP_LABELS[groupKey]}</h3>
                     <span className="text-xs text-slate-400">{items.length} elemento(s)</span>
                   </div>
-                  {items.map((item) => (
-                    <div key={item.id} className="rounded-2xl border border-slate-200 bg-white px-4 py-3">
-                      <div className="flex items-start justify-between gap-3">
-                        <div>
-                          <div className="flex flex-wrap items-center gap-2">
-                            <p className="text-sm font-medium text-slate-900">{item.title}</p>
-                            {!item.is_read ? <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-700">Nueva</span> : null}
-                            {item.entity_type ? <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold uppercase text-slate-600">{item.entity_type}</span> : null}
+                  {items.map((item) => {
+                    const href = buildNotificationHref(item);
+                    return (
+                      <div key={item.id} className="rounded-2xl border border-slate-200 bg-white px-4 py-3">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0 flex-1">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <p className="truncate text-sm font-medium text-slate-900">{item.title}</p>
+                              {!item.is_read ? <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-700">Nueva</span> : null}
+                              {item.entity_type ? <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold uppercase text-slate-600">{item.entity_type}</span> : null}
+                            </div>
+                            {item.body ? <p className="mt-1 text-sm text-slate-600">{item.body}</p> : null}
+                            <div className="mt-3 flex flex-wrap items-center gap-2">
+                              {href ? (
+                                <Link href={href} className="rounded-full border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50">
+                                  {href.includes('/tasks/') ? 'Ir a tarea' : 'Ir a proyecto'}
+                                </Link>
+                              ) : null}
+                              <MarkNotificationReadButton
+                                id={item.id}
+                                isRead={item.is_read}
+                                onMarked={() => {
+                                  setNotifications((current) => current.map((row) => (row.id === item.id ? { ...row, is_read: true } : row)));
+                                  if (!item.is_read) markOneAsRead(item.id);
+                                }}
+                              />
+                            </div>
+                            <p className="mt-2 text-xs text-slate-500">{formatDate(item.created_at)}</p>
                           </div>
-                          {item.body ? <p className="mt-1 text-sm text-slate-600">{item.body}</p> : null}
-                          <p className="mt-2 text-xs text-slate-500">{formatDate(item.created_at)}</p>
                         </div>
-                        <MarkNotificationReadButton
-                          id={item.id}
-                          isRead={item.is_read}
-                          onMarked={() => {
-                            setNotifications((current) => current.map((row) => (row.id === item.id ? { ...row, is_read: true } : row)));
-                            if (!item.is_read) markOneAsRead(item.id);
-                          }}
-                        />
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               );
             }) : <p className="text-sm text-slate-500">No hay notificaciones para este filtro.</p>}
@@ -252,6 +271,9 @@ export function NotificationsLivePanel({
                 <div key={item.id} className="rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-700">
                   <p className="font-medium text-slate-900">{item.tasks?.title ?? "Tarea"}</p>
                   <p className="mt-1 text-xs text-slate-500">Estado: {item.tasks?.status ?? "-"}</p>
+                  {item.tasks?.id ? (
+                    <Link href={`/app/tasks/${item.tasks.id}`} className="mt-2 inline-flex rounded-full border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-700 hover:bg-white">Ir a tarea</Link>
+                  ) : null}
                 </div>
               )) : <p className="text-sm text-slate-500">No tienes tareas asignadas recientes.</p>}
             </div>
@@ -266,6 +288,8 @@ export function NotificationsLivePanel({
                 <div key={item.id} className="rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-700">
                   <p>{item.task_id ? `Tarea ${item.task_id}` : `Proyecto ${item.project_id}`}</p>
                   <p className="mt-1 text-xs text-slate-500">Enviado: {formatDate(item.sent_at ?? new Date().toISOString())}</p>
+                  {item.task_id ? <Link href={`/app/tasks/${item.task_id}`} className="mt-2 inline-flex rounded-full border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-700 hover:bg-white">Ir a tarea</Link> : null}
+                  {!item.task_id && item.project_id ? <Link href={`/app/projects/${item.project_id}`} className="mt-2 inline-flex rounded-full border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-700 hover:bg-white">Ir a proyecto</Link> : null}
                 </div>
               )) : <p className="text-sm text-slate-500">Todavía no se han disparado recordatorios.</p>}
             </div>
