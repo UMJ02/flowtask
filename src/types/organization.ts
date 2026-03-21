@@ -12,3 +12,28 @@ export interface ClientPermissionSummary {
   canEdit: boolean;
   canManageMembers: boolean;
 }
+
+
+export interface OrganizationInviteSummary {
+  id: string;
+  email: string;
+  role: "admin_global" | "manager" | "member" | "viewer";
+  status: string;
+  createdAtLabel: string;
+}
+
+export interface OrganizationMetricSummary {
+  members: number;
+  clients: number;
+  activeProjects: number;
+  openTasks: number;
+  editableClients: number;
+  memberManagedClients: number;
+  readOnlyClients: number;
+  roleBreakdown: {
+    admin_global: number;
+    manager: number;
+    member: number;
+    viewer: number;
+  };
+}

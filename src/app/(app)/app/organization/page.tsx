@@ -1,10 +1,17 @@
 import { Card } from "@/components/ui/card";
 import { ClientPermissionsPanel } from "@/components/organization/client-permissions-panel";
+import { OrganizationInvitesPanel } from "@/components/organization/organization-invites-panel";
 import { OrganizationMembersPanel } from "@/components/organization/organization-members-panel";
-import { getOrganizationContext } from "@/lib/queries/organization";
+import { OrganizationMetricsPanel } from "@/components/organization/organization-metrics-panel";
+import { getOrganizationContext, getOrganizationInvites, getOrganizationMetrics } from "@/lib/queries/organization";
 
 export default async function OrganizationPage() {
   const context = await getOrganizationContext();
+  const activeOrganizationId = context?.activeOrganization?.id ?? null;
+  const [invites, metrics] = await Promise.all([
+    getOrganizationInvites(activeOrganizationId),
+    getOrganizationMetrics(activeOrganizationId),
+  ]);
 
   return (
     <div className="space-y-4">
@@ -14,7 +21,9 @@ export default async function OrganizationPage() {
         <p className="mt-2 text-sm text-slate-600">Esta vista concentra la operación multi-empresa: equipos, permisos por cliente y roles avanzados por organización.</p>
       </Card>
 
+      <OrganizationMetricsPanel metrics={metrics} />
       <OrganizationMembersPanel organizations={context?.organizations ?? []} />
+      <OrganizationInvitesPanel organizationId={activeOrganizationId} invites={invites} />
       <ClientPermissionsPanel items={context?.clientPermissions ?? []} />
     </div>
   );
