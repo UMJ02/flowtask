@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { ProjectClientMetrics } from "@/components/projects/project-client-metrics";
 import { ProjectCommentsLive } from "@/components/projects/project-comments-live";
 import { ProjectDetailSummary } from "@/components/projects/project-detail-summary";
 import { ProjectMembers } from "@/components/projects/project-members";
@@ -7,25 +8,35 @@ import { ProjectStatusForm } from "@/components/projects/project-status-form";
 import { ProjectTaskListLive } from "@/components/projects/project-task-list-live";
 import {
   getProjectById,
+  getProjectClientMetrics,
   getProjectComments,
   getProjectMembers,
   getProjectTasks,
 } from "@/lib/queries/projects";
 
-export default async function ProjectDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function ProjectDetailPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const { id } = await params;
-  const [project, comments, members, tasks] = await Promise.all([
+  const filters = (await searchParams) ?? {};
+  const currentQuery = new URLSearchParams(Object.entries(filters).flatMap(([key, value]) => typeof value === "string" && value.length > 0 ? [[key, value]] : [])).toString();
+  const [project, comments, members, tasks, clientMetrics] = await Promise.all([
     getProjectById(id),
     getProjectComments(id),
     getProjectMembers(id),
     getProjectTasks(id),
+    getProjectClientMetrics(id),
   ]);
 
   if (!project) notFound();
 
   return (
     <div className="space-y-4">
-      <ProjectDetailSummary project={project} />
+      <ProjectDetailSummary currentQuery={currentQuery} project={project} />
       <div className="grid gap-4 lg:grid-cols-2">
         <ProjectStatusForm
           projectId={project.id}
@@ -40,6 +51,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
         <ProjectTaskListLive projectId={project.id} tasks={tasks} />
         <ProjectMembers projectId={project.id} members={members} />
       </div>
+      <ProjectClientMetrics items={clientMetrics} />
       <ProjectCommentsLive projectId={project.id} comments={comments} />
     </div>
   );

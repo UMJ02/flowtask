@@ -29,6 +29,7 @@ export async function getDashboardData() {
     { data: notes },
     { data: departmentRows },
     { data: clientRows },
+    { data: projectClientRows },
     { data: urgentProjects },
     { data: assignmentRows },
     { data: collaboratorRows },
@@ -79,9 +80,13 @@ export async function getDashboardData() {
       .neq("status", "concluido"),
     supabase
       .from("tasks")
-      .select("client_name")
+      .select("client_name,status")
       .eq("owner_id", user.id)
-      .neq("status", "concluido")
+      .not("client_name", "is", null),
+    supabase
+      .from("projects")
+      .select("client_name,status")
+      .eq("owner_id", user.id)
       .not("client_name", "is", null),
     supabase
       .from("projects")
@@ -105,7 +110,7 @@ export async function getDashboardData() {
   ]);
 
   const departmentTotals = new Map<string, { code: string; name: string; total: number }>();
-  const clientTotals = new Map<string, { name: string; total: number }>();
+  const clientTotals = new Map<string, { name: string; total: number; tasks: number; projects: number; completed: number }>();
   const userWorkload = new Map<string, { name: string; total: number }>();
   const collaborationMetrics = new Map<string, { name: string; total: number }>();
 
@@ -119,8 +124,19 @@ export async function getDashboardData() {
 
   for (const row of clientRows ?? []) {
     if (!row.client_name) continue;
-    const current = clientTotals.get(row.client_name) ?? { name: row.client_name, total: 0 };
+    const current = clientTotals.get(row.client_name) ?? { name: row.client_name, total: 0, tasks: 0, projects: 0, completed: 0 };
     current.total += 1;
+    current.tasks += 1;
+    if (row.status === "concluido") current.completed += 1;
+    clientTotals.set(row.client_name, current);
+  }
+
+  for (const row of projectClientRows ?? []) {
+    if (!row.client_name) continue;
+    const current = clientTotals.get(row.client_name) ?? { name: row.client_name, total: 0, tasks: 0, projects: 0, completed: 0 };
+    current.total += 1;
+    current.projects += 1;
+    if (row.status === "completado") current.completed += 1;
     clientTotals.set(row.client_name, current);
   }
 

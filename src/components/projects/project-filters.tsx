@@ -11,12 +11,13 @@ interface ProjectFiltersProps {
     status?: string;
     department?: string;
     mode?: string;
+    client?: string;
   };
 }
 
 export function ProjectFilters({ filters }: ProjectFiltersProps) {
   return (
-    <form className="grid gap-3 rounded-[24px] bg-white p-4 shadow-soft md:grid-cols-5" method="get">
+    <form className="grid gap-3 rounded-[24px] bg-white p-4 shadow-soft md:grid-cols-6" method="get">
       <Input defaultValue={filters.q ?? ""} name="q" placeholder="Buscar proyecto" />
       <Select defaultValue={filters.status ?? ""} name="status">
         <option value="">Todos los estados</option>
@@ -30,6 +31,7 @@ export function ProjectFilters({ filters }: ProjectFiltersProps) {
           <option key={item.code} value={item.code}>{item.label}</option>
         ))}
       </Select>
+      <Input defaultValue={filters.client ?? ""} name="client" placeholder="Cliente" />
       <Select defaultValue={filters.mode ?? ""} name="mode">
         <option value="">Todos los tipos</option>
         <option value="solo">Solo personales</option>

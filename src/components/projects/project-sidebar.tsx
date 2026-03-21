@@ -2,16 +2,20 @@ import Link from "next/link";
 
 export function ProjectSidebar({
   projects,
+  currentQuery = "",
 }: {
   projects: Array<{ id: string; title: string }>;
+  currentQuery?: string;
 }) {
+  const suffix = currentQuery ? `?${currentQuery}` : "";
+
   return (
     <aside className="rounded-[24px] bg-white p-5 shadow-soft">
       <h2 className="text-lg font-semibold text-slate-900">Proyectos</h2>
       <div className="mt-4 space-y-2">
         {projects.length ? (
           projects.map((project) => (
-            <Link key={project.id} className="block rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-700 hover:bg-slate-100" href={`/app/projects/${project.id}`}>
+            <Link key={project.id} className="block rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-700 hover:bg-slate-100" href={`/app/projects/${project.id}${suffix}`}>
               {project.title}
             </Link>
           ))

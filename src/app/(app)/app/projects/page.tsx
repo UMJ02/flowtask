@@ -7,10 +7,11 @@ import { getProjects } from "@/lib/queries/projects";
 export default async function ProjectsPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ q?: string; status?: string; department?: string; mode?: string }>;
+  searchParams?: Promise<{ q?: string; status?: string; department?: string; mode?: string; client?: string }>;
 }) {
   const filters = (await searchParams) ?? {};
   const projects = await getProjects(filters);
+  const currentQuery = new URLSearchParams(Object.entries(filters).filter(([, value]) => typeof value === "string" && value.length > 0) as [string, string][]).toString();
 
   return (
     <div className="space-y-4">
@@ -24,7 +25,7 @@ export default async function ProjectsPage({
         </Link>
       </div>
       <ProjectFilters filters={filters} />
-      <ProjectSidebar projects={projects} />
+      <ProjectSidebar currentQuery={currentQuery} projects={projects} />
     </div>
   );
 }
