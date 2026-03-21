@@ -1,10 +1,12 @@
 import { BoardOverview } from "@/components/dashboard/board-overview";
 import { DeadlineLanes } from "@/components/dashboard/deadline-lanes";
+import { ClientMetrics } from "@/components/dashboard/client-metrics";
 import { DepartmentMetrics } from "@/components/dashboard/department-metrics";
 import { ProjectHealth } from "@/components/dashboard/project-health";
 import { QuickActions } from "@/components/dashboard/quick-actions";
 import { RecentActivity } from "@/components/dashboard/recent-activity";
 import { StickyBoard } from "@/components/dashboard/sticky-board";
+import { UrgentProjects } from "@/components/dashboard/urgent-projects";
 import { UpcomingItems } from "@/components/dashboard/upcoming-items";
 import { getDashboardData } from "@/lib/queries/dashboard";
 
@@ -30,6 +32,10 @@ export default async function DashboardPage() {
           completedProjects={data?.completedProjects ?? 0}
           collaborativeProjects={data?.collaborativeProjects ?? 0}
         />
+      </div>
+      <div className="grid gap-4 xl:grid-cols-[0.95fr_1.05fr]">
+        <ClientMetrics items={data?.clientMetrics ?? []} />
+        <UrgentProjects items={data?.urgentProjects ?? []} />
       </div>
       <StickyBoard
         recentTasks={data?.recentTasks ?? []}

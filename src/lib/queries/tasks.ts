@@ -39,6 +39,7 @@ export async function getTasks(filters: TaskFiltersInput = {}) {
 
   const today = new Date().toISOString().slice(0, 10);
   if (filters.due === "overdue") query = query.lt("due_date", today).neq("status", "concluido");
+  if (filters.due === "today") query = query.eq("due_date", today).neq("status", "concluido");
   if (filters.due === "soon") query = query.gte("due_date", today).neq("status", "concluido");
   if (filters.due === "none") query = query.is("due_date", null);
 

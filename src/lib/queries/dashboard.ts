@@ -28,6 +28,8 @@ export async function getDashboardData() {
     { data: recentProjects },
     { data: notes },
     { data: departmentRows },
+    { data: clientRows },
+    { data: urgentProjects },
   ] = await Promise.all([
     supabase.from("tasks").select("id", { count: "exact", head: true }).eq("owner_id", user.id).neq("status", "concluido"),
     supabase.from("projects").select("id", { count: "exact", head: true }).eq("owner_id", user.id).neq("status", "completado"),
@@ -73,15 +75,38 @@ export async function getDashboardData() {
       .select("department_id, departments ( code, name )")
       .eq("owner_id", user.id)
       .neq("status", "concluido"),
+    supabase
+      .from("tasks")
+      .select("client_name")
+      .eq("owner_id", user.id)
+      .neq("status", "concluido")
+      .not("client_name", "is", null),
+    supabase
+      .from("projects")
+      .select("id,title,status,due_date,client_name")
+      .eq("owner_id", user.id)
+      .neq("status", "completado")
+      .not("due_date", "is", null)
+      .lte("due_date", in7Days.toISOString().slice(0, 10))
+      .order("due_date", { ascending: true })
+      .limit(5),
   ]);
 
   const departmentTotals = new Map<string, { code: string; name: string; total: number }>();
+  const clientTotals = new Map<string, { name: string; total: number }>();
   for (const row of departmentRows ?? []) {
     const dept = Array.isArray(row.departments) ? row.departments[0] : row.departments;
     if (!dept?.code) continue;
     const current = departmentTotals.get(dept.code) ?? { code: dept.code, name: dept.name, total: 0 };
     current.total += 1;
     departmentTotals.set(dept.code, current);
+  }
+
+  for (const row of clientRows ?? []) {
+    if (!row.client_name) continue;
+    const current = clientTotals.get(row.client_name) ?? { name: row.client_name, total: 0 };
+    current.total += 1;
+    clientTotals.set(row.client_name, current);
   }
 
   return {
@@ -94,6 +119,8 @@ export async function getDashboardData() {
     completedProjects: completedProjects ?? 0,
     collaborativeProjects: collaborativeProjects ?? 0,
     departmentMetrics: Array.from(departmentTotals.values()).sort((a, b) => b.total - a.total),
+    clientMetrics: Array.from(clientTotals.values()).sort((a, b) => b.total - a.total).slice(0, 5),
+    urgentProjects: urgentProjects ?? [],
     recentTasks: recentTasks ?? [],
     recentProjects: recentProjects ?? [],
     reminders: notes ?? [],

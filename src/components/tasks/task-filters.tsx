@@ -33,6 +33,7 @@ export function TaskFilters({ filters }: TaskFiltersProps) {
       <Select defaultValue={filters.due ?? ""} name="due">
         <option value="">Todos los vencimientos</option>
         <option value="overdue">Vencidas</option>
+        <option value="today">Vencen hoy</option>
         <option value="soon">Próximas</option>
         <option value="none">Sin deadline</option>
       </Select>

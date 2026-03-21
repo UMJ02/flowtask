@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { TaskFilters } from "@/components/tasks/task-filters";
-import { TaskKanbanBoard } from "@/components/tasks/task-kanban-board";
-import { TaskList } from "@/components/tasks/task-list";
+import { TaskWorkspace } from "@/components/tasks/task-workspace";
 import { Button } from "@/components/ui/button";
 import { getTasks } from "@/lib/queries/tasks";
 
@@ -25,11 +24,7 @@ export default async function TasksPage({
         </Link>
       </div>
       <TaskFilters filters={filters} />
-      <TaskKanbanBoard tasks={tasks} />
-      <div className="space-y-2">
-        <h2 className="text-lg font-semibold text-slate-900">Listado</h2>
-        <TaskList tasks={tasks} />
-      </div>
+      <TaskWorkspace tasks={tasks} />
     </div>
   );
 }
