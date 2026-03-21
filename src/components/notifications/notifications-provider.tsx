@@ -10,6 +10,7 @@ type ToastItem = Pick<LiveNotification, "id" | "title" | "body" | "kind">;
 type NotificationsContextValue = {
   unreadCount: number;
   markOneAsRead: (id: string) => void;
+  markAllAsRead: (count?: number) => void;
   setUnreadCount: (value: number) => void;
 };
 
@@ -55,7 +56,19 @@ export function NotificationsProvider({
     setUnreadCount((current) => Math.max(0, current - 1));
   }, []);
 
-  const value = useMemo(() => ({ unreadCount, markOneAsRead, setUnreadCount }), [markOneAsRead, unreadCount]);
+  const markAllAsRead = useCallback((count?: number) => {
+    setUnreadCount((current) => {
+      if (typeof count === "number") {
+        return Math.max(0, current - count);
+      }
+      return 0;
+    });
+  }, []);
+
+  const value = useMemo(
+    () => ({ unreadCount, markOneAsRead, markAllAsRead, setUnreadCount }),
+    [markAllAsRead, markOneAsRead, unreadCount],
+  );
 
   return (
     <NotificationsContext.Provider value={value}>

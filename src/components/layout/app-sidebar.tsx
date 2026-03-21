@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useNotificationsState } from "@/components/notifications/notifications-provider";
 
 const links = [
   { href: "/app/dashboard", label: "Dashboard" },
@@ -6,13 +9,15 @@ const links = [
   { href: "/app/completed", label: "Finalizadas" },
   { href: "/app/projects", label: "Proyectos" },
   { href: "/app/reminders", label: "Recordatorios" },
-  { href: "/app/notifications", label: "Notificaciones" },
+  { href: "/app/notifications", label: "Notificaciones", isNotifications: true },
   { href: "/app/reports", label: "Reportes" },
   { href: "/contact", label: "Contacto" },
   { href: "/app/settings", label: "Configuración" },
 ];
 
 export function AppSidebar() {
+  const { unreadCount } = useNotificationsState();
+
   return (
     <aside className="rounded-[24px] bg-slate-900 p-5 text-white shadow-soft">
       <div className="mb-8">
@@ -22,8 +27,17 @@ export function AppSidebar() {
       </div>
       <nav className="space-y-2">
         {links.map((link) => (
-          <Link key={link.href} className="block rounded-2xl px-3 py-2.5 text-sm font-medium text-slate-100 transition hover:bg-slate-800" href={link.href}>
-            {link.label}
+          <Link
+            key={link.href}
+            className="flex items-center justify-between rounded-2xl px-3 py-2.5 text-sm font-medium text-slate-100 transition hover:bg-slate-800"
+            href={link.href}
+          >
+            <span>{link.label}</span>
+            {link.isNotifications && unreadCount > 0 ? (
+              <span className="inline-flex min-h-5 min-w-5 items-center justify-center rounded-full bg-rose-500 px-1.5 text-[10px] font-bold text-white">
+                {unreadCount > 99 ? "99+" : unreadCount}
+              </span>
+            ) : null}
           </Link>
         ))}
       </nav>

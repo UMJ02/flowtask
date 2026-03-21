@@ -113,3 +113,9 @@ Use the hooks in detail views to trigger `router.refresh()` or invalidate your l
 - Toasts visuales cuando entra una notificación nueva
 - `scripts/process-reminders.ts` ahora crea notificaciones internas y puede disparar webhooks opcionales para email o WhatsApp
 - Nueva migration: `0007_notifications_realtime.sql`
+
+
+## v8.2
+- badge de notificaciones también en sidebar
+- botón para marcar visibles como leídas
+- filtros por tipo dentro del centro de notificaciones
