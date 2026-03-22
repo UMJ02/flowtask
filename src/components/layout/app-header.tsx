@@ -1,4 +1,4 @@
-import Image from 'next/image';
+import { Sparkles } from 'lucide-react';
 import { NotificationBell } from '@/components/notifications/notification-bell';
 import { CommandPalette } from '@/components/layout/command-palette';
 import { MobileNav } from '@/components/layout/mobile-nav';
@@ -19,8 +19,8 @@ export function AppHeader({ userEmail, userName }: { userEmail: string; userName
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex min-w-0 items-start gap-3">
           <MobileNav />
-          <div className="hidden h-14 w-14 items-center justify-center rounded-2xl bg-white shadow-sm ring-1 ring-slate-200 md:inline-flex">
-            <Image src="/icons/icon.png" alt="FlowTask" width={34} height={34} className="h-8 w-8 object-contain" priority />
+          <div className="hidden h-12 w-12 items-center justify-center rounded-2xl bg-emerald-500 text-white shadow-sm md:inline-flex">
+            <Sparkles className="h-5 w-5" />
           </div>
           <div className="min-w-0">
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-emerald-600">FlowTask</p>
@@ -31,7 +31,7 @@ export function AppHeader({ userEmail, userName }: { userEmail: string; userName
 
         <div className="flex items-center justify-end gap-3">
           <div className="hidden sm:block">
-            <InstallAppButton compact />
+            <InstallAppButton />
           </div>
           <CommandPalette />
           <NotificationBell />
