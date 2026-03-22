@@ -29,23 +29,36 @@ export function AppSidebar({
 
   return (
     <aside className={`hidden sticky top-6 rounded-[32px] border border-emerald-900/20 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-900 px-3 py-4 text-white shadow-[0_20px_50px_rgba(15,23,42,0.24)] md:flex md:min-h-[calc(100vh-3rem)] md:flex-col transition-all duration-300 ${collapsed ? 'md:w-[104px]' : 'md:w-full'}`}>
-      <div className={`mb-4 rounded-[26px] bg-white/5 ring-1 ring-white/10 transition-all duration-300 ${collapsed ? 'px-2 py-3 text-center' : 'p-3'}`}>
-        <div className={`flex items-center ${collapsed ? 'justify-center' : 'justify-between gap-2'}`}>
-          <div className="min-w-0">
-            <p className={`text-xs font-semibold uppercase tracking-[0.22em] text-emerald-300 ${collapsed ? 'text-center' : ''}`}>FlowTask</p>
-            {!collapsed ? <p className="mt-1 text-xl font-bold">Todo más claro</p> : null}
-          </div>
+      {collapsed ? (
+        <div className="mb-4 flex justify-center">
           <button
             type="button"
             onClick={toggle}
-            aria-label={collapsed ? 'Expandir menú' : 'Colapsar menú'}
-            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-white/8 text-slate-200 transition hover:bg-white/12 hover:text-white"
+            aria-label="Expandir menú"
+            className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white/8 text-slate-200 transition hover:bg-white/12 hover:text-white"
           >
-            {collapsed ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
+            <PanelLeftOpen className="h-4 w-4" />
           </button>
         </div>
-        {!collapsed ? <p className="mt-1 text-xs leading-5 text-slate-300">Pendientes, proyectos y clientes en un solo lugar.</p> : null}
-      </div>
+      ) : (
+        <div className="mb-4 rounded-[26px] bg-white/5 p-3 ring-1 ring-white/10 transition-all duration-300">
+          <div className="flex items-center justify-between gap-2">
+            <div className="min-w-0">
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-emerald-300">FlowTask</p>
+              <p className="mt-1 text-xl font-bold">Todo más claro</p>
+            </div>
+            <button
+              type="button"
+              onClick={toggle}
+              aria-label="Colapsar menú"
+              className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-white/8 text-slate-200 transition hover:bg-white/12 hover:text-white"
+            >
+              <PanelLeftClose className="h-4 w-4" />
+            </button>
+          </div>
+          <p className="mt-1 text-xs leading-5 text-slate-300">Pendientes, proyectos y clientes en un solo lugar.</p>
+        </div>
+      )}
 
       <nav className="space-y-1.5">
         {mainLinks.map((link) => {
