@@ -23,7 +23,12 @@ import { getClientDashboardItems } from '@/lib/queries/clients';
 import { getOrganizationBillingSummary } from '@/lib/queries/billing';
 
 export default async function DashboardPage() {
-  const [data, organizationContext, clientItems, billingSummary] = await Promise.all([getDashboardData(), getOrganizationContext(), getClientDashboardItems(), getOrganizationBillingSummary()]);
+  const [data, organizationContext, clientItems, billingSummary] = await Promise.all([
+    getDashboardData(),
+    getOrganizationContext(),
+    getClientDashboardItems(),
+    getOrganizationBillingSummary(),
+  ]);
 
   return (
     <div className="space-y-4">

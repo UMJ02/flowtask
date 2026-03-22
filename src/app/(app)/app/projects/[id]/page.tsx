@@ -19,17 +19,19 @@ import { getProjectAttachments, getProjectSectionPermissions } from "@/lib/queri
 import { getProjectActivity } from "@/lib/queries/activity";
 import { ActivityTimeline } from "@/components/activity/activity-timeline";
 import { EntityRecentTracker } from '@/components/entities/entity-recent-tracker';
+import { projectDetailRoute } from '@/lib/navigation/routes';
+import { toQueryString, type SearchParamsRecord } from '@/lib/runtime/search-params';
 
 export default async function ProjectDetailPage({
   params,
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+  searchParams?: Promise<SearchParamsRecord>;
 }) {
   const { id } = await params;
-  const filters = (await searchParams) ?? {};
-  const currentQuery = new URLSearchParams(Object.entries(filters).flatMap(([key, value]) => typeof value === "string" && value.length > 0 ? [[key, value]] : [])).toString();
+  if (!id?.trim()) notFound();
+  const currentQuery = toQueryString((await searchParams) ?? {});
   const [project, comments, members, tasks, clientMetrics, attachments, permissions, activity] = await Promise.all([
     getProjectById(id),
     getProjectComments(id),
@@ -45,7 +47,7 @@ export default async function ProjectDetailPage({
 
   return (
     <div className="space-y-4">
-      <EntityRecentTracker entity={{ id: project.id, type: 'project', title: project.title, subtitle: project.client_name || 'Proyecto', href: `/app/projects/${project.id}`, updatedAt: new Date().toISOString() }} />
+      <EntityRecentTracker entity={{ id: project.id, type: 'project', title: project.title, subtitle: project.client_name || 'Proyecto', href: projectDetailRoute(project.id), updatedAt: new Date().toISOString() }} />
       <ProjectDetailSummary currentQuery={currentQuery} project={project} />
       <div className="grid gap-4 lg:grid-cols-2">
         <ProjectStatusForm

@@ -1,33 +1,21 @@
-# FlowTask v1.0.0-canon
+# FlowTask v1.1.0-runtime
 
-Base canónica estabilizada para continuar el proyecto sin seguir metiendo cambios improvisados.
+Base canónica actual con enfoque en **runtime hardening** sobre la línea `v1.0.0-canon`.
 
 ## Estado de esta versión
-- `npm run typecheck` en cero errores
-- rutas centralizadas en `src/lib/navigation/routes.ts`
-- login con sanitización del parámetro `next`
-- notificaciones live corregidas y consistentes
-- permisos `canUser()` corrigiendo ejecución real de la consulta
-- helpers de Supabase server/middleware tipados
-- tipos base `Database` mínimos y explícitos
+- `tsc --noEmit` en cero errores
+- filtros y `searchParams` normalizados en tareas, proyectos y clientes
+- scoping consistente por usuario/organización para listados y detalles
+- dashboard endurecido con consultas alineadas al workspace
+- páginas de detalle con validación de `id`
+- pantallas globales de `error` y `not-found`
+- base lista para continuar con validación funcional más profunda
 
 ## Objetivo de esta versión
-Cerrar la deuda técnica inicial y dejar una base confiable para entrar a validación funcional en la siguiente versión.
+Cerrar la capa de funcionamiento real para evitar rupturas por navegación, parámetros, vistas vacías y consultas fuera de scope.
 
 ## Próxima versión
-`v1.1.0-runtime`
-- validación de flujos auth
-- dashboard
-- clientes
-- proyectos
-- tareas
-- notificaciones
-- estados vacíos, errores y navegación
-
-## Scripts
-- `npm install`
-- `npm run dev`
-- `npm run typecheck`
-
-## Nota
-Esta versión corrige estabilidad y tipado. No introduce features nuevas.
+`v1.2.0-data-security`
+- validación de RLS por flujo
+- revisión de permisos por organización/rol
+- consistencia entre front, queries y migrations

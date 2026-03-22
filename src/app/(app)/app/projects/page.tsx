@@ -4,16 +4,18 @@ import { ProjectFilters } from '@/components/projects/project-filters';
 import { ProjectSidebar } from '@/components/projects/project-sidebar';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { projectNewRoute } from '@/lib/navigation/routes';
 import { getProjects } from '@/lib/queries/projects';
+import { normalizeProjectFilters, toQueryString, type SearchParamsRecord } from '@/lib/runtime/search-params';
 
 export default async function ProjectsPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ q?: string; status?: string; department?: string; mode?: string; client?: string }>;
+  searchParams?: Promise<SearchParamsRecord>;
 }) {
-  const filters = (await searchParams) ?? {};
+  const filters = normalizeProjectFilters((await searchParams) ?? {});
   const projects = await getProjects(filters);
-  const currentQuery = new URLSearchParams(Object.entries(filters).filter(([, value]) => typeof value === 'string' && value.length > 0) as [string, string][]).toString();
+  const currentQuery = toQueryString(filters);
 
   return (
     <div className="space-y-4">
@@ -26,7 +28,7 @@ export default async function ProjectsPage({
           <h1 className="mt-3 text-2xl font-bold text-slate-900">Proyectos</h1>
           <p className="mt-1 text-sm text-slate-500">Agrupa tareas, responsables y fechas en un espacio claro para todos.</p>
         </div>
-        <Link href="/app/projects/new">
+        <Link href={projectNewRoute()}>
           <Button>Nuevo proyecto</Button>
         </Link>
       </Card>

@@ -2,10 +2,10 @@ import { ClientListPanel } from "@/components/clients/client-list-panel";
 import { getClients } from "@/lib/queries/clients";
 import { canUser } from "@/lib/permissions/checks";
 import { Card } from "@/components/ui/card";
+import { normalizeClientSearch, type SearchParamsRecord } from "@/lib/runtime/search-params";
 
-export default async function ClientsPage({ searchParams }: { searchParams?: Promise<{ q?: string }> | { q?: string } }) {
-  const resolved = searchParams && typeof (searchParams as Promise<any>).then === "function" ? await (searchParams as Promise<{ q?: string }>) : (searchParams as { q?: string } | undefined);
-  const q = resolved?.q ?? "";
+export default async function ClientsPage({ searchParams }: { searchParams?: Promise<SearchParamsRecord> }) {
+  const q = normalizeClientSearch((await searchParams) ?? {});
   const [clients, canManageClients] = await Promise.all([getClients(q), canUser("clients.manage")]);
 
   return (

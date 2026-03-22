@@ -4,14 +4,16 @@ import { TaskFilters } from '@/components/tasks/task-filters';
 import { TaskWorkspace } from '@/components/tasks/task-workspace';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { taskNewRoute } from '@/lib/navigation/routes';
 import { getTasks } from '@/lib/queries/tasks';
+import { normalizeTaskFilters, type SearchParamsRecord } from '@/lib/runtime/search-params';
 
 export default async function TasksPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ q?: string; status?: string; department?: string; due?: string; view?: string }>;
+  searchParams?: Promise<SearchParamsRecord>;
 }) {
-  const filters = (await searchParams) ?? {};
+  const filters = normalizeTaskFilters((await searchParams) ?? {});
   const tasks = await getTasks(filters);
 
   return (
@@ -25,7 +27,7 @@ export default async function TasksPage({
           <h1 className="mt-3 text-2xl font-bold text-slate-900">Tareas</h1>
           <p className="mt-1 text-sm text-slate-500">Busca, filtra y actualiza pendientes sin perder tiempo. Puedes usar vista lista o tablero.</p>
         </div>
-        <Link href="/app/tasks/new">
+        <Link href={taskNewRoute()}>
           <Button>Nueva tarea</Button>
         </Link>
       </Card>

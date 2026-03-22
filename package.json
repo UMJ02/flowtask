@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "1.0.0-canon",
+  "version": "1.1.0-runtime",
   "private": true,
   "scripts": {
     "dev": "next dev",
