@@ -71,7 +71,7 @@ export function NotificationPreferencesForm({ initialPreferences }: Props) {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h2 className="text-lg font-semibold text-slate-900">Preferencias de notificaciones</h2>
-            <p className="mt-1 text-sm text-slate-500">Activa o desactiva avisos, define frecuencia y controla cuándo quieres menos interrupciones.</p>
+            <p className="mt-1 text-sm text-slate-500">Elige qué avisos quieres ver y cuándo prefieres recibirlos.</p>
           </div>
           <button
             type="button"
@@ -89,10 +89,10 @@ export function NotificationPreferencesForm({ initialPreferences }: Props) {
       <Card>
         <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Tipos de notificación</h3>
         <div className="mt-4 space-y-3">
-          <ToggleRow label="Tareas" description="Asignaciones, cambios de estado y novedades ligadas a tareas." checked={state.enable_task} onChange={(value) => updateField("enable_task", value)} />
-          <ToggleRow label="Proyectos" description="Movimientos importantes dentro de proyectos colaborativos." checked={state.enable_project} onChange={(value) => updateField("enable_project", value)} />
-          <ToggleRow label="Comentarios" description="Mensajes nuevos y seguimiento dentro de tareas o proyectos." checked={state.enable_comment} onChange={(value) => updateField("enable_comment", value)} />
-          <ToggleRow label="Recordatorios" description="Avisos por vencimientos y tareas pendientes." checked={state.enable_reminder} onChange={(value) => updateField("enable_reminder", value)} />
+          <ToggleRow label="Tareas" description="Avisos cuando te asignan algo o cambia una tarea importante." checked={state.enable_task} onChange={(value) => updateField("enable_task", value)} />
+          <ToggleRow label="Proyectos" description="Cambios clave dentro de proyectos donde participas." checked={state.enable_project} onChange={(value) => updateField("enable_project", value)} />
+          <ToggleRow label="Comentarios" description="Comentarios nuevos para que no se te pase una respuesta." checked={state.enable_comment} onChange={(value) => updateField("enable_comment", value)} />
+          <ToggleRow label="Recordatorios" description="Recordatorios sobre pendientes cercanos o atrasados." checked={state.enable_reminder} onChange={(value) => updateField("enable_reminder", value)} />
         </div>
       </Card>
 
@@ -124,8 +124,8 @@ export function NotificationPreferencesForm({ initialPreferences }: Props) {
               </div>
               <p className="mt-2 text-sm text-slate-500">
                 {disabledByDigest
-                  ? "En resumen diario se consolidan avisos y se reduce el ruido en tiempo real."
-                  : "En inmediato verás notificaciones en vivo y toasts dentro de la app."}
+                  ? "Recibirás un solo resumen al día con lo más importante."
+                  : "Verás los avisos al momento mientras trabajas dentro de la app."}
               </p>
             </div>
 
@@ -144,21 +144,21 @@ export function NotificationPreferencesForm({ initialPreferences }: Props) {
               </select>
             </label>
 
-            <ToggleRow label="Toasts dentro de la app" description="Pequeñas alertas visuales mientras trabajas." checked={state.enable_toasts} onChange={(value) => updateField("enable_toasts", value)} />
+            <ToggleRow label="Toasts dentro de la app" description="Mensajes breves en pantalla para avisarte sin interrumpir demasiado." checked={state.enable_toasts} onChange={(value) => updateField("enable_toasts", value)} />
           </div>
         </Card>
 
         <Card>
           <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Canales externos</h3>
           <div className="mt-4 space-y-3">
-            <ToggleRow label="Correo electrónico" description="Preparado para envío opcional por email desde tus webhooks o recordatorios automatizados." checked={state.enable_email} onChange={(value) => updateField("enable_email", value)} />
-            <ToggleRow label="WhatsApp" description="Base lista para integrar notificaciones por WhatsApp cuando conectes tu proveedor." checked={state.enable_whatsapp} onChange={(value) => updateField("enable_whatsapp", value)} />
+            <ToggleRow label="Correo electrónico" description="Recibe un correo cuando haya algo importante o cuando actives automatizaciones." checked={state.enable_email} onChange={(value) => updateField("enable_email", value)} />
+            <ToggleRow label="WhatsApp" description="Envía avisos por WhatsApp cuando conectes tu proveedor preferido." checked={state.enable_whatsapp} onChange={(value) => updateField("enable_whatsapp", value)} />
             <div className="rounded-2xl bg-slate-50 p-4 text-sm text-slate-600">
-              <p className="font-semibold text-slate-900">Comportamiento esperado</p>
+              <p className="font-semibold text-slate-900">Cómo funciona</p>
               <ul className="mt-2 space-y-1">
-                <li>• Inmediato + toasts: experiencia en vivo dentro de la app.</li>
-                <li>• Resumen diario: pensado para jefatura o usuarios que quieren menos interrupciones.</li>
-                <li>• Email / WhatsApp: opcional, quedan listos para tu siguiente integración.</li>
+                <li>• Inmediato: ves los avisos en el momento dentro de la app.</li>
+                <li>• Resumen diario: ideal si prefieres revisar todo junto una vez al día.</li>
+                <li>• Correo y WhatsApp: se pueden activar cuando termines esa integración.</li>
               </ul>
             </div>
           </div>
@@ -171,7 +171,7 @@ export function NotificationPreferencesForm({ initialPreferences }: Props) {
           <div className="mt-4 space-y-4">
             <ToggleRow
               label="Activar horas silenciosas"
-              description="Evita toasts en vivo dentro del horario que definas. Las notificaciones siguen entrando al centro interno."
+              description="Pausa las alertas visuales en las horas que elijas. Todo sigue guardándose en el centro de notificaciones."
               checked={state.quiet_hours_enabled}
               onChange={(value) => updateField("quiet_hours_enabled", value)}
             />
@@ -207,8 +207,8 @@ export function NotificationPreferencesForm({ initialPreferences }: Props) {
               <p className="font-semibold text-slate-900">Vista previa</p>
               <p className="mt-1">
                 {state.quiet_hours_enabled
-                  ? `Los toasts quedarán en silencio de ${hourLabel(state.quiet_hours_start)} a ${hourLabel(state.quiet_hours_end)}.`
-                  : "No hay horario silencioso activo. Los toasts se mostrarán de inmediato según tus preferencias."}
+                  ? `Las alertas visuales se pausarán de ${hourLabel(state.quiet_hours_start)} a ${hourLabel(state.quiet_hours_end)}.`
+                  : "No tienes un horario silencioso activo. Las alertas aparecerán según tus preferencias."}
               </p>
             </div>
           </div>
@@ -217,10 +217,10 @@ export function NotificationPreferencesForm({ initialPreferences }: Props) {
         <Card>
           <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Resumen diario</h3>
           <div className="mt-4 space-y-3 rounded-2xl bg-slate-50 p-4 text-sm text-slate-600">
-            <p className="font-semibold text-slate-900">Cómo se verá</p>
-            <p>• Tareas nuevas asignadas durante el día.</p>
-            <p>• Cambios relevantes en proyectos colaborativos.</p>
-            <p>• Comentarios recientes y recordatorios disparados.</p>
+            <p className="font-semibold text-slate-900">Qué incluirá</p>
+            <p>• Tareas nuevas o pendientes que requieren atención.</p>
+            <p>• Cambios importantes en proyectos del equipo.</p>
+            <p>• Comentarios recientes y recordatorios cercanos.</p>
             <p className="pt-2 text-xs text-slate-500">Horario actual configurado: {hourLabel(state.daily_digest_hour)}.</p>
           </div>
         </Card>

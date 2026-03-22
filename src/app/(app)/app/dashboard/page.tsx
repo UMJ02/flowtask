@@ -44,10 +44,8 @@ export default async function DashboardPage() {
         </div>
       </Card>
       <BoardOverview activeProjects={data?.activeProjects ?? 0} activeTasks={data?.activeTasks ?? 0} completedTasks={data?.completedTasks ?? 0} />
-      <div className="grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
-        <QuickActions />
-        <DeadlineLanes overdueTasks={data?.overdueTasks ?? 0} dueSoonTasks={data?.dueSoonTasks ?? 0} waitingTasks={data?.waitingTasks ?? 0} />
-      </div>
+      <QuickActions />
+      <DeadlineLanes overdueTasks={data?.overdueTasks ?? 0} dueSoonTasks={data?.dueSoonTasks ?? 0} waitingTasks={data?.waitingTasks ?? 0} />
       <div className="grid gap-4 xl:grid-cols-[1.15fr_0.85fr]">
         <OrganizationOverview activeOrganization={organizationContext?.activeOrganization ?? null} organizations={organizationContext?.organizations ?? []} clientPermissions={organizationContext?.clientPermissions ?? []} />
         <OrganizationPlanWidget summary={billingSummary} />

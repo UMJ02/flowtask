@@ -1,9 +1,10 @@
 import Link from 'next/link';
 import { Sparkles } from 'lucide-react';
 import { TaskFilters } from '@/components/tasks/task-filters';
-import { TaskWorkspaceQuery } from '@/components/tasks/task-workspace-query';
+import { TaskWorkspace } from '@/components/tasks/task-workspace';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { getTasks } from '@/lib/queries/tasks';
 
 export default async function TasksPage({
   searchParams,
@@ -11,6 +12,7 @@ export default async function TasksPage({
   searchParams?: Promise<{ q?: string; status?: string; department?: string; due?: string; view?: string }>;
 }) {
   const filters = (await searchParams) ?? {};
+  const tasks = await getTasks(filters);
 
   return (
     <div className="space-y-4">
@@ -28,7 +30,7 @@ export default async function TasksPage({
         </Link>
       </Card>
       <TaskFilters filters={filters} />
-      <TaskWorkspaceQuery filters={filters} />
+      <TaskWorkspace tasks={tasks} filters={filters} />
     </div>
   );
 }
