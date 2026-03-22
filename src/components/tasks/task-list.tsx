@@ -1,17 +1,67 @@
-import Link from "next/link";
-import { TaskCard } from "@/components/tasks/task-card";
+import Link from 'next/link';
+import { ArrowUpRight, CalendarClock, CircleCheckBig, FolderKanban } from 'lucide-react';
+import { TaskInlineActions } from '@/components/tasks/task-inline-actions';
+import { EntityMemoryActions } from '@/components/entities/entity-memory-actions';
+import { Card } from '@/components/ui/card';
 
 export function TaskList({ tasks }: { tasks: Array<{ id: string; title: string; status: string; client_name?: string | null; due_date?: string | null }> }) {
   if (!tasks.length) {
-    return <div className="rounded-[24px] bg-white p-5 text-sm text-slate-500 shadow-soft">Aún no hay tareas registradas.</div>;
+    return (
+      <Card className="text-center">
+        <div className="mx-auto inline-flex h-14 w-14 items-center justify-center rounded-3xl bg-emerald-50 text-emerald-600">
+          <CircleCheckBig className="h-6 w-6" />
+        </div>
+        <h3 className="mt-4 text-lg font-semibold text-slate-900">No hay tareas por aquí</h3>
+        <p className="mt-2 text-sm text-slate-500">Crea tu primera tarea o ajusta los filtros para ver otros pendientes.</p>
+      </Card>
+    );
   }
 
   return (
     <div className="grid gap-4">
       {tasks.map((task) => (
-        <Link key={task.id} href={`/app/tasks/${task.id}`}>
-          <TaskCard title={task.title} status={task.status} clientName={task.client_name} dueDate={task.due_date} />
-        </Link>
+        <Card key={task.id} className="space-y-4">
+          <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">{task.status}</span>
+                <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">{task.client_name || 'Sin cliente'}</span>
+              </div>
+              <Link href={`/app/tasks/${task.id}`} className="mt-3 block">
+                <h3 className="line-clamp-2 text-base font-semibold text-slate-900 transition hover:text-emerald-700">{task.title}</h3>
+              </Link>
+              <div className="mt-3 flex flex-wrap gap-3 text-sm text-slate-500">
+                <span className="inline-flex items-center gap-2">
+                  <CalendarClock className="h-4 w-4" />
+                  {task.due_date || 'Sin fecha definida'}
+                </span>
+                <Link href={`/app/tasks/${task.id}`} className="inline-flex items-center gap-2 font-medium text-emerald-700 transition hover:text-emerald-800">
+                  Abrir detalle
+                  <ArrowUpRight className="h-4 w-4" />
+                </Link>
+              </div>
+            </div>
+            <EntityMemoryActions
+              entity={{
+                id: task.id,
+                type: 'task',
+                title: task.title,
+                subtitle: task.client_name || 'Tarea',
+                href: `/app/tasks/${task.id}`,
+                updatedAt: new Date().toISOString(),
+              }}
+              compact
+            />
+          </div>
+
+          <div className="rounded-2xl border border-slate-100 bg-slate-50 px-3 py-3">
+            <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
+              <FolderKanban className="h-3.5 w-3.5" />
+              Acciones rápidas
+            </div>
+            <TaskInlineActions taskId={task.id} status={task.status} />
+          </div>
+        </Card>
       ))}
     </div>
   );

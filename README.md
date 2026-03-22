@@ -38,3 +38,10 @@ Base v9.1 con multi-empresa, roles avanzados, dashboard por organización e invi
 ## Novedades v9.6.8
 - Búsqueda rápida global con `⌘K` / `Ctrl+K`.
 - Accesos directos a tareas, proyectos, clientes, notificaciones y ajustes.
+
+
+## v9.7
+- Favoritos y fijados para tareas/proyectos
+- Recientes en dashboard y buscador rápido
+- Acciones rápidas de estado en tareas
+- Estados vacíos más claros

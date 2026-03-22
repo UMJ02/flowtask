@@ -8,6 +8,7 @@ import { ProjectHealth } from '@/components/dashboard/project-health';
 import { OrganizationOverview } from '@/components/dashboard/organization-overview';
 import { OrganizationPlanWidget } from '@/components/dashboard/organization-plan-widget';
 import { QuickActions } from '@/components/dashboard/quick-actions';
+import { FocusPanel } from '@/components/dashboard/focus-panel';
 import { RecentActivity } from '@/components/dashboard/recent-activity';
 import { StickyBoard } from '@/components/dashboard/sticky-board';
 import { UrgentProjects } from '@/components/dashboard/urgent-projects';
@@ -45,6 +46,7 @@ export default async function DashboardPage() {
       </Card>
       <BoardOverview activeProjects={data?.activeProjects ?? 0} activeTasks={data?.activeTasks ?? 0} completedTasks={data?.completedTasks ?? 0} />
       <QuickActions />
+      <FocusPanel />
       <DeadlineLanes overdueTasks={data?.overdueTasks ?? 0} dueSoonTasks={data?.dueSoonTasks ?? 0} waitingTasks={data?.waitingTasks ?? 0} />
       <div className="grid gap-4 xl:grid-cols-[1.15fr_0.85fr]">
         <OrganizationOverview activeOrganization={organizationContext?.activeOrganization ?? null} organizations={organizationContext?.organizations ?? []} clientPermissions={organizationContext?.clientPermissions ?? []} />

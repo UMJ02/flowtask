@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Command, FolderKanban, Bell, Building2, LayoutDashboard, ListTodo, Plus, Search, Settings, Users, ClipboardList, X } from 'lucide-react';
+import { Bell, Building2, ClipboardList, Command, FolderKanban, History, LayoutDashboard, ListTodo, Plus, Search, Settings, Star, Users, X } from 'lucide-react';
+import { useWorkspaceMemory } from '@/hooks/use-workspace-memory';
 
 type CommandItem = {
   id: string;
@@ -11,6 +12,7 @@ type CommandItem = {
   href: string;
   keywords: string[];
   icon: React.ComponentType<{ className?: string }>;
+  section?: 'Favoritos' | 'Fijados' | 'Recientes' | 'Accesos';
 };
 
 const COMMANDS: CommandItem[] = [
@@ -21,6 +23,7 @@ const COMMANDS: CommandItem[] = [
     href: '/app/dashboard',
     keywords: ['inicio', 'dashboard', 'resumen'],
     icon: LayoutDashboard,
+    section: 'Accesos',
   },
   {
     id: 'tasks',
@@ -29,6 +32,7 @@ const COMMANDS: CommandItem[] = [
     href: '/app/tasks',
     keywords: ['tareas', 'pendientes', 'kanban'],
     icon: ListTodo,
+    section: 'Accesos',
   },
   {
     id: 'new-task',
@@ -37,14 +41,16 @@ const COMMANDS: CommandItem[] = [
     href: '/app/tasks/new',
     keywords: ['crear', 'nueva tarea', 'agregar tarea'],
     icon: Plus,
+    section: 'Accesos',
   },
   {
     id: 'projects',
     label: 'Ver proyectos',
     description: 'Revisa avances, responsables y fechas clave.',
     href: '/app/projects',
-    keywords: ['proyectos', 'projectos', 'trabajos'],
+    keywords: ['proyectos', 'trabajos'],
     icon: FolderKanban,
+    section: 'Accesos',
   },
   {
     id: 'new-project',
@@ -53,14 +59,16 @@ const COMMANDS: CommandItem[] = [
     href: '/app/projects/new',
     keywords: ['crear proyecto', 'nuevo proyecto'],
     icon: ClipboardList,
+    section: 'Accesos',
   },
   {
     id: 'clients',
     label: 'Ver clientes',
     description: 'Consulta clientes, actividad y carga actual.',
     href: '/app/clients',
-    keywords: ['clientes', 'clientes', 'cuentas'],
+    keywords: ['clientes', 'cuentas'],
     icon: Users,
+    section: 'Accesos',
   },
   {
     id: 'notifications',
@@ -69,6 +77,7 @@ const COMMANDS: CommandItem[] = [
     href: '/app/notifications',
     keywords: ['notificaciones', 'avisos', 'alertas'],
     icon: Bell,
+    section: 'Accesos',
   },
   {
     id: 'organization',
@@ -77,6 +86,7 @@ const COMMANDS: CommandItem[] = [
     href: '/app/organization',
     keywords: ['organizacion', 'equipo', 'roles'],
     icon: Building2,
+    section: 'Accesos',
   },
   {
     id: 'settings',
@@ -85,6 +95,7 @@ const COMMANDS: CommandItem[] = [
     href: '/app/settings',
     keywords: ['configuracion', 'perfil', 'ajustes'],
     icon: Settings,
+    section: 'Accesos',
   },
 ];
 
@@ -93,6 +104,7 @@ export function CommandPalette() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
+  const { favorites, pinned, recent } = useWorkspaceMemory();
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -114,16 +126,56 @@ export function CommandPalette() {
     if (!open) setQuery('');
   }, [open]);
 
+  const favoriteCommands: CommandItem[] = favorites.map((item) => ({
+    id: `favorite-${item.type}-${item.id}`,
+    label: item.title,
+    description: item.subtitle || 'Acceso favorito',
+    href: item.href,
+    keywords: [item.title, item.subtitle || '', item.type],
+    icon: Star,
+    section: 'Favoritos',
+  }));
+
+
+  const pinnedCommands: CommandItem[] = pinned.map((item) => ({
+    id: `pinned-${item.type}-${item.id}`,
+    label: item.title,
+    description: item.subtitle || 'Fijado en tu panel',
+    href: item.href,
+    keywords: [item.title, item.subtitle || '', item.type],
+    icon: Star,
+    section: 'Fijados',
+  }));
+
+  const recentCommands: CommandItem[] = recent.map((item) => ({
+    id: `recent-${item.type}-${item.id}`,
+    label: item.title,
+    description: item.subtitle || 'Visto recientemente',
+    href: item.href,
+    keywords: [item.title, item.subtitle || '', item.type],
+    icon: History,
+    section: 'Recientes',
+  }));
+
   const results = useMemo(() => {
     const normalized = query.trim().toLowerCase();
-    const list = COMMANDS.filter((item) => item.href !== pathname);
-    if (!normalized) return list;
+    const list = [...favoriteCommands, ...pinnedCommands, ...recentCommands, ...COMMANDS].filter((item) => item.href !== pathname);
+    const unique = list.filter((item, index) => list.findIndex((candidate) => candidate.href === item.href) === index);
+    if (!normalized) return unique;
 
-    return list.filter((item) => {
+    return unique.filter((item) => {
       const haystack = [item.label, item.description, ...item.keywords].join(' ').toLowerCase();
       return haystack.includes(normalized);
     });
-  }, [pathname, query]);
+  }, [favoriteCommands, pathname, pinnedCommands, query, recentCommands]);
+
+  const groupedResults = useMemo(() => {
+    return results.reduce<Record<string, CommandItem[]>>((acc, item) => {
+      const section = item.section || 'Accesos';
+      acc[section] = acc[section] ? [...acc[section], item] : [item];
+      return acc;
+    }, {});
+  }, [results]);
 
   const runCommand = (href: string) => {
     setOpen(false);
@@ -181,26 +233,31 @@ export function CommandPalette() {
 
               <div className="max-h-[60vh] overflow-y-auto p-3">
                 {results.length ? (
-                  <div className="space-y-2">
-                    {results.map((item) => {
-                      const Icon = item.icon;
-                      return (
-                        <button
-                          key={item.id}
-                          type="button"
-                          onClick={() => runCommand(item.href)}
-                          className="flex w-full items-start gap-3 rounded-2xl px-3 py-3 text-left transition hover:bg-slate-50"
-                        >
-                          <span className="mt-0.5 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600">
-                            <Icon className="h-4.5 w-4.5" />
-                          </span>
-                          <span className="min-w-0 flex-1">
-                            <span className="block text-sm font-semibold text-slate-800">{item.label}</span>
-                            <span className="mt-1 block text-sm text-slate-500">{item.description}</span>
-                          </span>
-                        </button>
-                      );
-                    })}
+                  <div className="space-y-4">
+                    {Object.entries(groupedResults).map(([section, items]) => (
+                      <div key={section} className="space-y-2">
+                        <p className="px-2 text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">{section}</p>
+                        {items.map((item) => {
+                          const Icon = item.icon;
+                          return (
+                            <button
+                              key={item.id}
+                              type="button"
+                              onClick={() => runCommand(item.href)}
+                              className="flex w-full items-start gap-3 rounded-2xl px-3 py-3 text-left transition hover:bg-slate-50"
+                            >
+                              <span className="mt-0.5 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600">
+                                <Icon className="h-4.5 w-4.5" />
+                              </span>
+                              <span className="min-w-0 flex-1">
+                                <span className="block text-sm font-semibold text-slate-800">{item.label}</span>
+                                <span className="mt-1 block text-sm text-slate-500">{item.description}</span>
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    ))}
                   </div>
                 ) : (
                   <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-slate-200 px-6 py-12 text-center">

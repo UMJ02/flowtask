@@ -14,6 +14,7 @@ import {
 import { getTaskAttachments } from "@/lib/queries/attachments";
 import { getTaskActivity } from "@/lib/queries/activity";
 import { ActivityTimeline } from "@/components/activity/activity-timeline";
+import { EntityRecentTracker } from '@/components/entities/entity-recent-tracker';
 
 export default async function TaskDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -30,6 +31,7 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ id:
 
   return (
     <div className="space-y-4">
+      <EntityRecentTracker entity={{ id: task.id, type: 'task', title: task.title, subtitle: task.client_name || 'Tarea', href: `/app/tasks/${task.id}`, updatedAt: new Date().toISOString() }} />
       <TaskDetailSummary task={task} />
       <div className="grid gap-4 lg:grid-cols-2">
         <TaskStatusForm
