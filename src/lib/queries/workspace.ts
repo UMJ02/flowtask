@@ -1,5 +1,6 @@
 import type { User } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
+import { getActiveMembership } from "@/lib/security/organization-access";
 
 export interface WorkspaceContext {
   supabase: Awaited<ReturnType<typeof createClient>>;
@@ -8,27 +9,12 @@ export interface WorkspaceContext {
 }
 
 export async function getWorkspaceContext(): Promise<WorkspaceContext> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return { supabase, user: null, activeOrganizationId: null };
-  }
-
-  const { data: membership } = await supabase
-    .from("organization_members")
-    .select("organization_id")
-    .eq("user_id", user.id)
-    .order("is_default", { ascending: false })
-    .limit(1)
-    .maybeSingle();
+  const { supabase, user, membership } = await getActiveMembership();
 
   return {
     supabase,
     user,
-    activeOrganizationId: membership?.organization_id ?? null,
+    activeOrganizationId: membership?.organizationId ?? null,
   };
 }
 

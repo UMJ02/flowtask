@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
@@ -9,11 +9,21 @@ const ROLE_OPTIONS = [
   { value: "manager", label: "Manager" },
   { value: "member", label: "Member" },
   { value: "viewer", label: "Viewer" },
-];
+] as const;
 
-export function OrganizationInviteForm({ organizationId }: { organizationId?: string | null }) {
+export function OrganizationInviteForm({
+  organizationId,
+  canInviteManagers = false,
+}: {
+  organizationId?: string | null;
+  canInviteManagers?: boolean;
+}) {
+  const availableRoles = useMemo(
+    () => ROLE_OPTIONS.filter((option) => canInviteManagers || option.value !== "manager"),
+    [canInviteManagers],
+  );
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState("member");
+  const [role, setRole] = useState<string>(availableRoles[0]?.value ?? "member");
   const [status, setStatus] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -26,7 +36,7 @@ export function OrganizationInviteForm({ organizationId }: { organizationId?: st
     const response = await fetch("/api/organization/invites", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ organizationId, email: email.trim(), role }),
+      body: JSON.stringify({ organizationId, email: email.trim().toLowerCase(), role }),
     });
 
     const payload = await response.json().catch(() => ({}));
@@ -38,7 +48,7 @@ export function OrganizationInviteForm({ organizationId }: { organizationId?: st
 
     setStatus("Invitación creada correctamente.");
     setEmail("");
-    setRole("member");
+    setRole(availableRoles[0]?.value ?? "member");
     setLoading(false);
   }
 
@@ -51,7 +61,7 @@ export function OrganizationInviteForm({ organizationId }: { organizationId?: st
       <div>
         <p className="mb-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Rol</p>
         <Select value={role} onChange={(event) => setRole(event.target.value)} disabled={!organizationId || loading}>
-          {ROLE_OPTIONS.map((option) => (
+          {availableRoles.map((option) => (
             <option key={option.value} value={option.value}>{option.label}</option>
           ))}
         </Select>

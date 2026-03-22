@@ -9,9 +9,11 @@ function chunkPermissions(keys: string[], defs: PermissionDefinitionSummary[]) {
 export function OrganizationRolesPanel({
   roles,
   permissions,
+  canManageRoles = true,
 }: {
   roles: OrganizationRoleTemplateSummary[];
   permissions: PermissionDefinitionSummary[];
+  canManageRoles?: boolean;
 }) {
   return (
     <Card>
@@ -20,10 +22,15 @@ export function OrganizationRolesPanel({
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Roles editables</p>
           <h2 className="mt-1 text-lg font-semibold text-slate-900">Permisos granulares por organización</h2>
         </div>
-        <a href="/app/organization/roles" className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white">
-          Gestionar roles
-        </a>
+        {canManageRoles ? (
+          <a href="/app/organization/roles" className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white">
+            Gestionar roles
+          </a>
+        ) : null}
       </div>
+      {!canManageRoles ? (
+        <p className="mt-4 text-sm text-slate-600">Tu rol actual puede ver el resumen general de la organización, pero no administrar la matriz completa de permisos.</p>
+      ) : null}
       <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
         {roles.map((role) => (
           <div key={role.id} className="rounded-2xl border border-slate-200 p-4">
