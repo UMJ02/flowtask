@@ -1,5 +1,6 @@
 import { Sparkles } from 'lucide-react';
 import { NotificationBell } from '@/components/notifications/notification-bell';
+import { CommandPalette } from '@/components/layout/command-palette';
 import { MobileNav } from '@/components/layout/mobile-nav';
 import { UserMenu } from '@/components/layout/user-menu';
 
@@ -28,6 +29,7 @@ export function AppHeader({ userEmail, userName }: { userEmail: string; userName
         </div>
 
         <div className="flex items-center justify-end gap-3">
+          <CommandPalette />
           <NotificationBell />
           <UserMenu fullName={userName} email={userEmail} />
         </div>

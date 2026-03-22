@@ -33,3 +33,8 @@ Base v9.1 con multi-empresa, roles avanzados, dashboard por organización e invi
 - límites por plan (usuarios, proyectos, storage)
 - vista /app/organization/billing
 - base lista para Stripe
+
+
+## Novedades v9.6.8
+- Búsqueda rápida global con `⌘K` / `Ctrl+K`.
+- Accesos directos a tareas, proyectos, clientes, notificaciones y ajustes.
