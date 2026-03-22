@@ -24,13 +24,15 @@ import { getDashboardData } from '@/lib/queries/dashboard';
 import { getOrganizationContext } from '@/lib/queries/organization';
 import { getClientDashboardItems } from '@/lib/queries/clients';
 import { getOrganizationBillingSummary } from '@/lib/queries/billing';
+import { getRecentActivitySummary } from '@/lib/queries/activity';
 
 export default async function DashboardPage() {
-  const [data, organizationContext, clientItems, billingSummary] = await Promise.all([
+  const [data, organizationContext, clientItems, billingSummary, activitySummary] = await Promise.all([
     getDashboardData(),
     getOrganizationContext(),
     getClientDashboardItems(),
     getOrganizationBillingSummary(),
+    getRecentActivitySummary(10),
   ]);
 
   if (!data) {
@@ -112,7 +114,7 @@ export default async function DashboardPage() {
       <ClientPortfolio items={clientItems} />
       <StickyBoard recentTasks={data.recentTasks ?? []} recentProjects={data.recentProjects ?? []} reminders={data.reminders ?? []} />
       <div className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
-        <RecentActivity />
+        <RecentActivity summary={activitySummary} />
         <UpcomingItems />
       </div>
     </div>

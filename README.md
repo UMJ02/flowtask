@@ -1,25 +1,25 @@
-# FlowTask v1.4.0-productivity
+# FlowTask v1.5.0-automation
 
-Base canónica actual con enfoque en **productividad real de operación** sobre la línea `v1.3.0-ux-polish`.
+Base canónica actual con enfoque en **visibilidad operativa, automatización y seguimiento** sobre la línea `v1.4.0-productivity`.
 
 ## Estado de esta versión
-- `tsc --noEmit` en cero errores
-- tablero kanban con drag & drop más sólido y actualización optimista
-- feedback visual de columnas, conteos y error defensivo al mover tareas
-- vistas guardadas para tareas, proyectos y clientes
-- command palette mejorado con búsquedas rápidas por texto y acceso a vistas guardadas
-- sin romper routing, runtime, seguridad ni UX base de versiones previas
+- `tsc --noEmit` validado en cero errores
+- timeline de actividad del dashboard conectado a datos reales
+- centro de automatización en settings con lectura clara de canales, frecuencia y horas silenciosas
+- salud de entregas y digest más visible dentro del centro de notificaciones
+- sin romper routing, runtime, seguridad, UX ni productividad de versiones previas
 
 ## Objetivo de esta versión
-Reducir fricción operativa para que el equipo cambie entre vistas, recupere filtros frecuentes y mueva tareas más rápido sin reconstruir contexto a cada paso.
+Dar visibilidad real al pulso del workspace y dejar más clara la capa de automatizaciones para que el equipo entienda qué está pasando, qué se está enviando y qué tan lista está la app para crecer hacia canales externos y onboarding.
 
 ## Incluye
-- **Kanban productivo**: columnas con conteos, estados visuales de dropzone, actualización optimista y manejo de error
-- **Vistas guardadas**: snapshots reutilizables de filtros por módulo desde localStorage
-- **Búsqueda rápida mejorada**: acciones directas para buscar en tareas, proyectos y clientes, además de acceso a vistas guardadas
+- **Dashboard con actividad real**: el bloque de actividad reciente ahora usa `activity_logs` reales con conteos y timeline reutilizable
+- **Automation center**: resumen visual del estado de preferencias, horarios silenciosos y canales activos en settings
+- **Health de notificaciones**: lectura rápida de entregas enviadas, pendientes, fallidas y digest más reciente
+- **Timeline mejorado**: badges por entidad, detalle de metadata y presentación más clara en tareas, proyectos y dashboard
 
 ## Próxima versión
-`v1.5.0`
-- timeline de actividad más profundo
-- automatizaciones y notificaciones externas
-- onboarding y settings avanzados
+`v1.6.0`
+- onboarding inicial por organización
+- activación guiada de canales externos
+- reglas operativas por workspace y checklists de arranque

@@ -2,6 +2,7 @@ import { Card } from '@/components/ui/card';
 import { NotificationPreferencesForm } from '@/components/notifications/notification-preferences-form';
 import { TestNotificationButton } from '@/components/notifications/test-notification-button';
 import { ProfileSettingsForm } from '@/components/settings/profile-settings-form';
+import { AutomationControlCenter } from '@/components/settings/automation-control-center';
 import { getNotificationPreferences } from '@/lib/queries/notification-preferences';
 import { getOrganizationContext } from '@/lib/queries/organization';
 import { getCurrentProfile } from '@/lib/queries/profile';
@@ -21,6 +22,7 @@ export default async function SettingsPage() {
         {profile ? <ProfileSettingsForm initialFullName={profile.fullName} email={profile.email} /> : null}
       </Card>
 
+      {preferences ? <AutomationControlCenter preferences={preferences} /> : null}
       {preferences ? <NotificationPreferencesForm initialPreferences={preferences} /> : null}
       <TestNotificationButton />
 
