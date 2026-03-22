@@ -3,6 +3,7 @@ import { NotificationBell } from '@/components/notifications/notification-bell';
 import { CommandPalette } from '@/components/layout/command-palette';
 import { MobileNav } from '@/components/layout/mobile-nav';
 import { UserMenu } from '@/components/layout/user-menu';
+import { InstallAppButton } from '@/components/pwa/install-app-button';
 
 function getFirstName(name?: string | null) {
   const clean = name?.trim();
@@ -29,6 +30,9 @@ export function AppHeader({ userEmail, userName }: { userEmail: string; userName
         </div>
 
         <div className="flex items-center justify-end gap-3">
+          <div className="hidden sm:block">
+            <InstallAppButton />
+          </div>
           <CommandPalette />
           <NotificationBell />
           <UserMenu fullName={userName} email={userEmail} />

@@ -3,9 +3,10 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useMemo, useState } from 'react';
-import { Menu, X } from 'lucide-react';
+import { Download, Menu, X } from 'lucide-react';
 import { appNavLinks } from '@/components/layout/nav-links';
 import { useNotificationsState } from '@/components/notifications/notifications-provider';
+import { InstallAppButton } from '@/components/pwa/install-app-button';
 
 export function MobileNav() {
   const pathname = usePathname();
@@ -45,6 +46,21 @@ export function MobileNav() {
               >
                 <X className="h-5 w-5" />
               </button>
+            </div>
+
+            <div className="mb-4 rounded-[24px] border border-white/10 bg-white/5 p-3">
+              <div className="flex items-start gap-3">
+                <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-emerald-500/20 text-emerald-300">
+                  <Download className="h-4 w-4" />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-semibold text-white">Instala la app</p>
+                  <p className="mt-1 text-xs leading-5 text-slate-300">Ábrela más rápido desde tu pantalla principal.</p>
+                </div>
+              </div>
+              <div className="mt-3">
+                <InstallAppButton />
+              </div>
             </div>
 
             <div className="flex-1 space-y-5 overflow-y-auto pr-1">
