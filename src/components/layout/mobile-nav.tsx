@@ -1,12 +1,14 @@
 'use client';
 
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import { appNavLinks } from '@/components/layout/nav-links';
 import { useNotificationsState } from '@/components/notifications/notifications-provider';
 
 export function MobileNav() {
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const { unreadCount } = useNotificationsState();
 
@@ -43,20 +45,21 @@ export function MobileNav() {
             <nav className="space-y-2">
               {appNavLinks.map((link) => {
                 const Icon = link.icon;
+                const active = pathname === link.href || (link.href !== '/app/dashboard' && pathname?.startsWith(`${link.href}/`));
                 return (
                   <Link
                     key={link.href}
-                    className="flex items-center justify-between rounded-3xl border border-slate-200 px-4 py-3"
+                    className={`flex items-center justify-between rounded-3xl border px-4 py-3 ${active ? 'border-emerald-200 bg-emerald-50' : 'border-slate-200 bg-white'}`}
                     href={link.href}
                     onClick={() => setOpen(false)}
                   >
-                    <div className="flex items-center gap-3">
-                      <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <span className={`inline-flex h-10 w-10 items-center justify-center rounded-2xl ${active ? 'bg-emerald-500 text-white' : 'bg-emerald-50 text-emerald-600'}`}>
                         <Icon className="h-5 w-5" />
                       </span>
-                      <div>
-                        <p className="text-sm font-semibold text-slate-900">{link.label}</p>
-                        <p className="text-xs text-slate-500">{link.hint}</p>
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-semibold text-slate-900">{link.label}</p>
+                        <p className="truncate text-xs text-slate-500">{link.hint}</p>
                       </div>
                     </div>
                     {link.isNotifications && unreadCount > 0 ? (

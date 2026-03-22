@@ -19,13 +19,13 @@ export function OrganizationOverview({
   const editable = clientPermissions.filter((item) => item.canEdit).length;
   const stats = [
     { label: "Organizaciones", value: String(organizations.length), icon: Building2 },
-    { label: "Clientes con edición", value: String(editable), icon: PencilLine },
+    { label: "Clientes editables", value: String(editable), icon: PencilLine },
     { label: "Rol activo", value: formatRole(activeOrganization?.role), icon: ShieldCheck },
   ];
 
   return (
-    <Card className="space-y-4">
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+    <Card className="space-y-5">
+      <div className="space-y-3">
         <div className="min-w-0">
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Organización</p>
           <h2 className="mt-1 text-xl font-bold text-slate-900">{activeOrganization?.name ?? "Sin organización activa"}</h2>
@@ -33,14 +33,15 @@ export function OrganizationOverview({
             Aquí puedes ver tu equipo, los clientes que manejan y el tipo de acceso que tienes, sin mezclar información personal.
           </p>
         </div>
-        <div className="grid gap-3 sm:grid-cols-3 lg:max-w-[480px] lg:flex-1">
+
+        <div className="grid gap-3 sm:grid-cols-3">
           {stats.map((item) => {
             const Icon = item.icon;
             return (
               <div key={item.label} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
                 <div className="flex items-center gap-2 text-slate-500">
-                  <Icon className="h-4 w-4" />
-                  <p className="text-xs font-semibold uppercase tracking-[0.08em]">{item.label}</p>
+                  <Icon className="h-4 w-4 shrink-0" />
+                  <p className="truncate text-xs font-semibold uppercase tracking-[0.08em]">{item.label}</p>
                 </div>
                 <p className="mt-3 break-words text-xl font-bold text-slate-900">{item.value}</p>
               </div>

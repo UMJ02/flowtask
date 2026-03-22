@@ -192,7 +192,7 @@ export function NotificationsLivePanel({
 
   return (
     <div className="space-y-6">
-      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4 2xl:grid-cols-8">
+      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4">
         <StatCard label="No leídas" value={unreadCount} />
         <StatCard label="Tareas asignadas" value={assignedTasks.length} />
         <StatCard label="Recordatorios enviados" value={triggeredReminders.length} />
@@ -207,7 +207,7 @@ export function NotificationsLivePanel({
         <Card className="space-y-4">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <h2 className="text-lg font-semibold text-slate-900">Notificaciones</h2>
+              <h2 className="text-lg font-semibold text-slate-900">Centro de notificaciones</h2>
               <p className="text-sm text-slate-500">Revisa avisos del equipo y el estado de sus entregas en un solo lugar.</p>
             </div>
             <div className="flex flex-wrap items-center gap-2">

@@ -19,7 +19,7 @@ export function ProjectHealth({ activeProjects, completedProjects, collaborative
       <div className="grid gap-3 sm:grid-cols-3">
         {stats.map((item) => (
           <div key={item.label} className="rounded-2xl bg-slate-50 p-4">
-            <p className="text-sm font-semibold text-slate-500">{item.label}</p>
+            <p className="truncate text-sm font-semibold text-slate-500">{item.label}</p>
             <p className="mt-2 text-3xl font-bold text-slate-900">{item.value}</p>
           </div>
         ))}
