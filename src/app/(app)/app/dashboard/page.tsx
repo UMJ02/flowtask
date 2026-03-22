@@ -1,3 +1,5 @@
+import Link from 'next/link';
+import { CalendarDays, LayoutGrid } from 'lucide-react';
 import { BoardOverview } from '@/components/dashboard/board-overview';
 import { CollaborationMetrics } from '@/components/dashboard/collaboration-metrics';
 import { DeadlineLanes } from '@/components/dashboard/deadline-lanes';
@@ -14,9 +16,10 @@ import { StickyBoard } from '@/components/dashboard/sticky-board';
 import { UrgentProjects } from '@/components/dashboard/urgent-projects';
 import { UpcomingItems } from '@/components/dashboard/upcoming-items';
 import { UserWorkload } from '@/components/dashboard/user-workload';
-import Link from 'next/link';
-import { CalendarDays } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { ErrorState } from '@/components/ui/error-state';
+import { SectionHeader } from '@/components/ui/section-header';
 import { getDashboardData } from '@/lib/queries/dashboard';
 import { getOrganizationContext } from '@/lib/queries/organization';
 import { getClientDashboardItems } from '@/lib/queries/clients';
@@ -30,8 +33,34 @@ export default async function DashboardPage() {
     getOrganizationBillingSummary(),
   ]);
 
+  if (!data) {
+    return (
+      <ErrorState
+        title="No pudimos preparar tu dashboard"
+        description="No encontramos el contexto de trabajo necesario para cargar tu resumen. Revisa tu sesión o vuelve a intentarlo más tarde."
+        action={
+          <Link href="/login">
+            <Button>Ir al acceso</Button>
+          </Link>
+        }
+      />
+    );
+  }
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
+      <SectionHeader
+        eyebrow="Workspace"
+        title="Dashboard"
+        description="Tu vista principal para pendientes, proyectos, clientes y actividad reciente. Todo queda agrupado para decidir rápido qué atender primero."
+        icon={<LayoutGrid className="h-5 w-5" />}
+        actions={
+          <Link href="/app/calendar">
+            <Button variant="secondary">Abrir calendario</Button>
+          </Link>
+        }
+      />
+
       <Card className="bg-[linear-gradient(135deg,#06291d_0%,#0f172a_60%,#0f172a_100%)] text-white shadow-[0_24px_60px_rgba(15,23,42,0.25)]">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
           <div className="max-w-2xl">
@@ -42,16 +71,17 @@ export default async function DashboardPage() {
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="rounded-[26px] bg-white/10 px-4 py-3 ring-1 ring-white/10">
               <p className="text-xs uppercase tracking-[0.16em] text-slate-300">Pendientes</p>
-              <p className="mt-2 text-3xl font-bold">{data?.activeTasks ?? 0}</p>
+              <p className="mt-2 text-3xl font-bold">{data.activeTasks ?? 0}</p>
             </div>
             <div className="rounded-[26px] bg-white/10 px-4 py-3 ring-1 ring-white/10">
               <p className="text-xs uppercase tracking-[0.16em] text-slate-300">Proyectos</p>
-              <p className="mt-2 text-3xl font-bold">{data?.activeProjects ?? 0}</p>
+              <p className="mt-2 text-3xl font-bold">{data.activeProjects ?? 0}</p>
             </div>
           </div>
         </div>
       </Card>
-      <BoardOverview activeProjects={data?.activeProjects ?? 0} activeTasks={data?.activeTasks ?? 0} completedTasks={data?.completedTasks ?? 0} />
+
+      <BoardOverview activeProjects={data.activeProjects ?? 0} activeTasks={data.activeTasks ?? 0} completedTasks={data.completedTasks ?? 0} />
       <QuickActions />
       <Card className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div className="flex items-start gap-3">
@@ -64,23 +94,23 @@ export default async function DashboardPage() {
         <Link href="/app/calendar" className="inline-flex items-center justify-center rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">Abrir calendario</Link>
       </Card>
       <FocusPanel />
-      <DeadlineLanes overdueTasks={data?.overdueTasks ?? 0} dueSoonTasks={data?.dueSoonTasks ?? 0} waitingTasks={data?.waitingTasks ?? 0} />
+      <DeadlineLanes overdueTasks={data.overdueTasks ?? 0} dueSoonTasks={data.dueSoonTasks ?? 0} waitingTasks={data.waitingTasks ?? 0} />
       <div className="grid gap-4 xl:grid-cols-[1.15fr_0.85fr]">
         <OrganizationOverview activeOrganization={organizationContext?.activeOrganization ?? null} organizations={organizationContext?.organizations ?? []} clientPermissions={organizationContext?.clientPermissions ?? []} />
         <OrganizationPlanWidget summary={billingSummary} />
       </div>
       <div className="grid gap-4 xl:grid-cols-[1.2fr_0.8fr]">
-        <DepartmentMetrics items={data?.departmentMetrics ?? []} />
-        <ProjectHealth activeProjects={data?.activeProjects ?? 0} completedProjects={data?.completedProjects ?? 0} collaborativeProjects={data?.collaborativeProjects ?? 0} />
+        <DepartmentMetrics items={data.departmentMetrics ?? []} />
+        <ProjectHealth activeProjects={data.activeProjects ?? 0} completedProjects={data.completedProjects ?? 0} collaborativeProjects={data.collaborativeProjects ?? 0} />
       </div>
       <div className="grid gap-4 xl:grid-cols-3">
-        <ClientMetrics items={data?.clientMetrics ?? []} />
-        <UserWorkload items={data?.userWorkload ?? []} />
-        <CollaborationMetrics items={data?.collaborationMetrics ?? []} />
+        <ClientMetrics items={data.clientMetrics ?? []} />
+        <UserWorkload items={data.userWorkload ?? []} />
+        <CollaborationMetrics items={data.collaborationMetrics ?? []} />
       </div>
-      <UrgentProjects items={data?.urgentProjects ?? []} />
+      <UrgentProjects items={data.urgentProjects ?? []} />
       <ClientPortfolio items={clientItems} />
-      <StickyBoard recentTasks={data?.recentTasks ?? []} recentProjects={data?.recentProjects ?? []} reminders={data?.reminders ?? []} />
+      <StickyBoard recentTasks={data.recentTasks ?? []} recentProjects={data.recentProjects ?? []} reminders={data.reminders ?? []} />
       <div className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
         <RecentActivity />
         <UpcomingItems />

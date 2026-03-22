@@ -64,7 +64,7 @@ export function MobileNav() {
             </div>
 
             <div className="flex-1 space-y-5 overflow-y-auto pr-1">
-              <nav className="space-y-2">
+              <nav className="space-y-2 rounded-[28px] border border-white/10 bg-white/[0.03] p-2">
                 {groups.main.map((link) => {
                   const Icon = link.icon;
                   const active = pathname === link.href || (link.href !== '/app/dashboard' && pathname?.startsWith(`${link.href}/`));
@@ -96,7 +96,7 @@ export function MobileNav() {
 
               <div className="border-t border-white/10 pt-4">
                 <p className="mb-2 px-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Organización y cuenta</p>
-                <nav className="space-y-2">
+                <nav className="space-y-2 rounded-[28px] border border-white/10 bg-white/[0.03] p-2">
                   {groups.more.map((link) => {
                     const Icon = link.icon;
                     const active = pathname === link.href || pathname?.startsWith(`${link.href}/`);

@@ -60,7 +60,7 @@ export function AppSidebar({
         </div>
       )}
 
-      <nav className="space-y-1.5">
+      <nav className="space-y-1.5 border-t border-white/10 pt-3">
         {mainLinks.map((link) => {
           const Icon = link.icon;
           const active = pathname === link.href || (link.href !== '/app/dashboard' && pathname?.startsWith(`${link.href}/`));

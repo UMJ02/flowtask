@@ -221,7 +221,7 @@ export function CommandPalette() {
       {open ? (
         <div className="fixed inset-0 z-[70] bg-slate-950/30 backdrop-blur-sm">
           <button type="button" className="absolute inset-0 h-full w-full cursor-default" aria-label="Cerrar buscador" onClick={() => setOpen(false)} />
-          <div className="relative mx-auto mt-10 w-[min(96vw,760px)] rounded-[30px] border border-slate-200 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.24)]">
+          <div className="relative mx-auto mt-10 w-[min(96vw,760px)] overflow-hidden rounded-[30px] border border-slate-200 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.24)]">
             <div className="flex items-center gap-3 border-b border-slate-100 px-5 py-4">
               <Search className="h-5 w-5 text-slate-400" />
               <input
@@ -236,7 +236,7 @@ export function CommandPalette() {
               </button>
             </div>
 
-            <div className="max-h-[70vh] overflow-y-auto px-3 py-3">
+            <div className="max-h-[70vh] overflow-y-auto bg-slate-50/40 px-3 py-3">
               {Object.entries(groupedResults).map(([section, items]) => (
                 <div key={section} className="mb-4 last:mb-0">
                   <p className="px-2 pb-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">{section}</p>
@@ -247,7 +247,7 @@ export function CommandPalette() {
                         <button
                           key={item.id}
                           type="button"
-                          className="flex w-full items-center gap-3 rounded-2xl px-3 py-3 text-left transition hover:bg-slate-50"
+                          className="flex w-full items-center gap-3 rounded-2xl border border-transparent bg-white px-3 py-3 text-left transition hover:border-emerald-100 hover:bg-emerald-50/40"
                           onClick={() => runCommand(item.href)}
                         >
                           <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-100 text-slate-600">
@@ -265,7 +265,7 @@ export function CommandPalette() {
               ))}
 
               {!results.length ? (
-                <div className="px-3 py-6 text-sm text-slate-500">
+                <div className="rounded-2xl border border-dashed border-slate-200 bg-white px-4 py-6 text-sm text-slate-500">
                   No encontramos resultados con ese texto. Prueba con otra palabra clave.
                 </div>
               ) : null}
