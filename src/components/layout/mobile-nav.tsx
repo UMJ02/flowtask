@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import { appNavLinks } from '@/components/layout/nav-links';
 import { useNotificationsState } from '@/components/notifications/notifications-provider';
@@ -11,6 +11,11 @@ export function MobileNav() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const { unreadCount } = useNotificationsState();
+  const groups = useMemo(() => {
+    const main = appNavLinks.slice(0, 8);
+    const more = appNavLinks.slice(8);
+    return { main, more };
+  }, []);
 
   return (
     <>
@@ -26,15 +31,15 @@ export function MobileNav() {
       {open ? (
         <div className="fixed inset-0 z-50 md:hidden">
           <button className="absolute inset-0 bg-slate-950/45" onClick={() => setOpen(false)} type="button" />
-          <div className="absolute left-0 top-0 h-full w-[86%] max-w-sm overflow-y-auto bg-white p-4 shadow-2xl">
+          <div className="absolute left-0 top-0 flex h-full w-[86%] max-w-sm flex-col overflow-hidden bg-[linear-gradient(180deg,#020617_0%,#0f172a_100%)] p-4 text-white shadow-2xl">
             <div className="mb-4 flex items-center justify-between">
               <div>
-                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-emerald-600">FlowTask</p>
-                <h2 className="text-xl font-bold text-slate-900">Menú</h2>
+                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-emerald-300">FlowTask</p>
+                <h2 className="text-xl font-bold text-white">Menú</h2>
               </div>
               <button
                 aria-label="Cerrar menú"
-                className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-900"
+                className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white"
                 onClick={() => setOpen(false)}
                 type="button"
               >
@@ -42,35 +47,63 @@ export function MobileNav() {
               </button>
             </div>
 
-            <nav className="space-y-2">
-              {appNavLinks.map((link) => {
-                const Icon = link.icon;
-                const active = pathname === link.href || (link.href !== '/app/dashboard' && pathname?.startsWith(`${link.href}/`));
-                return (
-                  <Link
-                    key={link.href}
-                    className={`flex items-center justify-between rounded-3xl border px-4 py-3 ${active ? 'border-emerald-200 bg-emerald-50' : 'border-slate-200 bg-white'}`}
-                    href={link.href}
-                    onClick={() => setOpen(false)}
-                  >
-                    <div className="flex items-center gap-3 min-w-0">
-                      <span className={`inline-flex h-10 w-10 items-center justify-center rounded-2xl ${active ? 'bg-emerald-500 text-white' : 'bg-emerald-50 text-emerald-600'}`}>
-                        <Icon className="h-5 w-5" />
-                      </span>
-                      <div className="min-w-0">
-                        <p className="truncate text-sm font-semibold text-slate-900">{link.label}</p>
-                        <p className="truncate text-xs text-slate-500">{link.hint}</p>
+            <div className="flex-1 space-y-5 overflow-y-auto pr-1">
+              <nav className="space-y-2">
+                {groups.main.map((link) => {
+                  const Icon = link.icon;
+                  const active = pathname === link.href || (link.href !== '/app/dashboard' && pathname?.startsWith(`${link.href}/`));
+                  return (
+                    <Link
+                      key={link.href}
+                      className={`flex items-center justify-between rounded-3xl border px-4 py-3 transition ${active ? 'border-emerald-400/40 bg-white/10 shadow-[0_0_0_1px_rgba(16,185,129,0.12)]' : 'border-white/10 bg-white/5 hover:bg-white/8'}`}
+                      href={link.href}
+                      onClick={() => setOpen(false)}
+                    >
+                      <div className="flex min-w-0 items-center gap-3">
+                        <span className={`inline-flex h-10 w-10 items-center justify-center rounded-2xl ${active ? 'bg-emerald-500 text-white' : 'bg-white/10 text-emerald-300'}`}>
+                          <Icon className="h-5 w-5" />
+                        </span>
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-semibold text-white">{link.label}</p>
+                          <p className="truncate text-xs text-slate-300">{link.hint}</p>
+                        </div>
                       </div>
-                    </div>
-                    {link.isNotifications && unreadCount > 0 ? (
-                      <span className="inline-flex min-h-6 min-w-6 items-center justify-center rounded-full bg-rose-500 px-1.5 text-[10px] font-bold text-white">
-                        {unreadCount > 99 ? '99+' : unreadCount}
-                      </span>
-                    ) : null}
-                  </Link>
-                );
-              })}
-            </nav>
+                      {link.isNotifications && unreadCount > 0 ? (
+                        <span className="inline-flex min-h-6 min-w-6 items-center justify-center rounded-full bg-rose-500 px-1.5 text-[10px] font-bold text-white">
+                          {unreadCount > 99 ? '99+' : unreadCount}
+                        </span>
+                      ) : null}
+                    </Link>
+                  );
+                })}
+              </nav>
+
+              <div className="border-t border-white/10 pt-4">
+                <p className="mb-2 px-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Organización y cuenta</p>
+                <nav className="space-y-2">
+                  {groups.more.map((link) => {
+                    const Icon = link.icon;
+                    const active = pathname === link.href || pathname?.startsWith(`${link.href}/`);
+                    return (
+                      <Link
+                        key={link.href}
+                        className={`flex items-center gap-3 rounded-3xl border px-4 py-3 transition ${active ? 'border-emerald-400/40 bg-white/10' : 'border-white/10 bg-white/5 hover:bg-white/8'}`}
+                        href={link.href}
+                        onClick={() => setOpen(false)}
+                      >
+                        <span className={`inline-flex h-10 w-10 items-center justify-center rounded-2xl ${active ? 'bg-emerald-500 text-white' : 'bg-white/10 text-emerald-300'}`}>
+                          <Icon className="h-5 w-5" />
+                        </span>
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-semibold text-white">{link.label}</p>
+                          <p className="truncate text-xs text-slate-300">{link.hint}</p>
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </nav>
+              </div>
+            </div>
           </div>
         </div>
       ) : null}

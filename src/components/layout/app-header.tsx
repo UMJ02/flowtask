@@ -3,8 +3,14 @@ import { NotificationBell } from '@/components/notifications/notification-bell';
 import { MobileNav } from '@/components/layout/mobile-nav';
 import { UserMenu } from '@/components/layout/user-menu';
 
+function getFirstName(name?: string | null) {
+  const clean = name?.trim();
+  if (!clean) return 'de nuevo';
+  return clean.split(/\s+/)[0] ?? clean;
+}
+
 export function AppHeader({ userEmail, userName }: { userEmail: string; userName?: string | null }) {
-  const safeName = userName?.trim() || 'de nuevo';
+  const firstName = getFirstName(userName);
 
   return (
     <header className="sticky top-3 z-20 rounded-[32px] border border-slate-200/80 bg-white/90 px-4 py-4 shadow-[0_10px_30px_rgba(15,23,42,0.07)] backdrop-blur md:px-6">
@@ -16,7 +22,7 @@ export function AppHeader({ userEmail, userName }: { userEmail: string; userName
           </div>
           <div className="min-w-0">
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-emerald-600">FlowTask</p>
-            <h1 className="mt-1 text-lg font-bold text-slate-900 md:text-2xl">Bienvenido, {safeName}</h1>
+            <h1 className="mt-1 text-lg font-bold text-slate-900 md:text-2xl">Bienvenido, {firstName}</h1>
             <p className="mt-1 max-w-2xl text-sm text-slate-500">Administra tareas, proyectos y clientes en una vista simple, rápida y fácil de entender.</p>
           </div>
         </div>

@@ -15,14 +15,55 @@ export function OrganizationSwitcher({
   activeOrganization,
   compact = false,
   dark = false,
+  collapsed = false,
 }: {
   organizations: OrganizationSummary[];
   activeOrganization?: OrganizationSummary | null;
   compact?: boolean;
   dark?: boolean;
+  collapsed?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const label = activeOrganization?.name ?? 'Sin organización';
+
+  if (collapsed) {
+    return (
+      <div className="relative">
+        <button
+          type="button"
+          onClick={() => setOpen((value) => !value)}
+          title={label}
+          className="inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-white/6 text-emerald-300 transition hover:border-emerald-400/30 hover:bg-white/10"
+        >
+          <Building2 className="h-5 w-5" />
+        </button>
+
+        {open ? (
+          <div className="absolute bottom-[calc(100%+10px)] left-1/2 z-30 w-64 -translate-x-1/2 rounded-[24px] border border-white/10 bg-slate-950 p-3 text-white shadow-[0_24px_50px_rgba(15,23,42,0.16)]">
+            <div className="space-y-2">
+              {organizations.length ? organizations.slice(0, 5).map((organization) => (
+                <div
+                  key={organization.id}
+                  className={`flex items-center justify-between rounded-2xl px-3 py-2 ${organization.id === activeOrganization?.id ? 'bg-emerald-500/15 text-emerald-200' : 'bg-white/5 text-slate-200'}`}
+                >
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold">{organization.name}</p>
+                    <p className="text-xs opacity-80">{formatRole(organization.role)}</p>
+                  </div>
+                  {organization.id === activeOrganization?.id ? <Check className="h-4 w-4 shrink-0" /> : null}
+                </div>
+              )) : (
+                <div className="rounded-2xl bg-white/5 px-3 py-3 text-sm text-slate-300">Todavía no tienes una organización activa.</div>
+              )}
+            </div>
+            <Link href="/app/organization" onClick={() => setOpen(false)} className="mt-3 inline-flex w-full items-center justify-center rounded-full bg-white px-4 py-2.5 text-sm font-semibold text-slate-950">
+              Ver detalles
+            </Link>
+          </div>
+        ) : null}
+      </div>
+    );
+  }
 
   return (
     <div className="relative min-w-0 w-full">

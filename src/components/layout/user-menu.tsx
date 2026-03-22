@@ -35,15 +35,16 @@ export function UserMenu({
     <div className="relative">
       <button
         type="button"
-        title={email}
+        aria-label="Abrir menú de usuario"
         onClick={() => setOpen((value) => !value)}
-        className="inline-flex h-12 items-center gap-3 rounded-full border border-slate-200 bg-white px-2.5 pr-3 text-left shadow-sm transition hover:border-emerald-200 hover:bg-emerald-50"
+        className="group relative inline-flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 bg-white text-left shadow-sm transition hover:border-emerald-200 hover:bg-emerald-50"
       >
         <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-slate-950 text-sm font-bold text-white">
           {initials}
         </span>
-        <span className="hidden text-sm font-medium text-slate-700 lg:inline">{displayName}</span>
-        <ChevronDown className={`h-4 w-4 text-slate-500 transition ${open ? 'rotate-180' : ''}`} />
+        <span className="pointer-events-none absolute -bottom-10 left-1/2 hidden -translate-x-1/2 whitespace-nowrap rounded-xl bg-slate-950 px-3 py-1.5 text-xs font-medium text-white shadow-lg group-hover:block">
+          {email}
+        </span>
       </button>
 
       {open ? (

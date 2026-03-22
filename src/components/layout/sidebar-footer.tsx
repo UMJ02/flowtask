@@ -1,42 +1,74 @@
-'use client';
-
 import Link from 'next/link';
-import { Building2, Settings } from 'lucide-react';
+import { Settings } from 'lucide-react';
 import { OrganizationSwitcher } from '@/components/layout/organization-switcher';
-import { UserMenu } from '@/components/layout/user-menu';
 import type { OrganizationSummary } from '@/types/organization';
+
+function getInitials(name: string, email: string) {
+  const source = name?.trim() || email?.trim() || 'U';
+  const parts = source.split(/\s+/).filter(Boolean);
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return `${parts[0][0] ?? ''}${parts[1][0] ?? ''}`.toUpperCase();
+}
 
 export function SidebarFooter({
   organizations,
   activeOrganization,
   userEmail,
   userName,
+  collapsed = false,
 }: {
   organizations?: OrganizationSummary[];
   activeOrganization?: OrganizationSummary | null;
   userEmail: string;
   userName?: string | null;
+  collapsed?: boolean;
 }) {
+  const displayName = userName?.trim() || 'Mi cuenta';
+  const initials = getInitials(displayName, userEmail);
+
   return (
-    <div className="mt-6 space-y-3 border-t border-white/10 pt-5">
-      <p className="px-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Espacio de trabajo</p>
-      <OrganizationSwitcher organizations={organizations ?? []} activeOrganization={activeOrganization} compact dark />
-      <div className="grid grid-cols-2 gap-2">
-        <Link href="/app/organization" className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white/6 px-3 py-3 text-sm font-medium text-white transition hover:bg-white/10">
-          <Building2 className="h-4 w-4 text-emerald-300" />
-          Organización
-        </Link>
-        <Link href="/app/settings" className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white/6 px-3 py-3 text-sm font-medium text-white transition hover:bg-white/10">
-          <Settings className="h-4 w-4 text-emerald-300" />
-          Perfil
-        </Link>
-      </div>
-      <div className="flex justify-between gap-3 rounded-2xl bg-white/6 px-3 py-3">
-        <div className="min-w-0">
-          <p className="truncate text-sm font-semibold text-white">{userName?.trim() || 'Mi cuenta'}</p>
-          <p className="truncate text-xs text-slate-400">{userEmail}</p>
-        </div>
-        <UserMenu fullName={userName} email={userEmail} />
+    <div className="border-t border-white/10 pt-3">
+      <div className="space-y-3">
+        {!collapsed ? (
+          <>
+            <div>
+              <p className="px-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Organización</p>
+              <div className="mt-2">
+                <OrganizationSwitcher organizations={organizations ?? []} activeOrganization={activeOrganization} compact dark />
+              </div>
+            </div>
+            <div className="border-t border-white/10 pt-2.5">
+              <p className="px-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Perfil</p>
+              <Link href="/app/settings" className="mt-2 flex items-center gap-3 rounded-[24px] bg-white/6 px-3 py-2.5 ring-1 ring-white/10 transition hover:bg-white/10">
+                <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white text-sm font-bold text-slate-950">
+                  {initials}
+                </span>
+                <div className="min-w-0">
+                  <p className="break-words text-sm font-semibold leading-5 text-white">{displayName}</p>
+                  <p className="truncate text-xs text-slate-400">{userEmail}</p>
+                </div>
+              </Link>
+            </div>
+          </>
+        ) : (
+          <div className="flex flex-col items-center gap-2">
+            <OrganizationSwitcher organizations={organizations ?? []} activeOrganization={activeOrganization} compact dark collapsed />
+            <Link
+              href="/app/settings"
+              title={displayName}
+              className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-white/6 text-white ring-1 ring-white/10 transition hover:bg-white/10"
+            >
+              <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white text-sm font-bold text-slate-950">{initials}</span>
+            </Link>
+            <Link
+              href="/app/settings"
+              aria-label="Abrir configuración"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-white/6 text-slate-300 ring-1 ring-white/10 transition hover:bg-white/10 hover:text-white"
+            >
+              <Settings className="h-4 w-4" />
+            </Link>
+          </div>
+        )}
       </div>
     </div>
   );
