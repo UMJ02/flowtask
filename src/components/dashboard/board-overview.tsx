@@ -11,9 +11,9 @@ export function BoardOverview({
   completedTasks: number;
 }) {
   const items = [
-    { label: 'Pendientes', description: 'Lo que sigue hoy.', value: activeTasks, icon: ClipboardList },
-    { label: 'Proyectos activos', description: 'Trabajo en marcha.', value: activeProjects, icon: FolderKanban },
-    { label: 'Completadas', description: 'Lo que ya cerraste.', value: completedTasks, icon: CheckCircle2 },
+    { label: 'Tareas por atender', description: 'Lo que sigue pendiente hoy.', value: activeTasks, icon: ClipboardList },
+    { label: 'Proyectos en marcha', description: 'Trabajo activo del equipo.', value: activeProjects, icon: FolderKanban },
+    { label: 'Tareas resueltas', description: 'Lo que ya quedó listo.', value: completedTasks, icon: CheckCircle2 },
   ];
 
   return (
@@ -23,11 +23,11 @@ export function BoardOverview({
         return (
           <Card key={item.label} className="overflow-hidden">
             <div className="flex items-start justify-between gap-3">
-              <div className="min-w-0">
+              <div>
                 <p className="text-sm font-semibold text-slate-900">{item.label}</p>
                 <p className="mt-1 text-sm text-slate-500">{item.description}</p>
               </div>
-              <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600">
+              <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600">
                 <Icon className="h-5 w-5" />
               </span>
             </div>

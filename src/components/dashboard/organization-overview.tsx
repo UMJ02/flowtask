@@ -1,10 +1,10 @@
-import { Building2, PencilLine, ShieldCheck } from 'lucide-react';
-import { Card } from '@/components/ui/card';
-import type { ClientPermissionSummary, OrganizationSummary } from '@/types/organization';
+import { Building2, PencilLine, ShieldCheck } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import type { ClientPermissionSummary, OrganizationSummary } from "@/types/organization";
 
 function formatRole(role?: string | null) {
-  if (!role) return 'Miembro';
-  return role.replaceAll('_', ' ').replace(/^./, (match) => match.toUpperCase());
+  if (!role) return "Miembro";
+  return role.replaceAll("_", " ").replace(/^./, (match) => match.toUpperCase());
 }
 
 export function OrganizationOverview({
@@ -18,9 +18,9 @@ export function OrganizationOverview({
 }) {
   const editable = clientPermissions.filter((item) => item.canEdit).length;
   const stats = [
-    { label: 'Espacios', value: String(organizations.length), icon: Building2 },
-    { label: 'Clientes editables', value: String(editable), icon: PencilLine },
-    { label: 'Tu rol', value: formatRole(activeOrganization?.role), icon: ShieldCheck },
+    { label: "Organizaciones", value: String(organizations.length), icon: Building2 },
+    { label: "Clientes editables", value: String(editable), icon: PencilLine },
+    { label: "Rol activo", value: formatRole(activeOrganization?.role), icon: ShieldCheck },
   ];
 
   return (
@@ -28,9 +28,9 @@ export function OrganizationOverview({
       <div className="space-y-3">
         <div className="min-w-0">
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Organización</p>
-          <h2 className="mt-1 text-xl font-bold text-slate-900">{activeOrganization?.name ?? 'Sin organización activa'}</h2>
+          <h2 className="mt-1 text-xl font-bold text-slate-900">{activeOrganization?.name ?? "Sin organización activa"}</h2>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
-            Revisa tu espacio, tu acceso y los clientes principales desde un solo bloque.
+            Aquí puedes ver tu equipo, los clientes que manejan y el tipo de acceso que tienes, sin mezclar información personal.
           </p>
         </div>
 
@@ -56,14 +56,14 @@ export function OrganizationOverview({
               <p className="text-sm font-semibold text-slate-900">{permission.clientName}</p>
               <div className="mt-3 flex flex-wrap gap-2">
                 <span className="rounded-full bg-white px-3 py-1 text-xs font-medium text-slate-700 ring-1 ring-slate-200">
-                  {permission.canView ? 'Ver' : 'Sin acceso'}
+                  {permission.canView ? "Puede ver" : "Sin acceso"}
                 </span>
                 <span className="rounded-full bg-white px-3 py-1 text-xs font-medium text-slate-700 ring-1 ring-slate-200">
-                  {permission.canEdit ? 'Editar' : 'Solo lectura'}
+                  {permission.canEdit ? "Puede editar" : "Solo lectura"}
                 </span>
                 {permission.canManageMembers ? (
                   <span className="rounded-full bg-white px-3 py-1 text-xs font-medium text-slate-700 ring-1 ring-slate-200">
-                    Miembros
+                    Gestiona miembros
                   </span>
                 ) : null}
               </div>
@@ -72,7 +72,7 @@ export function OrganizationOverview({
         </div>
       ) : (
         <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
-          Aquí verás un resumen de acceso cuando tengas clientes asignados.
+          Cuando tengas clientes dentro de la organización, aquí verás un resumen rápido de sus permisos.
         </div>
       )}
     </Card>
