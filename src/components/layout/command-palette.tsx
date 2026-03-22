@@ -4,12 +4,13 @@ import { useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { Bell, Building2, CalendarDays, ClipboardList, Command, FolderKanban, History, LayoutDashboard, ListTodo, Plus, Search, Settings, Star, Users, X } from 'lucide-react';
 import { useWorkspaceMemory } from '@/hooks/use-workspace-memory';
+import { asRoute, type AppRoute } from '@/lib/navigation/routes';
 
 type CommandItem = {
   id: string;
   label: string;
   description: string;
-  href: string;
+  href: AppRoute;
   keywords: string[];
   icon: React.ComponentType<{ className?: string }>;
   section?: 'Favoritos' | 'Fijados' | 'Recientes' | 'Accesos';
@@ -145,7 +146,6 @@ export function CommandPalette() {
     section: 'Favoritos',
   }));
 
-
   const pinnedCommands: CommandItem[] = pinned.map((item) => ({
     id: `pinned-${item.type}-${item.id}`,
     label: item.title,
@@ -168,7 +168,8 @@ export function CommandPalette() {
 
   const results = useMemo(() => {
     const normalized = query.trim().toLowerCase();
-    const list = [...favoriteCommands, ...pinnedCommands, ...recentCommands, ...COMMANDS].filter((item) => item.href !== pathname);
+    const currentPath = pathname ? asRoute(pathname) : null;
+    const list = [...favoriteCommands, ...pinnedCommands, ...recentCommands, ...COMMANDS].filter((item) => item.href !== currentPath);
     const unique = list.filter((item, index) => list.findIndex((candidate) => candidate.href === item.href) === index);
     if (!normalized) return unique;
 
@@ -186,7 +187,7 @@ export function CommandPalette() {
     }, {});
   }, [results]);
 
-  const runCommand = (href: string) => {
+  const runCommand = (href: AppRoute) => {
     setOpen(false);
     router.push(href);
   };
@@ -218,71 +219,56 @@ export function CommandPalette() {
       </button>
 
       {open ? (
-        <div className="fixed inset-0 z-[70] bg-slate-950/30 backdrop-blur-sm" onClick={() => setOpen(false)}>
-          <div className="mx-auto flex min-h-screen w-full max-w-2xl items-start justify-center px-4 pt-[12vh]" onClick={(e) => e.stopPropagation()}>
-            <div className="w-full overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.2)]">
-              <div className="flex items-center gap-3 border-b border-slate-100 px-4 py-4 sm:px-5">
-                <Search className="h-5 w-5 shrink-0 text-slate-400" />
-                <input
-                  value={query}
-                  onChange={(event) => setQuery(event.target.value)}
-                  placeholder="Busca tareas, proyectos, clientes o ajustes"
-                  className="h-8 w-full border-0 bg-transparent text-sm text-slate-700 outline-none placeholder:text-slate-400"
-                  autoFocus
-                />
-                <button
-                  type="button"
-                  onClick={() => setOpen(false)}
-                  className="inline-flex h-9 w-9 items-center justify-center rounded-xl text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
-                  aria-label="Cerrar"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              </div>
+        <div className="fixed inset-0 z-[70] bg-slate-950/30 backdrop-blur-sm">
+          <button type="button" className="absolute inset-0 h-full w-full cursor-default" aria-label="Cerrar buscador" onClick={() => setOpen(false)} />
+          <div className="relative mx-auto mt-10 w-[min(96vw,760px)] rounded-[30px] border border-slate-200 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.24)]">
+            <div className="flex items-center gap-3 border-b border-slate-100 px-5 py-4">
+              <Search className="h-5 w-5 text-slate-400" />
+              <input
+                autoFocus
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder="Busca tareas, proyectos, clientes o accesos"
+                className="w-full bg-transparent text-sm text-slate-700 outline-none placeholder:text-slate-400"
+              />
+              <button type="button" onClick={() => setOpen(false)} className="rounded-xl border border-slate-200 p-2 text-slate-400 transition hover:text-slate-700" aria-label="Cerrar buscador">
+                <X className="h-4 w-4" />
+              </button>
+            </div>
 
-              <div className="max-h-[60vh] overflow-y-auto p-3">
-                {results.length ? (
-                  <div className="space-y-4">
-                    {Object.entries(groupedResults).map(([section, items]) => (
-                      <div key={section} className="space-y-2">
-                        <p className="px-2 text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">{section}</p>
-                        {items.map((item) => {
-                          const Icon = item.icon;
-                          return (
-                            <button
-                              key={item.id}
-                              type="button"
-                              onClick={() => runCommand(item.href)}
-                              className="flex w-full items-start gap-3 rounded-2xl px-3 py-3 text-left transition hover:bg-slate-50"
-                            >
-                              <span className="mt-0.5 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600">
-                                <Icon className="h-4.5 w-4.5" />
-                              </span>
-                              <span className="min-w-0 flex-1">
-                                <span className="block text-sm font-semibold text-slate-800">{item.label}</span>
-                                <span className="mt-1 block text-sm text-slate-500">{item.description}</span>
-                              </span>
-                            </button>
-                          );
-                        })}
-                      </div>
-                    ))}
+            <div className="max-h-[70vh] overflow-y-auto px-3 py-3">
+              {Object.entries(groupedResults).map(([section, items]) => (
+                <div key={section} className="mb-4 last:mb-0">
+                  <p className="px-2 pb-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">{section}</p>
+                  <div className="space-y-1">
+                    {items.map((item) => {
+                      const Icon = item.icon;
+                      return (
+                        <button
+                          key={item.id}
+                          type="button"
+                          className="flex w-full items-center gap-3 rounded-2xl px-3 py-3 text-left transition hover:bg-slate-50"
+                          onClick={() => runCommand(item.href)}
+                        >
+                          <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-100 text-slate-600">
+                            <Icon className="h-4 w-4" />
+                          </span>
+                          <span className="min-w-0 flex-1">
+                            <span className="block truncate text-sm font-semibold text-slate-900">{item.label}</span>
+                            <span className="mt-1 block truncate text-sm text-slate-500">{item.description}</span>
+                          </span>
+                        </button>
+                      );
+                    })}
                   </div>
-                ) : (
-                  <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-slate-200 px-6 py-12 text-center">
-                    <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-500">
-                      <Search className="h-5 w-5" />
-                    </div>
-                    <p className="mt-4 text-sm font-semibold text-slate-700">No encontré resultados</p>
-                    <p className="mt-1 text-sm text-slate-500">Prueba con otra palabra, por ejemplo: tareas, clientes o reportes.</p>
-                  </div>
-                )}
-              </div>
+                </div>
+              ))}
 
-              <div className="flex items-center justify-between border-t border-slate-100 px-4 py-3 text-xs text-slate-400 sm:px-5">
-                <span>Tip: usa ⌘K o Ctrl+K para abrir esta búsqueda rápida.</span>
-                <span>Esc para cerrar</span>
-              </div>
+              {!results.length ? (
+                <div className="px-3 py-6 text-sm text-slate-500">
+                  No encontramos resultados con ese texto. Prueba con otra palabra clave.
+                </div>
+              ) : null}
             </div>
           </div>
         </div>

@@ -5,6 +5,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { TaskKanbanBoard } from "@/components/tasks/task-kanban-board";
 import { TaskList } from "@/components/tasks/task-list";
 import { Button } from "@/components/ui/button";
+import { buildRouteWithQuery } from "@/lib/navigation/routes";
 
 type TaskItem = {
   id: string;
@@ -39,7 +40,7 @@ export function TaskWorkspace({
     } else {
       params.set("view", next);
     }
-    router.replace(`${pathname}?${params.toString()}`);
+    router.replace(buildRouteWithQuery(pathname, params));
   };
 
   return (

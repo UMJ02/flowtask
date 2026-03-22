@@ -15,9 +15,10 @@ import {
   BarChart3,
   CalendarDays,
 } from 'lucide-react';
+import type { AppRoute } from '@/lib/navigation/routes';
 
 export type AppNavLink = {
-  href: string;
+  href: AppRoute;
   label: string;
   hint: string;
   icon: LucideIcon;
