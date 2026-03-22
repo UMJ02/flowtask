@@ -3,21 +3,36 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { appNavLinks } from '@/components/layout/nav-links';
+import { SidebarFooter } from '@/components/layout/sidebar-footer';
 import { useNotificationsState } from '@/components/notifications/notifications-provider';
+import type { OrganizationSummary } from '@/types/organization';
 
-export function AppSidebar() {
+const footerHrefs = new Set(['/app/organization', '/app/organization/roles', '/app/organization/billing', '/app/admin', '/contact', '/app/settings']);
+
+export function AppSidebar({
+  organizations = [],
+  activeOrganization = null,
+  userEmail,
+  userName,
+}: {
+  organizations?: OrganizationSummary[];
+  activeOrganization?: OrganizationSummary | null;
+  userEmail: string;
+  userName?: string | null;
+}) {
   const pathname = usePathname();
   const { unreadCount } = useNotificationsState();
+  const mainLinks = appNavLinks.filter((link) => !footerHrefs.has(link.href));
 
   return (
-    <aside className="hidden rounded-[32px] border border-emerald-900/20 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-900 p-5 text-white shadow-[0_20px_50px_rgba(15,23,42,0.24)] md:block">
-      <div className="mb-8 rounded-[28px] bg-white/5 p-4 ring-1 ring-white/10">
+    <aside className="hidden rounded-[32px] border border-emerald-900/20 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-900 p-5 text-white shadow-[0_20px_50px_rgba(15,23,42,0.24)] md:flex md:flex-col md:max-h-[calc(100vh-3rem)]">
+      <div className="mb-6 rounded-[28px] bg-white/5 p-4 ring-1 ring-white/10">
         <p className="text-sm font-semibold uppercase tracking-[0.22em] text-emerald-300">FlowTask</p>
         <p className="mt-2 text-2xl font-bold">Todo más claro</p>
         <p className="mt-2 text-sm text-slate-300">Un panel simple para seguir pendientes, proyectos y clientes sin perderte entre módulos.</p>
       </div>
-      <nav className="space-y-2">
-        {appNavLinks.map((link) => {
+      <nav className="space-y-2 overflow-y-auto pr-1">
+        {mainLinks.map((link) => {
           const Icon = link.icon;
           const active = pathname === link.href || (link.href !== '/app/dashboard' && pathname?.startsWith(`${link.href}/`));
           return (
@@ -26,7 +41,7 @@ export function AppSidebar() {
               className={`group flex items-center justify-between rounded-3xl px-3 py-3 transition ${active ? 'bg-white/10 ring-1 ring-emerald-400/30' : 'hover:bg-white/8'}`}
               href={link.href}
             >
-              <div className="flex items-center gap-3 min-w-0">
+              <div className="flex min-w-0 items-center gap-3">
                 <span className={`inline-flex h-11 w-11 items-center justify-center rounded-2xl transition ${active ? 'bg-emerald-500 text-white shadow-[0_10px_24px_rgba(16,185,129,0.28)]' : 'bg-white/10 text-emerald-300 group-hover:bg-emerald-500 group-hover:text-white'}`}>
                   <Icon className="h-5 w-5" />
                 </span>
@@ -44,6 +59,7 @@ export function AppSidebar() {
           );
         })}
       </nav>
+      <SidebarFooter organizations={organizations} activeOrganization={activeOrganization} userEmail={userEmail} userName={userName} />
     </aside>
   );
 }

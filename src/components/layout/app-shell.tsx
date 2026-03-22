@@ -6,6 +6,7 @@ import type { OrganizationSummary } from '@/types/organization';
 
 export function AppShell({
   userEmail,
+  userName,
   userId,
   unreadCount,
   organizations = [],
@@ -13,6 +14,7 @@ export function AppShell({
   children,
 }: {
   userEmail: string;
+  userName?: string | null;
   userId: string;
   unreadCount: number;
   organizations?: OrganizationSummary[];
@@ -23,9 +25,9 @@ export function AppShell({
     <NotificationsProvider userId={userId} initialUnreadCount={unreadCount}>
       <div className="min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#f0fdf4_100%)] p-3 md:p-6">
         <div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-[300px_minmax(0,1fr)]">
-          <AppSidebar />
+          <AppSidebar organizations={organizations} activeOrganization={activeOrganization} userEmail={userEmail} userName={userName} />
           <div className="space-y-4">
-            <AppHeader userEmail={userEmail} organizations={organizations} activeOrganization={activeOrganization} />
+            <AppHeader userEmail={userEmail} userName={userName} />
             <main className="space-y-4">{children}</main>
             <AppFooter />
           </div>
