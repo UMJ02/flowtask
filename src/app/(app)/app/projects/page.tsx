@@ -5,6 +5,7 @@ import { ProjectSidebar } from '@/components/projects/project-sidebar';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { SectionHeader } from '@/components/ui/section-header';
+import { FilterPresets } from '@/components/ui/filter-presets';
 import { projectNewRoute } from '@/lib/navigation/routes';
 import { getProjects } from '@/lib/queries/projects';
 import { normalizeProjectFilters, toQueryString, type SearchParamsRecord } from '@/lib/runtime/search-params';
@@ -32,6 +33,13 @@ export default async function ProjectsPage({
         }
       />
       <ProjectFilters filters={filters} />
+      <FilterPresets
+        storageKey="flowtask:filters:projects"
+        basePath="/app/projects"
+        currentQuery={currentQuery}
+        title="Vistas rápidas de proyectos"
+        emptyLabel="Reutiliza filtros por cliente, tipo y estado sin rehacer la consulta cada vez."
+      />
       {projects.length ? (
         <ProjectSidebar currentQuery={currentQuery} projects={projects} />
       ) : (

@@ -2,9 +2,9 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Bell, Building2, CalendarDays, ClipboardList, Command, FolderKanban, History, LayoutDashboard, ListTodo, Plus, Search, Settings, Star, Users, X } from 'lucide-react';
+import { Bell, Bookmark, Building2, CalendarDays, ClipboardList, Command, FolderKanban, History, LayoutDashboard, ListTodo, Plus, Search, Settings, Star, Users, X } from 'lucide-react';
 import { useWorkspaceMemory } from '@/hooks/use-workspace-memory';
-import { asRoute, type AppRoute } from '@/lib/navigation/routes';
+import { asRoute, projectListRoute, taskListRoute, type AppRoute } from '@/lib/navigation/routes';
 
 type CommandItem = {
   id: string;
@@ -13,7 +13,13 @@ type CommandItem = {
   href: AppRoute;
   keywords: string[];
   icon: React.ComponentType<{ className?: string }>;
-  section?: 'Favoritos' | 'Fijados' | 'Recientes' | 'Accesos';
+  section?: 'Favoritos' | 'Fijados' | 'Recientes' | 'Accesos' | 'Vistas guardadas' | 'Acciones rápidas';
+};
+
+type SavedFilterView = {
+  id: string;
+  label: string;
+  query: string;
 };
 
 const COMMANDS: CommandItem[] = [
@@ -109,11 +115,23 @@ const COMMANDS: CommandItem[] = [
   },
 ];
 
+function readSavedViews(storageKey: string): SavedFilterView[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const raw = window.localStorage.getItem(storageKey);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed.filter((item) => typeof item?.id === 'string' && typeof item?.label === 'string' && typeof item?.query === 'string') : [];
+  } catch {
+    return [];
+  }
+}
+
 export function CommandPalette() {
   const router = useRouter();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
+  const [savedViewsVersion, setSavedViewsVersion] = useState(0);
   const { favorites, pinned, recent } = useWorkspaceMemory();
 
   useEffect(() => {
@@ -135,6 +153,12 @@ export function CommandPalette() {
   useEffect(() => {
     if (!open) setQuery('');
   }, [open]);
+
+  useEffect(() => {
+    const onUpdate = () => setSavedViewsVersion((current) => current + 1);
+    window.addEventListener('flowtask-filter-views-updated', onUpdate as EventListener);
+    return () => window.removeEventListener('flowtask-filter-views-updated', onUpdate as EventListener);
+  }, []);
 
   const favoriteCommands: CommandItem[] = favorites.map((item) => ({
     id: `favorite-${item.type}-${item.id}`,
@@ -166,18 +190,87 @@ export function CommandPalette() {
     section: 'Recientes',
   }));
 
+  const savedViewCommands: CommandItem[] = useMemo(() => {
+    const taskViews = readSavedViews('flowtask:filters:tasks').map((item) => ({
+      id: `task-view-${item.id}`,
+      label: `Tareas · ${item.label}`,
+      description: item.query || 'Vista guardada de tareas',
+      href: taskListRoute(item.query),
+      keywords: [item.label, item.query, 'tareas', 'vista guardada'],
+      icon: Bookmark,
+      section: 'Vistas guardadas' as const,
+    }));
+
+    const projectViews = readSavedViews('flowtask:filters:projects').map((item) => ({
+      id: `project-view-${item.id}`,
+      label: `Proyectos · ${item.label}`,
+      description: item.query || 'Vista guardada de proyectos',
+      href: projectListRoute(item.query),
+      keywords: [item.label, item.query, 'proyectos', 'vista guardada'],
+      icon: Bookmark,
+      section: 'Vistas guardadas' as const,
+    }));
+
+    const clientViews = readSavedViews('flowtask:filters:clients').map((item) => ({
+      id: `client-view-${item.id}`,
+      label: `Clientes · ${item.label}`,
+      description: item.query || 'Búsqueda guardada de clientes',
+      href: item.query ? `/app/clients?${item.query}` : '/app/clients',
+      keywords: [item.label, item.query, 'clientes', 'vista guardada'],
+      icon: Bookmark,
+      section: 'Vistas guardadas' as const,
+    }));
+
+    return [...taskViews, ...projectViews, ...clientViews];
+  }, [savedViewsVersion]);
+
+  const quickQueryCommands = useMemo<CommandItem[]>(() => {
+    const normalized = query.trim();
+    if (!normalized) return [];
+
+    return [
+      {
+        id: `search-tasks-${normalized}`,
+        label: `Buscar tareas: ${normalized}`,
+        description: 'Abre tareas filtradas por este texto.',
+        href: taskListRoute(new URLSearchParams({ q: normalized }).toString()),
+        keywords: [normalized, 'buscar', 'tareas'],
+        icon: Search,
+        section: 'Acciones rápidas',
+      },
+      {
+        id: `search-projects-${normalized}`,
+        label: `Buscar proyectos: ${normalized}`,
+        description: 'Abre proyectos filtrados por este texto.',
+        href: projectListRoute(new URLSearchParams({ q: normalized }).toString()),
+        keywords: [normalized, 'buscar', 'proyectos'],
+        icon: Search,
+        section: 'Acciones rápidas',
+      },
+      {
+        id: `search-clients-${normalized}`,
+        label: `Buscar clientes: ${normalized}`,
+        description: 'Abre clientes filtrados por esta búsqueda.',
+        href: `/app/clients?${new URLSearchParams({ q: normalized }).toString()}`,
+        keywords: [normalized, 'buscar', 'clientes'],
+        icon: Search,
+        section: 'Acciones rápidas',
+      },
+    ];
+  }, [query]);
+
   const results = useMemo(() => {
     const normalized = query.trim().toLowerCase();
     const currentPath = pathname ? asRoute(pathname) : null;
-    const list = [...favoriteCommands, ...pinnedCommands, ...recentCommands, ...COMMANDS].filter((item) => item.href !== currentPath);
-    const unique = list.filter((item, index) => list.findIndex((candidate) => candidate.href === item.href) === index);
+    const list = [...quickQueryCommands, ...savedViewCommands, ...favoriteCommands, ...pinnedCommands, ...recentCommands, ...COMMANDS].filter((item) => item.href !== currentPath);
+    const unique = list.filter((item, index) => list.findIndex((candidate) => candidate.href === item.href && candidate.label === item.label) === index);
     if (!normalized) return unique;
 
     return unique.filter((item) => {
       const haystack = [item.label, item.description, ...item.keywords].join(' ').toLowerCase();
       return haystack.includes(normalized);
     });
-  }, [favoriteCommands, pathname, pinnedCommands, query, recentCommands]);
+  }, [favoriteCommands, pathname, pinnedCommands, query, quickQueryCommands, recentCommands, savedViewCommands]);
 
   const groupedResults = useMemo(() => {
     return results.reduce<Record<string, CommandItem[]>>((acc, item) => {
@@ -236,8 +329,12 @@ export function CommandPalette() {
               </button>
             </div>
 
+            <div className="border-b border-slate-100 bg-white px-5 py-3 text-xs text-slate-500">
+              Usa <span className="font-semibold text-slate-700">⌘/Ctrl + K</span> para abrir, busca texto libre para ir directo a tareas, proyectos o clientes y reutiliza vistas guardadas.
+            </div>
+
             <div className="max-h-[70vh] overflow-y-auto bg-slate-50/40 px-3 py-3">
-              {Object.entries(groupedResults).map(([section, items]) => (
+              {Object.entries(groupedResults).length ? Object.entries(groupedResults).map(([section, items]) => (
                 <div key={section} className="mb-4 last:mb-0">
                   <p className="px-2 pb-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">{section}</p>
                   <div className="space-y-1">
@@ -262,13 +359,11 @@ export function CommandPalette() {
                     })}
                   </div>
                 </div>
-              ))}
-
-              {!results.length ? (
-                <div className="rounded-2xl border border-dashed border-slate-200 bg-white px-4 py-6 text-sm text-slate-500">
-                  No encontramos resultados con ese texto. Prueba con otra palabra clave.
+              )) : (
+                <div className="rounded-3xl border border-dashed border-slate-300 bg-white px-4 py-8 text-center text-sm text-slate-500">
+                  No encontramos resultados con ese criterio.
                 </div>
-              ) : null}
+              )}
             </div>
           </div>
         </div>

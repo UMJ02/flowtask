@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "1.3.0-ux-polish",
+  "version": "1.4.0-productivity",
   "private": true,
   "scripts": {
     "dev": "next dev",

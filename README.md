@@ -1,23 +1,25 @@
-# FlowTask v1.3.0-ux-polish
+# FlowTask v1.4.0-productivity
 
-Base canónica actual con enfoque en **UX polish** sobre la línea `v1.2.0-data-security`.
+Base canónica actual con enfoque en **productividad real de operación** sobre la línea `v1.3.0-ux-polish`.
 
 ## Estado de esta versión
 - `tsc --noEmit` en cero errores
-- layout consistente entre dashboard, proyectos, tareas y clientes
-- jerarquía visual más clara con encabezados reutilizables
-- loaders, estados vacíos y estados de error reutilizables
-- feedback visible en acciones críticas como login
-- sidebar, mobile nav y command palette más consistentes
-- badges de estado y cards más limpias para mejor lectura
-- sin romper routing, runtime ni endurecimiento de seguridad de versiones previas
+- tablero kanban con drag & drop más sólido y actualización optimista
+- feedback visual de columnas, conteos y error defensivo al mover tareas
+- vistas guardadas para tareas, proyectos y clientes
+- command palette mejorado con búsquedas rápidas por texto y acceso a vistas guardadas
+- sin romper routing, runtime, seguridad ni UX base de versiones previas
 
 ## Objetivo de esta versión
-Pulir la experiencia real del producto para que la app se sienta más estable, clara y lista para seguir creciendo sin deuda visual ni de interacción.
+Reducir fricción operativa para que el equipo cambie entre vistas, recupere filtros frecuentes y mueva tareas más rápido sin reconstruir contexto a cada paso.
+
+## Incluye
+- **Kanban productivo**: columnas con conteos, estados visuales de dropzone, actualización optimista y manejo de error
+- **Vistas guardadas**: snapshots reutilizables de filtros por módulo desde localStorage
+- **Búsqueda rápida mejorada**: acciones directas para buscar en tareas, proyectos y clientes, además de acceso a vistas guardadas
 
 ## Próxima versión
-`v1.4.0`
-- kanban drag & drop
-- búsqueda global más profunda
-- timeline de actividad
-- mejoras de productividad de alto impacto
+`v1.5.0`
+- timeline de actividad más profundo
+- automatizaciones y notificaciones externas
+- onboarding y settings avanzados

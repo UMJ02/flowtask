@@ -5,9 +5,10 @@ import { TaskWorkspace } from '@/components/tasks/task-workspace';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { SectionHeader } from '@/components/ui/section-header';
+import { FilterPresets } from '@/components/ui/filter-presets';
 import { taskNewRoute } from '@/lib/navigation/routes';
 import { getTasks } from '@/lib/queries/tasks';
-import { normalizeTaskFilters, type SearchParamsRecord } from '@/lib/runtime/search-params';
+import { normalizeTaskFilters, toQueryString, type SearchParamsRecord } from '@/lib/runtime/search-params';
 
 export default async function TasksPage({
   searchParams,
@@ -16,6 +17,7 @@ export default async function TasksPage({
 }) {
   const filters = normalizeTaskFilters((await searchParams) ?? {});
   const tasks = await getTasks(filters);
+  const currentQuery = toQueryString(filters);
 
   return (
     <div className="space-y-5">
@@ -31,6 +33,13 @@ export default async function TasksPage({
         }
       />
       <TaskFilters filters={filters} />
+      <FilterPresets
+        storageKey="flowtask:filters:tasks"
+        basePath="/app/tasks"
+        currentQuery={currentQuery}
+        title="Vistas rápidas de tareas"
+        emptyLabel="Guarda combinaciones de tablero, estado y fechas para volver sin reconstruir filtros."
+      />
       {tasks.length ? (
         <TaskWorkspace tasks={tasks} filters={filters} />
       ) : (
