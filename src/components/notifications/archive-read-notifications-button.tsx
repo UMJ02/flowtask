@@ -28,8 +28,8 @@ export function ArchiveReadNotificationsButton({ disabled, onArchived }: Props) 
   };
 
   return (
-    <Button type="button" variant="secondary" disabled={disabled || loading} onClick={handleArchive}>
-      {loading ? "Archivando..." : "Archivar leídas"}
+    <Button type="button" variant="secondary" loading={loading} disabled={disabled || loading} onClick={handleArchive}>
+      Archivar leídas
     </Button>
   );
 }

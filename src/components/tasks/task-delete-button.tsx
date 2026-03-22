@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 export function TaskDeleteButton({ taskId }: { taskId: string }) {
   const router = useRouter();
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isRedirecting, startRedirect] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
   const handleDelete = async () => {
@@ -25,14 +26,16 @@ export function TaskDeleteButton({ taskId }: { taskId: string }) {
       return;
     }
 
-    router.push("/app/tasks");
-    router.refresh();
+    startRedirect(() => {
+      router.push("/app/tasks");
+      router.refresh();
+    });
   };
 
   return (
     <div className="space-y-2">
-      <Button type="button" variant="secondary" onClick={handleDelete} disabled={isDeleting}>
-        {isDeleting ? "Eliminando..." : "Eliminar tarea"}
+      <Button type="button" variant="secondary" onClick={handleDelete} loading={isDeleting || isRedirecting}>
+        Eliminar tarea
       </Button>
       {error ? <p className="text-sm text-red-600">{error}</p> : null}
     </div>
