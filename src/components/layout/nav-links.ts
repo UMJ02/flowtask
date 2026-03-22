@@ -13,6 +13,7 @@ import {
   StickyNote,
   Users,
   BarChart3,
+  CalendarDays,
 } from 'lucide-react';
 
 export type AppNavLink = {
@@ -28,6 +29,7 @@ export const appNavLinks: AppNavLink[] = [
   { href: '/app/tasks', label: 'Tareas', hint: 'Pendientes y seguimiento', icon: ClipboardList },
   { href: '/app/projects', label: 'Proyectos', hint: 'Trabajo personal y en equipo', icon: FolderKanban },
   { href: '/app/clients', label: 'Clientes', hint: 'Actividad y carga por cliente', icon: Users },
+  { href: '/app/calendar', label: 'Calendario', hint: 'Fechas clave y agenda semanal', icon: CalendarDays },
   { href: '/app/notifications', label: 'Notificaciones', hint: 'Avisos y recordatorios', icon: Bell, isNotifications: true },
   { href: '/app/reminders', label: 'Recordatorios', hint: 'Fechas y alertas', icon: StickyNote },
   { href: '/app/reports', label: 'Reportes', hint: 'Exporta y revisa avances', icon: BarChart3 },

@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Bell, Building2, ClipboardList, Command, FolderKanban, History, LayoutDashboard, ListTodo, Plus, Search, Settings, Star, Users, X } from 'lucide-react';
+import { Bell, Building2, CalendarDays, ClipboardList, Command, FolderKanban, History, LayoutDashboard, ListTodo, Plus, Search, Settings, Star, Users, X } from 'lucide-react';
 import { useWorkspaceMemory } from '@/hooks/use-workspace-memory';
 
 type CommandItem = {
@@ -68,6 +68,15 @@ const COMMANDS: CommandItem[] = [
     href: '/app/clients',
     keywords: ['clientes', 'cuentas'],
     icon: Users,
+    section: 'Accesos',
+  },
+  {
+    id: 'calendar',
+    label: 'Abrir calendario',
+    description: 'Revisa fechas vencidas, hoy y la semana.',
+    href: '/app/calendar',
+    keywords: ['calendario', 'agenda', 'fechas'],
+    icon: CalendarDays,
     section: 'Accesos',
   },
   {

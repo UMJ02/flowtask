@@ -14,6 +14,8 @@ import { StickyBoard } from '@/components/dashboard/sticky-board';
 import { UrgentProjects } from '@/components/dashboard/urgent-projects';
 import { UpcomingItems } from '@/components/dashboard/upcoming-items';
 import { UserWorkload } from '@/components/dashboard/user-workload';
+import Link from 'next/link';
+import { CalendarDays } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { getDashboardData } from '@/lib/queries/dashboard';
 import { getOrganizationContext } from '@/lib/queries/organization';
@@ -46,6 +48,16 @@ export default async function DashboardPage() {
       </Card>
       <BoardOverview activeProjects={data?.activeProjects ?? 0} activeTasks={data?.activeTasks ?? 0} completedTasks={data?.completedTasks ?? 0} />
       <QuickActions />
+      <Card className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div className="flex items-start gap-3">
+          <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 text-blue-700"><CalendarDays className="h-5 w-5" /></span>
+          <div>
+            <h3 className="text-lg font-semibold text-slate-900">Agenda semanal</h3>
+            <p className="mt-1 text-sm text-slate-500">Abre un vistazo rápido por fechas para priorizar sin entrar al módulo de tareas.</p>
+          </div>
+        </div>
+        <Link href="/app/calendar" className="inline-flex items-center justify-center rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">Abrir calendario</Link>
+      </Card>
       <FocusPanel />
       <DeadlineLanes overdueTasks={data?.overdueTasks ?? 0} dueSoonTasks={data?.dueSoonTasks ?? 0} waitingTasks={data?.waitingTasks ?? 0} />
       <div className="grid gap-4 xl:grid-cols-[1.15fr_0.85fr]">
