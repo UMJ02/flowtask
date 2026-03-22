@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { Download } from 'lucide-react';
 
@@ -40,18 +41,40 @@ export function InstallAppButton({ compact = false }: { compact?: boolean }) {
     setInstalling(false);
   };
 
+  if (compact) {
+    return (
+      <button
+        type="button"
+        onClick={handleInstall}
+        disabled={installing}
+        className="group relative inline-flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:border-slate-900 hover:bg-slate-900 disabled:opacity-60"
+        aria-label="Instalar app"
+        title="Descargar app"
+      >
+        <Image
+          src="/icons/iconoapp.png"
+          alt="Descargar app"
+          width={26}
+          height={26}
+          className="h-7 w-7 object-contain transition-all duration-300 group-hover:brightness-90"
+        />
+        <span className="pointer-events-none absolute right-0 top-full mt-2 translate-y-1 rounded-md bg-slate-950 px-3 py-1 text-xs font-medium text-white opacity-0 shadow-lg transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100">
+          {installing ? 'Instalando…' : 'Descargar app'}
+        </span>
+      </button>
+    );
+  }
+
   return (
     <button
       type="button"
       onClick={handleInstall}
       disabled={installing}
-      className={compact
-        ? 'inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:border-emerald-200 hover:bg-emerald-50'
-        : 'inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 shadow-sm transition hover:border-emerald-200 hover:bg-emerald-50'}
+      className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 shadow-sm transition hover:border-emerald-200 hover:bg-emerald-50 disabled:opacity-60"
       aria-label="Instalar app"
     >
       <Download className="h-4 w-4" />
-      {!compact ? (installing ? 'Instalando…' : 'Instalar app') : null}
+      {installing ? 'Instalando…' : 'Instalar app'}
     </button>
   );
 }
