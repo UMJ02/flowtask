@@ -73,15 +73,16 @@ export default async function DashboardPage() {
 
       <QuickActions />
 
-      <div className="grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
-        <div className="space-y-4">
-          <SectionTitle
-            title="Prioridades"
-            description="Accesos que guardaste para volver más rápido a lo importante."
-          />
-          <FocusPanel />
-        </div>
-        <Card className="flex flex-col justify-between gap-4">
+      <div className="space-y-4">
+        <SectionTitle
+          title="Prioridades"
+          description="Tus accesos rápidos para volver a lo importante."
+        />
+        <FocusPanel />
+      </div>
+
+      <Card className="space-y-5">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex items-start gap-3">
             <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 text-blue-700">
               <CalendarDays className="h-5 w-5" />
@@ -91,21 +92,19 @@ export default async function DashboardPage() {
               <p className="mt-1 text-sm text-slate-500">Mira lo que viene hoy y en los próximos días.</p>
             </div>
           </div>
-          <DeadlineLanes
-            overdueTasks={data?.overdueTasks ?? 0}
-            dueSoonTasks={data?.dueSoonTasks ?? 0}
-            waitingTasks={data?.waitingTasks ?? 0}
-          />
-          <div className="flex justify-end">
-            <Link
-              href="/app/calendar"
-              className="inline-flex items-center justify-center rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
-            >
-              Abrir calendario
-            </Link>
-          </div>
-        </Card>
-      </div>
+          <Link
+            href="/app/calendar"
+            className="inline-flex items-center justify-center rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+          >
+            Abrir calendario
+          </Link>
+        </div>
+        <DeadlineLanes
+          overdueTasks={data?.overdueTasks ?? 0}
+          dueSoonTasks={data?.dueSoonTasks ?? 0}
+          waitingTasks={data?.waitingTasks ?? 0}
+        />
+      </Card>
 
       <div className="grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
         <OrganizationOverview
