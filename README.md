@@ -1,25 +1,26 @@
-# FlowTask v1.5.0-automation
+# FlowTask v1.6.0-operations
 
-Base canónica actual con enfoque en **visibilidad operativa, automatización y seguimiento** sobre la línea `v1.4.0-productivity`.
+Base canónica actual con enfoque en **visibilidad operativa y reporting ejecutivo** sobre la línea `v1.5.0-automation`.
 
 ## Estado de esta versión
-- `tsc --noEmit` validado en cero errores
-- timeline de actividad del dashboard conectado a datos reales
-- centro de automatización en settings con lectura clara de canales, frecuencia y horas silenciosas
-- salud de entregas y digest más visible dentro del centro de notificaciones
-- sin romper routing, runtime, seguridad, UX ni productividad de versiones previas
+- módulo de reportes elevado a centro operativo real
+- radar de atención con clientes de mayor carga y tareas foco
+- nueva salida imprimible `operations` para PDF
+- acceso rápido a reportes desde dashboard
+- continuidad limpia sobre runtime, seguridad, UX, productividad y automatización previas
 
 ## Objetivo de esta versión
-Dar visibilidad real al pulso del workspace y dejar más clara la capa de automatizaciones para que el equipo entienda qué está pasando, qué se está enviando y qué tan lista está la app para crecer hacia canales externos y onboarding.
+Dar una lectura más ejecutiva del workspace para que seguimiento, jefatura y cierre semanal se puedan resolver con menos pasos y con una salida más clara para compartir estado.
 
 ## Incluye
-- **Dashboard con actividad real**: el bloque de actividad reciente ahora usa `activity_logs` reales con conteos y timeline reutilizable
-- **Automation center**: resumen visual del estado de preferencias, horarios silenciosos y canales activos en settings
-- **Health de notificaciones**: lectura rápida de entregas enviadas, pendientes, fallidas y digest más reciente
-- **Timeline mejorado**: badges por entidad, detalle de metadata y presentación más clara en tareas, proyectos y dashboard
+- **Operations overview** en reportes con KPIs, distribución por estado, clientes de atención y tareas foco
+- **Reporte imprimible de operación** además del resumen general y proyectos
+- **Acceso directo desde dashboard** hacia reportes para reducir fricción operativa
+- **Base lista** para continuar con onboarding, canales externos o centro administrativo
 
-## Próxima versión
-`v1.6.0`
-- onboarding inicial por organización
+## Próxima versión sugerida
+`v1.7.0`
+- onboarding por organización
+- checklist de arranque del workspace
 - activación guiada de canales externos
-- reglas operativas por workspace y checklists de arranque
+- centro administrativo más profundo

@@ -57,9 +57,14 @@ export default async function DashboardPage() {
         description="Tu vista principal para pendientes, proyectos, clientes y actividad reciente. Todo queda agrupado para decidir rápido qué atender primero."
         icon={<LayoutGrid className="h-5 w-5" />}
         actions={
-          <Link href="/app/calendar">
-            <Button variant="secondary">Abrir calendario</Button>
-          </Link>
+          <>
+            <Link href="/app/reports">
+              <Button variant="secondary">Ver reportes</Button>
+            </Link>
+            <Link href="/app/calendar">
+              <Button>Abrir calendario</Button>
+            </Link>
+          </>
         }
       />
 
