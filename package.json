@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "2.1.0-risk-radar",
+  "version": "2.1.1-stability-hotfix",
   "private": true,
   "scripts": {
     "dev": "next dev",

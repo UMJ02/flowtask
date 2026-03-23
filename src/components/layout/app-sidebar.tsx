@@ -10,6 +10,7 @@ import { useNotificationsState } from '@/components/notifications/notifications-
 import type { OrganizationSummary } from '@/types/organization';
 
 const footerHrefs = new Set(['/app/organization', '/app/organization/roles', '/app/organization/billing', '/app/admin', '/contact', '/app/settings']);
+const mainNavLinks = appNavLinks.filter((link) => !footerHrefs.has(link.href));
 
 export function AppSidebar({
   organizations = [],
@@ -25,7 +26,6 @@ export function AppSidebar({
   const pathname = usePathname();
   const { unreadCount } = useNotificationsState();
   const { collapsed, toggle } = useSidebarState();
-  const mainLinks = appNavLinks.filter((link) => !footerHrefs.has(link.href));
 
   return (
     <aside className={`hidden sticky top-6 rounded-[32px] border border-emerald-900/20 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-900 px-3 py-4 text-white shadow-[0_20px_50px_rgba(15,23,42,0.24)] md:flex md:min-h-[calc(100vh-3rem)] md:flex-col transition-all duration-300 ${collapsed ? 'md:w-[104px]' : 'md:w-full'}`}>
@@ -61,7 +61,7 @@ export function AppSidebar({
       )}
 
       <nav className="space-y-1.5 border-t border-white/10 pt-3">
-        {mainLinks.map((link) => {
+        {mainNavLinks.map((link) => {
           const Icon = link.icon;
           const active = pathname === link.href || (link.href !== '/app/dashboard' && pathname?.startsWith(`${link.href}/`));
           return (

@@ -34,3 +34,10 @@ Dar una vista ejecutiva y accionable del riesgo real del workspace antes de que 
 - reglas automáticas por SLA
 - alertas por dueño/departamento
 - centro de seguimiento con automatizaciones más profundas
+
+
+## v2.1.1-stability-hotfix
+- Corrige el fetch de preferencias de notificación para evitar 404 en cliente.
+- Agrega endpoint de compatibilidad `GET /api/notification-preferences/me`.
+- Endurece la estrategia del service worker para evitar hidratar con assets JS viejos en rutas SSR.
+- Fuerza actualización del registro del service worker con `updateViaCache: 'none'`.
