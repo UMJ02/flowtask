@@ -2,6 +2,7 @@ import { getDashboardData } from "@/lib/queries/dashboard";
 import { getProjects } from "@/lib/queries/projects";
 import { getTasks } from "@/lib/queries/tasks";
 import { getReportsOverview } from "@/lib/queries/reports";
+import { getPlanningOverview } from '@/lib/queries/planning';
 
 type PrintPageParams = {
   type?: string;
@@ -18,11 +19,12 @@ export default async function ReportsPrintPage({
 }) {
   const params = (await searchParams) ?? {};
   const type = params.type || "summary";
-  const [dashboard, projects, tasks, operations] = await Promise.all([
+  const [dashboard, projects, tasks, operations, planning] = await Promise.all([
     getDashboardData(),
     getProjects({}),
     getTasks({}),
     getReportsOverview(),
+    getPlanningOverview(),
   ]);
 
   const heading =
@@ -32,7 +34,9 @@ export default async function ReportsPrintPage({
         ? "Reporte operativo"
         : type === "executive"
           ? "Reporte ejecutivo"
-          : "Reporte general";
+          : type === "planning"
+            ? "Reporte de planificación"
+            : "Reporte general";
 
   return (
     <main className="mx-auto max-w-5xl bg-white p-8 text-slate-900 print:p-4">
@@ -42,7 +46,79 @@ export default async function ReportsPrintPage({
         <p className="mt-2 text-sm text-slate-500">Generado para impresión o guardado como PDF.</p>
       </header>
 
-      {type === "executive" ? (
+      {type === "planning" ? (
+        <div className="mt-6 space-y-6">
+          <section className="grid gap-4 md:grid-cols-4">
+            {[
+              ["Esta semana", planning.kpis.dueThisWeek],
+              ["Próxima semana", planning.kpis.dueNextWeek],
+              ["Tareas vencidas", planning.kpis.overdueOpenTasks],
+              ["Proyectos activos", planning.kpis.activeProjects],
+            ].map(([label, value]) => (
+              <div key={String(label)} className="rounded-2xl border border-slate-200 p-4">
+                <p className="text-sm text-slate-500">{label}</p>
+                <p className="mt-2 text-3xl font-bold">{String(value)}</p>
+              </div>
+            ))}
+          </section>
+
+          <section>
+            <h2 className="text-xl font-semibold">Capacidad por departamento</h2>
+            <div className="mt-3 overflow-hidden rounded-2xl border border-slate-200">
+              <table className="min-w-full text-left text-sm">
+                <thead className="bg-slate-50 text-slate-600">
+                  <tr>
+                    <th className="px-4 py-3">Departamento</th>
+                    <th className="px-4 py-3">Items cercanos</th>
+                    <th className="px-4 py-3">Tareas abiertas</th>
+                    <th className="px-4 py-3">Proyectos activos</th>
+                    <th className="px-4 py-3">Estado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {planning.departmentCapacity.map((item) => (
+                    <tr key={item.name} className="border-t border-slate-200">
+                      <td className="px-4 py-3">{item.name}</td>
+                      <td className="px-4 py-3">{item.nearTermItems}</td>
+                      <td className="px-4 py-3">{item.openTasks}</td>
+                      <td className="px-4 py-3">{item.activeProjects}</td>
+                      <td className="px-4 py-3">{item.state}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-semibold">Foco semanal</h2>
+            <div className="mt-3 overflow-hidden rounded-2xl border border-slate-200">
+              <table className="min-w-full text-left text-sm">
+                <thead className="bg-slate-50 text-slate-600">
+                  <tr>
+                    <th className="px-4 py-3">Tarea</th>
+                    <th className="px-4 py-3">Cliente</th>
+                    <th className="px-4 py-3">Estado</th>
+                    <th className="px-4 py-3">Fecha</th>
+                    <th className="px-4 py-3">Urgencia</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {planning.weeklyFocus.map((task) => (
+                    <tr key={task.id} className="border-t border-slate-200">
+                      <td className="px-4 py-3">{task.title}</td>
+                      <td className="px-4 py-3">{task.clientName}</td>
+                      <td className="px-4 py-3">{task.status}</td>
+                      <td className="px-4 py-3">{task.dueLabel}</td>
+                      <td className="px-4 py-3">{task.urgency}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      ) : type === "executive" ? (
         <div className="mt-6 space-y-6">
           <section className="grid gap-4 md:grid-cols-4">
             {[

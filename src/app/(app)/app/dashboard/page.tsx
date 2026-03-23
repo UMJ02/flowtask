@@ -27,15 +27,18 @@ import { getOrganizationBillingSummary } from '@/lib/queries/billing';
 import { getRecentActivitySummary } from '@/lib/queries/activity';
 import { getWorkspaceOnboardingSummary } from '@/lib/queries/onboarding';
 import { WorkspaceOnboarding } from '@/components/onboarding/workspace-onboarding';
+import { PlanningCenter } from '@/components/planning/planning-center';
+import { getPlanningOverview } from '@/lib/queries/planning';
 
 export default async function DashboardPage() {
-  const [data, organizationContext, clientItems, billingSummary, activitySummary, onboardingSummary] = await Promise.all([
+  const [data, organizationContext, clientItems, billingSummary, activitySummary, onboardingSummary, planningSummary] = await Promise.all([
     getDashboardData(),
     getOrganizationContext(),
     getClientDashboardItems(),
     getOrganizationBillingSummary(),
     getRecentActivitySummary(10),
     getWorkspaceOnboardingSummary(),
+    getPlanningOverview(),
   ]);
 
   if (!data) {
@@ -92,6 +95,7 @@ export default async function DashboardPage() {
       </Card>
 
       {onboardingSummary ? <WorkspaceOnboarding summary={onboardingSummary} compact /> : null}
+      <PlanningCenter summary={planningSummary} compact />
       <BoardOverview activeProjects={data.activeProjects ?? 0} activeTasks={data.activeTasks ?? 0} completedTasks={data.completedTasks ?? 0} />
       <QuickActions />
       <Card className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">

@@ -1,4 +1,4 @@
-# FlowTask v1.8.0-workspace-onboarding
+# FlowTask v1.9.0-planning-center
 
 Base canónica actual con enfoque en **onboarding real del workspace, readiness operacional y activación guiada** sobre la línea `v1.7.0-executive-insights`.
 
@@ -32,3 +32,13 @@ Convertir el arranque del workspace en un flujo visible, guiado y medible para d
 - gobierno operativo y SLA por equipo
 - plantillas de arranque por tipo de organización
 - automatizaciones externas más cerradas
+
+
+## v1.9.0-planning-center
+
+- nueva ruta `/app/planning`
+- centro de planificación con foco de 14 días
+- capacidad por departamento
+- clientes con más movimiento
+- widget compacto en dashboard
+- salida imprimible `planning` en reportes

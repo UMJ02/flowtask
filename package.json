@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "1.8.0-workspace-onboarding",
+  "version": "1.9.0-planning-center",
   "private": true,
   "scripts": {
     "dev": "next dev",
