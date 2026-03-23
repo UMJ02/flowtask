@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { AlertCircle, BrainCircuit, FolderKanban, Plus, Sparkles, UserRoundPlus } from 'lucide-react';
+import { AlertCircle, Flag, FolderKanban, Plus, Sparkles, UserRoundPlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { projectNewRoute, taskNewRoute } from '@/lib/navigation/routes';
@@ -7,27 +7,27 @@ import { projectNewRoute, taskNewRoute } from '@/lib/navigation/routes';
 const ACTIONS = [
   {
     href: taskNewRoute(),
-    title: 'Nueva tarea',
-    description: 'Crea algo pendiente y súbelo al tablero.',
+    title: 'Tarea',
+    description: 'Crea una tarea y súbela al tablero.',
     icon: Plus,
   },
   {
     href: projectNewRoute(),
-    title: 'Nuevo proyecto',
+    title: 'Proyecto',
     description: 'Abre un frente nuevo con fechas y cliente.',
     icon: FolderKanban,
   },
   {
-    href: '/app/tasks?status=blocked',
-    title: 'Ver bloqueos',
-    description: 'Entra directo a lo que está frenando el avance.',
-    icon: AlertCircle,
+    href: '/app/tasks?view=list',
+    title: 'Asignar',
+    description: 'Entra rápido a repartir pendientes.',
+    icon: UserRoundPlus,
   },
   {
-    href: '/app/intelligence',
-    title: 'Abrir insights',
-    description: 'Revisa riesgo, foco y capacidad sin dar vueltas.',
-    icon: BrainCircuit,
+    href: '/app/tasks?status=alta',
+    title: 'Prioridad',
+    description: 'Mira primero lo más urgente.',
+    icon: Flag,
   },
 ];
 
@@ -38,14 +38,14 @@ export function WorkspaceQuickActions() {
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Acciones rápidas</p>
           <h3 className="mt-2 text-xl font-bold text-slate-900">Hazlo rápido</h3>
-          <p className="mt-1 text-sm text-slate-500">Las acciones más usadas, sin salir del flujo.</p>
+          <p className="mt-1 text-sm text-slate-500">Cuatro atajos para entrar, ver y actuar.</p>
         </div>
         <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100">
           <Sparkles className="h-5 w-5" />
         </span>
       </div>
 
-      <div className="mt-5 grid gap-3">
+      <div className="mt-5 grid gap-3 sm:grid-cols-2">
         {ACTIONS.map((action) => {
           const Icon = action.icon;
           return (
@@ -65,9 +65,9 @@ export function WorkspaceQuickActions() {
       </div>
 
       <div className="mt-4 flex flex-wrap gap-2">
-        <Link href="/app/organization">
+        <Link href="/app/tasks?status=blocked">
           <Button variant="secondary">
-            <UserRoundPlus className="h-4 w-4" /> Equipo
+            <AlertCircle className="h-4 w-4" /> Bloqueos
           </Button>
         </Link>
         <Link href="/app/reports">

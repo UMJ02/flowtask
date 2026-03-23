@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowRight, BrainCircuit, FolderKanban, LayoutGrid, ListChecks, Plus } from 'lucide-react';
+import { ArrowRight, FolderKanban, LayoutGrid, ListChecks, Plus } from 'lucide-react';
 import { RecentActivity } from '@/components/dashboard/recent-activity';
 import { TaskWorkspace } from '@/components/tasks/task-workspace';
 import { Button } from '@/components/ui/button';
@@ -20,6 +20,15 @@ function metricTone(value: number, type: 'danger' | 'attention' | 'neutral' = 'n
   if (type === 'danger') return value > 0 ? 'bg-rose-50 text-rose-700 ring-1 ring-rose-100' : 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100';
   if (type === 'attention') return value > 0 ? 'bg-amber-50 text-amber-700 ring-1 ring-amber-100' : 'bg-slate-100 text-slate-700 ring-1 ring-slate-200';
   return 'bg-slate-100 text-slate-700 ring-1 ring-slate-200';
+}
+
+function formatDueDate(value?: string | null) {
+  if (!value) return 'Sin fecha';
+  try {
+    return new Intl.DateTimeFormat('es-CR', { day: '2-digit', month: 'short' }).format(new Date(value));
+  } catch {
+    return 'Sin fecha';
+  }
 }
 
 export default async function WorkspacePage() {
@@ -46,6 +55,7 @@ export default async function WorkspacePage() {
     );
   }
 
+  const boardTasks = tasks.slice(0, 24);
   const topProjects = projects.slice(0, 4);
   const topClients = clientItems.slice(0, 4);
   const focus = [
@@ -59,19 +69,19 @@ export default async function WorkspacePage() {
     <div className="space-y-5">
       <SectionHeader
         eyebrow="Workspace"
-        title="Workspace"
-        description="Tu tablero principal para entrar, ver lo importante y seguir trabajando."
+        title="Tu espacio de trabajo"
+        description="Entra, revisa el tablero y actúa sin perder tiempo."
         icon={<LayoutGrid className="h-5 w-5" />}
         actions={
           <>
             <Link href={taskNewRoute()}>
               <Button>
-                <Plus className="h-4 w-4" /> Nueva tarea
+                <Plus className="h-4 w-4" /> Tarea
               </Button>
             </Link>
             <Link href={projectNewRoute()}>
               <Button variant="secondary">
-                <FolderKanban className="h-4 w-4" /> Nuevo proyecto
+                <FolderKanban className="h-4 w-4" /> Proyecto
               </Button>
             </Link>
           </>
@@ -83,16 +93,16 @@ export default async function WorkspacePage() {
           <div className="max-w-2xl">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">Vista principal</p>
             <h2 className="mt-2 text-3xl font-bold">Empieza por lo importante</h2>
-            <p className="mt-2 text-sm text-slate-300">Tu trabajo diario vive aquí. Mueve tareas, crea rápido y sigue sin perder el ritmo.</p>
+            <p className="mt-2 text-sm text-slate-300">Tu trabajo diario vive aquí. Crea, mueve y retoma sin saltar entre pantallas.</p>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="rounded-[26px] bg-white/10 px-4 py-3 ring-1 ring-white/10">
-              <p className="text-xs uppercase tracking-[0.16em] text-slate-300">Tareas activas</p>
-              <p className="mt-2 text-3xl font-bold">{data.activeTasks ?? 0}</p>
+              <p className="text-xs uppercase tracking-[0.16em] text-slate-300">Tareas hoy</p>
+              <p className="mt-2 text-3xl font-bold">{data.dueSoonTasks ?? 0}</p>
             </div>
             <div className="rounded-[26px] bg-white/10 px-4 py-3 ring-1 ring-white/10">
-              <p className="text-xs uppercase tracking-[0.16em] text-slate-300">Terminadas</p>
-              <p className="mt-2 text-3xl font-bold">{data.completedTasks ?? 0}</p>
+              <p className="text-xs uppercase tracking-[0.16em] text-slate-300">Proyectos activos</p>
+              <p className="mt-2 text-3xl font-bold">{data.activeProjects ?? 0}</p>
             </div>
           </div>
         </div>
@@ -100,8 +110,8 @@ export default async function WorkspacePage() {
 
       <div className="grid gap-4 xl:grid-cols-[1.2fr_0.8fr]">
         <div className="space-y-4">
-          {tasks.length ? (
-            <TaskWorkspace tasks={tasks.slice(0, 24)} filters={{ view: 'kanban' }} />
+          {boardTasks.length ? (
+            <TaskWorkspace tasks={boardTasks} filters={{ view: 'kanban' }} />
           ) : (
             <EmptyState
               title="Todavía no hay tareas"
@@ -122,8 +132,8 @@ export default async function WorkspacePage() {
           <Card>
             <div className="flex items-center justify-between gap-3">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Foco de hoy</p>
-                <h3 className="mt-2 text-xl font-bold text-slate-900">Vista rápida</h3>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Foco del día</p>
+                <h3 className="mt-2 text-xl font-bold text-slate-900">Qué atender ahora</h3>
               </div>
               <Link href="/app/intelligence" className="inline-flex items-center gap-2 text-sm font-semibold text-slate-700 hover:text-slate-900">
                 Ver más <ArrowRight className="h-4 w-4" />
@@ -174,8 +184,15 @@ export default async function WorkspacePage() {
             <div className="mt-4 space-y-3">
               {topProjects.length ? topProjects.map((project) => (
                 <Link key={project.id} href={projectDetailRoute(project.id)} className="block rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 transition hover:border-emerald-200 hover:bg-emerald-50">
-                  <p className="text-sm font-semibold text-slate-900">{project.name}</p>
-                  <p className="mt-1 text-sm text-slate-500">{project.status ?? 'Sin estado'} · {project.department ?? 'Sin equipo'}</p>
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="text-sm font-semibold text-slate-900">{project.title}</p>
+                    <span className="inline-flex rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-700 ring-1 ring-slate-200">
+                      {project.status ?? 'Activo'}
+                    </span>
+                  </div>
+                  <p className="mt-2 text-sm text-slate-500">
+                    {project.client_name?.trim() || 'Sin cliente'} · {formatDueDate(project.due_date)}
+                  </p>
                 </Link>
               )) : <p className="text-sm text-slate-500">Todavía no hay proyectos activos.</p>}
             </div>
@@ -194,7 +211,7 @@ export default async function WorkspacePage() {
                 <div key={client.id} className="rounded-2xl border border-slate-200 bg-white px-4 py-4">
                   <div className="flex items-center justify-between gap-3">
                     <p className="text-sm font-semibold text-slate-900">{client.name}</p>
-                    <span className="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700 ring-1 ring-slate-200">{client.activeProjects} proyectos</span>
+                    <span className="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700 ring-1 ring-slate-200">{client.openProjects} proyectos</span>
                   </div>
                   <p className="mt-2 text-sm text-slate-500">{client.openTasks} tareas abiertas</p>
                 </div>

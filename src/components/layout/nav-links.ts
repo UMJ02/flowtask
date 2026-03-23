@@ -23,13 +23,13 @@ export type AppNavLink = {
 
 export const appNavLinks: AppNavLink[] = [
   { href: '/app/workspace', label: 'Workspace', hint: 'Tu tablero', icon: LayoutGrid },
-  { href: '/app/projects', label: 'Proyectos', hint: 'Avance y entregas', icon: FolderKanban },
-  { href: '/app/tasks', label: 'Tareas', hint: 'Pendientes y pizarra', icon: ClipboardList },
+  { href: '/app/projects', label: 'Proyectos', hint: 'Fechas y avance', icon: FolderKanban },
+  { href: '/app/tasks', label: 'Tareas', hint: 'Pendientes al día', icon: ClipboardList },
   { href: '/app/clients', label: 'Clientes', hint: 'Cuentas activas', icon: Users },
-  { href: '/app/intelligence', label: 'Insights', hint: 'Riesgos y foco', icon: BrainCircuit },
+  { href: '/app/intelligence', label: 'Insights', hint: 'Riesgo y foco', icon: BrainCircuit },
   { href: '/app/reports', label: 'Reportes', hint: 'Resumen y PDF', icon: BarChart3 },
   { href: '/app/organization', label: 'Equipo', hint: 'Miembros y espacio', icon: Building2 },
-  { href: '/app/organization/roles', label: 'Roles', hint: 'Accesos del equipo', icon: Shield },
-  { href: '/app/organization/billing', label: 'Plan', hint: 'Límites y plan', icon: CreditCard },
+  { href: '/app/organization/roles', label: 'Roles', hint: 'Accesos', icon: Shield },
+  { href: '/app/organization/billing', label: 'Plan', hint: 'Límites', icon: CreditCard },
   { href: '/app/settings', label: 'Ajustes', hint: 'Perfil y preferencias', icon: Settings },
 ];

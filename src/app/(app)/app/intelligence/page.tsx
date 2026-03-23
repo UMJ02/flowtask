@@ -39,9 +39,9 @@ export default async function IntelligencePage() {
   }
 
   const executiveCards = [
-    { label: 'Estado del workspace', value: `${onboarding?.score ?? workspace.kpis.readinessScore}%`, icon: <Sparkles className="h-5 w-5" /> },
+    { label: 'Estado', value: `${onboarding?.score ?? workspace.kpis.readinessScore}%`, icon: <Sparkles className="h-5 w-5" /> },
     { label: 'Riesgo', value: `${risk.kpis.riskScore}%`, icon: <ShieldAlert className="h-5 w-5" /> },
-    { label: 'Capacidad próxima', value: `${planning.kpis.capacityBalance}%`, icon: <CalendarRange className="h-5 w-5" /> },
+    { label: 'Capacidad', value: `${planning.kpis.capacityBalance}%`, icon: <CalendarRange className="h-5 w-5" /> },
     { label: 'Ejecución', value: `${execution.kpis.executionScore}%`, icon: <BrainCircuit className="h-5 w-5" /> },
   ];
 
@@ -49,8 +49,8 @@ export default async function IntelligencePage() {
     <div className="space-y-5">
       <SectionHeader
         eyebrow="Insights"
-        title="Insights"
-        description="Estado, riesgo, capacidad y foco en una sola vista."
+        title="Insights del workspace"
+        description="Estado, riesgo y foco en una sola vista."
         icon={<BrainCircuit className="h-5 w-5" />}
         actions={
           <>
