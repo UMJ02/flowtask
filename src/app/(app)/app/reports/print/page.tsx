@@ -3,10 +3,18 @@ import { getProjects } from "@/lib/queries/projects";
 import { getTasks } from "@/lib/queries/tasks";
 import { getReportsOverview } from "@/lib/queries/reports";
 
+type PrintPageParams = {
+  type?: string;
+};
+
+type ProjectRow = Awaited<ReturnType<typeof getProjects>>[number];
+type TaskRow = Awaited<ReturnType<typeof getTasks>>[number];
+type ClientMetricRow = NonNullable<Awaited<ReturnType<typeof getDashboardData>>>["clientMetrics"][number];
+
 export default async function ReportsPrintPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ type?: string }>;
+  searchParams?: Promise<PrintPageParams>;
 }) {
   const params = (await searchParams) ?? {};
   const type = params.type || "summary";
@@ -17,15 +25,94 @@ export default async function ReportsPrintPage({
     getReportsOverview(),
   ]);
 
+  const heading =
+    type === "projects"
+      ? "Reporte de proyectos"
+      : type === "operations"
+        ? "Reporte operativo"
+        : type === "executive"
+          ? "Reporte ejecutivo"
+          : "Reporte general";
+
   return (
     <main className="mx-auto max-w-5xl bg-white p-8 text-slate-900 print:p-4">
       <header className="border-b border-slate-200 pb-4">
         <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">FlowTask</p>
-        <h1 className="mt-2 text-3xl font-bold">Reporte {type === "projects" ? "de proyectos" : "general"}</h1>
+        <h1 className="mt-2 text-3xl font-bold">{heading}</h1>
         <p className="mt-2 text-sm text-slate-500">Generado para impresión o guardado como PDF.</p>
       </header>
 
-      {type === "operations" ? (
+      {type === "executive" ? (
+        <div className="mt-6 space-y-6">
+          <section className="grid gap-4 md:grid-cols-4">
+            {[
+              ["Ritmo de cierre", `${operations.kpis.completionRate}%`],
+              ["Semana actual", operations.kpis.dueThisWeek],
+              ["En espera", operations.kpis.waitingTasks],
+              ["Proyectos vencidos", operations.kpis.overdueProjects],
+            ].map(([label, value]) => (
+              <div key={String(label)} className="rounded-2xl border border-slate-200 p-4">
+                <p className="text-sm text-slate-500">{label}</p>
+                <p className="mt-2 text-3xl font-bold">{String(value)}</p>
+              </div>
+            ))}
+          </section>
+
+          <section>
+            <h2 className="text-xl font-semibold">Capacidad por departamento</h2>
+            <div className="mt-3 overflow-hidden rounded-2xl border border-slate-200">
+              <table className="min-w-full text-left text-sm">
+                <thead className="bg-slate-50 text-slate-600">
+                  <tr>
+                    <th className="px-4 py-3">Departamento</th>
+                    <th className="px-4 py-3">Tareas abiertas</th>
+                    <th className="px-4 py-3">Proyectos activos</th>
+                    <th className="px-4 py-3">Carga total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {operations.departmentLoad.map((item) => (
+                    <tr key={item.name} className="border-t border-slate-200">
+                      <td className="px-4 py-3">{item.name}</td>
+                      <td className="px-4 py-3">{item.openTasks}</td>
+                      <td className="px-4 py-3">{item.activeProjects}</td>
+                      <td className="px-4 py-3">{item.total}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-semibold">Watchlist de proyectos</h2>
+            <div className="mt-3 overflow-hidden rounded-2xl border border-slate-200">
+              <table className="min-w-full text-left text-sm">
+                <thead className="bg-slate-50 text-slate-600">
+                  <tr>
+                    <th className="px-4 py-3">Proyecto</th>
+                    <th className="px-4 py-3">Cliente</th>
+                    <th className="px-4 py-3">Estado</th>
+                    <th className="px-4 py-3">Fecha</th>
+                    <th className="px-4 py-3">Urgencia</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {operations.projectWatchlist.map((project) => (
+                    <tr key={project.id} className="border-t border-slate-200">
+                      <td className="px-4 py-3">{project.title}</td>
+                      <td className="px-4 py-3">{project.clientName}</td>
+                      <td className="px-4 py-3">{project.status}</td>
+                      <td className="px-4 py-3">{project.dueLabel}</td>
+                      <td className="px-4 py-3">{project.urgency}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      ) : type === "operations" ? (
         <div className="mt-6 space-y-6">
           <section className="grid gap-4 md:grid-cols-4">
             {[
@@ -112,7 +199,7 @@ export default async function ReportsPrintPage({
                 </tr>
               </thead>
               <tbody>
-                {projects.map((project: any) => (
+                {projects.map((project: ProjectRow) => (
                   <tr key={project.id} className="border-t border-slate-200">
                     <td className="px-4 py-3">{project.title}</td>
                     <td className="px-4 py-3">{project.client_name || "-"}</td>
@@ -155,7 +242,7 @@ export default async function ReportsPrintPage({
                   </tr>
                 </thead>
                 <tbody>
-                  {(dashboard?.clientMetrics ?? []).map((item: any) => (
+                  {(dashboard?.clientMetrics ?? []).map((item: ClientMetricRow) => (
                     <tr key={item.name} className="border-t border-slate-200">
                       <td className="px-4 py-3">{item.name}</td>
                       <td className="px-4 py-3">{item.total}</td>
@@ -182,7 +269,7 @@ export default async function ReportsPrintPage({
                   </tr>
                 </thead>
                 <tbody>
-                  {tasks.slice(0, 12).map((task: any) => (
+                  {tasks.slice(0, 12).map((task: TaskRow) => (
                     <tr key={task.id} className="border-t border-slate-200">
                       <td className="px-4 py-3">{task.title}</td>
                       <td className="px-4 py-3">{task.client_name || "-"}</td>

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { BookmarkPlus, RotateCcw, Star, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { asRoute, type AppRoute } from '@/lib/navigation/routes';
 
 type SavedFilterView = {
   id: string;
@@ -40,7 +41,7 @@ export function FilterPresets({
   emptyLabel = 'Guarda tus combinaciones de filtros para volver a ellas rápido.',
 }: {
   storageKey: string;
-  basePath: string;
+  basePath: AppRoute;
   currentQuery: string;
   title?: string;
   emptyLabel?: string;
@@ -58,7 +59,7 @@ export function FilterPresets({
     return () => window.removeEventListener('flowtask-filter-views-updated', onUpdate as EventListener);
   }, [storageKey]);
 
-  const currentHref = useMemo(() => (currentQuery ? `${basePath}?${currentQuery}` : basePath), [basePath, currentQuery]);
+  const currentHref = useMemo(() => asRoute(currentQuery ? `${String(basePath)}?${currentQuery}` : String(basePath)), [basePath, currentQuery]);
   const hasActiveFilters = currentQuery.trim().length > 0;
 
   const saveCurrentView = () => {
@@ -122,7 +123,7 @@ export function FilterPresets({
       {views.length ? (
         <div className="flex flex-wrap gap-2">
           {views.map((view) => {
-            const href = view.query ? `${basePath}?${view.query}` : basePath;
+            const href = asRoute(view.query ? `${String(basePath)}?${view.query}` : String(basePath));
             const isActive = view.query === currentQuery;
             return (
               <div key={view.id} className={`group flex items-center gap-1 rounded-2xl border px-3 py-2 text-sm ${isActive ? 'border-emerald-200 bg-emerald-50 text-emerald-900' : 'border-slate-200 bg-white text-slate-700'}`}>

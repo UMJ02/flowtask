@@ -1,28 +1,40 @@
-import Link from 'next/link';
-import { Activity, AlertTriangle, ArrowUpRight, BriefcaseBusiness, CalendarClock, CheckCircle2, FileText, UsersRound } from 'lucide-react';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { StatusBadge } from '@/components/ui/status-badge';
-import type { ReportsOverview } from '@/lib/queries/reports';
+import Link from "next/link";
+import { Activity, AlertTriangle, ArrowUpRight, BriefcaseBusiness, CalendarClock, CheckCircle2, FileText, FolderKanban, Layers3, UsersRound } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { StatusBadge } from "@/components/ui/status-badge";
+import type { ReportsOverview } from "@/lib/queries/reports";
 
-const urgencyStyles: Record<'overdue' | 'today' | 'planned', string> = {
-  overdue: 'bg-rose-50 text-rose-700 ring-1 ring-rose-100',
-  today: 'bg-amber-50 text-amber-700 ring-1 ring-amber-100',
-  planned: 'bg-slate-100 text-slate-700 ring-1 ring-slate-200',
+const urgencyStyles: Record<"overdue" | "today" | "planned", string> = {
+  overdue: "bg-rose-50 text-rose-700 ring-1 ring-rose-100",
+  today: "bg-amber-50 text-amber-700 ring-1 ring-amber-100",
+  planned: "bg-slate-100 text-slate-700 ring-1 ring-slate-200",
 };
 
-const urgencyLabels: Record<'overdue' | 'today' | 'planned', string> = {
-  overdue: 'Vencida',
-  today: 'Hoy',
-  planned: 'Planificada',
+const urgencyLabels: Record<"overdue" | "today" | "planned", string> = {
+  overdue: "Vencida",
+  today: "Hoy",
+  planned: "Planificada",
+};
+
+const projectUrgencyStyles: Record<"overdue" | "this_week" | "planned", string> = {
+  overdue: "bg-rose-50 text-rose-700 ring-1 ring-rose-100",
+  this_week: "bg-amber-50 text-amber-700 ring-1 ring-amber-100",
+  planned: "bg-slate-100 text-slate-700 ring-1 ring-slate-200",
+};
+
+const projectUrgencyLabels: Record<"overdue" | "this_week" | "planned", string> = {
+  overdue: "Vencido",
+  this_week: "Esta semana",
+  planned: "Planificado",
 };
 
 export function OperationsOverview({ summary }: { summary: ReportsOverview }) {
   const cards = [
-    { label: 'Tareas activas', value: summary.kpis.activeTasks, icon: <Activity className="h-5 w-5" /> },
-    { label: 'Vencidas', value: summary.kpis.overdueTasks, icon: <AlertTriangle className="h-5 w-5" /> },
-    { label: 'Para hoy', value: summary.kpis.dueToday, icon: <CalendarClock className="h-5 w-5" /> },
-    { label: 'Clientes activos', value: summary.kpis.clients, icon: <UsersRound className="h-5 w-5" /> },
+    { label: "Tareas activas", value: summary.kpis.activeTasks, icon: <Activity className="h-5 w-5" /> },
+    { label: "Vencidas", value: summary.kpis.overdueTasks, icon: <AlertTriangle className="h-5 w-5" /> },
+    { label: "Semana actual", value: summary.kpis.dueThisWeek, icon: <CalendarClock className="h-5 w-5" /> },
+    { label: "Clientes activos", value: summary.kpis.clients, icon: <UsersRound className="h-5 w-5" /> },
   ];
 
   return (
@@ -81,6 +93,70 @@ export function OperationsOverview({ summary }: { summary: ReportsOverview }) {
             <Link href="/app/reports/print?type=summary" target="_blank"><Button className="w-full justify-between">Resumen para PDF <ArrowUpRight className="h-4 w-4" /></Button></Link>
             <Link href="/app/reports/print?type=projects" target="_blank"><Button variant="secondary" className="w-full justify-between">Proyectos para PDF <ArrowUpRight className="h-4 w-4" /></Button></Link>
             <Link href="/app/reports/print?type=operations" target="_blank"><Button variant="secondary" className="w-full justify-between">Operación para PDF <ArrowUpRight className="h-4 w-4" /></Button></Link>
+            <Link href="/app/reports/print?type=executive" target="_blank"><Button variant="secondary" className="w-full justify-between">Ejecutivo para PDF <ArrowUpRight className="h-4 w-4" /></Button></Link>
+          </div>
+        </Card>
+      </div>
+
+      <div className="grid gap-4 xl:grid-cols-3">
+        <Card>
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <h3 className="text-lg font-semibold text-slate-900">Ventana crítica</h3>
+              <p className="mt-1 text-sm text-slate-500">Lo que más presiona esta semana.</p>
+            </div>
+            <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-rose-50 text-rose-700 ring-1 ring-rose-100">
+              <AlertTriangle className="h-5 w-5" />
+            </span>
+          </div>
+          <div className="mt-5 space-y-3">
+            <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Vencidas</p>
+              <p className="mt-2 text-2xl font-bold text-slate-900">{summary.kpis.overdueTasks}</p>
+              <p className="mt-1 text-sm text-slate-500">Tareas fuera de fecha.</p>
+            </div>
+            <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">En espera</p>
+              <p className="mt-2 text-2xl font-bold text-slate-900">{summary.kpis.waitingTasks}</p>
+              <p className="mt-1 text-sm text-slate-500">Tareas que necesitan desbloqueo.</p>
+            </div>
+            <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Proyectos vencidos</p>
+              <p className="mt-2 text-2xl font-bold text-slate-900">{summary.kpis.overdueProjects}</p>
+              <p className="mt-1 text-sm text-slate-500">Requieren seguimiento con equipo o cliente.</p>
+            </div>
+          </div>
+        </Card>
+
+        <Card className="xl:col-span-2">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <h3 className="text-lg font-semibold text-slate-900">Capacidad por departamento</h3>
+              <p className="mt-1 text-sm text-slate-500">Distribución combinada de tareas abiertas y proyectos activos.</p>
+            </div>
+            <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-blue-50 text-blue-700 ring-1 ring-blue-100">
+              <Layers3 className="h-5 w-5" />
+            </span>
+          </div>
+          <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+            {summary.departmentLoad.length ? summary.departmentLoad.map((department) => (
+              <div key={department.name} className="rounded-2xl border border-slate-200 bg-white px-4 py-4">
+                <p className="text-sm font-semibold text-slate-900">{department.name}</p>
+                <div className="mt-3 flex items-end justify-between gap-3">
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.14em] text-slate-500">Carga total</p>
+                    <p className="mt-1 text-2xl font-bold text-slate-900">{department.total}</p>
+                  </div>
+                  <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-100 text-slate-700 ring-1 ring-slate-200">
+                    <BriefcaseBusiness className="h-5 w-5" />
+                  </span>
+                </div>
+                <div className="mt-4 space-y-2 text-sm text-slate-500">
+                  <div className="flex items-center justify-between gap-3"><span>Tareas abiertas</span><span className="font-semibold text-slate-900">{department.openTasks}</span></div>
+                  <div className="flex items-center justify-between gap-3"><span>Proyectos activos</span><span className="font-semibold text-slate-900">{department.activeProjects}</span></div>
+                </div>
+              </div>
+            )) : <div className="rounded-2xl border border-dashed border-slate-300 px-4 py-6 text-sm text-slate-500 md:col-span-2 xl:col-span-3">Todavía no hay departamentos con carga para resumir.</div>}
           </div>
         </Card>
       </div>
@@ -162,6 +238,37 @@ export function OperationsOverview({ summary }: { summary: ReportsOverview }) {
           </div>
         </Card>
       </div>
+
+      <Card>
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <h3 className="text-lg font-semibold text-slate-900">Watchlist de proyectos</h3>
+            <p className="mt-1 text-sm text-slate-500">Los proyectos que requieren monitoreo más de cerca.</p>
+          </div>
+          <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-700 ring-1 ring-indigo-100">
+            <FolderKanban className="h-5 w-5" />
+          </span>
+        </div>
+        <div className="mt-5 grid gap-3 lg:grid-cols-2 xl:grid-cols-3">
+          {summary.projectWatchlist.length ? summary.projectWatchlist.map((project) => (
+            <Link key={project.id} href={`/app/projects/${project.id}`} className="block rounded-2xl border border-slate-200 bg-white px-4 py-4 transition hover:border-indigo-200 hover:bg-indigo-50/30">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-sm font-semibold text-slate-900">{project.title}</p>
+                  <p className="mt-1 text-sm text-slate-500">{project.clientName} · {project.dueLabel}</p>
+                </div>
+                <span className={`inline-flex rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] ${projectUrgencyStyles[project.urgency]}`}>
+                  {projectUrgencyLabels[project.urgency]}
+                </span>
+              </div>
+              <div className="mt-4 flex items-center justify-between gap-3">
+                <StatusBadge value={project.status} />
+                <span className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">Abrir proyecto</span>
+              </div>
+            </Link>
+          )) : <div className="rounded-2xl border border-dashed border-slate-300 px-4 py-6 text-sm text-slate-500 lg:col-span-2 xl:col-span-3">Todavía no hay proyectos para monitorear en el watchlist.</div>}
+        </div>
+      </Card>
     </div>
   );
 }
