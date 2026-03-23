@@ -1,11 +1,12 @@
 import Link from 'next/link';
 import { Plus, Sparkles, Users } from 'lucide-react';
 import { Card } from '@/components/ui/card';
+import { projectNewRoute, taskNewRoute, type AppRoute } from '@/lib/navigation/routes';
 
-const actions = [
-  { href: '/app/tasks/new', label: 'Nueva tarea', hint: 'Agrega un pendiente rápido.', icon: Plus },
-  { href: '/app/projects/new', label: 'Nuevo proyecto', hint: 'Organiza un trabajo completo.', icon: Sparkles },
-  { href: '/app/projects/new', label: 'Proyecto colaborativo', hint: 'Invita al equipo desde el inicio.', icon: Users },
+const actions: Array<{ href: AppRoute; label: string; hint: string; icon: typeof Plus }> = [
+  { href: taskNewRoute(), label: 'Nueva tarea', hint: 'Agrega un pendiente rápido.', icon: Plus },
+  { href: projectNewRoute(), label: 'Nuevo proyecto', hint: 'Organiza un trabajo completo.', icon: Sparkles },
+  { href: projectNewRoute(), label: 'Proyecto colaborativo', hint: 'Invita al equipo desde el inicio.', icon: Users },
 ];
 
 export function QuickActions() {

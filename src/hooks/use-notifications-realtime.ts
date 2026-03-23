@@ -5,7 +5,8 @@ import type { RealtimePostgresInsertPayload, RealtimePostgresUpdatePayload } fro
 import { createClient } from "@/lib/supabase/client";
 
 export type NotificationDelivery = {
-  notification_id?: string;
+  id: string;
+  notification_id: string;
   channel: string;
   status: string;
   attempted_at: string;
@@ -34,7 +35,7 @@ type Options = {
   enabled?: boolean;
   onInsert?: (row: LiveNotification) => void;
   onUpdate?: (row: LiveNotification) => void;
-  onDeliveryInsert?: (delivery: NotificationDelivery & { notification_id: string }) => void;
+  onDeliveryInsert?: (delivery: NotificationDelivery) => void;
 };
 
 export function useNotificationsRealtime({ userId, enabled = true, onInsert, onUpdate, onDeliveryInsert }: Options) {
@@ -76,8 +77,8 @@ export function useNotificationsRealtime({ userId, enabled = true, onInsert, onU
           table: "notification_deliveries",
           filter: `user_id=eq.${userId}`,
         },
-        (payload) => {
-          onDeliveryInsert?.(payload.new as NotificationDelivery & { notification_id: string });
+        (payload: RealtimePostgresInsertPayload<NotificationDelivery>) => {
+          onDeliveryInsert?.(payload.new as NotificationDelivery);
         },
       )
       .subscribe();

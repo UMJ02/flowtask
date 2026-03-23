@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createClient } from "@/lib/supabase/client";
+import { safeInternalRoute } from "@/lib/navigation/routes";
 import { loginSchema, type LoginValues } from "@/lib/validations/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,7 +36,7 @@ export function LoginForm() {
       return;
     }
 
-    router.push(searchParams.get("next") || "/app/dashboard");
+    router.push(safeInternalRoute(searchParams.get("next")));
     router.refresh();
   };
 
@@ -52,7 +53,7 @@ export function LoginForm() {
         {errors.password ? <p className="text-sm text-red-600">{errors.password.message}</p> : null}
       </div>
       {serverError ? <p className="text-sm text-red-600">{serverError}</p> : null}
-      <Button className="w-full" disabled={isSubmitting} type="submit">
+      <Button className="w-full" loading={isSubmitting} type="submit">
         {isSubmitting ? "Ingresando..." : "Ingresar"}
       </Button>
       <div className="flex items-center justify-between text-sm text-slate-600">

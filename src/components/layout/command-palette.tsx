@@ -2,36 +2,59 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Bell, Building2, CalendarDays, ClipboardList, Command, FolderKanban, History, LayoutDashboard, ListTodo, Plus, Search, Settings, Star, Users, X } from 'lucide-react';
+import {
+  Bookmark,
+  BrainCircuit,
+  Building2,
+  ClipboardList,
+  Command,
+  FolderKanban,
+  History,
+  LayoutDashboard,
+  Plus,
+  Search,
+  Settings,
+  Star,
+  Users,
+  X,
+  BarChart3,
+} from 'lucide-react';
 import { useWorkspaceMemory } from '@/hooks/use-workspace-memory';
+import { asRoute, projectListRoute, taskListRoute, type AppRoute } from '@/lib/navigation/routes';
 
 type CommandItem = {
   id: string;
   label: string;
   description: string;
-  href: string;
+  href: AppRoute;
   keywords: string[];
   icon: React.ComponentType<{ className?: string }>;
-  section?: 'Favoritos' | 'Fijados' | 'Recientes' | 'Accesos';
+  section?: 'Favoritos' | 'Fijados' | 'Recientes' | 'Accesos' | 'Guardados';
+};
+
+type SavedFilterView = {
+  id: string;
+  label: string;
+  query: string;
 };
 
 const COMMANDS: CommandItem[] = [
   {
-    id: 'dashboard',
-    label: 'Ir al inicio',
-    description: 'Resumen general de trabajo y actividad reciente.',
-    href: '/app/dashboard',
-    keywords: ['inicio', 'dashboard', 'resumen'],
+    id: 'workspace',
+    label: 'Abrir workspace',
+    description: 'Tu tablero principal para entrar a trabajar.',
+    href: '/app/workspace',
+    keywords: ['workspace', 'inicio', 'tablero'],
     icon: LayoutDashboard,
     section: 'Accesos',
   },
   {
     id: 'tasks',
     label: 'Ver tareas',
-    description: 'Consulta y organiza pendientes del equipo.',
+    description: 'Consulta y organiza pendientes.',
     href: '/app/tasks',
     keywords: ['tareas', 'pendientes', 'kanban'],
-    icon: ListTodo,
+    icon: ClipboardList,
     section: 'Accesos',
   },
   {
@@ -46,7 +69,7 @@ const COMMANDS: CommandItem[] = [
   {
     id: 'projects',
     label: 'Ver proyectos',
-    description: 'Revisa avances, responsables y fechas clave.',
+    description: 'Revisa avance, responsables y fechas.',
     href: '/app/projects',
     keywords: ['proyectos', 'trabajos'],
     icon: FolderKanban,
@@ -55,7 +78,7 @@ const COMMANDS: CommandItem[] = [
   {
     id: 'new-project',
     label: 'Crear proyecto',
-    description: 'Inicia un nuevo proyecto con su equipo.',
+    description: 'Inicia un proyecto nuevo.',
     href: '/app/projects/new',
     keywords: ['crear proyecto', 'nuevo proyecto'],
     icon: ClipboardList,
@@ -64,34 +87,34 @@ const COMMANDS: CommandItem[] = [
   {
     id: 'clients',
     label: 'Ver clientes',
-    description: 'Consulta clientes, actividad y carga actual.',
+    description: 'Consulta clientes y carga actual.',
     href: '/app/clients',
     keywords: ['clientes', 'cuentas'],
     icon: Users,
     section: 'Accesos',
   },
   {
-    id: 'calendar',
-    label: 'Abrir calendario',
-    description: 'Revisa fechas vencidas, hoy y la semana.',
-    href: '/app/calendar',
-    keywords: ['calendario', 'agenda', 'fechas'],
-    icon: CalendarDays,
+    id: 'intelligence',
+    label: 'Abrir insights',
+    description: 'Ve riesgos, foco y capacidad en una sola vista.',
+    href: '/app/intelligence',
+    keywords: ['intelligence', 'riesgo', 'foco', 'capacidad'],
+    icon: BrainCircuit,
     section: 'Accesos',
   },
   {
-    id: 'notifications',
-    label: 'Abrir notificaciones',
-    description: 'Revisa avisos, recordatorios y novedades.',
-    href: '/app/notifications',
-    keywords: ['notificaciones', 'avisos', 'alertas'],
-    icon: Bell,
+    id: 'reports',
+    label: 'Abrir reportes',
+    description: 'Resume avances y exporta un PDF.',
+    href: '/app/reports',
+    keywords: ['reportes', 'pdf', 'resumen'],
+    icon: BarChart3,
     section: 'Accesos',
   },
   {
     id: 'organization',
-    label: 'Ver organización',
-    description: 'Administra equipo, roles y permisos.',
+    label: 'Ver equipo',
+    description: 'Gestiona miembros, roles y accesos.',
     href: '/app/organization',
     keywords: ['organizacion', 'equipo', 'roles'],
     icon: Building2,
@@ -99,8 +122,8 @@ const COMMANDS: CommandItem[] = [
   },
   {
     id: 'settings',
-    label: 'Abrir configuración',
-    description: 'Edita tu perfil y preferencias.',
+    label: 'Abrir ajustes',
+    description: 'Cambia tu perfil y preferencias.',
     href: '/app/settings',
     keywords: ['configuracion', 'perfil', 'ajustes'],
     icon: Settings,
@@ -108,11 +131,23 @@ const COMMANDS: CommandItem[] = [
   },
 ];
 
+function readSavedViews(storageKey: string): SavedFilterView[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const raw = window.localStorage.getItem(storageKey);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed.filter((item) => typeof item?.id === 'string' && typeof item?.label === 'string' && typeof item?.query === 'string') : [];
+  } catch {
+    return [];
+  }
+}
+
 export function CommandPalette() {
   const router = useRouter();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
+  const [savedViewsVersion, setSavedViewsVersion] = useState(0);
   const { favorites, pinned, recent } = useWorkspaceMemory();
 
   useEffect(() => {
@@ -135,6 +170,12 @@ export function CommandPalette() {
     if (!open) setQuery('');
   }, [open]);
 
+  useEffect(() => {
+    const onUpdate = () => setSavedViewsVersion((current) => current + 1);
+    window.addEventListener('flowtask-filter-views-updated', onUpdate as EventListener);
+    return () => window.removeEventListener('flowtask-filter-views-updated', onUpdate as EventListener);
+  }, []);
+
   const favoriteCommands: CommandItem[] = favorites.map((item) => ({
     id: `favorite-${item.type}-${item.id}`,
     label: item.title,
@@ -145,11 +186,10 @@ export function CommandPalette() {
     section: 'Favoritos',
   }));
 
-
   const pinnedCommands: CommandItem[] = pinned.map((item) => ({
     id: `pinned-${item.type}-${item.id}`,
     label: item.title,
-    description: item.subtitle || 'Fijado en tu panel',
+    description: item.subtitle || 'Fijado',
     href: item.href,
     keywords: [item.title, item.subtitle || '', item.type],
     icon: Star,
@@ -166,123 +206,152 @@ export function CommandPalette() {
     section: 'Recientes',
   }));
 
-  const results = useMemo(() => {
-    const normalized = query.trim().toLowerCase();
-    const list = [...favoriteCommands, ...pinnedCommands, ...recentCommands, ...COMMANDS].filter((item) => item.href !== pathname);
-    const unique = list.filter((item, index) => list.findIndex((candidate) => candidate.href === item.href) === index);
-    if (!normalized) return unique;
+  const savedViewCommands: CommandItem[] = useMemo(() => {
+    const taskViews = readSavedViews('flowtask:filters:tasks').map((item) => ({
+      id: `task-view-${item.id}`,
+      label: `Tareas · ${item.label}`,
+      description: item.query || 'Vista guardada de tareas',
+      href: taskListRoute(item.query),
+      keywords: [item.label, item.query, 'tareas', 'vista guardada'],
+      icon: Bookmark,
+      section: 'Guardados' as const,
+    }));
 
-    return unique.filter((item) => {
+    const projectViews = readSavedViews('flowtask:filters:projects').map((item) => ({
+      id: `project-view-${item.id}`,
+      label: `Proyectos · ${item.label}`,
+      description: item.query || 'Vista guardada de proyectos',
+      href: projectListRoute(item.query),
+      keywords: [item.label, item.query, 'proyectos', 'vista guardada'],
+      icon: Bookmark,
+      section: 'Guardados' as const,
+    }));
+
+    const clientViews = readSavedViews('flowtask:filters:clients').map((item) => ({
+      id: `client-view-${item.id}`,
+      label: `Clientes · ${item.label}`,
+      description: item.query || 'Búsqueda guardada de clientes',
+      href: item.query ? asRoute(`/app/clients?${item.query}`) : asRoute('/app/clients'),
+      keywords: [item.label, item.query, 'clientes', 'vista guardada'],
+      icon: Bookmark,
+      section: 'Guardados' as const,
+    }));
+
+    return [...taskViews, ...projectViews, ...clientViews];
+  }, [savedViewsVersion]);
+
+  const quickQueryCommands = useMemo<CommandItem[]>(() => {
+    const normalized = query.trim();
+    if (!normalized) return [];
+
+    return [
+      {
+        id: `search-tasks-${normalized}`,
+        label: `Buscar tareas: ${normalized}`,
+        description: 'Abre tareas filtradas por este texto.',
+        href: taskListRoute(new URLSearchParams({ q: normalized }).toString()),
+        keywords: [normalized, 'buscar tareas'],
+        icon: Search,
+        section: 'Accesos',
+      },
+      {
+        id: `search-projects-${normalized}`,
+        label: `Buscar proyectos: ${normalized}`,
+        description: 'Abre proyectos filtrados por este texto.',
+        href: projectListRoute(new URLSearchParams({ q: normalized }).toString()),
+        keywords: [normalized, 'buscar proyectos'],
+        icon: Search,
+        section: 'Accesos',
+      },
+    ];
+  }, [query]);
+
+  const commands = useMemo(() => {
+    const normalized = query.trim().toLowerCase();
+    const allCommands = [...favoriteCommands, ...pinnedCommands, ...recentCommands, ...savedViewCommands, ...COMMANDS, ...quickQueryCommands];
+    if (!normalized) return allCommands;
+
+    return allCommands.filter((item) => {
       const haystack = [item.label, item.description, ...item.keywords].join(' ').toLowerCase();
       return haystack.includes(normalized);
     });
-  }, [favoriteCommands, pathname, pinnedCommands, query, recentCommands]);
+  }, [favoriteCommands, pinnedCommands, quickQueryCommands, query, recentCommands, savedViewCommands]);
 
-  const groupedResults = useMemo(() => {
-    return results.reduce<Record<string, CommandItem[]>>((acc, item) => {
-      const section = item.section || 'Accesos';
-      acc[section] = acc[section] ? [...acc[section], item] : [item];
-      return acc;
-    }, {});
-  }, [results]);
-
-  const runCommand = (href: string) => {
-    setOpen(false);
-    router.push(href);
-  };
+  const grouped = useMemo(() => {
+    const map = new Map<string, CommandItem[]>();
+    for (const item of commands) {
+      const section = item.section ?? 'Accesos';
+      const current = map.get(section) ?? [];
+      current.push(item);
+      map.set(section, current);
+    }
+    return Array.from(map.entries());
+  }, [commands]);
 
   return (
     <>
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="hidden min-w-[220px] items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-3 text-left shadow-sm transition hover:border-emerald-200 hover:bg-emerald-50/50 lg:flex"
-        aria-label="Abrir buscador rápido"
+        className="hidden items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-emerald-200 hover:bg-emerald-50 lg:inline-flex"
       >
-        <span className="flex items-center gap-3 text-sm text-slate-500">
-          <Search className="h-4 w-4 text-slate-400" />
-          Buscar tarea, proyecto o módulo…
-        </span>
-        <span className="inline-flex items-center gap-1 rounded-xl border border-slate-200 px-2 py-1 text-xs font-semibold text-slate-400">
-          <Command className="h-3.5 w-3.5" />K
-        </span>
-      </button>
-
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:border-emerald-200 hover:bg-emerald-50 lg:hidden"
-        aria-label="Abrir buscador rápido"
-      >
-        <Search className="h-4 w-4" />
+        <Command className="h-4 w-4" /> Buscar o ir a
       </button>
 
       {open ? (
-        <div className="fixed inset-0 z-[70] bg-slate-950/30 backdrop-blur-sm" onClick={() => setOpen(false)}>
-          <div className="mx-auto flex min-h-screen w-full max-w-2xl items-start justify-center px-4 pt-[12vh]" onClick={(e) => e.stopPropagation()}>
-            <div className="w-full overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.2)]">
-              <div className="flex items-center gap-3 border-b border-slate-100 px-4 py-4 sm:px-5">
-                <Search className="h-5 w-5 shrink-0 text-slate-400" />
-                <input
-                  value={query}
-                  onChange={(event) => setQuery(event.target.value)}
-                  placeholder="Busca tareas, proyectos, clientes o ajustes"
-                  className="h-8 w-full border-0 bg-transparent text-sm text-slate-700 outline-none placeholder:text-slate-400"
-                  autoFocus
-                />
-                <button
-                  type="button"
-                  onClick={() => setOpen(false)}
-                  className="inline-flex h-9 w-9 items-center justify-center rounded-xl text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
-                  aria-label="Cerrar"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              </div>
+        <div className="fixed inset-0 z-50 flex items-start justify-center bg-slate-950/45 p-4 pt-16">
+          <div className="w-full max-w-3xl overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-2xl">
+            <div className="flex items-center gap-3 border-b border-slate-200 px-4 py-4">
+              <Search className="h-5 w-5 text-slate-400" />
+              <input
+                autoFocus
+                className="w-full bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400"
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder="Busca tareas, proyectos, clientes o pantallas"
+                value={query}
+              />
+              <button type="button" className="inline-flex h-10 w-10 items-center justify-center rounded-full text-slate-500 hover:bg-slate-100" onClick={() => setOpen(false)}>
+                <X className="h-5 w-5" />
+              </button>
+            </div>
 
-              <div className="max-h-[60vh] overflow-y-auto p-3">
-                {results.length ? (
-                  <div className="space-y-4">
-                    {Object.entries(groupedResults).map(([section, items]) => (
-                      <div key={section} className="space-y-2">
-                        <p className="px-2 text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">{section}</p>
-                        {items.map((item) => {
-                          const Icon = item.icon;
-                          return (
-                            <button
-                              key={item.id}
-                              type="button"
-                              onClick={() => runCommand(item.href)}
-                              className="flex w-full items-start gap-3 rounded-2xl px-3 py-3 text-left transition hover:bg-slate-50"
-                            >
-                              <span className="mt-0.5 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600">
-                                <Icon className="h-4.5 w-4.5" />
-                              </span>
-                              <span className="min-w-0 flex-1">
-                                <span className="block text-sm font-semibold text-slate-800">{item.label}</span>
-                                <span className="mt-1 block text-sm text-slate-500">{item.description}</span>
-                              </span>
-                            </button>
-                          );
-                        })}
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-slate-200 px-6 py-12 text-center">
-                    <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-500">
-                      <Search className="h-5 w-5" />
+            <div className="max-h-[70vh] overflow-y-auto p-3">
+              {grouped.length ? (
+                grouped.map(([section, items]) => (
+                  <div key={section} className="mb-4 last:mb-0">
+                    <p className="mb-2 px-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">{section}</p>
+                    <div className="space-y-2">
+                      {items.map((item) => {
+                        const Icon = item.icon;
+                        const active = pathname === item.href;
+                        return (
+                          <button
+                            key={item.id}
+                            className={`flex w-full items-center gap-3 rounded-3xl border px-4 py-3 text-left transition ${active ? 'border-emerald-200 bg-emerald-50' : 'border-slate-200 bg-white hover:border-emerald-200 hover:bg-emerald-50/50'}`}
+                            onClick={() => {
+                              router.push(item.href);
+                              setOpen(false);
+                            }}
+                            type="button"
+                          >
+                            <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-slate-100 text-slate-700">
+                              <Icon className="h-5 w-5" />
+                            </span>
+                            <div className="min-w-0">
+                              <p className="truncate text-sm font-semibold text-slate-900">{item.label}</p>
+                              <p className="truncate text-sm text-slate-500">{item.description}</p>
+                            </div>
+                          </button>
+                        );
+                      })}
                     </div>
-                    <p className="mt-4 text-sm font-semibold text-slate-700">No encontré resultados</p>
-                    <p className="mt-1 text-sm text-slate-500">Prueba con otra palabra, por ejemplo: tareas, clientes o reportes.</p>
                   </div>
-                )}
-              </div>
-
-              <div className="flex items-center justify-between border-t border-slate-100 px-4 py-3 text-xs text-slate-400 sm:px-5">
-                <span>Tip: usa ⌘K o Ctrl+K para abrir esta búsqueda rápida.</span>
-                <span>Esc para cerrar</span>
-              </div>
+                ))
+              ) : (
+                <div className="rounded-3xl border border-dashed border-slate-200 bg-slate-50 px-4 py-10 text-center text-sm text-slate-500">
+                  No encontramos resultados para tu búsqueda.
+                </div>
+              )}
             </div>
           </div>
         </div>

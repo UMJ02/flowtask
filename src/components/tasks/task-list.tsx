@@ -1,19 +1,19 @@
 import Link from 'next/link';
 import { ArrowUpRight, CalendarClock, CircleCheckBig, FolderKanban } from 'lucide-react';
-import { TaskInlineActions } from '@/components/tasks/task-inline-actions';
 import { EntityMemoryActions } from '@/components/entities/entity-memory-actions';
+import { TaskInlineActions } from '@/components/tasks/task-inline-actions';
 import { Card } from '@/components/ui/card';
+import { EmptyState } from '@/components/ui/empty-state';
+import { StatusBadge } from '@/components/ui/status-badge';
 
 export function TaskList({ tasks }: { tasks: Array<{ id: string; title: string; status: string; client_name?: string | null; due_date?: string | null }> }) {
   if (!tasks.length) {
     return (
-      <Card className="text-center">
-        <div className="mx-auto inline-flex h-14 w-14 items-center justify-center rounded-3xl bg-emerald-50 text-emerald-600">
-          <CircleCheckBig className="h-6 w-6" />
-        </div>
-        <h3 className="mt-4 text-lg font-semibold text-slate-900">No hay tareas por aquí</h3>
-        <p className="mt-2 text-sm text-slate-500">Crea tu primera tarea o ajusta los filtros para ver otros pendientes.</p>
-      </Card>
+      <EmptyState
+        icon={<CircleCheckBig className="h-6 w-6" />}
+        title="No hay tareas por aquí"
+        description="Crea tu primera tarea o ajusta los filtros para ver otros pendientes."
+      />
     );
   }
 
@@ -24,7 +24,7 @@ export function TaskList({ tasks }: { tasks: Array<{ id: string; title: string; 
           <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2">
-                <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">{task.status}</span>
+                <StatusBadge value={task.status} />
                 <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">{task.client_name || 'Sin cliente'}</span>
               </div>
               <Link href={`/app/tasks/${task.id}`} className="mt-3 block">

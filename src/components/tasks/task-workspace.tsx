@@ -1,10 +1,13 @@
 "use client";
 
-import { useMemo } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { TaskKanbanBoard } from "@/components/tasks/task-kanban-board";
-import { TaskList } from "@/components/tasks/task-list";
-import { Button } from "@/components/ui/button";
+import { useMemo } from 'react';
+import { LayoutGrid, Rows3 } from 'lucide-react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { TaskKanbanBoard } from '@/components/tasks/task-kanban-board';
+import { TaskList } from '@/components/tasks/task-list';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { buildRouteWithQuery } from '@/lib/navigation/routes';
 
 type TaskItem = {
   id: string;
@@ -14,7 +17,7 @@ type TaskItem = {
   due_date?: string | null;
 };
 
-type ViewMode = "kanban" | "list" | "both";
+type ViewMode = 'kanban' | 'list' | 'both';
 
 export function TaskWorkspace({
   tasks,
@@ -28,39 +31,48 @@ export function TaskWorkspace({
   const router = useRouter();
 
   const view: ViewMode = useMemo(() => {
-    const candidate = filters?.view ?? searchParams.get("view") ?? "both";
-    return candidate === "kanban" || candidate === "list" || candidate === "both" ? candidate : "both";
+    const candidate = filters?.view ?? searchParams.get('view') ?? 'kanban';
+    return candidate === 'kanban' || candidate === 'list' || candidate === 'both' ? candidate : 'kanban';
   }, [filters?.view, searchParams]);
 
   const updateView = (next: ViewMode) => {
     const params = new URLSearchParams(searchParams.toString());
-    if (next === "both") {
-      params.delete("view");
+    if (next === 'kanban') {
+      params.delete('view');
     } else {
-      params.set("view", next);
+      params.set('view', next);
     }
-    router.replace(`${pathname}?${params.toString()}`);
+    router.replace(buildRouteWithQuery(pathname, params));
   };
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-[24px] bg-white p-4 shadow-soft">
+      <Card className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h2 className="text-lg font-semibold text-slate-900">Vista de trabajo</h2>
-          <p className="text-sm text-slate-500">La vista queda persistida en la URL para compartir filtros y contexto.</p>
+          <h2 className="text-lg font-semibold text-slate-900">Zona de trabajo</h2>
+          <p className="text-sm text-slate-500">Cambia entre pizarra y lista según lo que necesites en el momento.</p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Button type="button" variant={view === "kanban" ? "primary" : "secondary"} onClick={() => updateView("kanban")}>Kanban</Button>
-          <Button type="button" variant={view === "list" ? "primary" : "secondary"} onClick={() => updateView("list")}>Listado</Button>
-          <Button type="button" variant={view === "both" ? "primary" : "secondary"} onClick={() => updateView("both")}>Ambos</Button>
+          <Button type="button" variant={view === 'kanban' ? 'primary' : 'secondary'} onClick={() => updateView('kanban')}>
+            <LayoutGrid className="h-4 w-4" /> Pizarra
+          </Button>
+          <Button type="button" variant={view === 'list' ? 'primary' : 'secondary'} onClick={() => updateView('list')}>
+            <Rows3 className="h-4 w-4" /> Lista
+          </Button>
+          <Button type="button" variant={view === 'both' ? 'primary' : 'secondary'} onClick={() => updateView('both')}>
+            Ambas
+          </Button>
         </div>
-      </div>
+      </Card>
 
-      {(view === "kanban" || view === "both") && <TaskKanbanBoard tasks={tasks} />}
+      {(view === 'kanban' || view === 'both') && <TaskKanbanBoard tasks={tasks} />}
 
-      {(view === "list" || view === "both") && (
-        <div className="space-y-2">
-          <h2 className="text-lg font-semibold text-slate-900">Listado</h2>
+      {(view === 'list' || view === 'both') && (
+        <div className="space-y-3">
+          <div>
+            <h2 className="text-lg font-semibold text-slate-900">Lista rápida</h2>
+            <p className="text-sm text-slate-500">Abre detalle, revisa fechas y usa acciones directas.</p>
+          </div>
           <TaskList tasks={tasks} />
         </div>
       )}

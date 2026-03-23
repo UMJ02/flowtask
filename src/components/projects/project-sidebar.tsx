@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import { ArrowUpRight, FolderKanban } from 'lucide-react';
 import { EntityMemoryActions } from '@/components/entities/entity-memory-actions';
+import { EmptyState } from '@/components/ui/empty-state';
+import { StatusBadge } from '@/components/ui/status-badge';
 
 export function ProjectSidebar({
   projects,
@@ -29,13 +31,13 @@ export function ProjectSidebar({
             <div key={project.id} className="rounded-3xl border border-slate-100 bg-slate-50 px-4 py-4 transition hover:border-emerald-200 hover:bg-emerald-50/50">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0 flex-1">
-                  <Link className="block" href={`/app/projects/${project.id}${suffix}`}>
-                    <p className="line-clamp-2 text-sm font-semibold text-slate-800 transition hover:text-emerald-700">{project.title}</p>
-                  </Link>
-                  <div className="mt-2 flex flex-wrap gap-2 text-xs text-slate-500">
-                    <span className="rounded-full bg-white px-3 py-1">{project.status || 'activo'}</span>
-                    <span className="rounded-full bg-white px-3 py-1">{project.client_name || 'Sin cliente'}</span>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <StatusBadge value={project.status ?? 'activo'} />
+                    <span className="rounded-full bg-white px-3 py-1 text-xs text-slate-500">{project.client_name || 'Sin cliente'}</span>
                   </div>
+                  <Link className="mt-3 block" href={`/app/projects/${project.id}${suffix}`}>
+                    <p className="line-clamp-2 text-base font-semibold text-slate-800 transition hover:text-emerald-700">{project.title}</p>
+                  </Link>
                 </div>
                 <EntityMemoryActions
                   entity={{
@@ -52,17 +54,18 @@ export function ProjectSidebar({
               <div className="mt-3 flex items-center justify-between gap-3 text-xs text-slate-500">
                 <span>{project.due_date || 'Sin fecha definida'}</span>
                 <Link href={`/app/projects/${project.id}${suffix}`} className="inline-flex items-center gap-1 font-semibold text-emerald-700">
-                  Ver
+                  Ver detalle
                   <ArrowUpRight className="h-3.5 w-3.5" />
                 </Link>
               </div>
             </div>
           ))
         ) : (
-          <div className="rounded-3xl border border-dashed border-slate-200 px-5 py-10 text-center">
-            <h3 className="text-base font-semibold text-slate-900">Aún no hay proyectos en esta vista</h3>
-            <p className="mt-2 text-sm text-slate-500">Prueba con otros filtros o crea un proyecto nuevo para empezar.</p>
-          </div>
+          <EmptyState
+            icon={<FolderKanban className="h-6 w-6" />}
+            title="Aún no hay proyectos en esta vista"
+            description="Prueba con otros filtros o crea un proyecto nuevo para empezar."
+          />
         )}
       </div>
     </aside>

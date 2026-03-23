@@ -28,9 +28,20 @@ export function PwaRegister() {
   useEffect(() => {
     setInstalled(isStandalone());
 
+    const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js').catch(() => undefined);
+        if (isLocalhost) {
+          navigator.serviceWorker.getRegistrations()
+            .then((registrations) => {
+              registrations.forEach((registration) => registration.update().catch(() => undefined));
+            })
+            .catch(() => undefined);
+          return;
+        }
+
+        navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' }).catch(() => undefined);
       });
     }
 

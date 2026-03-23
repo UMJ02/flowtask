@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { createClient } from "@/lib/supabase/client";
 import { DEPARTMENTS } from "@/lib/constants/departments";
 import { TASK_STATUSES } from "@/lib/constants/task-status";
+import { type AppRoute } from "@/lib/navigation/routes";
 import { taskSchema } from "@/lib/validations/task";
 import { getDepartmentIdByCode } from "@/lib/queries/departments";
 import { Button } from "@/components/ui/button";
@@ -22,7 +23,7 @@ interface TaskFormProps {
   initialData?: Partial<TaskValues>;
   submitLabel?: string;
   successMessage?: string;
-  redirectTo?: string;
+  redirectTo?: AppRoute;
 }
 
 export function TaskForm({

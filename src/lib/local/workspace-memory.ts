@@ -1,3 +1,5 @@
+import type { AppRoute } from '@/lib/navigation/routes';
+
 export type MemoryEntityType = 'task' | 'project';
 
 export type MemoryEntity = {
@@ -5,7 +7,7 @@ export type MemoryEntity = {
   type: MemoryEntityType;
   title: string;
   subtitle?: string | null;
-  href: string;
+  href: AppRoute;
   updatedAt: string;
 };
 

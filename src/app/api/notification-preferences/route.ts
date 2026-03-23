@@ -1,9 +1,20 @@
+import { getNotificationPreferences } from '@/lib/queries/notification-preferences';
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
 function clampHour(value: unknown, fallback: number) {
   const parsed = Number(value);
   return Number.isFinite(parsed) ? Math.min(23, Math.max(0, parsed)) : fallback;
+}
+
+export async function GET() {
+  const data = await getNotificationPreferences();
+
+  if (!data) {
+    return NextResponse.json({ error: 'No autenticado' }, { status: 401 });
+  }
+
+  return NextResponse.json({ data });
 }
 
 export async function POST(request: Request) {
