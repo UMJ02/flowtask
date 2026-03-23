@@ -158,7 +158,7 @@ export default async function WorkspacePage() {
             </div>
           </div>
           <div className="mt-4">
-            <RecentActivity items={activitySummary} compact />
+            <RecentActivity summary={activitySummary} />
           </div>
         </Card>
 

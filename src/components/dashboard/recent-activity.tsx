@@ -4,7 +4,26 @@ import { Card } from "@/components/ui/card";
 import type { RecentActivitySummary } from "@/lib/queries/activity";
 import { ActivityTimeline } from "@/components/activity/activity-timeline";
 
-export function RecentActivity({ summary }: { summary: RecentActivitySummary }) {
+type RecentActivityProps = {
+  summary?: RecentActivitySummary | null;
+};
+
+const EMPTY_SUMMARY = {
+  counts: {
+    total: 0,
+    tasks: 0,
+    projects: 0,
+    comments: 0,
+    reminders: 0,
+  },
+  items: [],
+} as const;
+
+export function RecentActivity({ summary }: RecentActivityProps) {
+  const safeSummary = summary ?? EMPTY_SUMMARY;
+  const counts = safeSummary.counts ?? EMPTY_SUMMARY.counts;
+  const items = Array.isArray(safeSummary.items) ? safeSummary.items : [];
+
   return (
     <div className="space-y-4">
       <Card>
@@ -19,35 +38,36 @@ export function RecentActivity({ summary }: { summary: RecentActivitySummary }) 
             </div>
           </div>
           <Link href="/app/notifications" className="inline-flex items-center gap-2 text-sm font-semibold text-slate-700 hover:text-slate-900">
-            Ver centro de notificaciones
+            Ver notificaciones
             <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
+
         <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Movimientos</p>
-            <p className="mt-2 text-2xl font-bold text-slate-900">{summary.counts.total}</p>
+            <p className="mt-2 text-2xl font-bold text-slate-900">{counts.total}</p>
           </div>
           <div className="rounded-2xl border border-blue-100 bg-blue-50 px-4 py-3">
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-blue-700">Tareas</p>
-            <p className="mt-2 text-2xl font-bold text-slate-900">{summary.counts.tasks}</p>
+            <p className="mt-2 text-2xl font-bold text-slate-900">{counts.tasks}</p>
           </div>
           <div className="rounded-2xl border border-violet-100 bg-violet-50 px-4 py-3">
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-violet-700">Proyectos</p>
-            <p className="mt-2 text-2xl font-bold text-slate-900">{summary.counts.projects}</p>
+            <p className="mt-2 text-2xl font-bold text-slate-900">{counts.projects}</p>
           </div>
           <div className="rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-3">
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-700">Comentarios y recordatorios</p>
-            <p className="mt-2 text-2xl font-bold text-slate-900">{summary.counts.comments + summary.counts.reminders}</p>
+            <p className="mt-2 text-2xl font-bold text-slate-900">{counts.comments + counts.reminders}</p>
           </div>
         </div>
       </Card>
 
       <ActivityTimeline
-        items={summary.items}
+        items={items}
         compact
         title="Actividad reciente"
-        description="Cambios, seguimiento y recordatorios que te ayudan a entender el ritmo del día."
+        description="Cambios, seguimiento y recordatorios para retomar rápido."
       />
     </div>
   );

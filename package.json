@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "5.6.0-workspace-enhanced",
+  "version": "5.6.1-workspace-enhanced-hotfix",
   "private": true,
   "scripts": {
     "dev": "next dev",
