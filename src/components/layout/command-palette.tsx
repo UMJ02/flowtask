@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Bell, Bookmark, Building2, CalendarDays, ClipboardList, Command, FolderKanban, History, LayoutDashboard, ListTodo, Plus, Radar, Search, Settings, Star, Users, X } from 'lucide-react';
+import { Bell, Bookmark, Building2, CalendarDays, ClipboardList, Command, FolderKanban, History, LayoutDashboard, ListTodo, Plus, Radar, Search, Settings, ShieldAlert, Star, Users, X } from 'lucide-react';
 import { useWorkspaceMemory } from '@/hooks/use-workspace-memory';
 import { asRoute, projectListRoute, taskListRoute, type AppRoute } from '@/lib/navigation/routes';
 
@@ -111,6 +111,15 @@ const COMMANDS: CommandItem[] = [
     href: '/app/control-tower',
     keywords: ['control tower', 'control', 'operacion', 'foco', 'ejecucion'],
     icon: Radar,
+    section: 'Accesos',
+  },
+  {
+    id: 'risk-radar',
+    label: 'Abrir risk radar',
+    description: 'Lee vencimientos, carga y exposición operativa del workspace.',
+    href: '/app/risk-radar',
+    keywords: ['risk radar', 'riesgo', 'vencimientos', 'presion', 'alertas'],
+    icon: ShieldAlert,
     section: 'Accesos',
   },
   {

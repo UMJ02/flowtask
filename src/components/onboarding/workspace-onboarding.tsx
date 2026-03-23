@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowRight, CheckCircle2, Rocket, ShieldCheck, Sparkles, UsersRound } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { asRoute } from '@/lib/navigation/routes';
 import type { WorkspaceOnboardingSummary } from "@/lib/queries/onboarding";
 
 const categoryStyles: Record<WorkspaceOnboardingSummary["steps"][number]["category"], string> = {
@@ -43,11 +44,11 @@ export function WorkspaceOnboarding({ summary, compact = false }: { summary: Wor
           </div>
           <div className="flex flex-wrap items-center gap-3">
             {pending[0] ? (
-              <Link href={pending[0].href}>
+              <Link href={asRoute(pending[0].href)}>
                 <Button>Continuar setup</Button>
               </Link>
             ) : null}
-            <Link href="/app/onboarding">
+            <Link href={asRoute("/app/onboarding")}>
               <Button variant="secondary">Abrir centro de arranque</Button>
             </Link>
           </div>
@@ -120,7 +121,7 @@ export function WorkspaceOnboarding({ summary, compact = false }: { summary: Wor
                       <p className="mt-1 text-sm text-slate-500">{step.description}</p>
                     </div>
                   </div>
-                  <Link href={step.href}>
+                  <Link href={asRoute(step.href)}>
                     <Button variant={step.done ? "secondary" : "primary"}>{step.cta}</Button>
                   </Link>
                 </div>

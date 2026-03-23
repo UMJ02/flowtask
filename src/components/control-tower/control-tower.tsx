@@ -3,6 +3,7 @@ import { Activity, AlertTriangle, ArrowUpRight, FolderKanban, Radar, Users2 } fr
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { StatusBadge } from '@/components/ui/status-badge';
+import { asRoute } from '@/lib/navigation/routes';
 import type { ControlTowerSummary } from '@/lib/queries/control-tower';
 
 const laneToneClasses: Record<ControlTowerSummary['executionLanes'][number]['tone'], string> = {
@@ -28,7 +29,7 @@ export function ControlTower({ summary, compact = false }: { summary: ControlTow
             <h3 className="mt-2 text-xl font-bold text-slate-900">Centro de control operativo</h3>
             <p className="mt-2 max-w-2xl text-sm text-slate-500">Unifica foco inmediato, señales por cliente y lectura rápida de ejecución.</p>
           </div>
-          <Link href="/app/control-tower"><Button>Ver centro de control</Button></Link>
+          <Link href={asRoute("/app/control-tower")}><Button>Ver centro de control</Button></Link>
         </div>
         <div className="mt-5 grid gap-3 md:grid-cols-4">
           {cards.map((card) => (
@@ -101,7 +102,7 @@ export function ControlTower({ summary, compact = false }: { summary: ControlTow
           </div>
           <div className="mt-5 flex flex-wrap gap-3">
             <Link href="/app/reports/print?type=control" target="_blank"><Button>Control PDF</Button></Link>
-            <Link href="/app/tasks"><Button variant="secondary">Ir a tareas</Button></Link>
+            <Link href={asRoute("/app/tasks")}><Button variant="secondary">Ir a tareas</Button></Link>
           </div>
         </Card>
       </div>
@@ -144,7 +145,7 @@ export function ControlTower({ summary, compact = false }: { summary: ControlTow
           </div>
           <div className="mt-5 space-y-3">
             {summary.focusNow.length ? summary.focusNow.map((item) => (
-              <Link key={`${item.type}-${item.id}`} href={item.type === 'task' ? `/app/tasks/${item.id}` : `/app/projects/${item.id}`} className="block rounded-2xl border border-slate-200 bg-white px-4 py-4 transition hover:border-cyan-200 hover:bg-cyan-50/40">
+              <Link key={`${item.type}-${item.id}`} href={asRoute(item.type === 'task' ? `/app/tasks/${item.id}` : `/app/projects/${item.id}`)} className="block rounded-2xl border border-slate-200 bg-white px-4 py-4 transition hover:border-cyan-200 hover:bg-cyan-50/40">
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <div className="flex items-center gap-2">
@@ -173,7 +174,7 @@ export function ControlTower({ summary, compact = false }: { summary: ControlTow
         </div>
         <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
           {summary.clientSignals.length ? summary.clientSignals.map((client) => (
-            <Link key={client.id} href={`/app/clients/${client.id}`} className="block rounded-2xl border border-slate-200 bg-white px-4 py-4 transition hover:border-cyan-200 hover:bg-cyan-50/40">
+            <Link key={client.id} href={asRoute(`/app/clients/${client.id}`)} className="block rounded-2xl border border-slate-200 bg-white px-4 py-4 transition hover:border-cyan-200 hover:bg-cyan-50/40">
               <p className="text-sm font-semibold text-slate-900">{client.name}</p>
               <div className="mt-3 grid grid-cols-3 gap-2 text-center text-sm">
                 <div className="rounded-2xl bg-slate-50 px-3 py-2">

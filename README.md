@@ -1,35 +1,36 @@
-# FlowTask v2.0.0-control-tower
+# FlowTask v2.1.0-risk-radar
 
-Base canónica actual sobre `v1.9.0-planning-center`, ahora con una capa nueva de **control operativo central** para leer foco inmediato, presión por cliente y señales de ejecución desde una sola vista.
+Base canónica actual sobre `v2.0.0-control-tower`, ahora con una capa nueva de **lectura de riesgo operativo** para ver vencimientos, presión por cliente y hotspots por departamento sin salir del workspace.
 
 ## Estado de esta versión
-- nueva ruta `/app/control-tower`
-- nuevo centro de control operativo
+- nueva ruta `/app/risk-radar`
+- nuevo centro de riesgo operativo
 - widget compacto en dashboard
 - acceso desde navegación principal
 - acceso desde command palette
-- salida imprimible `control` en reportes
+- salida imprimible `risk` en reportes
 
 ## Objetivo de esta versión
-Dar una vista ejecutable y rápida para decidir qué atender primero sin tener que saltar entre tareas, proyectos, clientes y reportes.
+Dar una vista ejecutiva y accionable del riesgo real del workspace antes de que los bloqueos se conviertan en atrasos mayores.
 
 ## Incluye
-- **Control Tower** con:
-  - KPIs de operación inmediata
-  - foco inmediato de tareas y proyectos
-  - carriles de ejecución
-  - señales por cliente
+- **Risk Radar** con:
+  - risk score global
+  - buckets de riesgo
+  - hotspots por departamento
+  - watchlist de proyectos
+  - clientes con presión operativa
   - recomendaciones accionables
-- **Nueva ruta** `/app/control-tower`
+- **Nueva ruta** `/app/risk-radar`
 - **Widget compacto** dentro del dashboard
-- **Nuevo PDF** en reportes con `type=control`
+- **Nuevo PDF** en reportes con `type=risk`
 
 ## Validación
-- cambios contenidos y empaquetado limpio para descarga
-- en este entorno no pude reejecutar una validación completa de `npm run typecheck`, así que no te la voy a vender como corrida confirmada cuando no la comprobé aquí
+- `npm run typecheck` validado en cero dentro del entorno de trabajo usando las dependencias restauradas del proyecto original
+- ZIP limpio para descarga
 
 ## Próxima versión sugerida
-`v2.1.0`
-- automatizaciones por reglas
-- SLA por cliente y departamento
-- centro de seguimiento con alertas más profundas
+`v2.2.0`
+- reglas automáticas por SLA
+- alertas por dueño/departamento
+- centro de seguimiento con automatizaciones más profundas

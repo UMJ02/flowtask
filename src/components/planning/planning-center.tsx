@@ -3,6 +3,7 @@ import { AlertTriangle, ArrowUpRight, CalendarClock, FolderKanban, Layers3, Targ
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { StatusBadge } from '@/components/ui/status-badge';
+import { asRoute } from '@/lib/navigation/routes';
 import type { PlanningOverview } from '@/lib/queries/planning';
 
 const bucketToneClasses: Record<PlanningOverview['dueBuckets'][number]['tone'], string> = {
@@ -42,7 +43,7 @@ export function PlanningCenter({ summary, compact = false }: { summary: Planning
             <h3 className="mt-2 text-xl font-bold text-slate-900">Radar de planificación</h3>
             <p className="mt-2 max-w-2xl text-sm text-slate-500">Revisa lo que vence primero, la carga por departamento y cuáles clientes concentran más movimiento.</p>
           </div>
-          <Link href="/app/planning"><Button>Ver centro de planificación</Button></Link>
+          <Link href={asRoute("/app/planning")}><Button>Ver centro de planificación</Button></Link>
         </div>
         <div className="mt-5 grid gap-3 md:grid-cols-4">
           {cards.map((card) => (
@@ -114,8 +115,8 @@ export function PlanningCenter({ summary, compact = false }: { summary: Planning
             ))}
           </div>
           <div className="mt-5 flex flex-wrap gap-3">
-            <Link href="/app/reports/print?type=planning" target="_blank"><Button>Planning PDF</Button></Link>
-            <Link href="/app/tasks"><Button variant="secondary">Ir a tareas</Button></Link>
+            <Link href={asRoute("/app/reports/print?type=planning")} target="_blank"><Button>Planning PDF</Button></Link>
+            <Link href={asRoute("/app/tasks")}><Button variant="secondary">Ir a tareas</Button></Link>
           </div>
         </Card>
       </div>
@@ -172,7 +173,7 @@ export function PlanningCenter({ summary, compact = false }: { summary: Planning
           </div>
           <div className="mt-5 space-y-3">
             {summary.clientMomentum.length ? summary.clientMomentum.map((client) => (
-              <Link key={client.id} href={`/app/clients/${client.id}`} className="block rounded-2xl border border-slate-200 bg-white px-4 py-4 transition hover:border-violet-200 hover:bg-violet-50/40">
+              <Link key={client.id} href={asRoute(`/app/clients/${client.id}`)} className="block rounded-2xl border border-slate-200 bg-white px-4 py-4 transition hover:border-violet-200 hover:bg-violet-50/40">
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="text-sm font-semibold text-slate-900">{client.name}</p>
@@ -192,7 +193,7 @@ export function PlanningCenter({ summary, compact = false }: { summary: Planning
           <p className="mt-1 text-sm text-slate-500">Las tareas que conviene resolver primero.</p>
           <div className="mt-5 space-y-3">
             {summary.weeklyFocus.length ? summary.weeklyFocus.map((task) => (
-              <Link key={task.id} href={`/app/tasks/${task.id}`} className="block rounded-2xl border border-slate-200 bg-white px-4 py-4 transition hover:border-violet-200 hover:bg-violet-50/40">
+              <Link key={task.id} href={asRoute(`/app/tasks/${task.id}`)} className="block rounded-2xl border border-slate-200 bg-white px-4 py-4 transition hover:border-violet-200 hover:bg-violet-50/40">
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="text-sm font-semibold text-slate-900">{task.title}</p>
@@ -210,7 +211,7 @@ export function PlanningCenter({ summary, compact = false }: { summary: Planning
           <p className="mt-1 text-sm text-slate-500">Proyectos activos ordenados por cercanía y coordinación.</p>
           <div className="mt-5 space-y-3">
             {summary.projectPipeline.length ? summary.projectPipeline.map((project) => (
-              <Link key={project.id} href={`/app/projects/${project.id}`} className="block rounded-2xl border border-slate-200 bg-white px-4 py-4 transition hover:border-violet-200 hover:bg-violet-50/40">
+              <Link key={project.id} href={asRoute(`/app/projects/${project.id}`)} className="block rounded-2xl border border-slate-200 bg-white px-4 py-4 transition hover:border-violet-200 hover:bg-violet-50/40">
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="text-sm font-semibold text-slate-900">{project.title}</p>

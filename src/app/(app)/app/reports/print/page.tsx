@@ -1,9 +1,10 @@
-import { getDashboardData } from "@/lib/queries/dashboard";
-import { getProjects } from "@/lib/queries/projects";
-import { getTasks } from "@/lib/queries/tasks";
-import { getReportsOverview } from "@/lib/queries/reports";
+import { getDashboardData } from '@/lib/queries/dashboard';
+import { getProjects } from '@/lib/queries/projects';
+import { getReportsOverview } from '@/lib/queries/reports';
+import { getTasks } from '@/lib/queries/tasks';
 import { getPlanningOverview } from '@/lib/queries/planning';
 import { getControlTowerSummary } from '@/lib/queries/control-tower';
+import { getRiskRadarSummary } from '@/lib/queries/risk-radar';
 
 type PrintPageParams = {
   type?: string;
@@ -11,7 +12,16 @@ type PrintPageParams = {
 
 type ProjectRow = Awaited<ReturnType<typeof getProjects>>[number];
 type TaskRow = Awaited<ReturnType<typeof getTasks>>[number];
-type ClientMetricRow = NonNullable<Awaited<ReturnType<typeof getDashboardData>>>["clientMetrics"][number];
+type ClientMetricRow = NonNullable<Awaited<ReturnType<typeof getDashboardData>>>['clientMetrics'][number];
+
+function MetricCard({ label, value }: { label: string; value: string | number }) {
+  return (
+    <div className="rounded-2xl border border-slate-200 p-4">
+      <p className="text-sm text-slate-500">{label}</p>
+      <p className="mt-2 text-3xl font-bold">{String(value)}</p>
+    </div>
+  );
+}
 
 export default async function ReportsPrintPage({
   searchParams,
@@ -19,28 +29,32 @@ export default async function ReportsPrintPage({
   searchParams?: Promise<PrintPageParams>;
 }) {
   const params = (await searchParams) ?? {};
-  const type = params.type || "summary";
-  const [dashboard, projects, tasks, operations, planning, controlTower] = await Promise.all([
+  const type = params.type || 'summary';
+
+  const [dashboard, projects, tasks, operations, planning, controlTower, risk] = await Promise.all([
     getDashboardData(),
     getProjects({}),
     getTasks({}),
     getReportsOverview(),
     getPlanningOverview(),
     getControlTowerSummary(),
+    getRiskRadarSummary(),
   ]);
 
   const heading =
-    type === "projects"
-      ? "Reporte de proyectos"
-      : type === "operations"
-        ? "Reporte operativo"
-        : type === "executive"
-          ? "Reporte ejecutivo"
-          : type === "planning"
-            ? "Reporte de planificación"
-            : type === "control"
-              ? "Reporte control tower"
-              : "Reporte general";
+    type === 'projects'
+      ? 'Reporte de proyectos'
+      : type === 'operations'
+        ? 'Reporte operativo'
+        : type === 'executive'
+          ? 'Reporte ejecutivo'
+          : type === 'planning'
+            ? 'Reporte de planificación'
+            : type === 'control'
+              ? 'Reporte control tower'
+              : type === 'risk'
+                ? 'Reporte risk radar'
+                : 'Reporte general';
 
   return (
     <main className="mx-auto max-w-5xl bg-white p-8 text-slate-900 print:p-4">
@@ -50,20 +64,78 @@ export default async function ReportsPrintPage({
         <p className="mt-2 text-sm text-slate-500">Generado para impresión o guardado como PDF.</p>
       </header>
 
-      {type === "control" ? (
+      {type === 'risk' ? (
         <div className="mt-6 space-y-6">
           <section className="grid gap-4 md:grid-cols-4">
-            {[
-              ["Tareas activas", controlTower.kpis.activeTasks],
-              ["Proyectos activos", controlTower.kpis.activeProjects],
-              ["Tareas vencidas", controlTower.kpis.overdueTasks],
-              ["Señales recientes", controlTower.kpis.activityEvents],
-            ].map(([label, value]) => (
-              <div key={String(label)} className="rounded-2xl border border-slate-200 p-4">
-                <p className="text-sm text-slate-500">{label}</p>
-                <p className="mt-2 text-3xl font-bold">{String(value)}</p>
-              </div>
-            ))}
+            <MetricCard label="Risk score" value={`${risk.kpis.riskScore}%`} />
+            <MetricCard label="Tareas vencidas" value={risk.kpis.overdueTasks} />
+            <MetricCard label="Proyectos vencidos" value={risk.kpis.overdueProjects} />
+            <MetricCard label="Clientes en presión" value={risk.kpis.pressuredClients} />
+          </section>
+
+          <section>
+            <h2 className="text-xl font-semibold">Hotspots por departamento</h2>
+            <div className="mt-3 overflow-hidden rounded-2xl border border-slate-200">
+              <table className="min-w-full text-left text-sm">
+                <thead className="bg-slate-50 text-slate-600">
+                  <tr>
+                    <th className="px-4 py-3">Departamento</th>
+                    <th className="px-4 py-3">Tareas abiertas</th>
+                    <th className="px-4 py-3">Proyectos activos</th>
+                    <th className="px-4 py-3">Items cercanos</th>
+                    <th className="px-4 py-3">Estado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {risk.hotspots.map((item) => (
+                    <tr key={item.name} className="border-t border-slate-200">
+                      <td className="px-4 py-3">{item.name}</td>
+                      <td className="px-4 py-3">{item.openTasks}</td>
+                      <td className="px-4 py-3">{item.activeProjects}</td>
+                      <td className="px-4 py-3">{item.nearTermItems}</td>
+                      <td className="px-4 py-3">{item.tone}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-semibold">Clientes con presión</h2>
+            <div className="mt-3 overflow-hidden rounded-2xl border border-slate-200">
+              <table className="min-w-full text-left text-sm">
+                <thead className="bg-slate-50 text-slate-600">
+                  <tr>
+                    <th className="px-4 py-3">Cliente</th>
+                    <th className="px-4 py-3">Estado</th>
+                    <th className="px-4 py-3">Tareas</th>
+                    <th className="px-4 py-3">Proyectos</th>
+                    <th className="px-4 py-3">Presión</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {risk.clientRisks.map((item) => (
+                    <tr key={item.id} className="border-t border-slate-200">
+                      <td className="px-4 py-3">{item.name}</td>
+                      <td className="px-4 py-3">{item.status}</td>
+                      <td className="px-4 py-3">{item.openTasks}</td>
+                      <td className="px-4 py-3">{item.activeProjects}</td>
+                      <td className="px-4 py-3">{item.pressure}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      ) : type === 'control' ? (
+        <div className="mt-6 space-y-6">
+          <section className="grid gap-4 md:grid-cols-4">
+            <MetricCard label="Tareas activas" value={controlTower.kpis.activeTasks} />
+            <MetricCard label="Proyectos activos" value={controlTower.kpis.activeProjects} />
+            <MetricCard label="Tareas vencidas" value={controlTower.kpis.overdueTasks} />
+            <MetricCard label="Señales recientes" value={controlTower.kpis.activityEvents} />
           </section>
 
           <section>
@@ -93,49 +165,14 @@ export default async function ReportsPrintPage({
               </table>
             </div>
           </section>
-
-          <section>
-            <h2 className="text-xl font-semibold">Señales por cliente</h2>
-            <div className="mt-3 overflow-hidden rounded-2xl border border-slate-200">
-              <table className="min-w-full text-left text-sm">
-                <thead className="bg-slate-50 text-slate-600">
-                  <tr>
-                    <th className="px-4 py-3">Cliente</th>
-                    <th className="px-4 py-3">Estado</th>
-                    <th className="px-4 py-3">Tareas abiertas</th>
-                    <th className="px-4 py-3">Proyectos activos</th>
-                    <th className="px-4 py-3">Cercanos</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {controlTower.clientSignals.map((item) => (
-                    <tr key={item.id} className="border-t border-slate-200">
-                      <td className="px-4 py-3">{item.name}</td>
-                      <td className="px-4 py-3">{item.status}</td>
-                      <td className="px-4 py-3">{item.openTasks}</td>
-                      <td className="px-4 py-3">{item.activeProjects}</td>
-                      <td className="px-4 py-3">{item.nearTermItems}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </section>
         </div>
-      ) : {type === "planning" ? (
+      ) : type === 'planning' ? (
         <div className="mt-6 space-y-6">
           <section className="grid gap-4 md:grid-cols-4">
-            {[
-              ["Esta semana", planning.kpis.dueThisWeek],
-              ["Próxima semana", planning.kpis.dueNextWeek],
-              ["Tareas vencidas", planning.kpis.overdueOpenTasks],
-              ["Proyectos activos", planning.kpis.activeProjects],
-            ].map(([label, value]) => (
-              <div key={String(label)} className="rounded-2xl border border-slate-200 p-4">
-                <p className="text-sm text-slate-500">{label}</p>
-                <p className="mt-2 text-3xl font-bold">{String(value)}</p>
-              </div>
-            ))}
+            <MetricCard label="Esta semana" value={planning.kpis.dueThisWeek} />
+            <MetricCard label="Próxima semana" value={planning.kpis.dueNextWeek} />
+            <MetricCard label="Tareas vencidas" value={planning.kpis.overdueOpenTasks} />
+            <MetricCard label="Proyectos activos" value={planning.kpis.activeProjects} />
           </section>
 
           <section>
@@ -165,75 +202,14 @@ export default async function ReportsPrintPage({
               </table>
             </div>
           </section>
-
-          <section>
-            <h2 className="text-xl font-semibold">Foco semanal</h2>
-            <div className="mt-3 overflow-hidden rounded-2xl border border-slate-200">
-              <table className="min-w-full text-left text-sm">
-                <thead className="bg-slate-50 text-slate-600">
-                  <tr>
-                    <th className="px-4 py-3">Tarea</th>
-                    <th className="px-4 py-3">Cliente</th>
-                    <th className="px-4 py-3">Estado</th>
-                    <th className="px-4 py-3">Fecha</th>
-                    <th className="px-4 py-3">Urgencia</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {planning.weeklyFocus.map((task) => (
-                    <tr key={task.id} className="border-t border-slate-200">
-                      <td className="px-4 py-3">{task.title}</td>
-                      <td className="px-4 py-3">{task.clientName}</td>
-                      <td className="px-4 py-3">{task.status}</td>
-                      <td className="px-4 py-3">{task.dueLabel}</td>
-                      <td className="px-4 py-3">{task.urgency}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </section>
         </div>
-      ) : type === "executive" ? (
+      ) : type === 'executive' ? (
         <div className="mt-6 space-y-6">
           <section className="grid gap-4 md:grid-cols-4">
-            {[
-              ["Ritmo de cierre", `${operations.kpis.completionRate}%`],
-              ["Semana actual", operations.kpis.dueThisWeek],
-              ["En espera", operations.kpis.waitingTasks],
-              ["Proyectos vencidos", operations.kpis.overdueProjects],
-            ].map(([label, value]) => (
-              <div key={String(label)} className="rounded-2xl border border-slate-200 p-4">
-                <p className="text-sm text-slate-500">{label}</p>
-                <p className="mt-2 text-3xl font-bold">{String(value)}</p>
-              </div>
-            ))}
-          </section>
-
-          <section>
-            <h2 className="text-xl font-semibold">Capacidad por departamento</h2>
-            <div className="mt-3 overflow-hidden rounded-2xl border border-slate-200">
-              <table className="min-w-full text-left text-sm">
-                <thead className="bg-slate-50 text-slate-600">
-                  <tr>
-                    <th className="px-4 py-3">Departamento</th>
-                    <th className="px-4 py-3">Tareas abiertas</th>
-                    <th className="px-4 py-3">Proyectos activos</th>
-                    <th className="px-4 py-3">Carga total</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {operations.departmentLoad.map((item) => (
-                    <tr key={item.name} className="border-t border-slate-200">
-                      <td className="px-4 py-3">{item.name}</td>
-                      <td className="px-4 py-3">{item.openTasks}</td>
-                      <td className="px-4 py-3">{item.activeProjects}</td>
-                      <td className="px-4 py-3">{item.total}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <MetricCard label="Ritmo de cierre" value={`${operations.kpis.completionRate}%`} />
+            <MetricCard label="Semana actual" value={operations.kpis.dueThisWeek} />
+            <MetricCard label="En espera" value={operations.kpis.waitingTasks} />
+            <MetricCard label="Proyectos vencidos" value={operations.kpis.overdueProjects} />
           </section>
 
           <section>
@@ -264,20 +240,13 @@ export default async function ReportsPrintPage({
             </div>
           </section>
         </div>
-      ) : type === "operations" ? (
+      ) : type === 'operations' ? (
         <div className="mt-6 space-y-6">
           <section className="grid gap-4 md:grid-cols-4">
-            {[
-              ["Tareas activas", operations.kpis.activeTasks],
-              ["Vencidas", operations.kpis.overdueTasks],
-              ["Para hoy", operations.kpis.dueToday],
-              ["Clientes activos", operations.kpis.clients],
-            ].map(([label, value]) => (
-              <div key={String(label)} className="rounded-2xl border border-slate-200 p-4">
-                <p className="text-sm text-slate-500">{label}</p>
-                <p className="mt-2 text-3xl font-bold">{String(value)}</p>
-              </div>
-            ))}
+            <MetricCard label="Tareas activas" value={operations.kpis.activeTasks} />
+            <MetricCard label="Vencidas" value={operations.kpis.overdueTasks} />
+            <MetricCard label="Para hoy" value={operations.kpis.dueToday} />
+            <MetricCard label="Clientes activos" value={operations.kpis.clients} />
           </section>
 
           <section>
@@ -307,36 +276,8 @@ export default async function ReportsPrintPage({
               </table>
             </div>
           </section>
-
-          <section>
-            <h2 className="text-xl font-semibold">Tareas foco</h2>
-            <div className="mt-3 overflow-hidden rounded-2xl border border-slate-200">
-              <table className="min-w-full text-left text-sm">
-                <thead className="bg-slate-50 text-slate-600">
-                  <tr>
-                    <th className="px-4 py-3">Tarea</th>
-                    <th className="px-4 py-3">Cliente</th>
-                    <th className="px-4 py-3">Estado</th>
-                    <th className="px-4 py-3">Fecha</th>
-                    <th className="px-4 py-3">Urgencia</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {operations.focusTasks.map((task) => (
-                    <tr key={task.id} className="border-t border-slate-200">
-                      <td className="px-4 py-3">{task.title}</td>
-                      <td className="px-4 py-3">{task.clientName}</td>
-                      <td className="px-4 py-3">{task.status}</td>
-                      <td className="px-4 py-3">{task.dueLabel}</td>
-                      <td className="px-4 py-3">{task.urgency}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </section>
         </div>
-      ) : type === "projects" ? (
+      ) : type === 'projects' ? (
         <section className="mt-6 space-y-3">
           <h2 className="text-xl font-semibold">Proyectos</h2>
           <div className="overflow-hidden rounded-2xl border border-slate-200">
@@ -354,10 +295,10 @@ export default async function ReportsPrintPage({
                 {projects.map((project: ProjectRow) => (
                   <tr key={project.id} className="border-t border-slate-200">
                     <td className="px-4 py-3">{project.title}</td>
-                    <td className="px-4 py-3">{project.client_name || "-"}</td>
+                    <td className="px-4 py-3">{project.client_name || '-'}</td>
                     <td className="px-4 py-3">{project.status}</td>
-                    <td className="px-4 py-3">{project.due_date || "-"}</td>
-                    <td className="px-4 py-3">{project.is_collaborative ? "Colaborativo" : "Personal"}</td>
+                    <td className="px-4 py-3">{project.due_date || '-'}</td>
+                    <td className="px-4 py-3">{project.is_collaborative ? 'Colaborativo' : 'Personal'}</td>
                   </tr>
                 ))}
               </tbody>
@@ -367,17 +308,10 @@ export default async function ReportsPrintPage({
       ) : (
         <div className="mt-6 space-y-6">
           <section className="grid gap-4 md:grid-cols-4">
-            {[
-              ["Tareas activas", dashboard?.activeTasks ?? 0],
-              ["Proyectos activos", dashboard?.activeProjects ?? 0],
-              ["Tareas concluidas", dashboard?.completedTasks ?? 0],
-              ["Proyectos colaborativos", dashboard?.collaborativeProjects ?? 0],
-            ].map(([label, value]) => (
-              <div key={String(label)} className="rounded-2xl border border-slate-200 p-4">
-                <p className="text-sm text-slate-500">{label}</p>
-                <p className="mt-2 text-3xl font-bold">{String(value)}</p>
-              </div>
-            ))}
+            <MetricCard label="Tareas activas" value={dashboard?.activeTasks ?? 0} />
+            <MetricCard label="Proyectos activos" value={dashboard?.activeProjects ?? 0} />
+            <MetricCard label="Tareas concluidas" value={dashboard?.completedTasks ?? 0} />
+            <MetricCard label="Proyectos colaborativos" value={dashboard?.collaborativeProjects ?? 0} />
           </section>
 
           <section>
@@ -424,9 +358,9 @@ export default async function ReportsPrintPage({
                   {tasks.slice(0, 12).map((task: TaskRow) => (
                     <tr key={task.id} className="border-t border-slate-200">
                       <td className="px-4 py-3">{task.title}</td>
-                      <td className="px-4 py-3">{task.client_name || "-"}</td>
+                      <td className="px-4 py-3">{task.client_name || '-'}</td>
                       <td className="px-4 py-3">{task.status}</td>
-                      <td className="px-4 py-3">{task.due_date || "-"}</td>
+                      <td className="px-4 py-3">{task.due_date || '-'}</td>
                     </tr>
                   ))}
                 </tbody>
