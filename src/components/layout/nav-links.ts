@@ -1,20 +1,23 @@
 import type { LucideIcon } from 'lucide-react';
 import {
-  BarChart3,
+  Bell,
   Building2,
+  CheckCircle2,
   ClipboardList,
+  Contact,
   CreditCard,
   FolderKanban,
   LayoutGrid,
   Settings,
   Shield,
+  StickyNote,
   Users,
-  BrainCircuit,
+  BarChart3,
+  CalendarDays,
 } from 'lucide-react';
-import type { AppRoute } from '@/lib/navigation/routes';
 
 export type AppNavLink = {
-  href: AppRoute;
+  href: string;
   label: string;
   hint: string;
   icon: LucideIcon;
@@ -22,14 +25,19 @@ export type AppNavLink = {
 };
 
 export const appNavLinks: AppNavLink[] = [
-  { href: '/app/workspace', label: 'Workspace', hint: 'Tu tablero', icon: LayoutGrid },
-  { href: '/app/projects', label: 'Proyectos', hint: 'Fechas y avance', icon: FolderKanban },
-  { href: '/app/tasks', label: 'Tareas', hint: 'Pendientes al día', icon: ClipboardList },
-  { href: '/app/clients', label: 'Clientes', hint: 'Cuentas activas', icon: Users },
-  { href: '/app/intelligence', label: 'Insights', hint: 'Riesgo y foco', icon: BrainCircuit },
-  { href: '/app/reports', label: 'Reportes', hint: 'Resumen y PDF', icon: BarChart3 },
-  { href: '/app/organization', label: 'Equipo', hint: 'Miembros y espacio', icon: Building2 },
-  { href: '/app/organization/roles', label: 'Roles', hint: 'Accesos', icon: Shield },
-  { href: '/app/organization/billing', label: 'Plan', hint: 'Límites', icon: CreditCard },
-  { href: '/app/settings', label: 'Ajustes', hint: 'Perfil y preferencias', icon: Settings },
+  { href: '/app/dashboard', label: 'Inicio', hint: 'Tu resumen del día', icon: LayoutGrid },
+  { href: '/app/tasks', label: 'Tareas', hint: 'Pendientes y seguimiento', icon: ClipboardList },
+  { href: '/app/projects', label: 'Proyectos', hint: 'Trabajo personal y en equipo', icon: FolderKanban },
+  { href: '/app/clients', label: 'Clientes', hint: 'Actividad y carga por cliente', icon: Users },
+  { href: '/app/calendar', label: 'Calendario', hint: 'Fechas clave y agenda semanal', icon: CalendarDays },
+  { href: '/app/notifications', label: 'Notificaciones', hint: 'Avisos y recordatorios', icon: Bell, isNotifications: true },
+  { href: '/app/reminders', label: 'Recordatorios', hint: 'Fechas y alertas', icon: StickyNote },
+  { href: '/app/reports', label: 'Reportes', hint: 'Exporta y revisa avances', icon: BarChart3 },
+  { href: '/app/completed', label: 'Finalizadas', hint: 'Lo que ya quedó listo', icon: CheckCircle2 },
+  { href: '/app/organization', label: 'Organización', hint: 'Equipo, clientes y uso', icon: Building2 },
+  { href: '/app/organization/roles', label: 'Permisos', hint: 'Qué puede hacer cada persona', icon: Shield },
+  { href: '/app/organization/billing', label: 'Plan', hint: 'Suscripción y límites', icon: CreditCard },
+  { href: '/app/admin', label: 'Admin SaaS', hint: 'Vista global de la plataforma', icon: Settings },
+  { href: '/contact', label: 'Contacto', hint: 'Ayuda rápida por WhatsApp', icon: Contact },
+  { href: '/app/settings', label: 'Configuración', hint: 'Tu perfil y preferencias', icon: Settings },
 ];

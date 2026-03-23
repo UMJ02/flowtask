@@ -1,12 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import { Clock3, Pin, Star } from 'lucide-react';
+import { Clock3, FolderHeart, Pin, Star } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { useWorkspaceMemory } from '@/hooks/use-workspace-memory';
-import type { AppRoute } from '@/lib/navigation/routes';
 
-function EntityList({ items, emptyLabel }: { items: Array<{ id: string; href: AppRoute; title: string; subtitle?: string | null }>; emptyLabel: string }) {
+function EntityList({ items, emptyLabel }: { items: Array<{ id: string; href: string; title: string; subtitle?: string | null }>; emptyLabel: string }) {
   if (!items.length) {
     return <p className="text-sm text-slate-500">{emptyLabel}</p>;
   }

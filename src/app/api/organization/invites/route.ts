@@ -1,15 +1,6 @@
 import { NextResponse } from "next/server";
 import { randomUUID } from "crypto";
 import { createClient } from "@/lib/supabase/server";
-import { deriveOrganizationAccess } from "@/lib/security/organization-access";
-
-const allowedRoles = ["manager", "member", "viewer"] as const;
-
-type AllowedInviteRole = (typeof allowedRoles)[number];
-
-function normalizeEmail(value: string) {
-  return value.trim().toLowerCase();
-}
 
 export async function POST(request: Request) {
   const supabase = await createClient();
@@ -21,19 +12,11 @@ export async function POST(request: Request) {
 
   const body = await request.json().catch(() => null);
   const organizationId = body?.organizationId as string | undefined;
-  const email = typeof body?.email === "string" ? normalizeEmail(body.email) : "";
-  const role = body?.role as AllowedInviteRole | undefined;
+  const email = body?.email as string | undefined;
+  const role = body?.role as string | undefined;
 
   if (!organizationId || !email || !role) {
     return NextResponse.json({ error: "Faltan datos de invitación." }, { status: 400 });
-  }
-
-  if (!allowedRoles.includes(role)) {
-    return NextResponse.json({ error: "Rol inválido para invitación." }, { status: 400 });
-  }
-
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    return NextResponse.json({ error: "Correo inválido." }, { status: 400 });
   }
 
   const { data: membership } = await supabase
@@ -43,25 +26,8 @@ export async function POST(request: Request) {
     .eq("user_id", user.id)
     .maybeSingle();
 
-  const access = deriveOrganizationAccess((membership?.role as any) ?? null);
-  if (!access.canManageInvites) {
+  if (!membership || !["admin_global", "manager"].includes(membership.role)) {
     return NextResponse.json({ error: "No tienes permiso para invitar miembros." }, { status: 403 });
-  }
-
-  if (membership?.role === "manager" && role === "manager") {
-    return NextResponse.json({ error: "Un manager solo puede invitar miembros o visualizadores." }, { status: 403 });
-  }
-
-  const { data: existingInvite } = await supabase
-    .from("organization_invites")
-    .select("id,status")
-    .eq("organization_id", organizationId)
-    .eq("email", email)
-    .eq("status", "pending")
-    .maybeSingle();
-
-  if (existingInvite?.id) {
-    return NextResponse.json({ error: "Ya existe una invitación pendiente para ese correo." }, { status: 409 });
   }
 
   const token = randomUUID();

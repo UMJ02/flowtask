@@ -1,26 +1,47 @@
-# FlowTask 5.6.0 Workspace Enhanced
+# FlowTask
 
-Base completa derivada de v5.5.0-workspace-integration.
+Base v9.1 con multi-empresa, roles avanzados, dashboard por organización e invitaciones de equipo.
 
-# FlowTask v5.5.0 — Workspace Integration
+## Novedades v9.1
+- Organización: métricas consolidadas por empresa
+- Invitaciones por correo con rol sugerido
+- Panel de organización con equipo, permisos por cliente e invitaciones
+- Migration `0013_organization_invites.sql`
 
-Base real integrada sobre la línea v5.4.0.
+## Puesta en marcha
+1. `npm install`
+2. corre las migrations en `supabase/migrations`
+3. `npm run dev`
 
-## Enfoque
-- Workspace como vista principal
-- Intelligence como lectura consolidada
-- Navegación más corta y humana
-- Menos ruido en la UI
 
-## Scripts
-- `npm run dev`
-- `npm run build`
-- `npm run start`
-- `npm run lint`
-- `npm run typecheck`
+## v9.2
+- roles dinámicos por organización
+- permisos granulares por acción
+- pantalla `/app/organization/roles`
+- migration `0014_roles_permissions.sql`
 
-## Cambios clave
-- Sidebar y mobile nav simplificados
-- Command palette alineado con la nueva navegación
-- Textos más cortos en Workspace e Intelligence
-- Se mantiene la compatibilidad con la base real del proyecto
+
+## v9.3
+- módulo de clientes por organización
+- dashboard por cliente
+- páginas /app/clients y /app/clients/[id]
+- migration 0015_clients_workspace.sql
+
+
+## v9.4
+- facturación por organización
+- límites por plan (usuarios, proyectos, storage)
+- vista /app/organization/billing
+- base lista para Stripe
+
+
+## Novedades v9.6.8
+- Búsqueda rápida global con `⌘K` / `Ctrl+K`.
+- Accesos directos a tareas, proyectos, clientes, notificaciones y ajustes.
+
+
+## v9.7
+- Favoritos y fijados para tareas/proyectos
+- Recientes en dashboard y buscador rápido
+- Acciones rápidas de estado en tareas
+- Estados vacíos más claros

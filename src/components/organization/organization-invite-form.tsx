@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
@@ -9,21 +9,11 @@ const ROLE_OPTIONS = [
   { value: "manager", label: "Manager" },
   { value: "member", label: "Member" },
   { value: "viewer", label: "Viewer" },
-] as const;
+];
 
-export function OrganizationInviteForm({
-  organizationId,
-  canInviteManagers = false,
-}: {
-  organizationId?: string | null;
-  canInviteManagers?: boolean;
-}) {
-  const availableRoles = useMemo(
-    () => ROLE_OPTIONS.filter((option) => canInviteManagers || option.value !== "manager"),
-    [canInviteManagers],
-  );
+export function OrganizationInviteForm({ organizationId }: { organizationId?: string | null }) {
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState<string>(availableRoles[0]?.value ?? "member");
+  const [role, setRole] = useState("member");
   const [status, setStatus] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -36,7 +26,7 @@ export function OrganizationInviteForm({
     const response = await fetch("/api/organization/invites", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ organizationId, email: email.trim().toLowerCase(), role }),
+      body: JSON.stringify({ organizationId, email: email.trim(), role }),
     });
 
     const payload = await response.json().catch(() => ({}));
@@ -48,7 +38,7 @@ export function OrganizationInviteForm({
 
     setStatus("Invitación creada correctamente.");
     setEmail("");
-    setRole(availableRoles[0]?.value ?? "member");
+    setRole("member");
     setLoading(false);
   }
 
@@ -61,7 +51,7 @@ export function OrganizationInviteForm({
       <div>
         <p className="mb-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Rol</p>
         <Select value={role} onChange={(event) => setRole(event.target.value)} disabled={!organizationId || loading}>
-          {availableRoles.map((option) => (
+          {ROLE_OPTIONS.map((option) => (
             <option key={option.value} value={option.value}>{option.label}</option>
           ))}
         </Select>

@@ -27,11 +27,7 @@ export async function getClients(search?: string): Promise<ClientListItem[]> {
 
   if (search?.trim()) query = query.ilike("name", `%${search.trim()}%`);
 
-  const { data: clients, error: clientsError } = await query;
-  if (clientsError) {
-    console.error("[getClients]", clientsError.message);
-    return [];
-  }
+  const { data: clients } = await query;
   const rows = clients ?? [];
   const ids = rows.map((row) => row.id as string);
   const [projectsRes, openTasksRes, completedTasksRes] = await Promise.all([
@@ -56,13 +52,9 @@ export async function getClientDashboardItems(): Promise<ClientDashboardItem[]> 
   const clients = await getClients();
   const supabase = await createClient();
   const ids = clients.map((client) => client.id);
-  const { data: overdueTasks, error: overdueError } = ids.length
+  const { data: overdueTasks } = ids.length
     ? await supabase.from("tasks").select("id,client_id,due_date,status").in("client_id", ids).neq("status", "concluido")
-    : { data: [] as any[], error: null as any };
-
-  if (overdueError) {
-    console.error("[getClientDashboardItems]", overdueError.message);
-  }
+    : { data: [] as any[] };
 
   return clients.slice(0, 6).map((client) => ({
     id: client.id,
@@ -79,17 +71,12 @@ export async function getClientById(clientId: string): Promise<ClientDetailSumma
   if (!organizationId) return null;
 
   const supabase = await createClient();
-  const { data: clientRow, error: clientError } = await supabase
+  const { data: clientRow } = await supabase
     .from("clients")
     .select("id,name,status,notes,created_at,organization_id,account_owner_id")
     .eq("organization_id", organizationId)
     .eq("id", clientId)
     .maybeSingle();
-
-  if (clientError) {
-    console.error("[getClientById]", clientError.message);
-    return null;
-  }
 
   if (!clientRow) return null;
 

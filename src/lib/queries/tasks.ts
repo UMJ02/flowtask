@@ -1,4 +1,4 @@
-import { getWorkspaceContext, applyWorkspaceScope } from "@/lib/queries/workspace";
+import { createClient } from "@/lib/supabase/server";
 
 export interface TaskFiltersInput {
   q?: string;
@@ -8,27 +8,27 @@ export interface TaskFiltersInput {
 }
 
 export async function getTasks(filters: TaskFiltersInput = {}) {
-  const { supabase, user, activeOrganizationId } = await getWorkspaceContext();
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) return [];
 
-  let query = applyWorkspaceScope(
-    supabase
-      .from("tasks")
-      .select(
-        `
-          id,
-          title,
-          status,
-          client_name,
-          due_date,
-          departments ( code, name )
-        `,
-      )
-      .order("created_at", { ascending: false }),
-    user.id,
-    activeOrganizationId,
-  );
+  let query = supabase
+    .from("tasks")
+    .select(
+      `
+        id,
+        title,
+        status,
+        client_name,
+        due_date,
+        departments ( code, name )
+      `,
+    )
+    .eq("owner_id", user.id)
+    .order("created_at", { ascending: false });
 
   if (filters.q) query = query.ilike("title", `%${filters.q}%`);
   if (filters.status) query = query.eq("status", filters.status);
@@ -43,56 +43,44 @@ export async function getTasks(filters: TaskFiltersInput = {}) {
   if (filters.due === "soon") query = query.gte("due_date", today).neq("status", "concluido");
   if (filters.due === "none") query = query.is("due_date", null);
 
-  const { data, error } = await query;
-  if (error) {
-    console.error("[getTasks]", error.message);
-    return [];
-  }
-
+  const { data } = await query;
   return data ?? [];
 }
 
 export async function getTaskById(taskId: string) {
-  const { supabase, user, activeOrganizationId } = await getWorkspaceContext();
-  if (!user) return null;
-
-  let query = applyWorkspaceScope(
-    supabase
-      .from("tasks")
-      .select(
-        `
-          id,
-          owner_id,
-          project_id,
-          title,
-          description,
-          status,
-          client_name,
-          due_date,
-          priority,
-          share_enabled,
-          share_token,
-          created_at,
-          updated_at,
-          completed_at,
-          departments ( id, code, name ),
-          projects ( id, title )
-        `,
-      )
-      .eq("id", taskId),
-    user.id,
-    activeOrganizationId,
-  );
-
-  const { data, error } = await query.single();
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("tasks")
+    .select(
+      `
+        id,
+        owner_id,
+        project_id,
+        title,
+        description,
+        status,
+        client_name,
+        due_date,
+        priority,
+        share_enabled,
+        share_token,
+        created_at,
+        updated_at,
+        completed_at,
+        departments ( id, code, name ),
+        projects ( id, title )
+      `,
+    )
+    .eq("id", taskId)
+    .single();
 
   if (error) return null;
   return data;
 }
 
 export async function getTaskComments(taskId: string) {
-  const { supabase } = await getWorkspaceContext();
-  const { data, error } = await supabase
+  const supabase = await createClient();
+  const { data } = await supabase
     .from("comments")
     .select(
       `
@@ -106,16 +94,11 @@ export async function getTaskComments(taskId: string) {
     .eq("task_id", taskId)
     .order("created_at", { ascending: false });
 
-  if (error) {
-    console.error("[getTaskComments]", error.message);
-    return [];
-  }
-
   return data ?? [];
 }
 
 export async function getAssignableUsers(taskId: string) {
-  const { supabase } = await getWorkspaceContext();
+  const supabase = await createClient();
   const task = await getTaskById(taskId);
   if (!task) return [];
 
@@ -128,7 +111,7 @@ export async function getAssignableUsers(taskId: string) {
     return owner ? [owner] : [];
   }
 
-  const { data, error } = await supabase
+  const { data } = await supabase
     .from("project_members")
     .select(
       `
@@ -138,19 +121,14 @@ export async function getAssignableUsers(taskId: string) {
     )
     .eq("project_id", task.project_id);
 
-  if (error) {
-    console.error("[getAssignableUsers]", error.message);
-    return [];
-  }
-
   return (data ?? [])
     .map((item) => Array.isArray(item.profiles) ? item.profiles[0] : item.profiles)
     .filter(Boolean);
 }
 
 export async function getTaskAssignees(taskId: string) {
-  const { supabase } = await getWorkspaceContext();
-  const { data, error } = await supabase
+  const supabase = await createClient();
+  const { data } = await supabase
     .from("task_assignees")
     .select(
       `
@@ -162,11 +140,6 @@ export async function getTaskAssignees(taskId: string) {
     )
     .eq("task_id", taskId)
     .order("assigned_at", { ascending: false });
-
-  if (error) {
-    console.error("[getTaskAssignees]", error.message);
-    return [];
-  }
 
   return data ?? [];
 }

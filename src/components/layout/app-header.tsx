@@ -24,8 +24,8 @@ export function AppHeader({ userEmail, userName }: { userEmail: string; userName
           </div>
           <div className="min-w-0">
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-emerald-600">FlowTask</p>
-            <h1 className="mt-1 text-lg font-bold text-slate-900 md:text-2xl">Hola, {firstName}</h1>
-            <p className="mt-1 max-w-2xl text-sm text-slate-500">Tu tablero, tus tareas y lo importante del día en un solo lugar.</p>
+            <h1 className="mt-1 text-lg font-bold text-slate-900 md:text-2xl">Bienvenido, {firstName}</h1>
+            <p className="mt-1 max-w-2xl text-sm text-slate-500">Administra tareas, proyectos y clientes en una vista simple, rápida y fácil de entender.</p>
           </div>
         </div>
 

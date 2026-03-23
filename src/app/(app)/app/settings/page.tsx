@@ -2,19 +2,15 @@ import { Card } from '@/components/ui/card';
 import { NotificationPreferencesForm } from '@/components/notifications/notification-preferences-form';
 import { TestNotificationButton } from '@/components/notifications/test-notification-button';
 import { ProfileSettingsForm } from '@/components/settings/profile-settings-form';
-import { AutomationControlCenter } from '@/components/settings/automation-control-center';
 import { getNotificationPreferences } from '@/lib/queries/notification-preferences';
 import { getOrganizationContext } from '@/lib/queries/organization';
 import { getCurrentProfile } from '@/lib/queries/profile';
-import { getWorkspaceOnboardingSummary } from '@/lib/queries/onboarding';
-import { WorkspaceOnboarding } from '@/components/onboarding/workspace-onboarding';
 
 export default async function SettingsPage() {
-  const [preferences, organizationContext, profile, onboardingSummary] = await Promise.all([
+  const [preferences, organizationContext, profile] = await Promise.all([
     getNotificationPreferences(),
     getOrganizationContext(),
     getCurrentProfile(),
-    getWorkspaceOnboardingSummary(),
   ]);
 
   return (
@@ -25,9 +21,6 @@ export default async function SettingsPage() {
         {profile ? <ProfileSettingsForm initialFullName={profile.fullName} email={profile.email} /> : null}
       </Card>
 
-      {onboardingSummary ? <WorkspaceOnboarding summary={onboardingSummary} compact /> : null}
-
-      {preferences ? <AutomationControlCenter preferences={preferences} /> : null}
       {preferences ? <NotificationPreferencesForm initialPreferences={preferences} /> : null}
       <TestNotificationButton />
 

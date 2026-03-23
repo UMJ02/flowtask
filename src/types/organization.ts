@@ -52,12 +52,3 @@ export interface OrganizationRoleTemplateSummary {
   memberCount: number;
   permissions: string[];
 }
-
-
-export interface OrganizationAccessSummary {
-  role: "admin_global" | "manager" | "member" | "viewer" | null;
-  canManageInvites: boolean;
-  canManageRoles: boolean;
-  canManageClientPermissions: boolean;
-  canViewSensitiveOrganizationData: boolean;
-}

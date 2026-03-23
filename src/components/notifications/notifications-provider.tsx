@@ -76,7 +76,7 @@ export function NotificationsProvider({
     let cancelled = false;
     async function loadPreferences() {
       try {
-        const response = await fetch('/api/notification-preferences', { cache: 'no-store' });
+        const response = await fetch('/api/notification-preferences/me', { cache: 'no-store' });
         if (!response.ok) return;
         const result = await response.json();
         if (!cancelled && result?.data) {

@@ -2,17 +2,7 @@ import { Card } from "@/components/ui/card";
 import { OrganizationInviteForm } from "@/components/organization/organization-invite-form";
 import type { OrganizationInviteSummary } from "@/types/organization";
 
-export function OrganizationInvitesPanel({
-  organizationId,
-  invites,
-  canManageInvites = false,
-  canInviteManagers = false,
-}: {
-  organizationId?: string | null;
-  invites: OrganizationInviteSummary[];
-  canManageInvites?: boolean;
-  canInviteManagers?: boolean;
-}) {
+export function OrganizationInvitesPanel({ organizationId, invites }: { organizationId?: string | null; invites: OrganizationInviteSummary[] }) {
   return (
     <Card>
       <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
@@ -23,15 +13,9 @@ export function OrganizationInvitesPanel({
         </div>
       </div>
 
-      {canManageInvites ? (
-        <div className="mt-4">
-          <OrganizationInviteForm organizationId={organizationId} canInviteManagers={canInviteManagers} />
-        </div>
-      ) : (
-        <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
-          Solo los roles <span className="font-semibold text-slate-900">admin_global</span> y <span className="font-semibold text-slate-900">manager</span> pueden crear y consultar invitaciones activas.
-        </div>
-      )}
+      <div className="mt-4">
+        <OrganizationInviteForm organizationId={organizationId} />
+      </div>
 
       <div className="mt-4 overflow-x-auto">
         <table className="min-w-full text-sm">
@@ -53,7 +37,7 @@ export function OrganizationInvitesPanel({
               </tr>
             )) : (
               <tr>
-                <td colSpan={4} className="py-6 text-sm text-slate-500">{canManageInvites ? "Todavía no hay invitaciones para esta organización." : "No tienes acceso a la bandeja de invitaciones de esta organización."}</td>
+                <td colSpan={4} className="py-6 text-sm text-slate-500">Todavía no hay invitaciones para esta organización.</td>
               </tr>
             )}
           </tbody>

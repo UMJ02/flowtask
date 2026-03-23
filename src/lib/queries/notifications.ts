@@ -9,16 +9,11 @@ export async function getUnreadNotificationsCount() {
 
   if (!user) return 0;
 
-  const { count, error } = await supabase
+  const { count } = await supabase
     .from("notifications")
     .select("id", { count: "exact", head: true })
     .eq("user_id", user.id)
     .eq("is_read", false);
-
-  if (error) {
-    console.error("[getUnreadNotificationsCount]", error.message);
-    return 0;
-  }
 
   return count ?? 0;
 }
@@ -35,7 +30,7 @@ export async function getNotificationsPageData() {
 
   const since = subDays(new Date(), 7).toISOString();
 
-  const [notificationsRes, assignedTasksRes, triggeredRemindersRes, unreadCountRes, latestDigestRes] = await Promise.all([
+  const [{ data: notifications }, { data: assignedTasks }, { data: triggeredReminders }, { count: unreadCount }, { data: latestDigest }] = await Promise.all([
     supabase
       .from("notifications")
       .select("id, user_id, title, body, kind, entity_type, entity_id, is_read, created_at, read_at")
@@ -58,51 +53,47 @@ export async function getNotificationsPageData() {
       .limit(10),
     supabase.from("notifications").select("id", { count: "exact", head: true }).eq("user_id", user.id).eq("is_read", false),
     supabase
-      .from("daily_notification_digests")
-      .select("id, digest_date, status, total_notifications, summary_title, summary_body, processed_at")
-      .eq("user_id", user.id)
-      .order("digest_date", { ascending: false })
+      .from('daily_notification_digests')
+      .select('id, digest_date, status, total_notifications, summary_title, summary_body, processed_at')
+      .eq('user_id', user.id)
+      .order('digest_date', { ascending: false })
       .limit(1)
       .maybeSingle(),
   ]);
 
-  const notifications = notificationsRes.data ?? [];
-  const notificationIds = notifications.map((item) => item.id);
+  const notificationIds = (notifications ?? []).map((item) => item.id);
   let deliveriesByNotificationId: Record<string, { channel: string; status: string; attempted_at: string; delivered_at: string | null; error_message: string | null; attempt_number?: number | null; retry_after?: string | null }[]> = {};
 
   if (notificationIds.length) {
-    const { data: deliveries, error: deliveriesError } = await supabase
-      .from("notification_deliveries")
-      .select("id, notification_id, channel, status, attempted_at, delivered_at, error_message, attempt_number, retry_after")
-      .in("notification_id", notificationIds)
-      .order("attempted_at", { ascending: false });
+    const { data: deliveries } = await supabase
+      .from('notification_deliveries')
+      .select('notification_id, channel, status, attempted_at, delivered_at, error_message, attempt_number, retry_after')
+      .in('notification_id', notificationIds)
+      .order('attempted_at', { ascending: false });
 
-    if (deliveriesError) {
-      console.error("[getNotificationsPageData/deliveries]", deliveriesError.message);
-    } else {
-      deliveriesByNotificationId = (deliveries ?? []).reduce((acc, item: any) => {
-        acc[item.notification_id] = acc[item.notification_id] ?? [];
-        acc[item.notification_id].push(item);
-        return acc;
-      }, {} as Record<string, any[]>);
-    }
+    deliveriesByNotificationId = (deliveries ?? []).reduce((acc, item: any) => {
+      acc[item.notification_id] = acc[item.notification_id] ?? [];
+      acc[item.notification_id].push(item);
+      return acc;
+    }, {} as Record<string, any[]>);
   }
+
 
   const deliverySummary = Object.values(deliveriesByNotificationId).flat().reduce((acc, item: any) => {
     acc.total += 1;
-    if (item.status === "sent") acc.sent += 1;
-    else if (item.status === "failed") acc.failed += 1;
+    if (item.status === 'sent') acc.sent += 1;
+    else if (item.status === 'failed') acc.failed += 1;
     else acc.pending += 1;
     return acc;
   }, { total: 0, sent: 0, failed: 0, pending: 0 });
 
   return {
     userId: user.id,
-    notifications: notifications.map((item: any) => ({ ...item, deliveries: deliveriesByNotificationId[item.id] ?? [] })),
-    assignedTasks: assignedTasksRes.data ?? [],
-    triggeredReminders: triggeredRemindersRes.data ?? [],
-    unreadCount: unreadCountRes.count ?? 0,
-    digestPreview: latestDigestRes.data ?? null,
+    notifications: (notifications ?? []).map((item: any) => ({ ...item, deliveries: deliveriesByNotificationId[item.id] ?? [] })),
+    assignedTasks: assignedTasks ?? [],
+    triggeredReminders: triggeredReminders ?? [],
+    unreadCount: unreadCount ?? 0,
+    digestPreview: latestDigest ?? null,
     deliverySummary,
   };
 }

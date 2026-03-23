@@ -10,7 +10,6 @@ import { MarkAllNotificationsReadButton } from "@/components/notifications/mark-
 import { ArchiveReadNotificationsButton } from "@/components/notifications/archive-read-notifications-button";
 import { useNotificationsRealtime, type LiveNotification, type NotificationDelivery } from "@/hooks/use-notifications-realtime";
 import { useNotificationsState } from "@/components/notifications/notifications-provider";
-import { buildRouteWithQuery, projectDetailRoute, taskDetailRoute, type AppRoute } from "@/lib/navigation/routes";
 import { formatDate } from "@/lib/utils/dates";
 import { NOTIFICATION_FILTERS, isNotificationFilterKey, useNotificationFilters, type NotificationFilterKey } from "@/hooks/use-notification-filters";
 
@@ -55,12 +54,12 @@ function getGroupKey(createdAt: string): GroupKey {
   return "earlier";
 }
 
-function buildNotificationHref(item: LiveNotification): AppRoute | null {
+function buildNotificationHref(item: LiveNotification) {
   if (!item.entity_id) return null;
-  if (item.entity_type === "task") return taskDetailRoute(item.entity_id);
-  if (item.entity_type === "project") return projectDetailRoute(item.entity_id);
-  if (item.entity_type === "comment" && item.kind?.toLowerCase().includes("project")) return projectDetailRoute(item.entity_id);
-  if (item.entity_type === "comment") return taskDetailRoute(item.entity_id);
+  if (item.entity_type === "task") return `/app/tasks/${item.entity_id}`;
+  if (item.entity_type === "project") return `/app/projects/${item.entity_id}`;
+  if (item.entity_type === "comment" && item.kind?.toLowerCase().includes("project")) return `/app/projects/${item.entity_id}`;
+  if (item.entity_type === "comment") return `/app/tasks/${item.entity_id}`;
   return null;
 }
 
@@ -71,7 +70,7 @@ function deliveryLabel(status: string) {
   return "En cola";
 }
 
-function withDelivery(current: LiveNotification[], delivery: NotificationDelivery) {
+function withDelivery(current: LiveNotification[], delivery: NotificationDelivery & { notification_id: string }) {
   return current.map((item) => {
     if (item.id !== delivery.notification_id) return item;
     return {
@@ -171,7 +170,8 @@ export function NotificationsLivePanel({
     else params.set("filter", nextFilter);
     if (nextQuery.trim()) params.set("q", nextQuery.trim());
     else params.delete("q");
-    router.replace(buildRouteWithQuery(pathname, params), { scroll: false });
+    const query = params.toString();
+    router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
   };
 
   const visibleNotifications = useNotificationFilters(notifications, activeFilter, searchQuery);
@@ -302,11 +302,10 @@ export function NotificationsLivePanel({
                               ) : null}
                               {!item.is_read ? (
                                 <MarkNotificationReadButton
-                                  id={item.id}
-                                  isRead={item.is_read}
+                                  notificationId={item.id}
                                   onMarked={() => {
                                     setNotifications((current) => current.map((row) => (row.id === item.id ? { ...row, is_read: true } : row)));
-                                    markOneAsRead(item.id);
+                                    markOneAsRead();
                                   }}
                                 />
                               ) : null}

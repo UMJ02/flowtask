@@ -1,6 +1,5 @@
 import { format } from "date-fns";
 import { createClient } from "@/lib/supabase/server";
-import { deriveOrganizationAccess } from "@/lib/security/organization-access";
 
 export async function getOrganizationContext() {
   const supabase = await createClient();
@@ -29,14 +28,12 @@ export async function getOrganizationContext() {
   }).filter((item) => item.id && item.name);
 
   const activeOrganization = normalized[0] ?? null;
-  const access = deriveOrganizationAccess(activeOrganization?.role ?? null);
 
   const { data: clientPermissions } = activeOrganization
     ? await supabase
         .from("client_permissions")
         .select("can_view, can_edit, can_manage_members, clients!inner ( name )")
         .eq("organization_id", activeOrganization.id)
-        .eq("user_id", user.id)
         .order("created_at", { ascending: false })
         .limit(8)
     : { data: [] as any[] };
@@ -55,13 +52,12 @@ export async function getOrganizationContext() {
     activeOrganization,
     organizations: normalized,
     clientPermissions: permissionRows,
-    access,
   };
 }
 
 
-export async function getOrganizationInvites(organizationId?: string | null, canManageInvites = false) {
-  if (!organizationId || !canManageInvites) return [];
+export async function getOrganizationInvites(organizationId?: string | null) {
+  if (!organizationId) return [];
   const supabase = await createClient();
   const { data } = await supabase
     .from("organization_invites")
@@ -115,8 +111,8 @@ export async function getOrganizationMetrics(organizationId?: string | null) {
 }
 
 
-export async function getOrganizationRolesAndPermissions(organizationId?: string | null, canManageRoles = false) {
-  if (!organizationId || !canManageRoles) {
+export async function getOrganizationRolesAndPermissions(organizationId?: string | null) {
+  if (!organizationId) {
     return {
       roleTemplates: [],
       permissionDefinitions: [],
@@ -147,17 +143,16 @@ export async function getOrganizationRolesAndPermissions(organizationId?: string
       .eq("organization_id", organizationId),
   ]);
 
-  const counts = new Map<string, number>();
+  const counts = new Map()
   for (const row of membersRes.data ?? []) {
-    counts.set(row.role as string, (counts.get(row.role as string) ?? 0) + 1);
+    counts.set(row.role, (counts.get(row.role) ?? 0) + 1);
   }
 
-  const permissionsByRole = new Map<string, string[]>();
+  const permissionsByRole = new Map();
   for (const row of rolePermissionsRes.data ?? []) {
-    const key = row.role_template_id as string;
-    const arr = permissionsByRole.get(key) ?? [];
-    arr.push(row.permission_key as string);
-    permissionsByRole.set(key, arr);
+    const arr = permissionsByRole.get(row.role_template_id) ?? [];
+    arr.push(row.permission_key);
+    permissionsByRole.set(row.role_template_id, arr);
   }
 
   const roleTemplates = (roleTemplatesRes.data ?? []).map((row) => ({
@@ -165,7 +160,7 @@ export async function getOrganizationRolesAndPermissions(organizationId?: string
     name: row.name as string,
     description: (row.description as string | null) ?? "",
     isSystem: !!row.is_system,
-    memberCount: counts.get(row.name as string) ?? 0,
+    memberCount: counts.get(row.name) ?? 0,
     permissions: (permissionsByRole.get(row.id as string) ?? []).sort(),
   }));
 

@@ -7,7 +7,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { createClient } from "@/lib/supabase/client";
 import { DEPARTMENTS } from "@/lib/constants/departments";
 import { PROJECT_STATUSES } from "@/lib/constants/project-status";
-import { projectListRoute, type AppRoute } from "@/lib/navigation/routes";
 import { generateShareToken } from "@/lib/utils/tokens";
 import { projectSchema } from "@/lib/validations/project";
 import { getDepartmentIdByCode } from "@/lib/queries/departments";
@@ -24,7 +23,7 @@ interface ProjectFormProps {
   initialData?: Partial<ProjectValues>;
   submitLabel?: string;
   successMessage?: string;
-  redirectTo?: AppRoute;
+  redirectTo?: string;
 }
 
 export function ProjectForm({

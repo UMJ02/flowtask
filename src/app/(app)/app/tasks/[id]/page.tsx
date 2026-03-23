@@ -15,11 +15,9 @@ import { getTaskAttachments } from "@/lib/queries/attachments";
 import { getTaskActivity } from "@/lib/queries/activity";
 import { ActivityTimeline } from "@/components/activity/activity-timeline";
 import { EntityRecentTracker } from '@/components/entities/entity-recent-tracker';
-import { taskDetailRoute } from '@/lib/navigation/routes';
 
 export default async function TaskDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  if (!id?.trim()) notFound();
   const [task, comments, options, assignees, attachments, activity] = await Promise.all([
     getTaskById(id),
     getTaskComments(id),
@@ -33,7 +31,7 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ id:
 
   return (
     <div className="space-y-4">
-      <EntityRecentTracker entity={{ id: task.id, type: 'task', title: task.title, subtitle: task.client_name || 'Tarea', href: taskDetailRoute(task.id), updatedAt: new Date().toISOString() }} />
+      <EntityRecentTracker entity={{ id: task.id, type: 'task', title: task.title, subtitle: task.client_name || 'Tarea', href: `/app/tasks/${task.id}`, updatedAt: new Date().toISOString() }} />
       <TaskDetailSummary task={task} />
       <div className="grid gap-4 lg:grid-cols-2">
         <TaskStatusForm

@@ -1,16 +1,14 @@
 import { Card } from "@/components/ui/card";
 import type { ClientPermissionSummary } from "@/types/organization";
 
-export function ClientPermissionsPanel({ items, canManage = false }: { items: ClientPermissionSummary[]; canManage?: boolean }) {
+export function ClientPermissionsPanel({ items }: { items: ClientPermissionSummary[] }) {
   return (
     <Card>
       <div className="flex items-center justify-between gap-3">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Permisos por cliente</p>
-          <h2 className="mt-1 text-lg font-semibold text-slate-900">Acceso efectivo del usuario actual</h2>
-          <p className="mt-2 text-sm text-slate-600">Esta tabla muestra únicamente los permisos asignados al usuario autenticado dentro de la organización activa.</p>
+          <h2 className="mt-1 text-lg font-semibold text-slate-900">Acceso fino para jefatura y managers</h2>
         </div>
-        {canManage ? <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">Puedes administrarlos</span> : null}
       </div>
       <div className="mt-4 overflow-x-auto">
         <table className="min-w-full text-sm">
@@ -23,18 +21,14 @@ export function ClientPermissionsPanel({ items, canManage = false }: { items: Cl
             </tr>
           </thead>
           <tbody>
-            {items.length ? items.map((item) => (
+            {items.map((item) => (
               <tr key={item.clientName} className="border-t border-slate-100">
                 <td className="py-3 pr-4 font-medium text-slate-900">{item.clientName}</td>
                 <td className="py-3 pr-4 text-slate-600">{item.canView ? "Sí" : "No"}</td>
                 <td className="py-3 pr-4 text-slate-600">{item.canEdit ? "Sí" : "No"}</td>
                 <td className="py-3 pr-4 text-slate-600">{item.canManageMembers ? "Sí" : "No"}</td>
               </tr>
-            )) : (
-              <tr>
-                <td colSpan={4} className="py-6 text-sm text-slate-500">No hay permisos por cliente asignados directamente a tu usuario en esta organización.</td>
-              </tr>
-            )}
+            ))}
           </tbody>
         </table>
       </div>

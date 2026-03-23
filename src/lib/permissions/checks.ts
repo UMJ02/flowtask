@@ -18,26 +18,18 @@ const roleFallbacks: Record<string, FlowPermissionKey[]> = {
 
 export async function canUser(permission: FlowPermissionKey, organizationId?: string | null) {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
   if (!user) return false;
 
-  let membershipQuery = supabase
+  const membershipQuery = supabase
     .from("organization_members")
     .select("role")
     .eq("user_id", user.id)
     .order("is_default", { ascending: false })
     .limit(1);
 
-  if (organizationId) {
-    membershipQuery = membershipQuery.eq("organization_id", organizationId);
-  }
-
-  const { data: memberships, error: membershipError } = await membershipQuery;
-  if (membershipError) return false;
-
-  const membership = memberships?.[0];
+  const membershipRes = organizationId ? membershipQuery.eq("organization_id", organizationId) : membershipQuery;
+  const membership = membershipRes.data?.[0];
   if (!membership?.role) return false;
 
   const role = membership.role as string;

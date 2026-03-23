@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { formatDate } from "@/lib/utils/dates";
 import { Card } from "@/components/ui/card";
-import { projectDetailRoute, taskDetailRoute, taskNewRoute, type AppRoute, asRoute } from "@/lib/navigation/routes";
 
 interface StickyBoardProps {
   recentTasks: Array<{
@@ -26,7 +25,7 @@ interface StickyBoardProps {
   }>;
 }
 
-function Sticky({ title, body, href, meta }: { title: string; body: string; href: AppRoute; meta: string }) {
+function Sticky({ title, body, href, meta }: { title: string; body: string; href: string; meta: string }) {
   return (
     <Link
       href={href}
@@ -48,7 +47,7 @@ export function StickyBoard({ recentTasks, recentProjects, reminders }: StickyBo
           <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">Pizarra personal</p>
           <h2 className="mt-1 text-xl font-bold text-slate-900">Vista rápida del trabajo pendiente</h2>
         </div>
-        <Link href={taskNewRoute()} className="rounded-2xl bg-slate-900 px-4 py-2 text-sm font-medium text-white">
+        <Link href="/app/tasks/new" className="rounded-2xl bg-slate-900 px-4 py-2 text-sm font-medium text-white">
           Nueva tarea
         </Link>
       </div>
@@ -60,7 +59,7 @@ export function StickyBoard({ recentTasks, recentProjects, reminders }: StickyBo
             recentTasks.slice(0, 3).map((task) => (
               <Sticky
                 key={task.id}
-                href={taskDetailRoute(task.id)}
+                href={`/app/tasks/${task.id}`}
                 title={task.title}
                 body={`Estado: ${task.status}. Cliente: ${task.client_name || "Sin cliente"}. Deadline: ${formatDate(task.due_date)}.`}
                 meta="Seguimiento de tarea"
@@ -77,7 +76,7 @@ export function StickyBoard({ recentTasks, recentProjects, reminders }: StickyBo
             recentProjects.slice(0, 3).map((project) => (
               <Sticky
                 key={project.id}
-                href={projectDetailRoute(project.id)}
+                href={`/app/projects/${project.id}`}
                 title={project.title}
                 body={`Estado: ${project.status}. Cliente: ${project.client_name || "Sin cliente"}. Deadline: ${formatDate(project.due_date)}.`}
                 meta="Resumen de proyecto"
@@ -94,7 +93,7 @@ export function StickyBoard({ recentTasks, recentProjects, reminders }: StickyBo
             reminders.slice(0, 3).map((reminder) => (
               <Sticky
                 key={reminder.id}
-                href={reminder.task_id ? taskDetailRoute(reminder.task_id) : reminder.project_id ? projectDetailRoute(reminder.project_id) : asRoute("/app/reminders")}
+                href={reminder.task_id ? `/app/tasks/${reminder.task_id}` : reminder.project_id ? `/app/projects/${reminder.project_id}` : "/app/reminders"}
                 title={`Recordatorio ${formatDate(reminder.remind_at)}`}
                 body={`Programado para ${formatDate(reminder.remind_at)}. Úsalo para revisar seguimiento, bloqueos o entregas próximas.`}
                 meta="Aviso programado"
