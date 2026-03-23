@@ -25,14 +25,17 @@ import { getOrganizationContext } from '@/lib/queries/organization';
 import { getClientDashboardItems } from '@/lib/queries/clients';
 import { getOrganizationBillingSummary } from '@/lib/queries/billing';
 import { getRecentActivitySummary } from '@/lib/queries/activity';
+import { getWorkspaceOnboardingSummary } from '@/lib/queries/onboarding';
+import { WorkspaceOnboarding } from '@/components/onboarding/workspace-onboarding';
 
 export default async function DashboardPage() {
-  const [data, organizationContext, clientItems, billingSummary, activitySummary] = await Promise.all([
+  const [data, organizationContext, clientItems, billingSummary, activitySummary, onboardingSummary] = await Promise.all([
     getDashboardData(),
     getOrganizationContext(),
     getClientDashboardItems(),
     getOrganizationBillingSummary(),
     getRecentActivitySummary(10),
+    getWorkspaceOnboardingSummary(),
   ]);
 
   if (!data) {
@@ -88,6 +91,7 @@ export default async function DashboardPage() {
         </div>
       </Card>
 
+      {onboardingSummary ? <WorkspaceOnboarding summary={onboardingSummary} compact /> : null}
       <BoardOverview activeProjects={data.activeProjects ?? 0} activeTasks={data.activeTasks ?? 0} completedTasks={data.completedTasks ?? 0} />
       <QuickActions />
       <Card className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">

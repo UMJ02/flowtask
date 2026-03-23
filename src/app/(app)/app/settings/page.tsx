@@ -6,12 +6,15 @@ import { AutomationControlCenter } from '@/components/settings/automation-contro
 import { getNotificationPreferences } from '@/lib/queries/notification-preferences';
 import { getOrganizationContext } from '@/lib/queries/organization';
 import { getCurrentProfile } from '@/lib/queries/profile';
+import { getWorkspaceOnboardingSummary } from '@/lib/queries/onboarding';
+import { WorkspaceOnboarding } from '@/components/onboarding/workspace-onboarding';
 
 export default async function SettingsPage() {
-  const [preferences, organizationContext, profile] = await Promise.all([
+  const [preferences, organizationContext, profile, onboardingSummary] = await Promise.all([
     getNotificationPreferences(),
     getOrganizationContext(),
     getCurrentProfile(),
+    getWorkspaceOnboardingSummary(),
   ]);
 
   return (
@@ -21,6 +24,8 @@ export default async function SettingsPage() {
         <p className="mt-2 text-sm text-slate-500">Revisa tus datos, actualiza cómo te mostramos en la app y ajusta cómo quieres recibir avisos.</p>
         {profile ? <ProfileSettingsForm initialFullName={profile.fullName} email={profile.email} /> : null}
       </Card>
+
+      {onboardingSummary ? <WorkspaceOnboarding summary={onboardingSummary} compact /> : null}
 
       {preferences ? <AutomationControlCenter preferences={preferences} /> : null}
       {preferences ? <NotificationPreferencesForm initialPreferences={preferences} /> : null}

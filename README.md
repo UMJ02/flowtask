@@ -1,37 +1,34 @@
-# FlowTask v1.7.0-executive-insights
+# FlowTask v1.8.0-workspace-onboarding
 
-Base canónica actual con enfoque en **lectura ejecutiva, capacidad por departamento y watchlist de proyectos** sobre la línea `v1.6.0-operations`.
+Base canónica actual con enfoque en **onboarding real del workspace, readiness operacional y activación guiada** sobre la línea `v1.7.0-executive-insights`.
 
 ## Estado de esta versión
 - typecheck validado en cero
-- módulo de reportes ampliado con capa ejecutiva real
-- nuevos KPIs para semana actual, tareas en espera y proyectos vencidos
-- nueva vista de capacidad por departamento
-- watchlist de proyectos para seguimiento de riesgo
-- nueva salida imprimible `executive` para PDF
+- nueva capa de onboarding del workspace con score real de readiness
+- checklist maestro para base, operación y automatización
+- recomendaciones accionables según faltantes del entorno
+- acceso al onboarding desde dashboard, settings y navegación principal
 
 ## Objetivo de esta versión
-Dar una lectura todavía más útil para dirección, coordinación y seguimiento semanal sin salir del workspace, con foco en capacidad, riesgo y prioridades inmediatas.
+Convertir el arranque del workspace en un flujo visible, guiado y medible para dejar de depender de memoria o de revisiones manuales.
 
 ## Incluye
-- **Executive insights** dentro de reportes con:
-  - ventana crítica
-  - capacidad por departamento
-  - watchlist de proyectos
-- **Nuevos KPIs**:
-  - tareas de esta semana
-  - tareas en espera
-  - proyectos vencidos
-- **Nuevo reporte imprimible ejecutivo** para compartir estado con jefatura o clientes internos
-- **Base lista** para continuar con onboarding, centro administrativo o automatizaciones más profundas
+- **Centro de onboarding** dentro del workspace con:
+  - score de readiness
+  - checklist maestro
+  - recomendaciones accionables
+  - pulso operativo básico
+- **Nueva ruta** `/app/onboarding`
+- **Widget compacto** de onboarding en dashboard y settings
+- **Base lista** para continuar con centro administrativo, gobierno operativo o automatizaciones más profundas
 
 ## Validación
 - `npm run typecheck` en cero
 - build compilado correctamente en etapa de bundling; en este entorno no confirmé el cierre final del proceso completo de `next build`, así que la validación firme de esta versión queda en typecheck
 
 ## Próxima versión sugerida
-`v1.8.0`
-- onboarding por organización
-- checklist de arranque del workspace
-- activación guiada de canales externos
+`v1.9.0`
 - centro administrativo más profundo
+- gobierno operativo y SLA por equipo
+- plantillas de arranque por tipo de organización
+- automatizaciones externas más cerradas
