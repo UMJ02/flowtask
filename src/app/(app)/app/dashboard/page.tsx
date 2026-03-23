@@ -35,11 +35,13 @@ import { getControlTowerSummary } from '@/lib/queries/control-tower';
 import { getRiskRadarSummary } from '@/lib/queries/risk-radar';
 import { getWorkspaceIntelligenceSummary } from '@/lib/queries/workspace-intelligence';
 import { getExecutionCenterSummary } from '@/lib/queries/execution-center';
+import { getWorkspaceOperatingSystemSummary } from '@/lib/queries/workspace-operating-system';
 import { WorkspaceIntelligence } from '@/components/intelligence/workspace-intelligence';
 import { ExecutionCenter } from '@/components/execution/execution-center';
+import { WorkspaceOperatingSystem } from '@/components/os/workspace-operating-system';
 
 export default async function DashboardPage() {
-  const [data, organizationContext, clientItems, billingSummary, activitySummary, onboardingSummary, planningSummary, controlTowerSummary, riskRadarSummary, workspaceIntelligenceSummary, executionCenterSummary] = await Promise.all([
+  const [data, organizationContext, clientItems, billingSummary, activitySummary, onboardingSummary, planningSummary, controlTowerSummary, riskRadarSummary, workspaceIntelligenceSummary, executionCenterSummary, workspaceOperatingSystemSummary] = await Promise.all([
     getDashboardData(),
     getOrganizationContext(),
     getClientDashboardItems(),
@@ -51,6 +53,7 @@ export default async function DashboardPage() {
     getRiskRadarSummary(),
     getWorkspaceIntelligenceSummary(),
     getExecutionCenterSummary(),
+    getWorkspaceOperatingSystemSummary(),
   ]);
 
   if (!data) {
@@ -107,6 +110,7 @@ export default async function DashboardPage() {
       </Card>
 
       {onboardingSummary ? <WorkspaceOnboarding summary={onboardingSummary} compact /> : null}
+      {workspaceOperatingSystemSummary ? <WorkspaceOperatingSystem summary={workspaceOperatingSystemSummary} compact /> : null}
       <WorkspaceIntelligence summary={workspaceIntelligenceSummary} compact />
       <ExecutionCenter summary={executionCenterSummary} compact />
       <PlanningCenter summary={planningSummary} compact />

@@ -7,6 +7,7 @@ import { getControlTowerSummary } from '@/lib/queries/control-tower';
 import { getRiskRadarSummary } from '@/lib/queries/risk-radar';
 import { getWorkspaceIntelligenceSummary } from '@/lib/queries/workspace-intelligence';
 import { getExecutionCenterSummary } from '@/lib/queries/execution-center';
+import { getWorkspaceOperatingSystemSummary } from '@/lib/queries/workspace-operating-system';
 
 type PrintPageParams = {
   type?: string;
@@ -20,7 +21,42 @@ function MetricCard({ label, value }: { label: string; value: string | number })
   return (
     <div className="rounded-2xl border border-slate-200 p-4">
       <p className="text-sm text-slate-500">{label}</p>
-      <p className="mt-2 text-3xl font-bold">{String(value)}</p>
+      <p className="mt-2 text-3xl font-bold text-slate-900">{String(value)}</p>
+    </div>
+  );
+}
+
+function DataTable({
+  headers,
+  rows,
+}: {
+  headers: string[];
+  rows: Array<Array<string | number>>;
+}) {
+  return (
+    <div className="overflow-hidden rounded-2xl border border-slate-200">
+      <table className="min-w-full text-left text-sm">
+        <thead className="bg-slate-50 text-slate-600">
+          <tr>
+            {headers.map((header) => (
+              <th key={header} className="px-4 py-3">{header}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.length ? rows.map((row, index) => (
+            <tr key={index} className="border-t border-slate-200">
+              {row.map((value, cellIndex) => (
+                <td key={`${index}-${cellIndex}`} className="px-4 py-3">{String(value)}</td>
+              ))}
+            </tr>
+          )) : (
+            <tr className="border-t border-slate-200">
+              <td className="px-4 py-6 text-slate-500" colSpan={headers.length}>Sin datos disponibles para este reporte.</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
     </div>
   );
 }
@@ -33,7 +69,7 @@ export default async function ReportsPrintPage({
   const params = (await searchParams) ?? {};
   const type = params.type || 'summary';
 
-  const [dashboard, projects, tasks, operations, planning, controlTower, risk, intelligence, execution] = await Promise.all([
+  const [dashboard, projects, tasks, operations, planning, controlTower, risk, intelligence, execution, workspaceOs] = await Promise.all([
     getDashboardData(),
     getProjects({}),
     getTasks({}),
@@ -43,26 +79,21 @@ export default async function ReportsPrintPage({
     getRiskRadarSummary(),
     getWorkspaceIntelligenceSummary(),
     getExecutionCenterSummary(),
+    getWorkspaceOperatingSystemSummary(),
   ]);
 
-  const heading =
-    type === 'projects'
-      ? 'Reporte de proyectos'
-      : type === 'operations'
-        ? 'Reporte operativo'
-        : type === 'executive'
-          ? 'Reporte ejecutivo'
-          : type === 'planning'
-            ? 'Reporte de planificación'
-            : type === 'control'
-              ? 'Reporte control tower'
-              : type === 'risk'
-                ? 'Reporte risk radar'
-                : type === 'intelligence'
-                  ? 'Reporte workspace intelligence'
-                  : type === 'execution'
-                    ? 'Reporte execution center'
-                    : 'Reporte general';
+  const heading = {
+    summary: 'Reporte general',
+    projects: 'Reporte de proyectos',
+    operations: 'Reporte operativo',
+    executive: 'Reporte ejecutivo',
+    planning: 'Reporte de planificación',
+    control: 'Reporte control tower',
+    risk: 'Reporte risk radar',
+    intelligence: 'Reporte workspace intelligence',
+    execution: 'Reporte execution center',
+    os: 'Reporte workspace OS',
+  }[type] || 'Reporte general';
 
   return (
     <main className="mx-auto max-w-5xl bg-white p-8 text-slate-900 print:p-4">
@@ -80,144 +111,39 @@ export default async function ReportsPrintPage({
             <MetricCard label="Unblock" value={execution.kpis.unblock} />
             <MetricCard label="Monitor" value={execution.kpis.monitor} />
           </section>
-
-          <section>
-            <h2 className="text-xl font-semibold">Do now</h2>
-            <div className="mt-3 overflow-hidden rounded-2xl border border-slate-200">
-              <table className="min-w-full text-left text-sm">
-                <thead className="bg-slate-50 text-slate-600">
-                  <tr>
-                    <th className="px-4 py-3">Fuente</th>
-                    <th className="px-4 py-3">Elemento</th>
-                    <th className="px-4 py-3">Detalle</th>
-                    <th className="px-4 py-3">Estado</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {execution.doNow.map((item) => (
-                    <tr key={`${item.source}-${item.title}`} className="border-t border-slate-200">
-                      <td className="px-4 py-3">{item.source}</td>
-                      <td className="px-4 py-3">{item.title}</td>
-                      <td className="px-4 py-3">{item.detail}</td>
-                      <td className="px-4 py-3">{item.tone}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </section>
-
-          <section className="grid gap-4 lg:grid-cols-2">
-            <div>
-              <h2 className="text-xl font-semibold">Unblock</h2>
-              <div className="mt-3 overflow-hidden rounded-2xl border border-slate-200">
-                <table className="min-w-full text-left text-sm">
-                  <thead className="bg-slate-50 text-slate-600">
-                    <tr>
-                      <th className="px-4 py-3">Fuente</th>
-                      <th className="px-4 py-3">Elemento</th>
-                      <th className="px-4 py-3">Estado</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {execution.unblock.map((item) => (
-                      <tr key={`${item.source}-${item.title}`} className="border-t border-slate-200">
-                        <td className="px-4 py-3">{item.source}</td>
-                        <td className="px-4 py-3">{item.title}</td>
-                        <td className="px-4 py-3">{item.tone}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            <div>
-              <h2 className="text-xl font-semibold">Team pulse</h2>
-              <div className="mt-3 overflow-hidden rounded-2xl border border-slate-200">
-                <table className="min-w-full text-left text-sm">
-                  <thead className="bg-slate-50 text-slate-600">
-                    <tr>
-                      <th className="px-4 py-3">Departamento</th>
-                      <th className="px-4 py-3">Open tasks</th>
-                      <th className="px-4 py-3">Near term</th>
-                      <th className="px-4 py-3">Score</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {execution.teamPulse.map((item) => (
-                      <tr key={item.name} className="border-t border-slate-200">
-                        <td className="px-4 py-3">{item.name}</td>
-                        <td className="px-4 py-3">{item.openTasks}</td>
-                        <td className="px-4 py-3">{item.nearTermItems}</td>
-                        <td className="px-4 py-3">{item.score}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
+          <section className="space-y-3">
+            <h2 className="text-xl font-semibold">Frentes de ejecución</h2>
+            <DataTable
+              headers={['Fuente', 'Frente', 'Detalle', 'Estado']}
+              rows={[
+                ...execution.doNow.map((item) => [item.source, item.title, item.detail, item.tone]),
+                ...execution.unblock.map((item) => [item.source, item.title, item.detail, item.tone]),
+                ...execution.monitor.map((item) => [item.source, item.title, item.detail, item.tone]),
+              ]}
+            />
           </section>
         </div>
-      ) : type === 'intelligence' ? (
+      ) : type === 'os' ? (
         <div className="mt-6 space-y-6">
           <section className="grid gap-4 md:grid-cols-4">
-            <MetricCard label="Intelligence score" value={`${intelligence.kpis.intelligenceScore}%`} />
-            <MetricCard label="Readiness" value={`${intelligence.kpis.readinessScore}%`} />
-            <MetricCard label="Risk score" value={`${intelligence.kpis.riskScore}%`} />
-            <MetricCard label="Ritmo de cierre" value={`${intelligence.kpis.completionRate}%`} />
+            <MetricCard label="Operating score" value={`${workspaceOs?.kpis.operatingScore ?? 0}%`} />
+            <MetricCard label="Readiness" value={`${workspaceOs?.kpis.readinessScore ?? 0}%`} />
+            <MetricCard label="Execution" value={`${workspaceOs?.kpis.executionScore ?? 0}%`} />
+            <MetricCard label="Risk" value={`${workspaceOs?.kpis.riskScore ?? 0}%`} />
           </section>
-
-          <section>
+          <section className="space-y-3">
+            <h2 className="text-xl font-semibold">Carriles del sistema</h2>
+            <DataTable
+              headers={['Carril', 'Valor', 'Detalle', 'Estado']}
+              rows={(workspaceOs?.operatingLanes ?? []).map((item) => [item.label, item.value, item.detail, item.tone])}
+            />
+          </section>
+          <section className="space-y-3">
             <h2 className="text-xl font-semibold">Prioridades cruzadas</h2>
-            <div className="mt-3 overflow-hidden rounded-2xl border border-slate-200">
-              <table className="min-w-full text-left text-sm">
-                <thead className="bg-slate-50 text-slate-600">
-                  <tr>
-                    <th className="px-4 py-3">Fuente</th>
-                    <th className="px-4 py-3">Prioridad</th>
-                    <th className="px-4 py-3">Detalle</th>
-                    <th className="px-4 py-3">Estado</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {intelligence.crossModulePriorities.map((item) => (
-                    <tr key={`${item.source}-${item.title}`} className="border-t border-slate-200">
-                      <td className="px-4 py-3">{item.source}</td>
-                      <td className="px-4 py-3">{item.title}</td>
-                      <td className="px-4 py-3">{item.detail}</td>
-                      <td className="px-4 py-3">{item.tone}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </section>
-
-          <section>
-            <h2 className="text-xl font-semibold">Watchlist unificado</h2>
-            <div className="mt-3 overflow-hidden rounded-2xl border border-slate-200">
-              <table className="min-w-full text-left text-sm">
-                <thead className="bg-slate-50 text-slate-600">
-                  <tr>
-                    <th className="px-4 py-3">Fuente</th>
-                    <th className="px-4 py-3">Elemento</th>
-                    <th className="px-4 py-3">Meta</th>
-                    <th className="px-4 py-3">Estado</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {intelligence.watchlist.map((item) => (
-                    <tr key={`${item.source}-${item.title}-${item.meta}`} className="border-t border-slate-200">
-                      <td className="px-4 py-3">{item.source}</td>
-                      <td className="px-4 py-3">{item.title}</td>
-                      <td className="px-4 py-3">{item.meta}</td>
-                      <td className="px-4 py-3">{item.tone}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <DataTable
+              headers={['Fuente', 'Prioridad', 'Detalle', 'Estado']}
+              rows={(workspaceOs?.priorities ?? []).map((item) => [item.source, item.title, item.detail, item.tone])}
+            />
           </section>
         </div>
       ) : type === 'risk' ? (
@@ -228,61 +154,19 @@ export default async function ReportsPrintPage({
             <MetricCard label="Proyectos vencidos" value={risk.kpis.overdueProjects} />
             <MetricCard label="Clientes en presión" value={risk.kpis.pressuredClients} />
           </section>
-
-          <section>
+          <section className="space-y-3">
             <h2 className="text-xl font-semibold">Hotspots por departamento</h2>
-            <div className="mt-3 overflow-hidden rounded-2xl border border-slate-200">
-              <table className="min-w-full text-left text-sm">
-                <thead className="bg-slate-50 text-slate-600">
-                  <tr>
-                    <th className="px-4 py-3">Departamento</th>
-                    <th className="px-4 py-3">Tareas abiertas</th>
-                    <th className="px-4 py-3">Proyectos activos</th>
-                    <th className="px-4 py-3">Items cercanos</th>
-                    <th className="px-4 py-3">Estado</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {risk.hotspots.map((item) => (
-                    <tr key={item.name} className="border-t border-slate-200">
-                      <td className="px-4 py-3">{item.name}</td>
-                      <td className="px-4 py-3">{item.openTasks}</td>
-                      <td className="px-4 py-3">{item.activeProjects}</td>
-                      <td className="px-4 py-3">{item.nearTermItems}</td>
-                      <td className="px-4 py-3">{item.tone}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <DataTable
+              headers={['Departamento', 'Tareas abiertas', 'Proyectos activos', 'Items cercanos', 'Estado']}
+              rows={risk.hotspots.map((item) => [item.name, item.openTasks, item.activeProjects, item.nearTermItems, item.tone])}
+            />
           </section>
-
-          <section>
+          <section className="space-y-3">
             <h2 className="text-xl font-semibold">Clientes con presión</h2>
-            <div className="mt-3 overflow-hidden rounded-2xl border border-slate-200">
-              <table className="min-w-full text-left text-sm">
-                <thead className="bg-slate-50 text-slate-600">
-                  <tr>
-                    <th className="px-4 py-3">Cliente</th>
-                    <th className="px-4 py-3">Estado</th>
-                    <th className="px-4 py-3">Tareas</th>
-                    <th className="px-4 py-3">Proyectos</th>
-                    <th className="px-4 py-3">Presión</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {risk.clientRisks.map((item) => (
-                    <tr key={item.id} className="border-t border-slate-200">
-                      <td className="px-4 py-3">{item.name}</td>
-                      <td className="px-4 py-3">{item.status}</td>
-                      <td className="px-4 py-3">{item.openTasks}</td>
-                      <td className="px-4 py-3">{item.activeProjects}</td>
-                      <td className="px-4 py-3">{item.pressure}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <DataTable
+              headers={['Cliente', 'Estado', 'Tareas', 'Proyectos', 'Presión']}
+              rows={risk.clientRisks.map((item) => [item.name, item.status, item.openTasks, item.activeProjects, item.pressure])}
+            />
           </section>
         </div>
       ) : type === 'control' ? (
@@ -293,33 +177,12 @@ export default async function ReportsPrintPage({
             <MetricCard label="Tareas vencidas" value={controlTower.kpis.overdueTasks} />
             <MetricCard label="Señales recientes" value={controlTower.kpis.activityEvents} />
           </section>
-
-          <section>
+          <section className="space-y-3">
             <h2 className="text-xl font-semibold">Foco inmediato</h2>
-            <div className="mt-3 overflow-hidden rounded-2xl border border-slate-200">
-              <table className="min-w-full text-left text-sm">
-                <thead className="bg-slate-50 text-slate-600">
-                  <tr>
-                    <th className="px-4 py-3">Tipo</th>
-                    <th className="px-4 py-3">Elemento</th>
-                    <th className="px-4 py-3">Cliente</th>
-                    <th className="px-4 py-3">Estado</th>
-                    <th className="px-4 py-3">Fecha</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {controlTower.focusNow.map((item) => (
-                    <tr key={`${item.type}-${item.id}`} className="border-t border-slate-200">
-                      <td className="px-4 py-3">{item.type}</td>
-                      <td className="px-4 py-3">{item.title}</td>
-                      <td className="px-4 py-3">{item.clientName}</td>
-                      <td className="px-4 py-3">{item.status}</td>
-                      <td className="px-4 py-3">{item.dueLabel}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <DataTable
+              headers={['Tipo', 'Elemento', 'Cliente', 'Estado', 'Fecha']}
+              rows={controlTower.focusNow.map((item) => [item.type, item.title, item.clientName, item.status, item.dueLabel])}
+            />
           </section>
         </div>
       ) : type === 'planning' ? (
@@ -330,136 +193,69 @@ export default async function ReportsPrintPage({
             <MetricCard label="Tareas vencidas" value={planning.kpis.overdueOpenTasks} />
             <MetricCard label="Proyectos activos" value={planning.kpis.activeProjects} />
           </section>
-
-          <section>
+          <section className="space-y-3">
             <h2 className="text-xl font-semibold">Capacidad por departamento</h2>
-            <div className="mt-3 overflow-hidden rounded-2xl border border-slate-200">
-              <table className="min-w-full text-left text-sm">
-                <thead className="bg-slate-50 text-slate-600">
-                  <tr>
-                    <th className="px-4 py-3">Departamento</th>
-                    <th className="px-4 py-3">Items cercanos</th>
-                    <th className="px-4 py-3">Tareas abiertas</th>
-                    <th className="px-4 py-3">Proyectos activos</th>
-                    <th className="px-4 py-3">Estado</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {planning.departmentCapacity.map((item) => (
-                    <tr key={item.name} className="border-t border-slate-200">
-                      <td className="px-4 py-3">{item.name}</td>
-                      <td className="px-4 py-3">{item.nearTermItems}</td>
-                      <td className="px-4 py-3">{item.openTasks}</td>
-                      <td className="px-4 py-3">{item.activeProjects}</td>
-                      <td className="px-4 py-3">{item.state}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <DataTable
+              headers={['Departamento', 'Items cercanos', 'Tareas abiertas', 'Proyectos activos', 'Estado']}
+              rows={planning.departmentCapacity.map((item) => [item.name, item.nearTermItems, item.openTasks, item.activeProjects, item.state])}
+            />
           </section>
         </div>
-      ) : type === 'executive' ? (
+      ) : type === 'intelligence' ? (
         <div className="mt-6 space-y-6">
           <section className="grid gap-4 md:grid-cols-4">
-            <MetricCard label="Ritmo de cierre" value={`${operations.kpis.completionRate}%`} />
-            <MetricCard label="Semana actual" value={operations.kpis.dueThisWeek} />
-            <MetricCard label="En espera" value={operations.kpis.waitingTasks} />
-            <MetricCard label="Proyectos vencidos" value={operations.kpis.overdueProjects} />
+            <MetricCard label="Intelligence score" value={`${intelligence.kpis.intelligenceScore}%`} />
+            <MetricCard label="Readiness" value={`${intelligence.kpis.readinessScore}%`} />
+            <MetricCard label="Risk score" value={`${intelligence.kpis.riskScore}%`} />
+            <MetricCard label="Ritmo de cierre" value={`${intelligence.kpis.completionRate}%`} />
           </section>
-
-          <section>
-            <h2 className="text-xl font-semibold">Watchlist de proyectos</h2>
-            <div className="mt-3 overflow-hidden rounded-2xl border border-slate-200">
-              <table className="min-w-full text-left text-sm">
-                <thead className="bg-slate-50 text-slate-600">
-                  <tr>
-                    <th className="px-4 py-3">Proyecto</th>
-                    <th className="px-4 py-3">Cliente</th>
-                    <th className="px-4 py-3">Estado</th>
-                    <th className="px-4 py-3">Fecha</th>
-                    <th className="px-4 py-3">Urgencia</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {operations.projectWatchlist.map((project) => (
-                    <tr key={project.id} className="border-t border-slate-200">
-                      <td className="px-4 py-3">{project.title}</td>
-                      <td className="px-4 py-3">{project.clientName}</td>
-                      <td className="px-4 py-3">{project.status}</td>
-                      <td className="px-4 py-3">{project.dueLabel}</td>
-                      <td className="px-4 py-3">{project.urgency}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+          <section className="space-y-3">
+            <h2 className="text-xl font-semibold">Prioridades cruzadas</h2>
+            <DataTable
+              headers={['Fuente', 'Prioridad', 'Detalle', 'Estado']}
+              rows={intelligence.crossModulePriorities.map((item) => [item.source, item.title, item.detail, item.tone])}
+            />
           </section>
         </div>
       ) : type === 'operations' ? (
         <div className="mt-6 space-y-6">
           <section className="grid gap-4 md:grid-cols-4">
             <MetricCard label="Tareas activas" value={operations.kpis.activeTasks} />
-            <MetricCard label="Vencidas" value={operations.kpis.overdueTasks} />
+            <MetricCard label="Tareas vencidas" value={operations.kpis.overdueTasks} />
             <MetricCard label="Para hoy" value={operations.kpis.dueToday} />
             <MetricCard label="Clientes activos" value={operations.kpis.clients} />
           </section>
-
-          <section>
-            <h2 className="text-xl font-semibold">Clientes con más carga</h2>
-            <div className="mt-3 overflow-hidden rounded-2xl border border-slate-200">
-              <table className="min-w-full text-left text-sm">
-                <thead className="bg-slate-50 text-slate-600">
-                  <tr>
-                    <th className="px-4 py-3">Cliente</th>
-                    <th className="px-4 py-3">Estado</th>
-                    <th className="px-4 py-3">Tareas abiertas</th>
-                    <th className="px-4 py-3">Proyectos activos</th>
-                    <th className="px-4 py-3">Cerradas</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {operations.attentionClients.map((item) => (
-                    <tr key={item.id} className="border-t border-slate-200">
-                      <td className="px-4 py-3">{item.name}</td>
-                      <td className="px-4 py-3">{item.status}</td>
-                      <td className="px-4 py-3">{item.openTasks}</td>
-                      <td className="px-4 py-3">{item.openProjects}</td>
-                      <td className="px-4 py-3">{item.completedTasks}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+          <section className="space-y-3">
+            <h2 className="text-xl font-semibold">Radar de atención</h2>
+            <DataTable
+              headers={['Elemento', 'Cliente', 'Estado', 'Fecha']}
+              rows={operations.focusTasks.map((item) => [item.title, item.clientName, item.status, item.dueLabel])}
+            />
+          </section>
+        </div>
+      ) : type === 'executive' ? (
+        <div className="mt-6 space-y-6">
+          <section className="grid gap-4 md:grid-cols-4">
+            <MetricCard label="Tareas activas" value={operations.kpis.activeTasks} />
+            <MetricCard label="Semana actual" value={operations.kpis.dueThisWeek} />
+            <MetricCard label="En espera" value={operations.kpis.waitingTasks} />
+            <MetricCard label="Proyectos vencidos" value={operations.kpis.overdueProjects} />
+          </section>
+          <section className="space-y-3">
+            <h2 className="text-xl font-semibold">Capacidad por departamento</h2>
+            <DataTable
+              headers={['Departamento', 'Tareas', 'Proyectos', 'Items cercanos', 'Score']}
+              rows={operations.departmentLoad.map((item) => [item.name, item.openTasks, item.activeProjects, item.nearTermItems, item.score])}
+            />
           </section>
         </div>
       ) : type === 'projects' ? (
         <section className="mt-6 space-y-3">
           <h2 className="text-xl font-semibold">Proyectos</h2>
-          <div className="overflow-hidden rounded-2xl border border-slate-200">
-            <table className="min-w-full text-left text-sm">
-              <thead className="bg-slate-50 text-slate-600">
-                <tr>
-                  <th className="px-4 py-3">Proyecto</th>
-                  <th className="px-4 py-3">Cliente</th>
-                  <th className="px-4 py-3">Estado</th>
-                  <th className="px-4 py-3">Deadline</th>
-                  <th className="px-4 py-3">Modo</th>
-                </tr>
-              </thead>
-              <tbody>
-                {projects.map((project: ProjectRow) => (
-                  <tr key={project.id} className="border-t border-slate-200">
-                    <td className="px-4 py-3">{project.title}</td>
-                    <td className="px-4 py-3">{project.client_name || '-'}</td>
-                    <td className="px-4 py-3">{project.status}</td>
-                    <td className="px-4 py-3">{project.due_date || '-'}</td>
-                    <td className="px-4 py-3">{project.is_collaborative ? 'Colaborativo' : 'Personal'}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <DataTable
+            headers={['Proyecto', 'Cliente', 'Estado', 'Deadline', 'Modo']}
+            rows={projects.map((project: ProjectRow) => [project.title, project.client_name || '-', project.status, project.due_date || '-', project.is_collaborative ? 'Colaborativo' : 'Personal'])}
+          />
         </section>
       ) : (
         <div className="mt-6 space-y-6">
@@ -469,59 +265,19 @@ export default async function ReportsPrintPage({
             <MetricCard label="Tareas concluidas" value={dashboard?.completedTasks ?? 0} />
             <MetricCard label="Proyectos colaborativos" value={dashboard?.collaborativeProjects ?? 0} />
           </section>
-
-          <section>
+          <section className="space-y-3">
             <h2 className="text-xl font-semibold">Clientes con más carga</h2>
-            <div className="mt-3 overflow-hidden rounded-2xl border border-slate-200">
-              <table className="min-w-full text-left text-sm">
-                <thead className="bg-slate-50 text-slate-600">
-                  <tr>
-                    <th className="px-4 py-3">Cliente</th>
-                    <th className="px-4 py-3">Total</th>
-                    <th className="px-4 py-3">Tareas</th>
-                    <th className="px-4 py-3">Proyectos</th>
-                    <th className="px-4 py-3">Completados</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {(dashboard?.clientMetrics ?? []).map((item: ClientMetricRow) => (
-                    <tr key={item.name} className="border-t border-slate-200">
-                      <td className="px-4 py-3">{item.name}</td>
-                      <td className="px-4 py-3">{item.total}</td>
-                      <td className="px-4 py-3">{item.tasks}</td>
-                      <td className="px-4 py-3">{item.projects}</td>
-                      <td className="px-4 py-3">{item.completed}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <DataTable
+              headers={['Cliente', 'Total', 'Tareas', 'Proyectos', 'Completados']}
+              rows={(dashboard?.clientMetrics ?? []).map((item: ClientMetricRow) => [item.name, item.total, item.tasks ?? 0, item.projects ?? 0, item.completed ?? 0])}
+            />
           </section>
-
-          <section>
+          <section className="space-y-3">
             <h2 className="text-xl font-semibold">Tareas recientes</h2>
-            <div className="mt-3 overflow-hidden rounded-2xl border border-slate-200">
-              <table className="min-w-full text-left text-sm">
-                <thead className="bg-slate-50 text-slate-600">
-                  <tr>
-                    <th className="px-4 py-3">Tarea</th>
-                    <th className="px-4 py-3">Cliente</th>
-                    <th className="px-4 py-3">Estado</th>
-                    <th className="px-4 py-3">Deadline</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {tasks.slice(0, 12).map((task: TaskRow) => (
-                    <tr key={task.id} className="border-t border-slate-200">
-                      <td className="px-4 py-3">{task.title}</td>
-                      <td className="px-4 py-3">{task.client_name || '-'}</td>
-                      <td className="px-4 py-3">{task.status}</td>
-                      <td className="px-4 py-3">{task.due_date || '-'}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <DataTable
+              headers={['Tarea', 'Cliente', 'Estado', 'Deadline']}
+              rows={tasks.slice(0, 12).map((task: TaskRow) => [task.title, task.client_name || '-', task.status, task.due_date || '-'])}
+            />
           </section>
         </div>
       )}

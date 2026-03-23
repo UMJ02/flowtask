@@ -26,6 +26,7 @@ export default async function ReportsPage() {
             <Link href="/app/reports/print?type=risk" target="_blank"><Button variant="secondary">Risk PDF</Button></Link>
             <Link href="/app/reports/print?type=intelligence" target="_blank"><Button variant="secondary">Intelligence PDF</Button></Link>
             <Link href="/app/reports/print?type=execution" target="_blank"><Button variant="secondary">Execution PDF</Button></Link>
+            <Link href="/app/reports/print?type=os" target="_blank"><Button variant="secondary">Workspace OS PDF</Button></Link>
           </>
         }
       />

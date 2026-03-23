@@ -20,6 +20,7 @@ import {
   ShieldAlert,
   BrainCircuit,
   PlayCircle,
+  Cpu,
 } from 'lucide-react';
 import type { AppRoute } from '@/lib/navigation/routes';
 
@@ -46,6 +47,7 @@ export const appNavLinks: AppNavLink[] = [
   { href: '/app/risk-radar', label: 'Risk Radar', hint: 'Riesgo operativo, vencimientos y presión', icon: ShieldAlert },
   { href: '/app/workspace-intelligence', label: 'Intelligence', hint: 'Lectura unificada del workspace', icon: BrainCircuit },
   { href: '/app/execution-center', label: 'Execution Center', hint: 'Do now, unblock y monitor en una sola capa', icon: PlayCircle },
+  { href: '/app/workspace-os', label: 'Workspace OS', hint: 'La capa maestra para operar el workspace completo', icon: Cpu },
   { href: '/app/completed', label: 'Finalizadas', hint: 'Lo que ya quedó listo', icon: CheckCircle2 },
   { href: '/app/organization', label: 'Organización', hint: 'Equipo, clientes y uso', icon: Building2 },
   { href: '/app/organization/roles', label: 'Permisos', hint: 'Qué puede hacer cada persona', icon: Shield },

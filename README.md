@@ -1,40 +1,17 @@
-# FlowTask v2.1.0-risk-radar
+# FlowTask v3.0.0-workspace-os
 
-Base canónica actual sobre `v2.0.0-control-tower`, ahora con una capa nueva de **lectura de riesgo operativo** para ver vencimientos, presión por cliente y hotspots por departamento sin salir del workspace.
+Base canónica actual sobre `v2.3.0-execution-center`, ahora consolidada en una capa maestra **Workspace OS** para operar onboarding, planning, execution, intelligence y riesgo como un solo sistema.
 
 ## Estado de esta versión
-- nueva ruta `/app/risk-radar`
-- nuevo centro de riesgo operativo
+- nueva ruta `/app/workspace-os`
+- nuevo centro maestro de operación del workspace
 - widget compacto en dashboard
 - acceso desde navegación principal
 - acceso desde command palette
-- salida imprimible `risk` en reportes
+- salida imprimible `os` en reportes
 
 ## Objetivo de esta versión
-Dar una vista ejecutiva y accionable del riesgo real del workspace antes de que los bloqueos se conviertan en atrasos mayores.
-
-## Incluye
-- **Risk Radar** con:
-  - risk score global
-  - buckets de riesgo
-  - hotspots por departamento
-  - watchlist de proyectos
-  - clientes con presión operativa
-  - recomendaciones accionables
-- **Nueva ruta** `/app/risk-radar`
-- **Widget compacto** dentro del dashboard
-- **Nuevo PDF** en reportes con `type=risk`
-
-## Validación
-- `npm run typecheck` validado en cero dentro del entorno de trabajo usando las dependencias restauradas del proyecto original
-- ZIP limpio para descarga
-
-## Próxima versión sugerida
-`v2.2.0`
-- reglas automáticas por SLA
-- alertas por dueño/departamento
-- centro de seguimiento con automatizaciones más profundas
-
+Acelerar el cierre profesional de segmentos sin seguir abriendo demasiadas subcapas, unificando la lectura ejecutiva en una sola experiencia de control.
 
 ## v2.1.1-stability-hotfix
 - Corrige el fetch de preferencias de notificación para evitar 404 en cliente.
