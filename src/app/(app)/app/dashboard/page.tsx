@@ -33,9 +33,11 @@ import { RiskRadar } from '@/components/risk/risk-radar';
 import { getPlanningOverview } from '@/lib/queries/planning';
 import { getControlTowerSummary } from '@/lib/queries/control-tower';
 import { getRiskRadarSummary } from '@/lib/queries/risk-radar';
+import { getWorkspaceIntelligenceSummary } from '@/lib/queries/workspace-intelligence';
+import { WorkspaceIntelligence } from '@/components/intelligence/workspace-intelligence';
 
 export default async function DashboardPage() {
-  const [data, organizationContext, clientItems, billingSummary, activitySummary, onboardingSummary, planningSummary, controlTowerSummary, riskRadarSummary] = await Promise.all([
+  const [data, organizationContext, clientItems, billingSummary, activitySummary, onboardingSummary, planningSummary, controlTowerSummary, riskRadarSummary, workspaceIntelligenceSummary] = await Promise.all([
     getDashboardData(),
     getOrganizationContext(),
     getClientDashboardItems(),
@@ -45,6 +47,7 @@ export default async function DashboardPage() {
     getPlanningOverview(),
     getControlTowerSummary(),
     getRiskRadarSummary(),
+    getWorkspaceIntelligenceSummary(),
   ]);
 
   if (!data) {
@@ -101,6 +104,7 @@ export default async function DashboardPage() {
       </Card>
 
       {onboardingSummary ? <WorkspaceOnboarding summary={onboardingSummary} compact /> : null}
+      <WorkspaceIntelligence summary={workspaceIntelligenceSummary} compact />
       <PlanningCenter summary={planningSummary} compact />
       <ControlTower summary={controlTowerSummary} compact />
       <RiskRadar summary={riskRadarSummary} compact />

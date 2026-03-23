@@ -5,6 +5,7 @@ import { getTasks } from '@/lib/queries/tasks';
 import { getPlanningOverview } from '@/lib/queries/planning';
 import { getControlTowerSummary } from '@/lib/queries/control-tower';
 import { getRiskRadarSummary } from '@/lib/queries/risk-radar';
+import { getWorkspaceIntelligenceSummary } from '@/lib/queries/workspace-intelligence';
 
 type PrintPageParams = {
   type?: string;
@@ -31,7 +32,7 @@ export default async function ReportsPrintPage({
   const params = (await searchParams) ?? {};
   const type = params.type || 'summary';
 
-  const [dashboard, projects, tasks, operations, planning, controlTower, risk] = await Promise.all([
+  const [dashboard, projects, tasks, operations, planning, controlTower, risk, intelligence] = await Promise.all([
     getDashboardData(),
     getProjects({}),
     getTasks({}),
@@ -39,6 +40,7 @@ export default async function ReportsPrintPage({
     getPlanningOverview(),
     getControlTowerSummary(),
     getRiskRadarSummary(),
+    getWorkspaceIntelligenceSummary(),
   ]);
 
   const heading =
@@ -54,7 +56,9 @@ export default async function ReportsPrintPage({
               ? 'Reporte control tower'
               : type === 'risk'
                 ? 'Reporte risk radar'
-                : 'Reporte general';
+                : type === 'intelligence'
+                  ? 'Reporte workspace intelligence'
+                  : 'Reporte general';
 
   return (
     <main className="mx-auto max-w-5xl bg-white p-8 text-slate-900 print:p-4">
@@ -64,7 +68,68 @@ export default async function ReportsPrintPage({
         <p className="mt-2 text-sm text-slate-500">Generado para impresión o guardado como PDF.</p>
       </header>
 
-      {type === 'risk' ? (
+      {type === 'intelligence' ? (
+        <div className="mt-6 space-y-6">
+          <section className="grid gap-4 md:grid-cols-4">
+            <MetricCard label="Intelligence score" value={`${intelligence.kpis.intelligenceScore}%`} />
+            <MetricCard label="Readiness" value={`${intelligence.kpis.readinessScore}%`} />
+            <MetricCard label="Risk score" value={`${intelligence.kpis.riskScore}%`} />
+            <MetricCard label="Ritmo de cierre" value={`${intelligence.kpis.completionRate}%`} />
+          </section>
+
+          <section>
+            <h2 className="text-xl font-semibold">Prioridades cruzadas</h2>
+            <div className="mt-3 overflow-hidden rounded-2xl border border-slate-200">
+              <table className="min-w-full text-left text-sm">
+                <thead className="bg-slate-50 text-slate-600">
+                  <tr>
+                    <th className="px-4 py-3">Fuente</th>
+                    <th className="px-4 py-3">Prioridad</th>
+                    <th className="px-4 py-3">Detalle</th>
+                    <th className="px-4 py-3">Estado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {intelligence.crossModulePriorities.map((item) => (
+                    <tr key={`${item.source}-${item.title}`} className="border-t border-slate-200">
+                      <td className="px-4 py-3">{item.source}</td>
+                      <td className="px-4 py-3">{item.title}</td>
+                      <td className="px-4 py-3">{item.detail}</td>
+                      <td className="px-4 py-3">{item.tone}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-semibold">Watchlist unificado</h2>
+            <div className="mt-3 overflow-hidden rounded-2xl border border-slate-200">
+              <table className="min-w-full text-left text-sm">
+                <thead className="bg-slate-50 text-slate-600">
+                  <tr>
+                    <th className="px-4 py-3">Fuente</th>
+                    <th className="px-4 py-3">Elemento</th>
+                    <th className="px-4 py-3">Meta</th>
+                    <th className="px-4 py-3">Estado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {intelligence.watchlist.map((item) => (
+                    <tr key={`${item.source}-${item.title}-${item.meta}`} className="border-t border-slate-200">
+                      <td className="px-4 py-3">{item.source}</td>
+                      <td className="px-4 py-3">{item.title}</td>
+                      <td className="px-4 py-3">{item.meta}</td>
+                      <td className="px-4 py-3">{item.tone}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      ) : type === 'risk' ? (
         <div className="mt-6 space-y-6">
           <section className="grid gap-4 md:grid-cols-4">
             <MetricCard label="Risk score" value={`${risk.kpis.riskScore}%`} />

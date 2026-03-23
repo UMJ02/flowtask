@@ -41,3 +41,11 @@ Dar una vista ejecutiva y accionable del riesgo real del workspace antes de que 
 - Agrega endpoint de compatibilidad `GET /api/notification-preferences/me`.
 - Endurece la estrategia del service worker para evitar hidratar con assets JS viejos en rutas SSR.
 - Fuerza actualización del registro del service worker con `updateViaCache: 'none'`.
+
+
+## v2.2.0-workspace-intelligence
+- Nueva ruta `/app/workspace-intelligence`
+- Nueva capa de lectura ejecutiva unificada
+- Widget compacto en dashboard
+- Acceso desde navegación y command palette
+- Nueva salida imprimible `/app/reports/print?type=intelligence`

@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Bell, Bookmark, Building2, CalendarDays, ClipboardList, Command, FolderKanban, History, LayoutDashboard, ListTodo, Plus, Radar, Search, Settings, ShieldAlert, Star, Users, X } from 'lucide-react';
+import { Bell, Bookmark, BrainCircuit, Building2, CalendarDays, ClipboardList, Command, FolderKanban, History, LayoutDashboard, ListTodo, Plus, Radar, Search, Settings, ShieldAlert, Star, Users, X } from 'lucide-react';
 import { useWorkspaceMemory } from '@/hooks/use-workspace-memory';
 import { asRoute, projectListRoute, taskListRoute, type AppRoute } from '@/lib/navigation/routes';
 
@@ -120,6 +120,15 @@ const COMMANDS: CommandItem[] = [
     href: '/app/risk-radar',
     keywords: ['risk radar', 'riesgo', 'vencimientos', 'presion', 'alertas'],
     icon: ShieldAlert,
+    section: 'Accesos',
+  },
+  {
+    id: 'workspace-intelligence',
+    label: 'Abrir workspace intelligence',
+    description: 'Cruza onboarding, planning, control y riesgo para priorizar mejor.',
+    href: '/app/workspace-intelligence',
+    keywords: ['workspace intelligence', 'intelligence', 'resumen ejecutivo', 'prioridades', 'insights'],
+    icon: BrainCircuit,
     section: 'Accesos',
   },
   {
