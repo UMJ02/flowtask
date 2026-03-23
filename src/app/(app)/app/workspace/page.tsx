@@ -70,7 +70,7 @@ export default async function WorkspacePage() {
       <SectionHeader
         eyebrow="Workspace"
         title="Tu espacio de trabajo"
-        description="Entra, revisa el tablero y actúa sin perder tiempo."
+        description="Entra, mira la pizarra y actúa sin perder tiempo."
         icon={<LayoutGrid className="h-5 w-5" />}
         actions={
           <>
@@ -136,7 +136,7 @@ export default async function WorkspacePage() {
                 <h3 className="mt-2 text-xl font-bold text-slate-900">Qué atender ahora</h3>
               </div>
               <Link href="/app/intelligence" className="inline-flex items-center gap-2 text-sm font-semibold text-slate-700 hover:text-slate-900">
-                Ver más <ArrowRight className="h-4 w-4" />
+                Ver insights <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
             <div className="mt-5 grid gap-3 sm:grid-cols-2">

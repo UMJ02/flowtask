@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "5.6.3-workspace-enhanced-pro",
+  "version": "5.7.0-real-interactive-board",
   "private": true,
   "scripts": {
     "dev": "next dev",
