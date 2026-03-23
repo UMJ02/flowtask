@@ -1,44 +1,35 @@
-# FlowTask v1.9.0-planning-center
+# FlowTask v2.0.0-control-tower
 
-Base canónica actual con enfoque en **onboarding real del workspace, readiness operacional y activación guiada** sobre la línea `v1.7.0-executive-insights`.
+Base canónica actual sobre `v1.9.0-planning-center`, ahora con una capa nueva de **control operativo central** para leer foco inmediato, presión por cliente y señales de ejecución desde una sola vista.
 
 ## Estado de esta versión
-- typecheck validado en cero
-- nueva capa de onboarding del workspace con score real de readiness
-- checklist maestro para base, operación y automatización
-- recomendaciones accionables según faltantes del entorno
-- acceso al onboarding desde dashboard, settings y navegación principal
+- nueva ruta `/app/control-tower`
+- nuevo centro de control operativo
+- widget compacto en dashboard
+- acceso desde navegación principal
+- acceso desde command palette
+- salida imprimible `control` en reportes
 
 ## Objetivo de esta versión
-Convertir el arranque del workspace en un flujo visible, guiado y medible para dejar de depender de memoria o de revisiones manuales.
+Dar una vista ejecutable y rápida para decidir qué atender primero sin tener que saltar entre tareas, proyectos, clientes y reportes.
 
 ## Incluye
-- **Centro de onboarding** dentro del workspace con:
-  - score de readiness
-  - checklist maestro
+- **Control Tower** con:
+  - KPIs de operación inmediata
+  - foco inmediato de tareas y proyectos
+  - carriles de ejecución
+  - señales por cliente
   - recomendaciones accionables
-  - pulso operativo básico
-- **Nueva ruta** `/app/onboarding`
-- **Widget compacto** de onboarding en dashboard y settings
-- **Base lista** para continuar con centro administrativo, gobierno operativo o automatizaciones más profundas
+- **Nueva ruta** `/app/control-tower`
+- **Widget compacto** dentro del dashboard
+- **Nuevo PDF** en reportes con `type=control`
 
 ## Validación
-- `npm run typecheck` en cero
-- build compilado correctamente en etapa de bundling; en este entorno no confirmé el cierre final del proceso completo de `next build`, así que la validación firme de esta versión queda en typecheck
+- cambios contenidos y empaquetado limpio para descarga
+- en este entorno no pude reejecutar una validación completa de `npm run typecheck`, así que no te la voy a vender como corrida confirmada cuando no la comprobé aquí
 
 ## Próxima versión sugerida
-`v1.9.0`
-- centro administrativo más profundo
-- gobierno operativo y SLA por equipo
-- plantillas de arranque por tipo de organización
-- automatizaciones externas más cerradas
-
-
-## v1.9.0-planning-center
-
-- nueva ruta `/app/planning`
-- centro de planificación con foco de 14 días
-- capacidad por departamento
-- clientes con más movimiento
-- widget compacto en dashboard
-- salida imprimible `planning` en reportes
+`v2.1.0`
+- automatizaciones por reglas
+- SLA por cliente y departamento
+- centro de seguimiento con alertas más profundas

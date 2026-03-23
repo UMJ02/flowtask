@@ -16,6 +16,7 @@ import {
   CalendarDays,
   Rocket,
   Compass,
+  Radar,
 } from 'lucide-react';
 import type { AppRoute } from '@/lib/navigation/routes';
 
@@ -38,6 +39,7 @@ export const appNavLinks: AppNavLink[] = [
   { href: '/app/reports', label: 'Reportes', hint: 'Exporta y revisa avances', icon: BarChart3 },
   { href: '/app/onboarding', label: 'Onboarding', hint: 'Checklist y readiness del workspace', icon: Rocket },
   { href: '/app/planning', label: 'Planning', hint: 'Capacidad, carga y próximos 14 días', icon: Compass },
+  { href: '/app/control-tower', label: 'Control Tower', hint: 'Señales, foco y ejecución inmediata', icon: Radar },
   { href: '/app/completed', label: 'Finalizadas', hint: 'Lo que ya quedó listo', icon: CheckCircle2 },
   { href: '/app/organization', label: 'Organización', hint: 'Equipo, clientes y uso', icon: Building2 },
   { href: '/app/organization/roles', label: 'Permisos', hint: 'Qué puede hacer cada persona', icon: Shield },

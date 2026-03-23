@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Bell, Bookmark, Building2, CalendarDays, ClipboardList, Command, FolderKanban, History, LayoutDashboard, ListTodo, Plus, Search, Settings, Star, Users, X } from 'lucide-react';
+import { Bell, Bookmark, Building2, CalendarDays, ClipboardList, Command, FolderKanban, History, LayoutDashboard, ListTodo, Plus, Radar, Search, Settings, Star, Users, X } from 'lucide-react';
 import { useWorkspaceMemory } from '@/hooks/use-workspace-memory';
 import { asRoute, projectListRoute, taskListRoute, type AppRoute } from '@/lib/navigation/routes';
 
@@ -102,6 +102,15 @@ const COMMANDS: CommandItem[] = [
     href: '/app/organization',
     keywords: ['organizacion', 'equipo', 'roles'],
     icon: Building2,
+    section: 'Accesos',
+  },
+  {
+    id: 'control-tower',
+    label: 'Abrir control tower',
+    description: 'Centro de control operativo con foco inmediato y señales por cliente.',
+    href: '/app/control-tower',
+    keywords: ['control tower', 'control', 'operacion', 'foco', 'ejecucion'],
+    icon: Radar,
     section: 'Accesos',
   },
   {

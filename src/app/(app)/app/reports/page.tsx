@@ -22,6 +22,7 @@ export default async function ReportsPage() {
             <Link href="/app/reports/print?type=operations" target="_blank"><Button>Operación PDF</Button></Link>
             <Link href="/app/reports/print?type=executive" target="_blank"><Button variant="secondary">Ejecutivo PDF</Button></Link>
             <Link href="/app/reports/print?type=planning" target="_blank"><Button variant="secondary">Planning PDF</Button></Link>
+            <Link href="/app/reports/print?type=control" target="_blank"><Button variant="secondary">Control PDF</Button></Link>
           </>
         }
       />

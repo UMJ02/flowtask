@@ -3,6 +3,7 @@ import { getProjects } from "@/lib/queries/projects";
 import { getTasks } from "@/lib/queries/tasks";
 import { getReportsOverview } from "@/lib/queries/reports";
 import { getPlanningOverview } from '@/lib/queries/planning';
+import { getControlTowerSummary } from '@/lib/queries/control-tower';
 
 type PrintPageParams = {
   type?: string;
@@ -19,12 +20,13 @@ export default async function ReportsPrintPage({
 }) {
   const params = (await searchParams) ?? {};
   const type = params.type || "summary";
-  const [dashboard, projects, tasks, operations, planning] = await Promise.all([
+  const [dashboard, projects, tasks, operations, planning, controlTower] = await Promise.all([
     getDashboardData(),
     getProjects({}),
     getTasks({}),
     getReportsOverview(),
     getPlanningOverview(),
+    getControlTowerSummary(),
   ]);
 
   const heading =
@@ -36,7 +38,9 @@ export default async function ReportsPrintPage({
           ? "Reporte ejecutivo"
           : type === "planning"
             ? "Reporte de planificación"
-            : "Reporte general";
+            : type === "control"
+              ? "Reporte control tower"
+              : "Reporte general";
 
   return (
     <main className="mx-auto max-w-5xl bg-white p-8 text-slate-900 print:p-4">
@@ -46,7 +50,79 @@ export default async function ReportsPrintPage({
         <p className="mt-2 text-sm text-slate-500">Generado para impresión o guardado como PDF.</p>
       </header>
 
-      {type === "planning" ? (
+      {type === "control" ? (
+        <div className="mt-6 space-y-6">
+          <section className="grid gap-4 md:grid-cols-4">
+            {[
+              ["Tareas activas", controlTower.kpis.activeTasks],
+              ["Proyectos activos", controlTower.kpis.activeProjects],
+              ["Tareas vencidas", controlTower.kpis.overdueTasks],
+              ["Señales recientes", controlTower.kpis.activityEvents],
+            ].map(([label, value]) => (
+              <div key={String(label)} className="rounded-2xl border border-slate-200 p-4">
+                <p className="text-sm text-slate-500">{label}</p>
+                <p className="mt-2 text-3xl font-bold">{String(value)}</p>
+              </div>
+            ))}
+          </section>
+
+          <section>
+            <h2 className="text-xl font-semibold">Foco inmediato</h2>
+            <div className="mt-3 overflow-hidden rounded-2xl border border-slate-200">
+              <table className="min-w-full text-left text-sm">
+                <thead className="bg-slate-50 text-slate-600">
+                  <tr>
+                    <th className="px-4 py-3">Tipo</th>
+                    <th className="px-4 py-3">Elemento</th>
+                    <th className="px-4 py-3">Cliente</th>
+                    <th className="px-4 py-3">Estado</th>
+                    <th className="px-4 py-3">Fecha</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {controlTower.focusNow.map((item) => (
+                    <tr key={`${item.type}-${item.id}`} className="border-t border-slate-200">
+                      <td className="px-4 py-3">{item.type}</td>
+                      <td className="px-4 py-3">{item.title}</td>
+                      <td className="px-4 py-3">{item.clientName}</td>
+                      <td className="px-4 py-3">{item.status}</td>
+                      <td className="px-4 py-3">{item.dueLabel}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-semibold">Señales por cliente</h2>
+            <div className="mt-3 overflow-hidden rounded-2xl border border-slate-200">
+              <table className="min-w-full text-left text-sm">
+                <thead className="bg-slate-50 text-slate-600">
+                  <tr>
+                    <th className="px-4 py-3">Cliente</th>
+                    <th className="px-4 py-3">Estado</th>
+                    <th className="px-4 py-3">Tareas abiertas</th>
+                    <th className="px-4 py-3">Proyectos activos</th>
+                    <th className="px-4 py-3">Cercanos</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {controlTower.clientSignals.map((item) => (
+                    <tr key={item.id} className="border-t border-slate-200">
+                      <td className="px-4 py-3">{item.name}</td>
+                      <td className="px-4 py-3">{item.status}</td>
+                      <td className="px-4 py-3">{item.openTasks}</td>
+                      <td className="px-4 py-3">{item.activeProjects}</td>
+                      <td className="px-4 py-3">{item.nearTermItems}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      ) : {type === "planning" ? (
         <div className="mt-6 space-y-6">
           <section className="grid gap-4 md:grid-cols-4">
             {[
