@@ -8,6 +8,7 @@ import { getRiskRadarSummary } from '@/lib/queries/risk-radar';
 import { getWorkspaceIntelligenceSummary } from '@/lib/queries/workspace-intelligence';
 import { getExecutionCenterSummary } from '@/lib/queries/execution-center';
 import { getWorkspaceOperatingSystemSummary } from '@/lib/queries/workspace-operating-system';
+import { getExecutiveSuiteSummary } from '@/lib/queries/executive-suite';
 
 type PrintPageParams = {
   type?: string;
@@ -69,7 +70,7 @@ export default async function ReportsPrintPage({
   const params = (await searchParams) ?? {};
   const type = params.type || 'summary';
 
-  const [dashboard, projects, tasks, operations, planning, controlTower, risk, intelligence, execution, workspaceOs] = await Promise.all([
+  const [dashboard, projects, tasks, operations, planning, controlTower, risk, intelligence, execution, workspaceOs, executiveSuite] = await Promise.all([
     getDashboardData(),
     getProjects({}),
     getTasks({}),
@@ -80,6 +81,7 @@ export default async function ReportsPrintPage({
     getWorkspaceIntelligenceSummary(),
     getExecutionCenterSummary(),
     getWorkspaceOperatingSystemSummary(),
+    getExecutiveSuiteSummary(),
   ]);
 
   const heading = {
@@ -93,6 +95,7 @@ export default async function ReportsPrintPage({
     intelligence: 'Reporte workspace intelligence',
     execution: 'Reporte execution center',
     os: 'Reporte workspace OS',
+    'executive-suite': 'Reporte executive suite',
   }[type] || 'Reporte general';
 
   return (
@@ -103,7 +106,30 @@ export default async function ReportsPrintPage({
         <p className="mt-2 text-sm text-slate-500">Generado para impresión o guardado como PDF.</p>
       </header>
 
-      {type === 'execution' ? (
+      {type === 'executive-suite' ? (
+        <div className="mt-6 space-y-6">
+          <section className="grid gap-4 md:grid-cols-4">
+            <MetricCard label="Executive score" value={`${executiveSuite?.kpis.executiveScore ?? 0}%`} />
+            <MetricCard label="Operating" value={`${executiveSuite?.kpis.operatingScore ?? 0}%`} />
+            <MetricCard label="Execution" value={`${executiveSuite?.kpis.executionScore ?? 0}%`} />
+            <MetricCard label="Risk load" value={`${executiveSuite?.kpis.riskScore ?? 0}%`} />
+          </section>
+          <section className="space-y-3">
+            <h2 className="text-xl font-semibold">Decision board</h2>
+            <DataTable
+              headers={['Fuente', 'Decisión', 'Detalle', 'Estado']}
+              rows={(executiveSuite?.decisionBoard ?? []).map((item) => [item.source, item.title, item.detail, item.tone])}
+            />
+          </section>
+          <section className="space-y-3">
+            <h2 className="text-xl font-semibold">Governance watchlist</h2>
+            <DataTable
+              headers={['Tipo', 'Elemento', 'Responsable', 'Detalle', 'Estado']}
+              rows={(executiveSuite?.governanceWatchlist ?? []).map((item) => [item.source, item.title, item.owner, item.detail, item.tone])}
+            />
+          </section>
+        </div>
+      ) : type === 'execution' ? (
         <div className="mt-6 space-y-6">
           <section className="grid gap-4 md:grid-cols-4">
             <MetricCard label="Execution score" value={`${execution.kpis.executionScore}%`} />

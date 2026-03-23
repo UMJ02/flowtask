@@ -36,12 +36,14 @@ import { getRiskRadarSummary } from '@/lib/queries/risk-radar';
 import { getWorkspaceIntelligenceSummary } from '@/lib/queries/workspace-intelligence';
 import { getExecutionCenterSummary } from '@/lib/queries/execution-center';
 import { getWorkspaceOperatingSystemSummary } from '@/lib/queries/workspace-operating-system';
+import { getExecutiveSuiteSummary } from '@/lib/queries/executive-suite';
 import { WorkspaceIntelligence } from '@/components/intelligence/workspace-intelligence';
 import { ExecutionCenter } from '@/components/execution/execution-center';
 import { WorkspaceOperatingSystem } from '@/components/os/workspace-operating-system';
+import { ExecutiveSuite } from '@/components/executive/executive-suite';
 
 export default async function DashboardPage() {
-  const [data, organizationContext, clientItems, billingSummary, activitySummary, onboardingSummary, planningSummary, controlTowerSummary, riskRadarSummary, workspaceIntelligenceSummary, executionCenterSummary, workspaceOperatingSystemSummary] = await Promise.all([
+  const [data, organizationContext, clientItems, billingSummary, activitySummary, onboardingSummary, planningSummary, controlTowerSummary, riskRadarSummary, workspaceIntelligenceSummary, executionCenterSummary, workspaceOperatingSystemSummary, executiveSuiteSummary] = await Promise.all([
     getDashboardData(),
     getOrganizationContext(),
     getClientDashboardItems(),
@@ -54,6 +56,7 @@ export default async function DashboardPage() {
     getWorkspaceIntelligenceSummary(),
     getExecutionCenterSummary(),
     getWorkspaceOperatingSystemSummary(),
+    getExecutiveSuiteSummary(),
   ]);
 
   if (!data) {
@@ -111,6 +114,7 @@ export default async function DashboardPage() {
 
       {onboardingSummary ? <WorkspaceOnboarding summary={onboardingSummary} compact /> : null}
       {workspaceOperatingSystemSummary ? <WorkspaceOperatingSystem summary={workspaceOperatingSystemSummary} compact /> : null}
+      {executiveSuiteSummary ? <ExecutiveSuite summary={executiveSuiteSummary} compact /> : null}
       <WorkspaceIntelligence summary={workspaceIntelligenceSummary} compact />
       <ExecutionCenter summary={executionCenterSummary} compact />
       <PlanningCenter summary={planningSummary} compact />

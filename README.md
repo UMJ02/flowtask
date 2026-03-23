@@ -1,17 +1,17 @@
-# FlowTask v3.0.0-workspace-os
+# FlowTask v4.0.0-executive-suite
 
-Base canónica actual sobre `v2.3.0-execution-center`, ahora consolidada en una capa maestra **Workspace OS** para operar onboarding, planning, execution, intelligence y riesgo como un solo sistema.
+Base canónica actual sobre `v3.0.0-workspace-os`, ahora ampliada con una capa de **Executive Suite** para revisar gobierno, watchlist y decisiones semanales del workspace sin perder el contexto operativo.
 
 ## Estado de esta versión
-- nueva ruta `/app/workspace-os`
-- nuevo centro maestro de operación del workspace
+- nueva ruta `/app/executive-suite`
+- nuevo tablero de gobierno semanal
+- decision board y governance watchlist
 - widget compacto en dashboard
-- acceso desde navegación principal
-- acceso desde command palette
-- salida imprimible `os` en reportes
+- acceso desde navegación principal y command palette
+- salida imprimible `executive-suite` en reportes
 
 ## Objetivo de esta versión
-Acelerar el cierre profesional de segmentos sin seguir abriendo demasiadas subcapas, unificando la lectura ejecutiva en una sola experiencia de control.
+Subir el proyecto a una capa más ejecutiva, con una vista clara para decisiones, seguimiento y cierre semanal sin seguir fragmentando la experiencia en módulos pequeños.
 
 ## v2.1.1-stability-hotfix
 - Corrige el fetch de preferencias de notificación para evitar 404 en cliente.
