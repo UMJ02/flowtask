@@ -1,4 +1,43 @@
 {
   "name": "flowtask",
-  "version": "5.0.0-workspace-rearchitecture"
+  "version": "5.1.0-workspace-real",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "process-reminders": "npx tsx scripts/process-reminders.ts",
+    "check": "npm run typecheck",
+    "process-notification-deliveries": "npx tsx scripts/process-notification-deliveries.ts",
+    "process-daily-digest": "npx tsx scripts/process-daily-digest.ts",
+    "retry-failed-deliveries": "npx tsx scripts/retry-failed-deliveries.ts"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^3.10.0",
+    "@supabase/ssr": "^0.5.2",
+    "@supabase/supabase-js": "^2.56.0",
+    "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
+    "lucide-react": "^0.511.0",
+    "next": "15.3.1",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "react-hook-form": "^7.54.2",
+    "tailwind-merge": "^3.3.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.0",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "autoprefixer": "^10.4.21",
+    "eslint": "^9.24.0",
+    "eslint-config-next": "15.3.1",
+    "postcss": "^8.5.3",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.8.2",
+    "tsx": "^4.19.3"
+  }
 }
