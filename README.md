@@ -49,3 +49,14 @@ Dar una vista ejecutiva y accionable del riesgo real del workspace antes de que 
 - Widget compacto en dashboard
 - Acceso desde navegación y command palette
 - Nueva salida imprimible `/app/reports/print?type=intelligence`
+
+
+## Current release
+
+### v2.3.0-execution-center
+- nueva ruta `/app/execution-center`
+- execution score con frentes `do now`, `unblock` y `monitor`
+- team pulse por departamento
+- widget compacto en dashboard
+- acceso desde sidebar y command palette
+- nuevo PDF en reportes: `/app/reports/print?type=execution`

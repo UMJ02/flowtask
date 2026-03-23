@@ -6,6 +6,7 @@ import { getPlanningOverview } from '@/lib/queries/planning';
 import { getControlTowerSummary } from '@/lib/queries/control-tower';
 import { getRiskRadarSummary } from '@/lib/queries/risk-radar';
 import { getWorkspaceIntelligenceSummary } from '@/lib/queries/workspace-intelligence';
+import { getExecutionCenterSummary } from '@/lib/queries/execution-center';
 
 type PrintPageParams = {
   type?: string;
@@ -32,7 +33,7 @@ export default async function ReportsPrintPage({
   const params = (await searchParams) ?? {};
   const type = params.type || 'summary';
 
-  const [dashboard, projects, tasks, operations, planning, controlTower, risk, intelligence] = await Promise.all([
+  const [dashboard, projects, tasks, operations, planning, controlTower, risk, intelligence, execution] = await Promise.all([
     getDashboardData(),
     getProjects({}),
     getTasks({}),
@@ -41,6 +42,7 @@ export default async function ReportsPrintPage({
     getControlTowerSummary(),
     getRiskRadarSummary(),
     getWorkspaceIntelligenceSummary(),
+    getExecutionCenterSummary(),
   ]);
 
   const heading =
@@ -58,7 +60,9 @@ export default async function ReportsPrintPage({
                 ? 'Reporte risk radar'
                 : type === 'intelligence'
                   ? 'Reporte workspace intelligence'
-                  : 'Reporte general';
+                  : type === 'execution'
+                    ? 'Reporte execution center'
+                    : 'Reporte general';
 
   return (
     <main className="mx-auto max-w-5xl bg-white p-8 text-slate-900 print:p-4">
@@ -68,7 +72,94 @@ export default async function ReportsPrintPage({
         <p className="mt-2 text-sm text-slate-500">Generado para impresión o guardado como PDF.</p>
       </header>
 
-      {type === 'intelligence' ? (
+      {type === 'execution' ? (
+        <div className="mt-6 space-y-6">
+          <section className="grid gap-4 md:grid-cols-4">
+            <MetricCard label="Execution score" value={`${execution.kpis.executionScore}%`} />
+            <MetricCard label="Do now" value={execution.kpis.doNow} />
+            <MetricCard label="Unblock" value={execution.kpis.unblock} />
+            <MetricCard label="Monitor" value={execution.kpis.monitor} />
+          </section>
+
+          <section>
+            <h2 className="text-xl font-semibold">Do now</h2>
+            <div className="mt-3 overflow-hidden rounded-2xl border border-slate-200">
+              <table className="min-w-full text-left text-sm">
+                <thead className="bg-slate-50 text-slate-600">
+                  <tr>
+                    <th className="px-4 py-3">Fuente</th>
+                    <th className="px-4 py-3">Elemento</th>
+                    <th className="px-4 py-3">Detalle</th>
+                    <th className="px-4 py-3">Estado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {execution.doNow.map((item) => (
+                    <tr key={`${item.source}-${item.title}`} className="border-t border-slate-200">
+                      <td className="px-4 py-3">{item.source}</td>
+                      <td className="px-4 py-3">{item.title}</td>
+                      <td className="px-4 py-3">{item.detail}</td>
+                      <td className="px-4 py-3">{item.tone}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section className="grid gap-4 lg:grid-cols-2">
+            <div>
+              <h2 className="text-xl font-semibold">Unblock</h2>
+              <div className="mt-3 overflow-hidden rounded-2xl border border-slate-200">
+                <table className="min-w-full text-left text-sm">
+                  <thead className="bg-slate-50 text-slate-600">
+                    <tr>
+                      <th className="px-4 py-3">Fuente</th>
+                      <th className="px-4 py-3">Elemento</th>
+                      <th className="px-4 py-3">Estado</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {execution.unblock.map((item) => (
+                      <tr key={`${item.source}-${item.title}`} className="border-t border-slate-200">
+                        <td className="px-4 py-3">{item.source}</td>
+                        <td className="px-4 py-3">{item.title}</td>
+                        <td className="px-4 py-3">{item.tone}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div>
+              <h2 className="text-xl font-semibold">Team pulse</h2>
+              <div className="mt-3 overflow-hidden rounded-2xl border border-slate-200">
+                <table className="min-w-full text-left text-sm">
+                  <thead className="bg-slate-50 text-slate-600">
+                    <tr>
+                      <th className="px-4 py-3">Departamento</th>
+                      <th className="px-4 py-3">Open tasks</th>
+                      <th className="px-4 py-3">Near term</th>
+                      <th className="px-4 py-3">Score</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {execution.teamPulse.map((item) => (
+                      <tr key={item.name} className="border-t border-slate-200">
+                        <td className="px-4 py-3">{item.name}</td>
+                        <td className="px-4 py-3">{item.openTasks}</td>
+                        <td className="px-4 py-3">{item.nearTermItems}</td>
+                        <td className="px-4 py-3">{item.score}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+        </div>
+      ) : type === 'intelligence' ? (
         <div className="mt-6 space-y-6">
           <section className="grid gap-4 md:grid-cols-4">
             <MetricCard label="Intelligence score" value={`${intelligence.kpis.intelligenceScore}%`} />

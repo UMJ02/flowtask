@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "2.2.0-workspace-intelligence",
+  "version": "2.3.0-execution-center",
   "private": true,
   "scripts": {
     "dev": "next dev",

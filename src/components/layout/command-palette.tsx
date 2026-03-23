@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Bell, Bookmark, BrainCircuit, Building2, CalendarDays, ClipboardList, Command, FolderKanban, History, LayoutDashboard, ListTodo, Plus, Radar, Search, Settings, ShieldAlert, Star, Users, X } from 'lucide-react';
+import { Bell, Bookmark, BrainCircuit, Building2, CalendarDays, ClipboardList, Command, FolderKanban, History, LayoutDashboard, ListTodo, PlayCircle, Plus, Radar, Search, Settings, ShieldAlert, Star, Users, X } from 'lucide-react';
 import { useWorkspaceMemory } from '@/hooks/use-workspace-memory';
 import { asRoute, projectListRoute, taskListRoute, type AppRoute } from '@/lib/navigation/routes';
 
@@ -129,6 +129,15 @@ const COMMANDS: CommandItem[] = [
     href: '/app/workspace-intelligence',
     keywords: ['workspace intelligence', 'intelligence', 'resumen ejecutivo', 'prioridades', 'insights'],
     icon: BrainCircuit,
+    section: 'Accesos',
+  },
+  {
+    id: 'execution-center',
+    label: 'Abrir execution center',
+    description: 'Convierte señales en acción con frentes do now, unblock y monitor.',
+    href: '/app/execution-center',
+    keywords: ['execution center', 'ejecucion', 'do now', 'unblock', 'monitor', 'prioridades'],
+    icon: PlayCircle,
     section: 'Accesos',
   },
   {

@@ -104,6 +104,7 @@ export function WorkspaceIntelligence({ summary, compact = false }: { summary: W
           <div className="mt-5 flex flex-wrap gap-3">
             <Link href={asRoute('/app/reports/print?type=intelligence')} target="_blank"><Button>Intelligence PDF</Button></Link>
             <Link href={asRoute('/app/control-tower')}><Button variant="secondary">Abrir control tower</Button></Link>
+            <Link href={asRoute('/app/execution-center')}><Button variant="secondary">Abrir execution center</Button></Link>
           </div>
         </Card>
       </div>
