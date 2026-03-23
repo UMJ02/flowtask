@@ -1,0 +1,172 @@
+import { getWorkspaceContext, applyWorkspaceScope } from "@/lib/queries/workspace";
+
+export interface TaskFiltersInput {
+  q?: string;
+  status?: string;
+  department?: string;
+  due?: string;
+}
+
+export async function getTasks(filters: TaskFiltersInput = {}) {
+  const { supabase, user, activeOrganizationId } = await getWorkspaceContext();
+
+  if (!user) return [];
+
+  let query = applyWorkspaceScope(
+    supabase
+      .from("tasks")
+      .select(
+        `
+          id,
+          title,
+          status,
+          client_name,
+          due_date,
+          departments ( code, name )
+        `,
+      )
+      .order("created_at", { ascending: false }),
+    user.id,
+    activeOrganizationId,
+  );
+
+  if (filters.q) query = query.ilike("title", `%${filters.q}%`);
+  if (filters.status) query = query.eq("status", filters.status);
+  if (filters.department) {
+    const { data: dept } = await supabase.from("departments").select("id").eq("code", filters.department).maybeSingle();
+    if (dept?.id) query = query.eq("department_id", dept.id);
+  }
+
+  const today = new Date().toISOString().slice(0, 10);
+  if (filters.due === "overdue") query = query.lt("due_date", today).neq("status", "concluido");
+  if (filters.due === "today") query = query.eq("due_date", today).neq("status", "concluido");
+  if (filters.due === "soon") query = query.gte("due_date", today).neq("status", "concluido");
+  if (filters.due === "none") query = query.is("due_date", null);
+
+  const { data, error } = await query;
+  if (error) {
+    console.error("[getTasks]", error.message);
+    return [];
+  }
+
+  return data ?? [];
+}
+
+export async function getTaskById(taskId: string) {
+  const { supabase, user, activeOrganizationId } = await getWorkspaceContext();
+  if (!user) return null;
+
+  let query = applyWorkspaceScope(
+    supabase
+      .from("tasks")
+      .select(
+        `
+          id,
+          owner_id,
+          project_id,
+          title,
+          description,
+          status,
+          client_name,
+          due_date,
+          priority,
+          share_enabled,
+          share_token,
+          created_at,
+          updated_at,
+          completed_at,
+          departments ( id, code, name ),
+          projects ( id, title )
+        `,
+      )
+      .eq("id", taskId),
+    user.id,
+    activeOrganizationId,
+  );
+
+  const { data, error } = await query.single();
+
+  if (error) return null;
+  return data;
+}
+
+export async function getTaskComments(taskId: string) {
+  const { supabase } = await getWorkspaceContext();
+  const { data, error } = await supabase
+    .from("comments")
+    .select(
+      `
+        id,
+        content,
+        created_at,
+        author_id,
+        profiles ( full_name, email )
+      `,
+    )
+    .eq("task_id", taskId)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("[getTaskComments]", error.message);
+    return [];
+  }
+
+  return data ?? [];
+}
+
+export async function getAssignableUsers(taskId: string) {
+  const { supabase } = await getWorkspaceContext();
+  const task = await getTaskById(taskId);
+  if (!task) return [];
+
+  if (!task.project_id) {
+    const { data: owner } = await supabase
+      .from("profiles")
+      .select("id, full_name, email")
+      .eq("id", task.owner_id)
+      .single();
+    return owner ? [owner] : [];
+  }
+
+  const { data, error } = await supabase
+    .from("project_members")
+    .select(
+      `
+        user_id,
+        profiles ( id, full_name, email )
+      `,
+    )
+    .eq("project_id", task.project_id);
+
+  if (error) {
+    console.error("[getAssignableUsers]", error.message);
+    return [];
+  }
+
+  return (data ?? [])
+    .map((item) => Array.isArray(item.profiles) ? item.profiles[0] : item.profiles)
+    .filter(Boolean);
+}
+
+export async function getTaskAssignees(taskId: string) {
+  const { supabase } = await getWorkspaceContext();
+  const { data, error } = await supabase
+    .from("task_assignees")
+    .select(
+      `
+        id,
+        assigned_at,
+        user_id,
+        profiles ( id, full_name, email )
+      `,
+    )
+    .eq("task_id", taskId)
+    .order("assigned_at", { ascending: false });
+
+  if (error) {
+    console.error("[getTaskAssignees]", error.message);
+    return [];
+  }
+
+  return data ?? [];
+}
