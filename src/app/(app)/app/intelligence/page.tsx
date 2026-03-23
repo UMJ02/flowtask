@@ -32,7 +32,7 @@ export default async function IntelligencePage() {
   if (!workspace || !planning || !risk || !execution) {
     return (
       <ErrorState
-        title="No pudimos abrir insights"
+        title="No pudimos abrir esta vista"
         description="Faltan datos del workspace para consolidar esta vista. Revisa tu contexto y vuelve a intentarlo."
       />
     );
@@ -49,8 +49,8 @@ export default async function IntelligencePage() {
     <div className="space-y-5">
       <SectionHeader
         eyebrow="Insights"
-        title="Todo en una vista"
-        description="Aquí se junta lo más útil del trabajo: estado, riesgo, capacidad y foco, sin dar vueltas."
+        title="Insights"
+        description="Estado, riesgo, capacidad y foco en una sola vista."
         icon={<BrainCircuit className="h-5 w-5" />}
         actions={
           <>

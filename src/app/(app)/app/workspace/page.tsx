@@ -1,12 +1,13 @@
 import Link from 'next/link';
 import { ArrowRight, BrainCircuit, FolderKanban, LayoutGrid, ListChecks, Plus } from 'lucide-react';
-import { TaskWorkspace } from '@/components/tasks/task-workspace';
 import { RecentActivity } from '@/components/dashboard/recent-activity';
+import { TaskWorkspace } from '@/components/tasks/task-workspace';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorState } from '@/components/ui/error-state';
 import { SectionHeader } from '@/components/ui/section-header';
+import { WorkspaceQuickActions } from '@/components/workspace/quick-actions';
 import { getRecentActivitySummary } from '@/lib/queries/activity';
 import { getClientDashboardItems } from '@/lib/queries/clients';
 import { getDashboardData } from '@/lib/queries/dashboard';
@@ -34,7 +35,7 @@ export default async function WorkspacePage() {
   if (!data) {
     return (
       <ErrorState
-        title="No pudimos abrir tu workspace"
+        title="No pudimos abrir el workspace"
         description="Falta el contexto del espacio de trabajo. Revisa tu sesión e inténtalo otra vez."
         action={
           <Link href="/login">
@@ -50,7 +51,7 @@ export default async function WorkspacePage() {
   const focus = [
     { label: 'Atrasadas', value: data.overdueTasks ?? 0, tone: 'danger' as const },
     { label: 'Para hoy', value: data.dueSoonTasks ?? 0, tone: 'attention' as const },
-    { label: 'Proyectos activos', value: data.activeProjects ?? 0, tone: 'neutral' as const },
+    { label: 'Activos', value: data.activeProjects ?? 0, tone: 'neutral' as const },
     { label: 'Bloqueadas', value: data.waitingTasks ?? 0, tone: 'attention' as const },
   ];
 
@@ -59,7 +60,7 @@ export default async function WorkspacePage() {
       <SectionHeader
         eyebrow="Workspace"
         title="Workspace"
-        description="Entra, mira lo importante y trabaja. Tu pizarra, acciones rápidas y métricas útiles viven aquí."
+        description="Tu tablero principal para entrar, ver lo importante y seguir trabajando."
         icon={<LayoutGrid className="h-5 w-5" />}
         actions={
           <>
@@ -116,32 +117,7 @@ export default async function WorkspacePage() {
         </div>
 
         <div className="space-y-4">
-          <Card>
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Acciones rápidas</p>
-                <h3 className="mt-2 text-xl font-bold text-slate-900">Acciones rápidas</h3>
-                <p className="mt-1 text-sm text-slate-500">Lo que más usas, sin salir del flujo.</p>
-              </div>
-              <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100">
-                <Plus className="h-5 w-5" />
-              </span>
-            </div>
-            <div className="mt-5 grid gap-3">
-              <Link href={taskNewRoute()} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 transition hover:border-emerald-200 hover:bg-emerald-50">
-                <p className="text-sm font-semibold text-slate-900">Nueva tarea</p>
-                <p className="mt-1 text-sm text-slate-500">Agrega algo pendiente y ponlo a moverse de inmediato.</p>
-              </Link>
-              <Link href={projectNewRoute()} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 transition hover:border-emerald-200 hover:bg-emerald-50">
-                <p className="text-sm font-semibold text-slate-900">Nuevo proyecto</p>
-                <p className="mt-1 text-sm text-slate-500">Crea una base nueva con equipo, fechas y cliente.</p>
-              </Link>
-              <Link href="/app/intelligence" className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 transition hover:border-emerald-200 hover:bg-emerald-50">
-                <p className="text-sm font-semibold text-slate-900">Ver insights</p>
-                <p className="mt-1 text-sm text-slate-500">Revisa riesgos, foco y capacidad en una sola vista.</p>
-              </Link>
-            </div>
-          </Card>
+          <WorkspaceQuickActions />
 
           <Card>
             <div className="flex items-center justify-between gap-3">
@@ -172,83 +148,61 @@ export default async function WorkspacePage() {
         </div>
       </div>
 
-      <div className="grid gap-4 xl:grid-cols-[1fr_1fr]">
+      <div className="grid gap-4 xl:grid-cols-[1.15fr_0.85fr]">
         <Card>
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Proyectos</p>
-              <h3 className="mt-2 text-xl font-bold text-slate-900">Sigue el avance</h3>
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Actividad reciente</p>
+              <h3 className="mt-2 text-xl font-bold text-slate-900">Lo último que pasó</h3>
+              <p className="mt-1 text-sm text-slate-500">Úsalo para retomar contexto sin abrir varias pantallas.</p>
             </div>
-            <Link href="/app/projects" className="inline-flex items-center gap-2 text-sm font-semibold text-slate-700 hover:text-slate-900">
-              Ver todos <ArrowRight className="h-4 w-4" />
-            </Link>
           </div>
-          <div className="mt-5 grid gap-3">
-            {topProjects.length ? topProjects.map((project) => (
-              <Link key={project.id} href={projectDetailRoute(project.id)} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 transition hover:border-emerald-200 hover:bg-emerald-50">
-                <div className="flex items-center justify-between gap-3">
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-slate-900">{project.title}</p>
-                    <p className="mt-1 text-sm text-slate-500">{project.client_name || 'Sin cliente'}</p>
-                  </div>
-                  <span className="inline-flex rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-700 ring-1 ring-slate-200">{project.status}</span>
-                </div>
-              </Link>
-            )) : (
-              <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-6 text-sm text-slate-500">Aún no hay proyectos activos.</div>
-            )}
+          <div className="mt-4">
+            <RecentActivity items={activitySummary} compact />
           </div>
         </Card>
 
-        <Card>
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Clientes</p>
-              <h3 className="mt-2 text-xl font-bold text-slate-900">Dónde está la carga</h3>
-            </div>
-            <Link href="/app/clients" className="inline-flex items-center gap-2 text-sm font-semibold text-slate-700 hover:text-slate-900">
-              Ver todos <ArrowRight className="h-4 w-4" />
-            </Link>
-          </div>
-          <div className="mt-5 grid gap-3">
-            {topClients.length ? topClients.map((client) => (
-              <div key={client.id} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4">
-                <div className="flex items-center justify-between gap-3">
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-slate-900">{client.name}</p>
-                    <p className="mt-1 text-sm text-slate-500">{client.openProjects} proyecto(s) · {client.openTasks} tarea(s)</p>
-                  </div>
-                  <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${metricTone(client.overdueTasks, 'danger')}`}>{client.overdueTasks} vencida(s)</span>
-                </div>
+        <div className="space-y-4">
+          <Card>
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Proyectos</p>
+                <h3 className="mt-2 text-xl font-bold text-slate-900">Activos ahora</h3>
               </div>
-            )) : (
-              <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-6 text-sm text-slate-500">Aún no hay clientes con movimiento reciente.</div>
-            )}
-          </div>
-        </Card>
+              <Link href="/app/projects" className="text-sm font-semibold text-slate-700 hover:text-slate-900">Ver todos</Link>
+            </div>
+            <div className="mt-4 space-y-3">
+              {topProjects.length ? topProjects.map((project) => (
+                <Link key={project.id} href={projectDetailRoute(project.id)} className="block rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 transition hover:border-emerald-200 hover:bg-emerald-50">
+                  <p className="text-sm font-semibold text-slate-900">{project.name}</p>
+                  <p className="mt-1 text-sm text-slate-500">{project.status ?? 'Sin estado'} · {project.department ?? 'Sin equipo'}</p>
+                </Link>
+              )) : <p className="text-sm text-slate-500">Todavía no hay proyectos activos.</p>}
+            </div>
+          </Card>
+
+          <Card>
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Clientes</p>
+                <h3 className="mt-2 text-xl font-bold text-slate-900">Carga por cliente</h3>
+              </div>
+              <Link href="/app/clients" className="text-sm font-semibold text-slate-700 hover:text-slate-900">Ver todos</Link>
+            </div>
+            <div className="mt-4 space-y-3">
+              {topClients.length ? topClients.map((client) => (
+                <div key={client.id} className="rounded-2xl border border-slate-200 bg-white px-4 py-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="text-sm font-semibold text-slate-900">{client.name}</p>
+                    <span className="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700 ring-1 ring-slate-200">{client.activeProjects} proyectos</span>
+                  </div>
+                  <p className="mt-2 text-sm text-slate-500">{client.openTasks} tareas abiertas</p>
+                </div>
+              )) : <p className="text-sm text-slate-500">Todavía no hay clientes con actividad.</p>}
+            </div>
+          </Card>
+        </div>
       </div>
-
-      <RecentActivity summary={activitySummary} />
-
-      <Card>
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Abajo del tablero</p>
-            <h3 className="mt-2 text-xl font-bold text-slate-900">Métricas que sí ayudan</h3>
-            <p className="mt-1 text-sm text-slate-500">Pocas, claras y listas para decidir rápido.</p>
-          </div>
-          <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 text-blue-700 ring-1 ring-blue-100">
-            <BrainCircuit className="h-5 w-5" />
-          </span>
-        </div>
-        <div className="mt-5 grid gap-3 md:grid-cols-5">
-          <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3"><p className="text-xs uppercase tracking-[0.16em] text-slate-500">Tareas hoy</p><p className="mt-2 text-2xl font-bold text-slate-900">{data.dueSoonTasks ?? 0}</p></div>
-          <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3"><p className="text-xs uppercase tracking-[0.16em] text-slate-500">Bloqueos</p><p className="mt-2 text-2xl font-bold text-slate-900">{data.waitingTasks ?? 0}</p></div>
-          <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3"><p className="text-xs uppercase tracking-[0.16em] text-slate-500">Proyectos activos</p><p className="mt-2 text-2xl font-bold text-slate-900">{data.activeProjects ?? 0}</p></div>
-          <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3"><p className="text-xs uppercase tracking-[0.16em] text-slate-500">Clientes activos</p><p className="mt-2 text-2xl font-bold text-slate-900">{clientItems.length}</p></div>
-          <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3"><p className="text-xs uppercase tracking-[0.16em] text-slate-500">En equipo</p><p className="mt-2 text-2xl font-bold text-slate-900">{data.collaborativeProjects ?? 0}</p></div>
-        </div>
-      </Card>
     </div>
   );
 }

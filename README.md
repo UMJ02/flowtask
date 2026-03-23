@@ -1,3 +1,7 @@
+# FlowTask 5.6.0 Workspace Enhanced
+
+Base completa derivada de v5.5.0-workspace-integration.
+
 # FlowTask v5.5.0 — Workspace Integration
 
 Base real integrada sobre la línea v5.4.0.
