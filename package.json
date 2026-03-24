@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "6.0.5-workspace-route-fix",
+  "version": "6.0.6-release-cleanup",
   "private": true,
   "scripts": {
     "dev": "next dev",

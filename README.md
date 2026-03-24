@@ -1,12 +1,12 @@
-# FlowTask v6.0.3 — Release Hardening
+# FlowTask v6.0.6 — Release Cleanup
 
-Base real endurecida para cierre técnico previo a despliegue.
+Base limpiada para continuar el proyecto sobre una entrega más profesional y portable.
 
 ## Objetivo de esta versión
-- cerrar errores reales de TypeScript
-- validar runtime mínimo obligatorio
-- endurecer acceso a variables críticas de entorno
-- dejar una ruta clara para certificación de build en entorno local o CI
+- limpiar el proyecto para distribución y handoff
+- agregar `.env.example` para onboarding técnico
+- mantener la base funcional de `v6.0.5-workspace-route-fix`
+- eliminar residuos de entorno del paquete final
 
 ## Scripts clave
 - `npm run dev`
@@ -17,14 +17,15 @@ Base real endurecida para cierre técnico previo a despliegue.
 - `npm run runtime:check`
 - `npm run release:check`
 
-## Qué se endureció
-- tipado corregido en `workspace-operating-system`
-- validación central de entorno en `src/lib/runtime/env.ts`
-- clientes Supabase conectados a runtime validado
-- middleware con redirección más segura y preservación de querystring
-- `.env.example` agregado para despliegue y onboarding técnico
+## Qué se limpió
+- el ZIP final ya no incluye `node_modules`
+- el ZIP final ya no incluye `.next`
+- el ZIP final ya no incluye `.git`
+- el ZIP final ya no incluye `.env.local`
+- el ZIP final ya no incluye residuos de macOS como `__MACOSX` y `.DS_Store`
+- se agregó `.env.example` como guía de configuración
 
 ## Estado honesto
 - `npm run typecheck` pasa en esta base
-- `npm run runtime:check` pasa con variables presentes
-- `next build` todavía depende de un binario SWC compatible en el entorno de ejecución
+- `npm run release:check` ya no falla por ausencia de `.env.example`
+- `next build` sigue dependiendo del entorno local/CI y de un binario SWC compatible
