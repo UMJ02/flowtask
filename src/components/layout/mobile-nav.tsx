@@ -4,16 +4,12 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import { Menu, X } from 'lucide-react';
-import { appNavLinks } from '@/components/layout/nav-links';
+import { coreNavLinks, organizationNavLinks } from '@/components/layout/nav-links';
 
 export function MobileNav() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const groups = useMemo(() => {
-    const main = appNavLinks.slice(0, 6);
-    const more = appNavLinks.slice(6);
-    return { main, more };
-  }, []);
+  const groups = useMemo(() => ({ main: coreNavLinks, more: organizationNavLinks }), []);
 
   return (
     <>
@@ -33,7 +29,7 @@ export function MobileNav() {
             <div className="mb-4 flex items-center justify-between">
               <div>
                 <p className="text-sm font-semibold uppercase tracking-[0.18em] text-emerald-300">FlowTask</p>
-                <h2 className="text-xl font-bold text-white">Workspace</h2>
+                <h2 className="text-xl font-bold text-white">Foundation</h2>
               </div>
               <button
                 aria-label="Cerrar menú"

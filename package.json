@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "5.7.2-health",
+  "version": "5.8.0-foundation",
   "private": true,
   "scripts": {
     "dev": "next dev",

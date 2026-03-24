@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowRight, BrainCircuit, CalendarRange, ShieldAlert, Sparkles, Telescope } from 'lucide-react';
+import { ArrowRight, BrainCircuit, CalendarRange, ShieldAlert, Sparkles, Telescope, Target, Presentation, Radar, Rocket } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ErrorState } from '@/components/ui/error-state';
@@ -9,6 +9,7 @@ import { getPlanningOverview } from '@/lib/queries/planning';
 import { getRiskRadarSummary } from '@/lib/queries/risk-radar';
 import { getWorkspaceOnboardingSummary } from '@/lib/queries/onboarding';
 import { getWorkspaceIntelligenceSummary } from '@/lib/queries/workspace-intelligence';
+import { reportsPrintRoute } from '@/lib/navigation/routes';
 
 function toneClass(tone: 'critical' | 'attention' | 'stable') {
   if (tone === 'critical') return 'bg-rose-50 text-rose-700 ring-1 ring-rose-100';
@@ -41,20 +42,56 @@ export default async function IntelligencePage() {
   const executiveCards = [
     { label: 'Estado', value: `${onboarding?.score ?? workspace.kpis.readinessScore}%`, icon: <Sparkles className="h-5 w-5" /> },
     { label: 'Riesgo', value: `${risk.kpis.riskScore}%`, icon: <ShieldAlert className="h-5 w-5" /> },
-    { label: 'Capacidad', value: `${(planning.departmentCapacity[0]?.score ?? 0)}%`, icon: <CalendarRange className="h-5 w-5" /> },
+    { label: 'Capacidad', value: `${planning.departmentCapacity[0]?.score ?? 0}%`, icon: <CalendarRange className="h-5 w-5" /> },
     { label: 'Ejecución', value: `${execution.kpis.executionScore}%`, icon: <BrainCircuit className="h-5 w-5" /> },
+  ];
+
+  const foundationModules = [
+    {
+      title: 'Planning',
+      href: '/app/planning',
+      icon: <Target className="h-5 w-5" />,
+      summary: `${planning.weeklyFocus.length} prioridades visibles`,
+      note: 'Ordena qué se mueve primero y dónde hay capacidad real.',
+      cta: 'Abrir planning',
+    },
+    {
+      title: 'Risk Radar',
+      href: '/app/risk-radar',
+      icon: <Radar className="h-5 w-5" />,
+      summary: `${risk.hotspots.length} focos detectados`,
+      note: 'Reúne los puntos de presión antes de que se vuelvan incidentes.',
+      cta: 'Abrir risk radar',
+    },
+    {
+      title: 'Execution',
+      href: '/app/execution-center',
+      icon: <Rocket className="h-5 w-5" />,
+      summary: `${execution.doNow.length} tareas do now`,
+      note: 'Convierte señales en acciones concretas para hoy.',
+      cta: 'Abrir execution',
+    },
+    {
+      title: 'Executive PDF',
+      href: reportsPrintRoute('executive-suite'),
+      icon: <Presentation className="h-5 w-5" />,
+      summary: 'Salida lista para dirección',
+      note: 'Usa reportes para comunicar el estado sin abrir módulos extra.',
+      cta: 'Abrir PDF',
+      target: '_blank' as const,
+    },
   ];
 
   return (
     <div className="space-y-5">
       <SectionHeader
-        eyebrow="Insights"
-        title="Insights del workspace"
-        description="Estado, riesgo y foco en una sola vista."
+        eyebrow="Intelligence"
+        title="Hub de inteligencia del workspace"
+        description="Plan, riesgo y ejecución en una sola capa para decidir rápido y sin duplicar pantallas."
         icon={<BrainCircuit className="h-5 w-5" />}
         actions={
           <>
-            <Link href="/app/reports/print?type=intelligence" target="_blank">
+            <Link href={reportsPrintRoute('intelligence')} target="_blank">
               <Button>PDF</Button>
             </Link>
             <Link href="/app/workspace">
@@ -78,13 +115,13 @@ export default async function IntelligencePage() {
         ))}
       </div>
 
-      <div className="grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
+      <div className="grid gap-4 xl:grid-cols-[1.15fr_0.85fr]">
         <Card className="bg-[linear-gradient(135deg,#082f49_0%,#0f766e_54%,#0f172a_100%)] text-white shadow-[0_24px_60px_rgba(15,23,42,0.22)]">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-2xl">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-200">Resumen</p>
-              <h2 className="mt-2 text-3xl font-bold">Qué atender ahora</h2>
-              <p className="mt-2 text-sm text-cyan-100/90">No necesitas abrir varias pantallas para decidir. Aquí ves dónde estás bien, qué está en riesgo y qué mover primero.</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-200">Foundation</p>
+              <h2 className="mt-2 text-3xl font-bold">Una sola capa para leer el negocio</h2>
+              <p className="mt-2 text-sm text-cyan-100/90">En v5.8 esta vista se vuelve el punto de entrada para inteligencia. Workspace sigue siendo el home operativo y aquí se consolidan planning, risk y execution.</p>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="rounded-[26px] bg-white/10 px-4 py-3 ring-1 ring-white/10">
@@ -115,6 +152,31 @@ export default async function IntelligencePage() {
             ))}
           </div>
         </Card>
+      </div>
+
+      <div className="grid gap-4 xl:grid-cols-4">
+        {foundationModules.map((module) => (
+          <Card key={module.title} className="flex h-full flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Módulo</p>
+                  <h3 className="mt-2 text-xl font-bold text-slate-900">{module.title}</h3>
+                </div>
+                <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-100 text-slate-700 ring-1 ring-slate-200">
+                  {module.icon}
+                </span>
+              </div>
+              <p className="mt-4 text-sm font-semibold text-slate-900">{module.summary}</p>
+              <p className="mt-2 text-sm text-slate-500">{module.note}</p>
+            </div>
+            <div className="mt-5">
+              <Link href={module.href} target={module.target} className="inline-flex items-center gap-2 text-sm font-semibold text-slate-700 hover:text-slate-900">
+                {module.cta} <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+          </Card>
+        ))}
       </div>
 
       <div className="grid gap-4 xl:grid-cols-3">
@@ -184,55 +246,6 @@ export default async function IntelligencePage() {
                 <p className="mt-2 text-sm text-slate-500">{item.clientName} · {item.status}</p>
               </div>
             ))}
-          </div>
-        </Card>
-      </div>
-
-      <div className="grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
-        <Card>
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <h3 className="text-lg font-semibold text-slate-900">Watchlist</h3>
-              <p className="mt-1 text-sm text-slate-500">Una sola lista con lo que merece seguimiento.</p>
-            </div>
-          </div>
-          <div className="mt-5 grid gap-3 md:grid-cols-2">
-            {workspace.watchlist.slice(0, 6).map((item) => (
-              <div key={`${item.source}-${item.title}-${item.meta}`} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4">
-                <div className="flex items-center justify-between gap-3">
-                  <span className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">{item.source}</span>
-                  <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${toneClass(item.tone)}`}>{toneLabel(item.tone)}</span>
-                </div>
-                <p className="mt-3 text-sm font-semibold text-slate-900">{item.title}</p>
-                <p className="mt-1 text-sm text-slate-500">{item.meta}</p>
-              </div>
-            ))}
-          </div>
-        </Card>
-
-        <Card>
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <h3 className="text-lg font-semibold text-slate-900">Sigue desde aquí</h3>
-              <p className="mt-1 text-sm text-slate-500">Vuelve al tablero o comparte un resumen cuando lo necesites.</p>
-            </div>
-            <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-700 ring-1 ring-slate-200">
-              <ArrowRight className="h-5 w-5" />
-            </span>
-          </div>
-          <div className="mt-5 grid gap-3">
-            <Link href="/app/workspace" className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 transition hover:border-emerald-200 hover:bg-emerald-50">
-              <p className="text-sm font-semibold text-slate-900">Ir al workspace</p>
-              <p className="mt-1 text-sm text-slate-500">Regresa a tu pizarra y sigue trabajando.</p>
-            </Link>
-            <Link href="/app/tasks" className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 transition hover:border-emerald-200 hover:bg-emerald-50">
-              <p className="text-sm font-semibold text-slate-900">Abrir tareas</p>
-              <p className="mt-1 text-sm text-slate-500">Ve al detalle de pendientes y cambia filtros.</p>
-            </Link>
-            <Link href="/app/reports" className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 transition hover:border-emerald-200 hover:bg-emerald-50">
-              <p className="text-sm font-semibold text-slate-900">Abrir reportes</p>
-              <p className="mt-1 text-sm text-slate-500">Exporta un PDF y comparte el estado del trabajo.</p>
-            </Link>
           </div>
         </Card>
       </div>

@@ -1,16 +1,15 @@
-# FlowTask v5.7.2-health
+# FlowTask v5.8.0-foundation
 
-Base validada sobre `v5.7.1-stabilization`.
+Base validada sobre `v5.7.2-health`.
 
 ## Objetivo
-Cerrar la salud mínima obligatoria antes de seguir creciendo la app, sin meter features nuevas ni alterar el comportamiento funcional existente.
-
+Ordenar la arquitectura visible del producto antes de seguir creciendo, manteniendo la base estable y evitando parches.
 
 ## Enfoque
-- Workspace como vista principal
-- Intelligence como lectura consolidada
-- Navegación más corta y humana
-- Menos ruido en la UI
+- Workspace como home operativo real
+- Intelligence como hub consolidado de planning, risk y execution
+- Navegación separada entre core del producto y capa de organización
+- Tipado de rutas internas para endurecer refactors y navegación
 
 ## Scripts
 - `npm run dev`
@@ -20,7 +19,7 @@ Cerrar la salud mínima obligatoria antes de seguir creciendo la app, sin meter 
 - `npm run typecheck`
 
 ## Cambios clave
-- Sidebar y mobile nav simplificados
-- Command palette alineado con la nueva navegación
-- Textos más cortos en Workspace e Intelligence
-- Se mantiene la compatibilidad con la base real del proyecto
+- `AppRoute` deja de ser `any` y pasa a tipado real de rutas internas
+- Sidebar y mobile nav quedan agrupados por core y organización
+- Intelligence evoluciona a hub foundation con accesos directos a Planning, Risk, Execution y salida ejecutiva
+- Se mantiene la compatibilidad con la base anterior sin romper el flujo principal

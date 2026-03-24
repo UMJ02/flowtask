@@ -3,13 +3,11 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { PanelLeftClose, PanelLeftOpen } from 'lucide-react';
-import { appNavLinks } from '@/components/layout/nav-links';
+import { coreNavLinks } from '@/components/layout/nav-links';
 import { SidebarFooter } from '@/components/layout/sidebar-footer';
 import { useSidebarState } from '@/components/layout/sidebar-state';
 import type { OrganizationSummary } from '@/types/organization';
 
-const footerHrefs = new Set(['/app/organization', '/app/organization/roles', '/app/organization/billing', '/contact', '/app/settings']);
-const mainNavLinks = appNavLinks.filter((link) => !footerHrefs.has(link.href));
 
 export function AppSidebar({
   organizations = [],
@@ -43,7 +41,7 @@ export function AppSidebar({
           <div className="flex items-center justify-between gap-2">
             <div className="min-w-0">
               <p className="text-xs font-semibold uppercase tracking-[0.22em] text-emerald-300">FlowTask</p>
-              <p className="mt-1 text-xl font-bold">Tu espacio</p>
+              <p className="mt-1 text-xl font-bold">Foundation</p>
             </div>
             <button
               type="button"
@@ -54,12 +52,12 @@ export function AppSidebar({
               <PanelLeftClose className="h-4 w-4" />
             </button>
           </div>
-          <p className="mt-1 text-xs leading-5 text-slate-300">Todo lo importante, en menos pasos.</p>
+          <p className="mt-1 text-xs leading-5 text-slate-300">Core primero, administración aparte y menos ruido visual.</p>
         </div>
       )}
 
       <nav className="space-y-1.5 border-t border-white/10 pt-3">
-        {mainNavLinks.map((link) => {
+        {coreNavLinks.map((link) => {
           const Icon = link.icon;
           const active = pathname === link.href || pathname?.startsWith(`${link.href}/`);
           return (
