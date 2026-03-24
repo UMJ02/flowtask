@@ -1,1 +1,5 @@
-export { default } from '../workspace/page';
+import { redirect } from 'next/navigation';
+
+export default function DashboardPage() {
+  redirect('/app/workspace');
+}

@@ -1,5 +1,4 @@
 import { getWorkspaceContext, applyWorkspaceScope } from "@/lib/queries/workspace";
-import type { TaskSummary } from "@/types/task";
 
 export interface TaskFiltersInput {
   q?: string;
@@ -8,26 +7,7 @@ export interface TaskFiltersInput {
   due?: string;
 }
 
-function normalizeTaskRow(row: any): TaskSummary {
-  const department = Array.isArray(row.departments) ? row.departments[0] : row.departments;
-  const dueDate = (row.due_date as string | null | undefined) ?? null;
-  const today = new Date().toISOString().slice(0, 10);
-  return {
-    id: String(row.id),
-    title: String(row.title ?? "Tarea"),
-    status: (row.status as TaskSummary["status"]) ?? "en_proceso",
-    created_at: (row.created_at as string | null | undefined) ?? null,
-    updated_at: (row.updated_at as string | null | undefined) ?? null,
-    clientName: (row.client_name as string | null | undefined) ?? null,
-    dueDate,
-    departmentCode: (department?.code as string | null | undefined) ?? null,
-    departmentName: (department?.name as string | null | undefined) ?? null,
-    isOverdue: Boolean(dueDate && dueDate < today && row.status !== "concluido"),
-    isDueToday: Boolean(dueDate && dueDate === today && row.status !== "concluido"),
-  };
-}
-
-export async function getTasks(filters: TaskFiltersInput = {}): Promise<TaskSummary[]> {
+export async function getTasks(filters: TaskFiltersInput = {}) {
   const { supabase, user, activeOrganizationId } = await getWorkspaceContext();
 
   if (!user) return [];
@@ -42,8 +22,6 @@ export async function getTasks(filters: TaskFiltersInput = {}): Promise<TaskSumm
           status,
           client_name,
           due_date,
-          created_at,
-          updated_at,
           departments ( code, name )
         `,
       )
@@ -71,7 +49,7 @@ export async function getTasks(filters: TaskFiltersInput = {}): Promise<TaskSumm
     return [];
   }
 
-  return (data ?? []).map(normalizeTaskRow);
+  return data ?? [];
 }
 
 export async function getTaskById(taskId: string) {

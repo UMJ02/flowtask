@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "6.2.4-ui-structure-refactor",
+  "version": "6.2.5-copy-layout-hardening",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -12,9 +12,7 @@
     "check": "npm run typecheck",
     "process-notification-deliveries": "npx tsx scripts/process-notification-deliveries.ts",
     "process-daily-digest": "npx tsx scripts/process-daily-digest.ts",
-    "retry-failed-deliveries": "npx tsx scripts/retry-failed-deliveries.ts",
-    "runtime:check": "node scripts/runtime-check.mjs",
-    "release:check": "node scripts/release-check.mjs"
+    "retry-failed-deliveries": "npx tsx scripts/retry-failed-deliveries.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
