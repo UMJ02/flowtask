@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "5.9.0-module-consolidation",
+  "version": "5.9.1-core-hardening",
   "private": true,
   "scripts": {
     "dev": "next dev",

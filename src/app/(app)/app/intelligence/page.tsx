@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowRight, BrainCircuit, CalendarRange, ShieldAlert, Sparkles, Telescope } from 'lucide-react';
+import { ArrowRight, BrainCircuit, CalendarRange, ClipboardList, FolderKanban, ShieldAlert, Sparkles, Telescope, UsersRound } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ErrorState } from '@/components/ui/error-state';
@@ -9,7 +9,8 @@ import { getPlanningOverview } from '@/lib/queries/planning';
 import { getRiskRadarSummary } from '@/lib/queries/risk-radar';
 import { getWorkspaceOnboardingSummary } from '@/lib/queries/onboarding';
 import { getWorkspaceIntelligenceSummary } from '@/lib/queries/workspace-intelligence';
-import { reportsPrintRoute } from '@/lib/navigation/routes';
+import { clientListRoute, projectListRoute, reportsPrintRoute, taskListRoute, workspaceRoute } from '@/lib/navigation/routes';
+import { CoreRouteDeck } from '@/components/core/core-route-deck';
 import { ModuleMap } from '@/components/intelligence/module-map';
 import { getModulesByLifecycle } from '@/lib/intelligence/module-registry';
 
@@ -64,7 +65,7 @@ export default async function IntelligencePage() {
             <Link href={reportsPrintRoute('intelligence')} target="_blank">
               <Button>PDF</Button>
             </Link>
-            <Link href="/app/workspace">
+            <Link href={workspaceRoute()}>
               <Button variant="secondary">Ir al workspace</Button>
             </Link>
           </>
@@ -123,6 +124,39 @@ export default async function IntelligencePage() {
           </div>
         </Card>
       </div>
+
+
+      <CoreRouteDeck
+        eyebrow="Conexión con el core"
+        title="Dónde aterrizan las señales"
+        description="Esta vista no vive aislada: sus recomendaciones deben terminar en proyectos, tareas, clientes o de vuelta en el workspace operativo."
+        items={[
+          {
+            title: 'Workspace',
+            description: 'Regresa al home operativo para ejecutar con contexto.',
+            href: workspaceRoute(),
+            icon: <BrainCircuit className="h-5 w-5" />,
+          },
+          {
+            title: 'Proyectos',
+            description: 'Ataca desvíos de portafolio y fechas clave.',
+            href: projectListRoute(),
+            icon: <FolderKanban className="h-5 w-5" />,
+          },
+          {
+            title: 'Tareas',
+            description: 'Convierte señales en acciones operativas concretas.',
+            href: taskListRoute(),
+            icon: <ClipboardList className="h-5 w-5" />,
+          },
+          {
+            title: 'Clientes',
+            description: 'Valida impacto comercial por cuenta activa.',
+            href: clientListRoute(),
+            icon: <UsersRound className="h-5 w-5" />,
+          },
+        ]}
+      />
 
       <div className="grid gap-4 xl:grid-cols-[1.05fr_0.95fr]">
         <ModuleMap

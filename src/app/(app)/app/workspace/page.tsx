@@ -1,8 +1,9 @@
 import Link from 'next/link';
-import { ArrowRight, FolderKanban, LayoutGrid, ListChecks, Plus } from 'lucide-react';
+import { ArrowRight, BrainCircuit, BriefcaseBusiness, FolderKanban, LayoutGrid, ListChecks, Plus } from 'lucide-react';
 import { RecentActivity } from '@/components/dashboard/recent-activity';
 import { TaskWorkspace } from '@/components/tasks/task-workspace';
 import { Button } from '@/components/ui/button';
+import { CoreRouteDeck } from '@/components/core/core-route-deck';
 import { Card } from '@/components/ui/card';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorState } from '@/components/ui/error-state';
@@ -16,7 +17,7 @@ import { getProjects } from '@/lib/queries/projects';
 type ProjectRow = Awaited<ReturnType<typeof getProjects>>[number];
 import { getTasks } from '@/lib/queries/tasks';
 import { getWorkspaceIntelligenceSummary } from '@/lib/queries/workspace-intelligence';
-import { intelligenceRoute, projectDetailRoute, projectNewRoute, taskNewRoute } from '@/lib/navigation/routes';
+import { clientListRoute, intelligenceRoute, projectDetailRoute, projectListRoute, projectNewRoute, taskListRoute, taskNewRoute } from '@/lib/navigation/routes';
 
 function metricTone(value: number, type: 'danger' | 'attention' | 'neutral' = 'neutral') {
   if (type === 'danger') return value > 0 ? 'bg-rose-50 text-rose-700 ring-1 ring-rose-100' : 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100';
@@ -109,6 +110,39 @@ export default async function WorkspacePage() {
           </div>
         </div>
       </Card>
+
+
+      <CoreRouteDeck
+        eyebrow="Ruta core"
+        title="Muévete entre los módulos principales"
+        description="Workspace sigue como home operativo. Desde aquí entras al resto del core sin rutas duplicadas ni pantallas sueltas."
+        items={[
+          {
+            title: 'Tareas',
+            description: 'Abre la ejecución diaria en lista o tablero.',
+            href: taskListRoute(),
+            icon: <ListChecks className="h-5 w-5" />,
+          },
+          {
+            title: 'Proyectos',
+            description: 'Revisa portafolio, responsables y fechas clave.',
+            href: projectListRoute(),
+            icon: <FolderKanban className="h-5 w-5" />,
+          },
+          {
+            title: 'Clientes',
+            description: 'Entra a cada cuenta con contexto de carga y riesgo.',
+            href: clientListRoute(),
+            icon: <BriefcaseBusiness className="h-5 w-5" />,
+          },
+          {
+            title: 'Intelligence',
+            description: 'Lee señales, prioridades y desvíos desde el hub.',
+            href: intelligenceRoute(),
+            icon: <BrainCircuit className="h-5 w-5" />,
+          },
+        ]}
+      />
 
       <div className="grid gap-4 xl:grid-cols-[1.2fr_0.8fr]">
         <div className="space-y-4">

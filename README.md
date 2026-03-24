@@ -1,15 +1,14 @@
-# FlowTask v5.9.0-module-consolidation
+# FlowTask v5.9.1-core-hardening
 
-Base validada sobre `v5.8.1-navigation-hardening`.
+Base validada sobre `v5.9.0-module-consolidation`.
 
 ## Objetivo
-Consolidar los módulos operativos relacionados con intelligence sin romper compatibilidad, definiendo qué queda como core, qué queda como soporte y qué se conserva como legacy.
+Endurecer el core del producto para que Workspace, Projects, Tasks, Clients e Intelligence se sientan más consistentes, más claros y más listos para evolución sin parches.
 
 ## Enfoque
-- Intelligence Hub como punto oficial de entrada para la capa analítica
-- Planning, Risk Radar y Execution Center como módulos core
-- Control Tower y Executive Suite como módulos de soporte
-- Workspace Intelligence y Workspace OS preservados como legacy con señal clara de migración
+- Reforzar la lectura inicial de cada módulo core con métricas rápidas y más contexto operativo
+- Conectar mejor el flujo entre Workspace e Intelligence con el resto del core
+- Mantener compatibilidad 1:1 con la base anterior sin tocar lógica sensible de detalle
 
 ## Scripts
 - `npm run dev`
@@ -19,7 +18,7 @@ Consolidar los módulos operativos relacionados con intelligence sin romper comp
 - `npm run typecheck`
 
 ## Cambios clave
-- Se crea un registro central de módulos de intelligence para ordenar lifecycle, CTAs y salidas PDF
-- Intelligence Hub muestra el mapa oficial de módulos core, soporte y legacy
-- Las vistas heredadas y complementarias incorporan banner de consolidación para orientar al usuario sin romper rutas previas
-- La command palette y los enlaces internos apuntan al nuevo flujo consolidado
+- Se agregan componentes reutilizables para métricas del core y navegación entre módulos principales
+- Projects, Tasks y Clients arrancan con una lectura rápida más clara antes de filtros o listados
+- Workspace e Intelligence refuerzan el puente hacia los demás módulos core
+- Se actualiza documentación y versionado a `v5.9.1-core-hardening`
