@@ -32,6 +32,11 @@ export default async function ProjectsPage({
         eyebrow="Trabajo en equipo"
         title="Proyectos"
         description="Agrupa tareas, responsables y fechas en un espacio claro para todos. Usa filtros rápidos y una navegación más predecible para entrar y salir sin perder contexto."
+        badges={[
+          { label: 'Portafolio claro', tone: 'stable' },
+          { label: 'Filtros rápidos', tone: 'default' },
+          { label: 'Fechas visibles', tone: 'attention' },
+        ]}
         icon={<FolderKanban className="h-5 w-5" />}
         actions={
           <Link href={projectNewRoute()}>

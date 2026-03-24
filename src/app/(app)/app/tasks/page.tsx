@@ -32,6 +32,11 @@ export default async function TasksPage({
         eyebrow="Seguimiento simple"
         title="Tareas"
         description="Busca, filtra y actualiza pendientes sin perder tiempo. Puedes usar vista lista o tablero con una interfaz más limpia y legible."
+        badges={[
+          { label: 'Lista + tablero', tone: 'stable' },
+          { label: 'Carga diaria', tone: 'default' },
+          { label: 'Atención a vencidas', tone: 'attention' },
+        ]}
         icon={<ClipboardList className="h-5 w-5" />}
         actions={
           <Link href={taskNewRoute()}>

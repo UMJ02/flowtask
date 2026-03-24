@@ -56,12 +56,12 @@ function ShellFrame({
   const { collapsed } = useSidebarState();
 
   return (
-    <div className="min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#f0fdf4_100%)] p-3 md:p-6">
+    <div className="app-noise min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#effcf5_44%,#eef6ff_100%)] p-3 md:p-5 xl:p-6">
       <div className={`mx-auto grid max-w-7xl gap-4 transition-[grid-template-columns] duration-300 ${collapsed ? 'md:grid-cols-[104px_minmax(0,1fr)]' : 'md:grid-cols-[300px_minmax(0,1fr)]'}`}>
         <AppSidebar organizations={organizations} activeOrganization={activeOrganization} userEmail={userEmail} userName={userName} />
-        <div className="space-y-4 min-w-0">
+        <div className="min-w-0 space-y-4">
           <AppHeader userEmail={userEmail} userName={userName} />
-          <main className="space-y-4 min-w-0">{children}</main>
+          <main className="min-w-0 space-y-5">{children}</main>
           <AppFooter />
         </div>
       </div>

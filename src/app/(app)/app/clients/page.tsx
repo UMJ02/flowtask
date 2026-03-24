@@ -24,6 +24,11 @@ export default async function ClientsPage({ searchParams }: { searchParams?: Pro
         eyebrow="Workspace comercial"
         title="Clientes"
         description="Consulta cada cliente con sus proyectos, carga y actividad reciente. La navegación queda enfocada en abrir contextos de trabajo sin confusión."
+        badges={[
+          { label: 'Contexto por cuenta', tone: 'stable' },
+          { label: 'Búsquedas guardadas', tone: 'default' },
+          { label: 'Relación operativa', tone: 'attention' },
+        ]}
         icon={<BriefcaseBusiness className="h-5 w-5" />}
       />
 

@@ -74,6 +74,11 @@ export default async function WorkspacePage() {
         eyebrow="Workspace"
         title="Tu espacio de trabajo"
         description="Entra, mira la pizarra y actúa sin perder tiempo."
+        badges={[
+          { label: 'Home operativo', tone: 'stable' },
+          { label: 'Acceso rápido', tone: 'default' },
+          { label: 'Foco del día', tone: 'attention' },
+        ]}
         icon={<LayoutGrid className="h-5 w-5" />}
         actions={
           <>

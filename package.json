@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "5.9.1-core-hardening",
+  "version": "6.0.0-product-polish",
   "private": true,
   "scripts": {
     "dev": "next dev",

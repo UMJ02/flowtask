@@ -1,14 +1,14 @@
-# FlowTask v5.9.1-core-hardening
+# FlowTask v6.0.0-product-polish
 
-Base validada sobre `v5.9.0-module-consolidation`.
+Base validada sobre `v5.9.1-core-hardening`.
 
 ## Objetivo
-Endurecer el core del producto para que Workspace, Projects, Tasks, Clients e Intelligence se sientan más consistentes, más claros y más listos para evolución sin parches.
+Subir la experiencia general del producto para que la app se sienta más clara, más premium y más consistente sin tocar la lógica sensible de operación.
 
 ## Enfoque
-- Reforzar la lectura inicial de cada módulo core con métricas rápidas y más contexto operativo
-- Conectar mejor el flujo entre Workspace e Intelligence con el resto del core
-- Mantener compatibilidad 1:1 con la base anterior sin tocar lógica sensible de detalle
+- Pulir shell, header, footer y estados globales
+- Hacer más consistentes los encabezados y señales visuales de los módulos core
+- Ordenar mejor la salida de reportes y reforzar la sensación de producto terminado
 
 ## Scripts
 - `npm run dev`
@@ -18,7 +18,8 @@ Endurecer el core del producto para que Workspace, Projects, Tasks, Clients e In
 - `npm run typecheck`
 
 ## Cambios clave
-- Se agregan componentes reutilizables para métricas del core y navegación entre módulos principales
-- Projects, Tasks y Clients arrancan con una lectura rápida más clara antes de filtros o listados
-- Workspace e Intelligence refuerzan el puente hacia los demás módulos core
-- Se actualiza documentación y versionado a `v5.9.1-core-hardening`
+- Se mejora la superficie visual del shell general, header y footer
+- `SectionHeader`, `EmptyState`, `ErrorState` y `LoadingState` reciben polish visual reutilizable
+- Workspace, Projects, Tasks, Clients e Intelligence ganan badges de contexto para una lectura más consistente
+- Reports se reordena con una salida más limpia y más clara para PDF y CSV
+- Se actualiza documentación y versionado a `v6.0.0-product-polish`

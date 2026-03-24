@@ -22,7 +22,7 @@ export function CoreRouteDeck({
   items: CoreRouteItem[];
 }) {
   return (
-    <Card>
+    <Card className="surface-glow">
       <div>
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{eyebrow}</p>
         <h2 className="mt-2 text-xl font-bold text-slate-900">{title}</h2>
@@ -34,7 +34,7 @@ export function CoreRouteDeck({
           <Link
             key={item.href}
             href={item.href}
-            className="group rounded-[24px] border border-slate-200 bg-slate-50 px-4 py-4 transition hover:border-emerald-200 hover:bg-emerald-50"
+            className="group rounded-[24px] border border-slate-200 bg-slate-50 px-4 py-4 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-emerald-200 hover:bg-emerald-50"
           >
             <div className="flex items-start justify-between gap-3">
               <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-slate-700 ring-1 ring-slate-200 transition group-hover:bg-emerald-100 group-hover:text-emerald-700 group-hover:ring-emerald-200">

@@ -36,7 +36,7 @@ export function CoreMetricStrip({
   items: CoreMetricItem[];
 }) {
   return (
-    <Card>
+    <Card className="surface-glow">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div className="max-w-2xl">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{eyebrow}</p>

@@ -59,6 +59,11 @@ export default async function IntelligencePage() {
         eyebrow="Intelligence"
         title="Hub de inteligencia del workspace"
         description="Plan, riesgo y ejecución en una sola capa para decidir rápido y sin duplicar pantallas."
+        badges={[
+          { label: 'Hub oficial', tone: 'stable' },
+          { label: 'Señales conectadas', tone: 'default' },
+          { label: 'Decisión rápida', tone: 'attention' },
+        ]}
         icon={<BrainCircuit className="h-5 w-5" />}
         actions={
           <>
