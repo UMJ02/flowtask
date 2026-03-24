@@ -68,9 +68,9 @@ export default async function WorkspacePage() {
   ];
 
   const topStats = [
-    { label: 'Tareas hoy', value: data.dueSoonTasks ?? 0 },
+    { label: 'Hoy', value: data.dueSoonTasks ?? 0 },
     { label: 'Atrasadas', value: data.overdueTasks ?? 0 },
-    { label: 'Proyectos activos', value: data.activeProjects ?? 0 },
+    { label: 'Activos', value: data.activeProjects ?? 0 },
   ];
 
   return (
@@ -106,8 +106,10 @@ export default async function WorkspacePage() {
           <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
             {topStats.map((stat) => (
               <div key={stat.label} className="rounded-lg border border-white/10 bg-white/10 px-4 py-3">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-300">{stat.label}</p>
-                <p className="mt-2 text-[1.8rem] font-bold leading-none">{stat.value}</p>
+                <div className="flex items-baseline justify-between gap-3">
+                  <p className="truncate text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-300">{stat.label}</p>
+                  <p className="text-[1.8rem] font-bold leading-none">{stat.value}</p>
+                </div>
               </div>
             ))}
           </div>
@@ -148,12 +150,14 @@ export default async function WorkspacePage() {
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               {focus.map((item) => (
                 <div key={item.label} className="rounded-lg border border-slate-200 bg-slate-50/70 px-4 py-4">
-                  <div className="flex items-center justify-between gap-3">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">{item.label}</p>
+                  <div className="flex items-start justify-between gap-3">
+                    <p className="max-w-[60%] text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">{item.label}</p>
                     <span className={`inline-flex shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${metricTone(item.value, item.tone)}`}>{item.value > 0 ? 'Activo' : 'Estable'}</span>
                   </div>
-                  <p className="mt-4 text-3xl font-bold leading-none text-slate-950">{item.value}</p>
-                  <p className="mt-3 text-sm text-slate-500">{item.helper}</p>
+                  <div className="mt-4 flex items-end justify-between gap-3">
+                    <p className="text-3xl font-bold leading-none text-slate-950">{item.value}</p>
+                    <p className="max-w-[11rem] text-right text-sm leading-5 text-slate-500">{item.helper}</p>
+                  </div>
                 </div>
               ))}
             </div>

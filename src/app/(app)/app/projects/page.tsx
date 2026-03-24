@@ -50,9 +50,8 @@ export default async function ProjectsPage({
         }
       />
       <ExpandableBar
-        eyebrow="Buscar y filtrar"
-        title="Refina la vista de proyectos"
-        description="Abre esta barra para buscar por cliente, estado, área o tipo."
+        title="Busca tus proyectos"
+        description="Abre esta barra para buscar por cliente, estado o tipo."
       >
         <ProjectFilters filters={filters} />
       </ExpandableBar>

@@ -28,7 +28,7 @@ export function RecentActivity({ summary }: RecentActivityProps) {
     { label: 'Movimientos', value: counts.total, tone: 'border-slate-200 bg-slate-50 text-slate-700' },
     { label: 'Tareas', value: counts.tasks, tone: 'border-blue-100 bg-blue-50 text-blue-700' },
     { label: 'Proyectos', value: counts.projects, tone: 'border-violet-100 bg-violet-50 text-violet-700' },
-    { label: 'Comentarios / recordatorios', value: counts.comments + counts.reminders, tone: 'border-emerald-100 bg-emerald-50 text-emerald-700' },
+    { label: 'Avisos', value: counts.comments + counts.reminders, tone: 'border-emerald-100 bg-emerald-50 text-emerald-700' },
   ];
 
   return (
@@ -53,7 +53,7 @@ export function RecentActivity({ summary }: RecentActivityProps) {
         <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           {tiles.map((tile) => (
             <div key={tile.label} className={`min-h-[96px] rounded-[10px] border px-4 py-3 ${tile.tone}`}>
-              <p className="line-clamp-2 text-[11px] font-semibold uppercase tracking-[0.16em]">{tile.label}</p>
+              <p className="truncate text-[11px] font-semibold uppercase tracking-[0.16em]">{tile.label}</p>
               <p className="mt-3 text-[2rem] font-bold leading-none text-slate-950">{tile.value}</p>
             </div>
           ))}

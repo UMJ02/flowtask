@@ -1,4 +1,4 @@
-import { ChevronDown } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { cn } from '@/lib/utils/classnames';
 
 type ExpandableBarProps = {
@@ -38,8 +38,8 @@ export function ExpandableBar({
             {description ? <p className="text-sm text-slate-500">{description}</p> : null}
           </div>
         </div>
-        <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-slate-200 bg-white text-slate-500 transition group-open:rotate-180">
-          <ChevronDown className="h-4 w-4" />
+        <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-emerald-200 bg-emerald-50 text-emerald-700">
+          <Search className="h-4 w-4" />
         </span>
       </summary>
       <div className={cn('border-t border-slate-200 p-4', contentClassName)}>{children}</div>

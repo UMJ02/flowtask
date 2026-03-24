@@ -38,9 +38,8 @@ export default async function ClientsPage({ searchParams }: { searchParams?: Pro
         icon={<BriefcaseBusiness className="h-5 w-5" />}
       />
       <ExpandableBar
-        eyebrow="Buscar"
-        title="Busca clientes por nombre"
-        description="Mantén la búsqueda plegada y ábrela solo cuando necesites filtrar cuentas."
+        title="Busca tus clientes"
+        description="Abre esta barra para encontrar cuentas por nombre, estado o relación."
       >
         <form className="grid gap-3 sm:grid-cols-[minmax(280px,1fr)_auto_auto]" action="/app/clients">
           <label className="relative block">

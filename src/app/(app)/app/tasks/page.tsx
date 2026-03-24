@@ -50,9 +50,8 @@ export default async function TasksPage({
         }
       />
       <ExpandableBar
-        eyebrow="Buscar y filtrar"
-        title="Refina la vista de tareas"
-        description="Busca rápido y despliega filtros solo cuando los necesites."
+        title="Busca tus tareas"
+        description="Abre esta barra para encontrar tareas por estado, área o fecha."
       >
         <TaskFilters filters={filters} />
       </ExpandableBar>

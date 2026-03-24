@@ -23,7 +23,7 @@ export function TaskFilters({ filters }: TaskFiltersProps) {
       <label className="relative block md:col-span-2">
         <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Buscar</span>
         <Search className="pointer-events-none absolute left-3 top-[42px] h-4 w-4 text-slate-400" />
-        <Input className="pl-9" defaultValue={filters.q ?? ''} name="q" placeholder="Busca por tarea, cliente o detalle" />
+        <Input className="pl-9" defaultValue={filters.q ?? ''} name="q" placeholder="Escribe una tarea, cliente o palabra clave" />
       </label>
       <label className="block">
         <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Estado</span>
@@ -57,7 +57,7 @@ export function TaskFilters({ filters }: TaskFiltersProps) {
         <Link href="/app/tasks" className="w-full md:w-auto">
           <Button className="w-full md:w-auto" type="button" variant="secondary">Limpiar</Button>
         </Link>
-        <Button className="w-full md:w-auto" type="submit">Aplicar filtros</Button>
+        <Button className="w-full md:w-auto" type="submit">Buscar</Button>
       </div>
     </form>
   );
