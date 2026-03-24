@@ -21,10 +21,12 @@ export default async function TasksPage({
   const currentQuery = toQueryString(filters);
   const today = new Date().toISOString().slice(0, 10);
 
-  const openCount = tasks.filter((task) => (task.status ?? '').toLowerCase() !== 'concluido').length;
-  const overdueCount = tasks.filter((task) => Boolean(task.due_date) && String(task.due_date).slice(0, 10) < today && (task.status ?? '').toLowerCase() !== 'concluido').length;
-  const todayCount = tasks.filter((task) => Boolean(task.due_date) && String(task.due_date).slice(0, 10) === today && (task.status ?? '').toLowerCase() !== 'concluido').length;
-  const clientBoundCount = tasks.filter((task) => Boolean(task.client_name?.trim())).length;
+  type TaskItem = Awaited<ReturnType<typeof getTasks>>[number];
+
+  const openCount = tasks.filter((task: TaskItem) => (task.status ?? "").toLowerCase() !== "concluido").length;
+  const overdueCount = tasks.filter((task: TaskItem) => Boolean(task.due_date) && String(task.due_date).slice(0, 10) < today && (task.status ?? "").toLowerCase() !== "concluido").length;
+  const todayCount = tasks.filter((task: TaskItem) => Boolean(task.due_date) && String(task.due_date).slice(0, 10) === today && (task.status ?? "").toLowerCase() !== "concluido").length;
+  const clientBoundCount = tasks.filter((task: TaskItem) => Boolean(task.client_name?.trim())).length;
 
   return (
     <div className="space-y-5">

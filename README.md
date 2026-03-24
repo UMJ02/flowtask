@@ -1,14 +1,14 @@
-# FlowTask v6.0.0-product-polish
+# FlowTask v6.0.1-runtime-hardening
 
-Base validada sobre `v5.9.1-core-hardening`.
+Base validada sobre `v6.0.0-product-polish`.
 
 ## Objetivo
-Subir la experiencia general del producto para que la app se sienta más clara, más premium y más consistente sin tocar la lógica sensible de operación.
+Endurecer la base real de runtime antes de seguir con más polish o expansión funcional.
 
 ## Enfoque
-- Pulir shell, header, footer y estados globales
-- Hacer más consistentes los encabezados y señales visuales de los módulos core
-- Ordenar mejor la salida de reportes y reforzar la sensación de producto terminado
+- cerrar errores reales de TypeScript que ya afectaban la capa core
+- centralizar variables críticas de entorno para evitar fallos silenciosos
+- dejar una verificación mínima reproducible para despliegue y validación local
 
 ## Scripts
 - `npm run dev`
@@ -16,10 +16,11 @@ Subir la experiencia general del producto para que la app se sienta más clara, 
 - `npm run start`
 - `npm run lint`
 - `npm run typecheck`
+- `npm run runtime:check`
 
 ## Cambios clave
-- Se mejora la superficie visual del shell general, header y footer
-- `SectionHeader`, `EmptyState`, `ErrorState` y `LoadingState` reciben polish visual reutilizable
-- Workspace, Projects, Tasks, Clients e Intelligence ganan badges de contexto para una lectura más consistente
-- Reports se reordena con una salida más limpia y más clara para PDF y CSV
-- Se actualiza documentación y versionado a `v6.0.0-product-polish`
+- se corrigen errores reales en `Projects`, `Tasks` y `Clients`
+- se agrega `src/lib/runtime/env.ts` para lectura segura de variables de entorno
+- los clientes de Supabase quedan conectados a un helper único de entorno
+- se suma `scripts/runtime-check.ts` y `.env.example` como base de operación
+- se actualiza documentación y versionado a `v6.0.1-runtime-hardening`

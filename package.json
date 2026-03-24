@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "6.0.0-product-polish",
+  "version": "6.0.1-runtime-hardening",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -12,7 +12,8 @@
     "check": "npm run typecheck",
     "process-notification-deliveries": "npx tsx scripts/process-notification-deliveries.ts",
     "process-daily-digest": "npx tsx scripts/process-daily-digest.ts",
-    "retry-failed-deliveries": "npx tsx scripts/retry-failed-deliveries.ts"
+    "retry-failed-deliveries": "npx tsx scripts/retry-failed-deliveries.ts",
+    "runtime:check": "npx tsx scripts/runtime-check.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

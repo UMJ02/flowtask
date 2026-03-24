@@ -21,10 +21,12 @@ export default async function ProjectsPage({
   const currentQuery = toQueryString(filters);
   const today = new Date().toISOString().slice(0, 10);
 
-  const activeCount = projects.filter((project) => (project.status ?? '').toLowerCase() !== 'completado').length;
-  const dueSoonCount = projects.filter((project) => Boolean(project.due_date) && String(project.due_date).slice(0, 10) <= today && (project.status ?? '').toLowerCase() !== 'completado').length;
-  const collaborativeCount = projects.filter((project) => Boolean(project.is_collaborative)).length;
-  const noClientCount = projects.filter((project) => !project.client_name?.trim()).length;
+  type ProjectItem = Awaited<ReturnType<typeof getProjects>>[number];
+
+  const activeCount = projects.filter((project: ProjectItem) => (project.status ?? "").toLowerCase() !== "completado").length;
+  const dueSoonCount = projects.filter((project: ProjectItem) => Boolean(project.due_date) && String(project.due_date).slice(0, 10) <= today && (project.status ?? "").toLowerCase() !== "completado").length;
+  const collaborativeCount = projects.filter((project: ProjectItem) => Boolean(project.is_collaborative)).length;
+  const noClientCount = projects.filter((project: ProjectItem) => !project.client_name?.trim()).length;
 
   return (
     <div className="space-y-5">

@@ -15,8 +15,8 @@ export default async function ClientsPage({ searchParams }: { searchParams?: Pro
 
   const activeCount = clients.filter((client) => client.status === 'activo').length;
   const withWorkloadCount = clients.filter((client) => client.openTasksCount > 0 || client.projectsCount > 0).length;
-  const overdueCount = clients.filter((client) => client.overdueTasks > 0).length;
-  const healthyCount = clients.filter((client) => client.openTasksCount === 0 && client.overdueTasks === 0 && client.projectsCount > 0).length;
+  const overdueCount = clients.filter((client) => client.overdueTasksCount > 0).length;
+  const healthyCount = clients.filter((client) => client.openTasksCount === 0 && client.overdueTasksCount === 0 && client.projectsCount > 0).length;
 
   return (
     <div className="space-y-5">

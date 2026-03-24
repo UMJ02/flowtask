@@ -34,11 +34,14 @@ export async function getClients(search?: string): Promise<ClientListItem[]> {
   }
   const rows = clients ?? [];
   const ids = rows.map((row) => row.id as string);
-  const [projectsRes, openTasksRes, completedTasksRes] = await Promise.all([
+  const [projectsRes, openTasksRes, completedTasksRes, overdueTasksRes] = await Promise.all([
     ids.length ? supabase.from("projects").select("id,client_id,status").in("client_id", ids) : Promise.resolve({ data: [] as any[] }),
     ids.length ? supabase.from("tasks").select("id,client_id,status").in("client_id", ids).neq("status", "concluido") : Promise.resolve({ data: [] as any[] }),
     ids.length ? supabase.from("tasks").select("id,client_id,status").in("client_id", ids).eq("status", "concluido") : Promise.resolve({ data: [] as any[] }),
+    ids.length ? supabase.from("tasks").select("id,client_id,due_date,status").in("client_id", ids).neq("status", "concluido") : Promise.resolve({ data: [] as any[] }),
   ]);
+
+  const now = new Date();
 
   return rows.map((row) => ({
     id: row.id as string,
@@ -49,6 +52,7 @@ export async function getClients(search?: string): Promise<ClientListItem[]> {
     projectsCount: (projectsRes.data ?? []).filter((item) => item.client_id === row.id && item.status !== "completado").length,
     openTasksCount: (openTasksRes.data ?? []).filter((item) => item.client_id === row.id).length,
     completedTasksCount: (completedTasksRes.data ?? []).filter((item) => item.client_id === row.id).length,
+    overdueTasksCount: (overdueTasksRes.data ?? []).filter((item) => item.client_id === row.id && item.due_date && new Date(item.due_date) < now).length,
   }));
 }
 
@@ -113,6 +117,7 @@ export async function getClientById(clientId: string): Promise<ClientDetailSumma
     projectsCount: (projects ?? []).filter((item) => item.status !== "completado").length,
     openTasksCount,
     completedTasksCount,
+    overdueTasksCount: (tasks ?? []).filter((item) => item.status !== "concluido" && item.due_date && new Date(item.due_date) < new Date()).length,
     accountOwnerEmail: (owner?.email as string | undefined) ?? null,
     recentProjects: (projects ?? []).map((item) => ({ id: item.id as string, title: item.title as string, status: item.status as string, dueDateLabel: formatDate(item.due_date as string | null | undefined) })),
     recentTasks: (tasks ?? []).map((item) => ({ id: item.id as string, title: item.title as string, status: item.status as string, dueDateLabel: formatDate(item.due_date as string | null | undefined) })),
