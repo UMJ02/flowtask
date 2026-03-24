@@ -36,10 +36,10 @@ export function ExecutionCenter({ summary, compact = false }: { summary: Executi
         </div>
         <div className="mt-5 grid gap-3 md:grid-cols-4">
           {cards.map((card) => (
-            <div key={card.label} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+            <div key={card.label} className="rounded-[16px] border border-slate-200 bg-slate-50 px-4 py-3">
               <div className="flex items-center justify-between gap-3 text-slate-500">
                 <span className="text-sm">{card.label}</span>
-                <span className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-white text-fuchsia-700 ring-1 ring-slate-200">{card.icon}</span>
+                <span className="inline-flex h-9 w-9 items-center justify-center rounded-[16px] bg-white text-fuchsia-700 ring-1 ring-slate-200">{card.icon}</span>
               </div>
               <p className="mt-3 text-2xl font-bold text-slate-900">{card.value}</p>
             </div>
@@ -59,7 +59,7 @@ export function ExecutionCenter({ summary, compact = false }: { summary: Executi
                 <p className="text-sm text-slate-500">{card.label}</p>
                 <p className="mt-3 text-3xl font-bold text-slate-900">{card.value}</p>
               </div>
-              <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-fuchsia-50 text-fuchsia-700 ring-1 ring-fuchsia-100">{card.icon}</span>
+              <span className="inline-flex h-12 w-12 items-center justify-center rounded-[16px] bg-fuchsia-50 text-fuchsia-700 ring-1 ring-fuchsia-100">{card.icon}</span>
             </div>
           </Card>
         ))}
@@ -71,14 +71,14 @@ export function ExecutionCenter({ summary, compact = false }: { summary: Executi
             <div className="max-w-2xl">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-fuchsia-200">Execution center</p>
               <h2 className="mt-2 text-3xl font-bold">La capa que convierte lectura en movimiento</h2>
-              <p className="mt-2 text-sm text-fuchsia-100/90">No solo lees el workspace: aquí decides qué ejecutar ya, qué destrabar y qué vigilar sin perder velocidad.</p>
+              <p className="prose-balance mt-2 max-w-2xl text-sm leading-6 text-fuchsia-100/90">No solo lees el workspace: aquí decides qué ejecutar ya, qué destrabar y qué vigilar sin perder velocidad.</p>
             </div>
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div className="rounded-[26px] bg-white/10 px-4 py-3 ring-1 ring-white/10">
+            <div className="grid gap-3 sm:grid-cols-2 lg:min-w-[340px]">
+              <div className="rounded-[16px] border border-white/10 bg-white/10 px-4 py-3">
                 <p className="text-xs uppercase tracking-[0.16em] text-fuchsia-100/80">Departamentos bajo presión</p>
                 <p className="mt-2 text-3xl font-bold">{summary.kpis.departmentsUnderPressure}</p>
               </div>
-              <div className="rounded-[26px] bg-white/10 px-4 py-3 ring-1 ring-white/10">
+              <div className="rounded-[16px] border border-white/10 bg-white/10 px-4 py-3">
                 <p className="text-xs uppercase tracking-[0.16em] text-fuchsia-100/80">Carga vencida</p>
                 <p className="mt-2 text-3xl font-bold">{summary.kpis.overdueLoad}</p>
               </div>
@@ -92,13 +92,13 @@ export function ExecutionCenter({ summary, compact = false }: { summary: Executi
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Próximo movimiento</p>
               <h3 className="mt-2 text-xl font-bold text-slate-900">Recomendaciones de ejecución</h3>
             </div>
-            <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-700 ring-1 ring-slate-200">
+            <span className="inline-flex h-12 w-12 items-center justify-center rounded-[16px] bg-slate-100 text-slate-700 ring-1 ring-slate-200">
               <ArrowRight className="h-5 w-5" />
             </span>
           </div>
           <div className="mt-5 space-y-3">
             {summary.recommendations.map((item) => (
-              <div key={item} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">{item}</div>
+              <div key={item} className="rounded-[16px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">{item}</div>
             ))}
           </div>
           <div className="mt-5 flex flex-wrap gap-3">
@@ -120,11 +120,11 @@ export function ExecutionCenter({ summary, compact = false }: { summary: Executi
                 <h3 className="text-lg font-semibold text-slate-900">{lane.title}</h3>
                 <p className="mt-1 text-sm text-slate-500">{lane.subtitle}</p>
               </div>
-              <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-fuchsia-50 text-fuchsia-700 ring-1 ring-fuchsia-100">{lane.icon}</span>
+              <span className="inline-flex h-11 w-11 items-center justify-center rounded-[16px] bg-fuchsia-50 text-fuchsia-700 ring-1 ring-fuchsia-100">{lane.icon}</span>
             </div>
             <div className="mt-5 space-y-3">
               {lane.items.map((item) => (
-                <div key={`${lane.title}-${item.title}-${item.detail}`} className="rounded-2xl border border-slate-200 bg-white px-4 py-4">
+                <div key={`${lane.title}-${item.title}-${item.detail}`} className="rounded-[16px] border border-slate-200 bg-white px-4 py-4">
                   <div className="flex flex-wrap items-center gap-2">
                     <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${toneClasses[item.tone]}`}>{toneLabel(item.tone)}</span>
                     <span className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">{item.source}</span>
@@ -144,7 +144,7 @@ export function ExecutionCenter({ summary, compact = false }: { summary: Executi
             <h3 className="text-lg font-semibold text-slate-900">Team pulse</h3>
             <p className="mt-1 text-sm text-slate-500">Una lectura rápida del área que tiene más carga y presión de corto plazo.</p>
           </div>
-          <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-blue-50 text-blue-700 ring-1 ring-blue-100">
+          <span className="inline-flex h-11 w-11 items-center justify-center rounded-[16px] bg-blue-50 text-blue-700 ring-1 ring-blue-100">
             <Layers3 className="h-5 w-5" />
           </span>
         </div>
@@ -152,7 +152,7 @@ export function ExecutionCenter({ summary, compact = false }: { summary: Executi
           {summary.teamPulse.map((item) => {
             const tone = item.state === 'high' ? 'critical' : item.state === 'medium' ? 'attention' : 'stable';
             return (
-              <div key={item.name} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4">
+              <div key={item.name} className="rounded-[16px] border border-slate-200 bg-slate-50 px-4 py-4">
                 <div className="flex items-center justify-between gap-3">
                   <span className="text-sm font-semibold text-slate-900">{item.name}</span>
                   <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${toneClasses[tone]}`}>{toneLabel(tone)}</span>

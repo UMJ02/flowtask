@@ -42,7 +42,7 @@ export function ExecutiveSuite({ summary, compact = false }: { summary: Executiv
         </div>
         <div className="mt-5 grid gap-3 md:grid-cols-4">
           {cards.map((card) => (
-            <div key={card.label} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+            <div key={card.label} className="rounded-[16px] border border-slate-200 bg-slate-50 px-4 py-3">
               <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">{card.label}</p>
               <p className="mt-2 text-2xl font-bold text-slate-900">{card.value}</p>
             </div>
@@ -59,14 +59,14 @@ export function ExecutiveSuite({ summary, compact = false }: { summary: Executiv
           <div className="max-w-3xl">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet-200">Executive suite</p>
             <h2 className="mt-2 text-3xl font-bold">Una sola capa para revisar foco, riesgo y gobierno del workspace</h2>
-            <p className="mt-2 text-sm text-violet-100/90">Pensado para cierres semanales y conversaciones ejecutivas. Aquí se condensa qué mover, qué escalar y qué solo vigilar.</p>
+            <p className="prose-balance mt-2 max-w-2xl text-sm leading-6 text-violet-100/90">Pensado para cierres semanales y conversaciones ejecutivas. Aquí se condensa qué mover, qué escalar y qué solo vigilar.</p>
           </div>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div className="rounded-[26px] bg-white/10 px-4 py-3 ring-1 ring-white/10">
+          <div className="grid gap-3 sm:grid-cols-2 lg:min-w-[340px]">
+            <div className="rounded-[16px] border border-white/10 bg-white/10 px-4 py-3">
               <p className="text-xs uppercase tracking-[0.16em] text-violet-100/80">Decisiones activas</p>
               <p className="mt-2 text-3xl font-bold">{summary.kpis.activeDecisions}</p>
             </div>
-            <div className="rounded-[26px] bg-white/10 px-4 py-3 ring-1 ring-white/10">
+            <div className="rounded-[16px] border border-white/10 bg-white/10 px-4 py-3">
               <p className="text-xs uppercase tracking-[0.16em] text-violet-100/80">Watchlist</p>
               <p className="mt-2 text-3xl font-bold">{summary.kpis.watchlistSize}</p>
             </div>
@@ -90,13 +90,13 @@ export function ExecutiveSuite({ summary, compact = false }: { summary: Executiv
               <h3 className="text-lg font-semibold text-slate-900">Decision board</h3>
               <p className="mt-1 text-sm text-slate-500">Lo que más conviene mover primero para sostener ritmo y bajar fricción.</p>
             </div>
-            <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-violet-50 text-violet-700 ring-1 ring-violet-100">
+            <span className="inline-flex h-11 w-11 items-center justify-center rounded-[16px] bg-violet-50 text-violet-700 ring-1 ring-violet-100">
               <ShieldCheck className="h-5 w-5" />
             </span>
           </div>
           <div className="mt-5 space-y-3">
             {summary.decisionBoard.map((item) => (
-              <div key={`${item.source}-${item.title}`} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4">
+              <div key={`${item.source}-${item.title}`} className="rounded-[16px] border border-slate-200 bg-slate-50 px-4 py-4">
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <div className="flex flex-wrap items-center gap-2">
@@ -118,13 +118,13 @@ export function ExecutiveSuite({ summary, compact = false }: { summary: Executiv
               <h3 className="text-lg font-semibold text-slate-900">Cadencia semanal</h3>
               <p className="mt-1 text-sm text-slate-500">Los cuatro números que no deberían perderse en la conversación del equipo.</p>
             </div>
-            <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100">
+            <span className="inline-flex h-11 w-11 items-center justify-center rounded-[16px] bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100">
               <Sparkles className="h-5 w-5" />
             </span>
           </div>
           <div className="mt-5 space-y-3">
             {summary.weeklyCadence.map((item) => (
-              <div key={item.label} className="rounded-2xl border border-slate-200 bg-white px-4 py-4">
+              <div key={item.label} className="rounded-[16px] border border-slate-200 bg-white px-4 py-4">
                 <div className="flex items-center justify-between gap-3">
                   <div>
                     <p className="text-sm font-semibold text-slate-900">{item.label}</p>
@@ -145,13 +145,13 @@ export function ExecutiveSuite({ summary, compact = false }: { summary: Executiv
               <h3 className="text-lg font-semibold text-slate-900">Governance watchlist</h3>
               <p className="mt-1 text-sm text-slate-500">Items que vale la pena llevar a revisión con responsables visibles y contexto corto.</p>
             </div>
-            <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-100 text-slate-700 ring-1 ring-slate-200">
+            <span className="inline-flex h-11 w-11 items-center justify-center rounded-[16px] bg-slate-100 text-slate-700 ring-1 ring-slate-200">
               <BriefcaseBusiness className="h-5 w-5" />
             </span>
           </div>
           <div className="mt-5 space-y-3">
             {summary.governanceWatchlist.map((item) => (
-              <div key={`${item.source}-${item.title}-${item.owner}`} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4">
+              <div key={`${item.source}-${item.title}-${item.owner}`} className="rounded-[16px] border border-slate-200 bg-slate-50 px-4 py-4">
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <div className="flex flex-wrap items-center gap-2">
@@ -174,13 +174,13 @@ export function ExecutiveSuite({ summary, compact = false }: { summary: Executiv
               <h3 className="text-lg font-semibold text-slate-900">Recomendaciones ejecutivas</h3>
               <p className="mt-1 text-sm text-slate-500">Próximos movimientos para cerrar la semana con foco profesional y sin sobrecomplicar la operación.</p>
             </div>
-            <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-blue-50 text-blue-700 ring-1 ring-blue-100">
+            <span className="inline-flex h-11 w-11 items-center justify-center rounded-[16px] bg-blue-50 text-blue-700 ring-1 ring-blue-100">
               <Sparkles className="h-5 w-5" />
             </span>
           </div>
           <div className="mt-5 space-y-3">
             {summary.recommendations.map((item) => (
-              <div key={item} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">{item}</div>
+              <div key={item} className="rounded-[16px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">{item}</div>
             ))}
           </div>
           <div className="mt-5 flex flex-wrap gap-3">

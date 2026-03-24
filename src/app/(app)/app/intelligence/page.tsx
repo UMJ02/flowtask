@@ -78,7 +78,7 @@ export default async function IntelligencePage() {
                 <p className="text-sm text-slate-500">{card.label}</p>
                 <p className="mt-3 text-3xl font-bold text-slate-900">{card.value}</p>
               </div>
-              <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100">{card.icon}</span>
+              <span className="inline-flex h-12 w-12 items-center justify-center rounded-[16px] bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100">{card.icon}</span>
             </div>
           </Card>
         ))}
@@ -90,14 +90,14 @@ export default async function IntelligencePage() {
             <div className="max-w-2xl">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-200">Resumen</p>
               <h2 className="mt-2 text-3xl font-bold">Qué atender ahora</h2>
-              <p className="mt-2 text-sm text-cyan-100/90">No necesitas abrir varias pantallas para decidir. Aquí ves dónde estás bien, qué está en riesgo y qué mover primero.</p>
+              <p className="prose-balance mt-2 max-w-2xl text-sm leading-6 text-cyan-100/90">No necesitas abrir varias pantallas para decidir. Aquí ves dónde estás bien, qué está en riesgo y qué mover primero.</p>
             </div>
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div className="rounded-[26px] bg-white/10 px-4 py-3 ring-1 ring-white/10">
+            <div className="grid gap-3 sm:grid-cols-2 lg:min-w-[340px]">
+              <div className="rounded-[16px] border border-white/10 bg-white/10 px-4 py-3">
                 <p className="text-xs uppercase tracking-[0.16em] text-cyan-100/80">Señales activas</p>
                 <p className="mt-2 text-3xl font-bold">{workspace.kpis.activeSignals}</p>
               </div>
-              <div className="rounded-[26px] bg-white/10 px-4 py-3 ring-1 ring-white/10">
+              <div className="rounded-[16px] border border-white/10 bg-white/10 px-4 py-3">
                 <p className="text-xs uppercase tracking-[0.16em] text-cyan-100/80">Carga vencida</p>
                 <p className="mt-2 text-3xl font-bold">{workspace.kpis.overdueLoad}</p>
               </div>
@@ -111,13 +111,13 @@ export default async function IntelligencePage() {
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Recomendaciones</p>
               <h3 className="mt-2 text-xl font-bold text-slate-900">Qué conviene hacer</h3>
             </div>
-            <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-700 ring-1 ring-slate-200">
+            <span className="inline-flex h-12 w-12 items-center justify-center rounded-[16px] bg-slate-100 text-slate-700 ring-1 ring-slate-200">
               <Telescope className="h-5 w-5" />
             </span>
           </div>
           <div className="mt-5 space-y-3">
             {[...workspace.recommendations, ...risk.recommendations].slice(0, 4).map((item) => (
-              <div key={item} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">{item}</div>
+              <div key={item} className="rounded-[16px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">{item}</div>
             ))}
           </div>
         </Card>
@@ -130,13 +130,13 @@ export default async function IntelligencePage() {
               <h3 className="text-lg font-semibold text-slate-900">Estado del workspace</h3>
               <p className="mt-1 text-sm text-slate-500">Lo que falta para que el workspace esté más completo.</p>
             </div>
-            <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100">
+            <span className="inline-flex h-11 w-11 items-center justify-center rounded-[16px] bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100">
               <Sparkles className="h-5 w-5" />
             </span>
           </div>
           <div className="mt-5 space-y-3">
             {(onboarding?.steps ?? []).slice(0, 4).map((step) => (
-              <div key={step.id} className="rounded-2xl border border-slate-200 bg-white px-4 py-4">
+              <div key={step.id} className="rounded-[16px] border border-slate-200 bg-white px-4 py-4">
                 <div className="flex items-center justify-between gap-3">
                   <p className="text-sm font-semibold text-slate-900">{step.title}</p>
                   <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${step.done ? toneClass('stable') : toneClass('attention')}`}>{step.done ? 'Listo' : 'Pendiente'}</span>
@@ -153,13 +153,13 @@ export default async function IntelligencePage() {
               <h3 className="text-lg font-semibold text-slate-900">Riesgos</h3>
               <p className="mt-1 text-sm text-slate-500">Dónde hay más presión ahora mismo.</p>
             </div>
-            <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-rose-50 text-rose-700 ring-1 ring-rose-100">
+            <span className="inline-flex h-11 w-11 items-center justify-center rounded-[16px] bg-rose-50 text-rose-700 ring-1 ring-rose-100">
               <ShieldAlert className="h-5 w-5" />
             </span>
           </div>
           <div className="mt-5 space-y-3">
             {risk.hotspots.slice(0, 4).map((item) => (
-              <div key={item.name} className="rounded-2xl border border-slate-200 bg-white px-4 py-4">
+              <div key={item.name} className="rounded-[16px] border border-slate-200 bg-white px-4 py-4">
                 <div className="flex items-center justify-between gap-3">
                   <p className="text-sm font-semibold text-slate-900">{item.name}</p>
                   <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${toneClass(item.tone)}`}>{toneLabel(item.tone)}</span>
@@ -176,13 +176,13 @@ export default async function IntelligencePage() {
               <h3 className="text-lg font-semibold text-slate-900">Plan y prioridad</h3>
               <p className="mt-1 text-sm text-slate-500">Qué viene y qué conviene mover primero.</p>
             </div>
-            <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-blue-50 text-blue-700 ring-1 ring-blue-100">
+            <span className="inline-flex h-11 w-11 items-center justify-center rounded-[16px] bg-blue-50 text-blue-700 ring-1 ring-blue-100">
               <CalendarRange className="h-5 w-5" />
             </span>
           </div>
           <div className="mt-5 space-y-3">
             {planning.weeklyFocus.slice(0, 4).map((item) => (
-              <div key={item.id} className="rounded-2xl border border-slate-200 bg-white px-4 py-4">
+              <div key={item.id} className="rounded-[16px] border border-slate-200 bg-white px-4 py-4">
                 <div className="flex items-center justify-between gap-3">
                   <p className="text-sm font-semibold text-slate-900">{item.title}</p>
                   <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${toneClass(item.urgency === 'overdue' ? 'critical' : item.urgency === 'today' || item.urgency === 'this_week' ? 'attention' : 'stable')}`}>{item.dueLabel}</span>
@@ -204,7 +204,7 @@ export default async function IntelligencePage() {
           </div>
           <div className="mt-5 grid gap-3 md:grid-cols-2">
             {workspace.watchlist.slice(0, 6).map((item) => (
-              <div key={`${item.source}-${item.title}-${item.meta}`} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4">
+              <div key={`${item.source}-${item.title}-${item.meta}`} className="rounded-[16px] border border-slate-200 bg-slate-50 px-4 py-4">
                 <div className="flex items-center justify-between gap-3">
                   <span className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">{item.source}</span>
                   <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${toneClass(item.tone)}`}>{toneLabel(item.tone)}</span>
@@ -222,20 +222,20 @@ export default async function IntelligencePage() {
               <h3 className="text-lg font-semibold text-slate-900">Sigue desde aquí</h3>
               <p className="mt-1 text-sm text-slate-500">Vuelve al tablero o comparte un resumen cuando lo necesites.</p>
             </div>
-            <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-700 ring-1 ring-slate-200">
+            <span className="inline-flex h-12 w-12 items-center justify-center rounded-[16px] bg-slate-100 text-slate-700 ring-1 ring-slate-200">
               <ArrowRight className="h-5 w-5" />
             </span>
           </div>
           <div className="mt-5 grid gap-3">
-            <Link href="/app/dashboard" className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 transition hover:border-emerald-200 hover:bg-emerald-50">
+            <Link href="/app/dashboard" className="rounded-[16px] border border-slate-200 bg-slate-50 px-4 py-4 transition hover:border-emerald-200 hover:bg-emerald-50">
               <p className="text-sm font-semibold text-slate-900">Ir al workspace</p>
               <p className="mt-1 text-sm text-slate-500">Regresa a tu pizarra y sigue trabajando.</p>
             </Link>
-            <Link href="/app/tasks" className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 transition hover:border-emerald-200 hover:bg-emerald-50">
+            <Link href="/app/tasks" className="rounded-[16px] border border-slate-200 bg-slate-50 px-4 py-4 transition hover:border-emerald-200 hover:bg-emerald-50">
               <p className="text-sm font-semibold text-slate-900">Abrir tareas</p>
               <p className="mt-1 text-sm text-slate-500">Ve al detalle de pendientes y cambia filtros.</p>
             </Link>
-            <Link href="/app/reports" className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 transition hover:border-emerald-200 hover:bg-emerald-50">
+            <Link href="/app/reports" className="rounded-[16px] border border-slate-200 bg-slate-50 px-4 py-4 transition hover:border-emerald-200 hover:bg-emerald-50">
               <p className="text-sm font-semibold text-slate-900">Abrir reportes</p>
               <p className="mt-1 text-sm text-slate-500">Exporta un PDF y comparte el estado del trabajo.</p>
             </Link>

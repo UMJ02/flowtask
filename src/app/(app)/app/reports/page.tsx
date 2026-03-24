@@ -10,25 +10,24 @@ export default async function ReportsPage() {
   const summary = await getReportsOverview();
 
   return (
-    <div className="space-y-4">
+    <div className="page-grid">
       <SectionHeader
         eyebrow="Reporting"
         title="Reportes"
         description="Consolida operación, lectura ejecutiva y seguimiento semanal sin salir del workspace."
         icon={<BarChart3 className="h-5 w-5" />}
         actions={
-          <>
-            <Link href="/app/reports/print?type=summary" target="_blank"><Button variant="secondary">Resumen PDF</Button></Link>
-            <Link href="/app/reports/print?type=operations" target="_blank"><Button>Operación PDF</Button></Link>
-            <Link href="/app/reports/print?type=executive" target="_blank"><Button variant="secondary">Ejecutivo PDF</Button></Link>
-            <Link href="/app/reports/print?type=planning" target="_blank"><Button variant="secondary">Planning PDF</Button></Link>
-            <Link href="/app/reports/print?type=control" target="_blank"><Button variant="secondary">Control PDF</Button></Link>
-            <Link href="/app/reports/print?type=risk" target="_blank"><Button variant="secondary">Risk PDF</Button></Link>
-            <Link href="/app/reports/print?type=intelligence" target="_blank"><Button variant="secondary">Intelligence PDF</Button></Link>
-            <Link href="/app/reports/print?type=execution" target="_blank"><Button variant="secondary">Execution PDF</Button></Link>
-            <Link href="/app/reports/print?type=os" target="_blank"><Button variant="secondary">Workspace OS PDF</Button></Link>
-            <Link href="/app/reports/print?type=executive-suite" target="_blank"><Button variant="secondary">Executive PDF</Button></Link>
-          </>
+          <div className="grid w-full gap-2 sm:grid-cols-2 xl:w-[760px] xl:grid-cols-3">
+            <Link href="/app/reports/print?type=summary" target="_blank"><Button variant="secondary" className="w-full">Resumen PDF</Button></Link>
+            <Link href="/app/reports/print?type=operations" target="_blank"><Button className="w-full">Operación PDF</Button></Link>
+            <Link href="/app/reports/print?type=executive" target="_blank"><Button variant="secondary" className="w-full">Ejecutivo PDF</Button></Link>
+            <Link href="/app/reports/print?type=planning" target="_blank"><Button variant="secondary" className="w-full">Planning PDF</Button></Link>
+            <Link href="/app/reports/print?type=control" target="_blank"><Button variant="secondary" className="w-full">Control PDF</Button></Link>
+            <Link href="/app/reports/print?type=risk" target="_blank"><Button variant="secondary" className="w-full">Risk PDF</Button></Link>
+            <Link href="/app/reports/print?type=intelligence" target="_blank"><Button variant="secondary" className="w-full">Intelligence PDF</Button></Link>
+            <Link href="/app/reports/print?type=execution" target="_blank"><Button variant="secondary" className="w-full">Execution PDF</Button></Link>
+            <Link href="/app/reports/print?type=os" target="_blank"><Button variant="secondary" className="w-full">Workspace OS PDF</Button></Link>
+          </div>
         }
       />
 
@@ -47,9 +46,9 @@ export default async function ReportsPage() {
         <Card>
           <h2 className="text-lg font-semibold text-slate-900">Ruta de cierre semanal</h2>
           <div className="mt-3 space-y-3 text-sm text-slate-600">
-            <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">1. Revisa el radar de atención y resuelve tareas vencidas.</div>
-            <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">2. Exporta el resumen operativo o ejecutivo según la reunión que tengas.</div>
-            <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">3. Usa el watchlist de proyectos para compartir riesgos con clientes o equipo.</div>
+            <div className="rounded-[16px] border border-slate-200 bg-slate-50 px-4 py-3">1. Revisa el radar de atención y resuelve tareas vencidas.</div>
+            <div className="rounded-[16px] border border-slate-200 bg-slate-50 px-4 py-3">2. Exporta el resumen operativo o ejecutivo según la reunión que tengas.</div>
+            <div className="rounded-[16px] border border-slate-200 bg-slate-50 px-4 py-3">3. Usa el watchlist de proyectos para compartir riesgos con clientes o equipo.</div>
           </div>
         </Card>
       </div>
