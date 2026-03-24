@@ -42,7 +42,16 @@ export function useNotificationsRealtime({ userId, enabled = true, onInsert, onU
   useEffect(() => {
     if (!enabled || !userId || process.env.NEXT_PUBLIC_ENABLE_REALTIME !== "true") return;
 
-    const supabase = createClient();
+    let supabase;
+    try {
+      supabase = createClient();
+    } catch (error) {
+      if (process.env.NODE_ENV !== 'production') {
+        console.warn('[notifications] realtime disabled because runtime env is unavailable', error);
+      }
+      return;
+    }
+
     const channel = supabase
       .channel(`notifications:${userId}`)
       .on(
