@@ -22,7 +22,7 @@ import {
   CalendarDays,
 } from 'lucide-react';
 import { useWorkspaceMemory } from '@/hooks/use-workspace-memory';
-import { asRoute, calendarRoute, clientListRoute, intelligenceRoute, isRouteActive, notificationsRoute, organizationRoute, projectListRoute, remindersRoute, reportsRoute, settingsRoute, taskListRoute, workspaceRoute, type AppRoute } from '@/lib/navigation/routes';
+import { asRoute, calendarRoute, clientListRoute, controlTowerRoute, executionCenterRoute, intelligenceRoute, isRouteActive, notificationsRoute, organizationRoute, planningRoute, projectListRoute, remindersRoute, reportsRoute, riskRadarRoute, settingsRoute, taskListRoute, workspaceRoute, type AppRoute } from '@/lib/navigation/routes';
 
 type CommandItem = {
   id: string;
@@ -97,10 +97,46 @@ const COMMANDS: CommandItem[] = [
   },
   {
     id: 'intelligence',
-    label: 'Abrir insights',
-    description: 'Ve riesgos, foco y capacidad en una sola vista.',
+    label: 'Abrir intelligence hub',
+    description: 'Lee riesgo, capacidad y ejecución desde la vista consolidada.',
     href: intelligenceRoute(),
-    keywords: ['intelligence', 'riesgo', 'foco', 'capacidad'],
+    keywords: ['intelligence', 'hub', 'riesgo', 'foco', 'capacidad'],
+    icon: BrainCircuit,
+    section: 'Accesos',
+  },
+  {
+    id: 'planning',
+    label: 'Abrir planning',
+    description: 'Ordena prioridades y horizonte de corto plazo.',
+    href: planningRoute(),
+    keywords: ['planning', 'planificacion', 'capacidad'],
+    icon: BrainCircuit,
+    section: 'Accesos',
+  },
+  {
+    id: 'risk-radar',
+    label: 'Abrir risk radar',
+    description: 'Detecta presión operativa y focos críticos.',
+    href: riskRadarRoute(),
+    keywords: ['risk', 'radar', 'riesgo'],
+    icon: BrainCircuit,
+    section: 'Accesos',
+  },
+  {
+    id: 'execution-center',
+    label: 'Abrir execution center',
+    description: 'Pasa de señales a acciones do now y unblock.',
+    href: executionCenterRoute(),
+    keywords: ['execution', 'ejecucion', 'do now', 'unblock'],
+    icon: BrainCircuit,
+    section: 'Accesos',
+  },
+  {
+    id: 'control-tower',
+    label: 'Abrir control tower',
+    description: 'Vista táctica complementaria para priorizar foco inmediato.',
+    href: controlTowerRoute(),
+    keywords: ['control tower', 'tactico', 'prioridad'],
     icon: BrainCircuit,
     section: 'Accesos',
   },

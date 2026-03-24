@@ -103,7 +103,7 @@ export function ExecutionCenter({ summary, compact = false }: { summary: Executi
           </div>
           <div className="mt-5 flex flex-wrap gap-3">
             <Link href={asRoute('/app/reports/print?type=execution')} target="_blank"><Button>Execution PDF</Button></Link>
-            <Link href={asRoute('/app/workspace-intelligence')}><Button variant="secondary">Ver intelligence</Button></Link>
+            <Link href={asRoute('/app/intelligence')}><Button variant="secondary">Abrir intelligence hub</Button></Link>
           </div>
         </Card>
       </div>

@@ -32,7 +32,7 @@ export function WorkspaceIntelligence({ summary, compact = false }: { summary: W
             <h3 className="mt-2 text-xl font-bold text-slate-900">Lectura ejecutiva unificada</h3>
             <p className="mt-2 max-w-2xl text-sm text-slate-500">Cruza onboarding, planning, control, riesgo y reportes para decirte qué mover primero.</p>
           </div>
-          <Link href={asRoute('/app/workspace-intelligence')}><Button>Ver intelligence center</Button></Link>
+          <Link href={asRoute('/app/intelligence')}><Button>Abrir intelligence hub</Button></Link>
         </div>
         <div className="mt-5 grid gap-3 md:grid-cols-4">
           {cards.map((card) => (

@@ -1,15 +1,15 @@
-# FlowTask v5.8.1-navigation-hardening
+# FlowTask v5.9.0-module-consolidation
 
-Base validada sobre `v5.7.2-health`.
+Base validada sobre `v5.8.1-navigation-hardening`.
 
 ## Objetivo
-Ordenar la arquitectura visible del producto antes de seguir creciendo, manteniendo la base estable y evitando parches.
+Consolidar los módulos operativos relacionados con intelligence sin romper compatibilidad, definiendo qué queda como core, qué queda como soporte y qué se conserva como legacy.
 
 ## Enfoque
-- Workspace como home operativo real
-- Intelligence como hub consolidado de planning, risk y execution
-- Navegación separada entre core del producto y capa de organización
-- Tipado de rutas internas para endurecer refactors y navegación
+- Intelligence Hub como punto oficial de entrada para la capa analítica
+- Planning, Risk Radar y Execution Center como módulos core
+- Control Tower y Executive Suite como módulos de soporte
+- Workspace Intelligence y Workspace OS preservados como legacy con señal clara de migración
 
 ## Scripts
 - `npm run dev`
@@ -19,7 +19,7 @@ Ordenar la arquitectura visible del producto antes de seguir creciendo, mantenie
 - `npm run typecheck`
 
 ## Cambios clave
-- `AppRoute` deja de ser `any` y pasa a tipado real de rutas internas
-- Sidebar y mobile nav quedan agrupados por core y organización
-- Intelligence evoluciona a hub foundation con accesos directos a Planning, Risk, Execution y salida ejecutiva
-- Se mantiene la compatibilidad con la base anterior sin romper el flujo principal
+- Se crea un registro central de módulos de intelligence para ordenar lifecycle, CTAs y salidas PDF
+- Intelligence Hub muestra el mapa oficial de módulos core, soporte y legacy
+- Las vistas heredadas y complementarias incorporan banner de consolidación para orientar al usuario sin romper rutas previas
+- La command palette y los enlaces internos apuntan al nuevo flujo consolidado

@@ -137,7 +137,8 @@ export function isRouteActive(currentPathname: string | null | undefined, target
 }
 
 export function buildRouteWithQuery(pathname: string | null, params: URLSearchParams): AppRoute {
-  const safePathname = pathname && isKnownBasePath(normalizePathname(pathname)) ? normalizePathname(pathname) : '/app/workspace';
+  const normalizedPathname = normalizePathname(pathname);
+  const safePathname: AppBaseRoute = normalizedPathname && isKnownBasePath(normalizedPathname) ? normalizedPathname : '/app/workspace';
   const query = params.toString();
   return query ? asRoute(`${safePathname}?${query}`) : safePathname;
 }
@@ -152,6 +153,35 @@ export function intelligenceRoute(): AppRoute {
 
 export function reportsRoute(): AppRoute {
   return '/app/reports';
+}
+
+
+export function planningRoute(): AppRoute {
+  return '/app/planning';
+}
+
+export function riskRadarRoute(): AppRoute {
+  return '/app/risk-radar';
+}
+
+export function executionCenterRoute(): AppRoute {
+  return '/app/execution-center';
+}
+
+export function controlTowerRoute(): AppRoute {
+  return '/app/control-tower';
+}
+
+export function executiveSuiteRoute(): AppRoute {
+  return '/app/executive-suite';
+}
+
+export function workspaceIntelligenceRoute(): AppRoute {
+  return '/app/workspace-intelligence';
+}
+
+export function workspaceOperatingSystemRoute(): AppRoute {
+  return '/app/workspace-os';
 }
 
 export function notificationsRoute(query = ''): AppRoute {
