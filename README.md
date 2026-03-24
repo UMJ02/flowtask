@@ -1,4 +1,4 @@
-# FlowTask v5.8.0-foundation
+# FlowTask v5.8.1-navigation-hardening
 
 Base validada sobre `v5.7.2-health`.
 

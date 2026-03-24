@@ -18,9 +18,11 @@ import {
   Users,
   X,
   BarChart3,
+  Bell,
+  CalendarDays,
 } from 'lucide-react';
 import { useWorkspaceMemory } from '@/hooks/use-workspace-memory';
-import { asRoute, projectListRoute, taskListRoute, type AppRoute } from '@/lib/navigation/routes';
+import { asRoute, calendarRoute, clientListRoute, intelligenceRoute, isRouteActive, notificationsRoute, organizationRoute, projectListRoute, remindersRoute, reportsRoute, settingsRoute, taskListRoute, workspaceRoute, type AppRoute } from '@/lib/navigation/routes';
 
 type CommandItem = {
   id: string;
@@ -43,7 +45,7 @@ const COMMANDS: CommandItem[] = [
     id: 'workspace',
     label: 'Abrir workspace',
     description: 'Tu tablero principal para entrar a trabajar.',
-    href: '/app/workspace',
+    href: workspaceRoute(),
     keywords: ['workspace', 'inicio', 'tablero'],
     icon: LayoutDashboard,
     section: 'Accesos',
@@ -52,7 +54,7 @@ const COMMANDS: CommandItem[] = [
     id: 'tasks',
     label: 'Ver tareas',
     description: 'Consulta y organiza pendientes.',
-    href: '/app/tasks',
+    href: taskListRoute(),
     keywords: ['tareas', 'pendientes', 'kanban'],
     icon: ClipboardList,
     section: 'Accesos',
@@ -61,7 +63,7 @@ const COMMANDS: CommandItem[] = [
     id: 'new-task',
     label: 'Crear tarea',
     description: 'Registra una nueva tarea en segundos.',
-    href: '/app/tasks/new',
+    href: asRoute('/app/tasks/new'),
     keywords: ['crear', 'nueva tarea', 'agregar tarea'],
     icon: Plus,
     section: 'Accesos',
@@ -70,7 +72,7 @@ const COMMANDS: CommandItem[] = [
     id: 'projects',
     label: 'Ver proyectos',
     description: 'Revisa avance, responsables y fechas.',
-    href: '/app/projects',
+    href: projectListRoute(),
     keywords: ['proyectos', 'trabajos'],
     icon: FolderKanban,
     section: 'Accesos',
@@ -79,7 +81,7 @@ const COMMANDS: CommandItem[] = [
     id: 'new-project',
     label: 'Crear proyecto',
     description: 'Inicia un proyecto nuevo.',
-    href: '/app/projects/new',
+    href: asRoute('/app/projects/new'),
     keywords: ['crear proyecto', 'nuevo proyecto'],
     icon: ClipboardList,
     section: 'Accesos',
@@ -88,7 +90,7 @@ const COMMANDS: CommandItem[] = [
     id: 'clients',
     label: 'Ver clientes',
     description: 'Consulta clientes y carga actual.',
-    href: '/app/clients',
+    href: clientListRoute(),
     keywords: ['clientes', 'cuentas'],
     icon: Users,
     section: 'Accesos',
@@ -97,7 +99,7 @@ const COMMANDS: CommandItem[] = [
     id: 'intelligence',
     label: 'Abrir insights',
     description: 'Ve riesgos, foco y capacidad en una sola vista.',
-    href: '/app/intelligence',
+    href: intelligenceRoute(),
     keywords: ['intelligence', 'riesgo', 'foco', 'capacidad'],
     icon: BrainCircuit,
     section: 'Accesos',
@@ -106,7 +108,7 @@ const COMMANDS: CommandItem[] = [
     id: 'reports',
     label: 'Abrir reportes',
     description: 'Resume avances y exporta un PDF.',
-    href: '/app/reports',
+    href: reportsRoute(),
     keywords: ['reportes', 'pdf', 'resumen'],
     icon: BarChart3,
     section: 'Accesos',
@@ -115,7 +117,7 @@ const COMMANDS: CommandItem[] = [
     id: 'organization',
     label: 'Ver equipo',
     description: 'Gestiona miembros, roles y accesos.',
-    href: '/app/organization',
+    href: organizationRoute(),
     keywords: ['organizacion', 'equipo', 'roles'],
     icon: Building2,
     section: 'Accesos',
@@ -124,9 +126,36 @@ const COMMANDS: CommandItem[] = [
     id: 'settings',
     label: 'Abrir ajustes',
     description: 'Cambia tu perfil y preferencias.',
-    href: '/app/settings',
+    href: settingsRoute(),
     keywords: ['configuracion', 'perfil', 'ajustes'],
     icon: Settings,
+    section: 'Accesos',
+  },
+  {
+    id: 'notifications',
+    label: 'Ver notificaciones',
+    description: 'Revisa alertas, actividad y entregas.',
+    href: notificationsRoute(),
+    keywords: ['notificaciones', 'alertas', 'actividad'],
+    icon: Bell,
+    section: 'Accesos',
+  },
+  {
+    id: 'reminders',
+    label: 'Abrir recordatorios',
+    description: 'Sigue pendientes y próximos follow-up.',
+    href: remindersRoute(),
+    keywords: ['recordatorios', 'seguimiento', 'follow up'],
+    icon: ClipboardList,
+    section: 'Accesos',
+  },
+  {
+    id: 'calendar',
+    label: 'Ver calendario',
+    description: 'Consulta agenda y vencimientos.',
+    href: calendarRoute(),
+    keywords: ['calendario', 'agenda', 'fechas'],
+    icon: CalendarDays,
     section: 'Accesos',
   },
 ];
@@ -231,7 +260,7 @@ export function CommandPalette() {
       id: `client-view-${item.id}`,
       label: `Clientes · ${item.label}`,
       description: item.query || 'Búsqueda guardada de clientes',
-      href: item.query ? asRoute(`/app/clients?${item.query}`) : asRoute('/app/clients'),
+      href: clientListRoute(item.query),
       keywords: [item.label, item.query, 'clientes', 'vista guardada'],
       icon: Bookmark,
       section: 'Guardados' as const,
@@ -263,15 +292,24 @@ export function CommandPalette() {
         icon: Search,
         section: 'Accesos',
       },
+      {
+        id: `search-clients-${normalized}`,
+        label: `Buscar clientes: ${normalized}`,
+        description: 'Abre clientes filtrados por este texto.',
+        href: clientListRoute(new URLSearchParams({ q: normalized }).toString()),
+        keywords: [normalized, 'buscar clientes'],
+        icon: Search,
+        section: 'Accesos',
+      },
     ];
   }, [query]);
 
   const commands = useMemo(() => {
     const normalized = query.trim().toLowerCase();
-    const allCommands = [...favoriteCommands, ...pinnedCommands, ...recentCommands, ...savedViewCommands, ...COMMANDS, ...quickQueryCommands];
-    if (!normalized) return allCommands;
+    const uniqueCommands = [...favoriteCommands, ...pinnedCommands, ...recentCommands, ...savedViewCommands, ...COMMANDS, ...quickQueryCommands].filter((item, index, array) => index === array.findIndex((candidate) => candidate.id === item.id));
+    if (!normalized) return uniqueCommands;
 
-    return allCommands.filter((item) => {
+    return uniqueCommands.filter((item) => {
       const haystack = [item.label, item.description, ...item.keywords].join(' ').toLowerCase();
       return haystack.includes(normalized);
     });
@@ -323,7 +361,7 @@ export function CommandPalette() {
                     <div className="space-y-2">
                       {items.map((item) => {
                         const Icon = item.icon;
-                        const active = pathname === item.href;
+                        const active = isRouteActive(pathname, item.href);
                         return (
                           <button
                             key={item.id}

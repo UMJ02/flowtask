@@ -37,13 +37,15 @@ export async function updateSession(request: NextRequest) {
   if (isAppRoute && !user) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
-    url.searchParams.set("next", request.nextUrl.pathname);
+    const nextTarget = `${request.nextUrl.pathname}${request.nextUrl.search}` || "/app/workspace";
+    url.searchParams.set("next", nextTarget);
     return NextResponse.redirect(url);
   }
 
   if (isAuthRoute && user) {
     const url = request.nextUrl.clone();
-    url.pathname = "/app/dashboard";
+    url.pathname = "/app/workspace";
+    url.search = "";
     return NextResponse.redirect(url);
   }
 

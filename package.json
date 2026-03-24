@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "5.8.0-foundation",
+  "version": "5.8.1-navigation-hardening",
   "private": true,
   "scripts": {
     "dev": "next dev",
