@@ -52,10 +52,10 @@ export function RecentActivity({ summary }: RecentActivityProps) {
 
         <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           {tiles.map((tile) => (
-            <div key={tile.label} className={`group min-w-0 min-h-[88px] rounded-[10px] border px-4 py-3 ${tile.tone} transition-all duration-200 hover:-translate-y-px`}>
-              <div className="numeric-inline">
-                <p className="numeric-inline__label text-[11px] font-semibold uppercase tracking-[0.14em]">{tile.label}</p>
-                <p className="numeric-inline__value text-[1.55rem] font-bold leading-none text-slate-950">{tile.value}</p>
+            <div key={tile.label} className={`min-w-0 min-h-[96px] rounded-[10px] border px-4 py-3 ${tile.tone}`}>
+              <div className="flex items-center justify-between gap-3">
+                <p className="min-w-0 truncate text-[11px] font-semibold uppercase tracking-[0.14em]">{tile.label}</p>
+                <p className="shrink-0 whitespace-nowrap text-[1.9rem] font-bold leading-none tabular-nums text-slate-950">{tile.value}</p>
               </div>
             </div>
           ))}

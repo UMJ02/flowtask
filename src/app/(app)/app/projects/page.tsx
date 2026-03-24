@@ -50,7 +50,6 @@ export default async function ProjectsPage({
         }
       />
       <ExpandableBar
-        eyebrow="Buscar"
         title="Busca tus proyectos"
         description="Abre esta barra para buscar por cliente, estado o tipo."
       >

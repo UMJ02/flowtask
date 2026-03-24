@@ -7,7 +7,6 @@
   --radius-card: 14px;
   --radius-panel: 12px;
   --shadow-soft: 0 6px 18px rgba(15, 23, 42, 0.05);
-  --shadow-soft-hover: 0 12px 28px rgba(15, 23, 42, 0.08);
   --border-soft: rgba(148, 163, 184, 0.18);
 }
 
@@ -113,13 +112,6 @@ textarea {
   text-wrap: balance;
 }
 
-.line-clamp-1,
-.truncate-1 {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
 .line-clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -132,45 +124,4 @@ textarea {
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
-}
-
-.interactive-surface {
-  transition:
-    transform 180ms ease,
-    box-shadow 180ms ease,
-    border-color 180ms ease,
-    background-color 180ms ease;
-}
-
-.interactive-surface:hover {
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-soft-hover);
-}
-
-.micro-lift {
-  transition: transform 160ms ease, opacity 160ms ease;
-}
-
-.group:hover .micro-lift {
-  transform: translateX(2px);
-}
-
-.numeric-inline {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 0.5rem;
-  min-width: 0;
-}
-
-.numeric-inline__label {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.numeric-inline__value {
-  flex-shrink: 0;
-  white-space: nowrap;
-  font-variant-numeric: tabular-nums;
 }

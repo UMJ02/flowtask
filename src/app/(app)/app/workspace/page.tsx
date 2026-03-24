@@ -105,10 +105,10 @@ export default async function WorkspacePage() {
           </div>
           <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
             {topStats.map((stat) => (
-              <div key={stat.label} className="min-w-0 rounded-lg border border-white/10 bg-white/10 px-4 py-3 transition-all duration-200 hover:border-white/20 hover:bg-white/12">
-                <div className="numeric-inline text-white">
-                  <p className="numeric-inline__label text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-300">{stat.label}</p>
-                  <p className="numeric-inline__value text-[1.42rem] font-bold leading-none">{stat.value}</p>
+              <div key={stat.label} className="min-w-0 rounded-lg border border-white/10 bg-white/10 px-4 py-3">
+                <div className="flex items-center justify-between gap-3">
+                  <p className="min-w-0 truncate text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-300">{stat.label}</p>
+                  <p className="shrink-0 whitespace-nowrap text-[1.65rem] font-bold leading-none tabular-nums">{stat.value}</p>
                 </div>
               </div>
             ))}
@@ -152,7 +152,7 @@ export default async function WorkspacePage() {
                 <div key={item.label} className="rounded-lg border border-slate-200 bg-slate-50/70 px-4 py-4">
                   <div className="flex items-start justify-between gap-3">
                     <p className="min-w-0 pr-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">{item.label}</p>
-                    <span className={`inline-flex shrink-0 rounded-full px-3 py-1 text-xs font-semibold transition-colors duration-200 ${metricTone(item.value, item.tone)}`}>{item.value > 0 ? 'Activo' : 'Estable'}</span>
+                    <span className={`inline-flex shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${metricTone(item.value, item.tone)}`}>{item.value > 0 ? 'Activo' : 'Estable'}</span>
                   </div>
                   <div className="mt-4 space-y-2">
                     <p className="text-3xl font-bold leading-none text-slate-950 tabular-nums">{item.value}</p>
