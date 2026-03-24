@@ -7,6 +7,7 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorState } from '@/components/ui/error-state';
 import { SectionHeader } from '@/components/ui/section-header';
 import { FilterPresets } from '@/components/ui/filter-presets';
+import { ExpandableBar } from '@/components/ui/expandable-bar';
 import { taskNewRoute } from '@/lib/navigation/routes';
 import { getTasks } from '@/lib/queries/tasks';
 import { safeServerCall } from '@/lib/runtime/safe-server';
@@ -48,7 +49,13 @@ export default async function TasksPage({
           </Link>
         }
       />
-      <TaskFilters filters={filters} />
+      <ExpandableBar
+        eyebrow="Buscar y filtrar"
+        title="Refina la vista de tareas"
+        description="Busca rápido y despliega filtros solo cuando los necesites."
+      >
+        <TaskFilters filters={filters} />
+      </ExpandableBar>
       <FilterPresets
         storageKey="flowtask:filters:tasks"
         basePath="/app/tasks"

@@ -105,8 +105,8 @@ export default async function WorkspacePage() {
           </div>
           <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
             {topStats.map((stat) => (
-              <div key={stat.label} className="rounded-[10px] border border-white/10 bg-white/10 px-4 py-3">
-                <p className="text-[11px] uppercase tracking-[0.16em] text-slate-300">{stat.label}</p>
+              <div key={stat.label} className="rounded-lg border border-white/10 bg-white/10 px-4 py-3">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-300">{stat.label}</p>
                 <p className="mt-2 text-[1.8rem] font-bold leading-none">{stat.value}</p>
               </div>
             ))}
@@ -147,20 +147,18 @@ export default async function WorkspacePage() {
             </div>
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               {focus.map((item) => (
-                <div key={item.label} className="rounded-[10px] border border-slate-200 bg-slate-50/70 px-4 py-4">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">{item.label}</p>
-                      <p className="mt-3 text-3xl font-bold leading-none text-slate-950">{item.value}</p>
-                    </div>
+                <div key={item.label} className="rounded-lg border border-slate-200 bg-slate-50/70 px-4 py-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">{item.label}</p>
                     <span className={`inline-flex shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${metricTone(item.value, item.tone)}`}>{item.value > 0 ? 'Activo' : 'Estable'}</span>
                   </div>
+                  <p className="mt-4 text-3xl font-bold leading-none text-slate-950">{item.value}</p>
                   <p className="mt-3 text-sm text-slate-500">{item.helper}</p>
                 </div>
               ))}
             </div>
             {intelligenceSummary?.recommendations?.[0] ? (
-              <div className="mt-4 rounded-[10px] border border-emerald-100 bg-emerald-50/80 px-4 py-3 text-sm leading-6 text-emerald-900">
+              <div className="mt-4 rounded-lg border border-emerald-100 bg-emerald-50/80 px-4 py-3 text-sm leading-6 text-emerald-900">
                 {intelligenceSummary.recommendations[0]}
               </div>
             ) : null}
@@ -193,7 +191,7 @@ export default async function WorkspacePage() {
             </div>
             <div className="mt-4 space-y-3">
               {topProjects.length ? topProjects.map((project: ProjectRow) => (
-                <Link key={project.id} href={projectDetailRoute(project.id)} className="block rounded-[10px] border border-slate-200 bg-slate-50/70 px-4 py-4 transition hover:border-emerald-200 hover:bg-emerald-50/70">
+                <Link key={project.id} href={projectDetailRoute(project.id)} className="block rounded-lg border border-slate-200 bg-slate-50/70 px-4 py-4 transition hover:border-emerald-200 hover:bg-emerald-50/70">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <p className="line-clamp-2 text-sm font-semibold text-slate-900">{project.title}</p>
@@ -218,7 +216,7 @@ export default async function WorkspacePage() {
             </div>
             <div className="mt-4 space-y-3">
               {topClients.length ? topClients.map((client) => (
-                <Link key={client.id} href={`/app/clients/${client.id}`} className="block rounded-[10px] border border-slate-200 bg-slate-50/70 px-4 py-4 transition hover:border-emerald-200 hover:bg-emerald-50/70">
+                <Link key={client.id} href={`/app/clients/${client.id}`} className="block rounded-lg border border-slate-200 bg-slate-50/70 px-4 py-4 transition hover:border-emerald-200 hover:bg-emerald-50/70">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <p className="line-clamp-2 text-sm font-semibold text-slate-900">{client.name}</p>

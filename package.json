@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "6.2.3-dashboard-reports-intelligence-refinement",
+  "version": "6.2.4-ui-structure-refactor",
   "private": true,
   "scripts": {
     "dev": "next dev",

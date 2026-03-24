@@ -7,6 +7,7 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorState } from '@/components/ui/error-state';
 import { SectionHeader } from '@/components/ui/section-header';
 import { FilterPresets } from '@/components/ui/filter-presets';
+import { ExpandableBar } from '@/components/ui/expandable-bar';
 import { projectNewRoute } from '@/lib/navigation/routes';
 import { getProjects } from '@/lib/queries/projects';
 import { safeServerCall } from '@/lib/runtime/safe-server';
@@ -48,7 +49,13 @@ export default async function ProjectsPage({
           </Link>
         }
       />
-      <ProjectFilters filters={filters} />
+      <ExpandableBar
+        eyebrow="Buscar y filtrar"
+        title="Refina la vista de proyectos"
+        description="Abre esta barra para buscar por cliente, estado, área o tipo."
+      >
+        <ProjectFilters filters={filters} />
+      </ExpandableBar>
       <FilterPresets
         storageKey="flowtask:filters:projects"
         basePath="/app/projects"

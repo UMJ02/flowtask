@@ -35,3 +35,6 @@ Base real endurecida para cierre técnico previo a despliegue.
 ## Current baseline
 
 - v6.1.1-data-consistency
+
+
+Current package version: 6.2.4-ui-structure-refactor.

@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { ArrowUpRight, BarChart3, Download, FileSpreadsheet } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { ExpandableBar } from '@/components/ui/expandable-bar';
 import { SectionHeader } from '@/components/ui/section-header';
 import { OperationsOverview } from '@/components/reports/operations-overview';
 import { getReportsOverview } from '@/lib/queries/reports';
@@ -41,33 +42,31 @@ export default async function ReportsPage() {
         icon={<BarChart3 className="h-5 w-5" />}
       />
 
-      <Card>
-        <div className="grid gap-4 xl:grid-cols-[0.92fr_1.08fr] xl:items-start">
-          <div className="max-w-md">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Salida rápida</p>
-            <h2 className="mt-2 text-[1.75rem] font-bold tracking-tight text-slate-950">Exporta con orden</h2>
-            <p className="mt-2 text-sm leading-6 text-slate-500">Agrupa las salidas por prioridad para encontrar el PDF correcto más rápido según la reunión o revisión que tengas.</p>
-          </div>
-          <div className="grid gap-3 lg:grid-cols-2">
-            {REPORT_GROUPS.map((group) => (
-              <div key={group.title} className="rounded-[10px] border border-slate-200 bg-slate-50/70 p-4">
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">{group.title}</p>
-                <p className="mt-2 text-sm text-slate-500">{group.description}</p>
-                <div className="mt-4 grid gap-2 sm:grid-cols-2">
-                  {group.actions.map((action) => (
-                    <Link key={action.href} href={action.href} target="_blank">
-                      <Button variant={action.primary ? 'primary' : 'secondary'} className="w-full justify-between">
-                        {action.label}
-                        <ArrowUpRight className="h-4 w-4" />
-                      </Button>
-                    </Link>
-                  ))}
-                </div>
+      <ExpandableBar
+        eyebrow="Exportación"
+        title="Salidas PDF"
+        description="Abre esta barra para elegir el formato correcto según el tipo de revisión."
+        defaultOpen
+      >
+        <div className="grid gap-3 lg:grid-cols-2">
+          {REPORT_GROUPS.map((group) => (
+            <div key={group.title} className="rounded-lg border border-slate-200 bg-slate-50/70 p-4">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">{group.title}</p>
+              <p className="mt-2 text-sm text-slate-500">{group.description}</p>
+              <div className="mt-4 grid gap-2 sm:grid-cols-2">
+                {group.actions.map((action) => (
+                  <Link key={action.href} href={action.href} target="_blank">
+                    <Button variant={action.primary ? 'primary' : 'secondary'} className="w-full justify-between">
+                      {action.label}
+                      <ArrowUpRight className="h-4 w-4" />
+                    </Button>
+                  </Link>
+                ))}
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
-      </Card>
+      </ExpandableBar>
 
       <OperationsOverview summary={summary} />
 
@@ -79,7 +78,7 @@ export default async function ReportsPage() {
               <h2 className="mt-2 text-xl font-semibold text-slate-900">Datos para hojas</h2>
               <p className="mt-2 text-sm text-slate-600">Descarga listados limpios de tareas y proyectos para Excel o Google Sheets.</p>
             </div>
-            <span className="inline-flex h-10 w-10 items-center justify-center rounded-[10px] bg-slate-100 text-slate-700 ring-1 ring-slate-200">
+            <span className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-slate-100 text-slate-700 ring-1 ring-slate-200">
               <FileSpreadsheet className="h-5 w-5" />
             </span>
           </div>
@@ -93,9 +92,9 @@ export default async function ReportsPage() {
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Ruta de cierre semanal</p>
           <h2 className="mt-2 text-xl font-semibold text-slate-900">Secuencia recomendada</h2>
           <div className="mt-4 grid gap-3">
-            <div className="rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">1. Revisa el radar de atención y resuelve tareas vencidas.</div>
-            <div className="rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">2. Exporta el resumen operativo o ejecutivo según la reunión que tengas.</div>
-            <div className="rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">3. Usa el watchlist de proyectos para compartir riesgos con clientes o equipo.</div>
+            <div className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">1. Revisa el radar de atención y resuelve tareas vencidas.</div>
+            <div className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">2. Exporta el resumen operativo o ejecutivo según la reunión que tengas.</div>
+            <div className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">3. Usa el watchlist de proyectos para compartir riesgos con clientes o equipo.</div>
           </div>
         </Card>
       </div>

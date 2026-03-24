@@ -72,6 +72,33 @@ export default async function IntelligencePage() {
         }
       />
 
+      <Card className="border-slate-200 bg-white px-4 py-4 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+        <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+          <div className="min-w-0 max-w-2xl">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">Resumen</p>
+            <div className="mt-2 flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
+              <div className="min-w-0">
+                <h2 className="text-2xl font-bold tracking-tight text-slate-950">Qué atender ahora</h2>
+                <p className="mt-1 text-sm text-slate-500">Una lectura rápida del workspace para decidir sin abrir varias pantallas.</p>
+              </div>
+              <Link href="/app/risk-radar" className="inline-flex items-center gap-2 text-sm font-semibold text-slate-700 hover:text-slate-950">
+                Ver insights <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2 xl:min-w-[360px]">
+            <div className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">Señales activas</p>
+              <p className="mt-2 text-[1.8rem] font-bold leading-none text-slate-950">{workspace.kpis.activeSignals}</p>
+            </div>
+            <div className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">Carga vencida</p>
+              <p className="mt-2 text-[1.8rem] font-bold leading-none text-slate-950">{workspace.kpis.overdueLoad}</p>
+            </div>
+          </div>
+        </div>
+      </Card>
+
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {executiveCards.map((card) => (
           <Card key={card.label} className="bg-gradient-to-br from-white to-slate-50/60">
@@ -80,46 +107,47 @@ export default async function IntelligencePage() {
                 <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">{card.label}</p>
                 <p className="mt-3 text-[2rem] font-bold leading-none text-slate-900">{card.value}</p>
               </div>
-              <span className="inline-flex h-10 w-10 items-center justify-center rounded-[10px] bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100">{card.icon}</span>
+              <span className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100">{card.icon}</span>
             </div>
           </Card>
         ))}
       </div>
 
-      <div className="grid gap-4 xl:grid-cols-[1.05fr_0.95fr]">
-        <Card className="bg-[linear-gradient(135deg,#082f49_0%,#0f766e_52%,#0f172a_100%)] text-white shadow-[0_24px_60px_rgba(15,23,42,0.22)]">
-          <div className="grid gap-4 lg:grid-cols-[minmax(0,1.2fr)_minmax(260px,0.8fr)] lg:items-end">
-            <div className="max-w-2xl">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-200">Resumen</p>
-              <h2 className="mt-2 text-[1.8rem] font-bold tracking-tight">Qué atender ahora</h2>
-              <p className="prose-balance mt-2 max-w-xl text-sm leading-6 text-cyan-100/90">Aquí ves dónde estás bien, qué está en riesgo y qué mover primero sin abrir múltiples vistas.</p>
-            </div>
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div className="rounded-[10px] border border-white/10 bg-white/10 px-4 py-3">
-                <p className="text-[11px] uppercase tracking-[0.16em] text-cyan-100/80">Señales activas</p>
-                <p className="mt-2 text-[1.9rem] font-bold leading-none">{workspace.kpis.activeSignals}</p>
-              </div>
-              <div className="rounded-[10px] border border-white/10 bg-white/10 px-4 py-3">
-                <p className="text-[11px] uppercase tracking-[0.16em] text-cyan-100/80">Carga vencida</p>
-                <p className="mt-2 text-[1.9rem] font-bold leading-none">{workspace.kpis.overdueLoad}</p>
-              </div>
-            </div>
-          </div>
-        </Card>
-
+      <div className="grid gap-4 xl:grid-cols-[0.9fr_1.1fr]">
         <Card>
           <div className="flex items-start justify-between gap-3">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Recomendaciones</p>
               <h3 className="mt-2 text-xl font-bold text-slate-900">Qué conviene hacer</h3>
             </div>
-            <span className="inline-flex h-10 w-10 items-center justify-center rounded-[10px] bg-slate-100 text-slate-700 ring-1 ring-slate-200">
+            <span className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-slate-100 text-slate-700 ring-1 ring-slate-200">
               <Telescope className="h-5 w-5" />
             </span>
           </div>
           <div className="mt-4 grid gap-3">
             {topRecommendations.map((item) => (
-              <div key={item} className="rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm leading-6 text-slate-600">{item}</div>
+              <div key={item} className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm leading-6 text-slate-600">{item}</div>
+            ))}
+          </div>
+        </Card>
+
+        <Card>
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <h3 className="text-lg font-semibold text-slate-900">Watchlist</h3>
+              <p className="mt-1 text-sm text-slate-500">Una sola lista con lo que merece seguimiento.</p>
+            </div>
+          </div>
+          <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+            {workspace.watchlist.slice(0, 6).map((item) => (
+              <div key={`${item.source}-${item.title}-${item.meta}`} className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-4">
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">{item.source}</span>
+                  <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${toneClass(item.tone)}`}>{toneLabel(item.tone)}</span>
+                </div>
+                <p className="mt-3 line-clamp-2 text-sm font-semibold text-slate-900">{item.title}</p>
+                <p className="mt-1 line-clamp-2 text-sm text-slate-500">{item.meta}</p>
+              </div>
             ))}
           </div>
         </Card>
@@ -132,13 +160,13 @@ export default async function IntelligencePage() {
               <h3 className="text-lg font-semibold text-slate-900">Estado del workspace</h3>
               <p className="mt-1 text-sm text-slate-500">Lo que falta para completar mejor la base.</p>
             </div>
-            <span className="inline-flex h-10 w-10 items-center justify-center rounded-[10px] bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100">
+            <span className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100">
               <Sparkles className="h-5 w-5" />
             </span>
           </div>
           <div className="mt-4 space-y-3">
             {(onboarding?.steps ?? []).slice(0, 4).map((step) => (
-              <div key={step.id} className="rounded-[10px] border border-slate-200 bg-white px-4 py-4">
+              <div key={step.id} className="rounded-lg border border-slate-200 bg-white px-4 py-4">
                 <div className="flex items-center justify-between gap-3">
                   <p className="text-sm font-semibold text-slate-900">{step.title}</p>
                   <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${step.done ? toneClass('stable') : toneClass('attention')}`}>{step.done ? 'Listo' : 'Pendiente'}</span>
@@ -155,13 +183,13 @@ export default async function IntelligencePage() {
               <h3 className="text-lg font-semibold text-slate-900">Riesgos</h3>
               <p className="mt-1 text-sm text-slate-500">Dónde hay más presión ahora mismo.</p>
             </div>
-            <span className="inline-flex h-10 w-10 items-center justify-center rounded-[10px] bg-rose-50 text-rose-700 ring-1 ring-rose-100">
+            <span className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-rose-50 text-rose-700 ring-1 ring-rose-100">
               <ShieldAlert className="h-5 w-5" />
             </span>
           </div>
           <div className="mt-4 space-y-3">
             {risk.hotspots.slice(0, 4).map((item) => (
-              <div key={item.name} className="rounded-[10px] border border-slate-200 bg-white px-4 py-4">
+              <div key={item.name} className="rounded-lg border border-slate-200 bg-white px-4 py-4">
                 <div className="flex items-center justify-between gap-3">
                   <p className="text-sm font-semibold text-slate-900">{item.name}</p>
                   <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${toneClass(item.tone)}`}>{toneLabel(item.tone)}</span>
@@ -178,13 +206,13 @@ export default async function IntelligencePage() {
               <h3 className="text-lg font-semibold text-slate-900">Plan y prioridad</h3>
               <p className="mt-1 text-sm text-slate-500">Qué viene y qué conviene mover primero.</p>
             </div>
-            <span className="inline-flex h-10 w-10 items-center justify-center rounded-[10px] bg-blue-50 text-blue-700 ring-1 ring-blue-100">
+            <span className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-blue-50 text-blue-700 ring-1 ring-blue-100">
               <CalendarRange className="h-5 w-5" />
             </span>
           </div>
           <div className="mt-4 space-y-3">
             {planning.weeklyFocus.slice(0, 4).map((item) => (
-              <div key={item.id} className="rounded-[10px] border border-slate-200 bg-white px-4 py-4">
+              <div key={item.id} className="rounded-lg border border-slate-200 bg-white px-4 py-4">
                 <div className="flex items-center justify-between gap-3">
                   <p className="text-sm font-semibold text-slate-900">{item.title}</p>
                   <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${toneClass(item.urgency === 'overdue' ? 'critical' : item.urgency === 'today' || item.urgency === 'this_week' ? 'attention' : 'stable')}`}>{item.dueLabel}</span>
@@ -196,54 +224,31 @@ export default async function IntelligencePage() {
         </Card>
       </div>
 
-      <div className="grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
-        <Card>
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <h3 className="text-lg font-semibold text-slate-900">Watchlist</h3>
-              <p className="mt-1 text-sm text-slate-500">Una sola lista con lo que merece seguimiento.</p>
-            </div>
+      <Card>
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <h3 className="text-lg font-semibold text-slate-900">Sigue desde aquí</h3>
+            <p className="mt-1 text-sm text-slate-500">Vuelve al tablero o comparte un resumen cuando lo necesites.</p>
           </div>
-          <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-            {workspace.watchlist.slice(0, 6).map((item) => (
-              <div key={`${item.source}-${item.title}-${item.meta}`} className="rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-4">
-                <div className="flex items-center justify-between gap-3">
-                  <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">{item.source}</span>
-                  <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${toneClass(item.tone)}`}>{toneLabel(item.tone)}</span>
-                </div>
-                <p className="mt-3 text-sm font-semibold text-slate-900 line-clamp-2">{item.title}</p>
-                <p className="mt-1 text-sm text-slate-500 line-clamp-2">{item.meta}</p>
-              </div>
-            ))}
-          </div>
-        </Card>
-
-        <Card>
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <h3 className="text-lg font-semibold text-slate-900">Sigue desde aquí</h3>
-              <p className="mt-1 text-sm text-slate-500">Vuelve al tablero o comparte un resumen cuando lo necesites.</p>
-            </div>
-            <span className="inline-flex h-10 w-10 items-center justify-center rounded-[10px] bg-slate-100 text-slate-700 ring-1 ring-slate-200">
-              <ArrowRight className="h-5 w-5" />
-            </span>
-          </div>
-          <div className="mt-4 grid gap-3">
-            <Link href="/app/dashboard" className="rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-4 transition hover:border-emerald-200 hover:bg-emerald-50">
-              <p className="text-sm font-semibold text-slate-900">Ir al workspace</p>
-              <p className="mt-1 text-sm text-slate-500">Regresa a tu pizarra y sigue trabajando.</p>
-            </Link>
-            <Link href="/app/tasks" className="rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-4 transition hover:border-emerald-200 hover:bg-emerald-50">
-              <p className="text-sm font-semibold text-slate-900">Abrir tareas</p>
-              <p className="mt-1 text-sm text-slate-500">Ve al detalle de pendientes y cambia filtros.</p>
-            </Link>
-            <Link href="/app/reports" className="rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-4 transition hover:border-emerald-200 hover:bg-emerald-50">
-              <p className="text-sm font-semibold text-slate-900">Abrir reportes</p>
-              <p className="mt-1 text-sm text-slate-500">Exporta un PDF y comparte el estado del trabajo.</p>
-            </Link>
-          </div>
-        </Card>
-      </div>
+          <span className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-slate-100 text-slate-700 ring-1 ring-slate-200">
+            <ArrowRight className="h-5 w-5" />
+          </span>
+        </div>
+        <div className="mt-4 grid gap-3 md:grid-cols-3">
+          <Link href="/app/dashboard" className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-4 transition hover:border-emerald-200 hover:bg-emerald-50">
+            <p className="text-sm font-semibold text-slate-900">Ir al workspace</p>
+            <p className="mt-1 text-sm text-slate-500">Regresa a tu pizarra y sigue trabajando.</p>
+          </Link>
+          <Link href="/app/tasks" className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-4 transition hover:border-emerald-200 hover:bg-emerald-50">
+            <p className="text-sm font-semibold text-slate-900">Abrir tareas</p>
+            <p className="mt-1 text-sm text-slate-500">Ve al detalle de pendientes y cambia filtros.</p>
+          </Link>
+          <Link href="/app/reports" className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-4 transition hover:border-emerald-200 hover:bg-emerald-50">
+            <p className="text-sm font-semibold text-slate-900">Abrir reportes</p>
+            <p className="mt-1 text-sm text-slate-500">Exporta un PDF y comparte el estado del trabajo.</p>
+          </Link>
+        </div>
+      </Card>
     </div>
   );
 }

@@ -18,7 +18,7 @@ interface TaskFiltersProps {
 
 export function TaskFilters({ filters }: TaskFiltersProps) {
   return (
-    <form className="grid gap-3 rounded-[30px] border border-slate-200 bg-white p-4 shadow-[0_14px_35px_rgba(15,23,42,0.05)] md:grid-cols-5" method="get">
+    <form className="grid gap-3 md:grid-cols-5" method="get">
       {!!filters.view && <input type="hidden" name="view" value={filters.view} />}
       <label className="relative block md:col-span-2">
         <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Buscar</span>

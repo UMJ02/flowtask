@@ -17,7 +17,7 @@ interface ProjectFiltersProps {
 
 export function ProjectFilters({ filters }: ProjectFiltersProps) {
   return (
-    <form className="grid gap-3 rounded-[24px] bg-white p-4 shadow-soft md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-[minmax(160px,1fr)_minmax(170px,1fr)_minmax(190px,1fr)_minmax(140px,0.8fr)_minmax(170px,1fr)_auto]" method="get">
+    <form className="grid gap-3 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-[minmax(160px,1fr)_minmax(170px,1fr)_minmax(190px,1fr)_minmax(140px,0.8fr)_minmax(170px,1fr)_auto]" method="get">
       <Input defaultValue={filters.q ?? ""} name="q" placeholder="Buscar proyecto" />
       <Select defaultValue={filters.status ?? ""} name="status">
         <option value="">Todos los estados</option>
