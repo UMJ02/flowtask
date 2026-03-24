@@ -18,12 +18,12 @@ interface TaskFiltersProps {
 
 export function TaskFilters({ filters }: TaskFiltersProps) {
   return (
-    <form className="grid gap-3 rounded-[30px] border border-slate-200 bg-white p-4 shadow-[0_14px_35px_rgba(15,23,42,0.05)] md:grid-cols-5" method="get">
+    <form className="grid gap-3 md:grid-cols-5" method="get">
       {!!filters.view && <input type="hidden" name="view" value={filters.view} />}
       <label className="relative block md:col-span-2">
         <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Buscar</span>
         <Search className="pointer-events-none absolute left-3 top-[42px] h-4 w-4 text-slate-400" />
-        <Input className="pl-9" defaultValue={filters.q ?? ''} name="q" placeholder="Busca por tarea, cliente o detalle" />
+        <Input className="pl-9" defaultValue={filters.q ?? ''} name="q" placeholder="Escribe una tarea, cliente o palabra clave" />
       </label>
       <label className="block">
         <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Estado</span>
@@ -57,7 +57,7 @@ export function TaskFilters({ filters }: TaskFiltersProps) {
         <Link href="/app/tasks" className="w-full md:w-auto">
           <Button className="w-full md:w-auto" type="button" variant="secondary">Limpiar</Button>
         </Link>
-        <Button className="w-full md:w-auto" type="submit">Aplicar filtros</Button>
+        <Button className="w-full md:w-auto" type="submit">Buscar</Button>
       </div>
     </form>
   );

@@ -12,6 +12,11 @@ function formatDate(value?: string | null) {
   }
 }
 
+function isOverdue(value?: string | null, status?: string | null) {
+  if (!value || status === "concluido") return false;
+  return value < new Date().toISOString().slice(0, 10);
+}
+
 export async function getClients(search?: string): Promise<ClientListItem[]> {
   const context = await getOrganizationContext();
   const organizationId = context?.activeOrganization?.id;
@@ -32,12 +37,14 @@ export async function getClients(search?: string): Promise<ClientListItem[]> {
     console.error("[getClients]", clientsError.message);
     return [];
   }
+
   const rows = clients ?? [];
   const ids = rows.map((row) => row.id as string);
-  const [projectsRes, openTasksRes, completedTasksRes] = await Promise.all([
+  const [projectsRes, openTasksRes, completedTasksRes, overdueTasksRes] = await Promise.all([
     ids.length ? supabase.from("projects").select("id,client_id,status").in("client_id", ids) : Promise.resolve({ data: [] as any[] }),
     ids.length ? supabase.from("tasks").select("id,client_id,status").in("client_id", ids).neq("status", "concluido") : Promise.resolve({ data: [] as any[] }),
     ids.length ? supabase.from("tasks").select("id,client_id,status").in("client_id", ids).eq("status", "concluido") : Promise.resolve({ data: [] as any[] }),
+    ids.length ? supabase.from("tasks").select("id,client_id,due_date,status").in("client_id", ids).neq("status", "concluido") : Promise.resolve({ data: [] as any[] }),
   ]);
 
   return rows.map((row) => ({
@@ -49,27 +56,19 @@ export async function getClients(search?: string): Promise<ClientListItem[]> {
     projectsCount: (projectsRes.data ?? []).filter((item) => item.client_id === row.id && item.status !== "completado").length,
     openTasksCount: (openTasksRes.data ?? []).filter((item) => item.client_id === row.id).length,
     completedTasksCount: (completedTasksRes.data ?? []).filter((item) => item.client_id === row.id).length,
+    overdueTasksCount: (overdueTasksRes.data ?? []).filter((item) => item.client_id === row.id && isOverdue(item.due_date as string | null | undefined, item.status as string | null | undefined)).length,
   }));
 }
 
 export async function getClientDashboardItems(): Promise<ClientDashboardItem[]> {
   const clients = await getClients();
-  const supabase = await createClient();
-  const ids = clients.map((client) => client.id);
-  const { data: overdueTasks, error: overdueError } = ids.length
-    ? await supabase.from("tasks").select("id,client_id,due_date,status").in("client_id", ids).neq("status", "concluido")
-    : { data: [] as any[], error: null as any };
-
-  if (overdueError) {
-    console.error("[getClientDashboardItems]", overdueError.message);
-  }
 
   return clients.slice(0, 6).map((client) => ({
     id: client.id,
     name: client.name,
     openProjects: client.projectsCount,
     openTasks: client.openTasksCount,
-    overdueTasks: (overdueTasks ?? []).filter((item) => item.client_id === client.id && item.due_date && new Date(item.due_date) < new Date()).length,
+    overdueTasks: client.overdueTasksCount,
   }));
 }
 
@@ -102,6 +101,7 @@ export async function getClientById(clientId: string): Promise<ClientDetailSumma
 
   const openTasksCount = (tasks ?? []).filter((item) => item.status !== "concluido").length;
   const completedTasksCount = (tasks ?? []).filter((item) => item.status === "concluido").length;
+  const overdueTasksCount = (tasks ?? []).filter((item) => isOverdue(item.due_date as string | null | undefined, item.status as string | null | undefined)).length;
 
   return {
     id: clientRow.id as string,
@@ -113,6 +113,7 @@ export async function getClientById(clientId: string): Promise<ClientDetailSumma
     projectsCount: (projects ?? []).filter((item) => item.status !== "completado").length,
     openTasksCount,
     completedTasksCount,
+    overdueTasksCount,
     accountOwnerEmail: (owner?.email as string | undefined) ?? null,
     recentProjects: (projects ?? []).map((item) => ({ id: item.id as string, title: item.title as string, status: item.status as string, dueDateLabel: formatDate(item.due_date as string | null | undefined) })),
     recentTasks: (tasks ?? []).map((item) => ({ id: item.id as string, title: item.title as string, status: item.status as string, dueDateLabel: formatDate(item.due_date as string | null | undefined) })),

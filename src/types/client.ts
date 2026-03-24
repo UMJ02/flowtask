@@ -1,12 +1,18 @@
-export interface ClientListItem {
+export type ClientStatus = "activo" | "en_pausa" | "cerrado";
+
+export interface ClientBase {
   id: string;
   name: string;
-  status: "activo" | "en_pausa" | "cerrado";
+  status: ClientStatus;
   notes?: string | null;
+}
+
+export interface ClientListItem extends ClientBase {
   createdAtLabel: string;
   projectsCount: number;
   openTasksCount: number;
   completedTasksCount: number;
+  overdueTasksCount: number;
 }
 
 export interface ClientDetailSummary extends ClientListItem {

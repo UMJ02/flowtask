@@ -24,42 +24,41 @@ export function RecentActivity({ summary }: RecentActivityProps) {
   const counts = safeSummary.counts ?? EMPTY_SUMMARY.counts;
   const items = Array.isArray(safeSummary.items) ? safeSummary.items : [];
 
+  const tiles = [
+    { label: 'Movimientos', value: counts.total, tone: 'border-slate-200 bg-slate-50 text-slate-700' },
+    { label: 'Tareas', value: counts.tasks, tone: 'border-blue-100 bg-blue-50 text-blue-700' },
+    { label: 'Proyectos', value: counts.projects, tone: 'border-violet-100 bg-violet-50 text-violet-700' },
+    { label: 'Avisos', value: counts.comments + counts.reminders, tone: 'border-emerald-100 bg-emerald-50 text-emerald-700' },
+  ];
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       <Card>
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div className="flex items-start gap-3">
-            <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-100 text-slate-700">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+          <div className="flex min-w-0 items-start gap-3">
+            <span className="inline-flex h-10 w-10 items-center justify-center rounded-[10px] bg-slate-100 text-slate-700">
               <Activity className="h-5 w-5" />
             </span>
-            <div>
+            <div className="min-w-0">
               <h2 className="text-lg font-semibold text-slate-900">Pulso de actividad</h2>
-              <p className="mt-1 text-sm text-slate-500">Un resumen vivo de lo que se está moviendo en tu workspace.</p>
+              <p className="mt-1 max-w-xl text-sm text-slate-500">Un resumen vivo de lo que se está moviendo en tu workspace.</p>
             </div>
           </div>
-          <Link href="/app/notifications" className="inline-flex items-center gap-2 text-sm font-semibold text-slate-700 hover:text-slate-900">
+          <Link href="/app/notifications" className="inline-flex items-center gap-2 self-start text-sm font-semibold text-slate-700 hover:text-slate-900">
             Ver notificaciones
             <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
 
         <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Movimientos</p>
-            <p className="mt-2 text-2xl font-bold text-slate-900">{counts.total}</p>
-          </div>
-          <div className="rounded-2xl border border-blue-100 bg-blue-50 px-4 py-3">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-blue-700">Tareas</p>
-            <p className="mt-2 text-2xl font-bold text-slate-900">{counts.tasks}</p>
-          </div>
-          <div className="rounded-2xl border border-violet-100 bg-violet-50 px-4 py-3">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-violet-700">Proyectos</p>
-            <p className="mt-2 text-2xl font-bold text-slate-900">{counts.projects}</p>
-          </div>
-          <div className="rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-3">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-700">Comentarios y recordatorios</p>
-            <p className="mt-2 text-2xl font-bold text-slate-900">{counts.comments + counts.reminders}</p>
-          </div>
+          {tiles.map((tile) => (
+            <div key={tile.label} className={`min-w-0 min-h-[96px] rounded-[10px] border px-4 py-3 ${tile.tone}`}>
+              <div className="flex items-center justify-between gap-3">
+                <p className="min-w-0 truncate text-[11px] font-semibold uppercase tracking-[0.14em]">{tile.label}</p>
+                <p className="shrink-0 whitespace-nowrap text-[1.9rem] font-bold leading-none tabular-nums text-slate-950">{tile.value}</p>
+              </div>
+            </div>
+          ))}
         </div>
       </Card>
 
