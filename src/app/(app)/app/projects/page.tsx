@@ -41,7 +41,7 @@ export default async function ProjectsPage({
       <SectionHeader
         eyebrow="Trabajo en equipo"
         title="Proyectos"
-        description="Agrupa tareas, responsables y fechas en un espacio claro para todos. Usa filtros rápidos y una navegación más predecible para entrar y salir sin perder contexto."
+        description="Consulta proyectos, responsables y fechas en una vista clara y fácil de recorrer."
         icon={<FolderKanban className="h-5 w-5" />}
         actions={
           <Link href={projectNewRoute()}>
@@ -60,7 +60,7 @@ export default async function ProjectsPage({
         basePath="/app/projects"
         currentQuery={currentQuery}
         title="Vistas rápidas de proyectos"
-        emptyLabel="Reutiliza filtros por cliente, tipo y estado sin rehacer la consulta cada vez."
+        emptyLabel="Guarda tus búsquedas de proyectos para volver más rápido."
       />
       {projects.length ? (
         <ProjectSidebar currentQuery={currentQuery} projects={projects} />
@@ -68,7 +68,7 @@ export default async function ProjectsPage({
         <EmptyState
           icon={<FolderKanban className="h-6 w-6" />}
           title="No hay proyectos en esta vista"
-          description="Prueba con otros filtros o crea un proyecto nuevo para empezar a organizar entregables, responsables y fechas."
+          description="Prueba otra búsqueda o crea un proyecto para empezar a organizar el trabajo."
           action={
             <Link href={projectNewRoute()}>
               <Button>Crear proyecto</Button>

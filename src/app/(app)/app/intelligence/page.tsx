@@ -57,7 +57,7 @@ export default async function IntelligencePage() {
     <div className="page-grid">
       <SectionHeader
         eyebrow="Insights"
-        title="Insights del workspace"
+        title="Insights"
         description="Estado, riesgo y foco en una sola vista para decidir más rápido."
         icon={<BrainCircuit className="h-5 w-5" />}
         actions={
@@ -78,8 +78,8 @@ export default async function IntelligencePage() {
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">Resumen</p>
             <div className="mt-2 flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
               <div className="min-w-0">
-                <h2 className="text-2xl font-bold tracking-tight text-slate-950">Qué atender ahora</h2>
-                <p className="mt-1 text-sm text-slate-500">Una lectura rápida del workspace para decidir sin abrir varias pantallas.</p>
+                <h2 className="text-2xl font-bold tracking-tight text-slate-950">Resumen rápido</h2>
+                <p className="mt-1 text-sm text-slate-500">Lo más importante del día en una sola vista.</p>
               </div>
               <Link href="/app/risk-radar" className="inline-flex items-center gap-2 text-sm font-semibold text-slate-700 hover:text-slate-950">
                 Ver insights <ArrowRight className="h-4 w-4" />

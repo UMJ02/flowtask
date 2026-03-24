@@ -6,11 +6,15 @@ import { ExpandableBar } from '@/components/ui/expandable-bar';
 import { SectionHeader } from '@/components/ui/section-header';
 import { OperationsOverview } from '@/components/reports/operations-overview';
 import { getReportsOverview } from '@/lib/queries/reports';
+import { asRoute, type AppRoute } from '@/lib/navigation/routes';
 
-const REPORT_GROUPS = [
+type ReportAction = { href: AppRoute; label: string; primary?: boolean };
+type ReportGroup = { title: string; description: string; actions: ReportAction[] };
+
+const REPORT_GROUPS: ReportGroup[] = [
   {
     title: 'Primarios',
-    description: 'Los que más se usan para revisar estado y compartir con dirección.',
+    description: 'Los más usados para revisar el estado del trabajo.',
     actions: [
       { href: '/app/reports/print?type=summary', label: 'Resumen PDF', primary: false },
       { href: '/app/reports/print?type=operations', label: 'Operación PDF', primary: true },
@@ -19,7 +23,7 @@ const REPORT_GROUPS = [
   },
   {
     title: 'Especializados',
-    description: 'Salidas para planning, control, riesgo, intelligence y ejecución.',
+    description: 'Reportes para seguimiento, riesgo y planificación.',
     actions: [
       { href: '/app/reports/print?type=planning', label: 'Planning PDF' },
       { href: '/app/reports/print?type=control', label: 'Control PDF' },
@@ -38,14 +42,14 @@ export default async function ReportsPage() {
       <SectionHeader
         eyebrow="Reporting"
         title="Reportes"
-        description="Consolida operación, lectura ejecutiva y seguimiento semanal sin salir del workspace."
+        description="Exporta y comparte el estado del trabajo sin salir de esta vista."
         icon={<BarChart3 className="h-5 w-5" />}
       />
 
       <ExpandableBar
-        eyebrow="Exportación"
-        title="Salidas PDF"
-        description="Abre esta barra para elegir el formato correcto según el tipo de revisión."
+        eyebrow="Reportes"
+        title="Busca tu reporte"
+        description="Abre esta barra para elegir el PDF que necesitas."
         defaultOpen
       >
         <div className="grid gap-3 lg:grid-cols-2">
@@ -55,7 +59,7 @@ export default async function ReportsPage() {
               <p className="mt-2 text-sm text-slate-500">{group.description}</p>
               <div className="mt-4 grid gap-2 sm:grid-cols-2">
                 {group.actions.map((action) => (
-                  <Link key={action.href} href={action.href} target="_blank">
+                  <Link key={action.href} href={asRoute(action.href)} target="_blank">
                     <Button variant={action.primary ? 'primary' : 'secondary'} className="w-full justify-between">
                       {action.label}
                       <ArrowUpRight className="h-4 w-4" />

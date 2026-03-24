@@ -37,4 +37,4 @@ Base real endurecida para cierre técnico previo a despliegue.
 - v6.1.1-data-consistency
 
 
-Current package version: 6.2.4-ui-structure-refactor.
+Current package version: 6.2.6-ui-consistency-pass.

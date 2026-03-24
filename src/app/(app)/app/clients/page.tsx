@@ -32,14 +32,14 @@ export default async function ClientsPage({ searchParams }: { searchParams?: Pro
   return (
     <div className="space-y-5">
       <SectionHeader
-        eyebrow="Workspace comercial"
+        eyebrow="Clientes"
         title="Clientes"
-        description="Consulta cada cliente con sus proyectos, carga y actividad reciente. La navegación queda enfocada en abrir contextos de trabajo sin confusión."
+        description="Revisa clientes, proyectos y actividad reciente en una vista simple y clara."
         icon={<BriefcaseBusiness className="h-5 w-5" />}
       />
       <ExpandableBar
         title="Busca tus clientes"
-        description="Abre esta barra para encontrar cuentas por nombre, estado o relación."
+        description="Abre esta barra para encontrar clientes por nombre o estado."
       >
         <form className="grid gap-3 sm:grid-cols-[minmax(280px,1fr)_auto_auto]" action="/app/clients">
           <label className="relative block">
@@ -47,7 +47,7 @@ export default async function ClientsPage({ searchParams }: { searchParams?: Pro
             <input
               name="q"
               defaultValue={q}
-              placeholder="Buscar cliente"
+              placeholder="Busca tus clientes"
               className="w-full rounded-md border border-slate-200 bg-white px-10 py-3 text-sm outline-none transition focus:border-emerald-300"
             />
           </label>
@@ -62,7 +62,7 @@ export default async function ClientsPage({ searchParams }: { searchParams?: Pro
         basePath="/app/clients"
         currentQuery={currentQuery}
         title="Búsquedas guardadas"
-        emptyLabel="Guarda consultas por cliente para cambiar entre cuentas activas, prospectos o búsquedas frecuentes."
+        emptyLabel="Guarda tus búsquedas de clientes para volver más rápido."
       />
       {!canManageClients ? (
         <Card className="border-amber-100 bg-amber-50/70">

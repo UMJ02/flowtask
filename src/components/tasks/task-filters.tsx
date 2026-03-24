@@ -21,9 +21,9 @@ export function TaskFilters({ filters }: TaskFiltersProps) {
     <form className="grid gap-3 md:grid-cols-5" method="get">
       {!!filters.view && <input type="hidden" name="view" value={filters.view} />}
       <label className="relative block md:col-span-2">
-        <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Buscar</span>
+        <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Busca tus tareas</span>
         <Search className="pointer-events-none absolute left-3 top-[42px] h-4 w-4 text-slate-400" />
-        <Input className="pl-9" defaultValue={filters.q ?? ''} name="q" placeholder="Escribe una tarea, cliente o palabra clave" />
+        <Input className="pl-9" defaultValue={filters.q ?? ''} name="q" placeholder="Busca tus tareas" />
       </label>
       <label className="block">
         <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Estado</span>
@@ -57,7 +57,7 @@ export function TaskFilters({ filters }: TaskFiltersProps) {
         <Link href="/app/tasks" className="w-full md:w-auto">
           <Button className="w-full md:w-auto" type="button" variant="secondary">Limpiar</Button>
         </Link>
-        <Button className="w-full md:w-auto" type="submit">Buscar</Button>
+        <Button className="w-full md:w-auto" type="submit">Aplicar</Button>
       </div>
     </form>
   );

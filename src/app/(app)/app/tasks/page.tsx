@@ -60,7 +60,7 @@ export default async function TasksPage({
         basePath="/app/tasks"
         currentQuery={currentQuery}
         title="Vistas rápidas de tareas"
-        emptyLabel="Guarda combinaciones de tablero, estado y fechas para volver sin reconstruir filtros."
+        emptyLabel="Guarda tus búsquedas de tareas para volver más rápido."
       />
       {tasks.length ? (
         <TaskWorkspace tasks={tasks} filters={filters} />
@@ -68,7 +68,7 @@ export default async function TasksPage({
         <EmptyState
           icon={<ClipboardList className="h-6 w-6" />}
           title="No hay tareas con estos filtros"
-          description="Ajusta la búsqueda, cambia los filtros o crea una tarea nueva para empezar a trabajar desde esta vista."
+          description="Prueba otra búsqueda o crea una tarea para empezar a trabajar desde aquí."
           action={
             <Link href={taskNewRoute()}>
               <Button>Crear tarea</Button>

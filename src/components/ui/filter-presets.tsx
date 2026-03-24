@@ -36,8 +36,8 @@ export function FilterPresets({
   storageKey,
   basePath,
   currentQuery,
-  title = 'Vistas guardadas',
-  emptyLabel = 'Guarda tus combinaciones de filtros para volver a ellas rápido.',
+  title = 'Búsquedas guardadas',
+  emptyLabel = 'Guarda tus búsquedas favoritas para volver con un clic.',
 }: {
   storageKey: string;
   basePath: AppRoute;
@@ -63,7 +63,7 @@ export function FilterPresets({
 
   const saveCurrentView = () => {
     if (!hasActiveFilters) return;
-    const label = window.prompt('Nombre corto para esta vista');
+    const label = window.prompt('Ponle un nombre corto a esta búsqueda');
     if (!label?.trim()) return;
 
     const nextView: SavedFilterView = {
@@ -101,11 +101,11 @@ export function FilterPresets({
         <div className="flex flex-wrap gap-2">
           <Link href={basePath}>
             <Button type="button" variant="secondary">
-              <RotateCcw className="h-4 w-4" /> Limpiar vista
+              <RotateCcw className="h-4 w-4" /> Limpiar
             </Button>
           </Link>
           <Button type="button" onClick={saveCurrentView} disabled={!hasActiveFilters}>
-            <BookmarkPlus className="h-4 w-4" /> Guardar vista actual
+            <BookmarkPlus className="h-4 w-4" /> Guardar búsqueda
           </Button>
         </div>
       </div>
@@ -113,13 +113,13 @@ export function FilterPresets({
       <div className="mt-3 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         {hasActiveFilters ? (
           <div className="min-w-0 rounded-md border border-emerald-100 bg-emerald-50 px-3 py-2 text-sm text-emerald-900">
-            Vista activa:{' '}
+            Búsqueda activa:{' '}
             <Link href={currentHref} className="font-semibold underline decoration-emerald-300 underline-offset-4">
               {currentQuery}
             </Link>
           </div>
         ) : (
-          <div className="text-sm text-slate-500">No hay una vista activa con filtros guardables.</div>
+          <div className="text-sm text-slate-500">Aplica filtros para guardar esta búsqueda.</div>
         )}
 
         {views.length ? (
@@ -145,7 +145,7 @@ export function FilterPresets({
             })}
           </div>
         ) : (
-          <div className="text-sm text-slate-500">Todavía no tienes vistas guardadas en este módulo.</div>
+          <div className="text-sm text-slate-500">Todavía no tienes búsquedas guardadas en este módulo.</div>
         )}
       </div>
     </div>
