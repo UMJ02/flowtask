@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "6.1.0-functional-hardening",
+  "version": "6.1.1-data-consistency",
   "private": true,
   "scripts": {
     "dev": "next dev",

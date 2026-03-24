@@ -28,3 +28,8 @@ Base real endurecida para cierre técnico previo a despliegue.
 - `npm run typecheck` pasa en esta base
 - `npm run runtime:check` pasa con variables presentes
 - `next build` todavía depende de un binario SWC compatible en el entorno de ejecución
+
+
+## Current baseline
+
+- v6.1.1-data-consistency
