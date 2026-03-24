@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "6.0.4-env-binding-fix",
+  "version": "6.0.5-workspace-route-fix",
   "private": true,
   "scripts": {
     "dev": "next dev",

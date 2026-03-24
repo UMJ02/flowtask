@@ -42,7 +42,7 @@ export async function updateSession(request: NextRequest) {
 
   if (isAuthRoute && user) {
     const url = request.nextUrl.clone();
-    url.pathname = '/app/workspace';
+    url.pathname = '/app/dashboard';
     url.search = '';
     return NextResponse.redirect(url);
   }

@@ -57,7 +57,7 @@ export default async function IntelligencePage() {
             <Link href="/app/reports/print?type=intelligence" target="_blank">
               <Button>PDF</Button>
             </Link>
-            <Link href="/app/workspace">
+            <Link href="/app/dashboard">
               <Button variant="secondary">Ir al workspace</Button>
             </Link>
           </>
@@ -221,7 +221,7 @@ export default async function IntelligencePage() {
             </span>
           </div>
           <div className="mt-5 grid gap-3">
-            <Link href="/app/workspace" className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 transition hover:border-emerald-200 hover:bg-emerald-50">
+            <Link href="/app/dashboard" className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 transition hover:border-emerald-200 hover:bg-emerald-50">
               <p className="text-sm font-semibold text-slate-900">Ir al workspace</p>
               <p className="mt-1 text-sm text-slate-500">Regresa a tu pizarra y sigue trabajando.</p>
             </Link>
