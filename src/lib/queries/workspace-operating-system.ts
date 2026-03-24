@@ -41,6 +41,10 @@ function clamp(value: number, min = 0, max = 100) {
   return Math.max(min, Math.min(max, value));
 }
 
+function getPriorityTone(condition: boolean, whenTrue: 'critical' | 'attention' | 'stable', whenFalse: 'critical' | 'attention' | 'stable') {
+  return condition ? whenTrue : whenFalse;
+}
+
 export async function getWorkspaceOperatingSystemSummary(): Promise<WorkspaceOperatingSystemSummary | null> {
   const [onboarding, planning, controlTower, risk, intelligence, execution] = await Promise.all([
     getWorkspaceOnboardingSummary(),
@@ -89,13 +93,13 @@ export async function getWorkspaceOperatingSystemSummary(): Promise<WorkspaceOpe
       title: 'Reducir riesgo activo',
       detail: item,
       source: 'Risk Radar' as const,
-      tone: (riskScore >= 65 ? 'critical' : 'attention') as const,
+      tone: getPriorityTone(riskScore >= 65, 'critical', 'attention'),
     })),
     ...onboarding.recommendations.slice(0, 1).map((item) => ({
       title: 'Cerrar base estructural',
       detail: item,
       source: 'Onboarding' as const,
-      tone: (onboarding.score < 70 ? 'attention' : 'stable') as const,
+      tone: getPriorityTone(onboarding.score < 70, 'attention', 'stable'),
     })),
   ].slice(0, 6);
 

@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "5.7.1-stabilization",
+  "version": "5.7.2-health",
   "private": true,
   "scripts": {
     "dev": "next dev",

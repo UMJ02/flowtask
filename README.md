@@ -1,10 +1,10 @@
-# FlowTask 5.6.0 Workspace Enhanced
+# FlowTask v5.7.2-health
 
-Base completa derivada de v5.5.0-workspace-integration.
+Base validada sobre `v5.7.1-stabilization`.
 
-# FlowTask v5.5.0 — Workspace Integration
+## Objetivo
+Cerrar la salud mínima obligatoria antes de seguir creciendo la app, sin meter features nuevas ni alterar el comportamiento funcional existente.
 
-Base real integrada sobre la línea v5.4.0.
 
 ## Enfoque
 - Workspace como vista principal
