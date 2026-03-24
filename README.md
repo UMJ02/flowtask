@@ -1,3 +1,5 @@
+Current version: 6.2.2-ops-exec-refinement
+
 # FlowTask v6.0.3 — Release Hardening
 
 Base real endurecida para cierre técnico previo a despliegue.
