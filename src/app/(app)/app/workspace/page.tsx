@@ -141,7 +141,7 @@ export default async function WorkspacePage() {
                 Ver insights <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
-            <div className="mt-5 grid gap-3 sm:grid-cols-2"
+            <div className="mt-5 grid gap-3 sm:grid-cols-2">
               {focus.map((item) => (
                 <div key={item.label} className="rounded-[16px] border border-slate-200 bg-slate-50/70 px-4 py-4">
                   <div className="flex items-center justify-between gap-3">
