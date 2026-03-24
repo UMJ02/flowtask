@@ -4,7 +4,7 @@ export function asRoute<T extends string>(route: T): AppRoute {
   return route;
 }
 
-export function safeInternalRoute(candidate: string | null | undefined, fallback: AppRoute = "/app/workspace"): AppRoute {
+export function safeInternalRoute(candidate: string | null | undefined, fallback: AppRoute = "/app/dashboard"): AppRoute {
   if (!candidate) return fallback;
   if (!candidate.startsWith("/") || candidate.startsWith("//")) return fallback;
 
@@ -23,7 +23,7 @@ export function safeInternalRoute(candidate: string | null | undefined, fallback
 }
 
 export function buildRouteWithQuery(pathname: string | null, params: URLSearchParams): AppRoute {
-  const safePathname = pathname && pathname.startsWith("/") ? pathname : "/app/workspace";
+  const safePathname = pathname && pathname.startsWith("/") ? pathname : "/app/dashboard";
   const query = params.toString();
   return query ? `${safePathname}?${query}` : safePathname;
 }

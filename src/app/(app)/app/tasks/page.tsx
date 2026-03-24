@@ -4,10 +4,13 @@ import { TaskFilters } from '@/components/tasks/task-filters';
 import { TaskWorkspace } from '@/components/tasks/task-workspace';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
+import { ErrorState } from '@/components/ui/error-state';
 import { SectionHeader } from '@/components/ui/section-header';
 import { FilterPresets } from '@/components/ui/filter-presets';
+import { ExpandableBar } from '@/components/ui/expandable-bar';
 import { taskNewRoute } from '@/lib/navigation/routes';
 import { getTasks } from '@/lib/queries/tasks';
+import { safeServerCall } from '@/lib/runtime/safe-server';
 import { normalizeTaskFilters, toQueryString, type SearchParamsRecord } from '@/lib/runtime/search-params';
 
 export default async function TasksPage({
@@ -16,15 +19,29 @@ export default async function TasksPage({
   searchParams?: Promise<SearchParamsRecord>;
 }) {
   const filters = normalizeTaskFilters((await searchParams) ?? {});
-  const tasks = await getTasks(filters);
   const currentQuery = toQueryString(filters);
+  const tasks = await safeServerCall('getTasks', () => getTasks(filters), null as Awaited<ReturnType<typeof getTasks>> | null);
+
+  if (tasks === null) {
+    return (
+      <ErrorState
+        title="No pudimos abrir tareas"
+        description="La vista no pudo cargar la lista en este intento. Vuelve a probar o entra al dashboard para seguir trabajando."
+        action={
+          <Link href="/app/dashboard">
+            <Button>Ir al dashboard</Button>
+          </Link>
+        }
+      />
+    );
+  }
 
   return (
     <div className="space-y-5">
       <SectionHeader
         eyebrow="Seguimiento simple"
         title="Tareas"
-        description="Ordena tus pendientes y cambia de vista sin perder el hilo del trabajo."
+        description="Busca, filtra y actualiza pendientes sin perder tiempo. Puedes usar vista lista o tablero con una interfaz más limpia y legible."
         icon={<ClipboardList className="h-5 w-5" />}
         actions={
           <Link href={taskNewRoute()}>
@@ -32,13 +49,19 @@ export default async function TasksPage({
           </Link>
         }
       />
-      <TaskFilters filters={filters} />
+      <ExpandableBar
+        eyebrow="Buscar y filtrar"
+        title="Refina la vista de tareas"
+        description="Busca rápido y despliega filtros solo cuando los necesites."
+      >
+        <TaskFilters filters={filters} />
+      </ExpandableBar>
       <FilterPresets
         storageKey="flowtask:filters:tasks"
         basePath="/app/tasks"
         currentQuery={currentQuery}
-        title="Tus vistas rápidas de tareas"
-        emptyLabel="Guarda una búsqueda útil para volver a ella cuando la necesites."
+        title="Vistas rápidas de tareas"
+        emptyLabel="Guarda combinaciones de tablero, estado y fechas para volver sin reconstruir filtros."
       />
       {tasks.length ? (
         <TaskWorkspace tasks={tasks} filters={filters} />

@@ -1,4 +1,5 @@
 import { getWorkspaceContext, applyWorkspaceScope } from "@/lib/queries/workspace";
+import type { ProjectSummary } from "@/types/project";
 
 export interface ProjectFiltersInput {
   q?: string;
@@ -8,7 +9,23 @@ export interface ProjectFiltersInput {
   client?: string;
 }
 
-export async function getProjects(filters: ProjectFiltersInput = {}) {
+function normalizeProjectRow(row: any): ProjectSummary {
+  const department = Array.isArray(row.departments) ? row.departments[0] : row.departments;
+  return {
+    id: String(row.id),
+    title: String(row.title ?? "Proyecto"),
+    status: (row.status as ProjectSummary["status"]) ?? "activo",
+    created_at: (row.created_at as string | null | undefined) ?? null,
+    updated_at: (row.updated_at as string | null | undefined) ?? null,
+    clientName: (row.client_name as string | null | undefined) ?? null,
+    dueDate: (row.due_date as string | null | undefined) ?? null,
+    isCollaborative: Boolean(row.is_collaborative),
+    departmentCode: (department?.code as string | null | undefined) ?? null,
+    departmentName: (department?.name as string | null | undefined) ?? null,
+  };
+}
+
+export async function getProjects(filters: ProjectFiltersInput = {}): Promise<ProjectSummary[]> {
   const { supabase, user, activeOrganizationId } = await getWorkspaceContext();
 
   if (!user) return [];
@@ -24,6 +41,8 @@ export async function getProjects(filters: ProjectFiltersInput = {}) {
           client_name,
           due_date,
           is_collaborative,
+          created_at,
+          updated_at,
           departments ( code, name )
         `,
       )
@@ -48,7 +67,7 @@ export async function getProjects(filters: ProjectFiltersInput = {}) {
     return [];
   }
 
-  return data ?? [];
+  return (data ?? []).map(normalizeProjectRow);
 }
 
 export async function getProjectClientMetrics(projectId: string) {

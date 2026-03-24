@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { BookmarkPlus, RotateCcw, Star, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import { asRoute, type AppRoute } from '@/lib/navigation/routes';
 
 type SavedFilterView = {
@@ -37,8 +36,8 @@ export function FilterPresets({
   storageKey,
   basePath,
   currentQuery,
-  title = 'Tus vistas guardadas',
-  emptyLabel = 'Guarda una combinación de filtros para volver a ella en un clic.',
+  title = 'Vistas guardadas',
+  emptyLabel = 'Guarda tus combinaciones de filtros para volver a ellas rápido.',
 }: {
   storageKey: string;
   basePath: AppRoute;
@@ -64,7 +63,7 @@ export function FilterPresets({
 
   const saveCurrentView = () => {
     if (!hasActiveFilters) return;
-    const label = window.prompt('Ponle un nombre corto a esta vista');
+    const label = window.prompt('Nombre corto para esta vista');
     if (!label?.trim()) return;
 
     const nextView: SavedFilterView = {
@@ -86,15 +85,17 @@ export function FilterPresets({
   };
 
   return (
-    <Card className="space-y-4 border border-slate-200 bg-slate-50/70">
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-        <div className="flex items-center gap-3">
-          <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 ring-1 ring-emerald-100">
-            <Star className="h-4 w-4" />
-          </span>
-          <div>
-            <h3 className="text-base font-semibold text-slate-900">{title}</h3>
-            <p className="text-sm text-slate-500">{emptyLabel}</p>
+    <div className="rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+      <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
+        <div className="min-w-0">
+          <div className="flex items-center gap-2 text-slate-900">
+            <span className="inline-flex h-8 w-8 items-center justify-center rounded-md bg-slate-100 text-slate-600">
+              <Star className="h-4 w-4" />
+            </span>
+            <div className="min-w-0">
+              <h3 className="text-sm font-semibold">{title}</h3>
+              <p className="text-sm text-slate-500">{emptyLabel}</p>
+            </div>
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -104,47 +105,49 @@ export function FilterPresets({
             </Button>
           </Link>
           <Button type="button" onClick={saveCurrentView} disabled={!hasActiveFilters}>
-            <BookmarkPlus className="h-4 w-4" /> Guardar esta vista
+            <BookmarkPlus className="h-4 w-4" /> Guardar vista actual
           </Button>
         </div>
       </div>
 
-      {hasActiveFilters ? (
-        <div className="rounded-xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm text-emerald-900">
-          Vista activa:{' '}
-          <Link href={currentHref} className="font-semibold underline decoration-emerald-300 underline-offset-4">
-            {currentQuery}
-          </Link>
-        </div>
-      ) : null}
+      <div className="mt-3 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+        {hasActiveFilters ? (
+          <div className="min-w-0 rounded-md border border-emerald-100 bg-emerald-50 px-3 py-2 text-sm text-emerald-900">
+            Vista activa:{' '}
+            <Link href={currentHref} className="font-semibold underline decoration-emerald-300 underline-offset-4">
+              {currentQuery}
+            </Link>
+          </div>
+        ) : (
+          <div className="text-sm text-slate-500">No hay una vista activa con filtros guardables.</div>
+        )}
 
-      {views.length ? (
-        <div className="flex flex-wrap gap-2">
-          {views.map((view) => {
-            const href = asRoute(view.query ? `${String(basePath)}?${view.query}` : String(basePath));
-            const isActive = view.query === currentQuery;
-            return (
-              <div key={view.id} className={`group flex items-center gap-1 rounded-xl border px-3 py-2 text-sm ${isActive ? 'border-emerald-200 bg-emerald-50 text-emerald-900' : 'border-slate-200 bg-white text-slate-700'}`}>
-                <Link href={href} className="font-medium">
-                  {view.label}
-                </Link>
-                <button
-                  type="button"
-                  className="rounded-lg p-1 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
-                  aria-label={`Eliminar vista ${view.label}`}
-                  onClick={() => removeView(view.id)}
-                >
-                  <Trash2 className="h-3.5 w-3.5" />
-                </button>
-              </div>
-            );
-          })}
-        </div>
-      ) : (
-        <div className="rounded-xl border border-dashed border-slate-300 bg-white/70 px-4 py-6 text-sm text-slate-500">
-          Aún no tienes vistas guardadas en este módulo.
-        </div>
-      )}
-    </Card>
+        {views.length ? (
+          <div className="flex flex-wrap gap-2">
+            {views.map((view) => {
+              const href = asRoute(view.query ? `${String(basePath)}?${view.query}` : String(basePath));
+              const isActive = view.query === currentQuery;
+              return (
+                <div key={view.id} className={`group flex items-center gap-1 rounded-md border px-3 py-2 text-sm ${isActive ? 'border-emerald-200 bg-emerald-50 text-emerald-900' : 'border-slate-200 bg-white text-slate-700'}`}>
+                  <Link href={href} className="font-medium">
+                    {view.label}
+                  </Link>
+                  <button
+                    type="button"
+                    className="rounded-md p-1 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+                    aria-label={`Eliminar vista ${view.label}`}
+                    onClick={() => removeView(view.id)}
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="text-sm text-slate-500">Todavía no tienes vistas guardadas en este módulo.</div>
+        )}
+      </div>
+    </div>
   );
 }
