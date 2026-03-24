@@ -25,6 +25,7 @@ type NotificationsContextValue = {
   markOneAsRead: (id: string) => void;
   markAllAsRead: (count?: number) => void;
   setUnreadCount: (value: number) => void;
+  recentToasts: ToastItem[];
 };
 
 const DEFAULT_PREFERENCES: ClientNotificationPreferences = {
@@ -145,8 +146,8 @@ export function NotificationsProvider({
   }, []);
 
   const value = useMemo(
-    () => ({ unreadCount, markOneAsRead, markAllAsRead, setUnreadCount }),
-    [markAllAsRead, markOneAsRead, unreadCount],
+    () => ({ unreadCount, markOneAsRead, markAllAsRead, setUnreadCount, recentToasts: toasts }),
+    [markAllAsRead, markOneAsRead, unreadCount, toasts],
   );
 
   return (

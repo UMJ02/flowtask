@@ -1,17 +1,7 @@
-export type ProjectStatus = "activo" | "en_pausa" | "completado" | "vencido";
-
-export interface ProjectBase {
+export interface ProjectSummary {
   id: string;
   title: string;
-  status: ProjectStatus;
-  created_at?: string | null;
-  updated_at?: string | null;
-}
-
-export interface ProjectSummary extends ProjectBase {
+  status: "activo" | "en_pausa" | "completado" | "vencido";
   clientName?: string | null;
   dueDate?: string | null;
-  isCollaborative?: boolean;
-  departmentCode?: string | null;
-  departmentName?: string | null;
 }

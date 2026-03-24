@@ -35,7 +35,7 @@ export function PwaRegister() {
         if (isLocalhost) {
           navigator.serviceWorker.getRegistrations()
             .then((registrations) => {
-              registrations.forEach((registration) => registration.unregister().catch(() => undefined));
+              registrations.forEach((registration) => registration.update().catch(() => undefined));
             })
             .catch(() => undefined);
           return;

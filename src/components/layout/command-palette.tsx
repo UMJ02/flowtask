@@ -43,7 +43,7 @@ const COMMANDS: CommandItem[] = [
     id: 'workspace',
     label: 'Abrir workspace',
     description: 'Tu tablero principal para entrar a trabajar.',
-    href: '/app/dashboard',
+    href: '/app/workspace',
     keywords: ['workspace', 'inicio', 'tablero'],
     icon: LayoutDashboard,
     section: 'Accesos',

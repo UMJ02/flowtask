@@ -4,13 +4,10 @@ import { ProjectFilters } from '@/components/projects/project-filters';
 import { ProjectSidebar } from '@/components/projects/project-sidebar';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
-import { ErrorState } from '@/components/ui/error-state';
 import { SectionHeader } from '@/components/ui/section-header';
 import { FilterPresets } from '@/components/ui/filter-presets';
-import { ExpandableBar } from '@/components/ui/expandable-bar';
 import { projectNewRoute } from '@/lib/navigation/routes';
 import { getProjects } from '@/lib/queries/projects';
-import { safeServerCall } from '@/lib/runtime/safe-server';
 import { normalizeProjectFilters, toQueryString, type SearchParamsRecord } from '@/lib/runtime/search-params';
 
 export default async function ProjectsPage({
@@ -19,22 +16,8 @@ export default async function ProjectsPage({
   searchParams?: Promise<SearchParamsRecord>;
 }) {
   const filters = normalizeProjectFilters((await searchParams) ?? {});
+  const projects = await getProjects(filters);
   const currentQuery = toQueryString(filters);
-  const projects = await safeServerCall('getProjects', () => getProjects(filters), null as Awaited<ReturnType<typeof getProjects>> | null);
-
-  if (projects === null) {
-    return (
-      <ErrorState
-        title="No pudimos abrir proyectos"
-        description="La consulta falló en esta carga. Puedes volver a intentar o ir directo al workspace mientras estabilizamos la conexión."
-        action={
-          <Link href="/app/dashboard">
-            <Button>Ir al dashboard</Button>
-          </Link>
-        }
-      />
-    );
-  }
 
   return (
     <div className="space-y-5">
@@ -49,12 +32,7 @@ export default async function ProjectsPage({
           </Link>
         }
       />
-      <ExpandableBar
-        title="Busca tus proyectos"
-        description="Abre esta barra para buscar por cliente, estado o tipo."
-      >
-        <ProjectFilters filters={filters} />
-      </ExpandableBar>
+      <ProjectFilters filters={filters} />
       <FilterPresets
         storageKey="flowtask:filters:projects"
         basePath="/app/projects"

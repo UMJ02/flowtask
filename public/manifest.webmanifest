@@ -2,7 +2,7 @@
   "name": "FlowTask",
   "short_name": "FlowTask",
   "description": "Workspace para tareas, proyectos y operación.",
-  "start_url": "/app/dashboard",
+  "start_url": "/app/workspace",
   "display": "standalone",
   "background_color": "#f8fafc",
   "theme_color": "#10b981",

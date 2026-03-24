@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { BookmarkPlus, RotateCcw, Star, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { asRoute, type AppRoute } from '@/lib/navigation/routes';
 
 type SavedFilterView = {
@@ -85,15 +86,15 @@ export function FilterPresets({
   };
 
   return (
-    <div className="rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
-      <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
-        <div className="min-w-0">
+    <Card className="space-y-4 border border-slate-200/80 bg-gradient-to-br from-white to-slate-50/60">
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+        <div>
           <div className="flex items-center gap-2 text-slate-900">
-            <span className="inline-flex h-8 w-8 items-center justify-center rounded-md bg-slate-100 text-slate-600">
+            <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600">
               <Star className="h-4 w-4" />
             </span>
-            <div className="min-w-0">
-              <h3 className="text-sm font-semibold">{title}</h3>
+            <div>
+              <h3 className="text-base font-semibold">{title}</h3>
               <p className="text-sm text-slate-500">{emptyLabel}</p>
             </div>
           </div>
@@ -110,44 +111,42 @@ export function FilterPresets({
         </div>
       </div>
 
-      <div className="mt-3 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-        {hasActiveFilters ? (
-          <div className="min-w-0 rounded-md border border-emerald-100 bg-emerald-50 px-3 py-2 text-sm text-emerald-900">
-            Vista activa:{' '}
-            <Link href={currentHref} className="font-semibold underline decoration-emerald-300 underline-offset-4">
-              {currentQuery}
-            </Link>
-          </div>
-        ) : (
-          <div className="text-sm text-slate-500">No hay una vista activa con filtros guardables.</div>
-        )}
+      {hasActiveFilters ? (
+        <div className="rounded-2xl border border-emerald-100 bg-emerald-50/70 px-4 py-3 text-sm text-emerald-900">
+          Vista activa:{' '}
+          <Link href={currentHref} className="font-semibold underline decoration-emerald-300 underline-offset-4">
+            {currentQuery}
+          </Link>
+        </div>
+      ) : null}
 
-        {views.length ? (
-          <div className="flex flex-wrap gap-2">
-            {views.map((view) => {
-              const href = asRoute(view.query ? `${String(basePath)}?${view.query}` : String(basePath));
-              const isActive = view.query === currentQuery;
-              return (
-                <div key={view.id} className={`group flex items-center gap-1 rounded-md border px-3 py-2 text-sm ${isActive ? 'border-emerald-200 bg-emerald-50 text-emerald-900' : 'border-slate-200 bg-white text-slate-700'}`}>
-                  <Link href={href} className="font-medium">
-                    {view.label}
-                  </Link>
-                  <button
-                    type="button"
-                    className="rounded-md p-1 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
-                    aria-label={`Eliminar vista ${view.label}`}
-                    onClick={() => removeView(view.id)}
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </button>
-                </div>
-              );
-            })}
-          </div>
-        ) : (
-          <div className="text-sm text-slate-500">Todavía no tienes vistas guardadas en este módulo.</div>
-        )}
-      </div>
-    </div>
+      {views.length ? (
+        <div className="flex flex-wrap gap-2">
+          {views.map((view) => {
+            const href = asRoute(view.query ? `${String(basePath)}?${view.query}` : String(basePath));
+            const isActive = view.query === currentQuery;
+            return (
+              <div key={view.id} className={`group flex items-center gap-1 rounded-2xl border px-3 py-2 text-sm ${isActive ? 'border-emerald-200 bg-emerald-50 text-emerald-900' : 'border-slate-200 bg-white text-slate-700'}`}>
+                <Link href={href} className="font-medium">
+                  {view.label}
+                </Link>
+                <button
+                  type="button"
+                  className="rounded-lg p-1 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+                  aria-label={`Eliminar vista ${view.label}`}
+                  onClick={() => removeView(view.id)}
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <div className="rounded-2xl border border-dashed border-slate-300 bg-white/70 px-4 py-6 text-sm text-slate-500">
+          Todavía no tienes vistas guardadas en este módulo.
+        </div>
+      )}
+    </Card>
   );
 }

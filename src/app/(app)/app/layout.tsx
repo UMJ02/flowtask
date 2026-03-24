@@ -3,14 +3,13 @@ import { requireUser } from '@/lib/auth/guards';
 import { getUnreadNotificationsCount } from '@/lib/queries/notifications';
 import { getOrganizationContext } from '@/lib/queries/organization';
 import { getCurrentProfile } from '@/lib/queries/profile';
-import { safeServerCall } from '@/lib/runtime/safe-server';
 
 export default async function PrivateAppLayout({ children }: { children: React.ReactNode }) {
   const user = await requireUser();
   const [unreadCount, organizationContext, profile] = await Promise.all([
-    safeServerCall('getUnreadNotificationsCount', () => getUnreadNotificationsCount(), 0),
-    safeServerCall('getOrganizationContext', () => getOrganizationContext(), null),
-    safeServerCall('getCurrentProfile', () => getCurrentProfile(), null),
+    getUnreadNotificationsCount(),
+    getOrganizationContext(),
+    getCurrentProfile(),
   ]);
 
   return (

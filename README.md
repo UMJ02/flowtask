@@ -1,40 +1,26 @@
-Current version: 6.2.2-ops-exec-refinement
+# FlowTask 5.6.0 Workspace Enhanced
 
-# FlowTask v6.0.3 — Release Hardening
+Base completa derivada de v5.5.0-workspace-integration.
 
-Base real endurecida para cierre técnico previo a despliegue.
+# FlowTask v5.5.0 — Workspace Integration
 
-## Objetivo de esta versión
-- cerrar errores reales de TypeScript
-- validar runtime mínimo obligatorio
-- endurecer acceso a variables críticas de entorno
-- dejar una ruta clara para certificación de build en entorno local o CI
+Base real integrada sobre la línea v5.4.0.
 
-## Scripts clave
+## Enfoque
+- Workspace como vista principal
+- Intelligence como lectura consolidada
+- Navegación más corta y humana
+- Menos ruido en la UI
+
+## Scripts
 - `npm run dev`
 - `npm run build`
 - `npm run start`
 - `npm run lint`
 - `npm run typecheck`
-- `npm run runtime:check`
-- `npm run release:check`
 
-## Qué se endureció
-- tipado corregido en `workspace-operating-system`
-- validación central de entorno en `src/lib/runtime/env.ts`
-- clientes Supabase conectados a runtime validado
-- middleware con redirección más segura y preservación de querystring
-- `.env.example` agregado para despliegue y onboarding técnico
-
-## Estado honesto
-- `npm run typecheck` pasa en esta base
-- `npm run runtime:check` pasa con variables presentes
-- `next build` todavía depende de un binario SWC compatible en el entorno de ejecución
-
-
-## Current baseline
-
-- v6.1.1-data-consistency
-
-
-Current package version: 6.2.4-ui-structure-refactor.
+## Cambios clave
+- Sidebar y mobile nav simplificados
+- Command palette alineado con la nueva navegación
+- Textos más cortos en Workspace e Intelligence
+- Se mantiene la compatibilidad con la base real del proyecto
