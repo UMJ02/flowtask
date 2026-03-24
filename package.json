@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "6.2.0-ui-layout-hardening",
+  "version": "6.2.1-ui-refinement",
   "private": true,
   "scripts": {
     "dev": "next dev",
