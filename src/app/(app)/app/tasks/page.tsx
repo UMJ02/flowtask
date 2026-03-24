@@ -50,6 +50,7 @@ export default async function TasksPage({
         }
       />
       <ExpandableBar
+        eyebrow="Buscar"
         title="Busca tus tareas"
         description="Abre esta barra para encontrar tareas por estado, área o fecha."
       >

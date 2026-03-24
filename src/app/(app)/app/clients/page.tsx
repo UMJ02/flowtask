@@ -38,6 +38,7 @@ export default async function ClientsPage({ searchParams }: { searchParams?: Pro
         icon={<BriefcaseBusiness className="h-5 w-5" />}
       />
       <ExpandableBar
+        eyebrow="Buscar"
         title="Busca tus clientes"
         description="Abre esta barra para encontrar cuentas por nombre, estado o relación."
       >
