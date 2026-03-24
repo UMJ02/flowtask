@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "6.2.2-ops-exec-refinement",
+  "version": "6.2.3-dashboard-reports-intelligence-refinement",
   "private": true,
   "scripts": {
     "dev": "next dev",

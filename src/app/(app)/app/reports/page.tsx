@@ -1,20 +1,32 @@
 import Link from 'next/link';
-import { BarChart3 } from 'lucide-react';
+import { ArrowUpRight, BarChart3, Download, FileSpreadsheet } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { SectionHeader } from '@/components/ui/section-header';
 import { OperationsOverview } from '@/components/reports/operations-overview';
 import { getReportsOverview } from '@/lib/queries/reports';
 
-const REPORT_ACTIONS = [
-  { href: '/app/reports/print?type=summary', label: 'Resumen PDF', primary: false },
-  { href: '/app/reports/print?type=operations', label: 'Operación PDF', primary: true },
-  { href: '/app/reports/print?type=executive', label: 'Ejecutivo PDF', primary: false },
-  { href: '/app/reports/print?type=planning', label: 'Planning PDF', primary: false },
-  { href: '/app/reports/print?type=control', label: 'Control PDF', primary: false },
-  { href: '/app/reports/print?type=risk', label: 'Risk PDF', primary: false },
-  { href: '/app/reports/print?type=intelligence', label: 'Intelligence PDF', primary: false },
-  { href: '/app/reports/print?type=execution', label: 'Execution PDF', primary: false },
+const REPORT_GROUPS = [
+  {
+    title: 'Primarios',
+    description: 'Los que más se usan para revisar estado y compartir con dirección.',
+    actions: [
+      { href: '/app/reports/print?type=summary', label: 'Resumen PDF', primary: false },
+      { href: '/app/reports/print?type=operations', label: 'Operación PDF', primary: true },
+      { href: '/app/reports/print?type=executive', label: 'Ejecutivo PDF', primary: false },
+    ],
+  },
+  {
+    title: 'Especializados',
+    description: 'Salidas para planning, control, riesgo, intelligence y ejecución.',
+    actions: [
+      { href: '/app/reports/print?type=planning', label: 'Planning PDF' },
+      { href: '/app/reports/print?type=control', label: 'Control PDF' },
+      { href: '/app/reports/print?type=risk', label: 'Risk PDF' },
+      { href: '/app/reports/print?type=intelligence', label: 'Intelligence PDF' },
+      { href: '/app/reports/print?type=execution', label: 'Execution PDF' },
+    ],
+  },
 ];
 
 export default async function ReportsPage() {
@@ -30,19 +42,28 @@ export default async function ReportsPage() {
       />
 
       <Card>
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div className="grid gap-4 xl:grid-cols-[0.92fr_1.08fr] xl:items-start">
           <div className="max-w-md">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Salida rápida</p>
-            <h2 className="mt-2 text-2xl font-bold text-slate-950">Exporta sin desorden</h2>
-            <p className="mt-2 text-sm leading-6 text-slate-500">Agrupa los PDFs por prioridad y abre la salida correcta según la reunión o revisión que tengas.</p>
+            <h2 className="mt-2 text-[1.75rem] font-bold tracking-tight text-slate-950">Exporta con orden</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-500">Agrupa las salidas por prioridad para encontrar el PDF correcto más rápido según la reunión o revisión que tengas.</p>
           </div>
-          <div className="grid w-full gap-2 sm:grid-cols-2 xl:max-w-[760px] xl:grid-cols-4">
-            {REPORT_ACTIONS.map((action) => (
-              <Link key={action.href} href={action.href} target="_blank">
-                <Button variant={action.primary ? 'primary' : 'secondary'} className="w-full justify-between">
-                  {action.label}
-                </Button>
-              </Link>
+          <div className="grid gap-3 lg:grid-cols-2">
+            {REPORT_GROUPS.map((group) => (
+              <div key={group.title} className="rounded-[10px] border border-slate-200 bg-slate-50/70 p-4">
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">{group.title}</p>
+                <p className="mt-2 text-sm text-slate-500">{group.description}</p>
+                <div className="mt-4 grid gap-2 sm:grid-cols-2">
+                  {group.actions.map((action) => (
+                    <Link key={action.href} href={action.href} target="_blank">
+                      <Button variant={action.primary ? 'primary' : 'secondary'} className="w-full justify-between">
+                        {action.label}
+                        <ArrowUpRight className="h-4 w-4" />
+                      </Button>
+                    </Link>
+                  ))}
+                </div>
+              </div>
             ))}
           </div>
         </div>
@@ -52,20 +73,29 @@ export default async function ReportsPage() {
 
       <div className="grid gap-4 lg:grid-cols-2">
         <Card>
-          <h2 className="text-lg font-semibold text-slate-900">Exportación CSV</h2>
-          <p className="mt-2 text-sm text-slate-600">Descarga listados limpios de tareas y proyectos para Excel o Google Sheets.</p>
-          <div className="mt-4 flex flex-wrap gap-3">
-            <Link href="/api/export/tasks"><Button>Tareas CSV</Button></Link>
-            <Link href="/api/export/projects"><Button variant="secondary">Proyectos CSV</Button></Link>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Exportación CSV</p>
+              <h2 className="mt-2 text-xl font-semibold text-slate-900">Datos para hojas</h2>
+              <p className="mt-2 text-sm text-slate-600">Descarga listados limpios de tareas y proyectos para Excel o Google Sheets.</p>
+            </div>
+            <span className="inline-flex h-10 w-10 items-center justify-center rounded-[10px] bg-slate-100 text-slate-700 ring-1 ring-slate-200">
+              <FileSpreadsheet className="h-5 w-5" />
+            </span>
+          </div>
+          <div className="mt-4 grid gap-2 sm:grid-cols-2">
+            <Link href="/api/export/tasks"><Button className="w-full justify-between">Tareas CSV <Download className="h-4 w-4" /></Button></Link>
+            <Link href="/api/export/projects"><Button variant="secondary" className="w-full justify-between">Proyectos CSV <Download className="h-4 w-4" /></Button></Link>
           </div>
         </Card>
 
         <Card>
-          <h2 className="text-lg font-semibold text-slate-900">Ruta de cierre semanal</h2>
-          <div className="mt-3 space-y-3 text-sm text-slate-600">
-            <div className="rounded-[12px] border border-slate-200 bg-slate-50 px-4 py-3">1. Revisa el radar de atención y resuelve tareas vencidas.</div>
-            <div className="rounded-[12px] border border-slate-200 bg-slate-50 px-4 py-3">2. Exporta el resumen operativo o ejecutivo según la reunión que tengas.</div>
-            <div className="rounded-[12px] border border-slate-200 bg-slate-50 px-4 py-3">3. Usa el watchlist de proyectos para compartir riesgos con clientes o equipo.</div>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Ruta de cierre semanal</p>
+          <h2 className="mt-2 text-xl font-semibold text-slate-900">Secuencia recomendada</h2>
+          <div className="mt-4 grid gap-3">
+            <div className="rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">1. Revisa el radar de atención y resuelve tareas vencidas.</div>
+            <div className="rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">2. Exporta el resumen operativo o ejecutivo según la reunión que tengas.</div>
+            <div className="rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">3. Usa el watchlist de proyectos para compartir riesgos con clientes o equipo.</div>
           </div>
         </Card>
       </div>

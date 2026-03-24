@@ -61,10 +61,16 @@ export default async function WorkspacePage() {
   const topProjects = projects.slice(0, 4);
   const topClients = clientItems.slice(0, 4);
   const focus = [
-    { label: 'Atrasadas', value: data.overdueTasks ?? 0, tone: 'danger' as const },
-    { label: 'Para hoy', value: data.dueSoonTasks ?? 0, tone: 'attention' as const },
-    { label: 'Activos', value: data.activeProjects ?? 0, tone: 'neutral' as const },
-    { label: 'Bloqueadas', value: data.waitingTasks ?? 0, tone: 'attention' as const },
+    { label: 'Atrasadas', value: data.overdueTasks ?? 0, tone: 'danger' as const, helper: 'requieren mover hoy' },
+    { label: 'Para hoy', value: data.dueSoonTasks ?? 0, tone: 'attention' as const, helper: 'cierre del día' },
+    { label: 'Activos', value: data.activeProjects ?? 0, tone: 'neutral' as const, helper: 'proyectos vigentes' },
+    { label: 'Bloqueadas', value: data.waitingTasks ?? 0, tone: 'attention' as const, helper: 'necesitan destrabe' },
+  ];
+
+  const topStats = [
+    { label: 'Tareas hoy', value: data.dueSoonTasks ?? 0 },
+    { label: 'Atrasadas', value: data.overdueTasks ?? 0 },
+    { label: 'Proyectos activos', value: data.activeProjects ?? 0 },
   ];
 
   return (
@@ -72,7 +78,7 @@ export default async function WorkspacePage() {
       <SectionHeader
         eyebrow="Workspace"
         title="Tu espacio de trabajo"
-        description="Entra, mira la pizarra y actúa sin perder tiempo."
+        description="Retoma contexto, decide rápido y mueve trabajo sin brincar entre módulos."
         icon={<LayoutGrid className="h-5 w-5" />}
         actions={
           <>
@@ -90,22 +96,20 @@ export default async function WorkspacePage() {
         }
       />
 
-      <Card className="bg-[linear-gradient(135deg,#063b2c_0%,#0f172a_58%,#0f172a_100%)] px-5 py-5 text-white shadow-[0_18px_40px_rgba(15,23,42,0.16)] md:px-6">
-        <div className="grid gap-4 lg:grid-cols-[minmax(0,1.35fr)_minmax(300px,0.65fr)] lg:items-end">
+      <Card className="bg-[linear-gradient(135deg,#063b2c_0%,#0f172a_60%,#0f172a_100%)] px-5 py-5 text-white shadow-[0_18px_40px_rgba(15,23,42,0.16)] md:px-6">
+        <div className="grid gap-4 lg:grid-cols-[minmax(0,1.25fr)_minmax(320px,0.75fr)] lg:items-end">
           <div className="max-w-[42rem]">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">Vista principal</p>
-            <h2 className="mt-2 max-w-xl text-[1.85rem] font-bold leading-tight tracking-tight">Empieza por lo importante</h2>
-            <p className="prose-balance mt-2 max-w-2xl text-sm leading-6 text-slate-300">Tu trabajo diario vive aquí. Crea, mueve y retoma sin saltar entre pantallas.</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-300">Vista principal</p>
+            <h2 className="mt-2 max-w-xl text-[1.7rem] font-bold leading-tight tracking-tight md:text-[1.9rem]">Empieza por lo importante</h2>
+            <p className="prose-balance mt-2 max-w-2xl text-sm leading-6 text-slate-300">Tu trabajo diario vive aquí. Mira prioridades, retoma actividad y ejecuta sin abrir cuatro pantallas para decidir.</p>
           </div>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div className="rounded-[12px] border border-white/10 bg-white/10 px-4 py-3">
-              <p className="text-xs uppercase tracking-[0.16em] text-slate-300">Tareas hoy</p>
-              <p className="mt-2 text-3xl font-bold">{data.dueSoonTasks ?? 0}</p>
-            </div>
-            <div className="rounded-[12px] border border-white/10 bg-white/10 px-4 py-3">
-              <p className="text-xs uppercase tracking-[0.16em] text-slate-300">Proyectos activos</p>
-              <p className="mt-2 text-3xl font-bold">{data.activeProjects ?? 0}</p>
-            </div>
+          <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
+            {topStats.map((stat) => (
+              <div key={stat.label} className="rounded-[10px] border border-white/10 bg-white/10 px-4 py-3">
+                <p className="text-[11px] uppercase tracking-[0.16em] text-slate-300">{stat.label}</p>
+                <p className="mt-2 text-[1.8rem] font-bold leading-none">{stat.value}</p>
+              </div>
+            ))}
           </div>
         </div>
       </Card>
@@ -143,17 +147,20 @@ export default async function WorkspacePage() {
             </div>
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               {focus.map((item) => (
-                <div key={item.label} className="rounded-[12px] border border-slate-200 bg-slate-50/70 px-4 py-4">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">{item.label}</p>
-                  <div className="mt-3 flex items-end justify-between gap-3">
-                    <p className="text-3xl font-bold leading-none text-slate-950">{item.value}</p>
-                    <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${metricTone(item.value, item.tone)}`}>{item.value > 0 ? 'Activo' : 'Estable'}</span>
+                <div key={item.label} className="rounded-[10px] border border-slate-200 bg-slate-50/70 px-4 py-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">{item.label}</p>
+                      <p className="mt-3 text-3xl font-bold leading-none text-slate-950">{item.value}</p>
+                    </div>
+                    <span className={`inline-flex shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${metricTone(item.value, item.tone)}`}>{item.value > 0 ? 'Activo' : 'Estable'}</span>
                   </div>
+                  <p className="mt-3 text-sm text-slate-500">{item.helper}</p>
                 </div>
               ))}
             </div>
             {intelligenceSummary?.recommendations?.[0] ? (
-              <div className="mt-4 rounded-[12px] border border-emerald-100 bg-emerald-50/80 px-4 py-3 text-sm leading-6 text-emerald-900">
+              <div className="mt-4 rounded-[10px] border border-emerald-100 bg-emerald-50/80 px-4 py-3 text-sm leading-6 text-emerald-900">
                 {intelligenceSummary.recommendations[0]}
               </div>
             ) : null}
@@ -186,16 +193,16 @@ export default async function WorkspacePage() {
             </div>
             <div className="mt-4 space-y-3">
               {topProjects.length ? topProjects.map((project: ProjectRow) => (
-                <Link key={project.id} href={projectDetailRoute(project.id)} className="block rounded-[12px] border border-slate-200 bg-slate-50/70 px-4 py-4 transition hover:border-emerald-200 hover:bg-emerald-50/70">
-                  <div className="flex items-center justify-between gap-3">
-                    <p className="line-clamp-2 text-sm font-semibold text-slate-900">{project.title}</p>
+                <Link key={project.id} href={projectDetailRoute(project.id)} className="block rounded-[10px] border border-slate-200 bg-slate-50/70 px-4 py-4 transition hover:border-emerald-200 hover:bg-emerald-50/70">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="line-clamp-2 text-sm font-semibold text-slate-900">{project.title}</p>
+                      <p className="mt-2 text-sm leading-5 text-slate-500">{project.client_name?.trim() || 'Sin cliente'} · {formatDueDate(project.due_date)}</p>
+                    </div>
                     <span className="inline-flex shrink-0 rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-700 ring-1 ring-slate-200">
                       {project.status ?? 'Activo'}
                     </span>
                   </div>
-                  <p className="mt-2 text-sm leading-5 text-slate-500">
-                    {project.client_name?.trim() || 'Sin cliente'} · {formatDueDate(project.due_date)}
-                  </p>
                 </Link>
               )) : <p className="text-sm text-slate-500">Todavía no hay proyectos activos.</p>}
             </div>
@@ -211,12 +218,14 @@ export default async function WorkspacePage() {
             </div>
             <div className="mt-4 space-y-3">
               {topClients.length ? topClients.map((client) => (
-                <Link key={client.id} href={`/app/clients/${client.id}`} className="block rounded-[12px] border border-slate-200 bg-slate-50/70 px-4 py-4 transition hover:border-emerald-200 hover:bg-emerald-50/70">
-                  <div className="flex items-center justify-between gap-3">
-                    <p className="line-clamp-2 text-sm font-semibold text-slate-900">{client.name}</p>
+                <Link key={client.id} href={`/app/clients/${client.id}`} className="block rounded-[10px] border border-slate-200 bg-slate-50/70 px-4 py-4 transition hover:border-emerald-200 hover:bg-emerald-50/70">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="line-clamp-2 text-sm font-semibold text-slate-900">{client.name}</p>
+                      <p className="mt-2 text-sm text-slate-500">{client.activeProjects} proyectos activos · {client.overdueTasksCount} vencidas</p>
+                    </div>
                     <span className="inline-flex shrink-0 rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-700 ring-1 ring-slate-200">{client.openTasks} tareas</span>
                   </div>
-                  <p className="mt-2 text-sm text-slate-500">{client.activeProjects} proyectos activos · {client.overdueTasksCount} vencidas</p>
                 </Link>
               )) : <p className="text-sm text-slate-500">Todavía no hay clientes con actividad.</p>}
             </div>
