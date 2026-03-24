@@ -33,9 +33,9 @@ export function ExpandableBar({
           {eyebrow ? (
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">{eyebrow}</p>
           ) : null}
-          <div className="mt-1 flex min-w-0 items-center gap-3">
+          <div className="mt-1 flex flex-wrap items-baseline gap-x-3 gap-y-1">
             <h3 className="text-sm font-semibold text-slate-950">{title}</h3>
-            {description ? <p className="hidden text-sm text-slate-500 md:block">{description}</p> : null}
+            {description ? <p className="text-sm text-slate-500">{description}</p> : null}
           </div>
         </div>
         <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-emerald-200 bg-emerald-50 text-emerald-700">

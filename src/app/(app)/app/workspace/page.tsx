@@ -78,7 +78,7 @@ export default async function WorkspacePage() {
       <SectionHeader
         eyebrow="Workspace"
         title="Tu espacio de trabajo"
-        description="Empieza por lo más importante y sigue trabajando sin perder el ritmo."
+        description="Retoma contexto, decide rápido y mueve trabajo sin brincar entre módulos."
         icon={<LayoutGrid className="h-5 w-5" />}
         actions={
           <>
@@ -99,16 +99,16 @@ export default async function WorkspacePage() {
       <Card className="bg-[linear-gradient(135deg,#063b2c_0%,#0f172a_60%,#0f172a_100%)] px-5 py-5 text-white shadow-[0_18px_40px_rgba(15,23,42,0.16)] md:px-6">
         <div className="grid gap-4 lg:grid-cols-[minmax(0,1.25fr)_minmax(320px,0.75fr)] lg:items-end">
           <div className="max-w-[42rem]">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-300">Hoy</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-300">Vista principal</p>
             <h2 className="mt-2 max-w-xl text-[1.7rem] font-bold leading-tight tracking-tight md:text-[1.9rem]">Empieza por lo importante</h2>
-            <p className="prose-balance mt-2 max-w-2xl text-sm leading-6 text-slate-300">Consulta prioridades, retoma actividad y sigue con lo que toca sin brincar entre módulos.</p>
+            <p className="prose-balance mt-2 max-w-2xl text-sm leading-6 text-slate-300">Tu trabajo diario vive aquí. Mira prioridades, retoma actividad y ejecuta sin abrir cuatro pantallas para decidir.</p>
           </div>
           <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
             {topStats.map((stat) => (
-              <div key={stat.label} className="rounded-lg border border-white/10 bg-white/10 px-4 py-3">
-                <div className="flex items-center justify-between gap-4">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-300">{stat.label}</p>
-                  <p className="text-[1.8rem] font-bold leading-none tabular-nums">{stat.value}</p>
+              <div key={stat.label} className="min-w-0 rounded-lg border border-white/10 bg-white/10 px-4 py-3">
+                <div className="flex items-center justify-between gap-3">
+                  <p className="min-w-0 truncate text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-300">{stat.label}</p>
+                  <p className="shrink-0 whitespace-nowrap text-[1.65rem] font-bold leading-none tabular-nums">{stat.value}</p>
                 </div>
               </div>
             ))}
@@ -151,11 +151,13 @@ export default async function WorkspacePage() {
               {focus.map((item) => (
                 <div key={item.label} className="rounded-lg border border-slate-200 bg-slate-50/70 px-4 py-4">
                   <div className="flex items-start justify-between gap-3">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">{item.label}</p>
+                    <p className="min-w-0 pr-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">{item.label}</p>
                     <span className={`inline-flex shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${metricTone(item.value, item.tone)}`}>{item.value > 0 ? 'Activo' : 'Estable'}</span>
                   </div>
-                  <p className="mt-4 text-3xl font-bold leading-none text-slate-950">{item.value}</p>
-                  <p className="mt-3 text-sm leading-5 text-slate-500">{item.helper}</p>
+                  <div className="mt-4 space-y-2">
+                    <p className="text-3xl font-bold leading-none text-slate-950 tabular-nums">{item.value}</p>
+                    <p className="text-sm leading-5 text-slate-500">{item.helper}</p>
+                  </div>
                 </div>
               ))}
             </div>

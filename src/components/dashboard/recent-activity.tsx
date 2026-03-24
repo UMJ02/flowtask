@@ -41,7 +41,7 @@ export function RecentActivity({ summary }: RecentActivityProps) {
             </span>
             <div className="min-w-0">
               <h2 className="text-lg font-semibold text-slate-900">Pulso de actividad</h2>
-              <p className="mt-1 max-w-xl text-sm text-slate-500">Lo más reciente para retomar rápido sin abrir más pantallas.</p>
+              <p className="mt-1 max-w-xl text-sm text-slate-500">Un resumen vivo de lo que se está moviendo en tu workspace.</p>
             </div>
           </div>
           <Link href="/app/notifications" className="inline-flex items-center gap-2 self-start text-sm font-semibold text-slate-700 hover:text-slate-900">
@@ -52,9 +52,11 @@ export function RecentActivity({ summary }: RecentActivityProps) {
 
         <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           {tiles.map((tile) => (
-            <div key={tile.label} className={`min-h-[104px] rounded-[10px] border px-4 py-3 ${tile.tone}`}>
-              <p className="line-clamp-2 min-h-[2.6rem] text-[11px] font-semibold uppercase tracking-[0.14em] leading-5">{tile.label}</p>
-              <p className="mt-3 text-[2rem] font-bold leading-none text-slate-950">{tile.value}</p>
+            <div key={tile.label} className={`min-w-0 min-h-[96px] rounded-[10px] border px-4 py-3 ${tile.tone}`}>
+              <div className="flex items-center justify-between gap-3">
+                <p className="min-w-0 truncate text-[11px] font-semibold uppercase tracking-[0.14em]">{tile.label}</p>
+                <p className="shrink-0 whitespace-nowrap text-[1.9rem] font-bold leading-none tabular-nums text-slate-950">{tile.value}</p>
+              </div>
             </div>
           ))}
         </div>
