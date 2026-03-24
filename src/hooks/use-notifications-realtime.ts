@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import type { RealtimePostgresInsertPayload, RealtimePostgresUpdatePayload } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
+import { tryGetRuntimeEnv } from "@/lib/runtime/env";
 
 export type NotificationDelivery = {
   id: string;

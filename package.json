@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "6.0.6-release-cleanup",
+  "version": "6.1.0-functional-hardening",
   "private": true,
   "scripts": {
     "dev": "next dev",

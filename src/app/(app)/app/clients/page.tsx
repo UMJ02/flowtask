@@ -1,16 +1,30 @@
 import { BriefcaseBusiness } from 'lucide-react';
 import { ClientListPanel } from '@/components/clients/client-list-panel';
 import { Card } from '@/components/ui/card';
+import { ErrorState } from '@/components/ui/error-state';
 import { SectionHeader } from '@/components/ui/section-header';
 import { FilterPresets } from '@/components/ui/filter-presets';
 import { getClients } from '@/lib/queries/clients';
 import { canUser } from '@/lib/permissions/checks';
+import { safeServerCall } from '@/lib/runtime/safe-server';
 import { normalizeClientSearch, toQueryString, type SearchParamsRecord } from '@/lib/runtime/search-params';
 
 export default async function ClientsPage({ searchParams }: { searchParams?: Promise<SearchParamsRecord> }) {
   const q = normalizeClientSearch((await searchParams) ?? {});
-  const [clients, canManageClients] = await Promise.all([getClients(q), canUser('clients.manage')]);
+  const [clients, canManageClients] = await Promise.all([
+    safeServerCall('getClients', () => getClients(q), null as Awaited<ReturnType<typeof getClients>> | null),
+    safeServerCall('canUser(clients.manage)', () => canUser('clients.manage'), false),
+  ]);
   const currentQuery = toQueryString({ q });
+
+  if (clients === null) {
+    return (
+      <ErrorState
+        title="No pudimos abrir clientes"
+        description="La consulta de clientes falló en esta carga. Reintenta desde esta pantalla cuando la conexión se estabilice."
+      />
+    );
+  }
 
   return (
     <div className="space-y-5">

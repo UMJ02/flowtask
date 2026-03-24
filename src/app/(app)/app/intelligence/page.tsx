@@ -9,6 +9,7 @@ import { getPlanningOverview } from '@/lib/queries/planning';
 import { getRiskRadarSummary } from '@/lib/queries/risk-radar';
 import { getWorkspaceOnboardingSummary } from '@/lib/queries/onboarding';
 import { getWorkspaceIntelligenceSummary } from '@/lib/queries/workspace-intelligence';
+import { safeServerCall } from '@/lib/runtime/safe-server';
 
 function toneClass(tone: 'critical' | 'attention' | 'stable') {
   if (tone === 'critical') return 'bg-rose-50 text-rose-700 ring-1 ring-rose-100';
@@ -22,11 +23,11 @@ function toneLabel(tone: 'critical' | 'attention' | 'stable') {
 
 export default async function IntelligencePage() {
   const [onboarding, planning, risk, workspace, execution] = await Promise.all([
-    getWorkspaceOnboardingSummary(),
-    getPlanningOverview(),
-    getRiskRadarSummary(),
-    getWorkspaceIntelligenceSummary(),
-    getExecutionCenterSummary(),
+    safeServerCall('getWorkspaceOnboardingSummary', () => getWorkspaceOnboardingSummary(), null),
+    safeServerCall('getPlanningOverview', () => getPlanningOverview(), null),
+    safeServerCall('getRiskRadarSummary', () => getRiskRadarSummary(), null),
+    safeServerCall('getWorkspaceIntelligenceSummary', () => getWorkspaceIntelligenceSummary(), null),
+    safeServerCall('getExecutionCenterSummary', () => getExecutionCenterSummary(), null),
   ]);
 
   if (!workspace || !planning || !risk || !execution) {
@@ -34,6 +35,11 @@ export default async function IntelligencePage() {
       <ErrorState
         title="No pudimos abrir esta vista"
         description="Faltan datos del workspace para consolidar esta vista. Revisa tu contexto y vuelve a intentarlo."
+        action={
+          <Link href="/app/dashboard">
+            <Button>Ir al dashboard</Button>
+          </Link>
+        }
       />
     );
   }
@@ -41,7 +47,7 @@ export default async function IntelligencePage() {
   const executiveCards = [
     { label: 'Estado', value: `${onboarding?.score ?? workspace.kpis.readinessScore}%`, icon: <Sparkles className="h-5 w-5" /> },
     { label: 'Riesgo', value: `${risk.kpis.riskScore}%`, icon: <ShieldAlert className="h-5 w-5" /> },
-    { label: 'Capacidad', value: `${(planning.departmentCapacity[0]?.score ?? 0)}%`, icon: <CalendarRange className="h-5 w-5" /> },
+    { label: 'Capacidad', value: `${planning.departmentCapacity[0]?.score ?? 0}%`, icon: <CalendarRange className="h-5 w-5" /> },
     { label: 'Ejecución', value: `${execution.kpis.executionScore}%`, icon: <BrainCircuit className="h-5 w-5" /> },
   ];
 
