@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowRight, BrainCircuit, CalendarRange, ClipboardList, FolderKanban, ShieldAlert, Sparkles, Telescope, UsersRound } from 'lucide-react';
+import { ArrowRight, BrainCircuit, CalendarRange, ShieldAlert, Sparkles, Telescope } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ErrorState } from '@/components/ui/error-state';
@@ -9,10 +9,6 @@ import { getPlanningOverview } from '@/lib/queries/planning';
 import { getRiskRadarSummary } from '@/lib/queries/risk-radar';
 import { getWorkspaceOnboardingSummary } from '@/lib/queries/onboarding';
 import { getWorkspaceIntelligenceSummary } from '@/lib/queries/workspace-intelligence';
-import { clientListRoute, projectListRoute, reportsPrintRoute, taskListRoute, workspaceRoute } from '@/lib/navigation/routes';
-import { CoreRouteDeck } from '@/components/core/core-route-deck';
-import { ModuleMap } from '@/components/intelligence/module-map';
-import { getModulesByLifecycle } from '@/lib/intelligence/module-registry';
 
 function toneClass(tone: 'critical' | 'attention' | 'stable') {
   if (tone === 'critical') return 'bg-rose-50 text-rose-700 ring-1 ring-rose-100';
@@ -45,32 +41,23 @@ export default async function IntelligencePage() {
   const executiveCards = [
     { label: 'Estado', value: `${onboarding?.score ?? workspace.kpis.readinessScore}%`, icon: <Sparkles className="h-5 w-5" /> },
     { label: 'Riesgo', value: `${risk.kpis.riskScore}%`, icon: <ShieldAlert className="h-5 w-5" /> },
-    { label: 'Capacidad', value: `${planning.departmentCapacity[0]?.score ?? 0}%`, icon: <CalendarRange className="h-5 w-5" /> },
+    { label: 'Capacidad', value: `${(planning.departmentCapacity[0]?.score ?? 0)}%`, icon: <CalendarRange className="h-5 w-5" /> },
     { label: 'Ejecución', value: `${execution.kpis.executionScore}%`, icon: <BrainCircuit className="h-5 w-5" /> },
   ];
-
-  const coreModules = getModulesByLifecycle('core').filter((item) => item.id !== 'intelligence-hub');
-  const supportModules = getModulesByLifecycle('support');
-  const legacyModules = getModulesByLifecycle('legacy');
 
   return (
     <div className="space-y-5">
       <SectionHeader
-        eyebrow="Intelligence"
-        title="Hub de inteligencia del workspace"
-        description="Plan, riesgo y ejecución en una sola capa para decidir rápido y sin duplicar pantallas."
-        badges={[
-          { label: 'Hub oficial', tone: 'stable' },
-          { label: 'Señales conectadas', tone: 'default' },
-          { label: 'Decisión rápida', tone: 'attention' },
-        ]}
+        eyebrow="Insights"
+        title="Insights del workspace"
+        description="Estado, riesgo y foco en una sola vista."
         icon={<BrainCircuit className="h-5 w-5" />}
         actions={
           <>
-            <Link href={reportsPrintRoute('intelligence')} target="_blank">
+            <Link href="/app/reports/print?type=intelligence" target="_blank">
               <Button>PDF</Button>
             </Link>
-            <Link href={workspaceRoute()}>
+            <Link href="/app/workspace">
               <Button variant="secondary">Ir al workspace</Button>
             </Link>
           </>
@@ -91,13 +78,13 @@ export default async function IntelligencePage() {
         ))}
       </div>
 
-      <div className="grid gap-4 xl:grid-cols-[1.15fr_0.85fr]">
+      <div className="grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
         <Card className="bg-[linear-gradient(135deg,#082f49_0%,#0f766e_54%,#0f172a_100%)] text-white shadow-[0_24px_60px_rgba(15,23,42,0.22)]">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-2xl">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-200">Foundation</p>
-              <h2 className="mt-2 text-3xl font-bold">Una sola capa para leer el negocio</h2>
-              <p className="mt-2 text-sm text-cyan-100/90">En v5.9 esta vista pasa a ser el punto oficial de entrada para inteligencia. Workspace sigue siendo el home operativo y aquí se ordenan módulos core, soporte y legacy sin duplicidad.</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-200">Resumen</p>
+              <h2 className="mt-2 text-3xl font-bold">Qué atender ahora</h2>
+              <p className="mt-2 text-sm text-cyan-100/90">No necesitas abrir varias pantallas para decidir. Aquí ves dónde estás bien, qué está en riesgo y qué mover primero.</p>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="rounded-[26px] bg-white/10 px-4 py-3 ring-1 ring-white/10">
@@ -128,59 +115,6 @@ export default async function IntelligencePage() {
             ))}
           </div>
         </Card>
-      </div>
-
-
-      <CoreRouteDeck
-        eyebrow="Conexión con el core"
-        title="Dónde aterrizan las señales"
-        description="Esta vista no vive aislada: sus recomendaciones deben terminar en proyectos, tareas, clientes o de vuelta en el workspace operativo."
-        items={[
-          {
-            title: 'Workspace',
-            description: 'Regresa al home operativo para ejecutar con contexto.',
-            href: workspaceRoute(),
-            icon: <BrainCircuit className="h-5 w-5" />,
-          },
-          {
-            title: 'Proyectos',
-            description: 'Ataca desvíos de portafolio y fechas clave.',
-            href: projectListRoute(),
-            icon: <FolderKanban className="h-5 w-5" />,
-          },
-          {
-            title: 'Tareas',
-            description: 'Convierte señales en acciones operativas concretas.',
-            href: taskListRoute(),
-            icon: <ClipboardList className="h-5 w-5" />,
-          },
-          {
-            title: 'Clientes',
-            description: 'Valida impacto comercial por cuenta activa.',
-            href: clientListRoute(),
-            icon: <UsersRound className="h-5 w-5" />,
-          },
-        ]}
-      />
-
-      <div className="grid gap-4 xl:grid-cols-[1.05fr_0.95fr]">
-        <ModuleMap
-          title="Módulos core"
-          description="Estos son los módulos que sí forman parte de la lectura consolidada del producto."
-          modules={coreModules}
-        />
-        <div className="space-y-4">
-          <ModuleMap
-            title="Módulos de soporte"
-            description="Se mantienen disponibles para lecturas tácticas o ejecutivas puntuales, pero ya no compiten con el hub principal."
-            modules={supportModules}
-          />
-          <ModuleMap
-            title="Vistas legacy"
-            description="Se preservan por compatibilidad para no romper la base anterior mientras termina la migración al hub."
-            modules={legacyModules}
-          />
-        </div>
       </div>
 
       <div className="grid gap-4 xl:grid-cols-3">
@@ -250,6 +184,55 @@ export default async function IntelligencePage() {
                 <p className="mt-2 text-sm text-slate-500">{item.clientName} · {item.status}</p>
               </div>
             ))}
+          </div>
+        </Card>
+      </div>
+
+      <div className="grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
+        <Card>
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <h3 className="text-lg font-semibold text-slate-900">Watchlist</h3>
+              <p className="mt-1 text-sm text-slate-500">Una sola lista con lo que merece seguimiento.</p>
+            </div>
+          </div>
+          <div className="mt-5 grid gap-3 md:grid-cols-2">
+            {workspace.watchlist.slice(0, 6).map((item) => (
+              <div key={`${item.source}-${item.title}-${item.meta}`} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4">
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">{item.source}</span>
+                  <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${toneClass(item.tone)}`}>{toneLabel(item.tone)}</span>
+                </div>
+                <p className="mt-3 text-sm font-semibold text-slate-900">{item.title}</p>
+                <p className="mt-1 text-sm text-slate-500">{item.meta}</p>
+              </div>
+            ))}
+          </div>
+        </Card>
+
+        <Card>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h3 className="text-lg font-semibold text-slate-900">Sigue desde aquí</h3>
+              <p className="mt-1 text-sm text-slate-500">Vuelve al tablero o comparte un resumen cuando lo necesites.</p>
+            </div>
+            <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-700 ring-1 ring-slate-200">
+              <ArrowRight className="h-5 w-5" />
+            </span>
+          </div>
+          <div className="mt-5 grid gap-3">
+            <Link href="/app/workspace" className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 transition hover:border-emerald-200 hover:bg-emerald-50">
+              <p className="text-sm font-semibold text-slate-900">Ir al workspace</p>
+              <p className="mt-1 text-sm text-slate-500">Regresa a tu pizarra y sigue trabajando.</p>
+            </Link>
+            <Link href="/app/tasks" className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 transition hover:border-emerald-200 hover:bg-emerald-50">
+              <p className="text-sm font-semibold text-slate-900">Abrir tareas</p>
+              <p className="mt-1 text-sm text-slate-500">Ve al detalle de pendientes y cambia filtros.</p>
+            </Link>
+            <Link href="/app/reports" className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 transition hover:border-emerald-200 hover:bg-emerald-50">
+              <p className="text-sm font-semibold text-slate-900">Abrir reportes</p>
+              <p className="mt-1 text-sm text-slate-500">Exporta un PDF y comparte el estado del trabajo.</p>
+            </Link>
           </div>
         </Card>
       </div>

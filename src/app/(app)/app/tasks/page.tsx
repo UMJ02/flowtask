@@ -1,6 +1,5 @@
 import Link from 'next/link';
-import { AlertTriangle, ClipboardList, ListTodo, TimerReset, Users } from 'lucide-react';
-import { CoreMetricStrip } from '@/components/core/core-metric-strip';
+import { ClipboardList } from 'lucide-react';
 import { TaskFilters } from '@/components/tasks/task-filters';
 import { TaskWorkspace } from '@/components/tasks/task-workspace';
 import { Button } from '@/components/ui/button';
@@ -19,14 +18,6 @@ export default async function TasksPage({
   const filters = normalizeTaskFilters((await searchParams) ?? {});
   const tasks = await getTasks(filters);
   const currentQuery = toQueryString(filters);
-  const today = new Date().toISOString().slice(0, 10);
-
-  type TaskItem = Awaited<ReturnType<typeof getTasks>>[number];
-
-  const openCount = tasks.filter((task: TaskItem) => (task.status ?? "").toLowerCase() !== "concluido").length;
-  const overdueCount = tasks.filter((task: TaskItem) => Boolean(task.due_date) && String(task.due_date).slice(0, 10) < today && (task.status ?? "").toLowerCase() !== "concluido").length;
-  const todayCount = tasks.filter((task: TaskItem) => Boolean(task.due_date) && String(task.due_date).slice(0, 10) === today && (task.status ?? "").toLowerCase() !== "concluido").length;
-  const clientBoundCount = tasks.filter((task: TaskItem) => Boolean(task.client_name?.trim())).length;
 
   return (
     <div className="space-y-5">
@@ -34,11 +25,6 @@ export default async function TasksPage({
         eyebrow="Seguimiento simple"
         title="Tareas"
         description="Busca, filtra y actualiza pendientes sin perder tiempo. Puedes usar vista lista o tablero con una interfaz más limpia y legible."
-        badges={[
-          { label: 'Lista + tablero', tone: 'stable' },
-          { label: 'Carga diaria', tone: 'default' },
-          { label: 'Atención a vencidas', tone: 'attention' },
-        ]}
         icon={<ClipboardList className="h-5 w-5" />}
         actions={
           <Link href={taskNewRoute()}>
@@ -46,43 +32,6 @@ export default async function TasksPage({
           </Link>
         }
       />
-
-      <CoreMetricStrip
-        eyebrow="Core hardening"
-        title="Pulso operativo de la carga"
-        description="La vista de tareas ahora arranca con señales más claras para decidir si conviene ejecutar, reagendar o limpiar backlog."
-        items={[
-          {
-            label: 'Abiertas',
-            value: openCount,
-            helper: 'Tareas activas dentro del filtro actual.',
-            icon: <ListTodo className="h-5 w-5" />,
-            tone: openCount ? 'stable' : 'default',
-          },
-          {
-            label: 'Vencidas',
-            value: overdueCount,
-            helper: 'Pendientes fuera de fecha que necesitan atención.',
-            icon: <AlertTriangle className="h-5 w-5" />,
-            tone: overdueCount ? 'critical' : 'default',
-          },
-          {
-            label: 'Para hoy',
-            value: todayCount,
-            helper: 'Carga que debería resolverse hoy.',
-            icon: <TimerReset className="h-5 w-5" />,
-            tone: todayCount ? 'attention' : 'default',
-          },
-          {
-            label: 'Con cliente',
-            value: clientBoundCount,
-            helper: 'Tareas vinculadas a un contexto comercial.',
-            icon: <Users className="h-5 w-5" />,
-            tone: clientBoundCount ? 'stable' : 'default',
-          },
-        ]}
-      />
-
       <TaskFilters filters={filters} />
       <FilterPresets
         storageKey="flowtask:filters:tasks"

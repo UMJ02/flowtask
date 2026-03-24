@@ -3,47 +3,13 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { PanelLeftClose, PanelLeftOpen } from 'lucide-react';
-import { coreNavLinks, organizationNavLinks, utilityNavLinks } from '@/components/layout/nav-links';
+import { appNavLinks } from '@/components/layout/nav-links';
 import { SidebarFooter } from '@/components/layout/sidebar-footer';
 import { useSidebarState } from '@/components/layout/sidebar-state';
-import { isRouteActive } from '@/lib/navigation/routes';
 import type { OrganizationSummary } from '@/types/organization';
 
-function SidebarLink({
-  href,
-  label,
-  hint,
-  icon: Icon,
-  active,
-  collapsed,
-}: {
-  href: string;
-  label: string;
-  hint: string;
-  icon: typeof coreNavLinks[number]['icon'];
-  active: boolean;
-  collapsed: boolean;
-}) {
-  return (
-    <Link
-      className={`group flex items-center ${collapsed ? 'justify-center' : 'justify-between'} rounded-[26px] px-2.5 py-2.5 transition-all duration-200 ${active ? 'bg-white/10 ring-1 ring-emerald-400/30 shadow-[0_0_0_1px_rgba(16,185,129,0.12)]' : 'hover:bg-white/8'}`}
-      href={href}
-      title={collapsed ? label : undefined}
-    >
-      <div className={`flex min-w-0 items-center ${collapsed ? '' : 'gap-3'}`}>
-        <span className={`inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl transition-all duration-200 ${active ? 'bg-emerald-500 text-white shadow-[0_10px_24px_rgba(16,185,129,0.28)]' : 'bg-white/10 text-emerald-300 group-hover:bg-emerald-500 group-hover:text-white'}`}>
-          <Icon className="h-4 w-4" />
-        </span>
-        {!collapsed ? (
-          <div className="min-w-0">
-            <p className="truncate text-sm font-semibold text-white">{label}</p>
-            <p className={`truncate text-[11px] ${active ? 'text-slate-200' : 'text-slate-400'}`}>{hint}</p>
-          </div>
-        ) : null}
-      </div>
-    </Link>
-  );
-}
+const footerHrefs = new Set(['/app/organization', '/app/organization/roles', '/app/organization/billing', '/contact', '/app/settings']);
+const mainNavLinks = appNavLinks.filter((link) => !footerHrefs.has(link.href));
 
 export function AppSidebar({
   organizations = [],
@@ -77,7 +43,7 @@ export function AppSidebar({
           <div className="flex items-center justify-between gap-2">
             <div className="min-w-0">
               <p className="text-xs font-semibold uppercase tracking-[0.22em] text-emerald-300">FlowTask</p>
-              <p className="mt-1 text-xl font-bold">Navigation Hardening</p>
+              <p className="mt-1 text-xl font-bold">Tu espacio</p>
             </div>
             <button
               type="button"
@@ -88,61 +54,36 @@ export function AppSidebar({
               <PanelLeftClose className="h-4 w-4" />
             </button>
           </div>
-          <p className="mt-1 text-xs leading-5 text-slate-300">Rutas más seguras, estado activo consistente y accesos de soporte sin ruido extra.</p>
+          <p className="mt-1 text-xs leading-5 text-slate-300">Todo lo importante, en menos pasos.</p>
         </div>
       )}
 
       <nav className="space-y-1.5 border-t border-white/10 pt-3">
-        {coreNavLinks.map((link) => (
-          <SidebarLink
-            key={link.href}
-            href={link.href}
-            label={link.label}
-            hint={link.hint}
-            icon={link.icon}
-            active={isRouteActive(pathname, link.href)}
-            collapsed={collapsed}
-          />
-        ))}
+        {mainNavLinks.map((link) => {
+          const Icon = link.icon;
+          const active = pathname === link.href || pathname?.startsWith(`${link.href}/`);
+          return (
+            <Link
+              key={link.href}
+              className={`group flex items-center ${collapsed ? 'justify-center' : 'justify-between'} rounded-[26px] px-2.5 py-2.5 transition-all duration-200 ${active ? 'bg-white/10 ring-1 ring-emerald-400/30 shadow-[0_0_0_1px_rgba(16,185,129,0.12)]' : 'hover:bg-white/8'}`}
+              href={link.href}
+              title={collapsed ? link.label : undefined}
+            >
+              <div className={`flex min-w-0 items-center ${collapsed ? '' : 'gap-3'}`}>
+                <span className={`inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl transition-all duration-200 ${active ? 'bg-emerald-500 text-white shadow-[0_10px_24px_rgba(16,185,129,0.28)]' : 'bg-white/10 text-emerald-300 group-hover:bg-emerald-500 group-hover:text-white'}`}>
+                  <Icon className="h-4 w-4" />
+                </span>
+                {!collapsed ? (
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold text-white">{link.label}</p>
+                    <p className={`truncate text-[11px] ${active ? 'text-slate-200' : 'text-slate-400'}`}>{link.hint}</p>
+                  </div>
+                ) : null}
+              </div>
+            </Link>
+          );
+        })}
       </nav>
-
-      {!collapsed ? (
-        <div className="mt-4 space-y-4 border-t border-white/10 pt-4">
-          <div>
-            <p className="mb-2 px-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Organización</p>
-            <div className="space-y-1.5">
-              {organizationNavLinks.map((link) => (
-                <SidebarLink
-                  key={link.href}
-                  href={link.href}
-                  label={link.label}
-                  hint={link.hint}
-                  icon={link.icon}
-                  active={isRouteActive(pathname, link.href)}
-                  collapsed={false}
-                />
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <p className="mb-2 px-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Soporte operativo</p>
-            <div className="space-y-1.5">
-              {utilityNavLinks.map((link) => (
-                <SidebarLink
-                  key={link.href}
-                  href={link.href}
-                  label={link.label}
-                  hint={link.hint}
-                  icon={link.icon}
-                  active={isRouteActive(pathname, link.href)}
-                  collapsed={false}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-      ) : null}
 
       <div className="mt-auto pt-3">
         <SidebarFooter

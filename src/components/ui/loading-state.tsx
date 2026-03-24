@@ -8,8 +8,8 @@ export function LoadingState({
   cards?: number;
 }) {
   return (
-    <div className="animate-fade-in space-y-5">
-      <div className="surface-glow rounded-[32px] border border-white/80 bg-white/85 p-5 backdrop-blur">
+    <div className="space-y-5 animate-fade-in">
+      <div className="rounded-[32px] border border-slate-200/70 bg-white/80 p-5 shadow-[0_14px_34px_rgba(15,23,42,0.06)]">
         <div className="mb-5 flex items-center gap-3">
           <div className="skeleton h-14 w-14 rounded-[24px]" />
           <div className="space-y-2">
@@ -24,7 +24,7 @@ export function LoadingState({
           <div key={index} className="skeleton h-40 rounded-[28px]" />
         ))}
       </div>
-      <div className="surface-glow rounded-[24px] border border-emerald-100 bg-emerald-50/85 px-4 py-3">
+      <div className="rounded-[24px] border border-emerald-100 bg-emerald-50/80 px-4 py-3">
         <div className="flex items-center gap-3 text-sm font-medium text-emerald-700">
           <span className="inline-flex h-3 w-3 animate-pulse rounded-full bg-emerald-500 shadow-[0_0_0_6px_rgba(16,185,129,0.14)]" />
           {title}

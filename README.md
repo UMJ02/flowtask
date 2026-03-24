@@ -1,26 +1,30 @@
-# FlowTask v6.0.1-runtime-hardening
+# FlowTask v6.0.3 — Release Hardening
 
-Base validada sobre `v6.0.0-product-polish`.
+Base real endurecida para cierre técnico previo a despliegue.
 
-## Objetivo
-Endurecer la base real de runtime antes de seguir con más polish o expansión funcional.
+## Objetivo de esta versión
+- cerrar errores reales de TypeScript
+- validar runtime mínimo obligatorio
+- endurecer acceso a variables críticas de entorno
+- dejar una ruta clara para certificación de build en entorno local o CI
 
-## Enfoque
-- cerrar errores reales de TypeScript que ya afectaban la capa core
-- centralizar variables críticas de entorno para evitar fallos silenciosos
-- dejar una verificación mínima reproducible para despliegue y validación local
-
-## Scripts
+## Scripts clave
 - `npm run dev`
 - `npm run build`
 - `npm run start`
 - `npm run lint`
 - `npm run typecheck`
 - `npm run runtime:check`
+- `npm run release:check`
 
-## Cambios clave
-- se corrigen errores reales en `Projects`, `Tasks` y `Clients`
-- se agrega `src/lib/runtime/env.ts` para lectura segura de variables de entorno
-- los clientes de Supabase quedan conectados a un helper único de entorno
-- se suma `scripts/runtime-check.ts` y `.env.example` como base de operación
-- se actualiza documentación y versionado a `v6.0.1-runtime-hardening`
+## Qué se endureció
+- tipado corregido en `workspace-operating-system`
+- validación central de entorno en `src/lib/runtime/env.ts`
+- clientes Supabase conectados a runtime validado
+- middleware con redirección más segura y preservación de querystring
+- `.env.example` agregado para despliegue y onboarding técnico
+
+## Estado honesto
+- `npm run typecheck` pasa en esta base
+- `npm run runtime:check` pasa con variables presentes
+- `next build` todavía depende de un binario SWC compatible en el entorno de ejecución

@@ -40,7 +40,7 @@ export function WorkspaceOperatingSystem({
             <h3 className="mt-2 text-xl font-bold text-slate-900">La capa maestra para operar todo el workspace</h3>
             <p className="mt-2 max-w-2xl text-sm text-slate-500">Junta onboarding, planning, execution, intelligence y riesgo en una sola lectura ejecutiva.</p>
           </div>
-          <Link href={asRoute('/app/intelligence')}><Button>Abrir intelligence hub</Button></Link>
+          <Link href={asRoute('/app/workspace-os')}><Button>Ver workspace OS</Button></Link>
         </div>
         <div className="mt-5 grid gap-3 md:grid-cols-4">
           {scoreCards.map((card) => (

@@ -1,30 +1,29 @@
-const MISSING_PREFIX = '[runtime-env]';
+const REQUIRED_ENV_KEYS = ['NEXT_PUBLIC_SUPABASE_URL', 'NEXT_PUBLIC_SUPABASE_ANON_KEY'] as const;
 
-function readEnv(name: string) {
-  const value = process.env[name]?.trim();
-  return value ? value : null;
-}
+type RequiredEnvKey = (typeof REQUIRED_ENV_KEYS)[number];
 
-function missingEnvError(name: string) {
-  return new Error(`${MISSING_PREFIX} Falta la variable ${name}. Revisa .env.local antes de correr la app o scripts operativos.`);
-}
+export type RuntimeEnv = Record<RequiredEnvKey, string>;
 
-export function requireEnv(name: string) {
-  const value = readEnv(name);
-  if (!value) throw missingEnvError(name);
+function readEnvValue(key: RequiredEnvKey): string {
+  const value = process.env[key];
+
+  if (!value || !value.trim()) {
+    throw new Error(`[runtime] Missing required environment variable: ${key}`);
+  }
+
   return value;
 }
 
-export function getPublicSupabaseEnv() {
+export function getRuntimeEnv(): RuntimeEnv {
   return {
-    url: requireEnv('NEXT_PUBLIC_SUPABASE_URL'),
-    anonKey: requireEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY'),
+    NEXT_PUBLIC_SUPABASE_URL: readEnvValue('NEXT_PUBLIC_SUPABASE_URL'),
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: readEnvValue('NEXT_PUBLIC_SUPABASE_ANON_KEY'),
   };
 }
 
-export function getServiceRoleEnv() {
-  return {
-    url: requireEnv('NEXT_PUBLIC_SUPABASE_URL'),
-    serviceRoleKey: requireEnv('SUPABASE_SERVICE_ROLE_KEY'),
-  };
+export function getRuntimeEnvStatus() {
+  return REQUIRED_ENV_KEYS.map((key) => ({
+    key,
+    present: Boolean(process.env[key] && process.env[key]?.trim()),
+  }));
 }

@@ -1,6 +1,5 @@
-import { AlertTriangle, BriefcaseBusiness, CheckCircle2, UsersRound } from 'lucide-react';
+import { BriefcaseBusiness } from 'lucide-react';
 import { ClientListPanel } from '@/components/clients/client-list-panel';
-import { CoreMetricStrip } from '@/components/core/core-metric-strip';
 import { Card } from '@/components/ui/card';
 import { SectionHeader } from '@/components/ui/section-header';
 import { FilterPresets } from '@/components/ui/filter-presets';
@@ -13,61 +12,14 @@ export default async function ClientsPage({ searchParams }: { searchParams?: Pro
   const [clients, canManageClients] = await Promise.all([getClients(q), canUser('clients.manage')]);
   const currentQuery = toQueryString({ q });
 
-  const activeCount = clients.filter((client) => client.status === 'activo').length;
-  const withWorkloadCount = clients.filter((client) => client.openTasksCount > 0 || client.projectsCount > 0).length;
-  const overdueCount = clients.filter((client) => client.overdueTasksCount > 0).length;
-  const healthyCount = clients.filter((client) => client.openTasksCount === 0 && client.overdueTasksCount === 0 && client.projectsCount > 0).length;
-
   return (
     <div className="space-y-5">
       <SectionHeader
         eyebrow="Workspace comercial"
         title="Clientes"
         description="Consulta cada cliente con sus proyectos, carga y actividad reciente. La navegación queda enfocada en abrir contextos de trabajo sin confusión."
-        badges={[
-          { label: 'Contexto por cuenta', tone: 'stable' },
-          { label: 'Búsquedas guardadas', tone: 'default' },
-          { label: 'Relación operativa', tone: 'attention' },
-        ]}
         icon={<BriefcaseBusiness className="h-5 w-5" />}
       />
-
-      <CoreMetricStrip
-        eyebrow="Core hardening"
-        title="Visión rápida por cuenta"
-        description="Esta lectura inicial ayuda a entrar a clientes con más contexto: quién está activo, quién tiene carga y dónde hay vencimientos que afectan la relación."
-        items={[
-          {
-            label: 'Activos',
-            value: activeCount,
-            helper: 'Clientes marcados como activos en la organización.',
-            icon: <UsersRound className="h-5 w-5" />,
-            tone: activeCount ? 'stable' : 'default',
-          },
-          {
-            label: 'Con carga',
-            value: withWorkloadCount,
-            helper: 'Cuentas con proyectos o tareas en movimiento.',
-            icon: <BriefcaseBusiness className="h-5 w-5" />,
-            tone: withWorkloadCount ? 'stable' : 'default',
-          },
-          {
-            label: 'Con vencidas',
-            value: overdueCount,
-            helper: 'Clientes que hoy arrastran presión operativa.',
-            icon: <AlertTriangle className="h-5 w-5" />,
-            tone: overdueCount ? 'attention' : 'default',
-          },
-          {
-            label: 'Limpios',
-            value: healthyCount,
-            helper: 'Sin pendientes abiertos y con señal de operación sana.',
-            icon: <CheckCircle2 className="h-5 w-5" />,
-            tone: healthyCount ? 'stable' : 'default',
-          },
-        ]}
-      />
-
       <FilterPresets
         storageKey="flowtask:filters:clients"
         basePath="/app/clients"

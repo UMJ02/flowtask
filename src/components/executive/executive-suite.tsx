@@ -185,7 +185,7 @@ export function ExecutiveSuite({ summary, compact = false }: { summary: Executiv
           </div>
           <div className="mt-5 flex flex-wrap gap-3">
             <Link href="/app/reports/print?type=executive-suite" target="_blank"><Button>Executive PDF</Button></Link>
-            <Link href={asRoute('/app/intelligence')}><Button variant="secondary">Abrir intelligence hub</Button></Link>
+            <Link href={asRoute('/app/workspace-os')}><Button variant="secondary">Abrir workspace OS</Button></Link>
           </div>
         </Card>
       </div>

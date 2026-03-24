@@ -37,12 +37,14 @@ export type WorkspaceOperatingSystemSummary = {
   recommendations: string[];
 };
 
+
+type PrioritySource = WorkspaceOperatingSystemSummary['priorities'][number]['source'];
+type PriorityTone = WorkspaceOperatingSystemSummary['priorities'][number]['tone'];
+
+type PriorityItem = WorkspaceOperatingSystemSummary['priorities'][number];
+
 function clamp(value: number, min = 0, max = 100) {
   return Math.max(min, Math.min(max, value));
-}
-
-function getPriorityTone(condition: boolean, whenTrue: 'critical' | 'attention' | 'stable', whenFalse: 'critical' | 'attention' | 'stable') {
-  return condition ? whenTrue : whenFalse;
 }
 
 export async function getWorkspaceOperatingSystemSummary(): Promise<WorkspaceOperatingSystemSummary | null> {
@@ -77,29 +79,29 @@ export async function getWorkspaceOperatingSystemSummary(): Promise<WorkspaceOpe
   );
 
   const priorities: WorkspaceOperatingSystemSummary['priorities'] = [
-    ...intelligence.crossModulePriorities.slice(0, 2).map((item) => ({
+    ...intelligence.crossModulePriorities.slice(0, 2).map<PriorityItem>((item) => ({
       title: item.title,
       detail: item.detail,
-      source: (item.source === 'Reports' ? 'Intelligence' : item.source) as WorkspaceOperatingSystemSummary['priorities'][number]['source'],
+      source: (item.source === 'Reports' ? 'Intelligence' : item.source) as PrioritySource,
       tone: item.tone,
     })),
-    ...execution.doNow.slice(0, 2).map((item) => ({
+    ...execution.doNow.slice(0, 2).map<PriorityItem>((item) => ({
       title: item.title,
       detail: item.detail,
       source: 'Execution' as const,
       tone: item.tone,
     })),
-    ...risk.recommendations.slice(0, 1).map((item) => ({
+    ...risk.recommendations.slice(0, 1).map<PriorityItem>((item) => ({
       title: 'Reducir riesgo activo',
       detail: item,
       source: 'Risk Radar' as const,
-      tone: getPriorityTone(riskScore >= 65, 'critical', 'attention'),
+      tone: (riskScore >= 65 ? 'critical' : 'attention') as PriorityTone,
     })),
-    ...onboarding.recommendations.slice(0, 1).map((item) => ({
+    ...onboarding.recommendations.slice(0, 1).map<PriorityItem>((item) => ({
       title: 'Cerrar base estructural',
       detail: item,
       source: 'Onboarding' as const,
-      tone: getPriorityTone(onboarding.score < 70, 'attention', 'stable'),
+      tone: (onboarding.score < 70 ? 'attention' : 'stable') as PriorityTone,
     })),
   ].slice(0, 6);
 

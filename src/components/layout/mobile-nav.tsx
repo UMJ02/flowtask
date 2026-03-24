@@ -4,13 +4,16 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import { Menu, X } from 'lucide-react';
-import { coreNavLinks, organizationNavLinks, utilityNavLinks } from '@/components/layout/nav-links';
-import { isRouteActive } from '@/lib/navigation/routes';
+import { appNavLinks } from '@/components/layout/nav-links';
 
 export function MobileNav() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const groups = useMemo(() => ({ main: coreNavLinks, more: organizationNavLinks, utility: utilityNavLinks }), []);
+  const groups = useMemo(() => {
+    const main = appNavLinks.slice(0, 6);
+    const more = appNavLinks.slice(6);
+    return { main, more };
+  }, []);
 
   return (
     <>
@@ -30,7 +33,7 @@ export function MobileNav() {
             <div className="mb-4 flex items-center justify-between">
               <div>
                 <p className="text-sm font-semibold uppercase tracking-[0.18em] text-emerald-300">FlowTask</p>
-                <h2 className="text-xl font-bold text-white">Navigation Hardening</h2>
+                <h2 className="text-xl font-bold text-white">Workspace</h2>
               </div>
               <button
                 aria-label="Cerrar menú"
@@ -45,7 +48,7 @@ export function MobileNav() {
               <nav className="space-y-2 rounded-[28px] border border-white/10 bg-white/[0.03] p-2">
                 {groups.main.map((link) => {
                   const Icon = link.icon;
-                  const active = isRouteActive(pathname, link.href);
+                  const active = pathname === link.href || pathname?.startsWith(`${link.href}/`);
                   return (
                     <Link
                       key={link.href}
@@ -72,33 +75,7 @@ export function MobileNav() {
                 <nav className="space-y-2 rounded-[28px] border border-white/10 bg-white/[0.03] p-2">
                   {groups.more.map((link) => {
                     const Icon = link.icon;
-                    const active = isRouteActive(pathname, link.href);
-                    return (
-                      <Link
-                        key={link.href}
-                        className={`flex items-center gap-3 rounded-3xl border px-4 py-3 transition ${active ? 'border-emerald-400/40 bg-white/10' : 'border-white/10 bg-white/5 hover:bg-white/8'}`}
-                        href={link.href}
-                        onClick={() => setOpen(false)}
-                      >
-                        <span className={`inline-flex h-10 w-10 items-center justify-center rounded-2xl ${active ? 'bg-emerald-500 text-white' : 'bg-white/10 text-emerald-300'}`}>
-                          <Icon className="h-5 w-5" />
-                        </span>
-                        <div className="min-w-0">
-                          <p className="truncate text-sm font-semibold text-white">{link.label}</p>
-                          <p className="truncate text-xs text-slate-300">{link.hint}</p>
-                        </div>
-                      </Link>
-                    );
-                  })}
-                </nav>
-              </div>
-
-              <div className="border-t border-white/10 pt-4">
-                <p className="mb-2 px-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Soporte operativo</p>
-                <nav className="space-y-2 rounded-[28px] border border-white/10 bg-white/[0.03] p-2">
-                  {groups.utility.map((link) => {
-                    const Icon = link.icon;
-                    const active = isRouteActive(pathname, link.href);
+                    const active = pathname === link.href || pathname?.startsWith(`${link.href}/`);
                     return (
                       <Link
                         key={link.href}

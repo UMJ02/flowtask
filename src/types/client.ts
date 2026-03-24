@@ -7,7 +7,6 @@ export interface ClientListItem {
   projectsCount: number;
   openTasksCount: number;
   completedTasksCount: number;
-  overdueTasksCount: number;
 }
 
 export interface ClientDetailSummary extends ClientListItem {
