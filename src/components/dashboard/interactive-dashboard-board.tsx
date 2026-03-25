@@ -302,7 +302,7 @@ export function InteractiveDashboardBoard() {
     } catch {
       // ignore persist errors
     }
-  }, [hydrated, asideOpen, activePanels, expanded, calendarMode, anchorDate, selectedDate, notes, quickTasks, reminders]);
+  }, [hydrated, asideOpen, activePanels, expanded, calendarMode, anchorDate, selectedDate, noteDraft, savedNotes, editingNoteId, quickTasks, reminders]);
 
   const activeCount = activePanels.length;
 
