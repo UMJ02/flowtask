@@ -1,6 +1,5 @@
 import Link from 'next/link';
-import { ArrowRight, FolderKanban, LayoutGrid, ListChecks, Plus } from 'lucide-react';
-import { RecentActivity } from '@/components/dashboard/recent-activity';
+import { ArrowRight, FolderKanban, LayoutGrid, ListChecks, PanelsTopLeft, Plus } from 'lucide-react';
 import { TaskWorkspace } from '@/components/tasks/task-workspace';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -8,7 +7,6 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorState } from '@/components/ui/error-state';
 import { SectionHeader } from '@/components/ui/section-header';
 import { WorkspaceQuickActions } from '@/components/workspace/quick-actions';
-import { getRecentActivitySummary } from '@/lib/queries/activity';
 import { getClientDashboardItems } from '@/lib/queries/clients';
 import { getDashboardData } from '@/lib/queries/dashboard';
 import { getProjects } from '@/lib/queries/projects';
@@ -34,11 +32,10 @@ function formatDueDate(value?: string | null) {
 }
 
 export default async function WorkspacePage() {
-  const [data, tasks, projects, activitySummary, clientItems, intelligenceSummary] = await Promise.all([
+  const [data, tasks, projects, clientItems, intelligenceSummary] = await Promise.all([
     getDashboardData(),
     getTasks({}),
     getProjects({}),
-    getRecentActivitySummary(8),
     getClientDashboardItems(),
     getWorkspaceIntelligenceSummary(),
   ]);
@@ -90,6 +87,11 @@ export default async function WorkspacePage() {
             <Link href={projectNewRoute()}>
               <Button variant="secondary">
                 <FolderKanban className="h-4 w-4" /> Proyecto
+              </Button>
+            </Link>
+            <Link href="/app/dashboard?view=board">
+              <Button variant="ghost">
+                <PanelsTopLeft className="h-4 w-4" /> Pizarra
               </Button>
             </Link>
           </>
@@ -170,69 +172,54 @@ export default async function WorkspacePage() {
         </div>
       </div>
 
-      <div className="grid gap-4 xl:grid-cols-[1.15fr_0.85fr]">
+      <div className="grid gap-4 lg:grid-cols-2">
         <Card>
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Actividad reciente</p>
-              <h3 className="mt-2 text-xl font-bold text-slate-900">Lo último que pasó</h3>
-              <p className="mt-1 text-sm text-slate-500">Úsalo para retomar contexto sin abrir varias pantallas.</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Proyectos</p>
+              <h3 className="mt-2 text-xl font-bold text-slate-900">Activos ahora</h3>
             </div>
+            <Link href="/app/projects" className="text-sm font-semibold text-slate-700 hover:text-slate-900">Ver todos</Link>
           </div>
-          <div className="mt-4">
-            <RecentActivity summary={activitySummary} />
+          <div className="mt-4 space-y-3">
+            {topProjects.length ? topProjects.map((project: ProjectRow) => (
+              <Link key={project.id} href={projectDetailRoute(project.id)} className="block rounded-lg border border-slate-200 bg-slate-50/70 px-4 py-4 transition hover:border-emerald-200 hover:bg-emerald-50/70">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="line-clamp-2 text-sm font-semibold text-slate-900">{project.title}</p>
+                    <p className="mt-2 text-sm leading-5 text-slate-500">{project.clientName?.trim() || 'Sin cliente'} · {formatDueDate(project.dueDate)}</p>
+                  </div>
+                  <span className="inline-flex shrink-0 rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-700 ring-1 ring-slate-200">
+                    {project.status ?? 'Activo'}
+                  </span>
+                </div>
+              </Link>
+            )) : <p className="text-sm text-slate-500">Todavía no hay proyectos activos.</p>}
           </div>
         </Card>
 
-        <div className="space-y-4">
-          <Card>
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Proyectos</p>
-                <h3 className="mt-2 text-xl font-bold text-slate-900">Activos ahora</h3>
-              </div>
-              <Link href="/app/projects" className="text-sm font-semibold text-slate-700 hover:text-slate-900">Ver todos</Link>
+        <Card>
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Clientes</p>
+              <h3 className="mt-2 text-xl font-bold text-slate-900">Carga por cliente</h3>
             </div>
-            <div className="mt-4 space-y-3">
-              {topProjects.length ? topProjects.map((project: ProjectRow) => (
-                <Link key={project.id} href={projectDetailRoute(project.id)} className="block rounded-lg border border-slate-200 bg-slate-50/70 px-4 py-4 transition hover:border-emerald-200 hover:bg-emerald-50/70">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <p className="line-clamp-2 text-sm font-semibold text-slate-900">{project.title}</p>
-                      <p className="mt-2 text-sm leading-5 text-slate-500">{project.client_name?.trim() || 'Sin cliente'} · {formatDueDate(project.due_date)}</p>
-                    </div>
-                    <span className="inline-flex shrink-0 rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-700 ring-1 ring-slate-200">
-                      {project.status ?? 'Activo'}
-                    </span>
+            <Link href="/app/clients" className="text-sm font-semibold text-slate-700 hover:text-slate-900">Ver todos</Link>
+          </div>
+          <div className="mt-4 space-y-3">
+            {topClients.length ? topClients.map((client) => (
+              <Link key={client.id} href={`/app/clients/${client.id}`} className="block rounded-lg border border-slate-200 bg-slate-50/70 px-4 py-4 transition hover:border-emerald-200 hover:bg-emerald-50/70">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="line-clamp-2 text-sm font-semibold text-slate-900">{client.name}</p>
+                    <p className="mt-2 text-sm text-slate-500">{client.openProjects} proyectos activos · {client.overdueTasks} vencidas</p>
                   </div>
-                </Link>
-              )) : <p className="text-sm text-slate-500">Todavía no hay proyectos activos.</p>}
-            </div>
-          </Card>
-
-          <Card>
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Clientes</p>
-                <h3 className="mt-2 text-xl font-bold text-slate-900">Carga por cliente</h3>
-              </div>
-              <Link href="/app/clients" className="text-sm font-semibold text-slate-700 hover:text-slate-900">Ver todos</Link>
-            </div>
-            <div className="mt-4 space-y-3">
-              {topClients.length ? topClients.map((client) => (
-                <Link key={client.id} href={`/app/clients/${client.id}`} className="block rounded-lg border border-slate-200 bg-slate-50/70 px-4 py-4 transition hover:border-emerald-200 hover:bg-emerald-50/70">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <p className="line-clamp-2 text-sm font-semibold text-slate-900">{client.name}</p>
-                      <p className="mt-2 text-sm text-slate-500">{client.activeProjects} proyectos activos · {client.overdueTasksCount} vencidas</p>
-                    </div>
-                    <span className="inline-flex shrink-0 rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-700 ring-1 ring-slate-200">{client.openTasks} tareas</span>
-                  </div>
-                </Link>
-              )) : <p className="text-sm text-slate-500">Todavía no hay clientes con actividad.</p>}
-            </div>
-          </Card>
-        </div>
+                  <span className="inline-flex shrink-0 rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-700 ring-1 ring-slate-200">{client.openTasks} tareas</span>
+                </div>
+              </Link>
+            )) : <p className="text-sm text-slate-500">Todavía no hay clientes con actividad.</p>}
+          </div>
+        </Card>
       </div>
     </div>
   );
