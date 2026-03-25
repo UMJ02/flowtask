@@ -190,7 +190,7 @@ function CalendarPanel({
                   type="button"
                   onClick={() => onSelectDate(key)}
                   className={cn(
-                    'rounded-lg border p-2 text-left transition',
+                    'flex min-w-0 flex-col justify-start rounded-lg border p-3 text-left transition',
                     mode === 'week' ? 'min-h-[88px]' : 'min-h-[84px]',
                     isSelected
                       ? 'border-emerald-300 bg-emerald-50 ring-1 ring-emerald-200'
@@ -199,12 +199,12 @@ function CalendarPanel({
                         : 'border-slate-100 bg-slate-50/30 text-slate-400 hover:border-slate-200'
                   )}
                 >
-                  <div className="flex items-start justify-between gap-2">
+                  <div className="flex items-baseline gap-2 text-left">
                     <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500">{formatShortDay(day).slice(0,3)}</span>
                     <span className="text-xs font-semibold leading-none text-slate-700">{day.getDate()}</span>
                   </div>
                   {hasTask ? (
-                    <div className="mt-2 rounded-md border border-emerald-200 bg-emerald-50 px-2.5 py-1.5 text-[11px] font-medium leading-5 text-emerald-900">
+                    <div className="mt-3 rounded-md border border-emerald-200 bg-emerald-50 px-2.5 py-1.5 text-[11px] font-medium leading-5 text-emerald-900">
                       <span className="line-clamp-3 block">{itemsByDate[key]?.[0] ?? '1 tarea'}</span>
                     </div>
                   ) : null}
