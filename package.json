@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "6.3.1-board-premium-polish",
+  "version": "6.3.2-board-interactions",
   "private": true,
   "scripts": {
     "dev": "next dev",

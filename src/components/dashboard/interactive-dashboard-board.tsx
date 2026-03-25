@@ -1,8 +1,21 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type ComponentType } from 'react';
 import Link from 'next/link';
-import { CalendarDays, ChevronLeft, ChevronRight, FolderKanban, Grip, LayoutGrid, Menu, Plus, StickyNote, X } from 'lucide-react';
+import {
+  CalendarDays,
+  Check,
+  ChevronLeft,
+  ChevronRight,
+  FolderKanban,
+  Grip,
+  LayoutGrid,
+  LayoutPanelLeft,
+  Menu,
+  Plus,
+  StickyNote,
+  X,
+} from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils/classnames';
@@ -10,7 +23,21 @@ import { cn } from '@/lib/utils/classnames';
 type PanelKey = 'task' | 'projects' | 'calendar';
 type CalendarMode = 'week' | 'month';
 
-const PANEL_META: Record<PanelKey, { label: string; icon: React.ComponentType<{ className?: string }>; description: string }> = {
+type QuickTask = {
+  id: string;
+  title: string;
+  detail: string;
+};
+
+type Reminder = {
+  id: string;
+  label: string;
+  done: boolean;
+};
+
+const STORAGE_KEY = 'flowtask.board.v632';
+
+const PANEL_META: Record<PanelKey, { label: string; icon: ComponentType<{ className?: string }>; description: string }> = {
   task: { label: 'Tarea', icon: LayoutGrid, description: 'Abre un bloque para crear o revisar tareas.' },
   projects: { label: 'Proyectos', icon: FolderKanban, description: 'Mantén a mano el estado de los proyectos activos.' },
   calendar: { label: 'Calendario', icon: CalendarDays, description: 'Consulta tareas por fecha en semana o mes.' },
@@ -31,6 +58,14 @@ function formatShortDay(date: Date) {
 
 function formatMonthLabel(date: Date) {
   return new Intl.DateTimeFormat('es-CR', { month: 'long', year: 'numeric' }).format(date);
+}
+
+function formatLongDate(date: Date) {
+  return new Intl.DateTimeFormat('es-CR', { weekday: 'long', day: 'numeric', month: 'long' }).format(date);
+}
+
+function isoDate(date: Date) {
+  return date.toISOString().slice(0, 10);
 }
 
 function buildWeekDays(anchor: Date) {
@@ -55,15 +90,46 @@ function buildMonthDays(anchor: Date) {
   return days.slice(0, 35);
 }
 
-function CalendarPanel({ mode, anchorDate, onModeChange, onStep }: { mode: CalendarMode; anchorDate: Date; onModeChange: (mode: CalendarMode) => void; onStep: (dir: -1 | 1) => void; }) {
+function sampleCalendarItems() {
+  const today = new Date();
+  const plus = (n: number) => {
+    const d = new Date(today);
+    d.setDate(today.getDate() + n);
+    return isoDate(d);
+  };
+  return {
+    [plus(0)]: ['Revisión de avance · 10:00'],
+    [plus(1)]: ['Llamada con cliente · 14:00'],
+    [plus(3)]: ['Cierre de entregables · 09:30'],
+    [plus(7)]: ['Seguimiento semanal · 11:00'],
+  } as Record<string, string[]>;
+}
+
+function CalendarPanel({
+  mode,
+  anchorDate,
+  onModeChange,
+  onStep,
+  selectedDate,
+  onSelectDate,
+}: {
+  mode: CalendarMode;
+  anchorDate: Date;
+  onModeChange: (mode: CalendarMode) => void;
+  onStep: (dir: -1 | 1) => void;
+  selectedDate: string;
+  onSelectDate: (value: string) => void;
+}) {
   const days = mode === 'week' ? buildWeekDays(anchorDate) : buildMonthDays(anchorDate);
+  const itemsByDate = useMemo(() => sampleCalendarItems(), []);
+  const selectedItems = itemsByDate[selectedDate] ?? [];
 
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="text-sm font-semibold text-slate-900">Calendario</p>
-          <p className="text-xs text-slate-500">Vista {mode === 'week' ? 'quincenal' : 'mensual'} para revisar fechas sin salir del tablero.</p>
+          <p className="text-xs text-slate-500">Cambia entre una vista corta de 2 semanas o una lectura mensual.</p>
         </div>
         <div className="flex items-center gap-2">
           <div className="inline-flex rounded-lg border border-slate-200 bg-slate-50 p-1">
@@ -81,47 +147,74 @@ function CalendarPanel({ mode, anchorDate, onModeChange, onStep }: { mode: Calen
               </button>
             ))}
           </div>
-          <button type="button" onClick={() => onStep(-1)} className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50">
+          <button type="button" onClick={() => onStep(-1)} className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-700 transition hover:-translate-y-0.5 hover:bg-slate-50">
             <ChevronLeft className="h-4 w-4" />
           </button>
-          <button type="button" onClick={() => onStep(1)} className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50">
+          <button type="button" onClick={() => onStep(1)} className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-700 transition hover:-translate-y-0.5 hover:bg-slate-50">
             <ChevronRight className="h-4 w-4" />
           </button>
         </div>
       </div>
 
-      <div className="rounded-xl border border-slate-200 bg-white p-3">
-        <div className="mb-3 flex items-center justify-between gap-2">
-          <p className="text-sm font-semibold capitalize text-slate-900">{formatMonthLabel(anchorDate)}</p>
-          <p className="text-xs text-slate-500">Mira lo que viene esta semana o cambia al mes.</p>
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_248px]">
+        <div className="rounded-xl border border-slate-200 bg-white p-3">
+          <div className="mb-3 flex items-center justify-between gap-2">
+            <p className="text-sm font-semibold capitalize text-slate-900">{formatMonthLabel(anchorDate)}</p>
+            <p className="text-xs text-slate-500">Pulsa un día para ver su agenda.</p>
+          </div>
+
+          <div className="grid grid-cols-7 gap-2">
+            {days.map((day, index) => {
+              const inMonth = day.getMonth() === anchorDate.getMonth();
+              const key = isoDate(day);
+              const hasTask = Boolean(itemsByDate[key]?.length) || index === (mode === 'week' ? 3 : 9);
+              const isSelected = key === selectedDate;
+              return (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => onSelectDate(key)}
+                  className={cn(
+                    'rounded-lg border p-2 text-left transition',
+                    mode === 'week' ? 'min-h-[78px]' : 'min-h-[70px]',
+                    isSelected
+                      ? 'border-emerald-300 bg-emerald-50 ring-1 ring-emerald-200'
+                      : inMonth
+                        ? 'border-slate-200 bg-slate-50/70 hover:border-slate-300 hover:bg-white'
+                        : 'border-slate-100 bg-slate-50/30 text-slate-400 hover:border-slate-200'
+                  )}
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500">{formatShortDay(day)}</span>
+                    <span className="text-xs font-semibold text-slate-700">{day.getDate()}</span>
+                  </div>
+                  {hasTask ? (
+                    <div className="mt-2 rounded-md border border-emerald-200 bg-emerald-50 px-2 py-1 text-[10px] font-medium leading-4 text-emerald-900">
+                      {itemsByDate[key]?.[0] ?? '1 tarea'}
+                    </div>
+                  ) : null}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
-        <div className={cn('grid gap-2', mode === 'week' ? 'grid-cols-7' : 'grid-cols-7')}>
-          {days.map((day, index) => {
-            const inMonth = day.getMonth() === anchorDate.getMonth();
-            const hasTask = index === (mode === 'week' ? 3 : 9);
-            return (
-              <div
-                key={day.toISOString()}
-                className={cn(
-                  'rounded-lg border p-2',
-                  mode === 'week' ? 'min-h-[84px]' : 'min-h-[76px]',
-                  inMonth ? 'border-slate-200 bg-slate-50/70' : 'border-slate-100 bg-slate-50/30 text-slate-400'
-                )}
-              >
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500">{formatShortDay(day)}</span>
-                  <span className="text-xs font-semibold text-slate-700">{day.getDate()}</span>
+        <div className="rounded-xl border border-slate-200 bg-slate-50/80 p-4">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Agenda del día</p>
+          <h4 className="mt-2 text-base font-semibold text-slate-900 capitalize">{formatLongDate(new Date(selectedDate))}</h4>
+          <div className="mt-4 space-y-3">
+            {selectedItems.length ? (
+              selectedItems.map((item) => (
+                <div key={item} className="rounded-lg border border-slate-200 bg-white px-3 py-3 text-sm text-slate-700 shadow-sm">
+                  {item}
                 </div>
-                {hasTask ? (
-                  <div className="mt-2 rounded-md border border-emerald-200 bg-emerald-50 px-2 py-1.5 text-[11px] leading-4 text-emerald-900">
-                    <p className="font-semibold">Revisión de avance</p>
-                    <p className="truncate">Hoy · 2 pendientes</p>
-                  </div>
-                ) : null}
+              ))
+            ) : (
+              <div className="rounded-lg border border-dashed border-slate-200 bg-white px-3 py-4 text-sm text-slate-500">
+                No hay tareas programadas para esta fecha.
               </div>
-            );
-          })}
+            )}
+          </div>
         </div>
       </div>
     </div>
@@ -129,14 +222,67 @@ function CalendarPanel({ mode, anchorDate, onModeChange, onStep }: { mode: Calen
 }
 
 export function InteractiveDashboardBoard() {
+  const [hydrated, setHydrated] = useState(false);
   const [asideOpen, setAsideOpen] = useState(true);
   const [activePanels, setActivePanels] = useState<PanelKey[]>(['task', 'projects', 'calendar']);
   const [expanded, setExpanded] = useState<Record<PanelKey, boolean>>({ task: true, projects: false, calendar: true });
   const [calendarMode, setCalendarMode] = useState<CalendarMode>('week');
   const [anchorDate, setAnchorDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(isoDate(new Date()));
   const [notes, setNotes] = useState('');
+  const [taskDraft, setTaskDraft] = useState({ title: '', detail: '' });
+  const [quickTasks, setQuickTasks] = useState<QuickTask[]>([]);
+  const [reminders, setReminders] = useState<Reminder[]>([]);
+  const [newReminder, setNewReminder] = useState('');
 
-  const reminders = useMemo(() => [], [] as string[]);
+  useEffect(() => {
+    try {
+      const raw = window.localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (typeof parsed.asideOpen === 'boolean') setAsideOpen(parsed.asideOpen);
+        if (Array.isArray(parsed.activePanels)) setActivePanels(parsed.activePanels);
+        if (parsed.expanded) setExpanded(parsed.expanded);
+        if (parsed.calendarMode === 'week' || parsed.calendarMode === 'month') setCalendarMode(parsed.calendarMode);
+        if (parsed.anchorDate) setAnchorDate(new Date(parsed.anchorDate));
+        if (parsed.selectedDate) setSelectedDate(parsed.selectedDate);
+        if (typeof parsed.notes === 'string') setNotes(parsed.notes);
+        if (Array.isArray(parsed.quickTasks)) setQuickTasks(parsed.quickTasks);
+        if (Array.isArray(parsed.reminders)) setReminders(parsed.reminders);
+      } else {
+        setReminders([
+          { id: 'r1', label: 'Revisar entregables del día', done: false },
+          { id: 'r2', label: 'Confirmar avance con el cliente', done: false },
+        ]);
+      }
+    } catch {
+      // ignore restore errors
+    }
+    setHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    try {
+      window.localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({
+          asideOpen,
+          activePanels,
+          expanded,
+          calendarMode,
+          anchorDate: anchorDate.toISOString(),
+          selectedDate,
+          notes,
+          quickTasks,
+          reminders,
+        })
+      );
+    } catch {
+      // ignore persist errors
+    }
+  }, [hydrated, asideOpen, activePanels, expanded, calendarMode, anchorDate, selectedDate, notes, quickTasks, reminders]);
+
   const activeCount = activePanels.length;
 
   function removePanel(key: PanelKey) {
@@ -160,6 +306,27 @@ export function InteractiveDashboardBoard() {
     });
   }
 
+  function addQuickTask() {
+    const title = taskDraft.title.trim();
+    if (!title) return;
+    setQuickTasks((current) => [
+      { id: crypto.randomUUID(), title, detail: taskDraft.detail.trim() || 'Sin detalle adicional' },
+      ...current,
+    ].slice(0, 4));
+    setTaskDraft({ title: '', detail: '' });
+  }
+
+  function addReminder() {
+    const label = newReminder.trim();
+    if (!label) return;
+    setReminders((current) => [{ id: crypto.randomUUID(), label, done: false }, ...current]);
+    setNewReminder('');
+  }
+
+  function toggleReminder(id: string) {
+    setReminders((current) => current.map((item) => (item.id === id ? { ...item, done: !item.done } : item)));
+  }
+
   return (
     <div className="space-y-4">
       <Card className="border-slate-200 bg-white px-5 py-5 shadow-sm">
@@ -167,17 +334,17 @@ export function InteractiveDashboardBoard() {
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-600">Modo pizarra</p>
             <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-950">Tablero visual premium</h2>
-            <p className="mt-1 max-w-2xl text-sm text-slate-500">Mueve paneles, revisa fechas y toma notas sin salir del dashboard. Todo en un entorno más limpio y visual.</p>
+            <p className="mt-1 max-w-2xl text-sm text-slate-500">Mueve paneles, revisa fechas, guarda notas y deja listo lo importante en un espacio más visual.</p>
             <div className="mt-3 flex flex-wrap gap-2">
               <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-600">{activeCount} paneles activos</span>
-              <span className="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">Vista blanca opcional</span>
+              <span className="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">Interacciones guardadas</span>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <button type="button" onClick={() => setAsideOpen((v) => !v)} className="inline-flex h-11 items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 hover:bg-slate-50">
+            <button type="button" onClick={() => setAsideOpen((v) => !v)} className="inline-flex h-11 items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:-translate-y-0.5 hover:bg-slate-50">
               <Menu className="h-4 w-4" /> {asideOpen ? 'Ocultar paneles' : 'Mostrar paneles'}
             </button>
-            <Link href="/app/dashboard" className="inline-flex h-11 items-center rounded-lg border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 hover:bg-slate-50">
+            <Link href="/app/dashboard" className="inline-flex h-11 items-center rounded-lg border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:-translate-y-0.5 hover:bg-slate-50">
               Volver al dashboard
             </Link>
           </div>
@@ -203,10 +370,10 @@ export function InteractiveDashboardBoard() {
                     onClick={() => (active ? removePanel(key) : restorePanel(key))}
                     className={cn(
                       'flex w-full items-start gap-3 rounded-xl border px-3 py-3 text-left transition',
-                      active ? 'border-emerald-200 bg-emerald-50/70' : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50'
+                      active ? 'border-emerald-200 bg-emerald-50/70 shadow-sm' : 'border-slate-200 bg-white hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-50'
                     )}
                   >
-                    <span className={cn('inline-flex h-10 w-10 items-center justify-center rounded-lg', active ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-700')}>
+                    <span className={cn('inline-flex h-10 w-10 items-center justify-center rounded-lg transition', active ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-700')}>
                       <Icon className="h-4 w-4" />
                     </span>
                     <span className="min-w-0">
@@ -227,59 +394,83 @@ export function InteractiveDashboardBoard() {
                 <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-white text-slate-700 shadow-sm"><LayoutPanelLeft className="h-4 w-4" /></span>
                 <div>
                   <p className="text-sm font-semibold text-slate-900">Organiza tu tablero</p>
-                  <p className="text-xs text-slate-500">Quita paneles, vuelve a activarlos desde el lateral y mantén solo lo que te sirve hoy.</p>
+                  <p className="text-xs text-slate-500">Quita paneles, vuelve a activarlos desde el lateral y deja solo lo que usarás hoy.</p>
                 </div>
               </div>
-              <span className="inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-600">Arrastre visual preparado</span>
+              <span className="inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-600">Estado guardado automáticamente</span>
             </div>
             <div className="grid gap-4 xl:grid-cols-2">
               {activePanels.includes('task') ? (
-                <div className="rounded-xl border border-emerald-200 bg-white p-4 shadow-sm">
+                <div className="rounded-xl border border-emerald-200 bg-white p-4 shadow-sm transition hover:shadow-md">
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Panel</p>
                       <h3 className="mt-1 text-2xl font-bold text-slate-950">Tarea</h3>
                     </div>
                     <div className="flex items-center gap-2">
-                      <button type="button" onClick={() => removePanel('task')} className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 hover:bg-slate-50"><X className="h-4 w-4" /></button>
-                      <button type="button" className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-emerald-200 bg-white text-emerald-600 hover:bg-emerald-50"><Grip className="h-4 w-4" /></button>
-                      <button type="button" onClick={() => toggleExpanded('task')} className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500 text-white hover:bg-emerald-400"><Plus className={cn('h-4 w-4 transition-transform', expanded.task ? 'rotate-45' : '')} /></button>
+                      <button type="button" onClick={() => removePanel('task')} className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition hover:-translate-y-0.5 hover:bg-slate-50"><X className="h-4 w-4" /></button>
+                      <button type="button" className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-emerald-200 bg-white text-emerald-600 transition hover:-translate-y-0.5 hover:bg-emerald-50"><Grip className="h-4 w-4" /></button>
+                      <button type="button" onClick={() => toggleExpanded('task')} className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500 text-white transition hover:-translate-y-0.5 hover:bg-emerald-400"><Plus className={cn('h-4 w-4 transition-transform', expanded.task ? 'rotate-45' : '')} /></button>
                     </div>
                   </div>
-                  <p className="mt-3 text-sm leading-6 text-slate-500">Crea una tarea rápida y úsala como bloque activo dentro de la pizarra.</p>
+                  <p className="mt-3 text-sm leading-6 text-slate-500">Crea una tarea rápida y déjala lista como acción de hoy.</p>
                   {expanded.task ? (
-                    <div className="mt-4 grid gap-3">
-                      <div className="h-12 rounded-full border border-emerald-200 bg-white" />
-                      <div className="h-12 rounded-full border border-emerald-200 bg-white" />
-                      <div className="h-12 rounded-full border border-emerald-200 bg-white" />
+                    <div className="mt-4 space-y-3">
+                      <input
+                        value={taskDraft.title}
+                        onChange={(event) => setTaskDraft((current) => ({ ...current, title: event.target.value }))}
+                        placeholder="Nombre de la tarea"
+                        className="h-12 w-full rounded-full border border-emerald-200 bg-white px-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-emerald-300"
+                      />
+                      <input
+                        value={taskDraft.detail}
+                        onChange={(event) => setTaskDraft((current) => ({ ...current, detail: event.target.value }))}
+                        placeholder="Detalle rápido"
+                        className="h-12 w-full rounded-full border border-emerald-200 bg-white px-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-emerald-300"
+                      />
                       <div className="flex justify-end">
-                        <Button className="h-10">Crear tarea</Button>
+                        <Button className="h-10" onClick={addQuickTask}>Crear tarea</Button>
                       </div>
+                      {quickTasks.length ? (
+                        <div className="grid gap-2">
+                          {quickTasks.map((task) => (
+                            <div key={task.id} className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-3">
+                              <p className="text-sm font-semibold text-slate-900">{task.title}</p>
+                              <p className="mt-1 text-xs text-slate-500">{task.detail}</p>
+                            </div>
+                          ))}
+                        </div>
+                      ) : null}
                     </div>
                   ) : null}
                 </div>
               ) : null}
 
               {activePanels.includes('projects') ? (
-                <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+                <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-md">
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Panel</p>
                       <h3 className="mt-1 text-2xl font-bold text-slate-950">Proyectos</h3>
                     </div>
                     <div className="flex items-center gap-2">
-                      <button type="button" onClick={() => removePanel('projects')} className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 hover:bg-slate-50"><X className="h-4 w-4" /></button>
-                      <button type="button" className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 hover:bg-slate-50"><Grip className="h-4 w-4" /></button>
-                      <button type="button" onClick={() => toggleExpanded('projects')} className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500 text-white hover:bg-emerald-400"><Plus className={cn('h-4 w-4 transition-transform', expanded.projects ? 'rotate-45' : '')} /></button>
+                      <button type="button" onClick={() => removePanel('projects')} className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition hover:-translate-y-0.5 hover:bg-slate-50"><X className="h-4 w-4" /></button>
+                      <button type="button" className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition hover:-translate-y-0.5 hover:bg-slate-50"><Grip className="h-4 w-4" /></button>
+                      <button type="button" onClick={() => toggleExpanded('projects')} className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500 text-white transition hover:-translate-y-0.5 hover:bg-emerald-400"><Plus className={cn('h-4 w-4 transition-transform', expanded.projects ? 'rotate-45' : '')} /></button>
                     </div>
                   </div>
-                  <p className="mt-3 text-sm leading-6 text-slate-500">Deja a mano los proyectos que quieres mover primero.</p>
+                  <p className="mt-3 text-sm leading-6 text-slate-500">Ten a mano los frentes que quieres mover primero.</p>
                   {expanded.projects ? (
                     <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                      {['Lanzamiento sitio web', 'Campaña Q2', 'Ajustes del catálogo', 'Revisión interna'].map((title) => (
-                        <div key={title} className="rounded-lg border border-slate-200 bg-white px-4 py-3">
-                          <p className="text-sm font-semibold text-slate-900">{title}</p>
-                          <p className="mt-1 text-xs text-slate-500">Activo · seguimiento pendiente</p>
+                      {[
+                        { title: 'Lanzamiento sitio web', state: 'En curso' },
+                        { title: 'Campaña Q2', state: 'Pendiente de revisión' },
+                        { title: 'Ajustes del catálogo', state: 'Necesita aprobación' },
+                        { title: 'Revisión interna', state: 'Bloqueado' },
+                      ].map((project) => (
+                        <div key={project.title} className="rounded-lg border border-slate-200 bg-white px-4 py-3 transition hover:-translate-y-0.5 hover:shadow-sm">
+                          <p className="text-sm font-semibold text-slate-900">{project.title}</p>
+                          <p className="mt-1 text-xs text-slate-500">{project.state}</p>
                         </div>
                       ))}
                     </div>
@@ -289,33 +480,31 @@ export function InteractiveDashboardBoard() {
             </div>
 
             {activePanels.includes('calendar') ? (
-              <div className="mt-4 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+              <div className="mt-4 rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-md">
                 <div className="mb-4 flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-3">
-                    <div>
-                      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Panel</p>
-                      <h3 className="mt-1 text-2xl font-bold text-slate-950">Calendario</h3>
-                    </div>
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Panel</p>
+                    <h3 className="mt-1 text-2xl font-bold text-slate-950">Calendario</h3>
                   </div>
                   <div className="flex items-center gap-2">
-                    <button type="button" onClick={() => removePanel('calendar')} className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 hover:bg-slate-50"><X className="h-4 w-4" /></button>
-                    <button type="button" className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 hover:bg-slate-50"><Grip className="h-4 w-4" /></button>
+                    <button type="button" onClick={() => removePanel('calendar')} className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition hover:-translate-y-0.5 hover:bg-slate-50"><X className="h-4 w-4" /></button>
+                    <button type="button" className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition hover:-translate-y-0.5 hover:bg-slate-50"><Grip className="h-4 w-4" /></button>
                   </div>
                 </div>
-                <CalendarPanel mode={calendarMode} anchorDate={anchorDate} onModeChange={setCalendarMode} onStep={stepCalendar} />
+                <CalendarPanel mode={calendarMode} anchorDate={anchorDate} onModeChange={setCalendarMode} onStep={stepCalendar} selectedDate={selectedDate} onSelectDate={setSelectedDate} />
               </div>
             ) : null}
           </Card>
 
           <div className="grid gap-4 xl:grid-cols-[1.35fr_0.65fr]">
-            <Card className="border-slate-200 bg-white p-4 md:p-5">
+            <Card className="border-slate-200 bg-white p-4 md:p-5 transition hover:shadow-md">
               <div className="flex items-center gap-3">
                 <span className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
                   <StickyNote className="h-5 w-5" />
                 </span>
                 <div>
                   <p className="text-lg font-semibold text-slate-900">Notas rápidas</p>
-                  <p className="text-sm text-slate-500">Guarda un recordatorio o una idea sin salir del tablero.</p>
+                  <p className="text-sm text-slate-500">Guarda una idea, una instrucción o un recordatorio corto.</p>
                 </div>
               </div>
               <textarea
@@ -324,16 +513,36 @@ export function InteractiveDashboardBoard() {
                 placeholder="Escribe una nota o recordatorio"
                 className="mt-4 min-h-[160px] w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm leading-6 text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-emerald-300 focus:bg-white"
               />
+              <div className="mt-3 flex items-center justify-between gap-3 text-xs text-slate-500">
+                <span>{notes.trim() ? 'Guardado automáticamente' : 'Empieza escribiendo para dejar un recordatorio'}</span>
+                <button type="button" onClick={() => setNotes('')} className="font-medium text-slate-600 hover:text-slate-900">Limpiar nota</button>
+              </div>
             </Card>
 
-            <Card className="border-slate-200 bg-white p-4 md:p-5">
+            <Card className="border-slate-200 bg-white p-4 md:p-5 transition hover:shadow-md">
               <div>
                 <p className="text-lg font-semibold text-slate-900">Lo que sigue hoy</p>
-                <p className="mt-1 text-sm text-slate-500">Ten a la vista los avisos que conviene revisar durante el día.</p>
+                <p className="mt-1 text-sm text-slate-500">Marca lo resuelto o agrega un aviso rápido para no perder el foco.</p>
+              </div>
+              <div className="mt-4 flex gap-2">
+                <input
+                  value={newReminder}
+                  onChange={(event) => setNewReminder(event.target.value)}
+                  placeholder="Agregar aviso"
+                  className="h-10 flex-1 rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-emerald-300"
+                />
+                <button type="button" onClick={addReminder} className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-500 text-white transition hover:-translate-y-0.5 hover:bg-emerald-400">
+                  <Plus className="h-4 w-4" />
+                </button>
               </div>
               <div className="mt-4 space-y-3">
                 {reminders.length ? reminders.map((item) => (
-                  <div key={item} className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-3 text-sm text-slate-700">{item}</div>
+                  <button key={item.id} type="button" onClick={() => toggleReminder(item.id)} className={cn('flex w-full items-start gap-3 rounded-lg border px-3 py-3 text-left transition', item.done ? 'border-emerald-200 bg-emerald-50 text-emerald-900' : 'border-slate-200 bg-slate-50 text-slate-700 hover:bg-white')}>
+                    <span className={cn('mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-full border', item.done ? 'border-emerald-500 bg-emerald-500 text-white' : 'border-slate-300 bg-white text-transparent')}>
+                      <Check className="h-3 w-3" />
+                    </span>
+                    <span className={cn('text-sm', item.done && 'line-through opacity-80')}>{item.label}</span>
+                  </button>
                 )) : (
                   <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50/80 px-4 py-5 text-sm text-slate-500">Todavía no tienes avisos pendientes para hoy.</div>
                 )}
