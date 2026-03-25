@@ -93,7 +93,7 @@ function CalendarPanel({ mode, anchorDate, onModeChange, onStep }: { mode: Calen
       <div className="rounded-xl border border-slate-200 bg-white p-3">
         <div className="mb-3 flex items-center justify-between gap-2">
           <p className="text-sm font-semibold capitalize text-slate-900">{formatMonthLabel(anchorDate)}</p>
-          <p className="text-xs text-slate-500">Tus tareas aparecen por fecha.</p>
+          <p className="text-xs text-slate-500">Mira lo que viene esta semana o cambia al mes.</p>
         </div>
 
         <div className={cn('grid gap-2', mode === 'week' ? 'grid-cols-7' : 'grid-cols-7')}>
@@ -137,6 +137,7 @@ export function InteractiveDashboardBoard() {
   const [notes, setNotes] = useState('');
 
   const reminders = useMemo(() => [], [] as string[]);
+  const activeCount = activePanels.length;
 
   function removePanel(key: PanelKey) {
     setActivePanels((current) => current.filter((item) => item !== key));
@@ -161,12 +162,16 @@ export function InteractiveDashboardBoard() {
 
   return (
     <div className="space-y-4">
-      <Card className="border-slate-200 bg-white px-5 py-5">
+      <Card className="border-slate-200 bg-white px-5 py-5 shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-600">Dashboard visual</p>
-            <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-950">Pizarra blanca opcional</h2>
-            <p className="mt-1 max-w-2xl text-sm text-slate-500">Organiza paneles, revisa fechas y deja recordatorios en un entorno gráfico más visual.</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-600">Modo pizarra</p>
+            <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-950">Tablero visual premium</h2>
+            <p className="mt-1 max-w-2xl text-sm text-slate-500">Mueve paneles, revisa fechas y toma notas sin salir del dashboard. Todo en un entorno más limpio y visual.</p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-600">{activeCount} paneles activos</span>
+              <span className="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">Vista blanca opcional</span>
+            </div>
           </div>
           <div className="flex items-center gap-2">
             <button type="button" onClick={() => setAsideOpen((v) => !v)} className="inline-flex h-11 items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 hover:bg-slate-50">
@@ -181,11 +186,11 @@ export function InteractiveDashboardBoard() {
 
       <div className={cn('grid gap-4', asideOpen ? 'xl:grid-cols-[220px_minmax(0,1fr)]' : 'xl:grid-cols-[minmax(0,1fr)]')}>
         {asideOpen ? (
-          <Card className="border-slate-200 bg-white p-4">
+          <Card className="border-slate-200 bg-white p-4 shadow-sm">
             <div className="space-y-3">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Paneles</p>
-                <p className="mt-1 text-sm text-slate-500">Activa o devuelve módulos al tablero.</p>
+                <p className="mt-1 text-sm text-slate-500">Activa, quita o vuelve a colocar módulos en la pizarra.</p>
               </div>
               {(['task', 'projects', 'calendar'] as PanelKey[]).map((key) => {
                 const meta = PANEL_META[key];
@@ -216,10 +221,20 @@ export function InteractiveDashboardBoard() {
         ) : null}
 
         <div className="space-y-4">
-          <Card className="border-slate-200 bg-white p-4 md:p-5">
+          <Card className="border-slate-200 bg-white p-4 md:p-5 shadow-sm">
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50/80 px-4 py-3">
+              <div className="flex items-center gap-3">
+                <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-white text-slate-700 shadow-sm"><LayoutPanelLeft className="h-4 w-4" /></span>
+                <div>
+                  <p className="text-sm font-semibold text-slate-900">Organiza tu tablero</p>
+                  <p className="text-xs text-slate-500">Quita paneles, vuelve a activarlos desde el lateral y mantén solo lo que te sirve hoy.</p>
+                </div>
+              </div>
+              <span className="inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-600">Arrastre visual preparado</span>
+            </div>
             <div className="grid gap-4 xl:grid-cols-2">
               {activePanels.includes('task') ? (
-                <div className="rounded-xl border border-emerald-200 bg-emerald-50/40 p-4">
+                <div className="rounded-xl border border-emerald-200 bg-white p-4 shadow-sm">
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Panel</p>
@@ -231,7 +246,7 @@ export function InteractiveDashboardBoard() {
                       <button type="button" onClick={() => toggleExpanded('task')} className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500 text-white hover:bg-emerald-400"><Plus className={cn('h-4 w-4 transition-transform', expanded.task ? 'rotate-45' : '')} /></button>
                     </div>
                   </div>
-                  <p className="mt-3 text-sm leading-6 text-slate-500">Ábrelo para ver y editar este bloque dentro del tablero.</p>
+                  <p className="mt-3 text-sm leading-6 text-slate-500">Crea una tarea rápida y úsala como bloque activo dentro de la pizarra.</p>
                   {expanded.task ? (
                     <div className="mt-4 grid gap-3">
                       <div className="h-12 rounded-full border border-emerald-200 bg-white" />
@@ -246,7 +261,7 @@ export function InteractiveDashboardBoard() {
               ) : null}
 
               {activePanels.includes('projects') ? (
-                <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-4">
+                <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Panel</p>
@@ -258,7 +273,7 @@ export function InteractiveDashboardBoard() {
                       <button type="button" onClick={() => toggleExpanded('projects')} className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500 text-white hover:bg-emerald-400"><Plus className={cn('h-4 w-4 transition-transform', expanded.projects ? 'rotate-45' : '')} /></button>
                     </div>
                   </div>
-                  <p className="mt-3 text-sm leading-6 text-slate-500">Mantén visibles los proyectos que quieres mover primero.</p>
+                  <p className="mt-3 text-sm leading-6 text-slate-500">Deja a mano los proyectos que quieres mover primero.</p>
                   {expanded.projects ? (
                     <div className="mt-4 grid gap-3 sm:grid-cols-2">
                       {['Lanzamiento sitio web', 'Campaña Q2', 'Ajustes del catálogo', 'Revisión interna'].map((title) => (
@@ -274,7 +289,7 @@ export function InteractiveDashboardBoard() {
             </div>
 
             {activePanels.includes('calendar') ? (
-              <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50/60 p-4">
+              <div className="mt-4 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
                 <div className="mb-4 flex items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
                     <div>
@@ -292,35 +307,35 @@ export function InteractiveDashboardBoard() {
             ) : null}
           </Card>
 
-          <div className="grid gap-4 xl:grid-cols-[1.25fr_0.75fr]">
+          <div className="grid gap-4 xl:grid-cols-[1.35fr_0.65fr]">
             <Card className="border-slate-200 bg-white p-4 md:p-5">
               <div className="flex items-center gap-3">
                 <span className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
                   <StickyNote className="h-5 w-5" />
                 </span>
                 <div>
-                  <p className="text-lg font-semibold text-slate-900">Notas</p>
-                  <p className="text-sm text-slate-500">Escribe una nota o recordatorio rápido.</p>
+                  <p className="text-lg font-semibold text-slate-900">Notas rápidas</p>
+                  <p className="text-sm text-slate-500">Guarda un recordatorio o una idea sin salir del tablero.</p>
                 </div>
               </div>
               <textarea
                 value={notes}
                 onChange={(event) => setNotes(event.target.value)}
                 placeholder="Escribe una nota o recordatorio"
-                className="mt-4 min-h-[140px] w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-emerald-300 focus:bg-white"
+                className="mt-4 min-h-[160px] w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm leading-6 text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-emerald-300 focus:bg-white"
               />
             </Card>
 
             <Card className="border-slate-200 bg-white p-4 md:p-5">
               <div>
-                <p className="text-lg font-semibold text-slate-900">Recordatorios del día</p>
-                <p className="mt-1 text-sm text-slate-500">Lo próximo que conviene revisar hoy.</p>
+                <p className="text-lg font-semibold text-slate-900">Lo que sigue hoy</p>
+                <p className="mt-1 text-sm text-slate-500">Ten a la vista los avisos que conviene revisar durante el día.</p>
               </div>
               <div className="mt-4 space-y-3">
                 {reminders.length ? reminders.map((item) => (
                   <div key={item} className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-3 text-sm text-slate-700">{item}</div>
                 )) : (
-                  <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-4 text-sm text-slate-500">Todavía no hay recordatorios para hoy.</div>
+                  <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50/80 px-4 py-5 text-sm text-slate-500">Todavía no tienes avisos pendientes para hoy.</div>
                 )}
               </div>
             </Card>

@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "6.3.0-board-layout-fix",
+  "version": "6.3.1-board-premium-polish",
   "private": true,
   "scripts": {
     "dev": "next dev",
