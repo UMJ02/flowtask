@@ -25,7 +25,7 @@ import type { ProjectSummary } from "@/types/project";
 import type { TaskSummary } from "@/types/task";
 
 type PanelId = "task" | "projects" | "calendar";
-type CalendarMode = "week" | "month";
+type CalendarMode = "fortnight" | "month";
 
 type PanelState = {
   id: PanelId;
@@ -71,12 +71,12 @@ function buildMonthDays(baseDate: Date) {
   });
 }
 
-function buildWeekDays(baseDate: Date) {
+function buildFortnightDays(baseDate: Date) {
   const current = new Date(baseDate);
   const weekday = (current.getDay() + 6) % 7;
   const start = new Date(current);
   start.setDate(current.getDate() - weekday);
-  return Array.from({ length: 7 }, (_, index) => {
+  return Array.from({ length: 14 }, (_, index) => {
     const day = new Date(start);
     day.setDate(start.getDate() + index);
     return day;
@@ -115,14 +115,14 @@ export function InteractiveDashboardBoard({
   const [panels, setPanels] = useState<PanelState[]>(initialPanels);
   const [activePanel, setActivePanel] = useState<PanelId>("task");
   const [notes, setNotes] = useState("");
-  const [calendarMode, setCalendarMode] = useState<CalendarMode>("week");
+  const [calendarMode, setCalendarMode] = useState<CalendarMode>("fortnight");
   const [calendarCursor, setCalendarCursor] = useState(() => new Date());
   const canvasRef = useRef<HTMLDivElement | null>(null);
   const dragRef = useRef<{ id: PanelId; offsetX: number; offsetY: number } | null>(null);
 
   const monthDays = useMemo(() => buildMonthDays(calendarCursor), [calendarCursor]);
-  const weekDays = useMemo(() => buildWeekDays(calendarCursor), [calendarCursor]);
-  const visibleCalendarDays = calendarMode === "week" ? weekDays : monthDays;
+  const fortnightDays = useMemo(() => buildFortnightDays(calendarCursor), [calendarCursor]);
+  const visibleCalendarDays = calendarMode === "fortnight" ? fortnightDays : monthDays;
 
   const calendarMap = useMemo(() => {
     const map = new Map<string, TaskSummary[]>();
@@ -131,7 +131,7 @@ export function InteractiveDashboardBoard({
       if (!key) return;
       const list = map.get(key) ?? [];
       list.push(task);
-      map.set(key, list.slice(0, calendarMode === "week" ? 3 : 1));
+      map.set(key, list.slice(0, calendarMode === "fortnight" ? 2 : 1));
     });
     return map;
   }, [tasks, calendarMode]);
@@ -149,7 +149,7 @@ export function InteractiveDashboardBoard({
       const canvas = canvasRef.current;
       if (!drag || !canvas) return;
       const rect = canvas.getBoundingClientRect();
-      const panelWidth = drag.id === "calendar" ? 500 : 360;
+      const panelWidth = drag.id === "calendar" ? 460 : 360;
       const nextX = Math.max(16, Math.min(rect.width - panelWidth - 16, event.clientX - rect.left - drag.offsetX));
       const nextY = Math.max(16, Math.min(rect.height - 260, event.clientY - rect.top - drag.offsetY));
       setPanels((current) => current.map((panel) => panel.id === drag.id ? { ...panel, x: nextX, y: nextY } : panel));
@@ -184,7 +184,7 @@ export function InteractiveDashboardBoard({
   function shiftCalendar(direction: "prev" | "next") {
     setCalendarCursor((current) => {
       const next = new Date(current);
-      if (calendarMode === "week") {
+      if (calendarMode === "fortnight") {
         next.setDate(current.getDate() + (direction === "next" ? 7 : -7));
       } else {
         next.setMonth(current.getMonth() + (direction === "next" ? 1 : -1));
@@ -297,7 +297,7 @@ export function InteractiveDashboardBoard({
                   data-panel-id={panel.id}
                   className={cn(
                     "absolute rounded-[24px] border border-emerald-200/80 bg-white shadow-[0_16px_32px_rgba(15,23,42,0.06)]",
-                    panel.id === "calendar" ? "w-[500px]" : "w-[360px]",
+                    panel.id === "calendar" ? "w-[460px]" : "w-[360px]",
                     activePanel === panel.id && "ring-2 ring-emerald-200"
                   )}
                   style={{ left: panel.x, top: panel.y }}
@@ -362,14 +362,14 @@ export function InteractiveDashboardBoard({
                             <div className="flex items-center gap-2">
                               <button type="button" onClick={() => shiftCalendar("prev")} className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200"><ChevronLeft className="h-4 w-4" /></button>
                               <div>
-                                <p className="font-medium text-slate-900">{calendarMode === "week" ? formatWeekRangeLabel(weekDays) : formatMonthLabel(calendarCursor)}</p>
-                                <p className="text-xs text-slate-500">{calendarMode === "week" ? "Vista semanal" : "Vista mensual"}</p>
+                                <p className="font-medium text-slate-900">{calendarMode === "fortnight" ? formatWeekRangeLabel(fortnightDays) : formatMonthLabel(calendarCursor)}</p>
+                                <p className="text-xs text-slate-500">{calendarMode === "fortnight" ? "Próximas dos semanas" : "Vista mensual compacta"}</p>
                               </div>
                               <button type="button" onClick={() => shiftCalendar("next")} className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200"><ChevronRight className="h-4 w-4" /></button>
                             </div>
                             <div className="inline-flex rounded-xl border border-slate-200 bg-slate-50 p-1">
                               {([
-                                { id: "week", label: "Semana" },
+                                { id: "fortnight", label: "2 semanas" },
                                 { id: "month", label: "Mes" },
                               ] as const).map((option) => (
                                 <button
@@ -389,7 +389,8 @@ export function InteractiveDashboardBoard({
                           <div className={cn("grid gap-2 text-center text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-400", calendarMode === "week" ? "grid-cols-7" : "grid-cols-7")}>
                             {['L', 'K', 'M', 'J', 'V', 'S', 'D'].map((day) => <span key={day}>{day}</span>)}
                           </div>
-                          <div className={cn("grid gap-2", calendarMode === "week" ? "grid-cols-7" : "grid-cols-7")}>
+                          <div className="max-h-[330px] overflow-y-auto pr-1">
+                            <div className="grid gap-2 grid-cols-7">
                             {visibleCalendarDays.map((day) => {
                               const key = day.toISOString().slice(0, 10);
                               const items = calendarMap.get(key) ?? [];
@@ -397,18 +398,19 @@ export function InteractiveDashboardBoard({
                               return (
                                 <div key={key} className={cn(
                                   "rounded-xl border p-2 text-left",
-                                  calendarMode === "week" ? "min-h-[116px]" : "min-h-[84px]",
+                                  calendarMode === "fortnight" ? "min-h-[74px]" : "min-h-[58px]",
                                   isCurrentMonth ? "border-slate-200 bg-white" : "border-slate-100 bg-slate-50 text-slate-400"
                                 )}>
                                   <p className="text-xs font-semibold">{formatDay(day)}</p>
                                   <div className="mt-2 space-y-1.5">
                                     {items.length ? items.map((item) => (
-                                      <p key={item.id} className="line-clamp-2 rounded-lg bg-emerald-50 px-2 py-1 text-[11px] font-medium text-emerald-800">{item.title}</p>
-                                    )) : (calendarMode === "week" ? <p className="text-[11px] text-slate-400">Sin tareas</p> : null)}
+                                      <p key={item.id} className={cn("rounded-lg bg-emerald-50 px-2 py-1 text-[10px] font-medium text-emerald-800", calendarMode === "fortnight" ? "line-clamp-2" : "line-clamp-1")}>{item.title}</p>
+                                    )) : (calendarMode === "fortnight" ? <p className="text-[10px] text-slate-400">Sin tareas</p> : null)}
                                   </div>
                                 </div>
                               );
                             })}
+                            </div>
                           </div>
                         </div>
                       ) : null}
