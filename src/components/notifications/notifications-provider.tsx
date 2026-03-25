@@ -22,7 +22,6 @@ type ClientNotificationPreferences = {
 
 type NotificationsContextValue = {
   unreadCount: number;
-  recentItems: ToastItem[];
   markOneAsRead: (id: string) => void;
   markAllAsRead: (count?: number) => void;
   setUnreadCount: (value: number) => void;
@@ -103,8 +102,8 @@ export function NotificationsProvider({
 
   const pushToast = useCallback((item: ToastItem) => {
     setToasts((current) => {
-      const next = current.filter((toast) => toast.id !== item.id);
-      return [item, ...next].slice(0, 6);
+      if (current.some((toast) => toast.id === item.id)) return current;
+      return [item, ...current].slice(0, 4);
     });
     window.setTimeout(() => {
       setToasts((current) => current.filter((toast) => toast.id !== item.id));
@@ -146,15 +145,15 @@ export function NotificationsProvider({
   }, []);
 
   const value = useMemo(
-    () => ({ unreadCount, recentItems: toasts, markOneAsRead, markAllAsRead, setUnreadCount }),
-    [markAllAsRead, markOneAsRead, toasts, unreadCount],
+    () => ({ unreadCount, markOneAsRead, markAllAsRead, setUnreadCount }),
+    [markAllAsRead, markOneAsRead, unreadCount],
   );
 
   return (
     <NotificationsContext.Provider value={value}>
       {children}
       <div className="pointer-events-none fixed right-4 top-4 z-50 space-y-3">
-        {toasts.slice(0, 4).map((toast) => (
+        {toasts.map((toast) => (
           <div key={toast.id} className="pointer-events-auto w-[320px] rounded-2xl border border-slate-200 bg-white p-4 shadow-lg">
             <div className="flex items-start gap-3">
               <div className="mt-0.5 rounded-full bg-slate-900/5 p-2 text-slate-700">
