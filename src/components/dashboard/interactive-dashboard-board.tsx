@@ -12,8 +12,10 @@ import {
   LayoutGrid,
   LayoutPanelLeft,
   Menu,
+  Pencil,
   Plus,
   StickyNote,
+  Trash2,
   X,
 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
@@ -33,6 +35,12 @@ type Reminder = {
   id: string;
   label: string;
   done: boolean;
+};
+
+type BoardNote = {
+  id: string;
+  text: string;
+  updatedAt: string;
 };
 
 const STORAGE_KEY = 'flowtask.board.v632';
@@ -191,13 +199,13 @@ function CalendarPanel({
                         : 'border-slate-100 bg-slate-50/30 text-slate-400 hover:border-slate-200'
                   )}
                 >
-                  <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-start justify-between gap-2">
                     <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500">{formatShortDay(day).slice(0,3)}</span>
-                    <span className="text-xs font-semibold text-slate-700">{day.getDate()}</span>
+                    <span className="text-xs font-semibold leading-none text-slate-700">{day.getDate()}</span>
                   </div>
                   {hasTask ? (
-                    <div className="mt-3 rounded-md border border-emerald-200 bg-emerald-50 px-2.5 py-1.5 text-[11px] font-medium leading-5 text-emerald-900">
-                      <span className="line-clamp-2 block">{itemsByDate[key]?.[0] ?? '1 tarea'}</span>
+                    <div className="mt-2 rounded-md border border-emerald-200 bg-emerald-50 px-2.5 py-1.5 text-[11px] font-medium leading-5 text-emerald-900">
+                      <span className="line-clamp-3 block">{itemsByDate[key]?.[0] ?? '1 tarea'}</span>
                     </div>
                   ) : null}
                 </button>
@@ -236,7 +244,9 @@ export function InteractiveDashboardBoard() {
   const [calendarMode, setCalendarMode] = useState<CalendarMode>('week');
   const [anchorDate, setAnchorDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(isoDate(new Date()));
-  const [notes, setNotes] = useState('');
+  const [noteDraft, setNoteDraft] = useState('');
+  const [savedNotes, setSavedNotes] = useState<BoardNote[]>([]);
+  const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
   const [taskDraft, setTaskDraft] = useState({ title: '', detail: '' });
   const [quickTasks, setQuickTasks] = useState<QuickTask[]>([]);
   const [reminders, setReminders] = useState<Reminder[]>([]);
@@ -253,7 +263,9 @@ export function InteractiveDashboardBoard() {
         if (parsed.calendarMode === 'week' || parsed.calendarMode === 'month') setCalendarMode(parsed.calendarMode);
         if (parsed.anchorDate) setAnchorDate(new Date(parsed.anchorDate));
         if (parsed.selectedDate) setSelectedDate(parsed.selectedDate);
-        if (typeof parsed.notes === 'string') setNotes(parsed.notes);
+        if (typeof parsed.noteDraft === 'string') setNoteDraft(parsed.noteDraft);
+        if (Array.isArray(parsed.savedNotes)) setSavedNotes(parsed.savedNotes);
+        if (typeof parsed.editingNoteId === 'string' || parsed.editingNoteId === null) setEditingNoteId(parsed.editingNoteId);
         if (Array.isArray(parsed.quickTasks)) setQuickTasks(parsed.quickTasks);
         if (Array.isArray(parsed.reminders)) setReminders(parsed.reminders);
       } else {
@@ -280,7 +292,9 @@ export function InteractiveDashboardBoard() {
           calendarMode,
           anchorDate: anchorDate.toISOString(),
           selectedDate,
-          notes,
+          noteDraft,
+          savedNotes,
+          editingNoteId,
           quickTasks,
           reminders,
         })
@@ -332,6 +346,33 @@ export function InteractiveDashboardBoard() {
 
   function toggleReminder(id: string) {
     setReminders((current) => current.map((item) => (item.id === id ? { ...item, done: !item.done } : item)));
+  }
+
+  function removeReminder(id: string) {
+    setReminders((current) => current.filter((item) => item.id !== id));
+  }
+
+  function editReminder(id: string) {
+    const target = reminders.find((item) => item.id === id);
+    if (!target) return;
+    setNewReminder(target.label);
+    setReminders((current) => current.filter((item) => item.id !== id));
+  }
+
+  function editSavedNote(id: string) {
+    const target = savedNotes.find((item) => item.id === id);
+    if (!target) return;
+    setNoteDraft(target.text);
+    setEditingNoteId(id);
+    setSavedNotes((current) => current.filter((item) => item.id !== id));
+  }
+
+  function deleteSavedNote(id: string) {
+    setSavedNotes((current) => current.filter((item) => item.id !== id));
+    if (editingNoteId === id) {
+      setEditingNoteId(null);
+      setNoteDraft('');
+    }
   }
 
   return (
@@ -511,18 +552,36 @@ export function InteractiveDashboardBoard() {
                 </span>
                 <div>
                   <p className="text-lg font-semibold text-slate-900">Notas rápidas</p>
-                  <p className="text-sm text-slate-500">Guarda una idea, una instrucción o un recordatorio corto.</p>
+                  <p className="text-sm text-slate-500">Escribe una nota. Si dejas de escribir por 10 segundos, se guarda sola.</p>
                 </div>
               </div>
               <textarea
-                value={notes}
-                onChange={(event) => setNotes(event.target.value)}
+                value={noteDraft}
+                onChange={(event) => setNoteDraft(event.target.value)}
                 placeholder="Escribe una nota o recordatorio"
                 className="mt-4 min-h-[160px] w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm leading-6 text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-emerald-300 focus:bg-white"
               />
               <div className="mt-3 flex items-center justify-between gap-3 text-xs text-slate-500">
-                <span>{notes.trim() ? 'Guardado automáticamente' : 'Empieza escribiendo para dejar un recordatorio'}</span>
-                <button type="button" onClick={() => setNotes('')} className="font-medium text-slate-600 hover:text-slate-900">Limpiar nota</button>
+                <span>{noteDraft.trim() ? 'Se guardará sola en 10 segundos de inactividad' : 'Empieza escribiendo para dejar un recordatorio'}</span>
+                <button type="button" onClick={() => { setNoteDraft(''); setEditingNoteId(null); }} className="font-medium text-slate-600 hover:text-slate-900">Limpiar editor</button>
+              </div>
+              <div className="mt-4 space-y-3">
+                {savedNotes.length ? savedNotes.map((item, index) => (
+                  <div key={item.id} className="group rounded-xl border border-slate-200 bg-slate-50/70 p-4 transition hover:border-slate-300 hover:bg-white">
+                    <div className="flex items-start justify-between gap-3">
+                      <p className="text-sm leading-6 text-slate-700 whitespace-pre-wrap">{item.text}</p>
+                      <div className="flex items-center gap-1 opacity-0 transition group-hover:opacity-100">
+                        <button type="button" onClick={() => editSavedNote(item.id)} className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 hover:text-slate-900">
+                          <Pencil className="h-3.5 w-3.5" />
+                        </button>
+                        <button type="button" onClick={() => deleteSavedNote(item.id)} className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 hover:text-rose-600">
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                    {index < savedNotes.length - 1 ? <div className="mt-3 border-t border-slate-200/80" /> : null}
+                  </div>
+                )) : null}
               </div>
             </Card>
 
@@ -544,12 +603,17 @@ export function InteractiveDashboardBoard() {
               </div>
               <div className="mt-4 space-y-3">
                 {reminders.length ? reminders.map((item) => (
-                  <button key={item.id} type="button" onClick={() => toggleReminder(item.id)} className={cn('flex w-full items-start gap-3 rounded-lg border px-3 py-3 text-left transition', item.done ? 'border-emerald-200 bg-emerald-50 text-emerald-900' : 'border-slate-200 bg-slate-50 text-slate-700 hover:bg-white')}>
-                    <span className={cn('mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-full border', item.done ? 'border-emerald-500 bg-emerald-500 text-white' : 'border-slate-300 bg-white text-transparent')}>
+                  <div key={item.id} className={cn('flex items-start gap-3 rounded-lg border px-3 py-3 transition', item.done ? 'border-emerald-200 bg-emerald-50 text-emerald-900' : 'border-slate-200 bg-slate-50 text-slate-700 hover:bg-white')}>
+                    <button type="button" onClick={() => toggleReminder(item.id)} className={cn('mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border', item.done ? 'border-emerald-500 bg-emerald-500 text-white' : 'border-slate-300 bg-white text-transparent')}>
                       <Check className="h-3 w-3" />
-                    </span>
-                    <span className={cn('text-sm', item.done && 'line-through opacity-80')}>{item.label}</span>
-                  </button>
+                    </button>
+                    <button type="button" onClick={() => editReminder(item.id)} className="flex-1 text-left text-sm">
+                      <span className={cn(item.done && 'line-through opacity-80')}>{item.label}</span>
+                    </button>
+                    <button type="button" onClick={() => removeReminder(item.id)} className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-transparent text-slate-400 transition hover:border-slate-200 hover:bg-white hover:text-rose-600">
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
                 )) : (
                   <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50/80 px-4 py-5 text-sm text-slate-500">Todavía no tienes avisos pendientes para hoy.</div>
                 )}
