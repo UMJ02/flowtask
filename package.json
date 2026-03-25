@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "6.2.8-interactive-dashboard-mode-fixed",
+  "version": "6.2.9-board-polish",
   "private": true,
   "scripts": {
     "dev": "next dev -p 3001",
