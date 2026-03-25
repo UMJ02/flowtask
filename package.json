@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "6.3.2-board-interactions",
+  "version": "6.3.2-board-interactions-hotfix",
   "private": true,
   "scripts": {
     "dev": "next dev",

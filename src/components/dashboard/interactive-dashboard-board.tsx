@@ -68,13 +68,20 @@ function isoDate(date: Date) {
   return date.toISOString().slice(0, 10);
 }
 
+function isWeekend(date: Date) {
+  const day = date.getDay();
+  return day === 0 || day === 6;
+}
+
 function buildWeekDays(anchor: Date) {
   const start = startOfWeek(anchor);
-  return Array.from({ length: 14 }, (_, index) => {
-    const day = new Date(start);
-    day.setDate(start.getDate() + index);
-    return day;
-  });
+  const days: Date[] = [];
+  const cursor = new Date(start);
+  while (days.length < 10) {
+    if (!isWeekend(cursor)) days.push(new Date(cursor));
+    cursor.setDate(cursor.getDate() + 1);
+  }
+  return days;
 }
 
 function buildMonthDays(anchor: Date) {
@@ -83,11 +90,11 @@ function buildMonthDays(anchor: Date) {
   const start = startOfWeek(first);
   const days: Date[] = [];
   const cursor = new Date(start);
-  while (days.length < 35 || cursor <= last) {
-    days.push(new Date(cursor));
+  while (cursor <= last || days.length % 5 !== 0 || days.length < 20) {
+    if (!isWeekend(cursor)) days.push(new Date(cursor));
     cursor.setDate(cursor.getDate() + 1);
   }
-  return days.slice(0, 35);
+  return days;
 }
 
 function sampleCalendarItems() {
@@ -129,7 +136,7 @@ function CalendarPanel({
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="text-sm font-semibold text-slate-900">Calendario</p>
-          <p className="text-xs text-slate-500">Cambia entre una vista corta de 2 semanas o una lectura mensual.</p>
+          <p className="text-xs text-slate-500">Consulta 2 semanas laborales o una lectura mensual solo con días hábiles.</p>
         </div>
         <div className="flex items-center gap-2">
           <div className="inline-flex rounded-lg border border-slate-200 bg-slate-50 p-1">
@@ -156,14 +163,14 @@ function CalendarPanel({
         </div>
       </div>
 
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_248px]">
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_260px]">
         <div className="rounded-xl border border-slate-200 bg-white p-3">
           <div className="mb-3 flex items-center justify-between gap-2">
             <p className="text-sm font-semibold capitalize text-slate-900">{formatMonthLabel(anchorDate)}</p>
-            <p className="text-xs text-slate-500">Pulsa un día para ver su agenda.</p>
+            <p className="text-xs text-slate-500">Pulsa un día hábil para ver su agenda.</p>
           </div>
 
-          <div className="grid grid-cols-7 gap-2">
+          <div className="grid grid-cols-5 gap-3">
             {days.map((day, index) => {
               const inMonth = day.getMonth() === anchorDate.getMonth();
               const key = isoDate(day);
@@ -176,7 +183,7 @@ function CalendarPanel({
                   onClick={() => onSelectDate(key)}
                   className={cn(
                     'rounded-lg border p-2 text-left transition',
-                    mode === 'week' ? 'min-h-[78px]' : 'min-h-[70px]',
+                    mode === 'week' ? 'min-h-[88px]' : 'min-h-[84px]',
                     isSelected
                       ? 'border-emerald-300 bg-emerald-50 ring-1 ring-emerald-200'
                       : inMonth
@@ -185,12 +192,12 @@ function CalendarPanel({
                   )}
                 >
                   <div className="flex items-center justify-between gap-2">
-                    <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500">{formatShortDay(day)}</span>
+                    <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500">{formatShortDay(day).slice(0,3)}</span>
                     <span className="text-xs font-semibold text-slate-700">{day.getDate()}</span>
                   </div>
                   {hasTask ? (
-                    <div className="mt-2 rounded-md border border-emerald-200 bg-emerald-50 px-2 py-1 text-[10px] font-medium leading-4 text-emerald-900">
-                      {itemsByDate[key]?.[0] ?? '1 tarea'}
+                    <div className="mt-3 rounded-md border border-emerald-200 bg-emerald-50 px-2.5 py-1.5 text-[11px] font-medium leading-5 text-emerald-900">
+                      <span className="line-clamp-2 block">{itemsByDate[key]?.[0] ?? '1 tarea'}</span>
                     </div>
                   ) : null}
                 </button>
