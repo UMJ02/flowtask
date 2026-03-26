@@ -14,4 +14,9 @@ export interface ProjectSummary extends ProjectBase {
   isCollaborative?: boolean;
   departmentCode?: string | null;
   departmentName?: string | null;
+  /** Compat aliases kept while modules are normalized */
+  client_name?: string | null;
+  due_date?: string | null;
+  is_collaborative?: boolean;
+  departments?: { code?: string | null; name?: string | null }[] | { code?: string | null; name?: string | null } | null;
 }

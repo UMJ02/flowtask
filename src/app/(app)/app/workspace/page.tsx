@@ -172,7 +172,7 @@ export default async function WorkspacePage() {
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <p className="line-clamp-2 text-sm font-semibold text-slate-900">{project.title}</p>
-                      <p className="mt-2 text-sm leading-5 text-slate-500">{project.client_name?.trim() || 'Sin cliente'} · {formatDueDate(project.due_date)}</p>
+                      <p className="mt-2 text-sm leading-5 text-slate-500">{project.clientName?.trim() || project.client_name?.trim() || 'Sin cliente'} · {formatDueDate(project.dueDate ?? project.due_date)}</p>
                     </div>
                     <span className="inline-flex shrink-0 rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-700 ring-1 ring-slate-200">
                       {project.status ?? 'Activo'}
@@ -197,7 +197,7 @@ export default async function WorkspacePage() {
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <p className="line-clamp-2 text-sm font-semibold text-slate-900">{client.name}</p>
-                      <p className="mt-2 text-sm text-slate-500">{client.activeProjects} proyectos activos · {client.overdueTasksCount} vencidas</p>
+                      <p className="mt-2 text-sm text-slate-500">{(client.activeProjects ?? client.openProjects)} proyectos activos · {(client.overdueTasksCount ?? client.overdueTasks)} vencidas</p>
                     </div>
                     <span className="inline-flex shrink-0 rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-700 ring-1 ring-slate-200">{client.openTasks} tareas</span>
                   </div>
