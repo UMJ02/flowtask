@@ -119,23 +119,26 @@ export default async function WorkspacePage() {
         </div>
       </Card>
 
-      {boardTasks.length ? (
-        <TaskWorkspace tasks={boardTasks} />
-      ) : (
-        <EmptyState
-          title="Todavía no hay tareas"
-          description="Crea tu primera tarea y empieza a usar el tablero como centro de trabajo."
-          icon={<ListChecks className="h-6 w-6" />}
-          action={
-            <Link href={taskNewRoute()}>
-              <Button>Crear tarea</Button>
-            </Link>
-          }
-        />
-      )}
+      <div className="relative">
+        {boardTasks.length ? (
+          <TaskWorkspace tasks={boardTasks} />
+        ) : (
+          <EmptyState
+            title="Todavía no hay tareas"
+            description="Crea tu primera tarea y empieza a usar el tablero como centro de trabajo."
+            icon={<ListChecks className="h-6 w-6" />}
+            action={
+              <Link href={taskNewRoute()}>
+                <Button>Crear tarea</Button>
+              </Link>
+            }
+          />
+        )}
+
+        <FocusDrawer focus={focus} recommendation={intelligenceSummary?.recommendations?.[0] ?? null} />
+      </div>
 
       <WorkspaceQuickActions />
-      <FocusDrawer focus={focus} recommendation={intelligenceSummary?.recommendations?.[0] ?? null} />
 
       <div className="grid gap-4 xl:grid-cols-[1.15fr_0.85fr]">
         <Card>
