@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowRight, FolderKanban, LayoutGrid, ListChecks, PanelTop, Plus } from 'lucide-react';
+import { FolderKanban, LayoutGrid, ListChecks, PanelTop, Plus } from 'lucide-react';
 import { RecentActivity } from '@/components/dashboard/recent-activity';
 import { TaskWorkspace } from '@/components/tasks/task-workspace';
 import { Button } from '@/components/ui/button';
@@ -8,6 +8,7 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorState } from '@/components/ui/error-state';
 import { SectionHeader } from '@/components/ui/section-header';
 import { WorkspaceQuickActions } from '@/components/workspace/quick-actions';
+import { FocusDrawer } from '@/components/workspace/focus-drawer';
 import { getRecentActivitySummary } from '@/lib/queries/activity';
 import { getClientDashboardItems } from '@/lib/queries/clients';
 import { getDashboardData } from '@/lib/queries/dashboard';
@@ -18,11 +19,6 @@ import { projectDetailRoute, projectNewRoute, taskNewRoute } from '@/lib/navigat
 
 type ProjectRow = Awaited<ReturnType<typeof getProjects>>[number];
 
-function metricTone(value: number, type: 'danger' | 'attention' | 'neutral' = 'neutral') {
-  if (type === 'danger') return value > 0 ? 'bg-rose-50 text-rose-700 ring-1 ring-rose-100' : 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100';
-  if (type === 'attention') return value > 0 ? 'bg-amber-50 text-amber-700 ring-1 ring-amber-100' : 'bg-slate-100 text-slate-700 ring-1 ring-slate-200';
-  return 'bg-slate-100 text-slate-700 ring-1 ring-slate-200';
-}
 
 function formatDueDate(value?: string | null) {
   if (!value) return 'Sin fecha';
@@ -112,10 +108,10 @@ export default async function WorkspacePage() {
           </div>
           <div className="grid grid-cols-2 gap-3 lg:grid-cols-2 xl:grid-cols-4">
             {topStats.map((stat) => (
-              <div key={stat.label} className="min-w-0 rounded-xl border border-white/10 bg-white/10 px-4 py-4 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
-                <div className="flex min-h-[92px] flex-col items-center justify-center gap-3">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-300">{stat.label}</p>
-                  <p className="text-[1.9rem] font-bold leading-none tabular-nums text-white">{stat.value}</p>
+              <div key={stat.label} className="min-w-0 rounded-2xl border border-white/10 bg-white/10 px-3 py-4 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] sm:px-4">
+                <div className="flex min-h-[120px] flex-col items-center justify-center gap-3">
+                  <p className="max-w-[8ch] text-balance text-[10px] font-semibold uppercase leading-4 tracking-[0.12em] text-slate-300 sm:text-[11px]">{stat.label}</p>
+                  <p className="text-[2rem] font-bold leading-none tabular-nums text-white">{stat.value}</p>
                 </div>
               </div>
             ))}
@@ -140,40 +136,9 @@ export default async function WorkspacePage() {
             />
           )}
         </div>
-
         <div className="space-y-4">
           <WorkspaceQuickActions />
-
-          <Card>
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Foco del día</p>
-                <h3 className="mt-2 text-xl font-bold text-slate-900">Qué atender ahora</h3>
-              </div>
-              <Link href="/app/intelligence" className="inline-flex items-center gap-2 text-sm font-semibold text-slate-700 hover:text-slate-900">
-                Ver insights <ArrowRight className="h-4 w-4" />
-              </Link>
-            </div>
-            <div className="mt-4 grid gap-3 sm:grid-cols-2">
-              {focus.map((item) => (
-                <div key={item.label} className="rounded-lg border border-slate-200 bg-slate-50/70 px-4 py-4">
-                  <div className="flex items-start justify-between gap-3">
-                    <p className="min-w-0 pr-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">{item.label}</p>
-                    <span className={`inline-flex shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${metricTone(item.value, item.tone)}`}>{item.value > 0 ? 'Activo' : 'Estable'}</span>
-                  </div>
-                  <div className="mt-4 space-y-2">
-                    <p className="text-3xl font-bold leading-none text-slate-950 tabular-nums">{item.value}</p>
-                    <p className="text-sm leading-5 text-slate-500">{item.helper}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-            {intelligenceSummary?.recommendations?.[0] ? (
-              <div className="mt-4 rounded-lg border border-emerald-100 bg-emerald-50/80 px-4 py-3 text-sm leading-6 text-emerald-900">
-                {intelligenceSummary.recommendations[0]}
-              </div>
-            ) : null}
-          </Card>
+          <FocusDrawer focus={focus} recommendation={intelligenceSummary?.recommendations?.[0] ?? null} />
         </div>
       </div>
 
