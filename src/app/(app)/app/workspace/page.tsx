@@ -113,7 +113,7 @@ export default async function WorkspacePage() {
                 className="rounded-[2rem] border border-white/10 bg-white/10 px-4 py-4 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] backdrop-blur-sm xl:min-w-[162px] xl:px-5"
               >
                 <div className="flex min-h-[122px] flex-col items-center justify-center gap-3">
-                  <p className="max-w-[11ch] text-center text-[10px] font-semibold uppercase leading-[1.22] tracking-[0.05em] text-slate-300 sm:text-[10.5px] xl:max-w-[10ch] xl:text-[10.5px]">{stat.label}</p>
+                  <p className="w-full px-1 text-center text-[10px] font-semibold uppercase leading-[1.18] tracking-[0.035em] text-slate-300 sm:text-[10.5px] xl:text-[10.5px] [text-wrap:balance]">{stat.label}</p>
                   <p className="text-[1.9rem] font-bold leading-none tabular-nums text-white md:text-[2rem]">{stat.value}</p>
                 </div>
               </div>
