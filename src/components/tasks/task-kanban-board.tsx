@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { AlertCircle, CheckCircle2, Clock3, FolderOpen, GripVertical, Loader2 } from "lucide-react";
+import { AlertCircle, CheckCircle2, Clock3, FolderOpen, GripVertical, Loader2, Sparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Card } from "@/components/ui/card";
@@ -97,18 +97,19 @@ export function TaskKanbanBoard({ tasks }: { tasks: TaskItem[] }) {
   };
 
   return (
-    <div className="space-y-4">
-      <Card className="rounded-[28px] p-5 shadow-[0_14px_30px_rgba(15,23,42,0.06)] md:p-6">
-        <div className="space-y-5">
+    <div className="space-y-5">
+      <Card className="rounded-[28px] border border-slate-200/90 p-5 shadow-[0_14px_30px_rgba(15,23,42,0.05)] md:p-6">
+        <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
           <div className="max-w-2xl">
-            <h2 className="text-[1.55rem] font-bold tracking-tight text-slate-900">Pizarra</h2>
-            <p className="mt-2 text-sm leading-6 text-slate-500">Arrastra tareas entre columnas o usa acciones rápidas dentro de cada tarjeta.</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Pizarra</p>
+            <h2 className="mt-2 text-[1.55rem] font-bold tracking-tight text-slate-900">Mueve trabajo sin perder contexto</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-500">Arrastra tareas entre columnas o usa acciones rápidas dentro de cada tarjeta. El tablero prioriza claridad y respuesta rápida.</p>
           </div>
-          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          <div className="grid gap-3 sm:grid-cols-2 xl:min-w-[560px] xl:grid-cols-3">
             {grouped.map((column) => {
               const Icon = column.icon;
               return (
-                <span key={column.value} className="inline-flex min-h-[72px] items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700">
+                <span key={column.value} className="inline-flex min-h-[78px] items-center justify-center gap-2.5 rounded-[22px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700 shadow-[inset_0_1px_0_rgba(255,255,255,0.75)]">
                   <Icon className="h-4 w-4 shrink-0" />
                   <span>{column.label}: {column.items.length}</span>
                 </span>
@@ -122,7 +123,7 @@ export function TaskKanbanBoard({ tasks }: { tasks: TaskItem[] }) {
         <div className="rounded-2xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div>
       ) : null}
 
-      <div className="grid gap-4 xl:grid-cols-2 2xl:grid-cols-3">
+      <div className="grid gap-5 xl:grid-cols-3">
         {grouped.map((column) => {
           const Icon = column.icon;
           const isActiveDropzone = hoverColumn === column.value;
@@ -130,7 +131,7 @@ export function TaskKanbanBoard({ tasks }: { tasks: TaskItem[] }) {
             <section
               key={column.value}
               className={`rounded-[24px] border p-4 transition ${
-                isActiveDropzone ? "border-emerald-300 bg-emerald-50/60" : "border-slate-200 bg-slate-50"
+                isActiveDropzone ? "border-emerald-300 bg-emerald-50/60 shadow-[0_12px_28px_rgba(16,185,129,0.08)]" : "border-slate-200 bg-slate-50/90"
               }`}
               onDragOver={(event) => {
                 event.preventDefault();
@@ -143,17 +144,17 @@ export function TaskKanbanBoard({ tasks }: { tasks: TaskItem[] }) {
                 if (taskId) moveTask(taskId, column.value);
               }}
             >
-              <div className="mb-4 flex items-start justify-between gap-3">
+              <div className="mb-4 flex items-start justify-between gap-3 border-b border-slate-200/80 pb-4">
                 <div className="flex items-start gap-3">
                   <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-slate-600 ring-1 ring-slate-200">
                     <Icon className="h-4 w-4" />
                   </span>
                   <div>
-                    <p className="text-xl font-bold tracking-tight text-slate-900">{column.label}</p>
-                    <p className="mt-1 text-sm leading-6 text-slate-500">{column.hint}</p>
+                    <p className="text-[1.75rem] font-bold tracking-tight text-slate-900">{column.label}</p>
+                    <p className="mt-1 max-w-[22ch] text-sm leading-6 text-slate-500">{column.hint}</p>
                   </div>
                 </div>
-                <span className="inline-flex h-10 min-w-10 items-center justify-center rounded-full bg-white px-3 text-sm font-semibold text-slate-700 ring-1 ring-slate-200">
+                <span className="inline-flex h-10 min-w-10 items-center justify-center rounded-full bg-white px-3 text-sm font-semibold text-slate-700 ring-1 ring-slate-200 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]">
                   {column.items.length}
                 </span>
               </div>
@@ -176,11 +177,12 @@ export function TaskKanbanBoard({ tasks }: { tasks: TaskItem[] }) {
                         }}
                         className={draggingId === task.id ? "opacity-60" : "opacity-100"}
                       >
-                        <Card className="rounded-[24px] border border-transparent p-4 shadow-none transition hover:border-slate-200">
+                        <Card className="rounded-[26px] border border-white/60 bg-white/85 p-4 shadow-[0_8px_22px_rgba(15,23,42,0.04)] transition hover:-translate-y-0.5 hover:border-slate-200 hover:shadow-[0_18px_34px_rgba(15,23,42,0.08)]">
                           <div className="space-y-4">
                             <div className="flex items-start justify-between gap-3">
                               <div className="min-w-0 flex-1">
                                 <div className="mb-3 flex flex-wrap items-center gap-2 text-slate-400">
+                                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 ring-1 ring-emerald-100"><Sparkles className="h-3.5 w-3.5" /></span>
                                   <span className="inline-flex items-center gap-2 rounded-full bg-slate-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] ring-1 ring-slate-200">
                                     <GripVertical className="h-3.5 w-3.5" />
                                     Mover
@@ -189,14 +191,14 @@ export function TaskKanbanBoard({ tasks }: { tasks: TaskItem[] }) {
                                     {formatDate(task.due_date)}
                                   </span>
                                 </div>
-                                <Link href={taskDetailRoute(task.id)} className="block line-clamp-2 text-[1.4rem] font-bold leading-tight tracking-tight text-slate-900 transition hover:text-emerald-700">
+                                <Link href={taskDetailRoute(task.id)} className="block line-clamp-2 text-[1.35rem] font-bold leading-tight tracking-tight text-slate-900 transition hover:text-emerald-700">
                                   {task.title}
                                 </Link>
                                 <p className="mt-2 text-sm leading-6 text-slate-500">{task.client_name || "Sin cliente"}</p>
                               </div>
                             </div>
 
-                            <div className="flex flex-wrap items-center gap-2">
+                            <div className="flex flex-wrap items-center gap-2 border-t border-slate-100 pt-3">
                               {columns
                                 .filter((option) => option.value !== task.status)
                                 .map((option) => (

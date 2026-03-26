@@ -99,18 +99,21 @@ export default async function WorkspacePage() {
         }
       />
 
-      <Card className="bg-[linear-gradient(135deg,#063b2c_0%,#0f172a_60%,#0f172a_100%)] px-5 py-5 text-white shadow-[0_18px_40px_rgba(15,23,42,0.16)] md:px-6">
-        <div className="grid gap-4 lg:grid-cols-[minmax(0,1.25fr)_minmax(320px,0.75fr)] lg:items-end">
-          <div className="max-w-[42rem]">
+      <Card className="bg-[linear-gradient(135deg,#063b2c_0%,#0f172a_58%,#0b1533_100%)] px-5 py-5 text-white shadow-[0_18px_40px_rgba(15,23,42,0.16)] md:px-6">
+        <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(760px,860px)] xl:items-center">
+          <div className="max-w-[44rem]">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-300">Vista principal</p>
             <h2 className="mt-2 max-w-xl text-[1.7rem] font-bold leading-tight tracking-tight md:text-[1.9rem]">Empieza por lo importante</h2>
             <p className="prose-balance mt-2 max-w-2xl text-sm leading-6 text-slate-300">Tu trabajo diario vive aquí. Mira prioridades, retoma actividad y ejecuta sin abrir cuatro pantallas para decidir.</p>
           </div>
-          <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 xl:justify-self-end">
             {topStats.map((stat) => (
-              <div key={stat.label} className="min-w-0 rounded-2xl border border-white/10 bg-white/10 px-3 py-4 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] sm:px-4">
-                <div className="flex min-h-[112px] flex-col items-center justify-center gap-2">
-                  <p className="max-w-[9ch] text-balance text-[9px] font-semibold uppercase leading-4 tracking-[0.1em] text-slate-300 sm:text-[10px] md:text-[11px]">{stat.label}</p>
+              <div
+                key={stat.label}
+                className="rounded-[2rem] border border-white/10 bg-white/10 px-4 py-4 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] backdrop-blur-sm xl:min-w-[162px] xl:px-5"
+              >
+                <div className="flex min-h-[122px] flex-col items-center justify-center gap-3">
+                  <p className="max-w-[11ch] text-center text-[10px] font-semibold uppercase leading-[1.22] tracking-[0.05em] text-slate-300 sm:text-[10.5px] xl:max-w-[10ch] xl:text-[10.5px]">{stat.label}</p>
                   <p className="text-[1.9rem] font-bold leading-none tabular-nums text-white md:text-[2rem]">{stat.value}</p>
                 </div>
               </div>

@@ -53,15 +53,16 @@ export function TaskWorkspace({
   };
 
   return (
-    <div className="space-y-4">
-      <Card className="rounded-[28px] p-5 md:p-6">
-        <div className="space-y-5">
+    <div className="space-y-5">
+      <Card className="rounded-[28px] border border-slate-200/90 p-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)] md:p-6">
+        <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
           <div className="max-w-2xl">
-            <h2 className="text-[1.55rem] font-bold tracking-tight text-slate-900">Zona de trabajo</h2>
-            <p className="mt-2 max-w-xl text-sm leading-6 text-slate-500">Cambia entre pizarra y lista según lo que necesites en el momento.</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Zona de trabajo</p>
+            <h2 className="mt-2 text-[1.55rem] font-bold tracking-tight text-slate-900">Elige cómo quieres operar</h2>
+            <p className="mt-2 max-w-xl text-sm leading-6 text-slate-500">Cambia entre pizarra y lista según lo que necesites en el momento. La pizarra prioriza movimiento visual y la lista lectura rápida.</p>
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-3">
+          <div className="grid gap-3 sm:grid-cols-3 xl:min-w-[520px]">
             {options.map((option) => {
               const Icon = option.icon;
               const active = view === option.value;
@@ -71,11 +72,11 @@ export function TaskWorkspace({
                   type="button"
                   variant={active ? 'primary' : 'secondary'}
                   onClick={() => updateView(option.value)}
-                  className="h-auto min-h-[78px] justify-center rounded-2xl px-4 py-4 text-center"
+                  className="h-auto min-h-[88px] justify-center rounded-[24px] px-4 py-4 text-center shadow-none"
                 >
-                  <span className="flex flex-col items-center gap-2">
-                    <Icon className="h-5 w-5" />
-                    <span>{option.label}</span>
+                  <span className="flex flex-col items-center gap-2.5">
+                    <span className={`inline-flex h-10 w-10 items-center justify-center rounded-2xl ${active ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-700'}`}><Icon className="h-5 w-5" /></span>
+                    <span className="text-sm font-semibold">{option.label}</span>
                   </span>
                 </Button>
               );
