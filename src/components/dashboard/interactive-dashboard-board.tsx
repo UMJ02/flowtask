@@ -9,6 +9,7 @@ import {
   ChevronLeft,
   ChevronRight,
   ExternalLink,
+  Star,
   FolderKanban,
   Grip,
   LayoutGrid,
@@ -24,6 +25,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { createClient } from '@/lib/supabase/client';
 import { cn } from '@/lib/utils/classnames';
+import { useWorkspaceMemory } from '@/hooks/use-workspace-memory';
 
 type PanelKey = 'task' | 'projects' | 'calendar';
 type CalendarMode = 'week' | 'month';
@@ -170,6 +172,7 @@ function CalendarPanel({
   selectedDate: string;
   onSelectDate: (value: string) => void;
   tasks: TaskRow[];
+  favoriteTaskIds: Set<string>;
   onOpenTask: (taskId: string) => void;
 }) {
   const days = mode === 'week' ? buildWeekDays(anchorDate) : buildMonthDays(anchorDate);
@@ -183,7 +186,7 @@ function CalendarPanel({
     return map;
   }, [tasks]);
 
-  const selectedItems = itemsByDate[selectedDate] ?? [];
+  const selectedItems = (itemsByDate[selectedDate] ?? []).filter((item) => favoriteTaskIds.has(item.id));
 
   return (
     <div className="space-y-4">
@@ -239,7 +242,7 @@ function CalendarPanel({
                     'flex min-w-0 flex-col justify-start rounded-lg border p-3 text-left transition',
                     mode === 'week' ? 'min-h-[88px]' : 'min-h-[84px]',
                     isSelected
-                      ? 'border-emerald-300 bg-emerald-50 ring-1 ring-emerald-200'
+                      ? 'border-sky-400 bg-white ring-1 ring-sky-100'
                       : inMonth
                         ? 'border-slate-200 bg-slate-50/70 hover:border-slate-300 hover:bg-white'
                         : 'border-slate-100 bg-slate-50/30 text-slate-400 hover:border-slate-200'
@@ -267,22 +270,32 @@ function CalendarPanel({
           <div className="mt-4 space-y-3">
             {selectedItems.length ? (
               selectedItems.map((item) => (
-                <button
+                <div
                   key={item.id}
-                  type="button"
-                  onClick={() => onOpenTask(item.id)}
                   className="w-full rounded-lg border border-slate-200 bg-white px-3 py-3 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-emerald-200 hover:shadow"
                 >
-                  <p className="text-sm font-semibold text-slate-800">{item.title}</p>
-                  <p className="mt-1 text-xs text-slate-500">{item.client_name?.trim() || 'Sin cliente'} · {formatStatus(item.status)}</p>
-                  <span className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-emerald-700">
-                    Abrir tarea <ExternalLink className="h-3.5 w-3.5" />
-                  </span>
-                </button>
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2">
+                        <p className="truncate text-sm font-semibold text-slate-800">{item.title}</p>
+                        <button
+                          type="button"
+                          onClick={() => onOpenTask(item.id)}
+                          className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-emerald-200 bg-emerald-50 text-emerald-700 transition hover:bg-emerald-100"
+                          title="Abrir tarea"
+                          aria-label={`Abrir tarea ${item.title}`}
+                        >
+                          <ExternalLink className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                      <p className="mt-1 text-xs text-slate-500">{item.client_name?.trim() || 'Sin cliente'} · {formatStatus(item.status)}</p>
+                    </div>
+                  </div>
+                </div>
               ))
             ) : (
               <div className="rounded-lg border border-dashed border-slate-200 bg-white px-3 py-4 text-sm text-slate-500">
-                No hay tareas programadas para esta fecha.
+                No hay tareas favoritas programadas para esta fecha. Márcalas como favoritas en planificación de tareas para verlas aquí.
               </div>
             )}
           </div>
@@ -294,6 +307,7 @@ function CalendarPanel({
 
 export function InteractiveDashboardBoard() {
   const router = useRouter();
+  const { favorites } = useWorkspaceMemory();
   const [hydrated, setHydrated] = useState(false);
   const [asideOpen, setAsideOpen] = useState(true);
   const [activePanels, setActivePanels] = useState<PanelKey[]>(['task', 'projects', 'calendar']);
@@ -314,6 +328,8 @@ export function InteractiveDashboardBoard() {
   const [savingTask, setSavingTask] = useState(false);
   const [activeOrganizationId, setActiveOrganizationId] = useState<string | null>(null);
   const [createdTaskId, setCreatedTaskId] = useState<string | null>(null);
+
+  const favoriteTaskIds = useMemo(() => new Set(favorites.filter((item) => item.type === 'task').map((item) => item.id)), [favorites]);
 
   useEffect(() => {
     try {
@@ -723,7 +739,7 @@ export function InteractiveDashboardBoard() {
                     <button type="button" className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition hover:-translate-y-0.5 hover:bg-slate-50"><Grip className="h-4 w-4" /></button>
                   </div>
                 </div>
-                <CalendarPanel mode={calendarMode} anchorDate={anchorDate} onModeChange={setCalendarMode} onStep={stepCalendar} selectedDate={selectedDate} onSelectDate={setSelectedDate} tasks={boardTasks.filter((item) => Boolean(item.due_date))} onOpenTask={openTask} />
+                <CalendarPanel mode={calendarMode} anchorDate={anchorDate} onModeChange={setCalendarMode} onStep={stepCalendar} selectedDate={selectedDate} onSelectDate={setSelectedDate} tasks={boardTasks.filter((item) => Boolean(item.due_date))} favoriteTaskIds={favoriteTaskIds} onOpenTask={openTask} />
               </div>
             ) : null}
           </Card>
