@@ -67,10 +67,12 @@ export default async function WorkspacePage() {
     { label: 'Bloqueadas', value: data.waitingTasks ?? 0, tone: 'attention' as const, helper: 'necesitan destrabe' },
   ];
 
+  const activityCounts = activitySummary?.counts;
   const topStats = [
-    { label: 'Hoy', value: data.dueSoonTasks ?? 0 },
-    { label: 'Atrasadas', value: data.overdueTasks ?? 0 },
-    { label: 'Activos', value: data.activeProjects ?? 0 },
+    { label: 'Movimientos', value: activityCounts?.total ?? 0 },
+    { label: 'Tareas', value: activityCounts?.tasks ?? 0 },
+    { label: 'Proyectos', value: activityCounts?.projects ?? 0 },
+    { label: 'Avisos', value: (activityCounts?.comments ?? 0) + (activityCounts?.reminders ?? 0) },
   ];
 
   return (
@@ -108,7 +110,7 @@ export default async function WorkspacePage() {
             <h2 className="mt-2 max-w-xl text-[1.7rem] font-bold leading-tight tracking-tight md:text-[1.9rem]">Empieza por lo importante</h2>
             <p className="prose-balance mt-2 max-w-2xl text-sm leading-6 text-slate-300">Tu trabajo diario vive aquí. Mira prioridades, retoma actividad y ejecuta sin abrir cuatro pantallas para decidir.</p>
           </div>
-          <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4">
             {topStats.map((stat) => (
               <div key={stat.label} className="min-w-0 rounded-lg border border-white/10 bg-white/10 px-4 py-3">
                 <div className="flex items-center justify-between gap-3">
