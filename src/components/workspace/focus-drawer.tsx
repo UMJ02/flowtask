@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { ArrowRight, ChevronLeft, Sparkles, X } from 'lucide-react';
-import { Card } from '@/components/ui/card';
+import { ArrowRight, Sparkles, X } from 'lucide-react';
 import { cn } from '@/lib/utils/classnames';
 
 type FocusItem = {
@@ -43,24 +42,21 @@ export function FocusDrawer({
 
   return (
     <>
-      <Card className="rounded-[28px] p-5 md:p-6">
-        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-          <div className="max-w-xl">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Foco del día</p>
-            <h3 className="mt-2 text-[1.55rem] font-bold tracking-tight text-slate-900">Qué atender ahora</h3>
-            <p className="mt-2 text-sm leading-6 text-slate-500">Ábrelo cuando quieras revisar alertas, prioridades e insights sin quitar espacio a la pizarra.</p>
-          </div>
-          <button
-            type="button"
-            onClick={() => setOpen(true)}
-            className="inline-flex min-h-[56px] items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
-          >
-            <Sparkles className="h-4 w-4" />
-            Ver foco del día
-            <ArrowRight className="h-4 w-4" />
-          </button>
-        </div>
-      </Card>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        title="Ver foco del día"
+        aria-label="Ver foco del día"
+        className={cn(
+          'fixed right-0 top-1/2 z-40 -translate-y-1/2 rounded-l-2xl bg-slate-950 text-white shadow-[0_18px_40px_rgba(15,23,42,0.22)] transition hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:ring-offset-2',
+          open ? 'translate-x-full opacity-0 pointer-events-none' : 'translate-x-0 opacity-100'
+        )}
+      >
+        <span className="flex items-center gap-2 px-3 py-4 md:px-3 md:py-5">
+          <Sparkles className="h-4 w-4 shrink-0" />
+          <span className="[writing-mode:vertical-rl] rotate-180 text-[11px] font-semibold uppercase tracking-[0.18em]">Foco del día</span>
+        </span>
+      </button>
 
       <div
         className={cn(
@@ -80,16 +76,16 @@ export function FocusDrawer({
         />
         <aside
           className={cn(
-            'absolute right-0 top-0 h-full w-full max-w-[720px] overflow-y-auto border-l border-slate-200 bg-white shadow-2xl transition-transform duration-300',
+            'absolute right-0 top-5 h-[calc(100%-2.5rem)] w-full max-w-[420px] overflow-y-auto rounded-l-[28px] border border-slate-200 bg-white shadow-2xl transition-transform duration-300',
             open ? 'translate-x-0' : 'translate-x-full'
           )}
         >
-          <div className="sticky top-0 z-10 border-b border-slate-200 bg-white/95 px-5 py-4 backdrop-blur md:px-6">
+          <div className="sticky top-0 z-10 rounded-tl-[28px] border-b border-slate-200 bg-white/95 px-5 py-4 backdrop-blur md:px-6">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Foco del día</p>
                 <h3 className="mt-2 text-[1.65rem] font-bold tracking-tight text-slate-900">Qué atender ahora</h3>
-                <p className="mt-2 text-sm leading-6 text-slate-500">Consulta el panorama del workspace sin mover el resto del layout.</p>
+                <p className="mt-2 text-sm leading-6 text-slate-500">Consulta alertas, prioridades e insights sin mover el resto del layout.</p>
               </div>
               <button
                 type="button"
@@ -101,18 +97,10 @@ export function FocusDrawer({
                 <X className="h-4 w-4" />
               </button>
             </div>
-            <div className="mt-4 flex flex-wrap items-center gap-3">
+            <div className="mt-4">
               <Link href="/app/intelligence" className="inline-flex min-h-[48px] items-center gap-2 rounded-2xl bg-slate-950 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">
                 Ver insights <ArrowRight className="h-4 w-4" />
               </Link>
-              <button
-                type="button"
-                onClick={() => setOpen(false)}
-                className="inline-flex min-h-[48px] items-center gap-2 rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
-              >
-                <ChevronLeft className="h-4 w-4" />
-                Volver al workspace
-              </button>
             </div>
           </div>
 

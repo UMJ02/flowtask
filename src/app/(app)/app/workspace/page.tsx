@@ -106,12 +106,12 @@ export default async function WorkspacePage() {
             <h2 className="mt-2 max-w-xl text-[1.7rem] font-bold leading-tight tracking-tight md:text-[1.9rem]">Empieza por lo importante</h2>
             <p className="prose-balance mt-2 max-w-2xl text-sm leading-6 text-slate-300">Tu trabajo diario vive aquí. Mira prioridades, retoma actividad y ejecuta sin abrir cuatro pantallas para decidir.</p>
           </div>
-          <div className="grid grid-cols-2 gap-3 lg:grid-cols-2 xl:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
             {topStats.map((stat) => (
               <div key={stat.label} className="min-w-0 rounded-2xl border border-white/10 bg-white/10 px-3 py-4 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] sm:px-4">
-                <div className="flex min-h-[120px] flex-col items-center justify-center gap-3">
-                  <p className="max-w-[8ch] text-balance text-[10px] font-semibold uppercase leading-4 tracking-[0.12em] text-slate-300 sm:text-[11px]">{stat.label}</p>
-                  <p className="text-[2rem] font-bold leading-none tabular-nums text-white">{stat.value}</p>
+                <div className="flex min-h-[112px] flex-col items-center justify-center gap-2">
+                  <p className="max-w-[9ch] text-balance text-[9px] font-semibold uppercase leading-4 tracking-[0.1em] text-slate-300 sm:text-[10px] md:text-[11px]">{stat.label}</p>
+                  <p className="text-[1.9rem] font-bold leading-none tabular-nums text-white md:text-[2rem]">{stat.value}</p>
                 </div>
               </div>
             ))}
@@ -119,28 +119,23 @@ export default async function WorkspacePage() {
         </div>
       </Card>
 
-      <div className="grid gap-4 xl:grid-cols-[1.18fr_0.82fr]">
-        <div className="space-y-4">
-          {boardTasks.length ? (
-            <TaskWorkspace tasks={boardTasks} />
-          ) : (
-            <EmptyState
-              title="Todavía no hay tareas"
-              description="Crea tu primera tarea y empieza a usar el tablero como centro de trabajo."
-              icon={<ListChecks className="h-6 w-6" />}
-              action={
-                <Link href={taskNewRoute()}>
-                  <Button>Crear tarea</Button>
-                </Link>
-              }
-            />
-          )}
-        </div>
-        <div className="space-y-4">
-          <WorkspaceQuickActions />
-          <FocusDrawer focus={focus} recommendation={intelligenceSummary?.recommendations?.[0] ?? null} />
-        </div>
-      </div>
+      {boardTasks.length ? (
+        <TaskWorkspace tasks={boardTasks} />
+      ) : (
+        <EmptyState
+          title="Todavía no hay tareas"
+          description="Crea tu primera tarea y empieza a usar el tablero como centro de trabajo."
+          icon={<ListChecks className="h-6 w-6" />}
+          action={
+            <Link href={taskNewRoute()}>
+              <Button>Crear tarea</Button>
+            </Link>
+          }
+        />
+      )}
+
+      <WorkspaceQuickActions />
+      <FocusDrawer focus={focus} recommendation={intelligenceSummary?.recommendations?.[0] ?? null} />
 
       <div className="grid gap-4 xl:grid-cols-[1.15fr_0.85fr]">
         <Card>
