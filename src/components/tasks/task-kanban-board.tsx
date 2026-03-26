@@ -6,7 +6,6 @@ import { AlertCircle, CheckCircle2, Clock3, FolderOpen, GripVertical, Loader2, S
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Card } from "@/components/ui/card";
-import { EntityMemoryActions } from "@/components/entities/entity-memory-actions";
 import { taskDetailRoute } from "@/lib/navigation/routes";
 
 type TaskItem = {
@@ -197,17 +196,6 @@ export function TaskKanbanBoard({ tasks }: { tasks: TaskItem[] }) {
                                 </Link>
                                 <p className="mt-2 text-sm leading-6 text-slate-500">{task.client_name || "Sin cliente"}</p>
                               </div>
-                              <EntityMemoryActions
-                                entity={{
-                                  id: task.id,
-                                  type: 'task',
-                                  title: task.title,
-                                  subtitle: task.client_name || 'Tarea',
-                                  href: taskDetailRoute(task.id),
-                                  updatedAt: new Date().toISOString(),
-                                }}
-                                compact
-                              />
                             </div>
 
                             <div className="flex flex-wrap items-center gap-2 border-t border-slate-100 pt-3">

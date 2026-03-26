@@ -9,7 +9,6 @@ import {
   ChevronLeft,
   ChevronRight,
   ExternalLink,
-  Star,
   FolderKanban,
   Grip,
   LayoutGrid,
@@ -17,6 +16,7 @@ import {
   Menu,
   Pencil,
   Plus,
+  Star,
   StickyNote,
   Trash2,
   X,
@@ -24,8 +24,8 @@ import {
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { createClient } from '@/lib/supabase/client';
+import { readWorkspaceMemory, toggleFavorite, type MemoryEntity } from '@/lib/local/workspace-memory';
 import { cn } from '@/lib/utils/classnames';
-import { useWorkspaceMemory } from '@/hooks/use-workspace-memory';
 
 type PanelKey = 'task' | 'projects' | 'calendar';
 type CalendarMode = 'week' | 'month';
@@ -155,6 +155,21 @@ function taskMeta(task: TaskRow) {
   return bits.join(' · ');
 }
 
+function taskEntity(task: TaskRow): MemoryEntity {
+  return {
+    id: task.id,
+    type: 'task',
+    title: task.title,
+    subtitle: task.client_name?.trim() || formatStatus(task.status),
+    href: `/app/tasks/${task.id}` as const,
+    updatedAt: task.created_at || new Date().toISOString(),
+  };
+}
+
+function favoriteTaskSet() {
+  return new Set(readWorkspaceMemory().favorites.filter((item) => item.type === 'task').map((item) => item.id));
+}
+
 function CalendarPanel({
   mode,
   anchorDate,
@@ -163,6 +178,7 @@ function CalendarPanel({
   selectedDate,
   onSelectDate,
   tasks,
+  favoriteTaskIds,
   onOpenTask,
 }: {
   mode: CalendarMode;
@@ -186,7 +202,7 @@ function CalendarPanel({
     return map;
   }, [tasks]);
 
-  const selectedItems = (itemsByDate[selectedDate] ?? []).filter((item) => favoriteTaskIds.has(item.id));
+  const selectedItems = (itemsByDate[selectedDate] ?? []).filter((task) => favoriteTaskIds.has(task.id));
 
   return (
     <div className="space-y-4">
@@ -232,6 +248,7 @@ function CalendarPanel({
               const inMonth = day.getMonth() === anchorDate.getMonth();
               const key = isoDate(day);
               const dayTasks = itemsByDate[key] ?? [];
+              const favoriteTasks = dayTasks.filter((task) => favoriteTaskIds.has(task.id));
               const isSelected = key === selectedDate;
               return (
                 <button
@@ -254,8 +271,8 @@ function CalendarPanel({
                   </div>
                   {dayTasks.length ? (
                     <div className="mt-3 rounded-md border border-emerald-200 bg-emerald-50 px-2.5 py-1.5 text-[11px] font-medium leading-5 text-emerald-900">
-                      <span className="line-clamp-2 block">{taskMeta(dayTasks[0])}</span>
-                      {dayTasks.length > 1 ? <span className="mt-1 block text-[10px] font-semibold uppercase tracking-[0.12em] text-emerald-700">+{dayTasks.length - 1} más</span> : null}
+                      <span className="line-clamp-2 block">{taskMeta((favoriteTasks[0] ?? dayTasks[0]))}</span>
+                      {favoriteTasks.length > 1 ? <span className="mt-1 block text-[10px] font-semibold uppercase tracking-[0.12em] text-emerald-700">+{favoriteTasks.length - 1} favorita(s)</span> : dayTasks.length > 1 ? <span className="mt-1 block text-[10px] font-semibold uppercase tracking-[0.12em] text-emerald-700">+{dayTasks.length - 1} más</span> : null}
                     </div>
                   ) : null}
                 </button>
@@ -276,26 +293,18 @@ function CalendarPanel({
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <div className="flex items-center gap-2">
-                        <p className="truncate text-sm font-semibold text-slate-800">{item.title}</p>
-                        <button
-                          type="button"
-                          onClick={() => onOpenTask(item.id)}
-                          className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-emerald-200 bg-emerald-50 text-emerald-700 transition hover:bg-emerald-100"
-                          title="Abrir tarea"
-                          aria-label={`Abrir tarea ${item.title}`}
-                        >
-                          <ExternalLink className="h-3.5 w-3.5" />
-                        </button>
-                      </div>
+                      <p className="text-sm font-semibold text-slate-800">{item.title}</p>
                       <p className="mt-1 text-xs text-slate-500">{item.client_name?.trim() || 'Sin cliente'} · {formatStatus(item.status)}</p>
                     </div>
+                    <button type="button" onClick={() => onOpenTask(item.id)} className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-emerald-200 text-emerald-700 transition hover:bg-emerald-50" title="Abrir tarea" aria-label="Abrir tarea">
+                      <ExternalLink className="h-3.5 w-3.5" />
+                    </button>
                   </div>
                 </div>
               ))
             ) : (
               <div className="rounded-lg border border-dashed border-slate-200 bg-white px-3 py-4 text-sm text-slate-500">
-                No hay tareas favoritas programadas para esta fecha. Márcalas como favoritas en planificación de tareas para verlas aquí.
+                No hay tareas favoritas programadas para esta fecha.
               </div>
             )}
           </div>
@@ -307,7 +316,6 @@ function CalendarPanel({
 
 export function InteractiveDashboardBoard() {
   const router = useRouter();
-  const { favorites } = useWorkspaceMemory();
   const [hydrated, setHydrated] = useState(false);
   const [asideOpen, setAsideOpen] = useState(true);
   const [activePanels, setActivePanels] = useState<PanelKey[]>(['task', 'projects', 'calendar']);
@@ -328,8 +336,7 @@ export function InteractiveDashboardBoard() {
   const [savingTask, setSavingTask] = useState(false);
   const [activeOrganizationId, setActiveOrganizationId] = useState<string | null>(null);
   const [createdTaskId, setCreatedTaskId] = useState<string | null>(null);
-
-  const favoriteTaskIds = useMemo(() => new Set(favorites.filter((item) => item.type === 'task').map((item) => item.id)), [favorites]);
+  const [favoriteTaskIds, setFavoriteTaskIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     try {
@@ -355,7 +362,16 @@ export function InteractiveDashboardBoard() {
     } catch {
       // ignore restore errors
     }
-    setHydrated(true);
+
+    try {
+      setFavoriteTaskIds(favoriteTaskSet());
+      const syncFavorites = () => setFavoriteTaskIds(favoriteTaskSet());
+      window.addEventListener('flowtask-memory-updated', syncFavorites as EventListener);
+      setHydrated(true);
+      return () => window.removeEventListener('flowtask-memory-updated', syncFavorites as EventListener);
+    } catch {
+      setHydrated(true);
+    }
   }, []);
 
   useEffect(() => {
@@ -402,34 +418,26 @@ export function InteractiveDashboardBoard() {
         return;
       }
 
-      const { data: memberships } = await supabase
-        .from('organization_members')
-        .select('organization_id,is_default')
-        .eq('user_id', user.id)
-        .order('is_default', { ascending: false });
+      if (!cancelled) setActiveOrganizationId(null);
 
-      const orgId = memberships?.find((item) => item.is_default)?.organization_id ?? memberships?.[0]?.organization_id ?? null;
-      if (!cancelled) setActiveOrganizationId(orgId ?? null);
-
-      const taskBase = supabase
+      const taskQuery = supabase
         .from('tasks')
         .select('id,title,description,status,client_name,due_date,project_id,organization_id,owner_id,created_at')
+        .eq('owner_id', user.id)
         .order('due_date', { ascending: true, nullsFirst: false })
         .order('created_at', { ascending: false })
         .limit(120);
 
-      const projectBase = supabase
+      const projectQuery = supabase
         .from('projects')
         .select('id,title,status,client_name,due_date,organization_id,owner_id,created_at')
+        .eq('owner_id', user.id)
         .order('created_at', { ascending: false })
         .limit(12);
 
-      const scopedTaskQuery = orgId ? taskBase.or(`organization_id.eq.${orgId},owner_id.eq.${user.id}`) : taskBase.eq('owner_id', user.id);
-      const scopedProjectQuery = orgId ? projectBase.or(`organization_id.eq.${orgId},owner_id.eq.${user.id}`) : projectBase.eq('owner_id', user.id);
-
       const [{ data: tasks, error: tasksError }, { data: projects, error: projectsError }] = await Promise.all([
-        scopedTaskQuery,
-        scopedProjectQuery,
+        taskQuery,
+        projectQuery,
       ]);
 
       if (!cancelled) {
@@ -474,6 +482,12 @@ export function InteractiveDashboardBoard() {
       else next.setMonth(current.getMonth() + dir);
       return next;
     });
+  }
+
+
+  function toggleTaskFavorite(task: TaskRow) {
+    toggleFavorite(taskEntity(task));
+    setFavoriteTaskIds(favoriteTaskSet());
   }
 
   async function addQuickTask() {
@@ -680,12 +694,28 @@ export function InteractiveDashboardBoard() {
                         </div>
                       ) : null}
                       <div className="grid gap-2">
-                        {(nextTasks.length ? nextTasks : openTasks.slice(0, 4)).map((task) => (
-                          <button key={task.id} type="button" onClick={() => openTask(task.id)} className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-3 text-left transition hover:-translate-y-0.5 hover:bg-white hover:shadow-sm">
-                            <p className="text-sm font-semibold text-slate-900">{task.title}</p>
-                            <p className="mt-1 text-xs text-slate-500">{task.client_name?.trim() || 'Sin cliente'} · {task.due_date || 'Sin fecha'} · {formatStatus(task.status)}</p>
-                          </button>
-                        ))}
+                        {(nextTasks.length ? nextTasks : openTasks.slice(0, 4)).map((task) => {
+                          const favorite = favoriteTaskIds.has(task.id);
+                          return (
+                            <div key={task.id} className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-3 text-left transition hover:-translate-y-0.5 hover:bg-white hover:shadow-sm">
+                            <div className="flex items-start justify-between gap-3">
+                              <button type="button" onClick={() => openTask(task.id)} className="min-w-0 flex-1 text-left">
+                                <p className="text-sm font-semibold text-slate-900">{task.title}</p>
+                                <p className="mt-1 text-xs text-slate-500">{task.client_name?.trim() || 'Sin cliente'} · {task.due_date || 'Sin fecha'} · {formatStatus(task.status)}</p>
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => toggleTaskFavorite(task)}
+                                title={favorite ? 'Quitar de agenda del día' : 'Mostrar en agenda del día'}
+                                aria-label={favorite ? 'Quitar de agenda del día' : 'Mostrar en agenda del día'}
+                                className={cn('inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border transition', favorite ? 'border-amber-200 bg-amber-50 text-amber-600' : 'border-slate-200 bg-white text-slate-500 hover:text-amber-600')}
+                              >
+                                <Star className={cn('h-4 w-4', favorite && 'fill-current')} />
+                              </button>
+                            </div>
+                            </div>
+                          );
+                        })}
                         {!loadingData && !openTasks.length ? <div className="rounded-lg border border-dashed border-slate-200 bg-slate-50 px-3 py-3 text-sm text-slate-500">No hay tareas cargadas todavía.</div> : null}
                       </div>
                     </div>
