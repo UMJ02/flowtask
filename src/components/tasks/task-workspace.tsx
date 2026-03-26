@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from 'react';
-import { LayoutGrid, Rows3 } from 'lucide-react';
+import { LayoutGrid, Rows3, SquareSplitHorizontal } from 'lucide-react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { TaskKanbanBoard } from '@/components/tasks/task-kanban-board';
 import { TaskList } from '@/components/tasks/task-list';
@@ -19,6 +19,12 @@ type TaskItem = {
 
 type ViewMode = 'kanban' | 'list' | 'both';
 
+const options: Array<{ value: ViewMode; label: string; icon: typeof LayoutGrid }> = [
+  { value: 'kanban', label: 'Pizarra', icon: LayoutGrid },
+  { value: 'list', label: 'Lista', icon: Rows3 },
+  { value: 'both', label: 'Ambas', icon: SquareSplitHorizontal },
+];
+
 export function TaskWorkspace({
   tasks,
   filters,
@@ -31,7 +37,8 @@ export function TaskWorkspace({
   const router = useRouter();
 
   const view: ViewMode = useMemo(() => {
-    const candidate = filters?.view ?? searchParams.get('view') ?? 'kanban';
+    const fromQuery = searchParams.get('view');
+    const candidate = fromQuery ?? filters?.view ?? 'kanban';
     return candidate === 'kanban' || candidate === 'list' || candidate === 'both' ? candidate : 'kanban';
   }, [filters?.view, searchParams]);
 
@@ -47,21 +54,33 @@ export function TaskWorkspace({
 
   return (
     <div className="space-y-4">
-      <Card className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div>
-          <h2 className="text-lg font-semibold text-slate-900">Zona de trabajo</h2>
-          <p className="text-sm text-slate-500">Cambia entre pizarra y lista según lo que necesites en el momento.</p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <Button type="button" variant={view === 'kanban' ? 'primary' : 'secondary'} onClick={() => updateView('kanban')}>
-            <LayoutGrid className="h-4 w-4" /> Pizarra
-          </Button>
-          <Button type="button" variant={view === 'list' ? 'primary' : 'secondary'} onClick={() => updateView('list')}>
-            <Rows3 className="h-4 w-4" /> Lista
-          </Button>
-          <Button type="button" variant={view === 'both' ? 'primary' : 'secondary'} onClick={() => updateView('both')}>
-            Ambas
-          </Button>
+      <Card className="rounded-[28px] p-5 md:p-6">
+        <div className="space-y-5">
+          <div className="max-w-2xl">
+            <h2 className="text-[1.55rem] font-bold tracking-tight text-slate-900">Zona de trabajo</h2>
+            <p className="mt-2 max-w-xl text-sm leading-6 text-slate-500">Cambia entre pizarra y lista según lo que necesites en el momento.</p>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-3">
+            {options.map((option) => {
+              const Icon = option.icon;
+              const active = view === option.value;
+              return (
+                <Button
+                  key={option.value}
+                  type="button"
+                  variant={active ? 'primary' : 'secondary'}
+                  onClick={() => updateView(option.value)}
+                  className="h-auto min-h-[78px] justify-center rounded-2xl px-4 py-4 text-center"
+                >
+                  <span className="flex flex-col items-center gap-2">
+                    <Icon className="h-5 w-5" />
+                    <span>{option.label}</span>
+                  </span>
+                </Button>
+              );
+            })}
+          </div>
         </div>
       </Card>
 

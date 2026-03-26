@@ -110,12 +110,12 @@ export default async function WorkspacePage() {
             <h2 className="mt-2 max-w-xl text-[1.7rem] font-bold leading-tight tracking-tight md:text-[1.9rem]">Empieza por lo importante</h2>
             <p className="prose-balance mt-2 max-w-2xl text-sm leading-6 text-slate-300">Tu trabajo diario vive aquí. Mira prioridades, retoma actividad y ejecuta sin abrir cuatro pantallas para decidir.</p>
           </div>
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 lg:grid-cols-2 xl:grid-cols-4">
             {topStats.map((stat) => (
-              <div key={stat.label} className="min-w-0 rounded-lg border border-white/10 bg-white/10 px-4 py-3">
-                <div className="flex items-center justify-between gap-3">
-                  <p className="min-w-0 truncate text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-300">{stat.label}</p>
-                  <p className="shrink-0 whitespace-nowrap text-[1.65rem] font-bold leading-none tabular-nums">{stat.value}</p>
+              <div key={stat.label} className="min-w-0 rounded-xl border border-white/10 bg-white/10 px-4 py-4 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
+                <div className="flex min-h-[92px] flex-col items-center justify-center gap-3">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-300">{stat.label}</p>
+                  <p className="text-[1.9rem] font-bold leading-none tabular-nums text-white">{stat.value}</p>
                 </div>
               </div>
             ))}
@@ -126,7 +126,7 @@ export default async function WorkspacePage() {
       <div className="grid gap-4 xl:grid-cols-[1.18fr_0.82fr]">
         <div className="space-y-4">
           {boardTasks.length ? (
-            <TaskWorkspace tasks={boardTasks} filters={{ view: 'kanban' }} />
+            <TaskWorkspace tasks={boardTasks} />
           ) : (
             <EmptyState
               title="Todavía no hay tareas"
