@@ -2,11 +2,13 @@
 
 import { useEffect, useMemo, useState, type ComponentType } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   CalendarDays,
   Check,
   ChevronLeft,
   ChevronRight,
+  ExternalLink,
   FolderKanban,
   Grip,
   LayoutGrid,
@@ -20,16 +22,11 @@ import {
 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { createClient } from '@/lib/supabase/client';
 import { cn } from '@/lib/utils/classnames';
 
 type PanelKey = 'task' | 'projects' | 'calendar';
 type CalendarMode = 'week' | 'month';
-
-type QuickTask = {
-  id: string;
-  title: string;
-  detail: string;
-};
 
 type Reminder = {
   id: string;
@@ -43,7 +40,31 @@ type BoardNote = {
   updatedAt: string;
 };
 
-const STORAGE_KEY = 'flowtask.board.v632';
+type TaskRow = {
+  id: string;
+  title: string;
+  description: string | null;
+  status: string | null;
+  client_name: string | null;
+  due_date: string | null;
+  project_id: string | null;
+  organization_id: string | null;
+  owner_id: string | null;
+  created_at?: string | null;
+};
+
+type ProjectRow = {
+  id: string;
+  title: string;
+  status: string | null;
+  client_name: string | null;
+  due_date: string | null;
+  organization_id: string | null;
+  owner_id: string | null;
+  created_at?: string | null;
+};
+
+const STORAGE_KEY = 'flowtask.board.v640';
 
 const PANEL_META: Record<PanelKey, { label: string; icon: ComponentType<{ className?: string }>; description: string }> = {
   task: { label: 'Tarea', icon: LayoutGrid, description: 'Abre un bloque para crear o revisar tareas.' },
@@ -105,19 +126,31 @@ function buildMonthDays(anchor: Date) {
   return days;
 }
 
-function sampleCalendarItems() {
-  const today = new Date();
-  const plus = (n: number) => {
-    const d = new Date(today);
-    d.setDate(today.getDate() + n);
-    return isoDate(d);
-  };
-  return {
-    [plus(0)]: ['Revisión de avance · 10:00'],
-    [plus(1)]: ['Llamada con cliente · 14:00'],
-    [plus(3)]: ['Cierre de entregables · 09:30'],
-    [plus(7)]: ['Seguimiento semanal · 11:00'],
-  } as Record<string, string[]>;
+function formatStatus(status: string | null | undefined) {
+  switch (status) {
+    case 'en_proceso':
+      return 'En proceso';
+    case 'en_espera':
+      return 'En espera';
+    case 'concluido':
+      return 'Concluida';
+    case 'activo':
+      return 'Activo';
+    case 'en_pausa':
+      return 'En pausa';
+    case 'completado':
+      return 'Completado';
+    case 'vencido':
+      return 'Vencido';
+    default:
+      return 'Sin estado';
+  }
+}
+
+function taskMeta(task: TaskRow) {
+  const bits = [task.title];
+  if (task.client_name?.trim()) bits.push(task.client_name.trim());
+  return bits.join(' · ');
 }
 
 function CalendarPanel({
@@ -127,6 +160,8 @@ function CalendarPanel({
   onStep,
   selectedDate,
   onSelectDate,
+  tasks,
+  onOpenTask,
 }: {
   mode: CalendarMode;
   anchorDate: Date;
@@ -134,9 +169,20 @@ function CalendarPanel({
   onStep: (dir: -1 | 1) => void;
   selectedDate: string;
   onSelectDate: (value: string) => void;
+  tasks: TaskRow[];
+  onOpenTask: (taskId: string) => void;
 }) {
   const days = mode === 'week' ? buildWeekDays(anchorDate) : buildMonthDays(anchorDate);
-  const itemsByDate = useMemo(() => sampleCalendarItems(), []);
+
+  const itemsByDate = useMemo(() => {
+    const map: Record<string, TaskRow[]> = {};
+    for (const task of tasks) {
+      if (!task.due_date) continue;
+      map[task.due_date] = [...(map[task.due_date] ?? []), task];
+    }
+    return map;
+  }, [tasks]);
+
   const selectedItems = itemsByDate[selectedDate] ?? [];
 
   return (
@@ -171,7 +217,7 @@ function CalendarPanel({
         </div>
       </div>
 
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_260px]">
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_280px]">
         <div className="rounded-xl border border-slate-200 bg-white p-3">
           <div className="mb-3 flex items-center justify-between gap-2">
             <p className="text-sm font-semibold capitalize text-slate-900">{formatMonthLabel(anchorDate)}</p>
@@ -179,10 +225,10 @@ function CalendarPanel({
           </div>
 
           <div className="grid grid-cols-5 gap-3">
-            {days.map((day, index) => {
+            {days.map((day) => {
               const inMonth = day.getMonth() === anchorDate.getMonth();
               const key = isoDate(day);
-              const hasTask = Boolean(itemsByDate[key]?.length) || index === (mode === 'week' ? 3 : 9);
+              const dayTasks = itemsByDate[key] ?? [];
               const isSelected = key === selectedDate;
               return (
                 <button
@@ -200,12 +246,13 @@ function CalendarPanel({
                   )}
                 >
                   <div className="flex items-baseline gap-2 text-left">
-                    <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500">{formatShortDay(day).slice(0,3)}</span>
+                    <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500">{formatShortDay(day).slice(0, 3)}</span>
                     <span className="text-xs font-semibold leading-none text-slate-700">{day.getDate()}</span>
                   </div>
-                  {hasTask ? (
+                  {dayTasks.length ? (
                     <div className="mt-3 rounded-md border border-emerald-200 bg-emerald-50 px-2.5 py-1.5 text-[11px] font-medium leading-5 text-emerald-900">
-                      <span className="line-clamp-3 block">{itemsByDate[key]?.[0] ?? '1 tarea'}</span>
+                      <span className="line-clamp-2 block">{taskMeta(dayTasks[0])}</span>
+                      {dayTasks.length > 1 ? <span className="mt-1 block text-[10px] font-semibold uppercase tracking-[0.12em] text-emerald-700">+{dayTasks.length - 1} más</span> : null}
                     </div>
                   ) : null}
                 </button>
@@ -220,9 +267,18 @@ function CalendarPanel({
           <div className="mt-4 space-y-3">
             {selectedItems.length ? (
               selectedItems.map((item) => (
-                <div key={item} className="rounded-lg border border-slate-200 bg-white px-3 py-3 text-sm text-slate-700 shadow-sm">
-                  {item}
-                </div>
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => onOpenTask(item.id)}
+                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-3 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-emerald-200 hover:shadow"
+                >
+                  <p className="text-sm font-semibold text-slate-800">{item.title}</p>
+                  <p className="mt-1 text-xs text-slate-500">{item.client_name?.trim() || 'Sin cliente'} · {formatStatus(item.status)}</p>
+                  <span className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-emerald-700">
+                    Abrir tarea <ExternalLink className="h-3.5 w-3.5" />
+                  </span>
+                </button>
               ))
             ) : (
               <div className="rounded-lg border border-dashed border-slate-200 bg-white px-3 py-4 text-sm text-slate-500">
@@ -237,10 +293,11 @@ function CalendarPanel({
 }
 
 export function InteractiveDashboardBoard() {
+  const router = useRouter();
   const [hydrated, setHydrated] = useState(false);
   const [asideOpen, setAsideOpen] = useState(true);
   const [activePanels, setActivePanels] = useState<PanelKey[]>(['task', 'projects', 'calendar']);
-  const [expanded, setExpanded] = useState<Record<PanelKey, boolean>>({ task: true, projects: false, calendar: true });
+  const [expanded, setExpanded] = useState<Record<PanelKey, boolean>>({ task: true, projects: true, calendar: true });
   const [calendarMode, setCalendarMode] = useState<CalendarMode>('week');
   const [anchorDate, setAnchorDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(isoDate(new Date()));
@@ -248,9 +305,15 @@ export function InteractiveDashboardBoard() {
   const [savedNotes, setSavedNotes] = useState<BoardNote[]>([]);
   const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
   const [taskDraft, setTaskDraft] = useState({ title: '', detail: '' });
-  const [quickTasks, setQuickTasks] = useState<QuickTask[]>([]);
   const [reminders, setReminders] = useState<Reminder[]>([]);
   const [newReminder, setNewReminder] = useState('');
+  const [boardTasks, setBoardTasks] = useState<TaskRow[]>([]);
+  const [boardProjects, setBoardProjects] = useState<ProjectRow[]>([]);
+  const [loadingData, setLoadingData] = useState(true);
+  const [dataError, setDataError] = useState<string | null>(null);
+  const [savingTask, setSavingTask] = useState(false);
+  const [activeOrganizationId, setActiveOrganizationId] = useState<string | null>(null);
+  const [createdTaskId, setCreatedTaskId] = useState<string | null>(null);
 
   useEffect(() => {
     try {
@@ -266,7 +329,6 @@ export function InteractiveDashboardBoard() {
         if (typeof parsed.noteDraft === 'string') setNoteDraft(parsed.noteDraft);
         if (Array.isArray(parsed.savedNotes)) setSavedNotes(parsed.savedNotes);
         if (typeof parsed.editingNoteId === 'string' || parsed.editingNoteId === null) setEditingNoteId(parsed.editingNoteId);
-        if (Array.isArray(parsed.quickTasks)) setQuickTasks(parsed.quickTasks);
         if (Array.isArray(parsed.reminders)) setReminders(parsed.reminders);
       } else {
         setReminders([
@@ -295,14 +357,85 @@ export function InteractiveDashboardBoard() {
           noteDraft,
           savedNotes,
           editingNoteId,
-          quickTasks,
           reminders,
         })
       );
     } catch {
       // ignore persist errors
     }
-  }, [hydrated, asideOpen, activePanels, expanded, calendarMode, anchorDate, selectedDate, noteDraft, savedNotes, editingNoteId, quickTasks, reminders]);
+  }, [hydrated, asideOpen, activePanels, expanded, calendarMode, anchorDate, selectedDate, noteDraft, savedNotes, editingNoteId, reminders]);
+
+  useEffect(() => {
+    if (!hydrated) return;
+
+    let cancelled = false;
+    const supabase = createClient();
+
+    async function loadBoardData() {
+      setLoadingData(true);
+      setDataError(null);
+
+      const { data: authData, error: authError } = await supabase.auth.getUser();
+      const user = authData.user;
+
+      if (authError || !user) {
+        if (!cancelled) {
+          setDataError('No fue posible validar la sesión actual.');
+          setLoadingData(false);
+        }
+        return;
+      }
+
+      const { data: memberships } = await supabase
+        .from('organization_members')
+        .select('organization_id,is_default')
+        .eq('user_id', user.id)
+        .order('is_default', { ascending: false });
+
+      const orgId = memberships?.find((item) => item.is_default)?.organization_id ?? memberships?.[0]?.organization_id ?? null;
+      if (!cancelled) setActiveOrganizationId(orgId ?? null);
+
+      const taskBase = supabase
+        .from('tasks')
+        .select('id,title,description,status,client_name,due_date,project_id,organization_id,owner_id,created_at')
+        .order('due_date', { ascending: true, nullsFirst: false })
+        .order('created_at', { ascending: false })
+        .limit(120);
+
+      const projectBase = supabase
+        .from('projects')
+        .select('id,title,status,client_name,due_date,organization_id,owner_id,created_at')
+        .order('created_at', { ascending: false })
+        .limit(12);
+
+      const scopedTaskQuery = orgId ? taskBase.or(`organization_id.eq.${orgId},owner_id.eq.${user.id}`) : taskBase.eq('owner_id', user.id);
+      const scopedProjectQuery = orgId ? projectBase.or(`organization_id.eq.${orgId},owner_id.eq.${user.id}`) : projectBase.eq('owner_id', user.id);
+
+      const [{ data: tasks, error: tasksError }, { data: projects, error: projectsError }] = await Promise.all([
+        scopedTaskQuery,
+        scopedProjectQuery,
+      ]);
+
+      if (!cancelled) {
+        if (tasksError || projectsError) {
+          setDataError(tasksError?.message ?? projectsError?.message ?? 'No se pudieron cargar tareas y proyectos.');
+        }
+        setBoardTasks(((tasks as TaskRow[] | null) ?? []).sort((a, b) => (a.due_date ?? '9999-12-31').localeCompare(b.due_date ?? '9999-12-31')));
+        setBoardProjects((projects as ProjectRow[] | null) ?? []);
+        setLoadingData(false);
+      }
+    }
+
+    void loadBoardData();
+    return () => {
+      cancelled = true;
+    };
+  }, [hydrated]);
+
+  const openTasks = useMemo(() => boardTasks.filter((item) => item.status !== 'concluido'), [boardTasks]);
+  const tasksToday = useMemo(() => openTasks.filter((item) => item.due_date === isoDate(new Date())), [openTasks]);
+  const nextTasks = useMemo(() => openTasks.slice(0, 4), [openTasks]);
+  const activeProjects = useMemo(() => boardProjects.filter((item) => item.status !== 'completado').slice(0, 4), [boardProjects]);
 
   const activeCount = activePanels.length;
 
@@ -327,14 +460,47 @@ export function InteractiveDashboardBoard() {
     });
   }
 
-  function addQuickTask() {
+  async function addQuickTask() {
     const title = taskDraft.title.trim();
-    if (!title) return;
-    setQuickTasks((current) => [
-      { id: crypto.randomUUID(), title, detail: taskDraft.detail.trim() || 'Sin detalle adicional' },
-      ...current,
-    ].slice(0, 4));
+    const detail = taskDraft.detail.trim();
+    if (!title || savingTask) return;
+
+    setSavingTask(true);
+    setDataError(null);
+    const supabase = createClient();
+    const { data: authData } = await supabase.auth.getUser();
+    const user = authData.user;
+
+    if (!user) {
+      setDataError('Sesión no válida para crear la tarea.');
+      setSavingTask(false);
+      return;
+    }
+
+    const payload = {
+      title,
+      description: detail || null,
+      status: 'en_proceso',
+      due_date: selectedDate,
+      client_name: null,
+      owner_id: user.id,
+      organization_id: activeOrganizationId,
+    };
+
+    const { data, error } = await supabase.from('tasks').insert(payload).select('id,title,description,status,client_name,due_date,project_id,organization_id,owner_id,created_at').single();
+
+    if (error) {
+      setDataError(error.message);
+      setSavingTask(false);
+      return;
+    }
+
+    const created = data as TaskRow;
+    setBoardTasks((current) => [created, ...current].sort((a, b) => (a.due_date ?? '9999-12-31').localeCompare(b.due_date ?? '9999-12-31')));
     setTaskDraft({ title: '', detail: '' });
+    setCreatedTaskId(created.id);
+    setSelectedDate(created.due_date ?? isoDate(new Date()));
+    setSavingTask(false);
   }
 
   function addReminder() {
@@ -375,6 +541,10 @@ export function InteractiveDashboardBoard() {
     }
   }
 
+  function openTask(taskId: string) {
+    router.push(`/app/tasks/${taskId}`);
+  }
+
   return (
     <div className="space-y-4">
       <Card className="border-slate-200 bg-white px-5 py-5 shadow-sm">
@@ -382,10 +552,10 @@ export function InteractiveDashboardBoard() {
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-600">Modo pizarra</p>
             <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-950">Tablero visual premium</h2>
-            <p className="mt-1 max-w-2xl text-sm text-slate-500">Mueve paneles, revisa fechas, guarda notas y deja listo lo importante en un espacio más visual.</p>
+            <p className="mt-1 max-w-2xl text-sm text-slate-500">Calendario, tareas rápidas y proyectos activos leyendo desde la base real del workspace.</p>
             <div className="mt-3 flex flex-wrap gap-2">
               <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-600">{activeCount} paneles activos</span>
-              <span className="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">Interacciones guardadas</span>
+              <span className="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">Supabase conectado</span>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -447,6 +617,7 @@ export function InteractiveDashboardBoard() {
               </div>
               <span className="inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-600">Estado guardado automáticamente</span>
             </div>
+            {dataError ? <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">{dataError}</div> : null}
             <div className="grid gap-4 xl:grid-cols-2">
               {activePanels.includes('task') ? (
                 <div className="rounded-xl border border-emerald-200 bg-white p-4 shadow-sm transition hover:shadow-md">
@@ -461,7 +632,7 @@ export function InteractiveDashboardBoard() {
                       <button type="button" onClick={() => toggleExpanded('task')} className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500 text-white transition hover:-translate-y-0.5 hover:bg-emerald-400"><Plus className={cn('h-4 w-4 transition-transform', expanded.task ? 'rotate-45' : '')} /></button>
                     </div>
                   </div>
-                  <p className="mt-3 text-sm leading-6 text-slate-500">Crea una tarea rápida y déjala lista como acción de hoy.</p>
+                  <p className="mt-3 text-sm leading-6 text-slate-500">Crea una tarea real en la BD y luego ábrela para completar el resto del CRUD.</p>
                   {expanded.task ? (
                     <div className="mt-4 space-y-3">
                       <input
@@ -476,19 +647,31 @@ export function InteractiveDashboardBoard() {
                         placeholder="Detalle rápido"
                         className="h-12 w-full rounded-full border border-emerald-200 bg-white px-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-emerald-300"
                       />
-                      <div className="flex justify-end">
-                        <Button className="h-10" onClick={addQuickTask}>Crear tarea</Button>
+                      <div className="flex flex-wrap items-center justify-between gap-3">
+                        <p className="text-xs text-slate-500">Se agenda para <span className="font-semibold text-slate-700 capitalize">{formatLongDate(new Date(selectedDate))}</span>.</p>
+                        <div className="flex gap-2">
+                          <Button className="h-10" onClick={addQuickTask} disabled={savingTask || !taskDraft.title.trim()}>{savingTask ? 'Creando…' : 'Crear tarea'}</Button>
+                          <Link href="/app/tasks/new" className="inline-flex h-10 items-center rounded-lg border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">Ir a tareas</Link>
+                        </div>
                       </div>
-                      {quickTasks.length ? (
-                        <div className="grid gap-2">
-                          {quickTasks.map((task) => (
-                            <div key={task.id} className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-3">
-                              <p className="text-sm font-semibold text-slate-900">{task.title}</p>
-                              <p className="mt-1 text-xs text-slate-500">{task.detail}</p>
-                            </div>
-                          ))}
+                      {createdTaskId ? (
+                        <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-3 text-sm text-emerald-900">
+                          <p className="font-semibold">La tarea se creó correctamente.</p>
+                          <div className="mt-2 flex flex-wrap gap-2">
+                            <button type="button" onClick={() => openTask(createdTaskId)} className="inline-flex items-center rounded-lg bg-white px-3 py-2 text-xs font-semibold text-emerald-700 shadow-sm">Abrir detalle</button>
+                            <Link href={`/app/tasks/${createdTaskId}/edit`} className="inline-flex items-center rounded-lg border border-emerald-200 bg-emerald-100/60 px-3 py-2 text-xs font-semibold text-emerald-700">Completar en tareas</Link>
+                          </div>
                         </div>
                       ) : null}
+                      <div className="grid gap-2">
+                        {(nextTasks.length ? nextTasks : openTasks.slice(0, 4)).map((task) => (
+                          <button key={task.id} type="button" onClick={() => openTask(task.id)} className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-3 text-left transition hover:-translate-y-0.5 hover:bg-white hover:shadow-sm">
+                            <p className="text-sm font-semibold text-slate-900">{task.title}</p>
+                            <p className="mt-1 text-xs text-slate-500">{task.client_name?.trim() || 'Sin cliente'} · {task.due_date || 'Sin fecha'} · {formatStatus(task.status)}</p>
+                          </button>
+                        ))}
+                        {!loadingData && !openTasks.length ? <div className="rounded-lg border border-dashed border-slate-200 bg-slate-50 px-3 py-3 text-sm text-slate-500">No hay tareas cargadas todavía.</div> : null}
+                      </div>
                     </div>
                   ) : null}
                 </div>
@@ -504,23 +687,24 @@ export function InteractiveDashboardBoard() {
                     <div className="flex items-center gap-2">
                       <button type="button" onClick={() => removePanel('projects')} className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition hover:-translate-y-0.5 hover:bg-slate-50"><X className="h-4 w-4" /></button>
                       <button type="button" className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition hover:-translate-y-0.5 hover:bg-slate-50"><Grip className="h-4 w-4" /></button>
-                      <button type="button" onClick={() => toggleExpanded('projects')} className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500 text-white transition hover:-translate-y-0.5 hover:bg-emerald-400"><Plus className={cn('h-4 w-4 transition-transform', expanded.projects ? 'rotate-45' : '')} /></button>
+                      <Link href="/app/projects/new" className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500 text-white transition hover:-translate-y-0.5 hover:bg-emerald-400"><Plus className="h-4 w-4" /></Link>
                     </div>
                   </div>
                   <p className="mt-3 text-sm leading-6 text-slate-500">Ten a mano los frentes que quieres mover primero.</p>
                   {expanded.projects ? (
                     <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                      {[
-                        { title: 'Lanzamiento sitio web', state: 'En curso' },
-                        { title: 'Campaña Q2', state: 'Pendiente de revisión' },
-                        { title: 'Ajustes del catálogo', state: 'Necesita aprobación' },
-                        { title: 'Revisión interna', state: 'Bloqueado' },
-                      ].map((project) => (
-                        <div key={project.title} className="rounded-lg border border-slate-200 bg-white px-4 py-3 transition hover:-translate-y-0.5 hover:shadow-sm">
+                      {activeProjects.map((project) => (
+                        <Link key={project.id} href={`/app/projects/${project.id}`} className="rounded-lg border border-slate-200 bg-white px-4 py-3 transition hover:-translate-y-0.5 hover:shadow-sm">
                           <p className="text-sm font-semibold text-slate-900">{project.title}</p>
-                          <p className="mt-1 text-xs text-slate-500">{project.state}</p>
-                        </div>
+                          <p className="mt-1 text-xs text-slate-500">{project.client_name?.trim() || 'Sin cliente'} · {formatStatus(project.status)}</p>
+                          <p className="mt-2 text-[11px] font-medium uppercase tracking-[0.14em] text-emerald-700">{project.due_date || 'Sin fecha'}</p>
+                        </Link>
                       ))}
+                      {!loadingData && !activeProjects.length ? (
+                        <div className="rounded-lg border border-dashed border-slate-200 bg-slate-50 px-4 py-4 text-sm text-slate-500 sm:col-span-2">
+                          Aún no hay proyectos activos para mostrar. <Link href="/app/projects" className="font-semibold text-emerald-700">Ir a proyectos</Link>
+                        </div>
+                      ) : null}
                     </div>
                   ) : null}
                 </div>
@@ -539,7 +723,7 @@ export function InteractiveDashboardBoard() {
                     <button type="button" className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition hover:-translate-y-0.5 hover:bg-slate-50"><Grip className="h-4 w-4" /></button>
                   </div>
                 </div>
-                <CalendarPanel mode={calendarMode} anchorDate={anchorDate} onModeChange={setCalendarMode} onStep={stepCalendar} selectedDate={selectedDate} onSelectDate={setSelectedDate} />
+                <CalendarPanel mode={calendarMode} anchorDate={anchorDate} onModeChange={setCalendarMode} onStep={stepCalendar} selectedDate={selectedDate} onSelectDate={setSelectedDate} tasks={boardTasks.filter((item) => Boolean(item.due_date))} onOpenTask={openTask} />
               </div>
             ) : null}
           </Card>
@@ -569,7 +753,7 @@ export function InteractiveDashboardBoard() {
                 {savedNotes.length ? savedNotes.map((item, index) => (
                   <div key={item.id} className="group rounded-xl border border-slate-200 bg-slate-50/70 p-4 transition hover:border-slate-300 hover:bg-white">
                     <div className="flex items-start justify-between gap-3">
-                      <p className="text-sm leading-6 text-slate-700 whitespace-pre-wrap">{item.text}</p>
+                      <p className="whitespace-pre-wrap text-sm leading-6 text-slate-700">{item.text}</p>
                       <div className="flex items-center gap-1 opacity-0 transition group-hover:opacity-100">
                         <button type="button" onClick={() => editSavedNote(item.id)} className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 hover:text-slate-900">
                           <Pencil className="h-3.5 w-3.5" />
@@ -589,6 +773,11 @@ export function InteractiveDashboardBoard() {
               <div>
                 <p className="text-lg font-semibold text-slate-900">Lo que sigue hoy</p>
                 <p className="mt-1 text-sm text-slate-500">Marca lo resuelto o agrega un aviso rápido para no perder el foco.</p>
+              </div>
+              <div className="mt-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Agenda de hoy</p>
+                <p className="mt-2 text-2xl font-bold text-slate-900">{tasksToday.length}</p>
+                <p className="text-sm text-slate-500">tareas abiertas con fecha para hoy</p>
               </div>
               <div className="mt-4 flex gap-2">
                 <input
