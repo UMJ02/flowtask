@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { TaskForm } from "@/components/tasks/task-form";
 import { getTaskById } from "@/lib/queries/tasks";
+import { taskDetailRoute } from "@/lib/navigation/routes";
 
 export default async function EditTaskPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -18,7 +19,7 @@ export default async function EditTaskPage({ params }: { params: Promise<{ id: s
       </div>
       <TaskForm
         taskId={task.id}
-        redirectTo={`/app/tasks/${task.id}`}
+        redirectTo={taskDetailRoute(task.id)}
         initialData={{
           title: task.title,
           description: task.description ?? "",

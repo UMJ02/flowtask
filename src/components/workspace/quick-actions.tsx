@@ -2,9 +2,9 @@ import Link from 'next/link';
 import { AlertCircle, Flag, FolderKanban, Plus, Sparkles, UserRoundPlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { projectNewRoute, taskNewRoute } from '@/lib/navigation/routes';
+import { asRoute, projectNewRoute, taskNewRoute, type AppRoute } from '@/lib/navigation/routes';
 
-const ACTIONS = [
+const ACTIONS: Array<{ href: AppRoute; title: string; description: string; icon: typeof Plus }> = [
   {
     href: taskNewRoute(),
     title: 'Tarea',
@@ -18,13 +18,13 @@ const ACTIONS = [
     icon: FolderKanban,
   },
   {
-    href: '/app/tasks?view=list',
+    href: asRoute('/app/tasks?view=list'),
     title: 'Asignar',
     description: 'Entra rápido a repartir pendientes.',
     icon: UserRoundPlus,
   },
   {
-    href: '/app/tasks?status=alta',
+    href: asRoute('/app/tasks?status=alta'),
     title: 'Prioridad',
     description: 'Mira primero lo más urgente.',
     icon: Flag,
@@ -65,12 +65,12 @@ export function WorkspaceQuickActions() {
       </div>
 
       <div className="mt-4 flex flex-wrap gap-2">
-        <Link href="/app/tasks?status=blocked" className="max-sm:flex-1">
+        <Link href={asRoute("/app/tasks?status=blocked")} className="max-sm:flex-1">
           <Button variant="secondary" className="max-sm:w-full">
             <AlertCircle className="h-4 w-4" /> Bloqueos
           </Button>
         </Link>
-        <Link href="/app/reports" className="max-sm:flex-1">
+        <Link href={asRoute("/app/reports")} className="max-sm:flex-1">
           <Button variant="ghost" className="max-sm:w-full">Resumen</Button>
         </Link>
       </div>

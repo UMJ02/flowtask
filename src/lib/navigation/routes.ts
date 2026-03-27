@@ -18,7 +18,7 @@ export function safeInternalRoute(candidate: string | null | undefined, fallback
       return fallback;
     }
 
-    return `${pathname}${parsed.search}${parsed.hash}`;
+    return `${pathname}${parsed.search}${parsed.hash}` as AppRoute;
   } catch {
     return fallback;
   }
@@ -35,7 +35,7 @@ export function taskDetailRoute(id: string): AppRoute {
 }
 
 export function taskEditRoute(id: string): AppRoute {
-  return `/app/tasks/${id}/edit`;
+  return `/app/tasks/${id}/edit` as AppRoute;
 }
 
 export function taskListRoute(query = ""): AppRoute {

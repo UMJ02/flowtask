@@ -3,6 +3,7 @@ import { ArrowUpRight, FolderKanban } from 'lucide-react';
 import { EntityMemoryActions } from '@/components/entities/entity-memory-actions';
 import { EmptyState } from '@/components/ui/empty-state';
 import { StatusBadge } from '@/components/ui/status-badge';
+import { asRoute, projectDetailRoute } from '@/lib/navigation/routes';
 
 export function ProjectSidebar({
   projects,
@@ -35,7 +36,7 @@ export function ProjectSidebar({
                     <StatusBadge value={project.status ?? 'activo'} />
                     <span className="rounded-full bg-white px-3 py-1 text-xs text-slate-500">{project.client_name || 'Sin cliente'}</span>
                   </div>
-                  <Link className="mt-3 block" href={`/app/projects/${project.id}${suffix}`}>
+                  <Link className="mt-3 block" href={asRoute(`${projectDetailRoute(project.id)}${suffix}`)}>
                     <p className="line-clamp-2 text-base font-semibold text-slate-800 transition hover:text-emerald-700">{project.title}</p>
                   </Link>
                 </div>
@@ -45,7 +46,7 @@ export function ProjectSidebar({
                     type: 'project',
                     title: project.title,
                     subtitle: project.client_name || 'Proyecto',
-                    href: `/app/projects/${project.id}`,
+                    href: projectDetailRoute(project.id),
                     updatedAt: new Date().toISOString(),
                   }}
                   compact
@@ -53,7 +54,7 @@ export function ProjectSidebar({
               </div>
               <div className="mt-3 flex items-center justify-between gap-3 text-xs text-slate-500">
                 <span>{project.due_date || 'Sin fecha definida'}</span>
-                <Link href={`/app/projects/${project.id}${suffix}`} className="inline-flex items-center gap-1 font-semibold text-emerald-700">
+                <Link href={asRoute(`${projectDetailRoute(project.id)}${suffix}`)} className="inline-flex items-center gap-1 font-semibold text-emerald-700">
                   Ver detalle
                   <ArrowUpRight className="h-3.5 w-3.5" />
                 </Link>

@@ -26,6 +26,7 @@ import { Button } from '@/components/ui/button';
 import { createClient } from '@/lib/supabase/client';
 import { readWorkspaceMemory, toggleFavorite, type MemoryEntity } from '@/lib/local/workspace-memory';
 import { cn } from '@/lib/utils/classnames';
+import { taskDetailRoute, taskEditRoute, projectDetailRoute } from '@/lib/navigation/routes';
 
 type PanelKey = 'task' | 'projects' | 'calendar';
 type CalendarMode = 'week' | 'month';
@@ -161,7 +162,7 @@ function taskEntity(task: TaskRow): MemoryEntity {
     type: 'task',
     title: task.title,
     subtitle: task.client_name?.trim() || formatStatus(task.status),
-    href: `/app/tasks/${task.id}` as const,
+    href: taskDetailRoute(task.id),
     updatedAt: task.created_at || new Date().toISOString(),
   };
 }
@@ -572,7 +573,7 @@ export function InteractiveDashboardBoard() {
   }
 
   function openTask(taskId: string) {
-    router.push(`/app/tasks/${taskId}`);
+    router.push(taskDetailRoute(taskId));
   }
 
   return (
@@ -689,7 +690,7 @@ export function InteractiveDashboardBoard() {
                           <p className="font-semibold">La tarea se creó correctamente.</p>
                           <div className="mt-2 flex flex-wrap gap-2">
                             <button type="button" onClick={() => openTask(createdTaskId)} className="inline-flex items-center rounded-lg bg-white px-3 py-2 text-xs font-semibold text-emerald-700 shadow-sm">Abrir detalle</button>
-                            <Link href={`/app/tasks/${createdTaskId}/edit`} className="inline-flex items-center rounded-lg border border-emerald-200 bg-emerald-100/60 px-3 py-2 text-xs font-semibold text-emerald-700">Completar en tareas</Link>
+                            <Link href={taskEditRoute(createdTaskId)} className="inline-flex items-center rounded-lg border border-emerald-200 bg-emerald-100/60 px-3 py-2 text-xs font-semibold text-emerald-700">Completar en tareas</Link>
                           </div>
                         </div>
                       ) : null}
@@ -740,7 +741,7 @@ export function InteractiveDashboardBoard() {
                   {expanded.projects ? (
                     <div className="mt-4 grid gap-3 sm:grid-cols-2">
                       {activeProjects.map((project) => (
-                        <Link key={project.id} href={`/app/projects/${project.id}`} className="rounded-lg border border-slate-200 bg-white px-4 py-3 transition hover:-translate-y-0.5 hover:shadow-sm">
+                        <Link key={project.id} href={projectDetailRoute(project.id)} className="rounded-lg border border-slate-200 bg-white px-4 py-3 transition hover:-translate-y-0.5 hover:shadow-sm">
                           <p className="text-sm font-semibold text-slate-900">{project.title}</p>
                           <p className="mt-1 text-xs text-slate-500">{project.client_name?.trim() || 'Sin cliente'} · {formatStatus(project.status)}</p>
                           <p className="mt-2 text-[11px] font-medium uppercase tracking-[0.14em] text-emerald-700">{project.due_date || 'Sin fecha'}</p>
