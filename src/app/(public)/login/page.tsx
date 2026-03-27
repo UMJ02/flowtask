@@ -1,10 +1,6 @@
-import Link from "next/link";
 import { Suspense } from "react";
+import Link from "next/link";
 import { LoginForm } from "@/components/auth/login-form";
-
-function LoginFormFallback() {
-  return <div className="h-48 animate-pulse rounded-2xl bg-slate-100" />;
-}
 
 export default function LoginPage() {
   return (
@@ -18,9 +14,7 @@ export default function LoginPage() {
             <h1 className="text-3xl font-bold text-slate-900">Iniciar sesión</h1>
             <p className="text-sm text-slate-600">Accede a tu tablero personal y proyectos.</p>
           </div>
-          <Suspense fallback={<LoginFormFallback />}>
-            <LoginForm />
-          </Suspense>
+          <Suspense fallback={<div className="h-48" />}><LoginForm /></Suspense>
         </div>
       </div>
     </main>
