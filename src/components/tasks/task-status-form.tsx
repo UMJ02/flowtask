@@ -1,12 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { TASK_STATUSES } from "@/lib/constants/task-status";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
+import { logActivity } from "@/lib/activity/log-client";
+import { createClientNotification } from "@/lib/notifications/create-client-notification";
 
 interface TaskStatusFormProps {
   taskId: string;
@@ -24,14 +26,18 @@ export function TaskStatusForm({ taskId, status, dueDate, shareEnabled, shareTok
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [isRefreshing, startRefresh] = useTransition();
 
   const handleSave = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError(null);
-    setMessage(null);
+    setMessage("Aplicando cambios…");
     setIsSaving(true);
 
     const supabase = createClient();
+    const { data: authData } = await supabase.auth.getUser();
+    const user = authData.user;
+
     const { error: updateError } = await supabase
       .from("tasks")
       .update({
@@ -44,17 +50,37 @@ export function TaskStatusForm({ taskId, status, dueDate, shareEnabled, shareTok
 
     if (updateError) {
       setError(updateError.message);
+      setMessage(null);
       setIsSaving(false);
       return;
     }
 
-    setMessage("Cambios guardados.");
+    if (user) {
+      await logActivity(supabase, {
+        entityType: "task",
+        entityId: taskId,
+        action: "task_status_changed",
+        metadata: { status: currentStatus },
+      });
+      await createClientNotification(supabase, {
+        userId: user.id,
+        title: "Estado de tarea actualizado",
+        body: `La tarea cambió a ${currentStatus}.`,
+        kind: "info",
+        entityType: "task",
+        entityId: taskId,
+      });
+    }
+
+    setMessage("Cambios aplicados.");
     setIsSaving(false);
-    router.refresh();
+    startRefresh(() => router.refresh());
   };
 
+  const isBusy = isSaving || isRefreshing;
+
   return (
-    <form className="space-y-3 rounded-2xl bg-slate-50 p-4" onSubmit={handleSave}>
+    <form className="space-y-3 rounded-2xl bg-slate-50 p-4 transition-all duration-200" onSubmit={handleSave}>
       <div>
         <p className="text-sm font-medium text-slate-800">Actualizar seguimiento</p>
         <p className="text-xs text-slate-500">Cambia estado, deadline y visibilidad compartida.</p>
@@ -75,8 +101,8 @@ export function TaskStatusForm({ taskId, status, dueDate, shareEnabled, shareTok
       </label>
       {error ? <p className="text-sm text-red-600">{error}</p> : null}
       {message ? <p className="text-sm text-emerald-600">{message}</p> : null}
-      <Button disabled={isSaving} type="submit">
-        {isSaving ? "Guardando..." : "Guardar cambios"}
+      <Button loading={isBusy} type="submit">
+        Guardar cambios
       </Button>
     </form>
   );

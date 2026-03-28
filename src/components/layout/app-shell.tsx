@@ -1,15 +1,67 @@
-import { AppFooter } from "@/components/layout/app-footer";
-import { AppHeader } from "@/components/layout/app-header";
-import { AppSidebar } from "@/components/layout/app-sidebar";
+'use client';
 
-export function AppShell({ userEmail, children }: { userEmail: string; children: React.ReactNode }) {
+import { AppFooter } from '@/components/layout/app-footer';
+import { AppHeader } from '@/components/layout/app-header';
+import { AppSidebar } from '@/components/layout/app-sidebar';
+import { SidebarStateProvider, useSidebarState } from '@/components/layout/sidebar-state';
+import { NotificationsProvider } from '@/components/notifications/notifications-provider';
+import type { OrganizationSummary } from '@/types/organization';
+
+export function AppShell({
+  userEmail,
+  userName,
+  userId,
+  unreadCount,
+  organizations = [],
+  activeOrganization = null,
+  children,
+}: {
+  userEmail: string;
+  userName?: string | null;
+  userId: string;
+  unreadCount: number;
+  organizations?: OrganizationSummary[];
+  activeOrganization?: OrganizationSummary | null;
+  children: React.ReactNode;
+}) {
   return (
-    <div className="min-h-screen bg-slate-50 p-4 md:p-6">
-      <div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-[260px_minmax(0,1fr)]">
-        <AppSidebar />
-        <div className="space-y-4">
-          <AppHeader userEmail={userEmail} />
-          <main>{children}</main>
+    <NotificationsProvider userId={userId} initialUnreadCount={unreadCount}>
+      <SidebarStateProvider>
+        <ShellFrame
+          userEmail={userEmail}
+          userName={userName}
+          organizations={organizations}
+          activeOrganization={activeOrganization}
+        >
+          {children}
+        </ShellFrame>
+      </SidebarStateProvider>
+    </NotificationsProvider>
+  );
+}
+
+function ShellFrame({
+  userEmail,
+  userName,
+  organizations = [],
+  activeOrganization = null,
+  children,
+}: {
+  userEmail: string;
+  userName?: string | null;
+  organizations?: OrganizationSummary[];
+  activeOrganization?: OrganizationSummary | null;
+  children: React.ReactNode;
+}) {
+  const { collapsed } = useSidebarState();
+
+  return (
+    <div className="min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#f3f7f5_100%)] p-2 md:p-4">
+      <div className={`mx-auto grid max-w-[1500px] gap-3 transition-[grid-template-columns] duration-300 xl:gap-4 ${collapsed ? 'md:grid-cols-[104px_minmax(0,1fr)]' : 'md:grid-cols-[292px_minmax(0,1fr)]'}`}>
+        <AppSidebar organizations={organizations} activeOrganization={activeOrganization} userEmail={userEmail} userName={userName} />
+        <div className="min-w-0 space-y-3 xl:space-y-4">
+          <AppHeader userEmail={userEmail} userName={userName} />
+          <main className="min-w-0 space-y-3 xl:space-y-4">{children}</main>
           <AppFooter />
         </div>
       </div>

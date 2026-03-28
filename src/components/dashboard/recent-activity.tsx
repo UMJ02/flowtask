@@ -1,22 +1,31 @@
-import { Card } from "@/components/ui/card";
+import type { RecentActivitySummary } from "@/lib/queries/activity";
+import { ActivityTimeline } from "@/components/activity/activity-timeline";
 
-export function RecentActivity() {
-  const events = [
-    "Comentario agregado a tarea de mercadeo",
-    "Proyecto compartido por link con jefatura",
-    "Tarea concluida y movida a finalizadas",
-  ];
+type RecentActivityProps = {
+  summary?: RecentActivitySummary | null;
+};
+
+const EMPTY_SUMMARY = {
+  counts: {
+    total: 0,
+    tasks: 0,
+    projects: 0,
+    comments: 0,
+    reminders: 0,
+  },
+  items: [],
+} as const;
+
+export function RecentActivity({ summary }: RecentActivityProps) {
+  const safeSummary = summary ?? EMPTY_SUMMARY;
+  const items = Array.isArray(safeSummary.items) ? safeSummary.items : [];
 
   return (
-    <Card>
-      <h2 className="text-lg font-semibold text-slate-900">Actividad reciente</h2>
-      <div className="mt-4 space-y-3">
-        {events.map((event) => (
-          <div key={event} className="rounded-2xl border border-slate-100 px-4 py-3 text-sm text-slate-600">
-            {event}
-          </div>
-        ))}
-      </div>
-    </Card>
+    <ActivityTimeline
+      items={items}
+      compact
+      title="Actividad reciente"
+      description="Cambios, seguimiento y recordatorios para retomar rápido."
+    />
   );
 }

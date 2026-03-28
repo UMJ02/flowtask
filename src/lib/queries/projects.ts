@@ -1,92 +1,159 @@
-import { createClient } from "@/lib/supabase/server";
+import { getWorkspaceContext, applyWorkspaceScope } from "@/lib/queries/workspace";
+import type { ProjectSummary } from "@/types/project";
 
 export interface ProjectFiltersInput {
   q?: string;
   status?: string;
   department?: string;
   mode?: string;
+  client?: string;
 }
 
-export async function getProjects(filters: ProjectFiltersInput = {}) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+function normalizeProjectRow(row: any): ProjectSummary {
+  const department = Array.isArray(row.departments) ? row.departments[0] : row.departments;
+  return {
+    id: String(row.id),
+    title: String(row.title ?? "Proyecto"),
+    status: (row.status as ProjectSummary["status"]) ?? "activo",
+    created_at: (row.created_at as string | null | undefined) ?? null,
+    updated_at: (row.updated_at as string | null | undefined) ?? null,
+    clientName: (row.client_name as string | null | undefined) ?? null,
+    client_name: (row.client_name as string | null | undefined) ?? null,
+    dueDate: (row.due_date as string | null | undefined) ?? null,
+    due_date: (row.due_date as string | null | undefined) ?? null,
+    isCollaborative: Boolean(row.is_collaborative),
+    is_collaborative: Boolean(row.is_collaborative),
+    departmentCode: (department?.code as string | null | undefined) ?? null,
+    departmentName: (department?.name as string | null | undefined) ?? null,
+    departments: row.departments ?? null,
+  };
+}
+
+export async function getProjects(filters: ProjectFiltersInput = {}): Promise<ProjectSummary[]> {
+  const { supabase, user, activeOrganizationId } = await getWorkspaceContext();
 
   if (!user) return [];
 
-  let query = supabase
-    .from("projects")
-    .select(
-      `
-        id,
-        title,
-        status,
-        client_name,
-        due_date,
-        is_collaborative,
-        departments ( code, name )
-      `,
-    )
-    .eq("owner_id", user.id)
-    .order("created_at", { ascending: false });
+  let query = applyWorkspaceScope(
+    supabase
+      .from("projects")
+      .select(
+        `
+          id,
+          title,
+          status,
+          client_name,
+          due_date,
+          is_collaborative,
+          created_at,
+          updated_at,
+          departments ( code, name )
+        `,
+      )
+      .order("created_at", { ascending: false }),
+    user.id,
+    activeOrganizationId,
+  );
 
   if (filters.q) query = query.ilike("title", `%${filters.q}%`);
   if (filters.status) query = query.eq("status", filters.status);
   if (filters.mode === "solo") query = query.eq("is_collaborative", false);
   if (filters.mode === "collaborative") query = query.eq("is_collaborative", true);
+  if (filters.client) query = query.ilike("client_name", `%${filters.client}%`);
   if (filters.department) {
     const { data: dept } = await supabase.from("departments").select("id").eq("code", filters.department).maybeSingle();
     if (dept?.id) query = query.eq("department_id", dept.id);
   }
 
-  const { data } = await query;
-  return data ?? [];
+  const { data, error } = await query;
+  if (error) {
+    console.error("[getProjects]", error.message);
+    return [];
+  }
+
+  return (data ?? []).map(normalizeProjectRow);
+}
+
+export async function getProjectClientMetrics(projectId: string) {
+  const { supabase } = await getWorkspaceContext();
+  const { data, error } = await supabase
+    .from("tasks")
+    .select("client_name,status")
+    .eq("project_id", projectId);
+
+  if (error) {
+    console.error("[getProjectClientMetrics]", error.message);
+    return [];
+  }
+
+  const totals = new Map<string, { name: string; total: number; completed: number; active: number }>();
+  for (const row of data ?? []) {
+    const name = row.client_name?.trim() || "Sin cliente";
+    const current = totals.get(name) ?? { name, total: 0, completed: 0, active: 0 };
+    current.total += 1;
+    if (row.status === "concluido") current.completed += 1;
+    else current.active += 1;
+    totals.set(name, current);
+  }
+
+  return Array.from(totals.values()).sort((a, b) => b.total - a.total);
 }
 
 export async function getProjectById(projectId: string) {
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("projects")
-    .select(
-      `
-        id,
-        owner_id,
-        title,
-        description,
-        status,
-        client_name,
-        due_date,
-        is_collaborative,
-        share_enabled,
-        share_token,
-        created_at,
-        updated_at,
-        completed_at,
-        departments ( id, code, name )
-      `,
-    )
-    .eq("id", projectId)
-    .single();
+  const { supabase, user, activeOrganizationId } = await getWorkspaceContext();
+  if (!user) return null;
+
+  const query = applyWorkspaceScope(
+    supabase
+      .from("projects")
+      .select(
+        `
+          id,
+          owner_id,
+          title,
+          description,
+          status,
+          client_name,
+          due_date,
+          is_collaborative,
+          share_enabled,
+          share_token,
+          created_at,
+          updated_at,
+          completed_at,
+          departments ( id, code, name )
+        `,
+      )
+      .eq("id", projectId),
+    user.id,
+    activeOrganizationId,
+  );
+
+  const { data, error } = await query.single();
 
   if (error) return null;
   return data;
 }
 
 export async function getProjectTasks(projectId: string) {
-  const supabase = await createClient();
-  const { data } = await supabase
+  const { supabase } = await getWorkspaceContext();
+  const { data, error } = await supabase
     .from("tasks")
     .select("id,title,status,client_name,due_date,priority,completed_at")
     .eq("project_id", projectId)
     .order("created_at", { ascending: false });
 
+  if (error) {
+    console.error("[getProjectTasks]", error.message);
+    return [];
+  }
+
   return data ?? [];
 }
 
 export async function getProjectComments(projectId: string) {
-  const supabase = await createClient();
-  const { data } = await supabase
+  const { supabase } = await getWorkspaceContext();
+  const { data, error } = await supabase
     .from("comments")
     .select(
       `
@@ -100,12 +167,17 @@ export async function getProjectComments(projectId: string) {
     .eq("project_id", projectId)
     .order("created_at", { ascending: false });
 
+  if (error) {
+    console.error("[getProjectComments]", error.message);
+    return [];
+  }
+
   return data ?? [];
 }
 
 export async function getProjectMembers(projectId: string) {
-  const supabase = await createClient();
-  const { data } = await supabase
+  const { supabase } = await getWorkspaceContext();
+  const { data, error } = await supabase
     .from("project_members")
     .select(
       `
@@ -118,6 +190,11 @@ export async function getProjectMembers(projectId: string) {
     )
     .eq("project_id", projectId)
     .order("created_at", { ascending: true });
+
+  if (error) {
+    console.error("[getProjectMembers]", error.message);
+    return [];
+  }
 
   return data ?? [];
 }

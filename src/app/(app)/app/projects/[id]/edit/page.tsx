@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { ProjectForm } from "@/components/projects/project-form";
 import { getProjectById } from "@/lib/queries/projects";
+import { projectDetailRoute } from "@/lib/navigation/routes";
 
 export default async function EditProjectPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -18,7 +19,7 @@ export default async function EditProjectPage({ params }: { params: Promise<{ id
       </div>
       <ProjectForm
         projectId={project.id}
-        redirectTo={`/app/projects/${project.id}`}
+        redirectTo={projectDetailRoute(project.id)}
         initialData={{
           title: project.title,
           description: project.description ?? "",
