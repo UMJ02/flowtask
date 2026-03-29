@@ -10,12 +10,13 @@ export interface TaskBase {
 
 export interface TaskSummary extends TaskBase {
   clientName?: string | null;
-  client_name?: string | null;
   dueDate?: string | null;
-  due_date?: string | null;
   departmentCode?: string | null;
   departmentName?: string | null;
-  departments?: string[];
   isOverdue?: boolean;
   isDueToday?: boolean;
+  /** Compat aliases kept while modules are normalized */
+  client_name?: string | null;
+  due_date?: string | null;
+  departments?: { code?: string | null; name?: string | null }[] | { code?: string | null; name?: string | null } | null;
 }

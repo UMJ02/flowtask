@@ -2,11 +2,12 @@ import { InteractiveDashboardBoard } from '@/components/dashboard/interactive-da
 import WorkspacePage from '../workspace/page';
 
 type DashboardPageProps = {
-  searchParams?: Promise<{ view?: string }>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
 };
 
 export default async function DashboardPage({ searchParams }: DashboardPageProps) {
   const params = (await searchParams) ?? {};
-  if (params?.view === 'board') return <InteractiveDashboardBoard />;
+  const view = Array.isArray(params.view) ? params.view[0] : params.view;
+  if (view === 'board') return <InteractiveDashboardBoard />;
   return <WorkspacePage />;
 }

@@ -38,3 +38,10 @@ Base real endurecida para cierre técnico previo a despliegue.
 
 
 Current package version: 6.2.4-ui-structure-refactor.
+
+
+## Deploy checklist
+- Use `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` in browser-facing code.
+- Keep `SUPABASE_SERVICE_ROLE_KEY` only in server-side contexts or project secrets.
+- The `/app/intelligence` route is intentionally dynamic because it depends on authenticated cookies.
+- Run `npm run build` locally before pushing to Vercel.

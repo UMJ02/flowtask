@@ -10,12 +10,13 @@ export interface ProjectBase {
 
 export interface ProjectSummary extends ProjectBase {
   clientName?: string | null;
-  client_name?: string | null;
   dueDate?: string | null;
-  due_date?: string | null;
   isCollaborative?: boolean;
-  is_collaborative?: boolean;
   departmentCode?: string | null;
   departmentName?: string | null;
-  departments?: string[];
+  /** Compat aliases kept while modules are normalized */
+  client_name?: string | null;
+  due_date?: string | null;
+  is_collaborative?: boolean;
+  departments?: { code?: string | null; name?: string | null }[] | { code?: string | null; name?: string | null } | null;
 }

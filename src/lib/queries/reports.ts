@@ -11,7 +11,6 @@ type ClientRow = Awaited<ReturnType<typeof getClients>>[number];
 type DepartmentReference =
   | { code?: string | null; name?: string | null }
   | Array<{ code?: string | null; name?: string | null }>
-  | string[]
   | null
   | undefined;
 
@@ -81,7 +80,6 @@ function countByStatus(items: Array<{ status?: string | null }>) {
 
 function getDepartmentName(reference: DepartmentReference) {
   const department = Array.isArray(reference) ? reference[0] : reference;
-  if (typeof department === "string") return department.trim() || "Sin departamento";
   return department?.name?.trim() || department?.code?.trim() || "Sin departamento";
 }
 
