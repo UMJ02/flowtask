@@ -27,6 +27,8 @@ export interface ClientDashboardItem {
   id: string;
   name: string;
   openProjects: number;
+  activeProjects?: number;
   openTasks: number;
   overdueTasks: number;
+  overdueTasksCount?: number;
 }

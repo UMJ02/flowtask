@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import type { Route } from 'next';
 import { ArrowUpRight, BarChart3, Download, FileSpreadsheet } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -7,7 +8,10 @@ import { SectionHeader } from '@/components/ui/section-header';
 import { OperationsOverview } from '@/components/reports/operations-overview';
 import { getReportsOverview } from '@/lib/queries/reports';
 
-const REPORT_GROUPS = [
+type ReportAction = { href: Route; label: string; primary?: boolean };
+type ReportGroup = { title: string; description: string; actions: ReportAction[] };
+
+const REPORT_GROUPS: ReportGroup[] = [
   {
     title: 'Primarios',
     description: 'Los que más se usan para revisar estado y compartir con dirección.',
@@ -83,8 +87,8 @@ export default async function ReportsPage() {
             </span>
           </div>
           <div className="mt-4 grid gap-2 sm:grid-cols-2">
-            <Link href="/api/export/tasks"><Button className="w-full justify-between">Tareas CSV <Download className="h-4 w-4" /></Button></Link>
-            <Link href="/api/export/projects"><Button variant="secondary" className="w-full justify-between">Proyectos CSV <Download className="h-4 w-4" /></Button></Link>
+            <Link href={"/api/export/tasks" as Route}><Button className="w-full justify-between">Tareas CSV <Download className="h-4 w-4" /></Button></Link>
+            <Link href={"/api/export/projects" as Route}><Button variant="secondary" className="w-full justify-between">Proyectos CSV <Download className="h-4 w-4" /></Button></Link>
           </div>
         </Card>
 
