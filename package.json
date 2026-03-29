@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "6.3.2-board-interactions-hotfix",
+  "version": "7.0.0-sanitize-v1",
   "private": true,
   "scripts": {
     "dev": "next dev",

@@ -67,7 +67,7 @@ export async function getNotificationsPageData() {
   ]);
 
   const notifications = notificationsRes.data ?? [];
-  const notificationIds = notifications.map((item) => item.id);
+  const notificationIds = notifications.map((item: any) => item.id);
   let deliveriesByNotificationId: Record<string, { channel: string; status: string; attempted_at: string; delivered_at: string | null; error_message: string | null; attempt_number?: number | null; retry_after?: string | null }[]> = {};
 
   if (notificationIds.length) {
@@ -80,7 +80,7 @@ export async function getNotificationsPageData() {
     if (deliveriesError) {
       console.error("[getNotificationsPageData/deliveries]", deliveriesError.message);
     } else {
-      deliveriesByNotificationId = (deliveries ?? []).reduce((acc, item: any) => {
+      deliveriesByNotificationId = (deliveries ?? []).reduce((acc: any, item: any) => {
         acc[item.notification_id] = acc[item.notification_id] ?? [];
         acc[item.notification_id].push(item);
         return acc;
@@ -88,7 +88,7 @@ export async function getNotificationsPageData() {
     }
   }
 
-  const deliverySummary = Object.values(deliveriesByNotificationId).flat().reduce((acc, item: any) => {
+  const deliverySummary = Object.values(deliveriesByNotificationId).flat().reduce((acc: any, item: any) => {
     acc.total += 1;
     if (item.status === "sent") acc.sent += 1;
     else if (item.status === "failed") acc.failed += 1;

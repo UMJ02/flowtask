@@ -35,7 +35,7 @@ export async function getAdminMetrics(): Promise<AdminMetricSummary> {
     supabase.from("internal_support_tickets").select("id", { count: "exact", head: true }).in("status", ["open", "in_progress"]),
   ]);
 
-  const uniqueUsers = new Set((membershipsRes.data ?? []).map((row) => row.user_id as string).filter(Boolean));
+  const uniqueUsers = new Set((membershipsRes.data ?? []).map((row: any) => row.user_id as string).filter(Boolean));
 
   return {
     organizations: organizationsRes.count ?? 0,
@@ -56,8 +56,8 @@ export async function getAdminOrganizations(): Promise<AdminOrganizationSummary[
   const rows = organizations ?? [];
   if (!rows.length) return [];
 
-  const organizationIds = rows.map((row) => row.id as string);
-  const ownerIds = Array.from(new Set(rows.map((row) => row.owner_id as string | null).filter(Boolean) as string[]));
+  const organizationIds = rows.map((row: any) => row.id as string);
+  const ownerIds = Array.from(new Set(rows.map((row: any) => row.owner_id as string | null).filter(Boolean) as string[]));
 
   const [membershipsRes, clientsRes, subscriptionsRes, profilesRes] = await Promise.all([
     supabase.from("organization_members").select("organization_id").in("organization_id", organizationIds),
@@ -91,7 +91,7 @@ export async function getAdminOrganizations(): Promise<AdminOrganizationSummary[
     ownerEmailById.set(row.id as string, (row.email as string) ?? "-");
   }
 
-  return rows.map((row) => ({
+  return rows.map((row: any) => ({
     id: row.id as string,
     name: row.name as string,
     slug: row.slug as string,
@@ -115,7 +115,7 @@ export async function getAdminUsers(): Promise<AdminUserSummary[]> {
   const rows = profiles ?? [];
   if (!rows.length) return [];
 
-  const userIds = rows.map((row) => row.id as string);
+  const userIds = rows.map((row: any) => row.id as string);
   const { data: memberships } = await supabase
     .from("organization_members")
     .select("user_id, role, is_default")
@@ -132,7 +132,7 @@ export async function getAdminUsers(): Promise<AdminUserSummary[]> {
     membershipsByUser.set(key, current);
   }
 
-  return rows.map((row) => ({
+  return rows.map((row: any) => ({
     id: row.id as string,
     email: (row.email as string) ?? "-",
     fullName: (row.full_name as string) ?? "Usuario",
@@ -152,8 +152,8 @@ export async function getAdminSupportTickets(): Promise<AdminSupportTicketSummar
   const rows = tickets ?? [];
   if (!rows.length) return [];
 
-  const organizationIds = Array.from(new Set(rows.map((row) => row.organization_id as string | null).filter(Boolean) as string[]));
-  const requesterIds = Array.from(new Set(rows.map((row) => row.requester_user_id as string | null).filter(Boolean) as string[]));
+  const organizationIds = Array.from(new Set(rows.map((row: any) => row.organization_id as string | null).filter(Boolean) as string[]));
+  const requesterIds = Array.from(new Set(rows.map((row: any) => row.requester_user_id as string | null).filter(Boolean) as string[]));
 
   const [organizationsRes, profilesRes] = await Promise.all([
     organizationIds.length ? supabase.from("organizations").select("id,name").in("id", organizationIds) : Promise.resolve({ data: [] as any[] }),
@@ -170,7 +170,7 @@ export async function getAdminSupportTickets(): Promise<AdminSupportTicketSummar
     requesterEmailById.set(row.id as string, (row.email as string) ?? "-");
   }
 
-  return rows.map((row) => ({
+  return rows.map((row: any) => ({
     id: row.id as string,
     subject: row.subject as string,
     organizationName: organizationNameById.get(row.organization_id as string) ?? "Sin organización",

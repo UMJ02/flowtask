@@ -8,8 +8,9 @@ type ActivityPayload = {
 };
 
 export async function logActivity(supabase: SupabaseClient, payload: ActivityPayload) {
-  const { data } = await supabase.auth.getUser();
-  const user = data.user;
+  const authClient = supabase.auth as any;
+  const userResult = authClient.getUser ? await authClient.getUser() : await authClient.getSession?.();
+  const user = userResult?.data?.user ?? userResult?.data?.session?.user ?? null;
   if (!user) return;
 
   await supabase.from("activity_logs").insert({
