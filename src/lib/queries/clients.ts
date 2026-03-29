@@ -67,10 +67,8 @@ export async function getClientDashboardItems(): Promise<ClientDashboardItem[]> 
     id: client.id,
     name: client.name,
     openProjects: client.projectsCount,
-    activeProjects: client.projectsCount,
     openTasks: client.openTasksCount,
     overdueTasks: client.overdueTasksCount,
-    overdueTasksCount: client.overdueTasksCount,
   }));
 }
 

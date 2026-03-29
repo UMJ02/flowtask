@@ -29,7 +29,4 @@ export interface ClientDashboardItem {
   openProjects: number;
   openTasks: number;
   overdueTasks: number;
-  /** Compat aliases kept while workspace modules converge */
-  activeProjects?: number;
-  overdueTasksCount?: number;
 }

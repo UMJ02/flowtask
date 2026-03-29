@@ -36,8 +36,7 @@ export function LoginForm() {
       return;
     }
 
-    const nextRoute = safeInternalRoute(searchParams.get("next"));
-    router.push(nextRoute);
+    router.push(safeInternalRoute(searchParams.get("next")));
     router.refresh();
   };
 

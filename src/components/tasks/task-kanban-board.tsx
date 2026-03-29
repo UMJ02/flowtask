@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { AlertCircle, CheckCircle2, Clock3, FolderOpen, GripVertical, Loader2, Sparkles } from "lucide-react";
+import { AlertCircle, CheckCircle2, Clock3, GripVertical, Loader2, MoveRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Card } from "@/components/ui/card";
@@ -97,33 +97,29 @@ export function TaskKanbanBoard({ tasks }: { tasks: TaskItem[] }) {
   };
 
   return (
-    <div className="space-y-5">
-      <Card className="rounded-[28px] border border-slate-200/90 p-5 shadow-[0_14px_30px_rgba(15,23,42,0.05)] md:p-6">
-        <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
-          <div className="max-w-2xl">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Pizarra</p>
-            <h2 className="mt-2 text-[1.55rem] font-bold tracking-tight text-slate-900">Mueve trabajo sin perder contexto</h2>
-            <p className="mt-2 text-sm leading-6 text-slate-500">Arrastra tareas entre columnas o usa acciones rápidas dentro de cada tarjeta. El tablero prioriza claridad y respuesta rápida.</p>
-          </div>
-          <div className="grid gap-3 sm:grid-cols-2 xl:min-w-[560px] xl:grid-cols-3">
-            {grouped.map((column) => {
-              const Icon = column.icon;
-              return (
-                <span key={column.value} className="inline-flex min-h-[78px] items-center justify-center gap-2.5 rounded-[22px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700 shadow-[inset_0_1px_0_rgba(255,255,255,0.75)]">
-                  <Icon className="h-4 w-4 shrink-0" />
-                  <span>{column.label}: {column.items.length}</span>
-                </span>
-              );
-            })}
-          </div>
+    <div className="space-y-4">
+      <div className="flex flex-col gap-3 rounded-[28px] border border-slate-200 bg-white p-5 shadow-[0_14px_30px_rgba(15,23,42,0.06)] lg:flex-row lg:items-center lg:justify-between">
+        <div>
+          <h2 className="text-lg font-semibold text-slate-900">Pizarra</h2>
+          <p className="text-sm text-slate-500">Arrastra tareas entre columnas o usa acciones rápidas dentro de cada tarjeta.</p>
         </div>
-      </Card>
+        <div className="flex flex-wrap gap-2">
+          {grouped.map((column) => {
+            const Icon = column.icon;
+            return (
+              <span key={column.value} className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-700">
+                <Icon className="h-3.5 w-3.5" /> {column.label}: {column.items.length}
+              </span>
+            );
+          })}
+        </div>
+      </div>
 
       {error ? (
         <div className="rounded-2xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div>
       ) : null}
 
-      <div className="grid gap-5 xl:grid-cols-3">
+      <div className="grid gap-4 xl:grid-cols-3">
         {grouped.map((column) => {
           const Icon = column.icon;
           const isActiveDropzone = hoverColumn === column.value;
@@ -131,7 +127,7 @@ export function TaskKanbanBoard({ tasks }: { tasks: TaskItem[] }) {
             <section
               key={column.value}
               className={`rounded-[24px] border p-4 transition ${
-                isActiveDropzone ? "border-emerald-300 bg-emerald-50/60 shadow-[0_12px_28px_rgba(16,185,129,0.08)]" : "border-slate-200 bg-slate-50/90"
+                isActiveDropzone ? "border-emerald-300 bg-emerald-50/60" : "border-slate-200 bg-slate-50"
               }`}
               onDragOver={(event) => {
                 event.preventDefault();
@@ -144,17 +140,17 @@ export function TaskKanbanBoard({ tasks }: { tasks: TaskItem[] }) {
                 if (taskId) moveTask(taskId, column.value);
               }}
             >
-              <div className="mb-4 flex items-start justify-between gap-3 border-b border-slate-200/80 pb-4">
-                <div className="flex items-start gap-3">
-                  <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-slate-600 ring-1 ring-slate-200">
+              <div className="mb-3 flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-white text-slate-600 ring-1 ring-slate-200">
                     <Icon className="h-4 w-4" />
                   </span>
                   <div>
-                    <p className="text-[1.75rem] font-bold tracking-tight text-slate-900">{column.label}</p>
-                    <p className="mt-1 max-w-[22ch] text-sm leading-6 text-slate-500">{column.hint}</p>
+                    <p className="text-sm font-semibold text-slate-900">{column.label}</p>
+                    <p className="text-xs text-slate-500">{column.hint}</p>
                   </div>
                 </div>
-                <span className="inline-flex h-10 min-w-10 items-center justify-center rounded-full bg-white px-3 text-sm font-semibold text-slate-700 ring-1 ring-slate-200 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]">
+                <span className="inline-flex rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-700 ring-1 ring-slate-200">
                   {column.items.length}
                 </span>
               </div>
@@ -177,59 +173,51 @@ export function TaskKanbanBoard({ tasks }: { tasks: TaskItem[] }) {
                         }}
                         className={draggingId === task.id ? "opacity-60" : "opacity-100"}
                       >
-                        <Card className="rounded-[26px] border border-white/60 bg-white/85 p-4 shadow-[0_8px_22px_rgba(15,23,42,0.04)] transition hover:-translate-y-0.5 hover:border-slate-200 hover:shadow-[0_18px_34px_rgba(15,23,42,0.08)]">
-                          <div className="space-y-4">
-                            <div className="flex items-start justify-between gap-3">
-                              <div className="min-w-0 flex-1">
-                                <div className="mb-3 flex flex-wrap items-center gap-2 text-slate-400">
-                                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 ring-1 ring-emerald-100"><Sparkles className="h-3.5 w-3.5" /></span>
-                                  <span className="inline-flex items-center gap-2 rounded-full bg-slate-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] ring-1 ring-slate-200">
-                                    <GripVertical className="h-3.5 w-3.5" />
-                                    Mover
-                                  </span>
-                                  <span className="rounded-full bg-white px-3 py-1 text-[11px] font-semibold text-slate-700 ring-1 ring-slate-200">
-                                    {formatDate(task.due_date)}
-                                  </span>
-                                </div>
-                                <Link href={taskDetailRoute(task.id)} className="block line-clamp-2 text-[1.35rem] font-bold leading-tight tracking-tight text-slate-900 transition hover:text-emerald-700">
-                                  {task.title}
-                                </Link>
-                                <p className="mt-2 text-sm leading-6 text-slate-500">{task.client_name || "Sin cliente"}</p>
+                        <Card className="space-y-3 border border-transparent p-4 shadow-none transition hover:border-slate-200">
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="min-w-0 flex-1">
+                              <div className="mb-2 flex items-center gap-2 text-slate-400">
+                                <GripVertical className="h-4 w-4" />
+                                <span className="text-[11px] font-semibold uppercase tracking-[0.16em]">Mover</span>
                               </div>
-                            </div>
-
-                            <div className="flex flex-wrap items-center gap-2 border-t border-slate-100 pt-3">
-                              {columns
-                                .filter((option) => option.value !== task.status)
-                                .map((option) => (
-                                  <button
-                                    key={option.value}
-                                    type="button"
-                                    disabled={Boolean(saving)}
-                                    onClick={() => moveTask(task.id, option.value)}
-                                    title={option.label}
-                                    aria-label={`Mover a ${option.label}`}
-                                    className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-slate-700 ring-1 ring-slate-200 transition hover:bg-slate-100 disabled:opacity-60"
-                                  >
-                                    {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <option.icon className="h-4 w-4" />}
-                                  </button>
-                                ))}
-                              <Link
-                                href={taskDetailRoute(task.id)}
-                                title="Abrir"
-                                aria-label="Abrir tarea"
-                                className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100 transition hover:bg-emerald-100"
-                              >
-                                <FolderOpen className="h-4 w-4" />
+                              <Link href={taskDetailRoute(task.id)} className="line-clamp-2 font-semibold text-slate-900 hover:text-emerald-700">
+                                {task.title}
                               </Link>
+                              <p className="mt-1 text-xs text-slate-500">{task.client_name || "Sin cliente"}</p>
                             </div>
+                            <span className="rounded-full bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-700 ring-1 ring-slate-200">
+                              {formatDate(task.due_date)}
+                            </span>
+                          </div>
+
+                          <div className="flex flex-wrap gap-2">
+                            {columns
+                              .filter((option) => option.value !== task.status)
+                              .map((option) => (
+                                <button
+                                  key={option.value}
+                                  type="button"
+                                  disabled={Boolean(saving)}
+                                  onClick={() => moveTask(task.id, option.value)}
+                                  className="inline-flex items-center gap-2 rounded-xl bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 ring-1 ring-slate-200 transition hover:bg-slate-100 disabled:opacity-60"
+                                >
+                                  {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <MoveRight className="h-3.5 w-3.5" />}
+                                  {option.label}
+                                </button>
+                              ))}
+                            <Link
+                              href={taskDetailRoute(task.id)}
+                              className="inline-flex items-center rounded-xl bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-100 transition hover:bg-emerald-100"
+                            >
+                              Abrir
+                            </Link>
                           </div>
                         </Card>
                       </article>
                     );
                   })
                 ) : (
-                  <div className="rounded-2xl border border-dashed border-slate-300 bg-white/60 px-4 py-8 text-center text-sm text-slate-500">
+                  <div className="rounded-2xl border border-dashed border-slate-300 bg-white/60 px-4 py-6 text-center text-sm text-slate-500">
                     Suelta una tarea aquí.
                   </div>
                 )}

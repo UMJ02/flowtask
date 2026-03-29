@@ -19,12 +19,9 @@ function normalizeTaskRow(row: any): TaskSummary {
     created_at: (row.created_at as string | null | undefined) ?? null,
     updated_at: (row.updated_at as string | null | undefined) ?? null,
     clientName: (row.client_name as string | null | undefined) ?? null,
-    client_name: (row.client_name as string | null | undefined) ?? null,
     dueDate,
-    due_date: dueDate,
     departmentCode: (department?.code as string | null | undefined) ?? null,
     departmentName: (department?.name as string | null | undefined) ?? null,
-    departments: row.departments ?? null,
     isOverdue: Boolean(dueDate && dueDate < today && row.status !== "concluido"),
     isDueToday: Boolean(dueDate && dueDate === today && row.status !== "concluido"),
   };

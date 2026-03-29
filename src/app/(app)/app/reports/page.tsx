@@ -7,11 +7,7 @@ import { SectionHeader } from '@/components/ui/section-header';
 import { OperationsOverview } from '@/components/reports/operations-overview';
 import { getReportsOverview } from '@/lib/queries/reports';
 
-const REPORT_GROUPS: Array<{
-  title: string;
-  description: string;
-  actions: Array<{ href: string; label: string; primary?: boolean }>;
-}> = [
+const REPORT_GROUPS = [
   {
     title: 'Primarios',
     description: 'Los que más se usan para revisar estado y compartir con dirección.',
@@ -59,7 +55,7 @@ export default async function ReportsPage() {
               <p className="mt-2 text-sm text-slate-500">{group.description}</p>
               <div className="mt-4 grid gap-2 sm:grid-cols-2">
                 {group.actions.map((action) => (
-                  <Link key={action.href} href={action.href as any} target="_blank">
+                  <Link key={action.href} href={action.href} target="_blank">
                     <Button variant={action.primary ? 'primary' : 'secondary'} className="w-full justify-between">
                       {action.label}
                       <ArrowUpRight className="h-4 w-4" />

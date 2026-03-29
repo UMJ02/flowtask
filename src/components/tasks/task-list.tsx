@@ -5,7 +5,6 @@ import { TaskInlineActions } from '@/components/tasks/task-inline-actions';
 import { Card } from '@/components/ui/card';
 import { EmptyState } from '@/components/ui/empty-state';
 import { StatusBadge } from '@/components/ui/status-badge';
-import { taskDetailRoute } from '@/lib/navigation/routes';
 
 export function TaskList({ tasks }: { tasks: Array<{ id: string; title: string; status: string; client_name?: string | null; due_date?: string | null }> }) {
   if (!tasks.length) {
@@ -28,7 +27,7 @@ export function TaskList({ tasks }: { tasks: Array<{ id: string; title: string; 
                 <StatusBadge value={task.status} />
                 <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">{task.client_name || 'Sin cliente'}</span>
               </div>
-              <Link href={taskDetailRoute(task.id)} className="mt-3 block">
+              <Link href={`/app/tasks/${task.id}`} className="mt-3 block">
                 <h3 className="line-clamp-2 text-base font-semibold text-slate-900 transition hover:text-emerald-700">{task.title}</h3>
               </Link>
               <div className="mt-3 flex flex-wrap gap-3 text-sm text-slate-500">
@@ -36,7 +35,7 @@ export function TaskList({ tasks }: { tasks: Array<{ id: string; title: string; 
                   <CalendarClock className="h-4 w-4" />
                   {task.due_date || 'Sin fecha definida'}
                 </span>
-                <Link href={taskDetailRoute(task.id)} className="inline-flex items-center gap-2 font-medium text-emerald-700 transition hover:text-emerald-800">
+                <Link href={`/app/tasks/${task.id}`} className="inline-flex items-center gap-2 font-medium text-emerald-700 transition hover:text-emerald-800">
                   Abrir detalle
                   <ArrowUpRight className="h-4 w-4" />
                 </Link>
@@ -48,7 +47,7 @@ export function TaskList({ tasks }: { tasks: Array<{ id: string; title: string; 
                 type: 'task',
                 title: task.title,
                 subtitle: task.client_name || 'Tarea',
-                href: taskDetailRoute(task.id),
+                href: `/app/tasks/${task.id}`,
                 updatedAt: new Date().toISOString(),
               }}
               compact

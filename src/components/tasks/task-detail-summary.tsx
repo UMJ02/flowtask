@@ -3,7 +3,6 @@ import { TaskDeleteButton } from "@/components/tasks/task-delete-button";
 import { Card } from "@/components/ui/card";
 import { EntityMemoryActions } from "@/components/entities/entity-memory-actions";
 import { formatDate } from "@/lib/utils/dates";
-import { taskDetailRoute, taskEditRoute } from "@/lib/navigation/routes";
 
 export function TaskDetailSummary({ task }: { task: any }) {
   const department = Array.isArray(task.departments) ? task.departments[0] : task.departments;
@@ -18,8 +17,8 @@ export function TaskDetailSummary({ task }: { task: any }) {
           <p className="mt-3 text-sm text-slate-600">{task.description || "Sin descripción todavía."}</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <EntityMemoryActions entity={{ id: task.id, type: 'task', title: task.title, subtitle: task.client_name || "Tarea", href: taskDetailRoute(task.id), updatedAt: new Date().toISOString() }} />
-          <Link href={taskEditRoute(task.id)} className="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-900 transition hover:bg-slate-50">
+          <EntityMemoryActions entity={{ id: task.id, type: 'task', title: task.title, subtitle: task.client_name || "Tarea", href: `/app/tasks/${task.id}`, updatedAt: new Date().toISOString() }} />
+          <Link href={`/app/tasks/${task.id}/edit`} className="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-900 transition hover:bg-slate-50">
             Editar tarea
           </Link>
           <TaskDeleteButton taskId={task.id} />

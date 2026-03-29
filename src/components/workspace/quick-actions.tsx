@@ -1,49 +1,32 @@
 import Link from 'next/link';
-import { CalendarDays, Flag, FolderKanban, LayoutPanelTop, Plus, Sparkles, UserRoundPlus } from 'lucide-react';
+import { AlertCircle, Flag, FolderKanban, Plus, Sparkles, UserRoundPlus } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { asRoute, projectNewRoute, taskNewRoute, type AppRoute } from '@/lib/navigation/routes';
+import { projectNewRoute, taskNewRoute } from '@/lib/navigation/routes';
 
-const ACTIONS: Array<{ href: AppRoute; title: string; description: string; helper: string; icon: typeof Plus }> = [
+const ACTIONS = [
   {
     href: taskNewRoute(),
     title: 'Tarea',
-    description: 'Crea una tarea nueva y súbela al flujo activo.',
-    helper: 'Alta rápida',
+    description: 'Crea una tarea y súbela al tablero.',
     icon: Plus,
   },
   {
     href: projectNewRoute(),
     title: 'Proyecto',
-    description: 'Abre un frente nuevo con fechas, cliente y contexto.',
-    helper: 'Inicio guiado',
+    description: 'Abre un frente nuevo con fechas y cliente.',
     icon: FolderKanban,
   },
   {
-    href: asRoute('/app/dashboard?view=board'),
-    title: 'Pizarra',
-    description: 'Abre el tablero interactivo para mover trabajo y foco.',
-    helper: 'Vista operativa',
-    icon: LayoutPanelTop,
-  },
-  {
-    href: asRoute('/app/planning'),
-    title: 'Planificación',
-    description: 'Revisa prioridades, capacidad y próximos vencimientos.',
-    helper: 'Semana actual',
-    icon: CalendarDays,
-  },
-  {
-    href: asRoute('/app/tasks?view=list'),
+    href: '/app/tasks?view=list',
     title: 'Asignar',
-    description: 'Entra directo a repartir pendientes y responsables.',
-    helper: 'Gestión rápida',
+    description: 'Entra rápido a repartir pendientes.',
     icon: UserRoundPlus,
   },
   {
-    href: asRoute('/app/tasks?status=alta'),
+    href: '/app/tasks?status=alta',
     title: 'Prioridad',
-    description: 'Filtra primero lo más urgente y decide sin rodeos.',
-    helper: 'Alta urgencia',
+    description: 'Mira primero lo más urgente.',
     icon: Flag,
   },
 ];
@@ -62,28 +45,34 @@ export function WorkspaceQuickActions() {
         </span>
       </div>
 
-      <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+      <div className="mt-4 grid gap-3 md:grid-cols-2">
         {ACTIONS.map((action) => {
           const Icon = action.icon;
           return (
-            <Link key={action.title} href={action.href} className="rounded-[14px] border border-slate-200 bg-slate-50 px-4 py-4 transition hover:border-emerald-200 hover:bg-emerald-50">
+            <Link key={action.title} href={action.href} className="rounded-[12px] border border-slate-200 bg-slate-50 px-4 py-4 transition hover:border-emerald-200 hover:bg-emerald-50">
               <div className="flex items-start gap-3">
-                <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-[12px] bg-white text-emerald-700 ring-1 ring-slate-200">
+                <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-white text-emerald-700 ring-1 ring-slate-200">
                   <Icon className="h-4.5 w-4.5" />
                 </span>
                 <div className="min-w-0">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <p className="text-sm font-semibold text-slate-900">{action.title}</p>
-                    <span className="inline-flex rounded-full bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-600 ring-1 ring-slate-200">
-                      {action.helper}
-                    </span>
-                  </div>
+                  <p className="text-sm font-semibold text-slate-900">{action.title}</p>
                   <p className="mt-1 text-sm leading-5 text-slate-500">{action.description}</p>
                 </div>
               </div>
             </Link>
           );
         })}
+      </div>
+
+      <div className="mt-4 flex flex-wrap gap-2">
+        <Link href="/app/tasks?status=blocked" className="max-sm:flex-1">
+          <Button variant="secondary" className="max-sm:w-full">
+            <AlertCircle className="h-4 w-4" /> Bloqueos
+          </Button>
+        </Link>
+        <Link href="/app/reports" className="max-sm:flex-1">
+          <Button variant="ghost" className="max-sm:w-full">Resumen</Button>
+        </Link>
       </div>
     </Card>
   );

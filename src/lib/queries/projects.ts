@@ -18,14 +18,10 @@ function normalizeProjectRow(row: any): ProjectSummary {
     created_at: (row.created_at as string | null | undefined) ?? null,
     updated_at: (row.updated_at as string | null | undefined) ?? null,
     clientName: (row.client_name as string | null | undefined) ?? null,
-    client_name: (row.client_name as string | null | undefined) ?? null,
     dueDate: (row.due_date as string | null | undefined) ?? null,
-    due_date: (row.due_date as string | null | undefined) ?? null,
     isCollaborative: Boolean(row.is_collaborative),
-    is_collaborative: Boolean(row.is_collaborative),
     departmentCode: (department?.code as string | null | undefined) ?? null,
     departmentName: (department?.name as string | null | undefined) ?? null,
-    departments: row.departments ?? null,
   };
 }
 

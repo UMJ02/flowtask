@@ -11,8 +11,6 @@ import { getWorkspaceOnboardingSummary } from '@/lib/queries/onboarding';
 import { getWorkspaceIntelligenceSummary } from '@/lib/queries/workspace-intelligence';
 import { safeServerCall } from '@/lib/runtime/safe-server';
 
-export const dynamic = 'force-dynamic';
-
 function toneClass(tone: 'critical' | 'attention' | 'stable') {
   if (tone === 'critical') return 'bg-rose-50 text-rose-700 ring-1 ring-rose-100';
   if (tone === 'attention') return 'bg-amber-50 text-amber-700 ring-1 ring-amber-100';
