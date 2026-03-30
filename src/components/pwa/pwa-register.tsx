@@ -35,7 +35,16 @@ export function PwaRegister() {
   useEffect(() => {
     const disable = shouldDisablePwaEnhancements();
     setDisabled(disable);
-    if (disable) return;
+    if (disable) {
+      if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations()
+          .then((registrations) => {
+            registrations.forEach((registration) => registration.unregister().catch(() => undefined));
+          })
+          .catch(() => undefined);
+      }
+      return;
+    }
 
     setInstalled(isStandalone());
 
