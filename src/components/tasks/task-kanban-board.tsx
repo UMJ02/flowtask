@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 
 import Link from "next/link";
-import { AlertCircle, CheckCircle2, Clock3, FolderOpen, GripVertical, Loader2 } from "lucide-react";
+import { AlertCircle, CheckCircle2, ChevronDown, ChevronUp, Clock3, FolderOpen, GripVertical, Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { Card } from "@/components/ui/card";
 import { taskDetailRoute } from "@/lib/navigation/routes";
@@ -16,6 +16,11 @@ type TaskItem = {
   due_date?: string | null;
 };
 
+type LayoutConfigShape = {
+  kanbanStatusOverrides?: Record<string, string>;
+  kanbanOrderOverrides?: Record<string, string[]>;
+};
+
 const columns = [
   { value: "en_proceso", label: "En progreso", icon: Clock3 },
   { value: "en_espera", label: "Pendiente", icon: AlertCircle },
@@ -24,6 +29,7 @@ const columns = [
 
 const STATUS_OVERRIDES_KEY = "flowtask.board.kanban.status-overrides.v1";
 const ORDER_OVERRIDES_KEY = "flowtask.board.kanban.order-overrides.v1";
+const DEFAULT_VISIBLE_COUNT = 5;
 
 function readStatusOverrides() {
   if (typeof window === "undefined") return {} as Record<string, string>;
@@ -65,16 +71,6 @@ function writeOrderOverrides(value: Record<string, string[]>) {
   } catch {}
 }
 
-function moveOrderItem(value: Record<string, string[]>, taskId: string, nextStatus: string) {
-  const next: Record<string, string[]> = {};
-  for (const column of columns) {
-    const current = Array.isArray(value[column.value]) ? value[column.value] : [];
-    next[column.value] = current.filter((id) => id !== taskId);
-  }
-  next[nextStatus] = [taskId, ...(next[nextStatus] ?? [])];
-  return next;
-}
-
 function applyStatusOverrides(items: TaskItem[], overrides: Record<string, string>) {
   return items.map((task) => {
     const override = overrides[task.id];
@@ -105,6 +101,98 @@ function formatDate(value?: string | null) {
   }
 }
 
+function normalizeOrderValue(value: unknown): Record<string, string[]> {
+  if (!value || typeof value !== "object") return {};
+  const next: Record<string, string[]> = {};
+  for (const column of columns) {
+    const current = (value as Record<string, unknown>)[column.value];
+    next[column.value] = Array.isArray(current) ? current.filter((item): item is string => typeof item === "string") : [];
+  }
+  return next;
+}
+
+function normalizeStatusValue(value: unknown): Record<string, string> {
+  if (!value || typeof value !== "object") return {};
+  const next: Record<string, string> = {};
+  for (const [taskId, status] of Object.entries(value as Record<string, unknown>)) {
+    if (typeof taskId === "string" && typeof status === "string") next[taskId] = status;
+  }
+  return next;
+}
+
+function mergeOrderOverrides(...values: Array<Record<string, string[]>>) {
+  const next: Record<string, string[]> = {};
+  for (const column of columns) {
+    const seen = new Set<string>();
+    next[column.value] = [];
+    for (const value of values) {
+      const current = Array.isArray(value[column.value]) ? value[column.value] : [];
+      for (const item of current) {
+        if (!seen.has(item)) {
+          seen.add(item);
+          next[column.value].push(item);
+        }
+      }
+    }
+  }
+  return next;
+}
+
+function buildNextOrderOverrides(
+  value: Record<string, string[]>,
+  taskId: string,
+  nextStatus: string,
+  beforeTaskId?: string | null,
+) {
+  const next: Record<string, string[]> = {};
+  for (const column of columns) {
+    const current = Array.isArray(value[column.value]) ? value[column.value] : [];
+    next[column.value] = current.filter((id) => id !== taskId);
+  }
+
+  const target = [...(next[nextStatus] ?? [])];
+  if (beforeTaskId && target.includes(beforeTaskId)) {
+    const targetIndex = target.indexOf(beforeTaskId);
+    target.splice(targetIndex, 0, taskId);
+  } else {
+    target.unshift(taskId);
+  }
+  next[nextStatus] = target;
+  return next;
+}
+
+async function readBoardLayoutConfig(supabase: ReturnType<typeof createClient>) {
+  const { data: authData } = await supabase.auth.getUser();
+  const userId = authData.user?.id;
+  if (!userId) return null;
+
+  const { data, error } = await supabase
+    .from("boards")
+    .select("id, layout_config")
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  if (error || !data) return null;
+  return { id: data.id as string, layoutConfig: (data.layout_config ?? {}) as LayoutConfigShape };
+}
+
+async function persistBoardLayoutConfig(
+  supabase: ReturnType<typeof createClient>,
+  statusOverrides: Record<string, string>,
+  orderOverrides: Record<string, string[]>,
+) {
+  const board = await readBoardLayoutConfig(supabase);
+  if (!board?.id) return;
+
+  const nextLayoutConfig: LayoutConfigShape = {
+    ...board.layoutConfig,
+    kanbanStatusOverrides: statusOverrides,
+    kanbanOrderOverrides: orderOverrides,
+  };
+
+  await supabase.from("boards").update({ layout_config: nextLayoutConfig }).eq("id", board.id);
+}
+
 export function TaskKanbanBoard({ tasks, showHeader = true }: { tasks: TaskItem[]; showHeader?: boolean }) {
   const supabase = createClient();
   const serverSignature = useMemo(() => tasks.map((task) => `${task.id}:${task.status}:${task.due_date ?? ""}:${task.title}`).join("|"), [tasks]);
@@ -114,14 +202,40 @@ export function TaskKanbanBoard({ tasks, showHeader = true }: { tasks: TaskItem[
   const [lastServerSignature, setLastServerSignature] = useState(serverSignature);
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [hoverColumn, setHoverColumn] = useState<string | null>(null);
+  const [hoverTaskId, setHoverTaskId] = useState<string | null>(null);
   const [busyStatus, setBusyStatus] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [recentDropColumn, setRecentDropColumn] = useState<string | null>(null);
+  const [expandedColumns, setExpandedColumns] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
-    setStatusOverrides(readStatusOverrides());
-    setOrderOverrides(readOrderOverrides());
-  }, []);
+    let active = true;
+
+    const syncBoardConfig = async () => {
+      const board = await readBoardLayoutConfig(supabase);
+      if (!active || !board) return;
+
+      const dbStatusOverrides = normalizeStatusValue(board.layoutConfig.kanbanStatusOverrides);
+      const dbOrderOverrides = normalizeOrderValue(board.layoutConfig.kanbanOrderOverrides);
+      const localStatusOverrides = readStatusOverrides();
+      const localOrderOverrides = readOrderOverrides();
+
+      const mergedStatusOverrides = { ...dbStatusOverrides, ...localStatusOverrides };
+      const mergedOrderOverrides = mergeOrderOverrides(dbOrderOverrides, localOrderOverrides);
+
+      setStatusOverrides(mergedStatusOverrides);
+      setOrderOverrides(mergedOrderOverrides);
+      setBoardTasks(applyStatusOverrides(tasks, mergedStatusOverrides));
+      writeStatusOverrides(mergedStatusOverrides);
+      writeOrderOverrides(mergedOrderOverrides);
+    };
+
+    void syncBoardConfig();
+
+    return () => {
+      active = false;
+    };
+  }, [serverSignature, supabase, tasks]);
 
   useEffect(() => {
     if (!recentDropColumn) return;
@@ -144,17 +258,31 @@ export function TaskKanbanBoard({ tasks, showHeader = true }: { tasks: TaskItem[
   }, [boardTasks]);
 
   const grouped = useMemo(() => {
-    return columns.map((column) => ({
-      ...column,
-      items: sortItems(normalizedTasks.filter((task) => task.status === column.value), orderOverrides[column.value] ?? []).slice(0, 5),
-    }));
-  }, [normalizedTasks, orderOverrides]);
+    return columns.map((column) => {
+      const orderedItems = sortItems(normalizedTasks.filter((task) => task.status === column.value), orderOverrides[column.value] ?? []);
+      const expanded = expandedColumns[column.value] ?? false;
+      return {
+        ...column,
+        allItems: orderedItems,
+        items: expanded ? orderedItems : orderedItems.slice(0, DEFAULT_VISIBLE_COUNT),
+        hiddenCount: Math.max(orderedItems.length - DEFAULT_VISIBLE_COUNT, 0),
+        expanded,
+      };
+    });
+  }, [expandedColumns, normalizedTasks, orderOverrides]);
 
-  const moveTask = async (taskId: string, nextStatus: string) => {
+  const persistLayout = async (nextStatusOverrides: Record<string, string>, nextOrderOverrides: Record<string, string[]>) => {
+    writeStatusOverrides(nextStatusOverrides);
+    writeOrderOverrides(nextOrderOverrides);
+    await persistBoardLayoutConfig(supabase, nextStatusOverrides, nextOrderOverrides);
+  };
+
+  const moveTask = async (taskId: string, nextStatus: string, beforeTaskId?: string | null) => {
     const currentTask = normalizedTasks.find((item) => item.id === taskId);
-    if (!currentTask || currentTask.status === nextStatus) {
+    if (!currentTask) {
       setDraggingId(null);
       setHoverColumn(null);
+      setHoverTaskId(null);
       return;
     }
 
@@ -163,33 +291,36 @@ export function TaskKanbanBoard({ tasks, showHeader = true }: { tasks: TaskItem[
     const previousOrderOverrides = orderOverrides;
     const nextTasks = normalizedTasks.map((item) => (item.id === taskId ? { ...item, status: nextStatus } : item));
     const nextStatusOverrides = { ...statusOverrides, [taskId]: nextStatus };
-    const nextOrderOverrides = moveOrderItem(orderOverrides, taskId, nextStatus);
+    const nextOrderOverrides = buildNextOrderOverrides(orderOverrides, taskId, nextStatus, beforeTaskId);
 
     setError(null);
     setBoardTasks(nextTasks);
     setStatusOverrides(nextStatusOverrides);
-    writeStatusOverrides(nextStatusOverrides);
     setOrderOverrides(nextOrderOverrides);
-    writeOrderOverrides(nextOrderOverrides);
     setBusyStatus(`${taskId}:${nextStatus}`);
     setRecentDropColumn(nextStatus);
 
-    const { error: updateError } = await supabase.from("tasks").update({ status: nextStatus }).eq("id", taskId);
+    try {
+      if (currentTask.status !== nextStatus) {
+        const { error: updateError } = await supabase.from("tasks").update({ status: nextStatus }).eq("id", taskId);
+        if (updateError) throw updateError;
+      }
 
-    if (updateError) {
+      await persistLayout(nextStatusOverrides, nextOrderOverrides);
+      setLastServerSignature(nextTasks.map((task) => `${task.id}:${task.status}:${task.due_date ?? ""}:${task.title}`).join("|"));
+    } catch {
       setBoardTasks(previousTasks);
       setStatusOverrides(previousStatusOverrides);
-      writeStatusOverrides(previousStatusOverrides);
       setOrderOverrides(previousOrderOverrides);
+      writeStatusOverrides(previousStatusOverrides);
       writeOrderOverrides(previousOrderOverrides);
-      setError("No pudimos mover la tarea. Revisa permisos o intenta de nuevo.");
-    } else {
-      setLastServerSignature(nextTasks.map((task) => `${task.id}:${task.status}:${task.due_date ?? ""}:${task.title}`).join("|"));
+      setError("No pudimos guardar el movimiento u orden de la tarea. Revisa permisos o intenta de nuevo.");
     }
 
     setBusyStatus(null);
     setDraggingId(null);
     setHoverColumn(null);
+    setHoverTaskId(null);
   };
 
   return (
@@ -207,7 +338,7 @@ export function TaskKanbanBoard({ tasks, showHeader = true }: { tasks: TaskItem[
                 return (
                   <span key={column.value} className="inline-flex min-h-[72px] items-center justify-center gap-2.5 rounded-[22px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700 shadow-[inset_0_1px_0_rgba(255,255,255,0.75)]">
                     <Icon className="h-4 w-4 shrink-0" />
-                    <span>{column.label}: {column.items.length}</span>
+                    <span>{column.label}: {column.allItems.length}</span>
                   </span>
                 );
               })}
@@ -239,8 +370,8 @@ export function TaskKanbanBoard({ tasks, showHeader = true }: { tasks: TaskItem[
               onDragLeave={() => setHoverColumn((current) => (current === column.value ? null : current))}
               onDrop={(event) => {
                 event.preventDefault();
-                const taskId = event.dataTransfer.getData("text/task-id") || event.dataTransfer.getData("text/plain");
-                if (taskId) moveTask(taskId, column.value);
+                const taskId = event.dataTransfer.getData("text/task-id") || event.dataTransfer.getData("application/x-flowtask-task-id") || event.dataTransfer.getData("text/plain");
+                if (taskId) void moveTask(taskId, column.value);
               }}
             >
               <div className="mb-3 flex items-center justify-between gap-3 border-b border-slate-200/80 pb-3">
@@ -251,7 +382,7 @@ export function TaskKanbanBoard({ tasks, showHeader = true }: { tasks: TaskItem[
                   <p className="text-[1.2rem] font-bold tracking-tight text-slate-900 md:text-[1.35rem]">{column.label}</p>
                 </div>
                 <span className="inline-flex h-10 min-w-10 items-center justify-center rounded-full bg-white px-3 text-sm font-semibold text-slate-700 ring-1 ring-slate-200 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]">
-                  {column.items.length}
+                  {column.allItems.length}
                 </span>
               </div>
 
@@ -259,6 +390,7 @@ export function TaskKanbanBoard({ tasks, showHeader = true }: { tasks: TaskItem[
                 {column.items.length ? (
                   column.items.map((task) => {
                     const saving = busyStatus?.startsWith(`${task.id}:`);
+                    const isHoverCard = hoverTaskId === task.id;
                     return (
                       <article
                         key={task.id}
@@ -266,7 +398,6 @@ export function TaskKanbanBoard({ tasks, showHeader = true }: { tasks: TaskItem[
                         onDragStart={(event) => {
                           event.dataTransfer.effectAllowed = "move";
                           event.dataTransfer.setData("text/task-id", task.id);
-                          event.dataTransfer.effectAllowed = "move";
                           event.dataTransfer.setData("application/x-flowtask-task-id", task.id);
                           event.dataTransfer.setData("text/plain", task.id);
                           setDraggingId(task.id);
@@ -274,10 +405,29 @@ export function TaskKanbanBoard({ tasks, showHeader = true }: { tasks: TaskItem[
                         onDragEnd={() => {
                           setDraggingId(null);
                           setHoverColumn(null);
+                          setHoverTaskId(null);
+                        }}
+                        onDragOver={(event) => {
+                          event.preventDefault();
+                          event.stopPropagation();
+                          setHoverColumn(column.value);
+                          setHoverTaskId(task.id);
+                        }}
+                        onDragLeave={(event) => {
+                          event.stopPropagation();
+                          setHoverTaskId((current) => (current === task.id ? null : current));
+                        }}
+                        onDrop={(event) => {
+                          event.preventDefault();
+                          event.stopPropagation();
+                          const taskId = event.dataTransfer.getData("text/task-id") || event.dataTransfer.getData("application/x-flowtask-task-id") || event.dataTransfer.getData("text/plain");
+                          if (taskId) void moveTask(taskId, column.value, task.id);
                         }}
                         className={draggingId === task.id ? "opacity-60" : "opacity-100"}
                       >
-                        <Card className="rounded-[20px] border border-white/70 bg-white/95 p-3 shadow-[0_6px_18px_rgba(15,23,42,0.04)] transition hover:-translate-y-0.5 hover:border-slate-200 hover:shadow-[0_14px_26px_rgba(15,23,42,0.08)]">
+                        <Card className={`rounded-[20px] border bg-white/95 p-3 shadow-[0_6px_18px_rgba(15,23,42,0.04)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_26px_rgba(15,23,42,0.08)] ${
+                          isHoverCard ? "border-emerald-300 ring-2 ring-emerald-100" : "border-white/70 hover:border-slate-200"
+                        }`}>
                           <div className="space-y-3">
                             <div className="flex items-start gap-3">
                               <span
@@ -305,7 +455,7 @@ export function TaskKanbanBoard({ tasks, showHeader = true }: { tasks: TaskItem[
                                     <button
                                       key={option.value}
                                       type="button"
-                                      onClick={() => moveTask(task.id, option.value)}
+                                      onClick={() => void moveTask(task.id, option.value)}
                                       disabled={Boolean(saving)}
                                       title={option.label}
                                       aria-label={`Mover a ${option.label}`}
@@ -334,6 +484,17 @@ export function TaskKanbanBoard({ tasks, showHeader = true }: { tasks: TaskItem[
                     {isActiveDropzone ? "Suelta para moverla aquí." : "Suelta una tarea aquí."}
                   </div>
                 )}
+
+                {column.hiddenCount > 0 ? (
+                  <button
+                    type="button"
+                    onClick={() => setExpandedColumns((current) => ({ ...current, [column.value]: !column.expanded }))}
+                    className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                  >
+                    {column.expanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                    {column.expanded ? "Ver menos" : `Ver más (${column.hiddenCount})`}
+                  </button>
+                ) : null}
               </div>
             </section>
           );
