@@ -8,7 +8,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Card } from "@/components/ui/card";
 import { taskDetailRoute } from "@/lib/navigation/routes";
 
-type TaskItem = {
+export type TaskItem = {
   id: string;
   title: string;
   status: string;
