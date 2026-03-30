@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "7.3.0-build-stabilization-v4",
+  "version": "7.4.0-deploy-safe-v5",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -22,7 +22,10 @@
     "vercel:build": "npm run clean && npm run runtime:check && next build",
     "build:strict": "npm run clean && npm run release:check && next build",
     "vercel:preflight": "npm run clean && npm run runtime:check && npm run typecheck",
-    "vercel:deploy-check": "npm run vercel:preflight && echo \"[vercel-deploy-check] Ready to run npm run build\""
+    "vercel:deploy-check": "npm run vercel:preflight && echo \"[vercel-deploy-check] Ready to run npm run build\"",
+    "security:check": "node scripts/security-check.mjs",
+    "deploy:ready": "npm run security:check && npm run vercel:preflight && npm run build",
+    "vercel:prod-ready": "npm run deploy:ready"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

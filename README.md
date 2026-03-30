@@ -81,3 +81,22 @@ Recommended flow:
 2. `npm run runtime:check`
 3. `npm run vercel:preflight`
 4. `npm run build`
+
+
+## v7.4.0 deploy safe v5
+
+Base pensada para continuar después de un build local exitoso.
+
+Nuevos scripts:
+- `npm run security:check`
+- `npm run deploy:ready`
+- `npm run vercel:prod-ready`
+
+Flujo recomendado desde esta versión:
+1. `npm install`
+2. `npm run security:check`
+3. `npm run runtime:check`
+4. `npm run vercel:preflight`
+5. `npm run build`
+
+Esta versión evita tocar features sensibles y se concentra en cuidar la base estable para Vercel.
