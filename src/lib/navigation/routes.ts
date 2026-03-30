@@ -1,9 +1,7 @@
-import type { Route } from "next";
-
-export type AppRoute = Route;
+export type AppRoute = string;
 
 export function asRoute<T extends string>(route: T): AppRoute {
-  return route as AppRoute;
+  return route;
 }
 
 export function safeInternalRoute(candidate: string | null | undefined, fallback: AppRoute = "/app/dashboard"): AppRoute {
@@ -18,7 +16,7 @@ export function safeInternalRoute(candidate: string | null | undefined, fallback
       return fallback;
     }
 
-    return `${pathname}${parsed.search}${parsed.hash}` as AppRoute;
+    return `${pathname}${parsed.search}${parsed.hash}`;
   } catch {
     return fallback;
   }
@@ -27,41 +25,41 @@ export function safeInternalRoute(candidate: string | null | undefined, fallback
 export function buildRouteWithQuery(pathname: string | null, params: URLSearchParams): AppRoute {
   const safePathname = pathname && pathname.startsWith("/") ? pathname : "/app/dashboard";
   const query = params.toString();
-  return (query ? `${safePathname}?${query}` : safePathname) as AppRoute;
+  return query ? `${safePathname}?${query}` : safePathname;
 }
 
 export function taskDetailRoute(id: string): AppRoute {
-  return `/app/tasks/${id}` as AppRoute;
+  return `/app/tasks/${id}`;
 }
 
 export function taskEditRoute(id: string): AppRoute {
-  return `/app/tasks/${id}/edit` as AppRoute;
+  return `/app/tasks/${id}/edit`;
 }
 
 export function taskListRoute(query = ""): AppRoute {
-  return (query ? `/app/tasks?${query}` : "/app/tasks") as AppRoute;
+  return query ? `/app/tasks?${query}` : "/app/tasks";
 }
 
 export function taskNewRoute(): AppRoute {
-  return "/app/tasks/new" as AppRoute;
+  return "/app/tasks/new";
 }
 
 export function projectDetailRoute(id: string): AppRoute {
-  return `/app/projects/${id}` as AppRoute;
+  return `/app/projects/${id}`;
 }
 
 export function projectEditRoute(id: string, query = ""): AppRoute {
-  return (query ? `/app/projects/${id}/edit?${query}` : `/app/projects/${id}/edit`) as AppRoute;
+  return query ? `/app/projects/${id}/edit?${query}` : `/app/projects/${id}/edit`;
 }
 
 export function projectListRoute(query = ""): AppRoute {
-  return (query ? `/app/projects?${query}` : "/app/projects") as AppRoute;
+  return query ? `/app/projects?${query}` : "/app/projects";
 }
 
 export function projectNewRoute(): AppRoute {
-  return "/app/projects/new" as AppRoute;
+  return "/app/projects/new";
 }
 
 export function notificationsRoute(query = ""): AppRoute {
-  return (query ? `/app/notifications?${query}` : "/app/notifications") as AppRoute;
+  return query ? `/app/notifications?${query}` : "/app/notifications";
 }
