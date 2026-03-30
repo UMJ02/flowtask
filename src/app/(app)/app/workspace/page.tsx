@@ -1,6 +1,7 @@
 import Link from 'next/link';
-import { FolderKanban, LayoutGrid, PanelTop, Plus } from 'lucide-react';
+import { FolderKanban, LayoutGrid, ListChecks, PanelTop, Plus } from 'lucide-react';
 import { RecentActivity } from '@/components/dashboard/recent-activity';
+import { TaskWorkspace } from '@/components/tasks/task-workspace';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -52,6 +53,7 @@ export default async function WorkspacePage() {
     );
   }
 
+  const boardTasks = tasks.slice(0, 24);
   const topProjects = projects.slice(0, 4);
   const topClients = clientItems.slice(0, 4);
   const focus = [
@@ -98,21 +100,21 @@ export default async function WorkspacePage() {
       />
 
       <Card className="bg-[linear-gradient(135deg,#063b2c_0%,#0f172a_58%,#0b1533_100%)] px-5 py-5 text-white shadow-[0_18px_40px_rgba(15,23,42,0.16)] md:px-6">
-        <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(660px,760px)] xl:items-center">
-          <div className="max-w-[42rem]">
+        <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(760px,860px)] xl:items-center">
+          <div className="max-w-[44rem]">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-300">Vista principal</p>
-            <h2 className="mt-2 max-w-xl text-[1.55rem] font-bold leading-tight tracking-tight md:text-[1.75rem]">Empieza por lo importante</h2>
+            <h2 className="mt-2 max-w-xl text-[1.7rem] font-bold leading-tight tracking-tight md:text-[1.9rem]">Empieza por lo importante</h2>
             <p className="prose-balance mt-2 max-w-2xl text-sm leading-6 text-slate-300">Tu trabajo diario vive aquí. Mira prioridades, retoma actividad y ejecuta sin abrir cuatro pantallas para decidir.</p>
           </div>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 xl:justify-self-end">
             {topStats.map((stat) => (
               <div
                 key={stat.label}
-                className="rounded-[1.6rem] border border-white/10 bg-white/10 px-3 py-3 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] backdrop-blur-sm xl:min-w-[138px]"
+                className="rounded-[2rem] border border-white/10 bg-white/10 px-4 py-4 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] backdrop-blur-sm xl:min-w-[162px] xl:px-5"
               >
-                <div className="flex min-h-[96px] flex-col items-center justify-center gap-2">
-                  <p className="w-full px-1 text-center text-[10px] font-semibold uppercase leading-[1.18] tracking-[0.045em] text-slate-300 [text-wrap:balance]">{stat.label}</p>
-                  <p className="text-[1.65rem] font-bold leading-none tabular-nums text-white md:text-[1.8rem]">{stat.value}</p>
+                <div className="flex min-h-[122px] flex-col items-center justify-center gap-3">
+                  <p className="w-full px-1 text-center text-[10px] font-semibold uppercase leading-[1.18] tracking-[0.035em] text-slate-300 sm:text-[10.5px] xl:text-[10.5px] [text-wrap:balance]">{stat.label}</p>
+                  <p className="text-[1.9rem] font-bold leading-none tabular-nums text-white md:text-[2rem]">{stat.value}</p>
                 </div>
               </div>
             ))}
@@ -121,6 +123,21 @@ export default async function WorkspacePage() {
       </Card>
 
       <div className="relative">
+        {boardTasks.length ? (
+          <TaskWorkspace tasks={boardTasks} />
+        ) : (
+          <EmptyState
+            title="Todavía no hay tareas"
+            description="Crea tu primera tarea y empieza a usar el tablero como centro de trabajo."
+            icon={<ListChecks className="h-6 w-6" />}
+            action={
+              <Link href={taskNewRoute()}>
+                <Button>Crear tarea</Button>
+              </Link>
+            }
+          />
+        )}
+
         <FocusDrawer focus={focus} recommendation={intelligenceSummary?.recommendations?.[0] ?? null} />
       </div>
 

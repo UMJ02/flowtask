@@ -39,7 +39,7 @@ export async function getClients(search?: string): Promise<ClientListItem[]> {
   }
 
   const rows = clients ?? [];
-  const ids = rows.map((row: any) => row.id as string);
+  const ids = rows.map((row) => row.id as string);
   const [projectsRes, openTasksRes, completedTasksRes, overdueTasksRes] = await Promise.all([
     ids.length ? supabase.from("projects").select("id,client_id,status").in("client_id", ids) : Promise.resolve({ data: [] as any[] }),
     ids.length ? supabase.from("tasks").select("id,client_id,status").in("client_id", ids).neq("status", "concluido") : Promise.resolve({ data: [] as any[] }),
@@ -47,16 +47,16 @@ export async function getClients(search?: string): Promise<ClientListItem[]> {
     ids.length ? supabase.from("tasks").select("id,client_id,due_date,status").in("client_id", ids).neq("status", "concluido") : Promise.resolve({ data: [] as any[] }),
   ]);
 
-  return rows.map((row: any) => ({
+  return rows.map((row) => ({
     id: row.id as string,
     name: row.name as string,
     status: (row.status as ClientListItem["status"]) ?? "activo",
     notes: (row.notes as string | null | undefined) ?? null,
     createdAtLabel: formatDate(row.created_at as string | null | undefined),
-    projectsCount: (projectsRes.data ?? []).filter((item: any) => item.client_id === row.id && item.status !== "completado").length,
-    openTasksCount: (openTasksRes.data ?? []).filter((item: any) => item.client_id === row.id).length,
-    completedTasksCount: (completedTasksRes.data ?? []).filter((item: any) => item.client_id === row.id).length,
-    overdueTasksCount: (overdueTasksRes.data ?? []).filter((item: any) => item.client_id === row.id && isOverdue(item.due_date as string | null | undefined, item.status as string | null | undefined)).length,
+    projectsCount: (projectsRes.data ?? []).filter((item) => item.client_id === row.id && item.status !== "completado").length,
+    openTasksCount: (openTasksRes.data ?? []).filter((item) => item.client_id === row.id).length,
+    completedTasksCount: (completedTasksRes.data ?? []).filter((item) => item.client_id === row.id).length,
+    overdueTasksCount: (overdueTasksRes.data ?? []).filter((item) => item.client_id === row.id && isOverdue(item.due_date as string | null | undefined, item.status as string | null | undefined)).length,
   }));
 }
 
@@ -101,9 +101,9 @@ export async function getClientById(clientId: string): Promise<ClientDetailSumma
     supabase.from("activity_logs").select("id,action,created_at,metadata").eq("entity_type", "client").eq("entity_id", clientId).order("created_at", { ascending: false }).limit(8),
   ]);
 
-  const openTasksCount = (tasks ?? []).filter((item: any) => item.status !== "concluido").length;
-  const completedTasksCount = (tasks ?? []).filter((item: any) => item.status === "concluido").length;
-  const overdueTasksCount = (tasks ?? []).filter((item: any) => isOverdue(item.due_date as string | null | undefined, item.status as string | null | undefined)).length;
+  const openTasksCount = (tasks ?? []).filter((item) => item.status !== "concluido").length;
+  const completedTasksCount = (tasks ?? []).filter((item) => item.status === "concluido").length;
+  const overdueTasksCount = (tasks ?? []).filter((item) => isOverdue(item.due_date as string | null | undefined, item.status as string | null | undefined)).length;
 
   return {
     id: clientRow.id as string,
@@ -112,13 +112,13 @@ export async function getClientById(clientId: string): Promise<ClientDetailSumma
     status: (clientRow.status as ClientListItem["status"]) ?? "activo",
     notes: (clientRow.notes as string | null | undefined) ?? null,
     createdAtLabel: formatDate(clientRow.created_at as string | null | undefined),
-    projectsCount: (projects ?? []).filter((item: any) => item.status !== "completado").length,
+    projectsCount: (projects ?? []).filter((item) => item.status !== "completado").length,
     openTasksCount,
     completedTasksCount,
     overdueTasksCount,
     accountOwnerEmail: (owner?.email as string | undefined) ?? null,
-    recentProjects: (projects ?? []).map((item: any) => ({ id: item.id as string, title: item.title as string, status: item.status as string, dueDateLabel: formatDate(item.due_date as string | null | undefined) })),
-    recentTasks: (tasks ?? []).map((item: any) => ({ id: item.id as string, title: item.title as string, status: item.status as string, dueDateLabel: formatDate(item.due_date as string | null | undefined) })),
-    activity: (activity ?? []).map((item: any) => ({ id: item.id as string, action: item.action as string, createdAtLabel: formatDate(item.created_at as string | null | undefined) })),
+    recentProjects: (projects ?? []).map((item) => ({ id: item.id as string, title: item.title as string, status: item.status as string, dueDateLabel: formatDate(item.due_date as string | null | undefined) })),
+    recentTasks: (tasks ?? []).map((item) => ({ id: item.id as string, title: item.title as string, status: item.status as string, dueDateLabel: formatDate(item.due_date as string | null | undefined) })),
+    activity: (activity ?? []).map((item) => ({ id: item.id as string, action: item.action as string, createdAtLabel: formatDate(item.created_at as string | null | undefined) })),
   };
 }

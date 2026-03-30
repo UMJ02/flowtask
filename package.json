@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "7.6.2-hydration-manifest-fix",
+  "version": "7.6.4-clean-board-fix",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -14,18 +14,7 @@
     "process-daily-digest": "npx tsx scripts/process-daily-digest.ts",
     "retry-failed-deliveries": "npx tsx scripts/retry-failed-deliveries.ts",
     "runtime:check": "node scripts/runtime-check.mjs",
-    "release:check": "node scripts/release-check.mjs",
-    "clean": "rm -rf .next tsconfig.tsbuildinfo",
-    "prebuild": "npm run runtime:check",
-    "ci:check": "npm run typecheck && npm run runtime:check",
-    "reinstall:clean": "rm -rf node_modules package-lock.json .next tsconfig.tsbuildinfo",
-    "vercel:build": "npm run clean && npm run runtime:check && next build",
-    "build:strict": "npm run clean && npm run release:check && next build",
-    "vercel:preflight": "npm run clean && npm run runtime:check && npm run typecheck",
-    "vercel:deploy-check": "npm run vercel:preflight && echo \"[vercel-deploy-check] Ready to run npm run build\"",
-    "security:check": "node scripts/security-check.mjs",
-    "deploy:ready": "npm run security:check && npm run vercel:preflight && npm run build",
-    "vercel:prod-ready": "npm run deploy:ready"
+    "release:check": "node scripts/release-check.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
@@ -39,8 +28,7 @@
     "react-dom": "19.0.0",
     "react-hook-form": "^7.54.2",
     "tailwind-merge": "^3.3.0",
-    "zod": "^3.24.1",
-    "dotenv": "^16.4.7"
+    "zod": "^3.24.1"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
@@ -48,13 +36,10 @@
     "@types/react-dom": "^19.0.4",
     "autoprefixer": "^10.4.21",
     "eslint": "^9.24.0",
-    "eslint-config-next": "^15.3.8",
+    "eslint-config-next": "15.3.1",
     "postcss": "^8.5.3",
     "tailwindcss": "^3.4.17",
     "tsx": "^4.19.3",
     "typescript": "^5.8.2"
-  },
-  "engines": {
-    "node": ">=20.11.0"
   }
 }

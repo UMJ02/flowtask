@@ -3,14 +3,13 @@ import { CalendarDays, Flag, FolderKanban, LayoutPanelTop, Plus, Sparkles, UserR
 import { Card } from '@/components/ui/card';
 import { asRoute, projectNewRoute, taskNewRoute, type AppRoute } from '@/lib/navigation/routes';
 
-const ACTIONS: Array<{ href: AppRoute; title: string; description: string; helper: string; icon: typeof Plus; accent: string }> = [
+const ACTIONS: Array<{ href: AppRoute; title: string; description: string; helper: string; icon: typeof Plus }> = [
   {
     href: taskNewRoute(),
     title: 'Tarea',
     description: 'Crea una tarea nueva y súbela al flujo activo.',
     helper: 'Alta rápida',
     icon: Plus,
-    accent: 'from-emerald-50 to-white',
   },
   {
     href: projectNewRoute(),
@@ -18,7 +17,6 @@ const ACTIONS: Array<{ href: AppRoute; title: string; description: string; helpe
     description: 'Abre un frente nuevo con fechas, cliente y contexto.',
     helper: 'Inicio guiado',
     icon: FolderKanban,
-    accent: 'from-sky-50 to-white',
   },
   {
     href: asRoute('/app/dashboard?view=board'),
@@ -26,7 +24,6 @@ const ACTIONS: Array<{ href: AppRoute; title: string; description: string; helpe
     description: 'Abre el tablero interactivo para mover trabajo y foco.',
     helper: 'Vista operativa',
     icon: LayoutPanelTop,
-    accent: 'from-violet-50 to-white',
   },
   {
     href: asRoute('/app/planning'),
@@ -34,7 +31,6 @@ const ACTIONS: Array<{ href: AppRoute; title: string; description: string; helpe
     description: 'Revisa prioridades, capacidad y próximos vencimientos.',
     helper: 'Semana actual',
     icon: CalendarDays,
-    accent: 'from-amber-50 to-white',
   },
   {
     href: asRoute('/app/tasks?view=list'),
@@ -42,7 +38,6 @@ const ACTIONS: Array<{ href: AppRoute; title: string; description: string; helpe
     description: 'Entra directo a repartir pendientes y responsables.',
     helper: 'Gestión rápida',
     icon: UserRoundPlus,
-    accent: 'from-rose-50 to-white',
   },
   {
     href: asRoute('/app/tasks?status=alta'),
@@ -50,41 +45,36 @@ const ACTIONS: Array<{ href: AppRoute; title: string; description: string; helpe
     description: 'Filtra primero lo más urgente y decide sin rodeos.',
     helper: 'Alta urgencia',
     icon: Flag,
-    accent: 'from-teal-50 to-white',
   },
 ];
 
 export function WorkspaceQuickActions() {
   return (
-    <Card className="rounded-[28px] border border-slate-200/90 p-5 shadow-[0_14px_34px_rgba(15,23,42,0.05)] md:p-6">
+    <Card>
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Accesos directos</p>
-          <h3 className="mt-2 text-xl font-bold text-slate-900">Inicia rápido</h3>
-          <p className="mt-1 max-w-md text-sm leading-5 text-slate-500">Entradas claras para crear, ordenar y revisar lo importante sin perder el hilo.</p>
+          <h3 className="mt-2 text-xl font-bold text-slate-900">Acciona sin rodeos</h3>
+          <p className="mt-1 max-w-md text-sm leading-5 text-slate-500">Atajos listos para crear, ordenar y revisar sin salir del flujo.</p>
         </div>
-        <span className="inline-flex h-11 w-11 items-center justify-center rounded-[14px] bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]">
+        <span className="inline-flex h-11 w-11 items-center justify-center rounded-[12px] bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100">
           <Sparkles className="h-5 w-5" />
         </span>
       </div>
 
-      <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+      <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
         {ACTIONS.map((action) => {
           const Icon = action.icon;
           return (
-            <Link
-              key={action.title}
-              href={action.href}
-              className={`group rounded-[20px] border border-slate-200 bg-gradient-to-br ${action.accent} px-4 py-4 shadow-[0_10px_24px_rgba(15,23,42,0.04)] transition duration-200 hover:-translate-y-1 hover:border-emerald-200 hover:shadow-[0_16px_34px_rgba(16,185,129,0.10)]`}
-            >
+            <Link key={action.title} href={action.href} className="rounded-[14px] border border-slate-200 bg-slate-50 px-4 py-4 transition hover:border-emerald-200 hover:bg-emerald-50">
               <div className="flex items-start gap-3">
-                <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] bg-white text-emerald-700 ring-1 ring-slate-200 shadow-sm transition group-hover:ring-emerald-200">
-                  <Icon className="h-5 w-5" />
+                <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-[12px] bg-white text-emerald-700 ring-1 ring-slate-200">
+                  <Icon className="h-4.5 w-4.5" />
                 </span>
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
-                    <p className="text-base font-semibold text-slate-900">{action.title}</p>
-                    <span className="inline-flex rounded-full bg-white/95 px-2.5 py-1 text-[11px] font-semibold text-slate-600 ring-1 ring-slate-200">
+                    <p className="text-sm font-semibold text-slate-900">{action.title}</p>
+                    <span className="inline-flex rounded-full bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-600 ring-1 ring-slate-200">
                       {action.helper}
                     </span>
                   </div>

@@ -17,7 +17,7 @@ export async function getOrganizationContext() {
     .order("is_default", { ascending: false })
     .limit(20);
 
-  const normalized = (memberships ?? []).map((row: any) => {
+  const normalized = (memberships ?? []).map((row) => {
     const organization = Array.isArray(row.organizations) ? row.organizations[0] : row.organizations;
     return {
       id: organization?.id as string,
@@ -26,7 +26,7 @@ export async function getOrganizationContext() {
       role: row.role as "admin_global" | "manager" | "member" | "viewer",
       isDefault: row.is_default ?? false,
     };
-  }).filter((item: any) => item.id && item.name);
+  }).filter((item) => item.id && item.name);
 
   const activeOrganization = normalized[0] ?? null;
   const access = deriveOrganizationAccess(activeOrganization?.role ?? null);
@@ -41,7 +41,7 @@ export async function getOrganizationContext() {
         .limit(8)
     : { data: [] as any[] };
 
-  const permissionRows = (clientPermissions ?? []).map((row: any) => {
+  const permissionRows = (clientPermissions ?? []).map((row) => {
     const client = Array.isArray(row.clients) ? row.clients[0] : row.clients;
     return {
       clientName: client?.name ?? "Cliente",
@@ -70,7 +70,7 @@ export async function getOrganizationInvites(organizationId?: string | null, can
     .order("created_at", { ascending: false })
     .limit(8);
 
-  return (data ?? []).map((row: any) => ({
+  return (data ?? []).map((row) => ({
     id: row.id as string,
     email: row.email as string,
     role: row.role as any,
@@ -98,9 +98,9 @@ export async function getOrganizationMetrics(organizationId?: string | null) {
   }
 
   const permissionRows = permissions.data ?? [];
-  const editableClients = permissionRows.filter((row: any) => row.can_edit).length;
-  const memberManagedClients = permissionRows.filter((row: any) => row.can_manage_members).length;
-  const readOnlyClients = permissionRows.filter((row: any) => !row.can_edit).length;
+  const editableClients = permissionRows.filter((row) => row.can_edit).length;
+  const memberManagedClients = permissionRows.filter((row) => row.can_manage_members).length;
+  const readOnlyClients = permissionRows.filter((row) => !row.can_edit).length;
 
   return {
     members: members.count ?? 0,
@@ -160,7 +160,7 @@ export async function getOrganizationRolesAndPermissions(organizationId?: string
     permissionsByRole.set(key, arr);
   }
 
-  const roleTemplates = (roleTemplatesRes.data ?? []).map((row: any) => ({
+  const roleTemplates = (roleTemplatesRes.data ?? []).map((row) => ({
     id: row.id as string,
     name: row.name as string,
     description: (row.description as string | null) ?? "",
@@ -171,7 +171,7 @@ export async function getOrganizationRolesAndPermissions(organizationId?: string
 
   return {
     roleTemplates,
-    permissionDefinitions: (permissionDefsRes.data ?? []).map((row: any) => ({
+    permissionDefinitions: (permissionDefsRes.data ?? []).map((row) => ({
       key: row.key as string,
       label: row.label as string,
       description: (row.description as string | null) ?? "",

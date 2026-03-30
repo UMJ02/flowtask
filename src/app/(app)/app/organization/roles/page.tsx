@@ -49,7 +49,7 @@ export default async function OrganizationRolesPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {permissionDefinitions.map((permission: any) => (
+                  {permissionDefinitions.map((permission) => (
                     <tr key={permission.key} className="border-t border-slate-100 align-top">
                       <td className="py-3 pr-4 font-medium text-slate-900">{permission.label}</td>
                       <td className="py-3 pr-4 text-slate-600">{permission.category}</td>

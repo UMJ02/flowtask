@@ -169,7 +169,7 @@ export async function getAssignableUsers(taskId: string) {
   }
 
   return (data ?? [])
-    .map((item: any) => Array.isArray(item.profiles) ? item.profiles[0] : item.profiles)
+    .map((item) => Array.isArray(item.profiles) ? item.profiles[0] : item.profiles)
     .filter(Boolean);
 }
 

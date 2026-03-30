@@ -48,7 +48,7 @@ export async function getOrganizationUsageMetrics(organizationId?: string | null
     { key: "seats", label: "Usuarios", used: summary.seatsUsed, limit: summary.seatsIncluded, unit: "usuarios", percentage: summary.seatsIncluded > 0 ? Math.round((summary.seatsUsed / summary.seatsIncluded) * 100) : 0, tone: "ok" },
     { key: "projects", label: "Proyectos", used: summary.projectsUsed, limit: summary.projectsIncluded, unit: "proyectos", percentage: summary.projectsIncluded > 0 ? Math.round((summary.projectsUsed / summary.projectsIncluded) * 100) : 0, tone: "ok" },
     { key: "storage", label: "Storage", used: summary.storageGbUsed, limit: summary.storageGbIncluded, unit: "GB", percentage: summary.storageGbIncluded > 0 ? Math.round((summary.storageGbUsed / summary.storageGbIncluded) * 100) : 0, tone: "ok" },
-  ].map((item: any) => ({ ...item, tone: toneForUsage(item.percentage) }));
+  ].map((item) => ({ ...item, tone: toneForUsage(item.percentage) }));
 
   return metrics;
 }
@@ -65,7 +65,7 @@ export async function getOrganizationInvoices(organizationId?: string | null): P
     .order("issued_at", { ascending: false })
     .limit(6);
 
-  return (data ?? []).map((row: any) => ({
+  return (data ?? []).map((row) => ({
     id: row.id as string,
     amountLabel: new Intl.NumberFormat("es-CR", { style: "currency", currency: ((row.currency as string) ?? "CRC").toUpperCase() }).format(Number(row.amount_cents ?? 0) / 100),
     status: (row.status as string) ?? "pendiente",

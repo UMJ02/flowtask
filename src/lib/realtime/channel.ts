@@ -1,6 +1,4 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
-
-type RealtimeChannel = ReturnType<SupabaseClient["channel"]>;
+import type { SupabaseClient, RealtimeChannel } from "@supabase/supabase-js";
 
 export function createRealtimeChannel(
   supabase: SupabaseClient,

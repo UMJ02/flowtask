@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import type { RealtimePostgresInsertPayload, RealtimePostgresUpdatePayload } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
 import { tryGetRuntimeEnv } from "@/lib/runtime/env";
 
@@ -62,7 +63,7 @@ export function useNotificationsRealtime({ userId, enabled = true, onInsert, onU
           table: "notifications",
           filter: `user_id=eq.${userId}`,
         },
-        (payload: { new: LiveNotification }) => {
+        (payload: RealtimePostgresInsertPayload<LiveNotification>) => {
           onInsert?.({ ...(payload.new as LiveNotification), deliveries: [] });
         },
       )
@@ -74,7 +75,7 @@ export function useNotificationsRealtime({ userId, enabled = true, onInsert, onU
           table: "notifications",
           filter: `user_id=eq.${userId}`,
         },
-        (payload: { new: LiveNotification }) => {
+        (payload: RealtimePostgresUpdatePayload<LiveNotification>) => {
           onUpdate?.(payload.new as LiveNotification);
         },
       )
@@ -86,7 +87,7 @@ export function useNotificationsRealtime({ userId, enabled = true, onInsert, onU
           table: "notification_deliveries",
           filter: `user_id=eq.${userId}`,
         },
-        (payload: { new: NotificationDelivery }) => {
+        (payload: RealtimePostgresInsertPayload<NotificationDelivery>) => {
           onDeliveryInsert?.(payload.new as NotificationDelivery);
         },
       )
