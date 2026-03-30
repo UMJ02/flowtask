@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "7.5.6-board-db-order-v6.3",
+  "version": "7.6.0-dashboard-mobile-refine-v7",
   "private": true,
   "scripts": {
     "dev": "next dev",
