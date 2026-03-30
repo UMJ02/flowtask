@@ -460,6 +460,11 @@ export function InteractiveDashboardBoard() {
     };
   }, [hydrated]);
 
+  const openTasks = useMemo(() => boardTasks.filter((item) => item.status !== 'concluido'), [boardTasks]);
+  const tasksToday = useMemo(() => openTasks.filter((item) => item.due_date === isoDate(new Date())), [openTasks]);
+  const nextTasks = useMemo(() => openTasks.slice(0, 4), [openTasks]);
+  const activeProjects = useMemo(() => boardProjects.filter((item) => item.status !== 'completado').slice(0, 4), [boardProjects]);
+
   if (!hydrated) {
     return (
       <div className="space-y-4">
@@ -479,11 +484,6 @@ export function InteractiveDashboardBoard() {
       </div>
     );
   }
-
-  const openTasks = useMemo(() => boardTasks.filter((item) => item.status !== 'concluido'), [boardTasks]);
-  const tasksToday = useMemo(() => openTasks.filter((item) => item.due_date === isoDate(new Date())), [openTasks]);
-  const nextTasks = useMemo(() => openTasks.slice(0, 4), [openTasks]);
-  const activeProjects = useMemo(() => boardProjects.filter((item) => item.status !== 'completado').slice(0, 4), [boardProjects]);
 
   const activeCount = activePanels.length;
 
