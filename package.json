@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "7.6.3-manifest-preview-disable",
+  "version": "7.6.2-hydration-manifest-fix",
   "private": true,
   "scripts": {
     "dev": "next dev",
