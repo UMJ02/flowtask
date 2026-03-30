@@ -1,4 +1,19 @@
-import 'dotenv/config'
+import fs from 'node:fs';
+import path from 'node:path';
+import dotenv from 'dotenv';
+
+const cwd = process.cwd();
+const candidateFiles = ['.env.local', '.env'];
+const loadedFrom = [];
+
+for (const file of candidateFiles) {
+  const fullPath = path.join(cwd, file);
+  if (fs.existsSync(fullPath)) {
+    dotenv.config({ path: fullPath, override: false });
+    loadedFrom.push(file);
+  }
+}
+
 const requiredKeys = ['NEXT_PUBLIC_SUPABASE_URL', 'NEXT_PUBLIC_SUPABASE_ANON_KEY'];
 
 const missing = requiredKeys.filter((key) => {
@@ -10,6 +25,11 @@ if (missing.length > 0) {
   console.error('[runtime-check] Missing variables:');
   for (const key of missing) {
     console.error(`- ${key}`);
+  }
+  if (loadedFrom.length === 0) {
+    console.error('[runtime-check] No .env.local or .env file was found in the project root.');
+  } else {
+    console.error(`[runtime-check] Loaded env files: ${loadedFrom.join(', ')}`);
   }
   process.exit(1);
 }
@@ -32,6 +52,7 @@ if (anonPayload?.role === 'service_role') {
 }
 
 console.log('[runtime-check] OK');
+console.log(`[runtime-check] Loaded env files: ${loadedFrom.length > 0 ? loadedFrom.join(', ') : 'none'}`);
 for (const key of requiredKeys) {
   console.log(`- ${key}: present`);
 }

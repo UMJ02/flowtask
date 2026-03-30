@@ -62,3 +62,8 @@ Server-side solamente:
 ## Notas
 - La ruta `/app/intelligence` debe seguir siendo dinámica cuando depende de cookies autenticadas.
 - Los scripts server-side que usan `SUPABASE_SERVICE_ROLE_KEY` deben ejecutarse solo del lado servidor.
+
+
+## v7.2.0 notes
+- `runtime-check` ahora carga `.env.local` y `.env` explícitamente con `dotenv`, para evitar diferencias entre Next.js y scripts Node.
+- Antes de desplegar en Vercel, replica `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_ANON_KEY` en Project Settings > Environment Variables.
