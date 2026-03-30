@@ -94,11 +94,13 @@ function sortItems(items: TaskItem[], orderedIds: string[] = []) {
 
 function formatDate(value?: string | null) {
   if (!value) return "Sin fecha";
-  try {
-    return new Intl.DateTimeFormat("es-CR", { day: "2-digit", month: "short" }).format(new Date(value));
-  } catch {
-    return "Sin fecha";
-  }
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+  if (!match) return value;
+  const [, year, month, day] = match;
+  const months = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
+  const monthIndex = Number(month) - 1;
+  if (monthIndex < 0 || monthIndex > 11) return `${day}-${month}`;
+  return `${day}-${months[monthIndex]}`;
 }
 
 function normalizeOrderValue(value: unknown): Record<string, string[]> {
@@ -196,9 +198,10 @@ async function persistBoardLayoutConfig(
 export function TaskKanbanBoard({ tasks, showHeader = true }: { tasks: TaskItem[]; showHeader?: boolean }) {
   const supabase = createClient();
   const serverSignature = useMemo(() => tasks.map((task) => `${task.id}:${task.status}:${task.due_date ?? ""}:${task.title}`).join("|"), [tasks]);
-  const [statusOverrides, setStatusOverrides] = useState<Record<string, string>>(() => readStatusOverrides());
-  const [orderOverrides, setOrderOverrides] = useState<Record<string, string[]>>(() => readOrderOverrides());
-  const [boardTasks, setBoardTasks] = useState<TaskItem[]>(() => applyStatusOverrides(tasks, readStatusOverrides()));
+  const [hydrated, setHydrated] = useState(false);
+  const [statusOverrides, setStatusOverrides] = useState<Record<string, string>>({});
+  const [orderOverrides, setOrderOverrides] = useState<Record<string, string[]>>({});
+  const [boardTasks, setBoardTasks] = useState<TaskItem[]>(tasks);
   const [lastServerSignature, setLastServerSignature] = useState(serverSignature);
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [hoverColumn, setHoverColumn] = useState<string | null>(null);
@@ -209,6 +212,11 @@ export function TaskKanbanBoard({ tasks, showHeader = true }: { tasks: TaskItem[
   const [expandedColumns, setExpandedColumns] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
+    setHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    if (!hydrated) return;
     let active = true;
 
     const syncBoardConfig = async () => {
@@ -235,20 +243,21 @@ export function TaskKanbanBoard({ tasks, showHeader = true }: { tasks: TaskItem[
     return () => {
       active = false;
     };
-  }, [serverSignature, supabase, tasks]);
+  }, [hydrated, serverSignature, supabase, tasks]);
 
   useEffect(() => {
-    if (!recentDropColumn) return;
+    if (!hydrated || !recentDropColumn) return;
     const timer = window.setTimeout(() => setRecentDropColumn(null), 1200);
     return () => window.clearTimeout(timer);
   }, [recentDropColumn]);
 
   useEffect(() => {
+    if (!hydrated) return;
     if (serverSignature !== lastServerSignature) {
       setBoardTasks(applyStatusOverrides(tasks, statusOverrides));
       setLastServerSignature(serverSignature);
     }
-  }, [lastServerSignature, serverSignature, statusOverrides, tasks]);
+  }, [hydrated, lastServerSignature, serverSignature, statusOverrides, tasks]);
 
   const normalizedTasks = useMemo(() => {
     return boardTasks.map((task) => {
@@ -270,6 +279,27 @@ export function TaskKanbanBoard({ tasks, showHeader = true }: { tasks: TaskItem[
       };
     });
   }, [expandedColumns, normalizedTasks, orderOverrides]);
+
+  if (!hydrated) {
+    return (
+      <div className="grid gap-4 xl:grid-cols-3">
+        {columns.map((column) => {
+          const Icon = column.icon;
+          return (
+            <Card key={column.value} className="rounded-[32px] border border-slate-200 bg-white p-5 shadow-[0_16px_36px_rgba(15,23,42,0.04)]">
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <span className="inline-flex h-14 w-14 items-center justify-center rounded-full border border-slate-200 text-slate-500"><Icon className="h-7 w-7" /></span>
+                  <h3 className="text-2xl font-bold tracking-tight text-slate-950">{column.label}</h3>
+                </div>
+                <span className="inline-flex h-14 min-w-14 items-center justify-center rounded-full border border-slate-200 px-4 text-xl font-semibold text-slate-700">0</span>
+              </div>
+            </Card>
+          );
+        })}
+      </div>
+    );
+  }
 
   const persistLayout = async (nextStatusOverrides: Record<string, string>, nextOrderOverrides: Record<string, string[]>) => {
     writeStatusOverrides(nextStatusOverrides);

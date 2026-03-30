@@ -19,13 +19,24 @@ function isiOS() {
   return /iphone|ipad|ipod/i.test(window.navigator.userAgent);
 }
 
+function shouldDisablePwaEnhancements() {
+  if (typeof window === 'undefined') return true;
+  const host = window.location.hostname;
+  return host.endsWith('.vercel.app');
+}
+
 export function PwaRegister() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [dismissed, setDismissed] = useState(false);
   const [installed, setInstalled] = useState(false);
   const [installing, setInstalling] = useState(false);
+  const [disabled, setDisabled] = useState(true);
 
   useEffect(() => {
+    const disable = shouldDisablePwaEnhancements();
+    setDisabled(disable);
+    if (disable) return;
+
     setInstalled(isStandalone());
 
     const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
@@ -64,7 +75,7 @@ export function PwaRegister() {
     };
   }, []);
 
-  const canShow = useMemo(() => !installed && !dismissed && (Boolean(deferredPrompt) || isiOS()), [deferredPrompt, dismissed, installed]);
+  const canShow = useMemo(() => !disabled && !installed && !dismissed && (Boolean(deferredPrompt) || isiOS()), [deferredPrompt, dismissed, disabled, installed]);
 
   const handleInstall = async () => {
     if (!deferredPrompt) return;

@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "7.6.0-dashboard-mobile-refine-v7",
+  "version": "7.6.2-hydration-manifest-fix",
   "private": true,
   "scripts": {
     "dev": "next dev",
