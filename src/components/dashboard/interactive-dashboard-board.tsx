@@ -69,13 +69,13 @@ type ProjectRow = {
   created_at?: string | null;
 };
 
-const STORAGE_KEY = 'flowtask.board.v651';
+const STORAGE_KEY = 'flowtask.board.v620';
 
 const PANEL_META: Record<PanelKey, { label: string; icon: ComponentType<{ className?: string }>; description: string }> = {
-  task: { label: 'Tarea', icon: LayoutGrid, description: 'Abre un bloque para crear o revisar tareas.' },
-  projects: { label: 'Proyectos', icon: FolderKanban, description: 'Mantén a mano el estado de los proyectos activos.' },
-  calendar: { label: 'Calendario', icon: CalendarDays, description: 'Consulta tareas por fecha en semana o mes.' },
-  kanban: { label: 'Flujo', icon: CheckCircle2, description: 'Despliega En progreso, Pendiente y Hecho en tres columnas seguidas.' },
+  task: { label: 'Tarea', icon: LayoutGrid, description: '' },
+  projects: { label: 'Proyectos', icon: FolderKanban, description: '' },
+  calendar: { label: 'Calendario', icon: CalendarDays, description: '' },
+  kanban: { label: 'Flujo', icon: CheckCircle2, description: '' },
 };
 
 function startOfWeek(date: Date) {
@@ -609,7 +609,7 @@ export function InteractiveDashboardBoard() {
             <div className="space-y-3">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Paneles</p>
-                <p className="mt-1 text-sm text-slate-500">Activa, quita o vuelve a colocar módulos en la pizarra.</p>
+
               </div>
               {(['task', 'projects', 'calendar', 'kanban'] as PanelKey[]).map((key) => {
                 const meta = PANEL_META[key];
@@ -630,7 +630,6 @@ export function InteractiveDashboardBoard() {
                     </span>
                     <span className="min-w-0">
                       <span className="block text-sm font-semibold text-slate-900">{meta.label}</span>
-                      <span className="mt-1 block text-xs leading-5 text-slate-500">{active ? 'Activo en pizarra' : meta.description}</span>
                     </span>
                   </button>
                 );
@@ -658,8 +657,7 @@ export function InteractiveDashboardBoard() {
                   <div className="flex items-center gap-3">
                     <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100"><CheckCircle2 className="h-5 w-5" /></span>
                     <div>
-                      <p className="text-sm font-semibold text-slate-900">Flujo en pizarra</p>
-                      <p className="text-xs text-slate-500">Esta sección salió del dashboard y ahora vive aquí con sus tres columnas seguidas.</p>
+                      <p className="text-sm font-semibold text-slate-900">Flujo</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
@@ -679,11 +677,11 @@ export function InteractiveDashboardBoard() {
                       client_name: task.client_name,
                       due_date: task.due_date,
                     }))}
-                    showHeader
+                    showHeader={false}
                   />
                 ) : (
                   <div className="rounded-[24px] border border-dashed border-emerald-200 bg-white/70 px-4 py-8 text-sm text-slate-500">
-                    Usa el botón <span className="font-semibold text-slate-700">Desplegar flujo</span> para volver a abrir las columnas de En progreso, Pendiente y Hecho dentro de la pizarra.
+                    Usa <span className="font-semibold text-slate-700">Desplegar flujo</span> para volver a abrir las columnas.
                   </div>
                 )}
               </div>
