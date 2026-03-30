@@ -13,8 +13,7 @@ const requiredFiles = [
 ];
 
 function runStep(label, command, env = process.env) {
-  console.log(`
-[release-check] ${label}`);
+  console.log(`\n[release-check] ${label}`);
   execSync(command, { stdio: 'inherit', env });
 }
 
@@ -34,7 +33,6 @@ for (const key of ['NEXT_PUBLIC_SUPABASE_URL', 'NEXT_PUBLIC_SUPABASE_ANON_KEY'])
 runStep('Runtime env validation', 'npm run runtime:check');
 runStep('TypeScript', 'npm run typecheck');
 
-console.log('
-[release-check] Build handoff');
+console.log('\n[release-check] Build handoff');
 console.log('- Local/Vercel next build should be run after this step in a clean install environment.');
 console.log('- Recommended command: npm run build');
