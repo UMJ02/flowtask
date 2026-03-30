@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "7.5.0-board-flow-move-v6",
+  "version": "7.5.1-board-flow-polish-v6.1",
   "private": true,
   "scripts": {
     "dev": "next dev",

@@ -69,7 +69,7 @@ type ProjectRow = {
   created_at?: string | null;
 };
 
-const STORAGE_KEY = 'flowtask.board.v650';
+const STORAGE_KEY = 'flowtask.board.v651';
 
 const PANEL_META: Record<PanelKey, { label: string; icon: ComponentType<{ className?: string }>; description: string }> = {
   task: { label: 'Tarea', icon: LayoutGrid, description: 'Abre un bloque para crear o revisar tareas.' },
@@ -322,7 +322,7 @@ export function InteractiveDashboardBoard() {
   const router = useRouter();
   const [hydrated, setHydrated] = useState(false);
   const [asideOpen, setAsideOpen] = useState(true);
-  const [activePanels, setActivePanels] = useState<PanelKey[]>(['task', 'projects', 'calendar']);
+  const [activePanels, setActivePanels] = useState<PanelKey[]>(['kanban', 'task', 'projects', 'calendar']);
   const [expanded, setExpanded] = useState<Record<PanelKey, boolean>>({ task: true, projects: true, calendar: true, kanban: true });
   const [calendarMode, setCalendarMode] = useState<CalendarMode>('week');
   const [anchorDate, setAnchorDate] = useState(new Date());
@@ -652,6 +652,43 @@ export function InteractiveDashboardBoard() {
               <span className="inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-600">Estado guardado automáticamente</span>
             </div>
             {dataError ? <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">{dataError}</div> : null}
+            {activePanels.includes('kanban') ? (
+              <div className="mb-4 rounded-[28px] border border-emerald-200 bg-gradient-to-br from-white via-emerald-50/40 to-white p-4 md:p-5 shadow-[0_16px_36px_rgba(16,185,129,0.08)]">
+                <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-[24px] border border-emerald-100 bg-white/80 px-4 py-3">
+                  <div className="flex items-center gap-3">
+                    <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100"><CheckCircle2 className="h-5 w-5" /></span>
+                    <div>
+                      <p className="text-sm font-semibold text-slate-900">Flujo en pizarra</p>
+                      <p className="text-xs text-slate-500">Esta sección salió del dashboard y ahora vive aquí con sus tres columnas seguidas.</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button type="button" onClick={() => toggleExpanded('kanban')} className="inline-flex h-11 items-center gap-2 rounded-full bg-emerald-500 px-4 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-emerald-400">
+                      <Plus className={cn('h-4 w-4 transition-transform', expanded.kanban ? 'rotate-45' : '')} />
+                      {expanded.kanban ? 'Ocultar flujo' : 'Desplegar flujo'}
+                    </button>
+                    <button type="button" onClick={() => removePanel('kanban')} className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition hover:-translate-y-0.5 hover:bg-slate-50"><X className="h-4 w-4" /></button>
+                  </div>
+                </div>
+                {expanded.kanban ? (
+                  <TaskKanbanBoard
+                    tasks={boardTasks.map((task) => ({
+                      id: task.id,
+                      title: task.title,
+                      status: task.status ?? 'en_espera',
+                      client_name: task.client_name,
+                      due_date: task.due_date,
+                    }))}
+                    showHeader
+                  />
+                ) : (
+                  <div className="rounded-[24px] border border-dashed border-emerald-200 bg-white/70 px-4 py-8 text-sm text-slate-500">
+                    Usa el botón <span className="font-semibold text-slate-700">Desplegar flujo</span> para volver a abrir las columnas de En progreso, Pendiente y Hecho dentro de la pizarra.
+                  </div>
+                )}
+              </div>
+            ) : null}
+
             <div className="grid gap-4 xl:grid-cols-2">
               {activePanels.includes('task') ? (
                 <div className="rounded-xl border border-emerald-200 bg-white p-4 shadow-sm transition hover:shadow-md">
@@ -778,42 +815,9 @@ export function InteractiveDashboardBoard() {
             ) : null}
           </Card>
 
-          {activePanels.includes('kanban') ? (
-            <Card className="border-slate-200 bg-white p-4 md:p-5 transition hover:shadow-md">
-              <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50/80 px-4 py-3">
-                <div className="flex items-center gap-3">
-                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-white text-slate-700 shadow-sm"><CheckCircle2 className="h-4 w-4" /></span>
-                  <div>
-                    <p className="text-sm font-semibold text-slate-900">Flujo del tablero</p>
-                    <p className="text-xs text-slate-500">Despliega En progreso, Pendiente y Hecho directamente dentro de la pizarra.</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <button type="button" onClick={() => removePanel('kanban')} className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition hover:-translate-y-0.5 hover:bg-slate-50"><X className="h-4 w-4" /></button>
-                  <button type="button" onClick={() => toggleExpanded('kanban')} className="inline-flex h-10 items-center gap-2 rounded-full bg-emerald-500 px-4 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-emerald-400">
-                    <Plus className={cn('h-4 w-4 transition-transform', expanded.kanban ? 'rotate-45' : '')} />
-                    {expanded.kanban ? 'Ocultar columnas' : 'Mostrar columnas'}
-                  </button>
-                </div>
-              </div>
-              {expanded.kanban ? (
-                <TaskKanbanBoard
-                  tasks={boardTasks.map((task) => ({
-                    id: task.id,
-                    title: task.title,
-                    status: task.status ?? 'en_espera',
-                    client_name: task.client_name,
-                    due_date: task.due_date,
-                  }))}
-                  showHeader={false}
-                />
-              ) : (
-                <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50/80 px-4 py-8 text-sm text-slate-500">
-                  Activa este bloque cuando quieras ver el flujo completo de tareas en tres columnas.
-                </div>
-              )}
-            </Card>
-          ) : null}
+
+
+
 
           <div className="grid gap-4 xl:grid-cols-[1.35fr_0.65fr]">
             <Card className="border-slate-200 bg-white p-4 md:p-5 transition hover:shadow-md">
