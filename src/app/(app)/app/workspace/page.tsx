@@ -1,7 +1,6 @@
 import Link from 'next/link';
-import { FolderKanban, LayoutGrid, ListChecks, PanelTop, Plus } from 'lucide-react';
+import { CheckCircle2, FolderKanban, LayoutGrid, ListChecks, PanelTop, Plus } from 'lucide-react';
 import { RecentActivity } from '@/components/dashboard/recent-activity';
-import { TaskWorkspace } from '@/components/tasks/task-workspace';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -124,7 +123,29 @@ export default async function WorkspacePage() {
 
       <div className="relative">
         {boardTasks.length ? (
-          <TaskWorkspace tasks={boardTasks} />
+          <Card className="rounded-[28px] border border-slate-200/90 p-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)] md:p-6">
+            <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
+              <div className="max-w-2xl">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Pizarra operativa</p>
+                <h2 className="mt-2 text-[1.55rem] font-bold tracking-tight text-slate-900">El flujo Kanban ahora vive dentro de Pizarra</h2>
+                <p className="mt-2 max-w-xl text-sm leading-6 text-slate-500">Movimos En progreso, Pendiente y Hecho fuera del dashboard para que este espacio se mantenga más limpio. Entra a Pizarra y activa el panel de flujo cuando necesites trabajar en tres columnas.</p>
+              </div>
+              <div className="grid gap-3 sm:grid-cols-2 xl:min-w-[520px]">
+                <Link href="/app/dashboard?view=board" className="inline-flex min-h-[96px] items-center justify-center rounded-[24px] border border-emerald-200 bg-emerald-50 px-5 py-4 text-center text-sm font-semibold text-emerald-800 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] transition hover:-translate-y-0.5 hover:bg-emerald-100">
+                  <span className="flex flex-col items-center gap-2.5">
+                    <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-emerald-700 ring-1 ring-emerald-100"><CheckCircle2 className="h-5 w-5" /></span>
+                    <span>Abrir pizarra y desplegar flujo</span>
+                  </span>
+                </Link>
+                <Link href={taskNewRoute()} className="inline-flex min-h-[96px] items-center justify-center rounded-[24px] border border-slate-200 bg-white px-5 py-4 text-center text-sm font-semibold text-slate-700 transition hover:-translate-y-0.5 hover:bg-slate-50">
+                  <span className="flex flex-col items-center gap-2.5">
+                    <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-100 text-slate-700"><Plus className="h-5 w-5" /></span>
+                    <span>Crear tarea nueva</span>
+                  </span>
+                </Link>
+              </div>
+            </div>
+          </Card>
         ) : (
           <EmptyState
             title="Todavía no hay tareas"

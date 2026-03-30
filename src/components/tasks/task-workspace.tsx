@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from 'react';
 import { LayoutGrid, Rows3, SquareSplitHorizontal } from 'lucide-react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { TaskKanbanBoard } from '@/components/tasks/task-kanban-board';
@@ -35,9 +36,11 @@ export function TaskWorkspace({
   const pathname = usePathname();
   const router = useRouter();
 
-  const fromQuery = searchParams.get('view');
-  const candidate = fromQuery ?? filters?.view ?? 'kanban';
-  const view: ViewMode = candidate === 'kanban' || candidate === 'list' || candidate === 'both' ? candidate : 'kanban';
+  const view: ViewMode = useMemo(() => {
+    const fromQuery = searchParams.get('view');
+    const candidate = fromQuery ?? filters?.view ?? 'kanban';
+    return candidate === 'kanban' || candidate === 'list' || candidate === 'both' ? candidate : 'kanban';
+  }, [filters?.view, searchParams]);
 
   const updateView = (next: ViewMode) => {
     const params = new URLSearchParams(searchParams.toString());

@@ -1,10 +1,9 @@
-import type { User } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 import { getActiveMembership } from "@/lib/security/organization-access";
 
 export interface WorkspaceContext {
   supabase: Awaited<ReturnType<typeof createClient>>;
-  user: User | null;
+  user: { id: string; email?: string | null } | null;
   activeOrganizationId: string | null;
 }
 
