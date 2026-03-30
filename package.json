@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "7.4.0-deploy-safe-v5",
+  "version": "7.5.0-board-flow-move-v6",
   "private": true,
   "scripts": {
     "dev": "next dev",

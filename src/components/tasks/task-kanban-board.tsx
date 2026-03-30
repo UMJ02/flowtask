@@ -40,7 +40,7 @@ function formatDate(value?: string | null) {
   }
 }
 
-export function TaskKanbanBoard({ tasks }: { tasks: TaskItem[] }) {
+export function TaskKanbanBoard({ tasks, showHeader = true }: { tasks: TaskItem[]; showHeader?: boolean }) {
   const router = useRouter();
   const supabase = createClient();
   const [boardTasks, setBoardTasks] = useState<TaskItem[]>(tasks);
@@ -98,26 +98,28 @@ export function TaskKanbanBoard({ tasks }: { tasks: TaskItem[] }) {
 
   return (
     <div className="space-y-5">
-      <Card className="rounded-[28px] border border-slate-200/90 p-5 shadow-[0_14px_30px_rgba(15,23,42,0.05)] md:p-6">
-        <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
-          <div className="max-w-2xl">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Pizarra</p>
-            <h2 className="mt-2 text-[1.55rem] font-bold tracking-tight text-slate-900">Mueve trabajo sin perder contexto</h2>
-            <p className="mt-2 text-sm leading-6 text-slate-500">Arrastra tareas entre columnas o usa acciones rápidas dentro de cada tarjeta. El tablero prioriza claridad y respuesta rápida.</p>
+      {showHeader ? (
+        <Card className="rounded-[28px] border border-slate-200/90 p-5 shadow-[0_14px_30px_rgba(15,23,42,0.05)] md:p-6">
+          <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
+            <div className="max-w-2xl">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Pizarra</p>
+              <h2 className="mt-2 text-[1.55rem] font-bold tracking-tight text-slate-900">Mueve trabajo sin perder contexto</h2>
+              <p className="mt-2 text-sm leading-6 text-slate-500">Arrastra tareas entre columnas o usa acciones rápidas dentro de cada tarjeta. El tablero prioriza claridad y respuesta rápida.</p>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2 xl:min-w-[560px] xl:grid-cols-3">
+              {grouped.map((column) => {
+                const Icon = column.icon;
+                return (
+                  <span key={column.value} className="inline-flex min-h-[78px] items-center justify-center gap-2.5 rounded-[22px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700 shadow-[inset_0_1px_0_rgba(255,255,255,0.75)]">
+                    <Icon className="h-4 w-4 shrink-0" />
+                    <span>{column.label}: {column.items.length}</span>
+                  </span>
+                );
+              })}
+            </div>
           </div>
-          <div className="grid gap-3 sm:grid-cols-2 xl:min-w-[560px] xl:grid-cols-3">
-            {grouped.map((column) => {
-              const Icon = column.icon;
-              return (
-                <span key={column.value} className="inline-flex min-h-[78px] items-center justify-center gap-2.5 rounded-[22px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700 shadow-[inset_0_1px_0_rgba(255,255,255,0.75)]">
-                  <Icon className="h-4 w-4 shrink-0" />
-                  <span>{column.label}: {column.items.length}</span>
-                </span>
-              );
-            })}
-          </div>
-        </div>
-      </Card>
+        </Card>
+      ) : null}
 
       {error ? (
         <div className="rounded-2xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div>

@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import {
   CalendarDays,
   Check,
+  CheckCircle2,
   ChevronLeft,
   ChevronRight,
   ExternalLink,
@@ -26,9 +27,10 @@ import { Button } from '@/components/ui/button';
 import { createClient } from '@/lib/supabase/client';
 import { readWorkspaceMemory, toggleFavorite, type MemoryEntity } from '@/lib/local/workspace-memory';
 import { cn } from '@/lib/utils/classnames';
+import { TaskKanbanBoard } from '@/components/tasks/task-kanban-board';
 import { taskDetailRoute, taskEditRoute, projectDetailRoute } from '@/lib/navigation/routes';
 
-type PanelKey = 'task' | 'projects' | 'calendar';
+type PanelKey = 'task' | 'projects' | 'calendar' | 'kanban';
 type CalendarMode = 'week' | 'month';
 
 type Reminder = {
@@ -67,12 +69,13 @@ type ProjectRow = {
   created_at?: string | null;
 };
 
-const STORAGE_KEY = 'flowtask.board.v640';
+const STORAGE_KEY = 'flowtask.board.v650';
 
 const PANEL_META: Record<PanelKey, { label: string; icon: ComponentType<{ className?: string }>; description: string }> = {
   task: { label: 'Tarea', icon: LayoutGrid, description: 'Abre un bloque para crear o revisar tareas.' },
   projects: { label: 'Proyectos', icon: FolderKanban, description: 'Mantén a mano el estado de los proyectos activos.' },
   calendar: { label: 'Calendario', icon: CalendarDays, description: 'Consulta tareas por fecha en semana o mes.' },
+  kanban: { label: 'Flujo', icon: CheckCircle2, description: 'Despliega En progreso, Pendiente y Hecho en tres columnas seguidas.' },
 };
 
 function startOfWeek(date: Date) {
@@ -320,7 +323,7 @@ export function InteractiveDashboardBoard() {
   const [hydrated, setHydrated] = useState(false);
   const [asideOpen, setAsideOpen] = useState(true);
   const [activePanels, setActivePanels] = useState<PanelKey[]>(['task', 'projects', 'calendar']);
-  const [expanded, setExpanded] = useState<Record<PanelKey, boolean>>({ task: true, projects: true, calendar: true });
+  const [expanded, setExpanded] = useState<Record<PanelKey, boolean>>({ task: true, projects: true, calendar: true, kanban: true });
   const [calendarMode, setCalendarMode] = useState<CalendarMode>('week');
   const [anchorDate, setAnchorDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(isoDate(new Date()));
@@ -608,7 +611,7 @@ export function InteractiveDashboardBoard() {
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Paneles</p>
                 <p className="mt-1 text-sm text-slate-500">Activa, quita o vuelve a colocar módulos en la pizarra.</p>
               </div>
-              {(['task', 'projects', 'calendar'] as PanelKey[]).map((key) => {
+              {(['task', 'projects', 'calendar', 'kanban'] as PanelKey[]).map((key) => {
                 const meta = PANEL_META[key];
                 const Icon = meta.icon;
                 const active = activePanels.includes(key);
@@ -774,6 +777,43 @@ export function InteractiveDashboardBoard() {
               </div>
             ) : null}
           </Card>
+
+          {activePanels.includes('kanban') ? (
+            <Card className="border-slate-200 bg-white p-4 md:p-5 transition hover:shadow-md">
+              <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50/80 px-4 py-3">
+                <div className="flex items-center gap-3">
+                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-white text-slate-700 shadow-sm"><CheckCircle2 className="h-4 w-4" /></span>
+                  <div>
+                    <p className="text-sm font-semibold text-slate-900">Flujo del tablero</p>
+                    <p className="text-xs text-slate-500">Despliega En progreso, Pendiente y Hecho directamente dentro de la pizarra.</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button type="button" onClick={() => removePanel('kanban')} className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition hover:-translate-y-0.5 hover:bg-slate-50"><X className="h-4 w-4" /></button>
+                  <button type="button" onClick={() => toggleExpanded('kanban')} className="inline-flex h-10 items-center gap-2 rounded-full bg-emerald-500 px-4 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-emerald-400">
+                    <Plus className={cn('h-4 w-4 transition-transform', expanded.kanban ? 'rotate-45' : '')} />
+                    {expanded.kanban ? 'Ocultar columnas' : 'Mostrar columnas'}
+                  </button>
+                </div>
+              </div>
+              {expanded.kanban ? (
+                <TaskKanbanBoard
+                  tasks={boardTasks.map((task) => ({
+                    id: task.id,
+                    title: task.title,
+                    status: task.status ?? 'en_espera',
+                    client_name: task.client_name,
+                    due_date: task.due_date,
+                  }))}
+                  showHeader={false}
+                />
+              ) : (
+                <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50/80 px-4 py-8 text-sm text-slate-500">
+                  Activa este bloque cuando quieras ver el flujo completo de tareas en tres columnas.
+                </div>
+              )}
+            </Card>
+          ) : null}
 
           <div className="grid gap-4 xl:grid-cols-[1.35fr_0.65fr]">
             <Card className="border-slate-200 bg-white p-4 md:p-5 transition hover:shadow-md">
