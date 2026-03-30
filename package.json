@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "7.5.3-board-flow-persist-v6.2.1",
+  "version": "7.5.4-board-flow-persist-fix-v6.2.2",
   "private": true,
   "scripts": {
     "dev": "next dev",

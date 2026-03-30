@@ -69,13 +69,13 @@ type ProjectRow = {
   created_at?: string | null;
 };
 
-const STORAGE_KEY = 'flowtask.board.v620';
+const STORAGE_KEY = 'flowtask.board.v622';
 
 const PANEL_META: Record<PanelKey, { label: string; icon: ComponentType<{ className?: string }>; description: string }> = {
-  task: { label: 'Tarea', icon: LayoutGrid, description: '' },
-  projects: { label: 'Proyectos', icon: FolderKanban, description: '' },
-  calendar: { label: 'Calendario', icon: CalendarDays, description: '' },
-  kanban: { label: 'Flujo', icon: CheckCircle2, description: '' },
+  task: { label: 'Tarea', icon: LayoutGrid, description: 'Agregar a pizarra' },
+  projects: { label: 'Proyectos', icon: FolderKanban, description: 'Agregar a pizarra' },
+  calendar: { label: 'Calendario', icon: CalendarDays, description: 'Agregar a pizarra' },
+  kanban: { label: 'Flujo', icon: CheckCircle2, description: 'Agregar a pizarra' },
 };
 
 function startOfWeek(date: Date) {

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+
 import Link from "next/link";
 import { AlertCircle, CheckCircle2, Clock3, FolderOpen, GripVertical, Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
@@ -20,6 +21,35 @@ const columns = [
   { value: "en_espera", label: "Pendiente", icon: AlertCircle },
   { value: "concluido", label: "Hecho", icon: CheckCircle2 },
 ] as const;
+
+const STATUS_OVERRIDES_KEY = "flowtask.board.kanban.status-overrides.v1";
+
+function readStatusOverrides() {
+  if (typeof window === "undefined") return {} as Record<string, string>;
+  try {
+    const raw = window.localStorage.getItem(STATUS_OVERRIDES_KEY);
+    if (!raw) return {} as Record<string, string>;
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== "object") return {} as Record<string, string>;
+    return parsed as Record<string, string>;
+  } catch {
+    return {} as Record<string, string>;
+  }
+}
+
+function writeStatusOverrides(value: Record<string, string>) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(STATUS_OVERRIDES_KEY, JSON.stringify(value));
+  } catch {}
+}
+
+function applyStatusOverrides(items: TaskItem[], overrides: Record<string, string>) {
+  return items.map((task) => {
+    const override = overrides[task.id];
+    return override ? { ...task, status: override } : task;
+  });
+}
 
 function sortItems(items: TaskItem[]) {
   return [...items].sort((a, b) => {
@@ -42,7 +72,8 @@ function formatDate(value?: string | null) {
 export function TaskKanbanBoard({ tasks, showHeader = true }: { tasks: TaskItem[]; showHeader?: boolean }) {
   const supabase = createClient();
   const serverSignature = useMemo(() => tasks.map((task) => `${task.id}:${task.status}:${task.due_date ?? ""}:${task.title}`).join("|"), [tasks]);
-  const [boardTasks, setBoardTasks] = useState<TaskItem[]>(tasks);
+  const [statusOverrides, setStatusOverrides] = useState<Record<string, string>>({});
+  const [boardTasks, setBoardTasks] = useState<TaskItem[]>(() => applyStatusOverrides(tasks, readStatusOverrides()));
   const [lastServerSignature, setLastServerSignature] = useState(serverSignature);
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [hoverColumn, setHoverColumn] = useState<string | null>(null);
@@ -50,11 +81,15 @@ export function TaskKanbanBoard({ tasks, showHeader = true }: { tasks: TaskItem[
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    setStatusOverrides(readStatusOverrides());
+  }, []);
+
+  useEffect(() => {
     if (serverSignature !== lastServerSignature) {
-      setBoardTasks(tasks);
+      setBoardTasks(applyStatusOverrides(tasks, statusOverrides));
       setLastServerSignature(serverSignature);
     }
-  }, [lastServerSignature, serverSignature, tasks]);
+  }, [lastServerSignature, serverSignature, statusOverrides, tasks]);
 
   const normalizedTasks = useMemo(() => {
     return boardTasks.map((task) => {
@@ -89,8 +124,19 @@ export function TaskKanbanBoard({ tasks, showHeader = true }: { tasks: TaskItem[
 
     if (updateError) {
       setBoardTasks(previousTasks);
+      setStatusOverrides((current) => {
+        const next = { ...current };
+        delete next[taskId];
+        writeStatusOverrides(next);
+        return next;
+      });
       setError("No pudimos mover la tarea. Revisa permisos o intenta de nuevo.");
     } else {
+      setStatusOverrides((current) => {
+        const next = { ...current, [taskId]: nextStatus };
+        writeStatusOverrides(next);
+        return next;
+      });
       setLastServerSignature(nextTasks.map((task) => `${task.id}:${task.status}:${task.due_date ?? ""}:${task.title}`).join("|"));
     }
 
