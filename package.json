@@ -1,13 +1,13 @@
 {
   "name": "flowtask",
-  "version": "7.6.3-cli-build-board-fix",
+  "version": "7.6.2-hydration-manifest-fix",
   "private": true,
   "scripts": {
-    "dev": "node ./node_modules/next/dist/bin/next dev",
-    "build": "node ./node_modules/next/dist/bin/next build",
-    "start": "node ./node_modules/next/dist/bin/next start",
-    "lint": "node ./node_modules/next/dist/bin/next lint",
-    "typecheck": "node ./node_modules/typescript/bin/tsc --noEmit",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
     "process-reminders": "npx tsx scripts/process-reminders.ts",
     "check": "npm run typecheck",
     "process-notification-deliveries": "npx tsx scripts/process-notification-deliveries.ts",
@@ -19,15 +19,13 @@
     "prebuild": "npm run runtime:check",
     "ci:check": "npm run typecheck && npm run runtime:check",
     "reinstall:clean": "rm -rf node_modules package-lock.json .next tsconfig.tsbuildinfo",
-    "vercel:build": "npm run clean && npm run runtime:check && node ./node_modules/next/dist/bin/next build",
-    "build:strict": "npm run clean && npm run release:check && node ./node_modules/next/dist/bin/next build",
+    "vercel:build": "npm run clean && npm run runtime:check && next build",
+    "build:strict": "npm run clean && npm run release:check && next build",
     "vercel:preflight": "npm run clean && npm run runtime:check && npm run typecheck",
     "vercel:deploy-check": "npm run vercel:preflight && echo \"[vercel-deploy-check] Ready to run npm run build\"",
     "security:check": "node scripts/security-check.mjs",
     "deploy:ready": "npm run security:check && npm run vercel:preflight && npm run build",
-    "vercel:prod-ready": "npm run deploy:ready",
-    "ci:install": "npm ci",
-    "validate:clean": "npm run clean && npm run runtime:check && npm run typecheck && npm run build"
+    "vercel:prod-ready": "npm run deploy:ready"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
