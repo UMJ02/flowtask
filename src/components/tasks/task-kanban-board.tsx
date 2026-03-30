@@ -23,6 +23,7 @@ const columns = [
 ] as const;
 
 const STATUS_OVERRIDES_KEY = "flowtask.board.kanban.status-overrides.v1";
+const ORDER_OVERRIDES_KEY = "flowtask.board.kanban.order-overrides.v1";
 
 function readStatusOverrides() {
   if (typeof window === "undefined") return {} as Record<string, string>;
@@ -44,6 +45,36 @@ function writeStatusOverrides(value: Record<string, string>) {
   } catch {}
 }
 
+function readOrderOverrides() {
+  if (typeof window === "undefined") return {} as Record<string, string[]>;
+  try {
+    const raw = window.localStorage.getItem(ORDER_OVERRIDES_KEY);
+    if (!raw) return {} as Record<string, string[]>;
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== "object") return {} as Record<string, string[]>;
+    return parsed as Record<string, string[]>;
+  } catch {
+    return {} as Record<string, string[]>;
+  }
+}
+
+function writeOrderOverrides(value: Record<string, string[]>) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(ORDER_OVERRIDES_KEY, JSON.stringify(value));
+  } catch {}
+}
+
+function moveOrderItem(value: Record<string, string[]>, taskId: string, nextStatus: string) {
+  const next: Record<string, string[]> = {};
+  for (const column of columns) {
+    const current = Array.isArray(value[column.value]) ? value[column.value] : [];
+    next[column.value] = current.filter((id) => id !== taskId);
+  }
+  next[nextStatus] = [taskId, ...(next[nextStatus] ?? [])];
+  return next;
+}
+
 function applyStatusOverrides(items: TaskItem[], overrides: Record<string, string>) {
   return items.map((task) => {
     const override = overrides[task.id];
@@ -51,12 +82,17 @@ function applyStatusOverrides(items: TaskItem[], overrides: Record<string, strin
   });
 }
 
-function sortItems(items: TaskItem[]) {
+function sortItems(items: TaskItem[], orderedIds: string[] = []) {
+  const rank = new Map(orderedIds.map((id, index) => [id, index]));
   return [...items].sort((a, b) => {
+    const aRank = rank.has(a.id) ? rank.get(a.id)! : Number.MAX_SAFE_INTEGER;
+    const bRank = rank.has(b.id) ? rank.get(b.id)! : Number.MAX_SAFE_INTEGER;
+    if (aRank !== bRank) return aRank - bRank;
     if (!a.due_date && !b.due_date) return a.title.localeCompare(b.title);
     if (!a.due_date) return 1;
     if (!b.due_date) return -1;
-    return a.due_date.localeCompare(b.due_date);
+    const byDate = a.due_date.localeCompare(b.due_date);
+    return byDate !== 0 ? byDate : a.title.localeCompare(b.title);
   });
 }
 
@@ -72,17 +108,26 @@ function formatDate(value?: string | null) {
 export function TaskKanbanBoard({ tasks, showHeader = true }: { tasks: TaskItem[]; showHeader?: boolean }) {
   const supabase = createClient();
   const serverSignature = useMemo(() => tasks.map((task) => `${task.id}:${task.status}:${task.due_date ?? ""}:${task.title}`).join("|"), [tasks]);
-  const [statusOverrides, setStatusOverrides] = useState<Record<string, string>>({});
+  const [statusOverrides, setStatusOverrides] = useState<Record<string, string>>(() => readStatusOverrides());
+  const [orderOverrides, setOrderOverrides] = useState<Record<string, string[]>>(() => readOrderOverrides());
   const [boardTasks, setBoardTasks] = useState<TaskItem[]>(() => applyStatusOverrides(tasks, readStatusOverrides()));
   const [lastServerSignature, setLastServerSignature] = useState(serverSignature);
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [hoverColumn, setHoverColumn] = useState<string | null>(null);
   const [busyStatus, setBusyStatus] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [recentDropColumn, setRecentDropColumn] = useState<string | null>(null);
 
   useEffect(() => {
     setStatusOverrides(readStatusOverrides());
+    setOrderOverrides(readOrderOverrides());
   }, []);
+
+  useEffect(() => {
+    if (!recentDropColumn) return;
+    const timer = window.setTimeout(() => setRecentDropColumn(null), 1200);
+    return () => window.clearTimeout(timer);
+  }, [recentDropColumn]);
 
   useEffect(() => {
     if (serverSignature !== lastServerSignature) {
@@ -101,9 +146,9 @@ export function TaskKanbanBoard({ tasks, showHeader = true }: { tasks: TaskItem[
   const grouped = useMemo(() => {
     return columns.map((column) => ({
       ...column,
-      items: sortItems(normalizedTasks.filter((task) => task.status === column.value)).slice(0, 5),
+      items: sortItems(normalizedTasks.filter((task) => task.status === column.value), orderOverrides[column.value] ?? []).slice(0, 5),
     }));
-  }, [normalizedTasks]);
+  }, [normalizedTasks, orderOverrides]);
 
   const moveTask = async (taskId: string, nextStatus: string) => {
     const currentTask = normalizedTasks.find((item) => item.id === taskId);
@@ -114,29 +159,31 @@ export function TaskKanbanBoard({ tasks, showHeader = true }: { tasks: TaskItem[
     }
 
     const previousTasks = boardTasks;
+    const previousStatusOverrides = statusOverrides;
+    const previousOrderOverrides = orderOverrides;
     const nextTasks = normalizedTasks.map((item) => (item.id === taskId ? { ...item, status: nextStatus } : item));
+    const nextStatusOverrides = { ...statusOverrides, [taskId]: nextStatus };
+    const nextOrderOverrides = moveOrderItem(orderOverrides, taskId, nextStatus);
 
     setError(null);
     setBoardTasks(nextTasks);
+    setStatusOverrides(nextStatusOverrides);
+    writeStatusOverrides(nextStatusOverrides);
+    setOrderOverrides(nextOrderOverrides);
+    writeOrderOverrides(nextOrderOverrides);
     setBusyStatus(`${taskId}:${nextStatus}`);
+    setRecentDropColumn(nextStatus);
 
     const { error: updateError } = await supabase.from("tasks").update({ status: nextStatus }).eq("id", taskId);
 
     if (updateError) {
       setBoardTasks(previousTasks);
-      setStatusOverrides((current) => {
-        const next = { ...current };
-        delete next[taskId];
-        writeStatusOverrides(next);
-        return next;
-      });
+      setStatusOverrides(previousStatusOverrides);
+      writeStatusOverrides(previousStatusOverrides);
+      setOrderOverrides(previousOrderOverrides);
+      writeOrderOverrides(previousOrderOverrides);
       setError("No pudimos mover la tarea. Revisa permisos o intenta de nuevo.");
     } else {
-      setStatusOverrides((current) => {
-        const next = { ...current, [taskId]: nextStatus };
-        writeStatusOverrides(next);
-        return next;
-      });
       setLastServerSignature(nextTasks.map((task) => `${task.id}:${task.status}:${task.due_date ?? ""}:${task.title}`).join("|"));
     }
 
@@ -177,11 +224,12 @@ export function TaskKanbanBoard({ tasks, showHeader = true }: { tasks: TaskItem[
         {grouped.map((column) => {
           const Icon = column.icon;
           const isActiveDropzone = hoverColumn === column.value;
+          const isRecentDrop = recentDropColumn === column.value;
           return (
             <section
               key={column.value}
               className={`rounded-[24px] border p-4 transition ${
-                isActiveDropzone ? "border-emerald-300 bg-emerald-50/60 shadow-[0_12px_28px_rgba(16,185,129,0.08)]" : "border-slate-200 bg-slate-50/90"
+                isActiveDropzone || isRecentDrop ? "border-emerald-300 bg-emerald-50/60 shadow-[0_12px_28px_rgba(16,185,129,0.08)]" : "border-slate-200 bg-slate-50/90"
               }`}
               onDragOver={(event) => {
                 event.preventDefault();
@@ -283,7 +331,7 @@ export function TaskKanbanBoard({ tasks, showHeader = true }: { tasks: TaskItem[
                   })
                 ) : (
                   <div className="rounded-2xl border border-dashed border-slate-300 bg-white/60 px-4 py-8 text-center text-sm text-slate-500">
-                    Suelta una tarea aquí.
+                    {isActiveDropzone ? "Suelta para moverla aquí." : "Suelta una tarea aquí."}
                   </div>
                 )}
               </div>
