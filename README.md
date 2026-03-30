@@ -67,3 +67,17 @@ Server-side solamente:
 ## v7.2.0 notes
 - `runtime-check` ahora carga `.env.local` y `.env` explícitamente con `dotenv`, para evitar diferencias entre Next.js y scripts Node.
 - Antes de desplegar en Vercel, replica `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_ANON_KEY` en Project Settings > Environment Variables.
+
+
+## v7.3.0 build stabilization v4
+
+This version focuses on build/deploy preflight for Vercel:
+- stronger runtime env validation
+- explicit `vercel.json`
+- stricter preflight scripts before `next build`
+
+Recommended flow:
+1. `npm install`
+2. `npm run runtime:check`
+3. `npm run vercel:preflight`
+4. `npm run build`

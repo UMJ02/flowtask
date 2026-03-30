@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "7.2.0-env-loader-vercel-v3",
+  "version": "7.3.0-build-stabilization-v4",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -19,7 +19,10 @@
     "prebuild": "npm run runtime:check",
     "ci:check": "npm run typecheck && npm run runtime:check",
     "reinstall:clean": "rm -rf node_modules package-lock.json .next tsconfig.tsbuildinfo",
-    "vercel:build": "npm run clean && npm run runtime:check && next build"
+    "vercel:build": "npm run clean && npm run runtime:check && next build",
+    "build:strict": "npm run clean && npm run release:check && next build",
+    "vercel:preflight": "npm run clean && npm run runtime:check && npm run typecheck",
+    "vercel:deploy-check": "npm run vercel:preflight && echo \"[vercel-deploy-check] Ready to run npm run build\""
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
