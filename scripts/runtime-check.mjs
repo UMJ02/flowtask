@@ -1,3 +1,4 @@
+import 'dotenv/config'
 const requiredKeys = ['NEXT_PUBLIC_SUPABASE_URL', 'NEXT_PUBLIC_SUPABASE_ANON_KEY'];
 
 const missing = requiredKeys.filter((key) => {
