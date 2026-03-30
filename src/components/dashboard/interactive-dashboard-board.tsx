@@ -630,6 +630,7 @@ export function InteractiveDashboardBoard() {
                     </span>
                     <span className="min-w-0">
                       <span className="block text-sm font-semibold text-slate-900">{meta.label}</span>
+                      <span className="mt-1 block text-xs leading-5 text-slate-500">{active ? 'Activo en pizarra' : meta.description}</span>
                     </span>
                   </button>
                 );

@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { AlertCircle, CheckCircle2, Clock3, FolderOpen, GripVertical, Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Card } from "@/components/ui/card";
 import { taskDetailRoute } from "@/lib/navigation/routes";
@@ -41,17 +40,21 @@ function formatDate(value?: string | null) {
 }
 
 export function TaskKanbanBoard({ tasks, showHeader = true }: { tasks: TaskItem[]; showHeader?: boolean }) {
-  const router = useRouter();
   const supabase = createClient();
+  const serverSignature = useMemo(() => tasks.map((task) => `${task.id}:${task.status}:${task.due_date ?? ""}:${task.title}`).join("|"), [tasks]);
   const [boardTasks, setBoardTasks] = useState<TaskItem[]>(tasks);
+  const [lastServerSignature, setLastServerSignature] = useState(serverSignature);
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [hoverColumn, setHoverColumn] = useState<string | null>(null);
   const [busyStatus, setBusyStatus] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    setBoardTasks(tasks);
-  }, [tasks]);
+    if (serverSignature !== lastServerSignature) {
+      setBoardTasks(tasks);
+      setLastServerSignature(serverSignature);
+    }
+  }, [lastServerSignature, serverSignature, tasks]);
 
   const normalizedTasks = useMemo(() => {
     return boardTasks.map((task) => {
@@ -88,7 +91,7 @@ export function TaskKanbanBoard({ tasks, showHeader = true }: { tasks: TaskItem[
       setBoardTasks(previousTasks);
       setError("No pudimos mover la tarea. Revisa permisos o intenta de nuevo.");
     } else {
-      router.refresh();
+      setLastServerSignature(nextTasks.map((task) => `${task.id}:${task.status}:${task.due_date ?? ""}:${task.title}`).join("|"));
     }
 
     setBusyStatus(null);
@@ -169,6 +172,8 @@ export function TaskKanbanBoard({ tasks, showHeader = true }: { tasks: TaskItem[
                         onDragStart={(event) => {
                           event.dataTransfer.effectAllowed = "move";
                           event.dataTransfer.setData("text/task-id", task.id);
+                          event.dataTransfer.effectAllowed = "move";
+                          event.dataTransfer.setData("application/x-flowtask-task-id", task.id);
                           event.dataTransfer.setData("text/plain", task.id);
                           setDraggingId(task.id);
                         }}
