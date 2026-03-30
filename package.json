@@ -3,11 +3,11 @@
   "version": "7.6.2-hydration-manifest-fix",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
-    "typecheck": "tsc --noEmit",
+    "dev": "node ./node_modules/next/dist/bin/next dev",
+    "build": "node ./node_modules/next/dist/bin/next build",
+    "start": "node ./node_modules/next/dist/bin/next start",
+    "lint": "node ./node_modules/next/dist/bin/next lint",
+    "typecheck": "node ./node_modules/typescript/bin/tsc --noEmit",
     "process-reminders": "npx tsx scripts/process-reminders.ts",
     "check": "npm run typecheck",
     "process-notification-deliveries": "npx tsx scripts/process-notification-deliveries.ts",
@@ -25,7 +25,9 @@
     "vercel:deploy-check": "npm run vercel:preflight && echo \"[vercel-deploy-check] Ready to run npm run build\"",
     "security:check": "node scripts/security-check.mjs",
     "deploy:ready": "npm run security:check && npm run vercel:preflight && npm run build",
-    "vercel:prod-ready": "npm run deploy:ready"
+    "vercel:prod-ready": "npm run deploy:ready",
+    "ci:install": "npm ci",
+    "validate:clean": "npm run clean && npm run runtime:check && npm run typecheck && npm run build"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

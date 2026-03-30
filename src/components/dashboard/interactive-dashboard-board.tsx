@@ -69,6 +69,11 @@ type ProjectRow = {
   created_at?: string | null;
 };
 
+type MembershipRow = {
+  organization_id: string;
+  is_default: boolean | null;
+};
+
 const STORAGE_KEY = 'flowtask.board.v622';
 
 const PANEL_META: Record<PanelKey, { label: string; icon: ComponentType<{ className?: string }>; description: string }> = {
@@ -422,22 +427,50 @@ export function InteractiveDashboardBoard() {
         return;
       }
 
-      if (!cancelled) setActiveOrganizationId(null);
+      const { data: membership } = await supabase
+        .from('organization_members')
+        .select('organization_id,is_default')
+        .eq('user_id', user.id)
+        .order('is_default', { ascending: false })
+        .limit(1)
+        .maybeSingle();
 
-      const taskQuery = supabase
-        .from('tasks')
-        .select('id,title,description,status,client_name,due_date,project_id,organization_id,owner_id,created_at')
-        .eq('owner_id', user.id)
-        .order('due_date', { ascending: true, nullsFirst: false })
-        .order('created_at', { ascending: false })
-        .limit(120);
+      const resolvedOrganizationId = (membership as MembershipRow | null)?.organization_id ?? null;
 
-      const projectQuery = supabase
-        .from('projects')
-        .select('id,title,status,client_name,due_date,organization_id,owner_id,created_at')
-        .eq('owner_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(12);
+      if (!cancelled) setActiveOrganizationId(resolvedOrganizationId);
+
+      const taskQuery = (() => {
+        let query = supabase
+          .from('tasks')
+          .select('id,title,description,status,client_name,due_date,project_id,organization_id,owner_id,created_at')
+          .order('due_date', { ascending: true, nullsFirst: false })
+          .order('created_at', { ascending: false })
+          .limit(120);
+
+        if (resolvedOrganizationId) {
+          query = query.or(`organization_id.eq.${resolvedOrganizationId},owner_id.eq.${user.id}`);
+        } else {
+          query = query.eq('owner_id', user.id);
+        }
+
+        return query;
+      })();
+
+      const projectQuery = (() => {
+        let query = supabase
+          .from('projects')
+          .select('id,title,status,client_name,due_date,organization_id,owner_id,created_at')
+          .order('created_at', { ascending: false })
+          .limit(12);
+
+        if (resolvedOrganizationId) {
+          query = query.or(`organization_id.eq.${resolvedOrganizationId},owner_id.eq.${user.id}`);
+        } else {
+          query = query.eq('owner_id', user.id);
+        }
+
+        return query;
+      })();
 
       const [{ data: tasks, error: tasksError }, { data: projects, error: projectsError }] = await Promise.all([
         taskQuery,
@@ -606,10 +639,10 @@ export function InteractiveDashboardBoard() {
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-600">Modo pizarra</p>
             <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-950">Tablero visual premium</h2>
-            <p className="mt-1 max-w-2xl text-sm text-slate-500">Calendario, tareas rápidas y proyectos activos leyendo desde la base real del workspace.</p>
+            <p className="mt-1 max-w-2xl text-sm text-slate-500">Calendario, tareas rápidas y proyectos activos leyendo desde la base real del workspace con alcance personal y organizacional.</p>
             <div className="mt-3 flex flex-wrap gap-2">
               <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-600">{activeCount} paneles activos</span>
-              <span className="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">Supabase conectado</span>
+              <span className="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">{activeOrganizationId ? 'Workspace con organización activa' : 'Workspace personal activo'}</span>
             </div>
           </div>
           <div className="flex items-center gap-2">
