@@ -460,6 +460,26 @@ export function InteractiveDashboardBoard() {
     };
   }, [hydrated]);
 
+  if (!hydrated) {
+    return (
+      <div className="space-y-4">
+        <Card className="border-slate-200 bg-white px-5 py-5 shadow-sm">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-600">Modo pizarra</p>
+              <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-950">Tablero visual premium</h2>
+              <p className="mt-1 max-w-2xl text-sm text-slate-500">Cargando la pizarra con tu configuración y paneles…</p>
+            </div>
+          </div>
+        </Card>
+        <div className="grid gap-4 xl:grid-cols-[340px_minmax(0,1fr)]">
+          <Card className="border-slate-200 bg-white p-5 shadow-sm"><div className="h-[420px] rounded-3xl bg-slate-50" /></Card>
+          <Card className="border-slate-200 bg-white p-5 shadow-sm"><div className="h-[420px] rounded-3xl bg-slate-50" /></Card>
+        </div>
+      </div>
+    );
+  }
+
   const openTasks = useMemo(() => boardTasks.filter((item) => item.status !== 'concluido'), [boardTasks]);
   const tasksToday = useMemo(() => openTasks.filter((item) => item.due_date === isoDate(new Date())), [openTasks]);
   const nextTasks = useMemo(() => openTasks.slice(0, 4), [openTasks]);
