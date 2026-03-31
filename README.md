@@ -101,3 +101,30 @@ Comando consolidado de release:
 ```bash
 npm run release:ops
 ```
+
+
+## V11 local QA / bugfix readiness
+
+Recommended validation flow after unpacking the source:
+
+```bash
+rm -rf node_modules .next package-lock.json
+npm install
+cp .env.example .env.local
+npm run validate:node
+npm run doctor:install
+npm run validate:env
+npm run doctor:supabase
+npm run runtime:check
+npm run typecheck
+npm run build
+npm run dev
+```
+
+Additional local endpoints:
+
+- `GET /api/health` → basic service heartbeat
+- `GET /api/ready` → safe readiness snapshot for local QA (no secrets returned)
+
+If `doctor:install` fails, reinstall dependencies from zero before debugging source code.
+If `doctor:supabase` fails, fix environment bindings before testing auth or workspace flows.

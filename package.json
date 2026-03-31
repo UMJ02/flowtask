@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "8.8.0-ops-readiness-v10",
+  "version": "8.9.0-qa-bugfix-readiness-v11",
   "private": true,
   "scripts": {
     "dev": "node node_modules/next/dist/bin/next dev",
@@ -36,7 +36,11 @@
     "smoke:health": "node scripts/smoke-health.mjs",
     "readiness:report": "node scripts/deploy-summary.mjs",
     "postdeploy:verify": "npm run smoke:health && npm run readiness:report",
-    "release:ops": "npm run clean && npm run ci:full && npm run smoke:health && npm run preflight:report && npm run readiness:report"
+    "release:ops": "npm run clean && npm run ci:full && npm run smoke:health && npm run preflight:report && npm run readiness:report",
+    "doctor:install": "node scripts/install-doctor.mjs",
+    "doctor:supabase": "node scripts/supabase-doctor.mjs",
+    "qa:smoke-local": "npm run validate:node && npm run doctor:install && npm run validate:env && npm run doctor:supabase && npm run runtime:check && npm run typecheck",
+    "release:qa": "npm run clean && npm run qa:smoke-local && npm run build && npm run smoke:health && npm run readiness:report"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
