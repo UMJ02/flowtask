@@ -80,7 +80,7 @@ export function TaskList({ tasks, currentQuery }: { tasks: Array<{ id: string; t
                   title: task.title,
                   subtitle: task.client_name || 'Tarea',
                   href: taskDetailRoute(task.id, currentQuery),
-                  updatedAt: task.updated_at || task.due_date || task.created_at || '1970-01-01T00:00:00.000Z',
+                  updatedAt: task.updated_at || task.created_at || task.due_date || '1970-01-01T00:00:00.000Z',
                 }}
                 compact
               />

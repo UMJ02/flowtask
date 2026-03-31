@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "13.0.0-typefix-hydration-followup",
+  "version": "14.0.0-hydration-typefix-pro",
   "private": true,
   "scripts": {
     "dev": "node node_modules/next/dist/bin/next dev",
@@ -52,12 +52,8 @@
     "preprod:bundle": "npm run qa:full-client && npm run ux:review && npm run release:check && npm run preprod:validate",
     "production:gate": "node scripts/production-gate.mjs",
     "final:bundle": "npm run qa:full-client && npm run ux:review && npm run release:check && npm run preprod:validate && npm run production:gate",
-    "hotfix:notes": "node scripts/hotfix-notes.mjs",
-    "v11:check": "npm run hotfix:notes && npm run production:gate",
-    "hydration:notes": "node scripts/hydration-notes.mjs",
-    "v12:check": "npm run hotfix:notes && npm run hydration:notes && npm run production:gate",
-    "v13:check": "npm run hydration:notes && npm run production:gate",
-    "debug:hydration": "node scripts/debug-hydration.mjs"
+    "debug:hydration": "node scripts/debug-hydration.mjs",
+    "v14:check": "npm run debug:hydration && npm run production:gate"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
