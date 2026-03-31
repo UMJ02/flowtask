@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "8.6.0-post-release-hardening-v8",
+  "version": "8.7.0-production-guardrails-v9",
   "private": true,
   "scripts": {
     "dev": "node node_modules/next/dist/bin/next dev",
@@ -28,7 +28,11 @@
     "vercel:prod-ready": "npm run deploy:ready",
     "validate:env": "node scripts/validate-env.mjs",
     "preflight:full": "npm run security:check && npm run validate:env && npm run runtime:check && npm run typecheck",
-    "deploy:checklist": "npm run clean && npm run preflight:full && npm run build"
+    "deploy:checklist": "npm run clean && npm run preflight:full && npm run build",
+    "validate:node": "node scripts/check-node-version.mjs",
+    "preflight:report": "node scripts/preflight-report.mjs",
+    "ci:full": "npm run validate:node && npm run preflight:full && npm run build",
+    "deploy:gate": "npm run clean && npm run ci:full && npm run preflight:report"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

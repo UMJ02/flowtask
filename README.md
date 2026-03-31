@@ -1,21 +1,22 @@
-# FlowTask v8.6.0 — Post Release Hardening v8
+# FlowTask v8.7.0 — Production Guardrails v9
 
-Base completa para continuar 1:1 desde la V7, con enfoque en handoff limpio, validación previa a deploy y una reinstalación más reproducible.
+Base completa para continuar 1:1 desde la V8, con enfoque en **guardrails de producción**, preflight más fuerte, CI básico y endpoint de salud para deploy.
 
 ## Qué cambia en esta versión
-- se mantiene el source completo de la V7 como base
-- se agrega validación dedicada de variables de entorno antes del build
-- se incorpora `.nvmrc` para fijar una versión sugerida de Node
-- se refuerza `.env.example` como plantilla única de arranque local
-- se agregan reportes de continuidad y checklist post-release
-- se actualiza la metadata del proyecto a `8.6.0-post-release-hardening-v8`
+- se mantiene el source completo de la V8 como base
+- se agrega validación de versión de Node antes del preflight
+- se agrega reporte de preflight para handoff y QA
+- se agrega workflow de GitHub Actions para validación continua
+- se agrega endpoint `api/health` para verificación rápida del entorno
+- se actualiza la metadata del proyecto a `8.7.0-production-guardrails-v9`
 
-## Archivos clave de esta versión
-- `.env.example`
-- `.nvmrc`
-- `scripts/validate-env.mjs`
-- `V_Report/VERSION_REPORT_v8.6.0-post-release-hardening-v8.md`
-- `V_Report/QA_HANDOFF_v8.md`
+## Archivos nuevos de esta versión
+- `.github/workflows/ci.yml`
+- `scripts/check-node-version.mjs`
+- `scripts/preflight-report.mjs`
+- `src/app/api/health/route.ts`
+- `V_Report/VERSION_REPORT_v8.7.0-production-guardrails-v9.md`
+- `V_Report/DEPLOY_RUNBOOK_v9.md`
 
 ## Variables de entorno requeridas
 ### Públicas
@@ -40,35 +41,47 @@ Base completa para continuar 1:1 desde la V7, con enfoque en handoff limpio, val
 3. Crear variables locales:
    - `cp .env.example .env.local`
 4. Completar las variables reales de Supabase
-5. Correr el preflight completo:
+5. Validar Node:
+   - `npm run validate:node`
+6. Correr el preflight completo:
    - `npm run preflight:full`
-6. Correr build:
+7. Generar reporte de preflight:
+   - `npm run preflight:report`
+8. Correr build:
    - `npm run build`
-7. Levantar localmente:
+9. Levantar localmente:
    - `npm run dev`
 
 ## Scripts de validación recomendados
+- `npm run validate:node`
 - `npm run validate:env`
 - `npm run security:check`
 - `npm run runtime:check`
 - `npm run typecheck`
 - `npm run preflight:full`
-- `npm run deploy:checklist`
+- `npm run ci:full`
+- `npm run deploy:gate`
+
+## Endpoint operativo
+- `GET /api/health`
+- devuelve estado general de entorno y readiness básico
+- útil para smoke test rápido después de deploy
 
 ## Flujo recomendado para Vercel
-1. Confirmar que el proyecto y el repo correctos están enlazados.
+1. Confirmar repo y proyecto enlazados correctamente.
 2. Cargar en Vercel las variables equivalentes al `.env.local`.
-3. Validar localmente con `npm run preflight:full`.
+3. Validar localmente con `npm run deploy:gate`.
 4. Ejecutar `npm run build`.
-5. Desplegar solo si el preflight y el build pasan limpios.
+5. Desplegar solo si preflight y build pasan limpios.
+6. Confirmar `GET /api/health` después del deploy.
 
 ## Estado honesto de la base
 - esta versión sigue siendo una base completa de continuidad
-- mejora la reproducibilidad del arranque y el handoff técnico
-- reduce el riesgo de deploy con variables incompletas
+- mejora el handoff técnico y la capacidad de validación antes de deploy
+- añade un mínimo de disciplina CI para no romper silenciosamente
 - cualquier secreto expuesto en versiones anteriores debe seguir rotado en Supabase y Vercel
 
 ## Notas finales
 - no subir `node_modules`, `.next`, `.env.local` ni secretos
-- usa esta V8 como nueva base 1:1 para los siguientes ciclos de corrección
-- revisa `V_Report/QA_HANDOFF_v8.md` antes del siguiente QA o deploy
+- usa esta V9 como nueva base 1:1 para los siguientes ciclos de corrección
+- revisa `V_Report/DEPLOY_RUNBOOK_v9.md` antes del siguiente paso de release
