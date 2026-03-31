@@ -36,7 +36,7 @@ export function LoginForm({ initialNext }: { initialNext?: string }) {
       return;
     }
 
-    router.push(nextRoute);
+    router.replace(nextRoute);
     router.refresh();
   };
 

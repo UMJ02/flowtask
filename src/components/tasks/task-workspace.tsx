@@ -20,10 +20,12 @@ export function TaskWorkspace({
   tasks,
   filters,
   currentView,
+  currentQuery,
 }: {
   tasks: TaskItem[];
   filters?: { q?: string; status?: string; department?: string; due?: string; view?: string };
   currentView?: string;
+  currentQuery?: string;
 }) {
   const router = useRouter();
 
@@ -76,14 +78,14 @@ export function TaskWorkspace({
       </Card>
 
       {view === 'kanban' ? (
-        <TaskKanbanBoard tasks={tasks} />
+        <TaskKanbanBoard tasks={tasks} currentQuery={currentQuery} />
       ) : (
         <div className="space-y-3">
           <div>
             <h2 className="text-lg font-semibold text-slate-900">Lista rápida</h2>
             <p className="text-sm text-slate-500">Abre detalle, revisa fechas y usa acciones directas.</p>
           </div>
-          <TaskList tasks={tasks} />
+          <TaskList tasks={tasks} currentQuery={currentQuery} />
         </div>
       )}
     </div>

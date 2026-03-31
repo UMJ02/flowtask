@@ -13,8 +13,10 @@ import { getTaskById, getTaskComments, getTaskAssignees, getAssignableUsers } fr
 import { getTaskAttachments } from '@/lib/queries/attachments';
 import { getTaskActivity } from '@/lib/queries/activity';
 
-export default async function TaskDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function TaskDetailPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
   const { id } = await params;
+  const query = (await searchParams) ?? {};
+  const queryString = new URLSearchParams(Object.entries(query).flatMap(([key, value]) => typeof value === 'string' ? [[key, value]] : Array.isArray(value) ? value.map((item) => [key, item]) : [])).toString();
   const task = await safeServerCall('getTaskById', () => getTaskById(id), null);
   if (!task) notFound();
 
@@ -28,7 +30,7 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ id:
 
   return (
     <div className="space-y-4">
-      <TaskDetailSummary task={task} />
+      <TaskDetailSummary task={task} currentQuery={queryString} />
       <div className="grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
         <div className="space-y-4">
           <TaskComments taskId={id} comments={comments} />

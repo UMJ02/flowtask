@@ -5,8 +5,10 @@ import { taskDetailRoute } from '@/lib/navigation/routes';
 import { getTaskById } from '@/lib/queries/tasks';
 import { safeServerCall } from '@/lib/runtime/safe-server';
 
-export default async function EditTaskPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function EditTaskPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
   const { id } = await params;
+  const query = (await searchParams) ?? {};
+  const queryString = new URLSearchParams(Object.entries(query).flatMap(([key, value]) => typeof value === 'string' ? [[key, value]] : Array.isArray(value) ? value.map((item) => [key, item]) : [])).toString();
   const task = await safeServerCall('getTaskById', () => getTaskById(id), null);
   if (!task) notFound();
   const department = Array.isArray(task.departments) ? task.departments[0] : task.departments;
@@ -19,7 +21,7 @@ export default async function EditTaskPage({ params }: { params: Promise<{ id: s
       </Card>
       <TaskForm
         taskId={id}
-        redirectTo={taskDetailRoute(id)}
+        redirectTo={taskDetailRoute(id, queryString)}
         initialData={{
           title: task.title,
           description: task.description ?? '',

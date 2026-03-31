@@ -6,14 +6,16 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createClient } from "@/lib/supabase/client";
+import { safeInternalRoute } from "@/lib/navigation/routes";
 import { registerSchema, type RegisterValues } from "@/lib/validations/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-export function RegisterForm() {
+export function RegisterForm({ initialNext }: { initialNext?: string }) {
   const router = useRouter();
   const [serverError, setServerError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const nextRoute = safeInternalRoute(initialNext);
   const {
     register,
     handleSubmit,
@@ -45,13 +47,13 @@ export function RegisterForm() {
     const hasSession = Boolean(data.session);
     setSuccess(
       hasSession
-        ? "Cuenta creada. Te llevaremos al dashboard."
+        ? "Cuenta creada. Te llevaremos a tu área de trabajo."
         : "Cuenta creada. Revisa tu correo antes de iniciar sesión si la confirmación está activa en Supabase.",
     );
 
     if (hasSession) {
       setTimeout(() => {
-        router.push("/app/dashboard");
+        router.push(nextRoute);
         router.refresh();
       }, 900);
     }
@@ -85,7 +87,7 @@ export function RegisterForm() {
         {isSubmitting ? "Creando..." : "Crear cuenta"}
       </Button>
       <div className="text-right text-sm text-slate-600">
-        <Link href="/login">Ya tengo cuenta</Link>
+        <Link href={initialNext ? `/login?next=${encodeURIComponent(initialNext)}` : '/login'}>Ya tengo cuenta</Link>
       </div>
     </form>
   );

@@ -3,9 +3,9 @@ import { TaskDeleteButton } from "@/components/tasks/task-delete-button";
 import { Card } from "@/components/ui/card";
 import { EntityMemoryActions } from "@/components/entities/entity-memory-actions";
 import { formatDate } from "@/lib/utils/dates";
-import { taskDetailRoute, taskEditRoute } from "@/lib/navigation/routes";
+import { taskDetailRoute, taskEditRoute, taskListRoute } from "@/lib/navigation/routes";
 
-export function TaskDetailSummary({ task }: { task: any }) {
+export function TaskDetailSummary({ task, currentQuery = "" }: { task: any; currentQuery?: string }) {
   const department = Array.isArray(task.departments) ? task.departments[0] : task.departments;
   const project = Array.isArray(task.projects) ? task.projects[0] : task.projects;
 
@@ -13,13 +13,16 @@ export function TaskDetailSummary({ task }: { task: any }) {
     <Card>
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">Tarea</p>
+          <Link href={taskListRoute(currentQuery)} className="text-sm font-semibold text-slate-500 transition hover:text-slate-900">
+            ← Volver al listado
+          </Link>
+          <p className="mt-3 text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">Tarea</p>
           <h1 className="mt-2 text-2xl font-bold text-slate-900">{task.title}</h1>
           <p className="mt-3 text-sm text-slate-600">{task.description || "Sin descripción todavía."}</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <EntityMemoryActions entity={{ id: task.id, type: 'task', title: task.title, subtitle: task.client_name || "Tarea", href: taskDetailRoute(task.id), updatedAt: new Date().toISOString() }} />
-          <Link href={taskEditRoute(task.id)} className="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-900 transition hover:bg-slate-50">
+          <EntityMemoryActions entity={{ id: task.id, type: 'task', title: task.title, subtitle: task.client_name || "Tarea", href: taskDetailRoute(task.id, currentQuery), updatedAt: new Date().toISOString() }} />
+          <Link href={taskEditRoute(task.id, currentQuery)} className="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-900 transition hover:bg-slate-50">
             Editar tarea
           </Link>
           <TaskDeleteButton taskId={task.id} />

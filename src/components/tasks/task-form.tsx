@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -8,7 +9,7 @@ import { getClientWorkspaceContext, findOrganizationClientId, fetchWorkspaceProj
 import { DEPARTMENTS } from "@/lib/constants/departments";
 import { TASK_STATUSES } from "@/lib/constants/task-status";
 import { TASK_PRIORITIES } from "@/lib/constants/task-priority";
-import { taskDetailRoute, type AppRoute } from "@/lib/navigation/routes";
+import { taskDetailRoute, taskListRoute, type AppRoute } from "@/lib/navigation/routes";
 import { taskSchema } from "@/lib/validations/task";
 import { getDepartmentIdByCode } from "@/lib/queries/departments";
 import { Button } from "@/components/ui/button";
@@ -175,6 +176,7 @@ export function TaskForm({
   };
 
   const isBusy = isSubmitting || isRefreshing;
+  const cancelHref = redirectTo ?? taskListRoute();
 
   return (
     <form className="space-y-4 rounded-[24px] bg-white p-5 shadow-soft transition-all duration-200" onSubmit={handleSubmit(onSubmit)}>
@@ -247,6 +249,9 @@ export function TaskForm({
         <Button type="button" variant="secondary" disabled={isBusy} onClick={() => reset(resetValues)}>
           Restablecer
         </Button>
+        <Link href={cancelHref} className="inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-900 transition hover:border-emerald-200 hover:bg-emerald-50">
+          Cancelar
+        </Link>
       </div>
     </form>
   );

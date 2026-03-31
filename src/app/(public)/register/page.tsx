@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { RegisterForm } from "@/components/auth/register-form";
 
-export default function RegisterPage() {
+export default async function RegisterPage({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
+  const params = (await searchParams) ?? {};
+  const next = typeof params.next === "string" ? params.next : undefined;
   return (
     <main className="min-h-screen bg-slate-50 py-16">
       <div className="container-page max-w-md">
@@ -13,7 +15,7 @@ export default function RegisterPage() {
             <h1 className="text-3xl font-bold text-slate-900">Crear cuenta</h1>
             <p className="text-sm text-slate-600">Tu tablero es privado. Tus proyectos pueden ser colaborativos.</p>
           </div>
-          <RegisterForm />
+          <RegisterForm initialNext={next} />
         </div>
       </div>
     </main>

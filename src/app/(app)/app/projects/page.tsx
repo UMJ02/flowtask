@@ -15,6 +15,16 @@ export default async function ProjectsPage({ searchParams }: { searchParams?: Pr
     client: typeof params.client === 'string' ? params.client : '',
   };
   const projects = await safeServerCall('getProjects', () => getProjects(filters), []);
+  const queryString = new URLSearchParams(
+    Object.entries(filters).flatMap(([key, value]) => (value ? [[key, value]] : [])),
+  ).toString();
+
+  const stats = {
+    total: projects.length,
+    active: projects.filter((project) => project.status === 'activo').length,
+    paused: projects.filter((project) => project.status === 'en_pausa').length,
+    collaborative: projects.filter((project) => project.is_collaborative).length,
+  };
 
   return (
     <div className="space-y-4">
@@ -24,12 +34,30 @@ export default async function ProjectsPage({ searchParams }: { searchParams?: Pr
           <h1 className="mt-2 text-2xl font-bold text-slate-900">Frentes activos del workspace</h1>
           <p className="mt-2 text-sm text-slate-500">Consulta estado, cliente, deadline y abre el detalle completo de cada frente.</p>
         </div>
-        <Link href={projectNewRoute()} className="inline-flex h-11 items-center justify-center rounded-2xl bg-slate-900 px-4 text-sm font-semibold text-white">Nuevo proyecto</Link>
+        <Link href={projectNewRoute(queryString)} className="inline-flex h-11 items-center justify-center rounded-2xl bg-slate-900 px-4 text-sm font-semibold text-white">Nuevo proyecto</Link>
       </Card>
       <ProjectFilters filters={filters} />
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <Card className="rounded-[22px] border border-slate-200 bg-white px-4 py-4">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">Total visible</p>
+          <p className="mt-2 text-2xl font-bold text-slate-900">{stats.total}</p>
+        </Card>
+        <Card className="rounded-[22px] border border-slate-200 bg-white px-4 py-4">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">Activos</p>
+          <p className="mt-2 text-2xl font-bold text-slate-900">{stats.active}</p>
+        </Card>
+        <Card className="rounded-[22px] border border-slate-200 bg-white px-4 py-4">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">En pausa</p>
+          <p className="mt-2 text-2xl font-bold text-slate-900">{stats.paused}</p>
+        </Card>
+        <Card className="rounded-[22px] border border-slate-200 bg-white px-4 py-4">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">Colaborativos</p>
+          <p className="mt-2 text-2xl font-bold text-slate-900">{stats.collaborative}</p>
+        </Card>
+      </div>
       <div className="grid gap-4 xl:grid-cols-2">
         {projects.length ? projects.map((project) => (
-          <Link key={project.id} href={projectDetailRoute(project.id)} className="rounded-[24px] border border-slate-200 bg-white p-5 transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-sm">
+          <Link key={project.id} href={projectDetailRoute(project.id, queryString)} className="rounded-[24px] border border-slate-200 bg-white p-5 transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-sm">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Proyecto</p>

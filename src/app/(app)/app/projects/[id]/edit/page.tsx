@@ -5,8 +5,10 @@ import { projectDetailRoute } from '@/lib/navigation/routes';
 import { getProjectById } from '@/lib/queries/projects';
 import { safeServerCall } from '@/lib/runtime/safe-server';
 
-export default async function EditProjectPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function EditProjectPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
   const { id } = await params;
+  const query = (await searchParams) ?? {};
+  const queryString = new URLSearchParams(Object.entries(query).flatMap(([key, value]) => typeof value === 'string' ? [[key, value]] : Array.isArray(value) ? value.map((item) => [key, item]) : [])).toString();
   const project = await safeServerCall('getProjectById', () => getProjectById(id), null);
   if (!project) notFound();
   const department = Array.isArray(project.departments) ? project.departments[0] : project.departments;
@@ -19,7 +21,7 @@ export default async function EditProjectPage({ params }: { params: Promise<{ id
       </Card>
       <ProjectForm
         projectId={id}
-        redirectTo={projectDetailRoute(id)}
+        redirectTo={projectDetailRoute(id, queryString)}
         initialData={{
           title: project.title,
           description: project.description ?? '',

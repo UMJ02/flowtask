@@ -196,7 +196,7 @@ async function persistBoardLayoutConfig(
   await supabase.from("boards").update({ layout_config: nextLayoutConfig }).eq("id", board.id);
 }
 
-export function TaskKanbanBoard({ tasks, showHeader = true }: { tasks: TaskItem[]; showHeader?: boolean }) {
+export function TaskKanbanBoard({ tasks, showHeader = true, currentQuery }: { tasks: TaskItem[]; showHeader?: boolean; currentQuery?: string }) {
   const supabase = createClient();
   const serverSignature = useMemo(() => tasks.map((task) => `${task.id}:${task.status}:${task.priority ?? ''}:${task.due_date ?? ''}:${task.title}`).join('|'), [tasks]);
   const [hydrated, setHydrated] = useState(false);
@@ -469,7 +469,7 @@ export function TaskKanbanBoard({ tasks, showHeader = true }: { tasks: TaskItem[
                                 <GripVertical className="h-4 w-4" />
                               </span>
                               <div className="min-w-0 flex-1">
-                                <Link href={taskDetailRoute(task.id)} className="block line-clamp-2 text-[1.02rem] font-bold leading-tight tracking-tight text-slate-900 transition hover:text-emerald-700">
+                                <Link href={taskDetailRoute(task.id, currentQuery)} className="block line-clamp-2 text-[1.02rem] font-bold leading-tight tracking-tight text-slate-900 transition hover:text-emerald-700">
                                   {task.title}
                                 </Link>
                               </div>
@@ -496,7 +496,7 @@ export function TaskKanbanBoard({ tasks, showHeader = true }: { tasks: TaskItem[
                                     </button>
                                   ))}
                                 <Link
-                                  href={taskDetailRoute(task.id)}
+                                  href={taskDetailRoute(task.id, currentQuery)}
                                   title="Abrir"
                                   aria-label="Abrir tarea"
                                   className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100 transition hover:bg-emerald-100"

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -7,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { getClientWorkspaceContext, findOrganizationClientId } from "@/lib/supabase/workspace-client";
 import { DEPARTMENTS } from "@/lib/constants/departments";
 import { PROJECT_STATUSES } from "@/lib/constants/project-status";
-import { projectDetailRoute, type AppRoute } from "@/lib/navigation/routes";
+import { projectDetailRoute, projectListRoute, type AppRoute } from "@/lib/navigation/routes";
 import { generateShareToken } from "@/lib/utils/tokens";
 import { projectSchema } from "@/lib/validations/project";
 import { getDepartmentIdByCode } from "@/lib/queries/departments";
@@ -147,6 +148,7 @@ export function ProjectForm({
   };
 
   const isBusy = isSubmitting || isRefreshing;
+  const cancelHref = redirectTo ?? projectListRoute();
 
   return (
     <form className="space-y-4 rounded-[24px] bg-white p-5 shadow-soft transition-all duration-200" onSubmit={handleSubmit(onSubmit)}>
@@ -218,6 +220,9 @@ export function ProjectForm({
         >
           Restablecer
         </Button>
+        <Link href={cancelHref} className="inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-900 transition hover:border-emerald-200 hover:bg-emerald-50">
+          Cancelar
+        </Link>
       </div>
     </form>
   );
