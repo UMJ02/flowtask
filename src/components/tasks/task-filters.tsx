@@ -10,6 +10,7 @@ interface TaskFiltersProps {
   filters: {
     q?: string;
     status?: string;
+    priority?: string;
     department?: string;
     due?: string;
     view?: string;
@@ -18,9 +19,9 @@ interface TaskFiltersProps {
 
 export function TaskFilters({ filters }: TaskFiltersProps) {
   return (
-    <form className="grid gap-3 md:grid-cols-5" method="get">
+    <form className="grid gap-3 md:grid-cols-2 xl:grid-cols-6" method="get">
       {!!filters.view && <input type="hidden" name="view" value={filters.view} />}
-      <label className="relative block md:col-span-2">
+      <label className="relative block md:col-span-2 xl:col-span-2">
         <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Buscar</span>
         <Search className="pointer-events-none absolute left-3 top-[42px] h-4 w-4 text-slate-400" />
         <Input className="pl-9" defaultValue={filters.q ?? ''} name="q" placeholder="Escribe una tarea, cliente o palabra clave" />
@@ -32,6 +33,15 @@ export function TaskFilters({ filters }: TaskFiltersProps) {
           {TASK_STATUSES.map((item) => (
             <option key={item.value} value={item.value}>{item.label}</option>
           ))}
+        </Select>
+      </label>
+      <label className="block">
+        <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Prioridad</span>
+        <Select defaultValue={filters.priority ?? ''} name="priority">
+          <option value="">Todas</option>
+          <option value="alta">Alta</option>
+          <option value="media">Media</option>
+          <option value="baja">Baja</option>
         </Select>
       </label>
       <label className="block">
@@ -53,11 +63,11 @@ export function TaskFilters({ filters }: TaskFiltersProps) {
           <option value="none">Sin fecha</option>
         </Select>
       </label>
-      <div className="flex gap-2 md:col-span-5 md:justify-end">
+      <div className="flex gap-2 md:col-span-2 xl:col-span-6 xl:justify-end">
         <Link href="/app/tasks" className="w-full md:w-auto">
           <Button className="w-full md:w-auto" type="button" variant="secondary">Limpiar</Button>
         </Link>
-        <Button className="w-full md:w-auto" type="submit">Buscar</Button>
+        <Button className="w-full md:w-auto" type="submit">Aplicar filtros</Button>
       </div>
     </form>
   );

@@ -4,6 +4,7 @@ import type { TaskSummary } from "@/types/task";
 export interface TaskFiltersInput {
   q?: string;
   status?: string;
+  priority?: string;
   department?: string;
   due?: string;
 }
@@ -59,8 +60,9 @@ export async function getTasks(filters: TaskFiltersInput = {}): Promise<TaskSumm
     activeOrganizationId,
   );
 
-  if (filters.q) query = query.ilike("title", `%${filters.q}%`);
+  if (filters.q) query = query.or(`title.ilike.%${filters.q}%,client_name.ilike.%${filters.q}%`);
   if (filters.status) query = query.eq("status", filters.status);
+  if (filters.priority) query = query.eq("priority", filters.priority);
   if (filters.department) {
     const { data: dept } = await supabase.from("departments").select("id").eq("code", filters.department).maybeSingle();
     if (dept?.id) query = query.eq("department_id", dept.id);

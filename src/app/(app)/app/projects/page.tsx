@@ -1,9 +1,23 @@
 import Link from 'next/link';
+import { BriefcaseBusiness, FolderOpenDot, Plus, Users } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { EmptyState } from '@/components/ui/empty-state';
 import { ProjectFilters } from '@/components/projects/project-filters';
 import { projectDetailRoute, projectNewRoute } from '@/lib/navigation/routes';
 import { getProjects } from '@/lib/queries/projects';
 import { safeServerCall } from '@/lib/runtime/safe-server';
+import { formatDate } from '@/lib/utils/dates';
+
+function metricCard(label: string, value: number, helper: string) {
+  return (
+    <Card className="rounded-[22px] border border-slate-200 bg-white px-4 py-4">
+      <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">{label}</p>
+      <p className="mt-2 text-2xl font-bold text-slate-900">{value}</p>
+      <p className="mt-2 text-sm text-slate-500">{helper}</p>
+    </Card>
+  );
+}
 
 export default async function ProjectsPage({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
   const params = (await searchParams) ?? {};
@@ -28,32 +42,25 @@ export default async function ProjectsPage({ searchParams }: { searchParams?: Pr
 
   return (
     <div className="space-y-4">
-      <Card className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+      <Card className="flex flex-col gap-4 rounded-[28px] md:flex-row md:items-end md:justify-between">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Proyectos</p>
           <h1 className="mt-2 text-2xl font-bold text-slate-900">Frentes activos del workspace</h1>
-          <p className="mt-2 text-sm text-slate-500">Consulta estado, cliente, deadline y abre el detalle completo de cada frente.</p>
+          <p className="mt-2 max-w-2xl text-sm text-slate-500">Consulta estado, cliente, deadline y abre el detalle completo de cada frente sin perder el contexto de búsqueda.</p>
         </div>
-        <Link href={projectNewRoute(queryString)} className="inline-flex h-11 items-center justify-center rounded-2xl bg-slate-900 px-4 text-sm font-semibold text-white">Nuevo proyecto</Link>
+        <Link href={projectNewRoute(queryString)} className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-slate-900 px-4 text-sm font-semibold text-white">
+          <Plus className="h-4 w-4" />
+          Nuevo proyecto
+        </Link>
       </Card>
-      <ProjectFilters filters={filters} />
+      <Card className="rounded-[24px] border border-slate-200/90 bg-white/90 p-5 shadow-[0_10px_30px_rgba(15,23,42,0.04)]">
+        <ProjectFilters filters={filters} />
+      </Card>
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <Card className="rounded-[22px] border border-slate-200 bg-white px-4 py-4">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">Total visible</p>
-          <p className="mt-2 text-2xl font-bold text-slate-900">{stats.total}</p>
-        </Card>
-        <Card className="rounded-[22px] border border-slate-200 bg-white px-4 py-4">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">Activos</p>
-          <p className="mt-2 text-2xl font-bold text-slate-900">{stats.active}</p>
-        </Card>
-        <Card className="rounded-[22px] border border-slate-200 bg-white px-4 py-4">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">En pausa</p>
-          <p className="mt-2 text-2xl font-bold text-slate-900">{stats.paused}</p>
-        </Card>
-        <Card className="rounded-[22px] border border-slate-200 bg-white px-4 py-4">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">Colaborativos</p>
-          <p className="mt-2 text-2xl font-bold text-slate-900">{stats.collaborative}</p>
-        </Card>
+        {metricCard('Total visible', stats.total, 'resultado actual')}
+        {metricCard('Activos', stats.active, 'frentes en marcha')}
+        {metricCard('En pausa', stats.paused, 'requieren reactivación')}
+        {metricCard('Colaborativos', stats.collaborative, 'trabajo compartido')}
       </div>
       <div className="grid gap-4 xl:grid-cols-2">
         {projects.length ? projects.map((project) => (
@@ -69,15 +76,31 @@ export default async function ProjectsPage({ searchParams }: { searchParams?: Pr
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               <div className="rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-600">
                 <p className="text-[11px] uppercase tracking-[0.16em] text-slate-500">Deadline</p>
-                <p className="mt-1 font-semibold text-slate-900">{project.due_date || 'Sin fecha'}</p>
+                <p className="mt-1 font-semibold text-slate-900">{project.due_date ? formatDate(project.due_date) : 'Sin fecha'}</p>
               </div>
               <div className="rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-600">
                 <p className="text-[11px] uppercase tracking-[0.16em] text-slate-500">Departamento</p>
                 <p className="mt-1 font-semibold text-slate-900">{project.departmentName || 'No indicado'}</p>
               </div>
             </div>
+            <div className="mt-4 flex flex-wrap gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
+              <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1 text-slate-600"><BriefcaseBusiness className="h-3.5 w-3.5" /> Estado visible</span>
+              <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1 text-slate-600"><Users className="h-3.5 w-3.5" /> {project.is_collaborative ? 'Equipo' : 'Individual'}</span>
+            </div>
           </Link>
-        )) : <Card><p className="text-sm text-slate-500">No encontramos proyectos con este filtro.</p></Card>}
+        )) : (
+          <EmptyState
+            icon={<FolderOpenDot className="h-6 w-6" />}
+            title="No encontramos proyectos con este filtro"
+            description="Puedes limpiar filtros para volver a ver todos los frentes o crear un proyecto nuevo para arrancar desde aquí."
+            action={
+              <div className="flex flex-wrap justify-center gap-2">
+                <Link href="/app/projects"><Button variant="secondary">Limpiar filtros</Button></Link>
+                <Link href={projectNewRoute(queryString)}><Button>Nuevo proyecto</Button></Link>
+              </div>
+            }
+          />
+        )}
       </div>
     </div>
   );

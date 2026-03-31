@@ -23,7 +23,7 @@ export function TaskWorkspace({
   currentQuery,
 }: {
   tasks: TaskItem[];
-  filters?: { q?: string; status?: string; department?: string; due?: string; view?: string };
+  filters?: { q?: string; status?: string; priority?: string; department?: string; due?: string; view?: string };
   currentView?: string;
   currentQuery?: string;
 }) {
@@ -38,6 +38,7 @@ export function TaskWorkspace({
     const params = new URLSearchParams();
     if (filters?.q) params.set('q', filters.q);
     if (filters?.status) params.set('status', filters.status);
+    if (filters?.priority) params.set('priority', filters.priority);
     if (filters?.department) params.set('department', filters.department);
     if (filters?.due) params.set('due', filters.due);
     if (next === 'list') params.set('view', 'list');

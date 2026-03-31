@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { CalendarDays, Flag, FolderKanban, LayoutPanelTop, Plus, Sparkles, UserRoundPlus } from 'lucide-react';
+import { AlertTriangle, CalendarDays, FolderKanban, LayoutPanelTop, Plus, Sparkles, UserRoundPlus } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { asRoute, projectNewRoute, taskNewRoute, type AppRoute } from '@/lib/navigation/routes';
 
@@ -21,6 +21,14 @@ const ACTIONS: Array<{ href: AppRoute; title: string; description: string; helpe
     accent: 'from-sky-50 to-white',
   },
   {
+    href: asRoute('/app/tasks?view=list'),
+    title: 'Lista de tareas',
+    description: 'Entra directo al listado para ordenar, filtrar y revisar detalle.',
+    helper: 'Vista rápida',
+    icon: UserRoundPlus,
+    accent: 'from-rose-50 to-white',
+  },
+  {
     href: asRoute('/app/dashboard?view=board'),
     title: 'Pizarra',
     description: 'Abre el tablero interactivo para mover trabajo y foco.',
@@ -37,19 +45,11 @@ const ACTIONS: Array<{ href: AppRoute; title: string; description: string; helpe
     accent: 'from-amber-50 to-white',
   },
   {
-    href: asRoute('/app/tasks?view=list'),
-    title: 'Asignar',
-    description: 'Entra directo a repartir pendientes y responsables.',
-    helper: 'Gestión rápida',
-    icon: UserRoundPlus,
-    accent: 'from-rose-50 to-white',
-  },
-  {
-    href: asRoute('/app/tasks?status=alta'),
-    title: 'Prioridad',
-    description: 'Filtra primero lo más urgente y decide sin rodeos.',
-    helper: 'Alta urgencia',
-    icon: Flag,
+    href: asRoute('/app/tasks?priority=alta'),
+    title: 'Prioridad alta',
+    description: 'Filtra primero lo crítico para decidir sin rodeos.',
+    helper: 'Foco inmediato',
+    icon: AlertTriangle,
     accent: 'from-teal-50 to-white',
   },
 ];

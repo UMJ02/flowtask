@@ -26,7 +26,9 @@ html {
 }
 
 body {
-  background: #f4f7f5;
+  background:
+    radial-gradient(circle at top, rgba(16, 185, 129, 0.07), transparent 24%),
+    linear-gradient(180deg, #f8fafc 0%, #f3f7f5 100%);
   color: #0f172a;
   font-family: Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -43,6 +45,11 @@ input,
 select,
 textarea {
   font: inherit;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: rgb(148 163 184);
 }
 
 .container-page {
@@ -124,4 +131,23 @@ textarea {
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(226, 232, 240, 0.6);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.45);
+  border-radius: 999px;
+  border: 2px solid rgba(226, 232, 240, 0.6);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(71, 85, 105, 0.6);
 }
