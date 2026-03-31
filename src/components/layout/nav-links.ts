@@ -12,6 +12,7 @@ import {
   BrainCircuit,
   LifeBuoy,
   ShieldEllipsis,
+  PanelsTopLeft,
 } from 'lucide-react';
 import type { AppRoute } from '@/lib/navigation/routes';
 
@@ -25,6 +26,7 @@ export type AppNavLink = {
 
 export const appNavLinks: AppNavLink[] = [
   { href: '/app/dashboard', label: 'Workspace', hint: 'Tu tablero', icon: LayoutGrid },
+  { href: '/app/pizarra', label: 'Pizarra', hint: 'Paneles y notas', icon: PanelsTopLeft },
   { href: '/app/projects', label: 'Proyectos', hint: 'Fechas y avance', icon: FolderKanban },
   { href: '/app/tasks', label: 'Tareas', hint: 'Pendientes al día', icon: ClipboardList },
   { href: '/app/clients', label: 'Clientes', hint: 'Cuentas activas', icon: Users },
