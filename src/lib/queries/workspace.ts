@@ -17,10 +17,10 @@ export async function getWorkspaceContext(): Promise<WorkspaceContext> {
   };
 }
 
-export function applyWorkspaceScope<T extends { eq: Function; or: Function }>(query: T, userId: string, organizationId?: string | null) {
+export function applyWorkspaceScope<T extends { eq: (column: string, value: unknown) => T }>(query: T, _userId: string, organizationId?: string | null) {
   if (organizationId) {
-    return query.or(`organization_id.eq.${organizationId},owner_id.eq.${userId}`);
+    return query.eq("organization_id", organizationId);
   }
 
-  return query.eq("owner_id", userId);
+  return query;
 }

@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createClient } from "@/lib/supabase/client";
@@ -11,9 +11,9 @@ import { loginSchema, type LoginValues } from "@/lib/validations/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-export function LoginForm() {
+export function LoginForm({ initialNext }: { initialNext?: string }) {
   const router = useRouter();
-  const searchParams = useSearchParams();
+  const nextRoute = useMemo(() => safeInternalRoute(initialNext), [initialNext]);
   const [serverError, setServerError] = useState<string | null>(null);
   const {
     register,
@@ -36,7 +36,6 @@ export function LoginForm() {
       return;
     }
 
-    const nextRoute = safeInternalRoute(searchParams.get("next"));
     router.push(nextRoute);
     router.refresh();
   };

@@ -6,7 +6,42 @@ import { getNotificationPreferences } from '@/lib/queries/notification-preferenc
 import { getNotificationsPageData } from '@/lib/queries/notifications';
 import { safeServerCall } from '@/lib/runtime/safe-server';
 
-export default async function NotificationsPage() {
+type NotificationFilterKey =
+  | 'all'
+  | 'unread'
+  | 'task'
+  | 'project'
+  | 'comment'
+  | 'reminder'
+  | 'delivery_failed'
+  | 'delivery_pending'
+  | 'delivery_sent';
+
+const NOTIFICATION_FILTER_VALUES = new Set<NotificationFilterKey>([
+  'all',
+  'unread',
+  'task',
+  'project',
+  'comment',
+  'reminder',
+  'delivery_failed',
+  'delivery_pending',
+  'delivery_sent',
+]);
+
+function parseNotificationFilter(value: string | undefined): NotificationFilterKey {
+  if (value && NOTIFICATION_FILTER_VALUES.has(value as NotificationFilterKey)) {
+    return value as NotificationFilterKey;
+  }
+
+  return 'all';
+}
+
+export default async function NotificationsPage({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
+  const params = (await searchParams) ?? {};
+  const initialFilter = parseNotificationFilter(typeof params.filter === 'string' ? params.filter : undefined);
+  const initialSearch = typeof params.q === 'string' ? params.q : '';
+
   const [data, preferences] = await Promise.all([
     safeServerCall('getNotificationsPageData', () => getNotificationsPageData(), {
       userId: '', notifications: [], assignedTasks: [], triggeredReminders: [], unreadCount: 0, digestPreview: null, deliverySummary: { total: 0, sent: 0, failed: 0, pending: 0 },
@@ -31,6 +66,8 @@ export default async function NotificationsPage() {
         triggeredReminders={data.triggeredReminders}
         digestPreview={data.digestPreview}
         deliverySummary={data.deliverySummary}
+        initialFilter={initialFilter}
+        initialSearch={initialSearch}
       />
       <NotificationDeliveryHealth deliverySummary={data.deliverySummary} digestPreview={data.digestPreview} />
     </div>

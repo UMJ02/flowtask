@@ -37,7 +37,7 @@ export default async function TasksPage({ searchParams }: { searchParams?: Promi
         priority: task.priority,
         client_name: task.client_name,
         due_date: task.due_date,
-      }))} filters={filters} />
+      }))} filters={filters} currentView={filters.view} />
     </div>
   );
 }

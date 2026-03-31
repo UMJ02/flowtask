@@ -3,16 +3,16 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { isToday, isYesterday, parseISO } from "date-fns";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { MarkNotificationReadButton } from "@/components/notifications/mark-notification-read-button";
 import { MarkAllNotificationsReadButton } from "@/components/notifications/mark-all-notifications-read-button";
 import { ArchiveReadNotificationsButton } from "@/components/notifications/archive-read-notifications-button";
 import { useNotificationsRealtime, type LiveNotification, type NotificationDelivery } from "@/hooks/use-notifications-realtime";
 import { useNotificationsState } from "@/components/notifications/notifications-provider";
-import { buildRouteWithQuery, projectDetailRoute, taskDetailRoute, type AppRoute } from "@/lib/navigation/routes";
+import { notificationsRoute, projectDetailRoute, taskDetailRoute, type AppRoute } from "@/lib/navigation/routes";
 import { formatDate } from "@/lib/utils/dates";
-import { NOTIFICATION_FILTERS, isNotificationFilterKey, useNotificationFilters, type NotificationFilterKey } from "@/hooks/use-notification-filters";
+import { NOTIFICATION_FILTERS, useNotificationFilters, type NotificationFilterKey } from "@/hooks/use-notification-filters";
 
 type AssignedTask = {
   id: string;
@@ -121,6 +121,8 @@ export function NotificationsLivePanel({
   triggeredReminders,
   digestPreview,
   deliverySummary,
+  initialFilter = "all",
+  initialSearch = "",
 }: {
   userId: string;
   initialNotifications: LiveNotification[];
@@ -128,15 +130,13 @@ export function NotificationsLivePanel({
   triggeredReminders: TriggeredReminder[];
   digestPreview: DigestPreview;
   deliverySummary: DeliverySummary;
+  initialFilter?: NotificationFilterKey;
+  initialSearch?: string;
 }) {
   const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const initialFilterFromUrl = searchParams.get("filter");
-  const initialSearchFromUrl = searchParams.get("q") ?? "";
   const [notifications, setNotifications] = useState(initialNotifications);
-  const [activeFilter, setActiveFilter] = useState<NotificationFilterKey>(isNotificationFilterKey(initialFilterFromUrl) ? initialFilterFromUrl : "all");
-  const [searchQuery, setSearchQuery] = useState(initialSearchFromUrl);
+  const [activeFilter, setActiveFilter] = useState<NotificationFilterKey>(initialFilter);
+  const [searchQuery, setSearchQuery] = useState(initialSearch);
   const [liveDeliverySummary, setLiveDeliverySummary] = useState(deliverySummary);
   const { unreadCount, markOneAsRead, markAllAsRead } = useNotificationsState();
 
@@ -157,21 +157,12 @@ export function NotificationsLivePanel({
     setLiveDeliverySummary(summarizeDeliveries(notifications));
   }, [notifications]);
 
-  useEffect(() => {
-    const filterFromUrl = searchParams.get("filter");
-    const q = searchParams.get("q") ?? "";
-    if (isNotificationFilterKey(filterFromUrl) && filterFromUrl !== activeFilter) setActiveFilter(filterFromUrl);
-    if (!filterFromUrl && activeFilter !== "all") setActiveFilter("all");
-    if (q !== searchQuery) setSearchQuery(q);
-  }, [activeFilter, searchParams, searchQuery]);
 
   const syncUrl = (nextFilter: NotificationFilterKey, nextQuery: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-    if (nextFilter === "all") params.delete("filter");
-    else params.set("filter", nextFilter);
+    const params = new URLSearchParams();
+    if (nextFilter !== "all") params.set("filter", nextFilter);
     if (nextQuery.trim()) params.set("q", nextQuery.trim());
-    else params.delete("q");
-    router.replace(buildRouteWithQuery(pathname, params), { scroll: false });
+    router.replace(notificationsRoute(params.toString()), { scroll: false });
   };
 
   const visibleNotifications = useNotificationFilters(notifications, activeFilter, searchQuery);

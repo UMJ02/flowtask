@@ -2,12 +2,12 @@
 
 import { useMemo } from 'react';
 import { LayoutGrid, Rows3 } from 'lucide-react';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { TaskKanbanBoard, type TaskItem } from '@/components/tasks/task-kanban-board';
 import { TaskList } from '@/components/tasks/task-list';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { buildRouteWithQuery } from '@/lib/navigation/routes';
+import { taskListRoute } from '@/lib/navigation/routes';
 
 type ViewMode = 'kanban' | 'list' | 'both';
 
@@ -19,28 +19,27 @@ const options: Array<{ value: Exclude<ViewMode, 'both'>; label: string; icon: ty
 export function TaskWorkspace({
   tasks,
   filters,
+  currentView,
 }: {
   tasks: TaskItem[];
   filters?: { q?: string; status?: string; department?: string; due?: string; view?: string };
+  currentView?: string;
 }) {
-  const searchParams = useSearchParams();
-  const pathname = usePathname();
   const router = useRouter();
 
   const view: Exclude<ViewMode, 'both'> = useMemo(() => {
-    const fromQuery = searchParams.get('view');
-    const candidate = fromQuery ?? filters?.view ?? 'kanban';
+    const candidate = currentView ?? filters?.view ?? 'kanban';
     return candidate === 'list' ? 'list' : 'kanban';
-  }, [filters?.view, searchParams]);
+  }, [currentView, filters?.view]);
 
   const updateView = (next: Exclude<ViewMode, 'both'>) => {
-    const params = new URLSearchParams(searchParams.toString());
-    if (next === 'kanban') {
-      params.delete('view');
-    } else {
-      params.set('view', next);
-    }
-    router.replace(buildRouteWithQuery(pathname, params));
+    const params = new URLSearchParams();
+    if (filters?.q) params.set('q', filters.q);
+    if (filters?.status) params.set('status', filters.status);
+    if (filters?.department) params.set('department', filters.department);
+    if (filters?.due) params.set('due', filters.due);
+    if (next === 'list') params.set('view', 'list');
+    router.replace(taskListRoute(params.toString()), { scroll: false });
   };
 
   return (
