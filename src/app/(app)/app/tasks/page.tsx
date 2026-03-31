@@ -1,54 +1,43 @@
-import { UnifiedSearchBar } from '@/components/ui/unified-search-bar';
-import { TaskEditableTable } from '@/components/tasks/task-editable-table';
+import Link from 'next/link';
+import { TaskFilters } from '@/components/tasks/task-filters';
+import { TaskWorkspace } from '@/components/tasks/task-workspace';
+import { Card } from '@/components/ui/card';
+import { taskNewRoute } from '@/lib/navigation/routes';
 import { getTasks } from '@/lib/queries/tasks';
+import { safeServerCall } from '@/lib/runtime/safe-server';
 
 export default async function TasksPage({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
-  const resolved = searchParams ? await searchParams : {};
+  const params = (await searchParams) ?? {};
   const filters = {
-    q: typeof resolved.q === 'string' ? resolved.q : '',
-    status: typeof resolved.status === 'string' ? resolved.status : '',
-    due: typeof resolved.due === 'string' ? resolved.due : '',
+    q: typeof params.q === 'string' ? params.q : '',
+    status: typeof params.status === 'string' ? params.status : '',
+    department: typeof params.department === 'string' ? params.department : '',
+    due: typeof params.due === 'string' ? params.due : '',
+    view: typeof params.view === 'string' ? params.view : '',
   };
-  const tasks = await getTasks(filters);
+  const tasks = await safeServerCall('getTasks', () => getTasks(filters), []);
 
   return (
-    <div className="space-y-6">
-      <section className="rounded-[28px] border border-slate-200 bg-white px-6 py-6 shadow-sm">
-        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-emerald-600">Tareas</p>
-        <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-900">Control editable de tareas</h1>
-        <p className="mt-2 max-w-3xl text-sm text-slate-500">
-          Se eliminó la zona de trabajo y el flujo para concentrar la vista en una card vertical editable por columnas.
-        </p>
-      </section>
-
-      <UnifiedSearchBar
-        placeholder="Buscar tarea, cliente o deadline..."
-        filters={[
-          { key: 'status', label: 'Estado', options: [
-            { value: 'en_proceso', label: 'En proceso' },
-            { value: 'en_espera', label: 'En espera' },
-            { value: 'concluido', label: 'Concluido' },
-          ] },
-          { key: 'due', label: 'Deadline', options: [
-            { value: 'today', label: 'Hoy' },
-            { value: 'soon', label: 'Próximas' },
-            { value: 'overdue', label: 'Vencidas' },
-            { value: 'none', label: 'Sin fecha' },
-          ] },
-        ]}
-        values={filters}
-      />
-
-      <TaskEditableTable
-        initialTasks={tasks.map((task) => ({
-          id: task.id,
-          title: task.title,
-          status: task.status,
-          due_date: task.due_date ?? null,
-          priority: (task as any).priority ?? 'media',
-          client_name: task.client_name ?? null,
-        }))}
-      />
+    <div className="space-y-4">
+      <Card className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Tareas</p>
+          <h1 className="mt-2 text-2xl font-bold text-slate-900">Workspace de tareas</h1>
+          <p className="mt-2 text-sm text-slate-500">Filtra, abre detalle y mueve tu trabajo sin salir del módulo.</p>
+        </div>
+        <Link href={taskNewRoute()} className="inline-flex h-11 items-center justify-center rounded-2xl bg-slate-900 px-4 text-sm font-semibold text-white">
+          Nueva tarea
+        </Link>
+      </Card>
+      <TaskFilters filters={filters} />
+      <TaskWorkspace tasks={tasks.map((task) => ({
+        id: task.id,
+        title: task.title,
+        status: task.status,
+        priority: task.priority,
+        client_name: task.client_name,
+        due_date: task.due_date,
+      }))} filters={filters} />
     </div>
   );
 }
