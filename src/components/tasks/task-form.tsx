@@ -8,7 +8,7 @@ import { getClientWorkspaceContext, findOrganizationClientId, fetchWorkspaceProj
 import { DEPARTMENTS } from "@/lib/constants/departments";
 import { TASK_STATUSES } from "@/lib/constants/task-status";
 import { TASK_PRIORITIES } from "@/lib/constants/task-priority";
-import { type AppRoute } from "@/lib/navigation/routes";
+import { taskDetailRoute, type AppRoute } from "@/lib/navigation/routes";
 import { taskSchema } from "@/lib/validations/task";
 import { getDepartmentIdByCode } from "@/lib/queries/departments";
 import { Button } from "@/components/ui/button";
@@ -133,11 +133,15 @@ export function TaskForm({
       project_id: values.projectId || null,
     };
 
-    const query = isEdit
-      ? supabase.from("tasks").update(payload).eq("id", taskId!)
-      : supabase.from("tasks").insert({ owner_id: user.id, organization_id: workspace.activeOrganizationId, ...payload });
+    const result = isEdit
+      ? await supabase.from("tasks").update(payload).eq("id", taskId!)
+      : await supabase
+          .from("tasks")
+          .insert({ owner_id: user.id, organization_id: workspace.activeOrganizationId, ...payload })
+          .select("id")
+          .single();
 
-    const { error } = await query;
+    const error = result.error;
 
     if (error) {
       setServerError(error.message);
@@ -145,10 +149,11 @@ export function TaskForm({
       return;
     }
 
+    const createdTaskId = !isEdit ? ((result as { data?: { id?: string | null } | null }).data?.id ?? null) : null;
     const okMessage = successMessage ?? (isEdit ? "Cambios guardados al instante." : "Tarea creada y lista para seguir trabajando.");
     setMessage(okMessage);
 
-    if (!isEdit) {
+    if (!isEdit && !createdTaskId) {
       reset({
         title: "",
         description: "",
@@ -161,9 +166,11 @@ export function TaskForm({
       });
     }
 
+    const nextRoute = isEdit ? redirectTo : redirectTo ?? (createdTaskId ? taskDetailRoute(createdTaskId) : undefined);
+
     startRefresh(() => {
       router.refresh();
-      if (redirectTo) router.push(redirectTo);
+      if (nextRoute) router.push(nextRoute);
     });
   };
 

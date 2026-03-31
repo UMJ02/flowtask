@@ -27,7 +27,7 @@ export function RegisterForm() {
     setSuccess(null);
     const supabase = createClient();
 
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email: values.email,
       password: values.password,
       options: {
@@ -42,11 +42,19 @@ export function RegisterForm() {
       return;
     }
 
-    setSuccess("Cuenta creada. Revisa tu correo si la confirmación está activa en Supabase.");
-    setTimeout(() => {
-      router.push("/app/dashboard");
-      router.refresh();
-    }, 1200);
+    const hasSession = Boolean(data.session);
+    setSuccess(
+      hasSession
+        ? "Cuenta creada. Te llevaremos al dashboard."
+        : "Cuenta creada. Revisa tu correo antes de iniciar sesión si la confirmación está activa en Supabase.",
+    );
+
+    if (hasSession) {
+      setTimeout(() => {
+        router.push("/app/dashboard");
+        router.refresh();
+      }, 900);
+    }
   };
 
   return (

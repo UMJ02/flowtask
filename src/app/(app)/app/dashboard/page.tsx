@@ -1,4 +1,5 @@
 import { BoardOverview } from '@/components/dashboard/board-overview';
+import { DashboardStartState } from '@/components/dashboard/dashboard-start-state';
 import { ClientMetrics } from '@/components/dashboard/client-metrics';
 import { CollaborationMetrics } from '@/components/dashboard/collaboration-metrics';
 import { DashboardHero } from '@/components/dashboard/dashboard-hero';
@@ -20,6 +21,12 @@ export default async function DashboardPage() {
     safeServerCall('getRecentActivitySummary', () => getRecentActivitySummary(12), null),
   ]);
 
+  const totalVisibleItems =
+    (summary?.activeTasks ?? 0) +
+    (summary?.activeProjects ?? 0) +
+    (summary?.completedTasks ?? 0) +
+    (summary?.completedProjects ?? 0);
+
   return (
     <div className="space-y-5 lg:space-y-6">
       <DashboardHero
@@ -31,6 +38,8 @@ export default async function DashboardPage() {
       />
 
       <WorkspaceQuickActions />
+
+      {totalVisibleItems === 0 ? <DashboardStartState /> : null}
 
       <BoardOverview
         activeTasks={summary?.activeTasks ?? 0}

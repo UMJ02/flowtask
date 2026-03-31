@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { getClientWorkspaceContext, findOrganizationClientId } from "@/lib/supabase/workspace-client";
 import { DEPARTMENTS } from "@/lib/constants/departments";
 import { PROJECT_STATUSES } from "@/lib/constants/project-status";
-import { projectListRoute, type AppRoute } from "@/lib/navigation/routes";
+import { projectDetailRoute, type AppRoute } from "@/lib/navigation/routes";
 import { generateShareToken } from "@/lib/utils/tokens";
 import { projectSchema } from "@/lib/validations/project";
 import { getDepartmentIdByCode } from "@/lib/queries/departments";
@@ -94,6 +94,8 @@ export function ProjectForm({
       share_enabled: values.isCollaborative,
     };
 
+    let createdProjectId: string | null = null;
+
     if (isEdit) {
       const updateValues: Record<string, unknown> = { ...payload };
       updateValues.share_token = values.isCollaborative ? initialData?.shareToken ?? generateShareToken() : null;
@@ -122,31 +124,25 @@ export function ProjectForm({
         return;
       }
 
-      if (data?.id) {
+      createdProjectId = data?.id ?? null;
+
+      if (createdProjectId) {
         await supabase.from("project_members").insert({
-          project_id: data.id,
+          project_id: createdProjectId,
           user_id: user.id,
           role: "owner",
         });
       }
-
-      reset({
-        title: "",
-        description: "",
-        status: "activo",
-        department: "",
-        clientName: "",
-        dueDate: "",
-        isCollaborative: false,
-      });
     }
 
     const okMessage = successMessage ?? (isEdit ? "Proyecto actualizado al instante." : "Proyecto creado y listo para compartir.");
     setMessage(okMessage);
 
+    const nextRoute = isEdit ? redirectTo : redirectTo ?? (createdProjectId ? projectDetailRoute(createdProjectId) : undefined);
+
     startRefresh(() => {
       router.refresh();
-      if (redirectTo) router.push(redirectTo);
+      if (nextRoute) router.push(nextRoute);
     });
   };
 
