@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "7.6.2-hydration-manifest-fix",
+  "version": "8.5.0-release-candidate-v7",
   "private": true,
   "scripts": {
     "dev": "node node_modules/next/dist/bin/next dev",

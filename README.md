@@ -1,20 +1,63 @@
-# FlowTask v7.1.0 — Vercel Hardening v2
+# FlowTask v8.5.0 — Release Candidate v7
 
-Base saneada para continuar el proyecto sin arrastrar artefactos locales ni exponer secretos, pensando en estabilidad para Vercel + Supabase.
+Base completa para continuar 1:1 desde la V6, con enfoque de cierre de release: menos artefactos locales, menos riesgo de exponer secretos y una guía más clara para preflight + deploy.
 
-## Objetivo de esta versión
-- usar una base limpia del proyecto para continuar 1:1
-- evitar errores por artefactos locales (`node_modules`, `.next`, `.env.local`, `.git`)
-- reforzar la validación mínima de runtime antes del build
-- dejar una guía clara para instalación limpia, build y deploy en Vercel
+## Qué cambia en esta versión
+- se eliminan del source entregable los artefactos locales y sensibles que no deben viajar en un zip de handoff
+- se agrega `.env.example` como plantilla segura para reconstruir variables de entorno
+- se actualiza la metadata de versión del proyecto a `8.5.0-release-candidate-v7`
+- se agregan reportes de cierre para checklist de release y continuidad
 
-## Stack
-- Next.js 15
-- React 19
-- TypeScript
-- Supabase (Auth + DB + RLS)
-- TailwindCSS
-- TanStack Query
+## Archivos removidos del source entregable
+- `.env`
+- `.env.local`
+- `tsconfig.tsbuildinfo`
+- `next` (artefacto vacío)
+
+## Variables de entorno esperadas
+Mínimas para levantar la app:
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `NEXT_PUBLIC_APP_URL`
+
+Solo server-side:
+- `SUPABASE_SERVICE_ROLE_KEY`
+
+Opcionales según jobs / procesos:
+- `CRON_SECRET`
+- `DIGEST_TIMEZONE`
+- `NOTIFICATION_BATCH_SIZE`
+
+Usa `.env.example` como plantilla y crea tu `.env.local` solo en tu entorno local o en Vercel.
+
+## Flujo recomendado de preflight local
+1. Instalar dependencias limpias:
+   - `npm install`
+2. Crear variables locales desde la plantilla:
+   - `cp .env.example .env.local`
+3. Validar seguridad básica:
+   - `npm run security:check`
+4. Validar runtime:
+   - `npm run runtime:check`
+5. Validar TypeScript:
+   - `npm run typecheck`
+6. Validar build:
+   - `npm run build`
+7. Solo después conectar o empujar a Vercel.
+
+## Flujo recomendado para Vercel
+1. Conectar el repo correcto al proyecto correcto.
+2. Cargar en Vercel las mismas variables de entorno necesarias.
+3. Confirmar que la `NEXT_PUBLIC_SUPABASE_ANON_KEY` sea la anon key pública.
+4. Correr localmente el preflight antes del push final.
+5. Desplegar solo cuando `security:check`, `runtime:check`, `typecheck` y `build` pasen en limpio.
+
+## Estado honesto de esta base
+- esta versión está pensada como release candidate de continuidad
+- conserva el source completo de la V6
+- limpia artefactos que no deben viajar
+- deja una plantilla segura de entorno para reinstalación y deploy
+- cualquier secreto previamente expuesto en zips anteriores debe rotarse en Supabase / Vercel antes de producción
 
 ## Scripts clave
 - `npm run dev`
@@ -22,81 +65,11 @@ Base saneada para continuar el proyecto sin arrastrar artefactos locales ni expo
 - `npm run start`
 - `npm run typecheck`
 - `npm run runtime:check`
-- `npm run ci:check`
-- `npm run clean`
-- `npm run vercel:build`
-
-## Variables requeridas
-Deben existir al menos:
-- `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-
-Server-side solamente:
-- `SUPABASE_SERVICE_ROLE_KEY`
-
-## Flujo recomendado para continuar
-1. Instalar dependencias limpias:
-   - `npm install`
-2. Validar TypeScript:
-   - `npm run typecheck`
-3. Validar runtime:
-   - `npm run runtime:check`
-4. Validar build:
-   - `npm run build`
-5. Solo después empujar a Git/Vercel
-
-## Estado honesto de esta base
-- se eliminó del zip todo lo que no debe viajar
-- se preservó la base de código para seguir iterando
-- esta versión está pensada para reinstalar dependencias limpias antes de certificar build final
-- no incluye `.env.local` por seguridad
-- si el zip anterior expuso una service role key, debe rotarse en Supabase
-
-## Checklist rápido para Vercel
-- repo correcto conectado en Vercel
-- variables de entorno cargadas en el proyecto correcto
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY` realmente sea la anon key pública
-- build validado localmente antes de push
-- no subir `node_modules`, `.next`, `.env.local` ni secretos
-
-## Notas
-- La ruta `/app/intelligence` debe seguir siendo dinámica cuando depende de cookies autenticadas.
-- Los scripts server-side que usan `SUPABASE_SERVICE_ROLE_KEY` deben ejecutarse solo del lado servidor.
-
-
-## v7.2.0 notes
-- `runtime-check` ahora carga `.env.local` y `.env` explícitamente con `dotenv`, para evitar diferencias entre Next.js y scripts Node.
-- Antes de desplegar en Vercel, replica `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_ANON_KEY` en Project Settings > Environment Variables.
-
-
-## v7.3.0 build stabilization v4
-
-This version focuses on build/deploy preflight for Vercel:
-- stronger runtime env validation
-- explicit `vercel.json`
-- stricter preflight scripts before `next build`
-
-Recommended flow:
-1. `npm install`
-2. `npm run runtime:check`
-3. `npm run vercel:preflight`
-4. `npm run build`
-
-
-## v7.4.0 deploy safe v5
-
-Base pensada para continuar después de un build local exitoso.
-
-Nuevos scripts:
 - `npm run security:check`
+- `npm run vercel:preflight`
 - `npm run deploy:ready`
-- `npm run vercel:prod-ready`
 
-Flujo recomendado desde esta versión:
-1. `npm install`
-2. `npm run security:check`
-3. `npm run runtime:check`
-4. `npm run vercel:preflight`
-5. `npm run build`
-
-Esta versión evita tocar features sensibles y se concentra en cuidar la base estable para Vercel.
+## Notas finales
+- no subir `node_modules`, `.next`, `.env.local` ni secretos
+- si vas a retomar el proyecto desde un entorno limpio, usa esta versión como nueva base 1:1
+- revisa `V_Report/RELEASE_CHECKLIST_v7.md` antes del próximo deploy
