@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "8.9.0-qa-bugfix-readiness-v11",
+  "version": "8.10.0-design-views-v12",
   "private": true,
   "scripts": {
     "dev": "node node_modules/next/dist/bin/next dev",
