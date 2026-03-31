@@ -1,102 +1,130 @@
-# FlowTask v7.1.0 — Vercel Hardening v2
+# FlowTask v8.7.0 — Production Guardrails v9
 
-Base saneada para continuar el proyecto sin arrastrar artefactos locales ni exponer secretos, pensando en estabilidad para Vercel + Supabase.
+Base completa para continuar 1:1 desde la V8, con enfoque en **guardrails de producción**, preflight más fuerte, CI básico y endpoint de salud para deploy.
 
-## Objetivo de esta versión
-- usar una base limpia del proyecto para continuar 1:1
-- evitar errores por artefactos locales (`node_modules`, `.next`, `.env.local`, `.git`)
-- reforzar la validación mínima de runtime antes del build
-- dejar una guía clara para instalación limpia, build y deploy en Vercel
+## Qué cambia en esta versión
+- se mantiene el source completo de la V8 como base
+- se agrega validación de versión de Node antes del preflight
+- se agrega reporte de preflight para handoff y QA
+- se agrega workflow de GitHub Actions para validación continua
+- se agrega endpoint `api/health` para verificación rápida del entorno
+- se actualiza la metadata del proyecto a `8.7.0-production-guardrails-v9`
 
-## Stack
-- Next.js 15
-- React 19
-- TypeScript
-- Supabase (Auth + DB + RLS)
-- TailwindCSS
-- TanStack Query
+## Archivos nuevos de esta versión
+- `.github/workflows/ci.yml`
+- `scripts/check-node-version.mjs`
+- `scripts/preflight-report.mjs`
+- `src/app/api/health/route.ts`
+- `V_Report/VERSION_REPORT_v8.7.0-production-guardrails-v9.md`
+- `V_Report/DEPLOY_RUNBOOK_v9.md`
 
-## Scripts clave
-- `npm run dev`
-- `npm run build`
-- `npm run start`
-- `npm run typecheck`
-- `npm run runtime:check`
-- `npm run ci:check`
-- `npm run clean`
-- `npm run vercel:build`
-
-## Variables requeridas
-Deben existir al menos:
+## Variables de entorno requeridas
+### Públicas
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `NEXT_PUBLIC_APP_URL`
 
-Server-side solamente:
+### Solo servidor
 - `SUPABASE_SERVICE_ROLE_KEY`
 
-## Flujo recomendado para continuar
-1. Instalar dependencias limpias:
+### Opcionales
+- `NEXT_PUBLIC_ENABLE_REALTIME`
+- `CRON_SECRET`
+- `DIGEST_TIMEZONE`
+- `NOTIFICATION_BATCH_SIZE`
+
+## Flujo recomendado para reinstalación limpia
+1. Usar la versión de Node sugerida:
+   - `nvm use`
+2. Instalar dependencias:
    - `npm install`
-2. Validar TypeScript:
-   - `npm run typecheck`
-3. Validar runtime:
-   - `npm run runtime:check`
-4. Validar build:
+3. Crear variables locales:
+   - `cp .env.example .env.local`
+4. Completar las variables reales de Supabase
+5. Validar Node:
+   - `npm run validate:node`
+6. Correr el preflight completo:
+   - `npm run preflight:full`
+7. Generar reporte de preflight:
+   - `npm run preflight:report`
+8. Correr build:
    - `npm run build`
-5. Solo después empujar a Git/Vercel
+9. Levantar localmente:
+   - `npm run dev`
 
-## Estado honesto de esta base
-- se eliminó del zip todo lo que no debe viajar
-- se preservó la base de código para seguir iterando
-- esta versión está pensada para reinstalar dependencias limpias antes de certificar build final
-- no incluye `.env.local` por seguridad
-- si el zip anterior expuso una service role key, debe rotarse en Supabase
-
-## Checklist rápido para Vercel
-- repo correcto conectado en Vercel
-- variables de entorno cargadas en el proyecto correcto
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY` realmente sea la anon key pública
-- build validado localmente antes de push
-- no subir `node_modules`, `.next`, `.env.local` ni secretos
-
-## Notas
-- La ruta `/app/intelligence` debe seguir siendo dinámica cuando depende de cookies autenticadas.
-- Los scripts server-side que usan `SUPABASE_SERVICE_ROLE_KEY` deben ejecutarse solo del lado servidor.
-
-
-## v7.2.0 notes
-- `runtime-check` ahora carga `.env.local` y `.env` explícitamente con `dotenv`, para evitar diferencias entre Next.js y scripts Node.
-- Antes de desplegar en Vercel, replica `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_ANON_KEY` en Project Settings > Environment Variables.
-
-
-## v7.3.0 build stabilization v4
-
-This version focuses on build/deploy preflight for Vercel:
-- stronger runtime env validation
-- explicit `vercel.json`
-- stricter preflight scripts before `next build`
-
-Recommended flow:
-1. `npm install`
-2. `npm run runtime:check`
-3. `npm run vercel:preflight`
-4. `npm run build`
-
-
-## v7.4.0 deploy safe v5
-
-Base pensada para continuar después de un build local exitoso.
-
-Nuevos scripts:
+## Scripts de validación recomendados
+- `npm run validate:node`
+- `npm run validate:env`
 - `npm run security:check`
-- `npm run deploy:ready`
-- `npm run vercel:prod-ready`
+- `npm run runtime:check`
+- `npm run typecheck`
+- `npm run preflight:full`
+- `npm run ci:full`
+- `npm run deploy:gate`
 
-Flujo recomendado desde esta versión:
-1. `npm install`
-2. `npm run security:check`
-3. `npm run runtime:check`
-4. `npm run vercel:preflight`
-5. `npm run build`
+## Endpoint operativo
+- `GET /api/health`
+- devuelve estado general de entorno y readiness básico
+- útil para smoke test rápido después de deploy
 
-Esta versión evita tocar features sensibles y se concentra en cuidar la base estable para Vercel.
+## Flujo recomendado para Vercel
+1. Confirmar repo y proyecto enlazados correctamente.
+2. Cargar en Vercel las variables equivalentes al `.env.local`.
+3. Validar localmente con `npm run deploy:gate`.
+4. Ejecutar `npm run build`.
+5. Desplegar solo si preflight y build pasan limpios.
+6. Confirmar `GET /api/health` después del deploy.
+
+## Estado honesto de la base
+- esta versión sigue siendo una base completa de continuidad
+- mejora el handoff técnico y la capacidad de validación antes de deploy
+- añade un mínimo de disciplina CI para no romper silenciosamente
+- cualquier secreto expuesto en versiones anteriores debe seguir rotado en Supabase y Vercel
+
+## Notas finales
+- no subir `node_modules`, `.next`, `.env.local` ni secretos
+- usa esta V9 como nueva base 1:1 para los siguientes ciclos de corrección
+- revisa `V_Report/DEPLOY_RUNBOOK_v9.md` antes del siguiente paso de release
+
+## V10 Ops readiness
+
+Flujo recomendado de verificación operativa:
+
+```bash
+npm run smoke:health
+npm run readiness:report
+npm run postdeploy:verify
+```
+
+Comando consolidado de release:
+
+```bash
+npm run release:ops
+```
+
+
+## V11 local QA / bugfix readiness
+
+Recommended validation flow after unpacking the source:
+
+```bash
+rm -rf node_modules .next package-lock.json
+npm install
+cp .env.example .env.local
+npm run validate:node
+npm run doctor:install
+npm run validate:env
+npm run doctor:supabase
+npm run runtime:check
+npm run typecheck
+npm run build
+npm run dev
+```
+
+Additional local endpoints:
+
+- `GET /api/health` → basic service heartbeat
+- `GET /api/ready` → safe readiness snapshot for local QA (no secrets returned)
+
+If `doctor:install` fails, reinstall dependencies from zero before debugging source code.
+If `doctor:supabase` fails, fix environment bindings before testing auth or workspace flows.

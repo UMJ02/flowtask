@@ -11,6 +11,8 @@ export interface TaskBase {
 export interface TaskSummary extends TaskBase {
   clientName?: string | null;
   dueDate?: string | null;
+  priority?: string | null;
+  project_id?: string | null;
   departmentCode?: string | null;
   departmentName?: string | null;
   isOverdue?: boolean;
