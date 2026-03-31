@@ -1,75 +1,74 @@
-# FlowTask v8.5.0 — Release Candidate v7
+# FlowTask v8.6.0 — Post Release Hardening v8
 
-Base completa para continuar 1:1 desde la V6, con enfoque de cierre de release: menos artefactos locales, menos riesgo de exponer secretos y una guía más clara para preflight + deploy.
+Base completa para continuar 1:1 desde la V7, con enfoque en handoff limpio, validación previa a deploy y una reinstalación más reproducible.
 
 ## Qué cambia en esta versión
-- se eliminan del source entregable los artefactos locales y sensibles que no deben viajar en un zip de handoff
-- se agrega `.env.example` como plantilla segura para reconstruir variables de entorno
-- se actualiza la metadata de versión del proyecto a `8.5.0-release-candidate-v7`
-- se agregan reportes de cierre para checklist de release y continuidad
+- se mantiene el source completo de la V7 como base
+- se agrega validación dedicada de variables de entorno antes del build
+- se incorpora `.nvmrc` para fijar una versión sugerida de Node
+- se refuerza `.env.example` como plantilla única de arranque local
+- se agregan reportes de continuidad y checklist post-release
+- se actualiza la metadata del proyecto a `8.6.0-post-release-hardening-v8`
 
-## Archivos removidos del source entregable
-- `.env`
-- `.env.local`
-- `tsconfig.tsbuildinfo`
-- `next` (artefacto vacío)
+## Archivos clave de esta versión
+- `.env.example`
+- `.nvmrc`
+- `scripts/validate-env.mjs`
+- `V_Report/VERSION_REPORT_v8.6.0-post-release-hardening-v8.md`
+- `V_Report/QA_HANDOFF_v8.md`
 
-## Variables de entorno esperadas
-Mínimas para levantar la app:
+## Variables de entorno requeridas
+### Públicas
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - `NEXT_PUBLIC_APP_URL`
 
-Solo server-side:
+### Solo servidor
 - `SUPABASE_SERVICE_ROLE_KEY`
 
-Opcionales según jobs / procesos:
+### Opcionales
+- `NEXT_PUBLIC_ENABLE_REALTIME`
 - `CRON_SECRET`
 - `DIGEST_TIMEZONE`
 - `NOTIFICATION_BATCH_SIZE`
 
-Usa `.env.example` como plantilla y crea tu `.env.local` solo en tu entorno local o en Vercel.
-
-## Flujo recomendado de preflight local
-1. Instalar dependencias limpias:
+## Flujo recomendado para reinstalación limpia
+1. Usar la versión de Node sugerida:
+   - `nvm use`
+2. Instalar dependencias:
    - `npm install`
-2. Crear variables locales desde la plantilla:
+3. Crear variables locales:
    - `cp .env.example .env.local`
-3. Validar seguridad básica:
-   - `npm run security:check`
-4. Validar runtime:
-   - `npm run runtime:check`
-5. Validar TypeScript:
-   - `npm run typecheck`
-6. Validar build:
+4. Completar las variables reales de Supabase
+5. Correr el preflight completo:
+   - `npm run preflight:full`
+6. Correr build:
    - `npm run build`
-7. Solo después conectar o empujar a Vercel.
+7. Levantar localmente:
+   - `npm run dev`
+
+## Scripts de validación recomendados
+- `npm run validate:env`
+- `npm run security:check`
+- `npm run runtime:check`
+- `npm run typecheck`
+- `npm run preflight:full`
+- `npm run deploy:checklist`
 
 ## Flujo recomendado para Vercel
-1. Conectar el repo correcto al proyecto correcto.
-2. Cargar en Vercel las mismas variables de entorno necesarias.
-3. Confirmar que la `NEXT_PUBLIC_SUPABASE_ANON_KEY` sea la anon key pública.
-4. Correr localmente el preflight antes del push final.
-5. Desplegar solo cuando `security:check`, `runtime:check`, `typecheck` y `build` pasen en limpio.
+1. Confirmar que el proyecto y el repo correctos están enlazados.
+2. Cargar en Vercel las variables equivalentes al `.env.local`.
+3. Validar localmente con `npm run preflight:full`.
+4. Ejecutar `npm run build`.
+5. Desplegar solo si el preflight y el build pasan limpios.
 
-## Estado honesto de esta base
-- esta versión está pensada como release candidate de continuidad
-- conserva el source completo de la V6
-- limpia artefactos que no deben viajar
-- deja una plantilla segura de entorno para reinstalación y deploy
-- cualquier secreto previamente expuesto en zips anteriores debe rotarse en Supabase / Vercel antes de producción
-
-## Scripts clave
-- `npm run dev`
-- `npm run build`
-- `npm run start`
-- `npm run typecheck`
-- `npm run runtime:check`
-- `npm run security:check`
-- `npm run vercel:preflight`
-- `npm run deploy:ready`
+## Estado honesto de la base
+- esta versión sigue siendo una base completa de continuidad
+- mejora la reproducibilidad del arranque y el handoff técnico
+- reduce el riesgo de deploy con variables incompletas
+- cualquier secreto expuesto en versiones anteriores debe seguir rotado en Supabase y Vercel
 
 ## Notas finales
 - no subir `node_modules`, `.next`, `.env.local` ni secretos
-- si vas a retomar el proyecto desde un entorno limpio, usa esta versión como nueva base 1:1
-- revisa `V_Report/RELEASE_CHECKLIST_v7.md` antes del próximo deploy
+- usa esta V8 como nueva base 1:1 para los siguientes ciclos de corrección
+- revisa `V_Report/QA_HANDOFF_v8.md` antes del siguiente QA o deploy

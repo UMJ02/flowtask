@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "8.5.0-release-candidate-v7",
+  "version": "8.6.0-post-release-hardening-v8",
   "private": true,
   "scripts": {
     "dev": "node node_modules/next/dist/bin/next dev",
@@ -25,7 +25,10 @@
     "vercel:deploy-check": "npm run vercel:preflight && echo \"[vercel-deploy-check] Ready to run npm run build\"",
     "security:check": "node scripts/security-check.mjs",
     "deploy:ready": "npm run security:check && npm run vercel:preflight && npm run build",
-    "vercel:prod-ready": "npm run deploy:ready"
+    "vercel:prod-ready": "npm run deploy:ready",
+    "validate:env": "node scripts/validate-env.mjs",
+    "preflight:full": "npm run security:check && npm run validate:env && npm run runtime:check && npm run typecheck",
+    "deploy:checklist": "npm run clean && npm run preflight:full && npm run build"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
