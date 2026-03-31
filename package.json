@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "9.0.0-functional-flow-v3",
+  "version": "9.1.0-full-functional-qa-v6",
   "private": true,
   "scripts": {
     "dev": "node node_modules/next/dist/bin/next dev",
@@ -40,7 +40,10 @@
     "doctor:install": "node scripts/install-doctor.mjs",
     "doctor:supabase": "node scripts/supabase-doctor.mjs",
     "qa:smoke-local": "npm run validate:node && npm run doctor:install && npm run validate:env && npm run doctor:supabase && npm run runtime:check && npm run typecheck",
-    "release:qa": "npm run clean && npm run qa:smoke-local && npm run build && npm run smoke:health && npm run readiness:report"
+    "release:qa": "npm run clean && npm run qa:smoke-local && npm run build && npm run smoke:health && npm run readiness:report",
+    "qa:functional": "node scripts/functional-qa.mjs",
+    "qa:report": "node scripts/qa-report.mjs",
+    "qa:full-client": "npm run qa:smoke-local && npm run qa:functional && npm run qa:report"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
