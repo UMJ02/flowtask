@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { Card } from '@/components/ui/card';
 import { ProfileSettingsForm } from '@/components/settings/profile-settings-form';
 import { NotificationPreferencesForm } from '@/components/notifications/notification-preferences-form';

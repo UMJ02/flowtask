@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { ExecutiveSuite } from '@/components/executive/executive-suite';
 import { getExecutiveSuiteSummary } from '@/lib/queries/executive-suite';
 import { safeServerCall } from '@/lib/runtime/safe-server';

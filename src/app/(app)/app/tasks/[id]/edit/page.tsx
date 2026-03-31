@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { notFound } from 'next/navigation';
 import { TaskForm } from '@/components/tasks/task-form';
 import { Card } from '@/components/ui/card';

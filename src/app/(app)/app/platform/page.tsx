@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { redirect } from 'next/navigation';
 import { AdminMetricsPanel } from '@/components/admin/admin-metrics-panel';
 import { AdminOrganizationsPanel } from '@/components/admin/admin-organizations-panel';

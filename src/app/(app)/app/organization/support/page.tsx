@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { SupportReadinessPanel } from '@/components/organization/support-readiness-panel';
 import { getOrganizationContext } from '@/lib/queries/organization';
 import { getOrganizationSupportReadiness, getOrganizationSupportTickets } from '@/lib/queries/support';

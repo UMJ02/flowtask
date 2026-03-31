@@ -9,7 +9,7 @@ export function ProjectSidebar({
   projects,
   currentQuery = '',
 }: {
-  projects: Array<{ id: string; title: string; status?: string | null; client_name?: string | null; due_date?: string | null }>;
+  projects: Array<{ id: string; title: string; status?: string | null; client_name?: string | null; due_date?: string | null; updated_at?: string | null; created_at?: string | null }>;
   currentQuery?: string;
 }) {
   const suffix = currentQuery ? `?${currentQuery}` : '';
@@ -47,7 +47,7 @@ export function ProjectSidebar({
                     title: project.title,
                     subtitle: project.client_name || 'Proyecto',
                     href: projectDetailRoute(project.id),
-                    updatedAt: new Date().toISOString(),
+                    updatedAt: project.updated_at || project.due_date || project.created_at || '1970-01-01T00:00:00.000Z',
                   }}
                   compact
                 />

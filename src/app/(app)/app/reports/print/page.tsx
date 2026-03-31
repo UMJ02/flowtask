@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { Card } from '@/components/ui/card';
 import { getReportsOverview } from '@/lib/queries/reports';
 import { safeServerCall } from '@/lib/runtime/safe-server';

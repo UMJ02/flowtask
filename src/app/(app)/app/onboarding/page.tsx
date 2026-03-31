@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { WorkspaceOnboarding } from '@/components/onboarding/workspace-onboarding';
 import { getWorkspaceOnboardingSummary } from '@/lib/queries/onboarding';
 import { safeServerCall } from '@/lib/runtime/safe-server';

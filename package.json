@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "11.0.0-hotfix-build-rls",
+  "version": "12.0.0-hydration-hotfix",
   "private": true,
   "scripts": {
     "dev": "node node_modules/next/dist/bin/next dev",
@@ -53,7 +53,9 @@
     "production:gate": "node scripts/production-gate.mjs",
     "final:bundle": "npm run qa:full-client && npm run ux:review && npm run release:check && npm run preprod:validate && npm run production:gate",
     "hotfix:notes": "node scripts/hotfix-notes.mjs",
-    "v11:check": "npm run hotfix:notes && npm run production:gate"
+    "v11:check": "npm run hotfix:notes && npm run production:gate",
+    "hydration:notes": "node scripts/hydration-notes.mjs",
+    "v12:check": "npm run hotfix:notes && npm run hydration:notes && npm run production:gate"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

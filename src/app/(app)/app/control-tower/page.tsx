@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { ControlTower } from '@/components/control-tower/control-tower';
 import { getControlTowerSummary } from '@/lib/queries/control-tower';
 import { safeServerCall } from '@/lib/runtime/safe-server';

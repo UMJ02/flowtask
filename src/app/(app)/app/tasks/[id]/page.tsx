@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { notFound } from 'next/navigation';
 import { TaskDetailSummary } from '@/components/tasks/task-detail-summary';
 import { TaskStatusForm } from '@/components/tasks/task-status-form';

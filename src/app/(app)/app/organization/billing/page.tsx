@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { OrganizationBillingSummary } from '@/components/organization/organization-billing-summary';
 import { OrganizationPlanLimitsPanel } from '@/components/organization/organization-plan-limits-panel';
 import { OrganizationUsagePanel } from '@/components/organization/organization-usage-panel';

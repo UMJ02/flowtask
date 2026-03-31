@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { NotificationsLivePanel } from '@/components/notifications/notifications-live-panel';
 import { NotificationDeliveryHealth } from '@/components/notifications/notification-delivery-health';
 import { NotificationsCommandCenter } from '@/components/notifications/notifications-command-center';

@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { Card } from '@/components/ui/card';
 import { ReminderForm } from '@/components/reminders/reminder-form';
 import { ReminderList } from '@/components/reminders/reminder-list';

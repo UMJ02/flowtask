@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { AppShell } from '@/components/layout/app-shell';
 import { requireUser } from '@/lib/auth/guards';
 import { getUnreadNotificationsCount } from '@/lib/queries/notifications';

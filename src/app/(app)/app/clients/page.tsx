@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { ClientListPanel } from '@/components/clients/client-list-panel';
 import { Card } from '@/components/ui/card';
 import { getClients } from '@/lib/queries/clients';

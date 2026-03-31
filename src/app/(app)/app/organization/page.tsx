@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { OrganizationMetricsPanel } from '@/components/organization/organization-metrics-panel';
 import { OrganizationMembersPanel } from '@/components/organization/organization-members-panel';
 import { OrganizationRolesPanel } from '@/components/organization/organization-roles-panel';

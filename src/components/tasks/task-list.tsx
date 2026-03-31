@@ -15,7 +15,7 @@ function priorityTone(priority?: string | null) {
   return 'bg-violet-50 text-violet-700 ring-violet-100';
 }
 
-export function TaskList({ tasks, currentQuery }: { tasks: Array<{ id: string; title: string; status: string; priority?: string | null; client_name?: string | null; due_date?: string | null; project_id?: string | null }>; currentQuery?: string }) {
+export function TaskList({ tasks, currentQuery }: { tasks: Array<{ id: string; title: string; status: string; priority?: string | null; client_name?: string | null; due_date?: string | null; project_id?: string | null; updated_at?: string | null; created_at?: string | null }>; currentQuery?: string }) {
   if (!tasks.length) {
     return (
       <EmptyState
@@ -80,7 +80,7 @@ export function TaskList({ tasks, currentQuery }: { tasks: Array<{ id: string; t
                   title: task.title,
                   subtitle: task.client_name || 'Tarea',
                   href: taskDetailRoute(task.id, currentQuery),
-                  updatedAt: new Date().toISOString(),
+                  updatedAt: task.updated_at || task.due_date || task.created_at || '1970-01-01T00:00:00.000Z',
                 }}
                 compact
               />

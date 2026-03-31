@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { PlanningCenter } from '@/components/planning/planning-center';
 import { getPlanningOverview } from '@/lib/queries/planning';
 import { safeServerCall } from '@/lib/runtime/safe-server';

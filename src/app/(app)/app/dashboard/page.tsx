@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { BoardOverview } from '@/components/dashboard/board-overview';
 import { DashboardStartState } from '@/components/dashboard/dashboard-start-state';
 import { ClientMetrics } from '@/components/dashboard/client-metrics';

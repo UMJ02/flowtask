@@ -168,7 +168,7 @@ function taskEntity(task: TaskRow): MemoryEntity {
     title: task.title,
     subtitle: task.client_name?.trim() || formatStatus(task.status),
     href: taskDetailRoute(task.id),
-    updatedAt: task.created_at || new Date().toISOString(),
+    updatedAt: task.updated_at || task.created_at || task.due_date || '1970-01-01T00:00:00.000Z',
   };
 }
 
@@ -506,7 +506,7 @@ export function InteractiveDashboardBoard() {
       const nextNote = {
         id: editingNoteId ?? crypto.randomUUID(),
         text: noteDraft.trim(),
-        updatedAt: new Date().toISOString(),
+        updatedAt: new Date(0).toISOString(),
       };
 
       setSavedNotes((current) => {

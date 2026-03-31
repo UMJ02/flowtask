@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { notFound } from 'next/navigation';
 import { ClientDetailPanels } from '@/components/clients/client-detail-panels';
 import { getClientById } from '@/lib/queries/clients';

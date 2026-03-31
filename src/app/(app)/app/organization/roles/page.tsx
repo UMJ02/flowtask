@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { OrganizationRolesPanel } from '@/components/organization/organization-roles-panel';
 import { getOrganizationContext, getOrganizationRolesAndPermissions } from '@/lib/queries/organization';
 import { safeServerCall } from '@/lib/runtime/safe-server';

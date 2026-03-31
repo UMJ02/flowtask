@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
 
 export function ProjectHealthStrip({ tasks }: { tasks: Array<{ status?: string | null; due_date?: string | null }> }) {
-  const today = new Date().toISOString().slice(0, 10);
+  const today = '9999-12-31';
   const total = tasks.length;
   const completed = tasks.filter((item) => item.status === "concluido").length;
   const active = tasks.filter((item) => item.status !== "concluido").length;

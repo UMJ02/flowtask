@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import Link from 'next/link';
 import { Filter, FolderClock, ListChecks, Plus } from 'lucide-react';
 import { TaskFilters } from '@/components/tasks/task-filters';

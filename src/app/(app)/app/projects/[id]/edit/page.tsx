@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { notFound } from 'next/navigation';
 import { ProjectForm } from '@/components/projects/project-form';
 import { Card } from '@/components/ui/card';
