@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createClient } from "@/lib/supabase/client";
+import { getClientWorkspaceContext, findOrganizationClientId } from "@/lib/supabase/workspace-client";
 import { DEPARTMENTS } from "@/lib/constants/departments";
 import { TASK_STATUSES } from "@/lib/constants/task-status";
 import { type AppRoute } from "@/lib/navigation/routes";
@@ -59,9 +60,9 @@ export function TaskForm({
   const onSubmit = async (values: TaskValues) => {
     setMessage(isEdit ? "Guardando cambios…" : "Creando tarea…");
     setServerError(null);
-    const supabase = createClient();
-    const { data: authData } = await supabase.auth.getUser();
-    const user = authData.user;
+    const workspace = await getClientWorkspaceContext();
+    const supabase = workspace.supabase;
+    const user = workspace.user;
 
     if (!user) {
       setServerError("Sesión no válida.");
@@ -78,18 +79,22 @@ export function TaskForm({
       return;
     }
 
+    const clientName = values.clientName?.trim() || null;
+    const clientId = await findOrganizationClientId(supabase, workspace.activeOrganizationId, clientName);
+
     const payload = {
       title: values.title,
       description: values.description || null,
       status: values.status,
       department_id: departmentId,
-      client_name: values.clientName || null,
+      client_name: clientName,
+      client_id: clientId,
       due_date: values.dueDate || null,
     };
 
     const query = isEdit
       ? supabase.from("tasks").update(payload).eq("id", taskId!)
-      : supabase.from("tasks").insert({ owner_id: user.id, ...payload });
+      : supabase.from("tasks").insert({ owner_id: user.id, organization_id: workspace.activeOrganizationId, ...payload });
 
     const { error } = await query;
 
