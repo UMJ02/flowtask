@@ -1,7 +1,7 @@
 "use client";
 
 import { ProjectHealth } from "@/components/dashboard/project-health";
-import InteractiveDashboardBoard from "@/components/dashboard/interactive-dashboard-board";
+import { InteractiveDashboardBoard } from "@/components/dashboard/interactive-dashboard-board";
 
 export default function PizarraPage() {
   return (
@@ -10,9 +10,11 @@ export default function PizarraPage() {
         <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500">
           Modo visual
         </p>
-        <h1 className="mt-2 text-3xl font-semibold text-slate-950">Pizarra interactiva</h1>
+        <h1 className="mt-2 text-3xl font-semibold text-slate-950">
+          Pizarra interactiva
+        </h1>
         <p className="mt-2 text-sm text-slate-600">
-          Paneles, notas rápidas, agenda del día y flujo visual del workspace.
+          Vista saneada para paneles, notas rápidas y flujo visual del workspace.
         </p>
       </div>
 

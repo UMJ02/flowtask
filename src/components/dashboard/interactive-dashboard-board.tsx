@@ -25,7 +25,6 @@ import {
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { createClient } from '@/lib/supabase/client';
-import { getClientWorkspaceContext, applyClientWorkspaceScope } from '@/lib/supabase/workspace-client';
 import { readWorkspaceMemory, toggleFavorite, type MemoryEntity } from '@/lib/local/workspace-memory';
 import { cn } from '@/lib/utils/classnames';
 import { TaskKanbanBoard } from '@/components/tasks/task-kanban-board';
@@ -71,7 +70,6 @@ type ProjectRow = {
 };
 
 const STORAGE_KEY = 'flowtask.board.v622';
-const BOARD_LAYOUT_KEY = 'interactiveDashboardBoard';
 
 const PANEL_META: Record<PanelKey, { label: string; icon: ComponentType<{ className?: string }>; description: string }> = {
   task: { label: 'Tarea', icon: LayoutGrid, description: 'Agregar a pizarra' },
@@ -174,60 +172,6 @@ function taskEntity(task: TaskRow): MemoryEntity {
 
 function favoriteTaskSet() {
   return new Set(readWorkspaceMemory().favorites.filter((item) => item.type === 'task').map((item) => item.id));
-}
-
-
-function applyBoardSnapshot(snapshot: any, apply: {
-  setAsideOpen: (value: boolean) => void;
-  setActivePanels: (value: PanelKey[]) => void;
-  setExpanded: (value: Record<PanelKey, boolean>) => void;
-  setCalendarMode: (value: CalendarMode) => void;
-  setAnchorDate: (value: Date) => void;
-  setSelectedDate: (value: string) => void;
-  setNoteDraft: (value: string) => void;
-  setSavedNotes: (value: BoardNote[]) => void;
-  setEditingNoteId: (value: string | null) => void;
-  setReminders: (value: Reminder[]) => void;
-}) {
-  if (!snapshot || typeof snapshot !== 'object') return false;
-
-  if (typeof snapshot.asideOpen === 'boolean') apply.setAsideOpen(snapshot.asideOpen);
-  if (Array.isArray(snapshot.activePanels)) apply.setActivePanels((function(){ const validPanels: PanelKey[] = ['task','projects','calendar','kanban']; return snapshot.activePanels.filter((item: unknown): item is PanelKey => typeof item === 'string' && validPanels.includes(item as PanelKey)); })());
-  if (snapshot.expanded && typeof snapshot.expanded === 'object') apply.setExpanded(snapshot.expanded);
-  if (snapshot.calendarMode === 'week' || snapshot.calendarMode === 'month') apply.setCalendarMode(snapshot.calendarMode);
-  if (snapshot.anchorDate) apply.setAnchorDate(new Date(snapshot.anchorDate));
-  if (snapshot.selectedDate) apply.setSelectedDate(snapshot.selectedDate);
-  if (typeof snapshot.noteDraft === 'string') apply.setNoteDraft(snapshot.noteDraft);
-  if (Array.isArray(snapshot.savedNotes)) apply.setSavedNotes(snapshot.savedNotes);
-  if (typeof snapshot.editingNoteId === 'string' || snapshot.editingNoteId === null) apply.setEditingNoteId(snapshot.editingNoteId);
-  if (Array.isArray(snapshot.reminders)) apply.setReminders(snapshot.reminders);
-  return true;
-}
-
-function buildBoardSnapshot(args: {
-  asideOpen: boolean;
-  activePanels: PanelKey[];
-  expanded: Record<PanelKey, boolean>;
-  calendarMode: CalendarMode;
-  anchorDate: Date;
-  selectedDate: string;
-  noteDraft: string;
-  savedNotes: BoardNote[];
-  editingNoteId: string | null;
-  reminders: Reminder[];
-}) {
-  return {
-    asideOpen: args.asideOpen,
-    activePanels: args.activePanels,
-    expanded: args.expanded,
-    calendarMode: args.calendarMode,
-    anchorDate: args.anchorDate.toISOString(),
-    selectedDate: args.selectedDate,
-    noteDraft: args.noteDraft,
-    savedNotes: args.savedNotes,
-    editingNoteId: args.editingNoteId,
-    reminders: args.reminders,
-  };
 }
 
 function CalendarPanel({
@@ -397,25 +341,22 @@ export function InteractiveDashboardBoard() {
   const [activeOrganizationId, setActiveOrganizationId] = useState<string | null>(null);
   const [createdTaskId, setCreatedTaskId] = useState<string | null>(null);
   const [favoriteTaskIds, setFavoriteTaskIds] = useState<Set<string>>(new Set());
-  const [boardId, setBoardId] = useState<string | null>(null);
-  const [boardLayoutBase, setBoardLayoutBase] = useState<Record<string, any>>({});
 
   useEffect(() => {
     try {
       const raw = window.localStorage.getItem(STORAGE_KEY);
       if (raw) {
-        applyBoardSnapshot(JSON.parse(raw), {
-          setAsideOpen,
-          setActivePanels,
-          setExpanded,
-          setCalendarMode,
-          setAnchorDate,
-          setSelectedDate,
-          setNoteDraft,
-          setSavedNotes,
-          setEditingNoteId,
-          setReminders,
-        });
+        const parsed = JSON.parse(raw);
+        if (typeof parsed.asideOpen === 'boolean') setAsideOpen(parsed.asideOpen);
+        if (Array.isArray(parsed.activePanels)) setActivePanels(parsed.activePanels);
+        if (parsed.expanded) setExpanded(parsed.expanded);
+        if (parsed.calendarMode === 'week' || parsed.calendarMode === 'month') setCalendarMode(parsed.calendarMode);
+        if (parsed.anchorDate) setAnchorDate(new Date(parsed.anchorDate));
+        if (parsed.selectedDate) setSelectedDate(parsed.selectedDate);
+        if (typeof parsed.noteDraft === 'string') setNoteDraft(parsed.noteDraft);
+        if (Array.isArray(parsed.savedNotes)) setSavedNotes(parsed.savedNotes);
+        if (typeof parsed.editingNoteId === 'string' || parsed.editingNoteId === null) setEditingNoteId(parsed.editingNoteId);
+        if (Array.isArray(parsed.reminders)) setReminders(parsed.reminders);
       } else {
         setReminders([
           { id: 'r1', label: 'Revisar entregables del día', done: false },
@@ -442,82 +383,23 @@ export function InteractiveDashboardBoard() {
     try {
       window.localStorage.setItem(
         STORAGE_KEY,
-        JSON.stringify(
-          buildBoardSnapshot({
-            asideOpen,
-            activePanels,
-            expanded,
-            calendarMode,
-            anchorDate,
-            selectedDate,
-            noteDraft,
-            savedNotes,
-            editingNoteId,
-            reminders,
-          })
-        )
+        JSON.stringify({
+          asideOpen,
+          activePanels,
+          expanded,
+          calendarMode,
+          anchorDate: anchorDate.toISOString(),
+          selectedDate,
+          noteDraft,
+          savedNotes,
+          editingNoteId,
+          reminders,
+        })
       );
     } catch {
       // ignore persist errors
     }
   }, [hydrated, asideOpen, activePanels, expanded, calendarMode, anchorDate, selectedDate, noteDraft, savedNotes, editingNoteId, reminders]);
-
-  useEffect(() => {
-    if (!hydrated || !boardId) return;
-
-    const snapshot = buildBoardSnapshot({
-      asideOpen,
-      activePanels,
-      expanded,
-      calendarMode,
-      anchorDate,
-      selectedDate,
-      noteDraft,
-      savedNotes,
-      editingNoteId,
-      reminders,
-    });
-
-    const timeout = window.setTimeout(() => {
-      const supabase = createClient();
-      const nextLayoutConfig = {
-        ...boardLayoutBase,
-        [BOARD_LAYOUT_KEY]: snapshot,
-      };
-
-      void supabase
-        .from('boards')
-        .update({ layout_config: nextLayoutConfig })
-        .eq('id', boardId)
-        .then((result: { error?: unknown }) => { const error = result?.error ?? null;
-          if (!error) {
-            setBoardLayoutBase(nextLayoutConfig);
-          }
-        });
-    }, 800);
-
-    return () => window.clearTimeout(timeout);
-  }, [hydrated, boardId, boardLayoutBase, asideOpen, activePanels, expanded, calendarMode, anchorDate, selectedDate, noteDraft, savedNotes, editingNoteId, reminders]);
-
-  useEffect(() => {
-    if (!hydrated || !noteDraft.trim()) return;
-
-    const timeout = window.setTimeout(() => {
-      const nextNote = {
-        id: editingNoteId ?? crypto.randomUUID(),
-        text: noteDraft.trim(),
-        updatedAt: new Date().toISOString(),
-      };
-
-      setSavedNotes((current) => {
-        const withoutCurrent = current.filter((item) => item.id !== nextNote.id && item.text.trim() !== nextNote.text.trim());
-        return [nextNote, ...withoutCurrent].slice(0, 12);
-      });
-      setEditingNoteId(null);
-    }, 10000);
-
-    return () => window.clearTimeout(timeout);
-  }, [hydrated, noteDraft, editingNoteId]);
 
   useEffect(() => {
     if (!hydrated) return;
@@ -529,10 +411,10 @@ export function InteractiveDashboardBoard() {
       setLoadingData(true);
       setDataError(null);
 
-      const workspace = await getClientWorkspaceContext();
-      const user = workspace.user;
+      const { data: authData, error: authError } = await supabase.auth.getUser();
+      const user = authData.user;
 
-      if (!user) {
+      if (authError || !user) {
         if (!cancelled) {
           setDataError('No fue posible validar la sesión actual.');
           setLoadingData(false);
@@ -540,48 +422,22 @@ export function InteractiveDashboardBoard() {
         return;
       }
 
-      if (!cancelled) {
-        setActiveOrganizationId(workspace.activeOrganizationId);
-        setBoardId(workspace.boardId);
-        setBoardLayoutBase(workspace.layoutConfig ?? {});
-      }
+      if (!cancelled) setActiveOrganizationId(null);
 
-      const dbBoardState = workspace.layoutConfig?.[BOARD_LAYOUT_KEY];
-      if (!cancelled && dbBoardState) {
-        applyBoardSnapshot(dbBoardState, {
-          setAsideOpen,
-          setActivePanels,
-          setExpanded,
-          setCalendarMode,
-          setAnchorDate,
-          setSelectedDate,
-          setNoteDraft,
-          setSavedNotes,
-          setEditingNoteId,
-          setReminders,
-        });
-      }
+      const taskQuery = supabase
+        .from('tasks')
+        .select('id,title,description,status,client_name,due_date,project_id,organization_id,owner_id,created_at')
+        .eq('owner_id', user.id)
+        .order('due_date', { ascending: true, nullsFirst: false })
+        .order('created_at', { ascending: false })
+        .limit(120);
 
-      const taskQuery = applyClientWorkspaceScope(
-        supabase
-          .from('tasks')
-          .select('id,title,description,status,client_name,due_date,project_id,organization_id,owner_id,created_at')
-          .order('due_date', { ascending: true, nullsFirst: false })
-          .order('created_at', { ascending: false })
-          .limit(120),
-        user.id,
-        workspace.activeOrganizationId,
-      );
-
-      const projectQuery = applyClientWorkspaceScope(
-        supabase
-          .from('projects')
-          .select('id,title,status,client_name,due_date,organization_id,owner_id,created_at')
-          .order('created_at', { ascending: false })
-          .limit(12),
-        user.id,
-        workspace.activeOrganizationId,
-      );
+      const projectQuery = supabase
+        .from('projects')
+        .select('id,title,status,client_name,due_date,organization_id,owner_id,created_at')
+        .eq('owner_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(12);
 
       const [{ data: tasks, error: tasksError }, { data: projects, error: projectsError }] = await Promise.all([
         taskQuery,
@@ -604,11 +460,6 @@ export function InteractiveDashboardBoard() {
     };
   }, [hydrated]);
 
-  const openTasks = useMemo(() => boardTasks.filter((item) => item.status !== 'concluido'), [boardTasks]);
-  const tasksToday = useMemo(() => openTasks.filter((item) => item.due_date === isoDate(new Date())), [openTasks]);
-  const nextTasks = useMemo(() => openTasks.slice(0, 4), [openTasks]);
-  const activeProjects = useMemo(() => boardProjects.filter((item) => item.status !== 'completado').slice(0, 4), [boardProjects]);
-
   if (!hydrated) {
     return (
       <div className="space-y-4">
@@ -628,6 +479,11 @@ export function InteractiveDashboardBoard() {
       </div>
     );
   }
+
+  const openTasks = useMemo(() => boardTasks.filter((item) => item.status !== 'concluido'), [boardTasks]);
+  const tasksToday = useMemo(() => openTasks.filter((item) => item.due_date === isoDate(new Date())), [openTasks]);
+  const nextTasks = useMemo(() => openTasks.slice(0, 4), [openTasks]);
+  const activeProjects = useMemo(() => boardProjects.filter((item) => item.status !== 'completado').slice(0, 4), [boardProjects]);
 
   const activeCount = activePanels.length;
 
@@ -665,9 +521,9 @@ export function InteractiveDashboardBoard() {
 
     setSavingTask(true);
     setDataError(null);
-    const workspace = await getClientWorkspaceContext();
-    const supabase = workspace.supabase;
-    const user = workspace.user;
+    const supabase = createClient();
+    const { data: authData } = await supabase.auth.getUser();
+    const user = authData.user;
 
     if (!user) {
       setDataError('Sesión no válida para crear la tarea.');
@@ -682,7 +538,7 @@ export function InteractiveDashboardBoard() {
       due_date: selectedDate,
       client_name: null,
       owner_id: user.id,
-      organization_id: workspace.activeOrganizationId ?? activeOrganizationId,
+      organization_id: activeOrganizationId,
     };
 
     const { data, error } = await supabase.from('tasks').insert(payload).select('id,title,description,status,client_name,due_date,project_id,organization_id,owner_id,created_at').single();
@@ -753,7 +609,7 @@ export function InteractiveDashboardBoard() {
             <p className="mt-1 max-w-2xl text-sm text-slate-500">Calendario, tareas rápidas y proyectos activos leyendo desde la base real del workspace.</p>
             <div className="mt-3 flex flex-wrap gap-2">
               <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-600">{activeCount} paneles activos</span>
-              <span className="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">{activeOrganizationId ? 'Workspace de organización activo' : 'Workspace personal activo'}</span>
+              <span className="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">Supabase conectado</span>
             </div>
           </div>
           <div className="flex items-center gap-2">

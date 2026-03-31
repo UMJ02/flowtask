@@ -1,13 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { getClientWorkspaceContext, findOrganizationClientId, fetchWorkspaceProjects } from "@/lib/supabase/workspace-client";
+import { createClient } from "@/lib/supabase/client";
 import { DEPARTMENTS } from "@/lib/constants/departments";
 import { TASK_STATUSES } from "@/lib/constants/task-status";
-import { TASK_PRIORITIES } from "@/lib/constants/task-priority";
 import { type AppRoute } from "@/lib/navigation/routes";
 import { taskSchema } from "@/lib/validations/task";
 import { getDepartmentIdByCode } from "@/lib/queries/departments";
@@ -37,8 +36,6 @@ export function TaskForm({
   const [message, setMessage] = useState<string | null>(null);
   const [serverError, setServerError] = useState<string | null>(null);
   const [isRefreshing, startRefresh] = useTransition();
-  const [projects, setProjects] = useState<Array<{ id: string; title: string; status: string }>>([]);
-  const [loadingProjects, setLoadingProjects] = useState(true);
   const router = useRouter();
   const isEdit = Boolean(taskId);
 
@@ -53,55 +50,18 @@ export function TaskForm({
       title: initialData?.title ?? "",
       description: initialData?.description ?? "",
       status: initialData?.status ?? "en_proceso",
-      priority: initialData?.priority ?? "media",
       department: initialData?.department ?? "",
       clientName: initialData?.clientName ?? "",
       dueDate: initialData?.dueDate ?? "",
-      projectId: initialData?.projectId ?? "",
     },
   });
-
-  const resetValues = useMemo(() => ({
-    title: initialData?.title ?? "",
-    description: initialData?.description ?? "",
-    status: initialData?.status ?? "en_proceso",
-    priority: initialData?.priority ?? "media",
-    department: initialData?.department ?? "",
-    clientName: initialData?.clientName ?? "",
-    dueDate: initialData?.dueDate ?? "",
-    projectId: initialData?.projectId ?? "",
-  }), [initialData]);
-
-  useEffect(() => {
-    let active = true;
-    const loadProjects = async () => {
-      setLoadingProjects(true);
-      const workspace = await getClientWorkspaceContext();
-      if (!workspace.user) {
-        if (active) {
-          setProjects([]);
-          setLoadingProjects(false);
-        }
-        return;
-      }
-      const rows = await fetchWorkspaceProjects(workspace.supabase, workspace.user.id, workspace.activeOrganizationId);
-      if (active) {
-        setProjects(rows);
-        setLoadingProjects(false);
-      }
-    };
-    void loadProjects();
-    return () => {
-      active = false;
-    };
-  }, []);
 
   const onSubmit = async (values: TaskValues) => {
     setMessage(isEdit ? "Guardando cambios…" : "Creando tarea…");
     setServerError(null);
-    const workspace = await getClientWorkspaceContext();
-    const supabase = workspace.supabase;
-    const user = workspace.user;
+    const supabase = createClient();
+    const { data: authData } = await supabase.auth.getUser();
+    const user = authData.user;
 
     if (!user) {
       setServerError("Sesión no válida.");
@@ -118,24 +78,18 @@ export function TaskForm({
       return;
     }
 
-    const clientName = values.clientName?.trim() || null;
-    const clientId = await findOrganizationClientId(supabase, workspace.activeOrganizationId, clientName);
-
     const payload = {
       title: values.title,
       description: values.description || null,
       status: values.status,
-      priority: values.priority,
       department_id: departmentId,
-      client_name: clientName,
-      client_id: clientId,
+      client_name: values.clientName || null,
       due_date: values.dueDate || null,
-      project_id: values.projectId || null,
     };
 
     const query = isEdit
       ? supabase.from("tasks").update(payload).eq("id", taskId!)
-      : supabase.from("tasks").insert({ owner_id: user.id, organization_id: workspace.activeOrganizationId, ...payload });
+      : supabase.from("tasks").insert({ owner_id: user.id, ...payload });
 
     const { error } = await query;
 
@@ -153,11 +107,9 @@ export function TaskForm({
         title: "",
         description: "",
         status: "en_proceso",
-        priority: "media",
         department: "",
         clientName: "",
         dueDate: "",
-        projectId: "",
       });
     }
 
@@ -192,26 +144,6 @@ export function TaskForm({
           </Select>
         </div>
         <div className="space-y-2">
-          <label className="text-sm font-medium text-slate-700">Prioridad</label>
-          <Select {...register("priority")}>
-            {TASK_PRIORITIES.map((item) => (
-              <option key={item.value} value={item.value}>
-                {item.label}
-              </option>
-            ))}
-          </Select>
-        </div>
-        <div className="space-y-2 md:col-span-2">
-          <label className="text-sm font-medium text-slate-700">Proyecto vinculado</label>
-          <Select {...register("projectId")}>
-            <option value="">Sin proyecto</option>
-            {projects.map((item) => (
-              <option key={item.id} value={item.id}>{item.title}</option>
-            ))}
-          </Select>
-          <p className="text-xs text-slate-500">{loadingProjects ? "Cargando proyectos del workspace…" : "Opcional: asigna esta tarea a un proyecto activo."}</p>
-        </div>
-        <div className="space-y-2">
           <label className="text-sm font-medium text-slate-700">Departamento</label>
           <Select {...register("department")}>
             <option value="">Seleccionar</option>
@@ -226,7 +158,7 @@ export function TaskForm({
           <label className="text-sm font-medium text-slate-700">Cliente</label>
           <Input {...register("clientName")} placeholder="Nombre del cliente" />
         </div>
-        <div className="space-y-2 md:col-span-2">
+        <div className="space-y-2">
           <label className="text-sm font-medium text-slate-700">Deadline</label>
           <Input {...register("dueDate")} type="date" />
         </div>
@@ -237,7 +169,21 @@ export function TaskForm({
         <Button loading={isBusy} type="submit">
           {submitLabel ?? (isEdit ? "Guardar cambios" : "Guardar tarea")}
         </Button>
-        <Button type="button" variant="secondary" disabled={isBusy} onClick={() => reset(resetValues)}>
+        <Button
+          type="button"
+          variant="secondary"
+          disabled={isBusy}
+          onClick={() =>
+            reset({
+              title: initialData?.title ?? "",
+              description: initialData?.description ?? "",
+              status: initialData?.status ?? "en_proceso",
+              department: initialData?.department ?? "",
+              clientName: initialData?.clientName ?? "",
+              dueDate: initialData?.dueDate ?? "",
+            })
+          }
+        >
           Restablecer
         </Button>
       </div>

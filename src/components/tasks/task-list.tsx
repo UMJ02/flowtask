@@ -7,7 +7,7 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { taskDetailRoute } from '@/lib/navigation/routes';
 
-export function TaskList({ tasks }: { tasks: Array<{ id: string; title: string; status: string; priority?: string | null; client_name?: string | null; due_date?: string | null }> }) {
+export function TaskList({ tasks }: { tasks: Array<{ id: string; title: string; status: string; client_name?: string | null; due_date?: string | null }> }) {
   if (!tasks.length) {
     return (
       <EmptyState
@@ -26,7 +26,6 @@ export function TaskList({ tasks }: { tasks: Array<{ id: string; title: string; 
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2">
                 <StatusBadge value={task.status} />
-                <span className="rounded-full bg-violet-50 px-3 py-1 text-xs font-semibold text-violet-700">Prioridad {task.priority || 'media'}</span>
                 <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">{task.client_name || 'Sin cliente'}</span>
               </div>
               <Link href={taskDetailRoute(task.id)} className="mt-3 block">
