@@ -25,7 +25,7 @@ export type AppNavLink = {
 
 export const appNavLinks: AppNavLink[] = [
   { href: '/app/dashboard', label: 'Workspace', hint: 'Tu tablero', icon: LayoutGrid },
-  { href: '/app/pizarra', label: 'Pizarra', hint: 'Vista interactiva', icon: ClipboardList },
+  { href: '/app/pizarra', label: 'Pizarra', hint: 'Flujo interactivo', icon: LayoutGrid },
   { href: '/app/projects', label: 'Proyectos', hint: 'Fechas y avance', icon: FolderKanban },
   { href: '/app/tasks', label: 'Tareas', hint: 'Pendientes al día', icon: ClipboardList },
   { href: '/app/clients', label: 'Clientes', hint: 'Cuentas activas', icon: Users },

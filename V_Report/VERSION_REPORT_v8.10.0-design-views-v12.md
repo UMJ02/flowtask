@@ -1,27 +1,19 @@
-# FlowTask v8.10.0-design-views-v12
-
-## Base
-- Construida sobre V11 completa.
+# VERSION REPORT v8.10.0 — design-views-v12
 
 ## Cambios incluidos
-- Nueva ruta `/app/pizarra` con la pizarra interactiva como vista dedicada.
-- Sidebar actualizado para mostrar **Pizarra** en segunda posición del menú.
-- Refactor de filtros de búsqueda a una sola barra principal con botón **Buscar** y botón **Expandir**.
-- Aplicado en módulos de **Tareas** y **Proyectos**.
-- Vista de **Tareas** simplificada: se elimina la sección de zona de trabajo / flujo y se reemplaza por una tarjeta vertical editable por columnas.
-- Vista de **Proyectos** actualizada a tarjeta vertical editable por columnas.
-- Edición inline en filas para nombre, cliente, estado, fecha, área y otros campos operativos.
+- nueva página `/app/pizarra` con la pizarra interactiva en vista dedicada
+- `Pizarra` agregada al sidebar en segunda posición
+- búsqueda unificada con barra principal, botón `Buscar`, botón `Expandir` y filtros avanzados desplegables
+- búsqueda unificada aplicada en `Tareas` y `Proyectos`
+- en `Tareas` se eliminó la zona de trabajo / flujo y se reemplazó por una vista editable por columnas
+- en `Tareas` y `Proyectos` ahora existe una card vertical editable por columnas con guardado por fila
 
-## Archivos clave
+## Archivos principales
 - `src/app/(app)/app/pizarra/page.tsx`
-- `src/components/layout/nav-links.ts`
-- `src/components/filters/expandable-search-shell.tsx`
-- `src/components/tasks/task-filters.tsx`
-- `src/components/projects/project-filters.tsx`
+- `src/components/ui/search-unified.tsx`
 - `src/components/tasks/task-editable-list.tsx`
 - `src/components/projects/project-editable-list.tsx`
 - `src/app/(app)/app/tasks/page.tsx`
 - `src/app/(app)/app/projects/page.tsx`
-
-## Nota
-- Esta versión queda lista como nueva base completa para iteraciones visuales sobre vistas y experiencia de uso.
+- `src/components/layout/nav-links.ts`
+- `src/lib/queries/catalog.ts`
