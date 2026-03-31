@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "9.3.0-release-candidate-v8",
+  "version": "9.4.0-preproduction-v9",
   "private": true,
   "scripts": {
     "dev": "node node_modules/next/dist/bin/next dev",
@@ -46,7 +46,10 @@
     "qa:full-client": "npm run qa:smoke-local && npm run qa:functional && npm run qa:report",
     "ux:review": "node scripts/ux-review.mjs",
     "client:ready": "npm run qa:full-client && npm run ux:review",
-    "release:bundle": "npm run qa:full-client && npm run ux:review && npm run release:check"
+    "release:bundle": "npm run qa:full-client && npm run ux:review && npm run release:check",
+    "preprod:validate": "node scripts/preprod-validate.mjs",
+    "bugs:template": "node scripts/bugs-template.mjs",
+    "preprod:bundle": "npm run qa:full-client && npm run ux:review && npm run release:check && npm run preprod:validate"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
