@@ -15,7 +15,7 @@ export function AppHeader({ userEmail, userName }: { userEmail: string; userName
   const firstName = getFirstName(userName);
 
   return (
-    <header className="sticky top-3 z-20 rounded-[32px] border border-slate-200/80 bg-white/90 px-4 py-4 shadow-[0_10px_30px_rgba(15,23,42,0.07)] backdrop-blur md:px-6">
+    <header className="sticky top-3 z-20 rounded-[32px] border border-slate-200/80 bg-white/[0.90] px-4 py-4 shadow-[0_10px_30px_rgba(15,23,42,0.07)] backdrop-blur md:px-6">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex min-w-0 items-start gap-3">
           <MobileNav />

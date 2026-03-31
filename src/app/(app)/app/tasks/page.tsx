@@ -56,7 +56,7 @@ export default async function TasksPage({ searchParams }: { searchParams?: Promi
         </Link>
       </Card>
 
-      <Card className="rounded-[24px] border border-slate-200/90 bg-white/90 p-5 shadow-[0_10px_30px_rgba(15,23,42,0.04)]">
+      <Card className="rounded-[24px] border border-slate-200/90 bg-white/[0.90] p-5 shadow-[0_10px_30px_rgba(15,23,42,0.04)]">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Centro de filtros</p>
@@ -97,7 +97,7 @@ export default async function TasksPage({ searchParams }: { searchParams?: Promi
         project_id: task.project_id,
       }))} filters={filters} currentView={filters.view} currentQuery={queryString} />
 
-      <Card className="rounded-[22px] border border-slate-200/90 bg-white/90 p-4">
+      <Card className="rounded-[22px] border border-slate-200/90 bg-white/[0.90] p-4">
         <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
           <div className="inline-flex items-center gap-2 text-sm font-medium text-slate-600">
             <ListChecks className="h-4 w-4 text-emerald-700" />

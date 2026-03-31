@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "9.4.0-preproduction-v9",
+  "version": "11.0.0-hotfix-build-rls",
   "private": true,
   "scripts": {
     "dev": "node node_modules/next/dist/bin/next dev",
@@ -49,7 +49,11 @@
     "release:bundle": "npm run qa:full-client && npm run ux:review && npm run release:check",
     "preprod:validate": "node scripts/preprod-validate.mjs",
     "bugs:template": "node scripts/bugs-template.mjs",
-    "preprod:bundle": "npm run qa:full-client && npm run ux:review && npm run release:check && npm run preprod:validate"
+    "preprod:bundle": "npm run qa:full-client && npm run ux:review && npm run release:check && npm run preprod:validate",
+    "production:gate": "node scripts/production-gate.mjs",
+    "final:bundle": "npm run qa:full-client && npm run ux:review && npm run release:check && npm run preprod:validate && npm run production:gate",
+    "hotfix:notes": "node scripts/hotfix-notes.mjs",
+    "v11:check": "npm run hotfix:notes && npm run production:gate"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
