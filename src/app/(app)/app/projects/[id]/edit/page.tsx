@@ -28,6 +28,7 @@ export default async function EditProjectPage({ params }: { params: Promise<{ id
           clientName: project.client_name ?? '',
           dueDate: project.due_date ?? '',
           isCollaborative: project.is_collaborative ?? false,
+          shareToken: project.share_token ?? null,
         }}
       />
     </div>

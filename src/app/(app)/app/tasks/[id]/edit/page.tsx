@@ -27,6 +27,8 @@ export default async function EditTaskPage({ params }: { params: Promise<{ id: s
           department: department?.code ?? '',
           clientName: task.client_name ?? '',
           dueDate: task.due_date ?? '',
+          priority: task.priority ?? 'media',
+          projectId: task.project_id ?? '',
         }}
       />
     </div>

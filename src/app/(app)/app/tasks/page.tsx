@@ -34,6 +34,7 @@ export default async function TasksPage({ searchParams }: { searchParams?: Promi
         id: task.id,
         title: task.title,
         status: task.status,
+        priority: task.priority,
         client_name: task.client_name,
         due_date: task.due_date,
       }))} filters={filters} />

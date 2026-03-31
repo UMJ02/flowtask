@@ -4,6 +4,7 @@ import { ProjectStatusForm } from '@/components/projects/project-status-form';
 import { ProjectMembers } from '@/components/projects/project-members';
 import { ProjectSharePanel } from '@/components/projects/project-share-panel';
 import { ProjectTaskList } from '@/components/projects/project-task-list';
+import { ProjectHealthStrip } from '@/components/projects/project-health-strip';
 import { ProjectTaskListLive } from '@/components/projects/project-task-list-live';
 import { ProjectComments } from '@/components/projects/project-comments';
 import { ProjectCommentsLive } from '@/components/projects/project-comments-live';
@@ -36,6 +37,7 @@ export default async function ProjectDetailPage({ params, searchParams }: { para
   return (
     <div className="space-y-4">
       <ProjectDetailSummary project={project} currentQuery={queryString} />
+      <ProjectHealthStrip tasks={tasks} />
       <div className="grid gap-4 xl:grid-cols-[1.05fr_0.95fr]">
         <div className="space-y-4">
           <ProjectTaskList tasks={tasks} />

@@ -4,7 +4,6 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createClient } from "@/lib/supabase/client";
 import { getClientWorkspaceContext, findOrganizationClientId } from "@/lib/supabase/workspace-client";
 import { DEPARTMENTS } from "@/lib/constants/departments";
 import { PROJECT_STATUSES } from "@/lib/constants/project-status";
@@ -22,7 +21,7 @@ type ProjectValues = z.infer<typeof projectSchema>;
 
 interface ProjectFormProps {
   projectId?: string;
-  initialData?: Partial<ProjectValues>;
+  initialData?: Partial<ProjectValues> & { shareToken?: string | null };
   submitLabel?: string;
   successMessage?: string;
   redirectTo?: AppRoute;
@@ -97,7 +96,7 @@ export function ProjectForm({
 
     if (isEdit) {
       const updateValues: Record<string, unknown> = { ...payload };
-      updateValues.share_token = values.isCollaborative ? generateShareToken() : null;
+      updateValues.share_token = values.isCollaborative ? initialData?.shareToken ?? generateShareToken() : null;
       const { error } = await supabase.from("projects").update(updateValues).eq("id", projectId!);
       if (error) {
         setServerError(error.message);

@@ -74,3 +74,29 @@ export async function findOrganizationClientId(
 
   return (data?.id as string | null | undefined) ?? null;
 }
+
+
+export async function fetchWorkspaceProjects(
+  supabase: ReturnType<typeof createClient>,
+  userId: string,
+  organizationId?: string | null,
+) {
+  let query = applyClientWorkspaceScope(
+    supabase
+      .from("projects")
+      .select("id,title,status")
+      .neq("status", "completado")
+      .order("title", { ascending: true }),
+    userId,
+    organizationId,
+  );
+
+  const { data, error } = await query;
+  if (error) return [] as Array<{ id: string; title: string; status: string }>;
+
+  return (data ?? []).map((item: any) => ({
+    id: String(item.id),
+    title: String(item.title ?? "Proyecto"),
+    status: String(item.status ?? "activo"),
+  }));
+}

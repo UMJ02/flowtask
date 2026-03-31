@@ -12,6 +12,7 @@ export type TaskItem = {
   id: string;
   title: string;
   status: string;
+  priority?: string | null;
   client_name?: string | null;
   due_date?: string | null;
 };
@@ -197,7 +198,7 @@ async function persistBoardLayoutConfig(
 
 export function TaskKanbanBoard({ tasks, showHeader = true }: { tasks: TaskItem[]; showHeader?: boolean }) {
   const supabase = createClient();
-  const serverSignature = useMemo(() => tasks.map((task) => `${task.id}:${task.status}:${task.due_date ?? ""}:${task.title}`).join("|"), [tasks]);
+  const serverSignature = useMemo(() => tasks.map((task) => `${task.id}:${task.status}:${task.priority ?? ''}:${task.due_date ?? ''}:${task.title}`).join('|'), [tasks]);
   const [hydrated, setHydrated] = useState(false);
   const [statusOverrides, setStatusOverrides] = useState<Record<string, string>>({});
   const [orderOverrides, setOrderOverrides] = useState<Record<string, string[]>>({});
