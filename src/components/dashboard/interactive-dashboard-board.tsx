@@ -192,7 +192,7 @@ function applyBoardSnapshot(snapshot: any, apply: {
   if (!snapshot || typeof snapshot !== 'object') return false;
 
   if (typeof snapshot.asideOpen === 'boolean') apply.setAsideOpen(snapshot.asideOpen);
-  if (Array.isArray(snapshot.activePanels)) apply.setActivePanels(snapshot.activePanels.filter((item): item is PanelKey => ['task', 'projects', 'calendar', 'kanban'].includes(item)));
+  if (Array.isArray(snapshot.activePanels)) apply.setActivePanels((function(){ const validPanels: PanelKey[] = ['task','projects','calendar','kanban']; return snapshot.activePanels.filter((item: unknown): item is PanelKey => typeof item === 'string' && validPanels.includes(item as PanelKey)); })());
   if (snapshot.expanded && typeof snapshot.expanded === 'object') apply.setExpanded(snapshot.expanded);
   if (snapshot.calendarMode === 'week' || snapshot.calendarMode === 'month') apply.setCalendarMode(snapshot.calendarMode);
   if (snapshot.anchorDate) apply.setAnchorDate(new Date(snapshot.anchorDate));
@@ -489,7 +489,7 @@ export function InteractiveDashboardBoard() {
         .from('boards')
         .update({ layout_config: nextLayoutConfig })
         .eq('id', boardId)
-        .then(({ error }) => {
+        .then((result: { error?: unknown }) => { const error = result?.error ?? null;
           if (!error) {
             setBoardLayoutBase(nextLayoutConfig);
           }
