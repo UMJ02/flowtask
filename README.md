@@ -85,3 +85,19 @@ Base completa para continuar 1:1 desde la V8, con enfoque en **guardrails de pro
 - no subir `node_modules`, `.next`, `.env.local` ni secretos
 - usa esta V9 como nueva base 1:1 para los siguientes ciclos de corrección
 - revisa `V_Report/DEPLOY_RUNBOOK_v9.md` antes del siguiente paso de release
+
+## V10 Ops readiness
+
+Flujo recomendado de verificación operativa:
+
+```bash
+npm run smoke:health
+npm run readiness:report
+npm run postdeploy:verify
+```
+
+Comando consolidado de release:
+
+```bash
+npm run release:ops
+```

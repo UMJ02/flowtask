@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "8.7.0-production-guardrails-v9",
+  "version": "8.8.0-ops-readiness-v10",
   "private": true,
   "scripts": {
     "dev": "node node_modules/next/dist/bin/next dev",
@@ -32,7 +32,11 @@
     "validate:node": "node scripts/check-node-version.mjs",
     "preflight:report": "node scripts/preflight-report.mjs",
     "ci:full": "npm run validate:node && npm run preflight:full && npm run build",
-    "deploy:gate": "npm run clean && npm run ci:full && npm run preflight:report"
+    "deploy:gate": "npm run clean && npm run ci:full && npm run preflight:report",
+    "smoke:health": "node scripts/smoke-health.mjs",
+    "readiness:report": "node scripts/deploy-summary.mjs",
+    "postdeploy:verify": "npm run smoke:health && npm run readiness:report",
+    "release:ops": "npm run clean && npm run ci:full && npm run smoke:health && npm run preflight:report && npm run readiness:report"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
