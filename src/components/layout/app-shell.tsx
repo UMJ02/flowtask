@@ -56,13 +56,17 @@ function ShellFrame({
   const { collapsed } = useSidebarState();
 
   return (
-    <div className="min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#f3f7f5_100%)] p-2 md:p-4">
-      <div className={`mx-auto grid max-w-[1500px] gap-3 transition-[grid-template-columns] duration-300 xl:gap-4 ${collapsed ? 'md:grid-cols-[104px_minmax(0,1fr)]' : 'md:grid-cols-[292px_minmax(0,1fr)]'}`}>
+    <div className="min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#f3f7f5_52%,#eef5f2_100%)] px-2 py-2 md:px-3 md:py-4">
+      <div className={`mx-auto grid max-w-[1540px] gap-3 transition-[grid-template-columns] duration-300 xl:gap-4 ${collapsed ? 'md:grid-cols-[104px_minmax(0,1fr)]' : 'md:grid-cols-[292px_minmax(0,1fr)]'}`}>
         <AppSidebar organizations={organizations} activeOrganization={activeOrganization} userEmail={userEmail} userName={userName} />
         <div className="min-w-0 space-y-3 xl:space-y-4">
-          <AppHeader userEmail={userEmail} userName={userName} />
+          <div className="glass-strip sticky top-2 z-20 rounded-[26px] p-2 shadow-[0_12px_26px_rgba(15,23,42,0.05)]">
+            <AppHeader userEmail={userEmail} userName={userName} />
+          </div>
           <main className="min-w-0 space-y-3 xl:space-y-4">{children}</main>
-          <AppFooter />
+          <div className="page-section px-4 py-3 md:px-5">
+            <AppFooter />
+          </div>
         </div>
       </div>
     </div>

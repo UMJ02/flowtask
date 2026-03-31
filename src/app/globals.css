@@ -4,10 +4,12 @@
 
 :root {
   color-scheme: light;
-  --radius-card: 14px;
-  --radius-panel: 12px;
-  --shadow-soft: 0 6px 18px rgba(15, 23, 42, 0.05);
+  --radius-card: 18px;
+  --radius-panel: 16px;
+  --shadow-soft: 0 12px 30px rgba(15, 23, 42, 0.06);
+  --shadow-float: 0 18px 40px rgba(15, 23, 42, 0.08);
   --border-soft: rgba(148, 163, 184, 0.18);
+  --ring-brand: rgba(16, 185, 129, 0.22);
 }
 
 * {
@@ -27,12 +29,18 @@ html {
 
 body {
   background:
-    radial-gradient(circle at top, rgba(16, 185, 129, 0.07), transparent 24%),
-    linear-gradient(180deg, #f8fafc 0%, #f3f7f5 100%);
+    radial-gradient(circle at top left, rgba(16, 185, 129, 0.10), transparent 24%),
+    radial-gradient(circle at top right, rgba(59, 130, 246, 0.08), transparent 20%),
+    linear-gradient(180deg, #f8fafc 0%, #f3f7f5 52%, #eef5f2 100%);
   color: #0f172a;
   font-family: Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: rgba(16, 185, 129, 0.18);
+  color: #052e16;
 }
 
 a {
@@ -45,6 +53,15 @@ input,
 select,
 textarea {
   font: inherit;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+a:focus-visible {
+  outline: 3px solid var(--ring-brand);
+  outline-offset: 2px;
 }
 
 input::placeholder,
@@ -69,6 +86,22 @@ textarea::placeholder {
 
 .soft-divider {
   @apply border-t border-slate-100;
+}
+
+.surface-panel {
+  @apply rounded-[24px] border border-white/80 bg-white/88 shadow-[0_18px_40px_rgba(15,23,42,0.06)] backdrop-blur;
+}
+
+.glass-strip {
+  @apply border border-white/70 bg-white/72 backdrop-blur;
+}
+
+.page-section {
+  @apply rounded-[28px] border border-white/75 bg-white/82 shadow-[0_16px_34px_rgba(15,23,42,0.05)] backdrop-blur;
+}
+
+.kicker-chip {
+  @apply inline-flex items-center gap-2 rounded-full border border-emerald-100 bg-emerald-50/90 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-emerald-700;
 }
 
 .skeleton {
