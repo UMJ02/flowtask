@@ -1,19 +1,14 @@
 # VERSION REPORT v8.10.0 — design-views-v12
 
 ## Cambios incluidos
-- nueva página `/app/pizarra` con la pizarra interactiva en vista dedicada
-- `Pizarra` agregada al sidebar en segunda posición
-- búsqueda unificada con barra principal, botón `Buscar`, botón `Expandir` y filtros avanzados desplegables
-- búsqueda unificada aplicada en `Tareas` y `Proyectos`
-- en `Tareas` se eliminó la zona de trabajo / flujo y se reemplazó por una vista editable por columnas
-- en `Tareas` y `Proyectos` ahora existe una card vertical editable por columnas con guardado por fila
+- Nueva página `/app/pizarra` con los módulos clave de la pizarra interactiva.
+- Pizarra agregada al sidebar en segunda posición.
+- Nueva barra de búsqueda unificada con campo, botón Buscar, botón Expandir y filtros avanzados.
+- Aplicación de la barra de búsqueda unificada en Tareas y Proyectos.
+- Se eliminó la lógica de zona de trabajo / flujo de la vista principal de Tareas.
+- Tareas y Proyectos migrados a una card vertical editable por columnas.
+- Guardado por fila con acción directa al final de cada registro.
 
-## Archivos principales
-- `src/app/(app)/app/pizarra/page.tsx`
-- `src/components/ui/search-unified.tsx`
-- `src/components/tasks/task-editable-list.tsx`
-- `src/components/projects/project-editable-list.tsx`
-- `src/app/(app)/app/tasks/page.tsx`
-- `src/app/(app)/app/projects/page.tsx`
-- `src/components/layout/nav-links.ts`
-- `src/lib/queries/catalog.ts`
+## Notas
+- El guardado por fila actualiza directamente `tasks` y `projects` en Supabase desde el cliente.
+- La nueva estructura privada del app vive bajo `src/app/(app)/app/` para conservar compatibilidad con el shell actual.
