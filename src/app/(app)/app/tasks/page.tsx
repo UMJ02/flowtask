@@ -1,8 +1,8 @@
 export const dynamic = 'force-dynamic';
 
 import Link from 'next/link';
-import { Filter, FolderClock, ListChecks, Plus } from 'lucide-react';
-import { TaskFilters } from '@/components/tasks/task-filters';
+import { FolderClock, ListChecks, Plus } from 'lucide-react';
+import { TaskSearchPanel } from '@/components/tasks/task-search-panel';
 import { TaskWorkspace } from '@/components/tasks/task-workspace';
 import { Card } from '@/components/ui/card';
 import { taskNewRoute } from '@/lib/navigation/routes';
@@ -42,7 +42,6 @@ export default async function TasksPage({ searchParams }: { searchParams?: Promi
     highPriority: tasks.filter((task) => task.priority === 'alta').length,
   };
 
-  const activeFilterCount = Object.values(filters).filter(Boolean).length - (filters.view ? 1 : 0);
 
   return (
     <div className="space-y-4">
@@ -58,19 +57,7 @@ export default async function TasksPage({ searchParams }: { searchParams?: Promi
         </Link>
       </Card>
 
-      <Card className="rounded-[24px] border border-slate-200/90 bg-white/[0.90] p-5 shadow-[0_10px_30px_rgba(15,23,42,0.04)]">
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Centro de filtros</p>
-            <h2 className="mt-1 text-lg font-semibold text-slate-900">Encuentra lo que sigue</h2>
-          </div>
-          <div className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
-            <Filter className="h-3.5 w-3.5" />
-            {activeFilterCount > 0 ? `${activeFilterCount} filtro(s) activos` : 'Sin filtros activos'}
-          </div>
-        </div>
-        <TaskFilters filters={filters} />
-      </Card>
+      <TaskSearchPanel filters={filters} />
 
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
         {metricCard('Total visible', stats.total, 'resultado actual')}

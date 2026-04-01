@@ -5,7 +5,7 @@ import { BriefcaseBusiness, FolderOpenDot, Plus, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { EmptyState } from '@/components/ui/empty-state';
-import { ProjectFilters } from '@/components/projects/project-filters';
+import { ProjectSearchPanel } from '@/components/projects/project-search-panel';
 import { projectDetailRoute, projectNewRoute } from '@/lib/navigation/routes';
 import { getProjects } from '@/lib/queries/projects';
 import { safeServerCall } from '@/lib/runtime/safe-server';
@@ -55,9 +55,7 @@ export default async function ProjectsPage({ searchParams }: { searchParams?: Pr
           Nuevo proyecto
         </Link>
       </Card>
-      <Card className="rounded-[24px] border border-slate-200/90 bg-white/[0.90] p-5 shadow-[0_10px_30px_rgba(15,23,42,0.04)]">
-        <ProjectFilters filters={filters} />
-      </Card>
+      <ProjectSearchPanel filters={filters} />
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         {metricCard('Total visible', stats.total, 'resultado actual')}
         {metricCard('Activos', stats.active, 'frentes en marcha')}

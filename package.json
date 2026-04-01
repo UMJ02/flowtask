@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "30.0.0-quick-actions-portal-panel",
+  "version": "31.0.0-smart-search-panels",
   "private": true,
   "scripts": {
     "dev": "node node_modules/next/dist/bin/next dev",
@@ -66,7 +66,8 @@
     "verify:v27": "node scripts/verify-v27.mjs",
     "verify:v28": "node scripts/verify-v28.mjs",
     "verify:v29": "node scripts/verify-v29.mjs",
-    "verify:v30": "node scripts/verify-v30.mjs"
+    "verify:v30": "node scripts/verify-v30.mjs",
+    "verify:v31": "node scripts/verify-v31.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
