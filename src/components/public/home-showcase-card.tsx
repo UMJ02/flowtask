@@ -4,9 +4,9 @@ import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils/classnames';
 
 const ITEMS = [
-  { label: 'Hoy', value: '3 tareas por vencer', tone: 'border-emerald-100 bg-emerald-50/70' },
-  { label: 'Proyecto colaborativo', value: 'Lanzamiento campaña abril', tone: 'border-sky-100 bg-sky-50/70' },
-  { label: 'Seguimiento', value: 'Comentarios y cambios con fecha automática', tone: 'border-violet-100 bg-violet-50/70' },
+  { label: 'Hoy', value: '3 tareas por vencer', tone: 'border-emerald-200 bg-emerald-50/72 glow-emerald' },
+  { label: 'Proyecto colaborativo', value: 'Lanzamiento campaña abril', tone: 'border-sky-200 bg-sky-50/72 glow-sky' },
+  { label: 'Seguimiento', value: 'Comentarios y cambios con fecha automática', tone: 'border-violet-200 bg-violet-50/72 glow-violet' },
 ] as const;
 
 export function HomeShowcaseCard() {
@@ -20,7 +20,7 @@ export function HomeShowcaseCard() {
   }, []);
 
   return (
-    <div className="rounded-[26px] border border-slate-200/80 bg-white/42 p-3 backdrop-blur-sm">
+    <div className="rounded-[26px] border border-white/35 bg-white/14 p-3 backdrop-blur-sm lg:bg-white/8">
       <div className="space-y-3">
         {ITEMS.map((item, index) => {
           const active = index === activeIndex;
@@ -29,11 +29,18 @@ export function HomeShowcaseCard() {
               key={item.label}
               className={cn(
                 'rounded-[20px] border px-4 py-4 transition-all duration-500',
-                active ? `${item.tone} shadow-[0_12px_30px_rgba(15,23,42,0.06)]` : 'border-white/40 bg-white/55 opacity-80'
+                active
+                  ? `${item.tone} animate-[pulse-outline_2.8s_ease-in-out_infinite] shadow-[0_14px_36px_rgba(15,23,42,0.10)] ring-1 ring-white/40`
+                  : 'border-white/28 bg-white/45 opacity-84 lg:bg-white/38'
               )}
             >
-              <p className="text-sm text-slate-500">{item.label}</p>
-              <p className={cn('mt-1 text-lg font-semibold text-slate-900 transition-all duration-500', active && 'animate-[fade-rise_500ms_ease-out]')}>
+              <p className="text-sm text-slate-500 lg:text-slate-700/90">{item.label}</p>
+              <p
+                className={cn(
+                  'mt-1 text-lg font-semibold text-slate-900 transition-all duration-500',
+                  active && 'animate-[fade-rise_500ms_ease-out]'
+                )}
+              >
                 {item.value}
               </p>
             </div>

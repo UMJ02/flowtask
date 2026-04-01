@@ -33,16 +33,16 @@ export default function HomePage() {
             </div>
 
             <div className="flex items-center justify-center lg:justify-end">
-              <div className="w-full max-w-[540px] rounded-[32px] border border-white/70 bg-white/72 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.14)] backdrop-blur-xl md:p-8">
+              <div className="w-full max-w-[540px] rounded-[32px] border border-white/70 bg-white/72 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.14)] backdrop-blur-xl lg:bg-white/12 lg:shadow-[0_26px_80px_rgba(15,23,42,0.24)] md:p-8">
                 <span className="inline-flex rounded-full bg-emerald-50/90 px-3 py-1 text-sm font-semibold text-emerald-700 ring-1 ring-emerald-100">
                   FlowTask · Web app
                 </span>
 
-                <h1 className="mt-5 text-4xl font-bold tracking-tight text-slate-900 md:text-5xl">
+                <h1 className="mt-5 text-4xl font-bold tracking-tight text-slate-900 lg:text-white md:text-5xl lg:[text-shadow:0_10px_30px_rgba(15,23,42,0.35)]">
                   Gestiona tareas, proyectos y seguimiento sin complicarte.
                 </h1>
 
-                <p className="mt-5 max-w-xl text-base leading-8 text-slate-600 md:text-lg">
+                <p className="mt-5 max-w-xl text-base leading-8 text-slate-600 md:text-lg lg:text-white/88 lg:[text-shadow:0_8px_24px_rgba(15,23,42,0.28)]">
                   Tablero personal privado, proyectos colaborativos, comentarios con fecha automática y vistas por link para jefatura.
                 </p>
 

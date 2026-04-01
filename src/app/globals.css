@@ -204,3 +204,31 @@ textarea::placeholder {
   0% { opacity: 0; transform: translateY(8px); }
   100% { opacity: 1; transform: translateY(0); }
 }
+
+
+.glow-emerald {
+  box-shadow:
+    0 0 0 1px rgba(16, 185, 129, 0.10),
+    0 0 24px rgba(16, 185, 129, 0.16),
+    0 12px 30px rgba(15, 23, 42, 0.08);
+}
+
+.glow-sky {
+  box-shadow:
+    0 0 0 1px rgba(56, 189, 248, 0.10),
+    0 0 24px rgba(56, 189, 248, 0.16),
+    0 12px 30px rgba(15, 23, 42, 0.08);
+}
+
+.glow-violet {
+  box-shadow:
+    0 0 0 1px rgba(168, 85, 247, 0.10),
+    0 0 24px rgba(168, 85, 247, 0.16),
+    0 12px 30px rgba(15, 23, 42, 0.08);
+}
+
+@keyframes pulse-outline {
+  0% { transform: translateY(0); filter: saturate(1); }
+  50% { transform: translateY(-2px); filter: saturate(1.04); }
+  100% { transform: translateY(0); filter: saturate(1); }
+}
