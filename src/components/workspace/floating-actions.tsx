@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { AlertTriangle, CalendarDays, FolderKanban, LayoutPanelTop, Sparkles, UserRoundPlus, ChevronLeft, ChevronRight } from 'lucide-react';
 import { asRoute } from '@/lib/navigation/routes';
@@ -39,50 +39,38 @@ const ACTIONS = [
   },
 ] as const;
 
-const MESSAGES = [
-  'A un click de empezar',
-  'Hazlo rápido',
-  'Entra y sigue',
-];
 
 export function WorkspaceFloatingActions() {
   const [open, setOpen] = useState(false);
-  const [messageIndex, setMessageIndex] = useState(0);
-
-  useEffect(() => {
-    const interval = window.setInterval(() => {
-      setMessageIndex((current) => (current + 1) % MESSAGES.length);
-    }, 2400);
-    return () => window.clearInterval(interval);
-  }, []);
 
   return (
     <div className="pointer-events-none fixed right-0 top-[32vh] z-30 hidden xl:block">
-      <div className="pointer-events-auto flex items-start">
-        <button
-          type="button"
-          onClick={() => setOpen((value) => !value)}
-          className={cn(
-            'group flex min-h-[132px] w-[56px] flex-col items-center justify-center gap-3 rounded-l-[22px] border border-emerald-200 bg-[linear-gradient(180deg,rgba(236,253,245,0.98),rgba(255,255,255,0.98))] px-2 py-4 text-emerald-800 shadow-[0_18px_40px_rgba(15,23,42,0.12)] transition duration-200',
-            'hover:w-[64px] hover:bg-emerald-50',
-            !open && 'animate-[float-tab_2.6s_ease-in-out_infinite]'
-          )}
-          aria-label={open ? 'Ocultar accesos rápidos' : 'Mostrar accesos rápidos'}
-        >
-          <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-emerald-500 text-white shadow-sm">
-            {open ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
-          </span>
-          <span className="text-center text-[11px] font-semibold uppercase tracking-[0.16em] [writing-mode:vertical-rl] rotate-180">
-            {MESSAGES[messageIndex]}
-          </span>
-        </button>
-
+      <div className="pointer-events-auto relative flex items-start">
         <div
           className={cn(
             'overflow-hidden rounded-l-[28px] border border-r-0 border-emerald-200 bg-white/[0.98] shadow-[0_24px_54px_rgba(15,23,42,0.14)] transition-all duration-300',
             open ? 'max-w-[340px] translate-x-0 opacity-100' : 'max-w-0 translate-x-8 opacity-0'
           )}
         >
+          <button
+            type="button"
+            onClick={() => setOpen((value) => !value)}
+            className={cn(
+              'absolute left-0 top-1/2 z-10 flex h-[148px] w-[58px] -translate-x-full -translate-y-1/2 flex-col items-center justify-center gap-3 rounded-l-[22px] border border-r-0 px-2 py-4 text-center text-white shadow-[0_18px_40px_rgba(15,23,42,0.16)] transition duration-300',
+              open
+                ? 'border-emerald-300 bg-[linear-gradient(180deg,#10b981,#0f766e)]'
+                : 'border-sky-300 bg-[linear-gradient(180deg,#38bdf8,#2563eb)] animate-[float-tab_2.6s_ease-in-out_infinite]'
+            )}
+            aria-label={open ? 'Ocultar accesos rápidos' : 'Mostrar accesos rápidos'}
+          >
+            <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/20 backdrop-blur text-white shadow-sm">
+              {open ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+            </span>
+            <span className="text-center text-[11px] font-semibold uppercase tracking-[0.16em] [writing-mode:vertical-rl] rotate-180">
+              A un click de empezar
+            </span>
+          </button>
+
           <div className="w-[340px] p-4">
             <div className="flex items-start justify-between gap-3">
               <div>
