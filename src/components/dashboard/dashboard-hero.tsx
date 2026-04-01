@@ -75,7 +75,7 @@ export function DashboardHero({
             {focusLabel} Revisa la pizarra, prioriza lo que bloquea al equipo y entra directo a ejecución sin perder contexto.
           </p>
 
-          <div className="mt-5 flex flex-wrap items-center gap-3">
+          <div className="mt-5 flex flex-wrap items-center gap-3 lg:flex-nowrap">
             <Link
               href={asRoute('/app/board')}
               className="inline-flex items-center gap-2 rounded-2xl bg-slate-950 px-4 py-2.5 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-slate-900"
