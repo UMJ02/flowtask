@@ -19,8 +19,8 @@ export function AppHeader({ userEmail, userName }: { userEmail: string; userName
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex min-w-0 items-start gap-3">
           <MobileNav />
-          <div className="hidden h-16 w-16 items-center justify-center rounded-full bg-slate-950 shadow-[0_12px_28px_rgba(15,23,42,0.18)] ring-1 ring-slate-900 md:inline-flex">
-            <Image src="/icons/icon.png" alt="FlowTask" width={34} height={34} className="h-8 w-8 object-contain" priority />
+          <div className="hidden h-[68px] w-[68px] items-center justify-center rounded-2xl bg-slate-950 shadow-[0_12px_28px_rgba(15,23,42,0.18)] ring-1 ring-slate-900 md:inline-flex">
+            <Image src="/icons/icon.png" alt="FlowTask" width={36} height={36} className="h-9 w-9 object-contain" priority />
           </div>
           <div className="min-w-0">
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-emerald-600">FlowTask</p>

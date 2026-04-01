@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "33.0.0-header-refined-green",
+  "version": "34.0.0-header-icon-square",
   "private": true,
   "scripts": {
     "dev": "node node_modules/next/dist/bin/next dev",
