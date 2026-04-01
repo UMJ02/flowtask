@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "18.0.0-board-panels-under-header",
+  "version": "19.0.0-board-panels-grid-animation",
   "private": true,
   "scripts": {
     "dev": "node node_modules/next/dist/bin/next dev",
@@ -57,7 +57,8 @@
     "verify:v15": "node scripts/verify-v15.mjs",
     "verify:v16": "node scripts/verify-v16.mjs",
     "verify:v17": "node scripts/verify-v17.mjs",
-    "verify:v18": "node scripts/verify-v18.mjs"
+    "verify:v18": "node scripts/verify-v18.mjs",
+    "verify:v19": "node scripts/verify-v19.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

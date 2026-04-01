@@ -770,7 +770,7 @@ export function InteractiveDashboardBoard() {
 
       <div className="space-y-4">
         {asideOpen ? (
-          <Card className="border-sky-200 bg-[linear-gradient(180deg,rgba(239,246,255,0.92),rgba(255,255,255,0.98))] p-4 shadow-[0_14px_34px_rgba(59,130,246,0.08)]">
+          <Card className="animate-[fade-in_220ms_ease-out] border-sky-200 bg-[linear-gradient(180deg,rgba(239,246,255,0.92),rgba(255,255,255,0.98))] p-4 shadow-[0_14px_34px_rgba(59,130,246,0.08)]">
             <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-sky-700">Paneles de pizarra</p>
@@ -785,7 +785,7 @@ export function InteractiveDashboardBoard() {
                 Cerrar
               </button>
             </div>
-            <div className="space-y-3">
+            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Paneles</p>
 
@@ -800,15 +800,15 @@ export function InteractiveDashboardBoard() {
                     type="button"
                     onClick={() => (active ? removePanel(key) : restorePanel(key))}
                     className={cn(
-                      'flex w-full items-start gap-3 rounded-xl border px-3 py-3 text-left transition',
-                      active ? 'border-emerald-200 bg-white shadow-sm ring-2 ring-emerald-100' : 'border-sky-100 bg-white/95 hover:-translate-y-0.5 hover:border-sky-200 hover:bg-sky-50/60'
+                      'flex w-full items-start gap-3 rounded-2xl border px-3 py-3 text-left transition duration-200 hover:-translate-y-0.5',
+                      active ? 'border-emerald-200 bg-white shadow-[0_10px_24px_rgba(16,185,129,0.10)] ring-2 ring-emerald-100' : 'border-sky-100 bg-white/95 hover:border-sky-200 hover:bg-sky-50/60 hover:shadow-[0_10px_24px_rgba(59,130,246,0.10)]'
                     )}
                   >
                     <span className={cn('inline-flex h-10 w-10 items-center justify-center rounded-lg transition', active ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-700')}>
                       <Icon className="h-4 w-4" />
                     </span>
                     <span className="min-w-0">
-                      <span className="block text-sm font-semibold text-slate-900">{meta.label}</span>
+                      <span className="block text-sm font-semibold leading-5 text-slate-900">{meta.label}</span>
                       <span className="mt-1 block text-xs leading-5 text-slate-500">{active ? 'Activo en pizarra' : meta.description}</span>
                     </span>
                   </button>
