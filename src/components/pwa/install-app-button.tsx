@@ -47,16 +47,16 @@ export function InstallAppButton({ compact = false }: { compact?: boolean }) {
         type="button"
         onClick={handleInstall}
         disabled={installing}
-        className="group relative inline-flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:border-slate-900 hover:bg-slate-900 disabled:opacity-60"
+        className="group relative inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:border-slate-900 hover:bg-slate-900 disabled:opacity-60"
         aria-label="Instalar app"
         title="Descargar app"
       >
         <Image
           src="/icons/iconoapp.png"
           alt="Descargar app"
-          width={26}
-          height={26}
-          className="h-7 w-7 object-contain transition-all duration-300 group-hover:brightness-90"
+          width={30}
+          height={30}
+          className="h-[30px] w-[30px] object-contain transition-all duration-300 group-hover:brightness-90"
         />
         <span className="pointer-events-none absolute right-0 top-full mt-2 translate-y-1 rounded-md bg-slate-950 px-3 py-1 text-xs font-medium text-white opacity-0 shadow-lg transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100">
           {installing ? 'Instalando…' : 'Descargar app'}
