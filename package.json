@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "16.0.0-dashboard-cleanup-board-move",
+  "version": "17.0.0-board-floating-panels",
   "private": true,
   "scripts": {
     "dev": "node node_modules/next/dist/bin/next dev",
@@ -55,7 +55,8 @@
     "debug:hydration": "node scripts/debug-hydration.mjs",
     "v14:check": "npm run debug:hydration && npm run production:gate",
     "verify:v15": "node scripts/verify-v15.mjs",
-    "verify:v16": "node scripts/verify-v16.mjs"
+    "verify:v16": "node scripts/verify-v16.mjs",
+    "verify:v17": "node scripts/verify-v17.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
