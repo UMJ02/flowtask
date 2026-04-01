@@ -7,7 +7,6 @@ import { CollaborationMetrics } from '@/components/dashboard/collaboration-metri
 import { DashboardHero } from '@/components/dashboard/dashboard-hero';
 import { DepartmentMetrics } from '@/components/dashboard/department-metrics';
 import { FocusPanel } from '@/components/dashboard/focus-panel';
-import { InteractiveDashboardBoard } from '@/components/dashboard/interactive-dashboard-board';
 import { ProjectHealth } from '@/components/dashboard/project-health';
 import { RecentActivity } from '@/components/dashboard/recent-activity';
 import { UrgentProjects } from '@/components/dashboard/urgent-projects';
@@ -51,24 +50,23 @@ export default async function DashboardPage() {
 
       <FocusPanel />
 
-      <div className="grid gap-5 xl:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.85fr)]">
-        <InteractiveDashboardBoard />
+      <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(320px,0.92fr)]">
         <div className="space-y-5">
           <ProjectHealth
             activeProjects={summary?.activeProjects ?? 0}
             completedProjects={summary?.completedProjects ?? 0}
             collaborativeProjects={summary?.collaborativeProjects ?? 0}
           />
+          <DepartmentMetrics items={summary?.departmentMetrics ?? []} />
+          <ClientMetrics items={summary?.clientMetrics ?? []} />
+        </div>
+
+        <div className="space-y-5">
           <UrgentProjects items={summary?.urgentProjects ?? []} />
           <RecentActivity summary={activitySummary} />
+          <UserWorkload items={summary?.userWorkload ?? []} />
+          <CollaborationMetrics items={summary?.collaborationMetrics ?? []} />
         </div>
-      </div>
-
-      <div className="grid gap-5 xl:grid-cols-2">
-        <DepartmentMetrics items={summary?.departmentMetrics ?? []} />
-        <ClientMetrics items={summary?.clientMetrics ?? []} />
-        <UserWorkload items={summary?.userWorkload ?? []} />
-        <CollaborationMetrics items={summary?.collaborationMetrics ?? []} />
       </div>
     </div>
   );

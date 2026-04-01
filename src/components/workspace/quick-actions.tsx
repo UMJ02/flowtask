@@ -29,7 +29,7 @@ const ACTIONS: Array<{ href: AppRoute; title: string; description: string; helpe
     accent: 'from-rose-50 to-white',
   },
   {
-    href: asRoute('/app/dashboard?view=board'),
+    href: asRoute('/app/board'),
     title: 'Pizarra',
     description: 'Abre el tablero interactivo para mover trabajo y foco.',
     helper: 'Vista operativa',

@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "15.0.0-clean-build-fix",
+  "version": "16.0.0-dashboard-cleanup-board-move",
   "private": true,
   "scripts": {
     "dev": "node node_modules/next/dist/bin/next dev",
@@ -54,7 +54,8 @@
     "final:bundle": "npm run qa:full-client && npm run ux:review && npm run release:check && npm run preprod:validate && npm run production:gate",
     "debug:hydration": "node scripts/debug-hydration.mjs",
     "v14:check": "npm run debug:hydration && npm run production:gate",
-    "verify:v15": "node scripts/verify-v15.mjs"
+    "verify:v15": "node scripts/verify-v15.mjs",
+    "verify:v16": "node scripts/verify-v16.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

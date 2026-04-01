@@ -76,7 +76,7 @@ export function DashboardHero({
 
           <div className="mt-5 flex flex-wrap gap-3">
             <Link
-              href={asRoute('/app/dashboard?view=board')}
+              href={asRoute('/app/board')}
               className="inline-flex items-center gap-2 rounded-2xl bg-slate-950 px-4 py-2.5 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-slate-900"
             >
               Abrir pizarra
