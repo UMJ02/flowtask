@@ -758,8 +758,8 @@ export function InteractiveDashboardBoard() {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <button type="button" onClick={() => setAsideOpen((v) => !v)} className="inline-flex h-11 items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:-translate-y-0.5 hover:bg-slate-50">
-              <Menu className="h-4 w-4" /> {asideOpen ? 'Ocultar paneles' : 'Paneles flotantes'}
+            <button type="button" onClick={() => setAsideOpen((v) => !v)} className="inline-flex h-11 items-center gap-2 rounded-lg border border-sky-200 bg-sky-50/70 px-4 text-sm font-semibold text-sky-800 transition hover:-translate-y-0.5 hover:bg-sky-100/70">
+              <Menu className="h-4 w-4" /> {asideOpen ? 'Ocultar paneles' : 'Mostrar paneles'}
             </button>
             <Link href="/app/dashboard" className="inline-flex h-11 items-center rounded-lg border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:-translate-y-0.5 hover:bg-slate-50">
               Volver al dashboard
@@ -768,29 +768,23 @@ export function InteractiveDashboardBoard() {
         </div>
       </Card>
 
-      <div className="relative space-y-4">
+      <div className="space-y-4">
         {asideOpen ? (
-          <>
-            <button
-              type="button"
-              aria-label="Cerrar paneles"
-              onClick={() => setAsideOpen(false)}
-              className="fixed inset-0 z-20 bg-slate-900/10 backdrop-blur-[1px] xl:hidden"
-            />
-            <Card className="fixed inset-x-4 top-24 z-30 max-h-[70vh] overflow-y-auto border-slate-200 bg-white p-4 shadow-[0_24px_60px_rgba(15,23,42,0.18)] xl:absolute xl:right-0 xl:top-0 xl:left-auto xl:w-[320px] xl:max-h-none">
-              <div className="mb-3 flex items-center justify-between gap-3">
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Paneles</p>
-                  <p className="mt-1 text-sm text-slate-500">Activa o quita módulos sin aplastar la pizarra.</p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setAsideOpen(false)}
-                  className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50"
-                >
-                  <X className="h-4 w-4" />
-                </button>
+          <Card className="border-sky-200 bg-[linear-gradient(180deg,rgba(239,246,255,0.92),rgba(255,255,255,0.98))] p-4 shadow-[0_14px_34px_rgba(59,130,246,0.08)]">
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-sky-700">Paneles de pizarra</p>
+                <p className="mt-1 text-sm text-slate-600">Activa o quita módulos sin compactar el contenido principal.</p>
               </div>
+              <button
+                type="button"
+                onClick={() => setAsideOpen(false)}
+                className="inline-flex h-9 items-center gap-2 rounded-full border border-sky-200 bg-white px-3 text-sm font-semibold text-sky-700 transition hover:bg-sky-50"
+              >
+                <X className="h-4 w-4" />
+                Cerrar
+              </button>
+            </div>
             <div className="space-y-3">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Paneles</p>
@@ -807,7 +801,7 @@ export function InteractiveDashboardBoard() {
                     onClick={() => (active ? removePanel(key) : restorePanel(key))}
                     className={cn(
                       'flex w-full items-start gap-3 rounded-xl border px-3 py-3 text-left transition',
-                      active ? 'border-emerald-200 bg-emerald-50/70 shadow-sm' : 'border-slate-200 bg-white hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-50'
+                      active ? 'border-emerald-200 bg-white shadow-sm ring-2 ring-emerald-100' : 'border-sky-100 bg-white/95 hover:-translate-y-0.5 hover:border-sky-200 hover:bg-sky-50/60'
                     )}
                   >
                     <span className={cn('inline-flex h-10 w-10 items-center justify-center rounded-lg transition', active ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-700')}>
@@ -821,11 +815,10 @@ export function InteractiveDashboardBoard() {
                 );
               })}
             </div>
-            </Card>
-          </>
+          </Card>
         ) : null}
 
-        <div className={cn('space-y-4', asideOpen && 'xl:pt-2')}>
+        <div className="space-y-4">
           <Card className="border-slate-200 bg-white p-4 md:p-5 shadow-sm">
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50/80 px-4 py-3 xl:pr-24">
               <div className="flex items-center gap-3">
