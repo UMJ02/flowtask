@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { createPortal } from 'react-dom';
 import {
   AlertTriangle,
   CalendarDays,
@@ -24,24 +25,20 @@ const ACTIONS = [
 
 export function WorkspaceFloatingActions() {
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
-  return (
+  useEffect(() => {
+    setMounted(true);
+    return () => setMounted(false);
+  }, []);
+
+  const panel = (
     <>
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        className="inline-flex items-center gap-2 rounded-2xl border border-sky-200 bg-sky-50 px-4 py-2.5 text-sm font-semibold text-sky-800 transition hover:-translate-y-0.5 hover:bg-sky-100"
-        aria-label="Mostrar acciones rápidas"
-      >
-        <Sparkles className="h-4 w-4" />
-        Acción rápida
-      </button>
-
       <button
         type="button"
         onClick={() => setOpen(false)}
         className={cn(
-          'fixed inset-0 z-40 transition',
+          'fixed inset-0 z-[90] transition',
           open ? 'bg-slate-900/12 opacity-100' : 'pointer-events-none bg-transparent opacity-0'
         )}
         aria-label="Cerrar acciones rápidas"
@@ -49,7 +46,7 @@ export function WorkspaceFloatingActions() {
 
       <div
         className={cn(
-          'pointer-events-none fixed right-6 top-[132px] z-50 w-[420px] max-w-[calc(100vw-2rem)] transition-all duration-300',
+          'pointer-events-none fixed right-6 top-[132px] z-[100] w-[420px] max-w-[calc(100vw-2rem)] transition-all duration-300',
           open ? 'translate-x-0 opacity-100' : 'translate-x-10 opacity-0'
         )}
       >
@@ -103,6 +100,22 @@ export function WorkspaceFloatingActions() {
           </div>
         </div>
       </div>
+    </>
+  );
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="inline-flex items-center gap-2 rounded-2xl border border-sky-200 bg-sky-50 px-4 py-2.5 text-sm font-semibold text-sky-800 transition hover:-translate-y-0.5 hover:bg-sky-100"
+        aria-label="Mostrar acciones rápidas"
+      >
+        <Sparkles className="h-4 w-4" />
+        Acción rápida
+      </button>
+
+      {mounted ? createPortal(panel, document.body) : null}
     </>
   );
 }
