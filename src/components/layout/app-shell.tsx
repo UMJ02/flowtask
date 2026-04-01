@@ -60,9 +60,7 @@ function ShellFrame({
       <div className={`mx-auto grid max-w-[1540px] gap-3 transition-[grid-template-columns] duration-300 xl:gap-4 ${collapsed ? 'md:grid-cols-[104px_minmax(0,1fr)]' : 'md:grid-cols-[292px_minmax(0,1fr)]'}`}>
         <AppSidebar organizations={organizations} activeOrganization={activeOrganization} userEmail={userEmail} userName={userName} />
         <div className="min-w-0 space-y-3 xl:space-y-4">
-          <div className="glass-strip sticky top-2 z-20 rounded-[26px] p-2 shadow-[0_12px_26px_rgba(15,23,42,0.05)]">
-            <AppHeader userEmail={userEmail} userName={userName} />
-          </div>
+          <AppHeader userEmail={userEmail} userName={userName} />
           <main className="min-w-0 space-y-3 xl:space-y-4">{children}</main>
           <div className="page-section px-4 py-3 md:px-5">
             <AppFooter />

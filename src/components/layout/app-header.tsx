@@ -15,11 +15,11 @@ export function AppHeader({ userEmail, userName }: { userEmail: string; userName
   const firstName = getFirstName(userName);
 
   return (
-    <header className="sticky top-3 z-20 rounded-[32px] border border-slate-200/80 bg-white/[0.90] px-4 py-4 shadow-[0_10px_30px_rgba(15,23,42,0.07)] backdrop-blur md:px-6">
+    <header className="sticky top-3 z-20 rounded-[34px] border border-emerald-100/90 bg-[radial-gradient(circle_at_top_left,rgba(16,185,129,0.12),transparent_26%),linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,250,252,0.98))] px-4 py-4 shadow-[0_14px_34px_rgba(15,23,42,0.06)] backdrop-blur md:px-6">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex min-w-0 items-start gap-3">
           <MobileNav />
-          <div className="hidden h-14 w-14 items-center justify-center rounded-2xl bg-white shadow-sm ring-1 ring-slate-200 md:inline-flex">
+          <div className="hidden h-16 w-16 items-center justify-center rounded-full bg-slate-950 shadow-[0_12px_28px_rgba(15,23,42,0.18)] ring-1 ring-slate-900 md:inline-flex">
             <Image src="/icons/icon.png" alt="FlowTask" width={34} height={34} className="h-8 w-8 object-contain" priority />
           </div>
           <div className="min-w-0">
