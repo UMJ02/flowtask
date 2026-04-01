@@ -198,3 +198,9 @@ textarea::placeholder {
   50% { filter: saturate(1.08) brightness(1.06); }
   100% { filter: saturate(1) brightness(1); }
 }
+
+
+@keyframes fade-rise {
+  0% { opacity: 0; transform: translateY(8px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
