@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "20.0.0-board-panels-inline-clean",
+  "version": "21.0.0-workspace-simplified-floating-actions",
   "private": true,
   "scripts": {
     "dev": "node node_modules/next/dist/bin/next dev",
@@ -59,7 +59,8 @@
     "verify:v17": "node scripts/verify-v17.mjs",
     "verify:v18": "node scripts/verify-v18.mjs",
     "verify:v19": "node scripts/verify-v19.mjs",
-    "verify:v20": "node scripts/verify-v20.mjs"
+    "verify:v20": "node scripts/verify-v20.mjs",
+    "verify:v21": "node scripts/verify-v21.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

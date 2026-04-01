@@ -1,17 +1,11 @@
 export const dynamic = 'force-dynamic';
 
-import { BoardOverview } from '@/components/dashboard/board-overview';
 import { DashboardStartState } from '@/components/dashboard/dashboard-start-state';
-import { ClientMetrics } from '@/components/dashboard/client-metrics';
-import { CollaborationMetrics } from '@/components/dashboard/collaboration-metrics';
 import { DashboardHero } from '@/components/dashboard/dashboard-hero';
-import { DepartmentMetrics } from '@/components/dashboard/department-metrics';
-import { FocusPanel } from '@/components/dashboard/focus-panel';
 import { ProjectHealth } from '@/components/dashboard/project-health';
 import { RecentActivity } from '@/components/dashboard/recent-activity';
 import { UrgentProjects } from '@/components/dashboard/urgent-projects';
-import { UserWorkload } from '@/components/dashboard/user-workload';
-import { WorkspaceQuickActions } from '@/components/workspace/quick-actions';
+import { WorkspaceFloatingActions } from '@/components/workspace/floating-actions';
 import { getRecentActivitySummary } from '@/lib/queries/activity';
 import { getDashboardData } from '@/lib/queries/dashboard';
 import { safeServerCall } from '@/lib/runtime/safe-server';
@@ -29,45 +23,32 @@ export default async function DashboardPage() {
     (summary?.completedProjects ?? 0);
 
   return (
-    <div className="space-y-5 lg:space-y-6">
-      <DashboardHero
-        activeTasks={summary?.activeTasks ?? 0}
-        activeProjects={summary?.activeProjects ?? 0}
-        waitingTasks={summary?.waitingTasks ?? 0}
-        overdueTasks={summary?.overdueTasks ?? 0}
-        dueSoonTasks={summary?.dueSoonTasks ?? 0}
-      />
+    <>
+      <WorkspaceFloatingActions />
 
-      <WorkspaceQuickActions />
+      <div className="space-y-5 lg:space-y-6">
+        <DashboardHero
+          activeTasks={summary?.activeTasks ?? 0}
+          activeProjects={summary?.activeProjects ?? 0}
+          waitingTasks={summary?.waitingTasks ?? 0}
+          overdueTasks={summary?.overdueTasks ?? 0}
+          dueSoonTasks={summary?.dueSoonTasks ?? 0}
+        />
 
-      {totalVisibleItems === 0 ? <DashboardStartState /> : null}
+        {totalVisibleItems === 0 ? <DashboardStartState /> : null}
 
-      <BoardOverview
-        activeTasks={summary?.activeTasks ?? 0}
-        activeProjects={summary?.activeProjects ?? 0}
-        completedTasks={summary?.completedTasks ?? 0}
-      />
-
-      <FocusPanel />
-
-      <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(320px,0.92fr)]">
-        <div className="space-y-5">
+        <div className="grid gap-5 xl:grid-cols-[minmax(0,0.95fr)_minmax(340px,0.65fr)]">
           <ProjectHealth
             activeProjects={summary?.activeProjects ?? 0}
             completedProjects={summary?.completedProjects ?? 0}
             collaborativeProjects={summary?.collaborativeProjects ?? 0}
           />
-          <DepartmentMetrics items={summary?.departmentMetrics ?? []} />
-          <ClientMetrics items={summary?.clientMetrics ?? []} />
+
+          <UrgentProjects items={summary?.urgentProjects ?? []} />
         </div>
 
-        <div className="space-y-5">
-          <UrgentProjects items={summary?.urgentProjects ?? []} />
-          <RecentActivity summary={activitySummary} />
-          <UserWorkload items={summary?.userWorkload ?? []} />
-          <CollaborationMetrics items={summary?.collaborationMetrics ?? []} />
-        </div>
+        <RecentActivity summary={activitySummary} />
       </div>
-    </div>
+    </>
   );
 }
