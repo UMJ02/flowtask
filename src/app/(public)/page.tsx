@@ -7,14 +7,14 @@ export default function HomePage() {
       <div className="absolute inset-0 hidden lg:block">
         <video
           className="h-full w-full object-cover"
+          src="/videos/videointro.mp4"
           autoPlay
           muted
           loop
           playsInline
-          preload="metadata"
+          preload="auto"
           poster="/icons/icon.png"
         >
-          <source src="videos/videointro.mp4" type="video/mp4" />
           Tu navegador no soporta video HTML5.
         </video>
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(2,6,23,0.50)_0%,rgba(2,6,23,0.16)_38%,rgba(2,6,23,0.34)_100%)]" />
