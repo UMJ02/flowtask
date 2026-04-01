@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "39.0.0-home-video-absolute-manifest-silent",
+  "version": "40.0.0-home-video-visible-card-white-transparent",
   "private": true,
   "scripts": {
     "dev": "node node_modules/next/dist/bin/next dev",
@@ -73,7 +73,8 @@
     "verify:v35": "node scripts/verify-v35.mjs",
     "verify:v36": "node scripts/verify-v36.mjs",
     "verify:v37": "node scripts/verify-v37.mjs",
-    "verify:v39": "node scripts/verify-v39.mjs"
+    "verify:v39": "node scripts/verify-v39.mjs",
+    "verify:v40": "node scripts/verify-v40.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

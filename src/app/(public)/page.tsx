@@ -20,7 +20,7 @@ export default function HomePage() {
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(2,6,23,0.50)_0%,rgba(2,6,23,0.16)_38%,rgba(2,6,23,0.34)_100%)]" />
       </div>
 
-      <div className="relative min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#f2f7f4_48%,#eef5f2_100%)] lg:bg-transparent">
+      <div className="relative min-h-screen bg-slate-50 lg:bg-transparent">
         <div className="container-page flex min-h-screen items-center py-8 md:py-10">
           <div className="grid w-full gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(420px,540px)] lg:items-center">
             <div className="hidden min-h-[620px] items-end lg:flex">
@@ -33,7 +33,7 @@ export default function HomePage() {
             </div>
 
             <div className="flex items-center justify-center lg:justify-end">
-              <div className="w-full max-w-[540px] rounded-[32px] border border-white/60 bg-white/78 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.14)] backdrop-blur-xl md:p-8">
+              <div className="w-full max-w-[540px] rounded-[32px] border border-white/70 bg-white/68 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.14)] backdrop-blur-xl md:p-8">
                 <span className="inline-flex rounded-full bg-emerald-50/90 px-3 py-1 text-sm font-semibold text-emerald-700 ring-1 ring-emerald-100">
                   FlowTask · Web app
                 </span>
