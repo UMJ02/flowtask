@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "22.0.0-floating-tab-center-color-pulse",
+  "version": "23.0.0-floating-tab-exposed-taller",
   "private": true,
   "scripts": {
     "dev": "node node_modules/next/dist/bin/next dev",
@@ -61,7 +61,8 @@
     "verify:v19": "node scripts/verify-v19.mjs",
     "verify:v20": "node scripts/verify-v20.mjs",
     "verify:v21": "node scripts/verify-v21.mjs",
-    "verify:v22": "node scripts/verify-v22.mjs"
+    "verify:v22": "node scripts/verify-v22.mjs",
+    "verify:v23": "node scripts/verify-v23.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
