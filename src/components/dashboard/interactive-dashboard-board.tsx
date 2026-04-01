@@ -57,6 +57,7 @@ type TaskRow = {
   organization_id: string | null;
   owner_id: string | null;
   created_at?: string | null;
+  updated_at?: string | null;
 };
 
 type ProjectRow = {
@@ -168,7 +169,7 @@ function taskEntity(task: TaskRow): MemoryEntity {
     title: task.title,
     subtitle: task.client_name?.trim() || formatStatus(task.status),
     href: taskDetailRoute(task.id),
-    updatedAt: task.updated_at || task.created_at || task.due_date || '1970-01-01T00:00:00.000Z',
+    updatedAt: task.updated_at ?? task.created_at ?? task.due_date ?? '1970-01-01T00:00:00.000Z',
   };
 }
 
@@ -818,7 +819,7 @@ export function InteractiveDashboardBoard() {
             {dataError ? <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">{dataError}</div> : null}
             {activePanels.includes('kanban') ? (
               <div className="mb-4 rounded-[28px] border border-emerald-200 bg-gradient-to-br from-white via-emerald-50/40 to-white p-4 md:p-5 shadow-[0_16px_36px_rgba(16,185,129,0.08)]">
-                <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-[24px] border border-emerald-100 bg-white/80 px-4 py-3">
+                <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-[24px] border border-emerald-100 bg-white/[0.80] px-4 py-3">
                   <div className="flex items-center gap-3">
                     <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100"><CheckCircle2 className="h-5 w-5" /></span>
                     <div>
@@ -845,7 +846,7 @@ export function InteractiveDashboardBoard() {
                     showHeader={false}
                   />
                 ) : (
-                  <div className="rounded-[24px] border border-dashed border-emerald-200 bg-white/70 px-4 py-8 text-sm text-slate-500">
+                  <div className="rounded-[24px] border border-dashed border-emerald-200 bg-white/[0.70] px-4 py-8 text-sm text-slate-500">
                     Usa <span className="font-semibold text-slate-700">Desplegar flujo</span> para volver a abrir las columnas.
                   </div>
                 )}

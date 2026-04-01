@@ -47,7 +47,7 @@ export function ProjectSidebar({
                     title: project.title,
                     subtitle: project.client_name || 'Proyecto',
                     href: projectDetailRoute(project.id),
-                    updatedAt: project.updated_at || project.created_at || project.due_date || '1970-01-01T00:00:00.000Z',
+                    updatedAt: project.updated_at ?? project.created_at ?? project.due_date ?? '1970-01-01T00:00:00.000Z',
                   }}
                   compact
                 />

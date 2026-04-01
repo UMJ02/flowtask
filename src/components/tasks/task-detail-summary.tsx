@@ -32,7 +32,7 @@ export function TaskDetailSummary({ task, currentQuery = "" }: { task: any; curr
         </div>
 
         <div className="flex flex-wrap items-center gap-2 md:max-w-[320px] md:justify-end">
-          <EntityMemoryActions entity={{ id: task.id, type: 'task', title: task.title, subtitle: task.client_name || "Tarea", href: taskDetailRoute(task.id, currentQuery), updatedAt: task.updated_at || task.created_at || task.due_date || '1970-01-01T00:00:00.000Z' }} />
+          <EntityMemoryActions entity={{ id: task.id, type: 'task', title: task.title, subtitle: task.client_name || "Tarea", href: taskDetailRoute(task.id, currentQuery), updatedAt: task.updated_at ?? task.created_at ?? task.due_date ?? '1970-01-01T00:00:00.000Z' }} />
           <Link href={taskEditRoute(task.id, currentQuery)} className="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-900 transition hover:-translate-y-0.5 hover:bg-slate-50">
             Editar tarea
           </Link>
