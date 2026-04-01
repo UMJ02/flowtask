@@ -42,7 +42,7 @@ export default function HomePage() {
                   Gestiona tareas, proyectos y seguimiento sin complicarte.
                 </h1>
 
-                <p className="mt-5 max-w-xl text-base leading-8 text-slate-600 md:text-lg lg:text-white/88 lg:[text-shadow:0_8px_24px_rgba(15,23,42,0.28)]">
+                <p className="mt-5 max-w-xl text-base leading-8 text-slate-600 md:text-lg lg:text-white lg:[text-shadow:0_8px_24px_rgba(15,23,42,0.28)]">
                   Tablero personal privado, proyectos colaborativos, comentarios con fecha automática y vistas por link para jefatura.
                 </p>
 

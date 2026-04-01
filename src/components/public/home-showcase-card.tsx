@@ -4,9 +4,9 @@ import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils/classnames';
 
 const ITEMS = [
-  { label: 'Hoy', value: '3 tareas por vencer', tone: 'border-emerald-200 bg-emerald-50/72 glow-emerald' },
-  { label: 'Proyecto colaborativo', value: 'Lanzamiento campaña abril', tone: 'border-sky-200 bg-sky-50/72 glow-sky' },
-  { label: 'Seguimiento', value: 'Comentarios y cambios con fecha automática', tone: 'border-violet-200 bg-violet-50/72 glow-violet' },
+  { label: 'Hoy', value: '3 tareas por vencer', tone: 'border-emerald-200 bg-emerald-50/72 glow-emerald text-glow-active' },
+  { label: 'Proyecto colaborativo', value: 'Lanzamiento campaña abril', tone: 'border-sky-200 bg-sky-50/72 glow-sky text-glow-active' },
+  { label: 'Seguimiento', value: 'Comentarios y cambios con fecha automática', tone: 'border-violet-200 bg-violet-50/72 glow-violet text-glow-active' },
 ] as const;
 
 export function HomeShowcaseCard() {
@@ -34,11 +34,18 @@ export function HomeShowcaseCard() {
                   : 'border-white/28 bg-white/45 opacity-84 lg:bg-white/38'
               )}
             >
-              <p className="text-sm text-slate-500 lg:text-slate-700/90">{item.label}</p>
+              <p
+                className={cn(
+                  'text-sm text-slate-500 transition-colors duration-500 lg:text-slate-700/90',
+                  active && 'text-white lg:text-white'
+                )}
+              >
+                {item.label}
+              </p>
               <p
                 className={cn(
                   'mt-1 text-lg font-semibold text-slate-900 transition-all duration-500',
-                  active && 'animate-[fade-rise_500ms_ease-out]'
+                  active && 'text-white animate-[fade-rise_500ms_ease-out]'
                 )}
               >
                 {item.value}
