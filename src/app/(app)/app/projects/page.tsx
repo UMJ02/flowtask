@@ -63,32 +63,48 @@ export default async function ProjectsPage({ searchParams }: { searchParams?: Pr
         {metricCard('Colaborativos', stats.collaborative, 'trabajo compartido')}
       </div>
       <div className="grid gap-4 xl:grid-cols-2">
-        {projects.length ? projects.map((project) => (
-          <Link key={project.id} href={projectDetailRoute(project.id, queryString)} className="rounded-[24px] border border-slate-200 bg-white p-5 transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-sm">
+        {projects.length ? projects.map((project, index) => {
+          const accents = [
+            'border-emerald-200 bg-[radial-gradient(circle_at_top_left,rgba(16,185,129,0.12),transparent_34%),linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,250,252,0.98))]',
+            'border-sky-200 bg-[radial-gradient(circle_at_top_left,rgba(56,189,248,0.14),transparent_34%),linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,250,252,0.98))]',
+            'border-violet-200 bg-[radial-gradient(circle_at_top_left,rgba(168,85,247,0.12),transparent_34%),linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,250,252,0.98))]',
+            'border-amber-200 bg-[radial-gradient(circle_at_top_left,rgba(245,158,11,0.12),transparent_34%),linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,250,252,0.98))]',
+          ];
+          const chips = [
+            'bg-emerald-50 text-emerald-700',
+            'bg-sky-50 text-sky-700',
+            'bg-violet-50 text-violet-700',
+            'bg-amber-50 text-amber-700',
+          ];
+          const accent = accents[index % accents.length];
+          const chip = chips[index % chips.length];
+
+          return (
+          <Link key={project.id} href={projectDetailRoute(project.id, queryString)} className={`rounded-[24px] border p-5 transition hover:-translate-y-0.5 hover:shadow-[0_16px_34px_rgba(15,23,42,0.08)] ${accent}`}>
             <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Proyecto</p>
                 <h2 className="mt-2 text-xl font-bold text-slate-900">{project.title}</h2>
-                <p className="mt-2 text-sm text-slate-500">{project.client_name || 'Sin cliente'} · {project.status}</p>
+                <p className="mt-2 text-sm text-slate-600">{project.client_name || 'Sin cliente'} · {project.status}</p>
               </div>
-              <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">{project.is_collaborative ? 'Colaborativo' : 'Solo owner'}</span>
+              <span className={`rounded-full px-3 py-1 text-xs font-semibold ${chip}`}>{project.is_collaborative ? 'Colaborativo' : 'Solo owner'}</span>
             </div>
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
-              <div className="rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-600">
+              <div className="rounded-2xl bg-white/80 px-4 py-3 text-sm text-slate-600 ring-1 ring-slate-200/80">
                 <p className="text-[11px] uppercase tracking-[0.16em] text-slate-500">Deadline</p>
                 <p className="mt-1 font-semibold text-slate-900">{project.due_date ? formatDate(project.due_date) : 'Sin fecha'}</p>
               </div>
-              <div className="rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-600">
+              <div className="rounded-2xl bg-white/80 px-4 py-3 text-sm text-slate-600 ring-1 ring-slate-200/80">
                 <p className="text-[11px] uppercase tracking-[0.16em] text-slate-500">Departamento</p>
                 <p className="mt-1 font-semibold text-slate-900">{project.departmentName || 'No indicado'}</p>
               </div>
             </div>
             <div className="mt-4 flex flex-wrap gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
-              <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1 text-slate-600"><BriefcaseBusiness className="h-3.5 w-3.5" /> Estado visible</span>
-              <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1 text-slate-600"><Users className="h-3.5 w-3.5" /> {project.is_collaborative ? 'Equipo' : 'Individual'}</span>
+              <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1 ${chip}`}><BriefcaseBusiness className="h-3.5 w-3.5" /> Estado visible</span>
+              <span className="inline-flex items-center gap-1 rounded-full bg-white/85 px-3 py-1 text-slate-600 ring-1 ring-slate-200"><Users className="h-3.5 w-3.5" /> {project.is_collaborative ? 'Equipo' : 'Individual'}</span>
             </div>
           </Link>
-        )) : (
+        )}) : (
           <EmptyState
             icon={<FolderOpenDot className="h-6 w-6" />}
             title="No encontramos proyectos con este filtro"

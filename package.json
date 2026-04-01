@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "31.0.0-smart-search-panels",
+  "version": "32.0.0-tasks-list-projects-colorful",
   "private": true,
   "scripts": {
     "dev": "node node_modules/next/dist/bin/next dev",
@@ -67,7 +67,8 @@
     "verify:v28": "node scripts/verify-v28.mjs",
     "verify:v29": "node scripts/verify-v29.mjs",
     "verify:v30": "node scripts/verify-v30.mjs",
-    "verify:v31": "node scripts/verify-v31.mjs"
+    "verify:v31": "node scripts/verify-v31.mjs",
+    "verify:v32": "node scripts/verify-v32.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
