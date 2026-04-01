@@ -59,7 +59,7 @@ export function WorkspaceFloatingActions() {
           onClick={() => setOpen((value) => !value)}
           aria-label={open ? 'Ocultar accesos rápidos' : 'Mostrar accesos rápidos'}
           className={cn(
-            'absolute left-0 top-1/2 z-20 flex h-[206px] w-[54px] -translate-x-[82%] -translate-y-1/2 flex-col items-center justify-center gap-3 rounded-l-[22px] border border-r-0 px-2 py-4 text-center text-white shadow-[0_18px_40px_rgba(15,23,42,0.16)] transition duration-300',
+            'absolute left-0 top-1/2 z-10 flex h-[206px] w-[54px] -translate-x-[92%] -translate-y-1/2 flex-col items-center justify-center gap-3 rounded-l-[22px] border border-r-0 px-2 py-4 text-center text-white shadow-[0_18px_40px_rgba(15,23,42,0.16)] transition duration-300',
             open
               ? 'border-emerald-300 bg-[linear-gradient(180deg,#10b981,#0f766e)]'
               : 'border-sky-300 bg-[linear-gradient(180deg,#38bdf8,#2563eb)] animate-[float-tab_2.6s_ease-in-out_infinite]'
