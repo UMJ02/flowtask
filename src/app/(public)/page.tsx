@@ -11,9 +11,11 @@ export default function HomePage() {
           muted
           loop
           playsInline
-          preload="auto"
+          preload="metadata"
+          poster="/icons/icon.png"
         >
-          <source src="/videos/videointro.mp4" type="video/mp4" />
+          <source src="videos/videointro.mp4" type="video/mp4" />
+          Tu navegador no soporta video HTML5.
         </video>
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(2,6,23,0.50)_0%,rgba(2,6,23,0.16)_38%,rgba(2,6,23,0.34)_100%)]" />
       </div>

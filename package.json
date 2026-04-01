@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "37.0.0-home-clean-fullbleed-video-fixed",
+  "version": "38.0.0-home-video-path-fix",
   "private": true,
   "scripts": {
     "dev": "node node_modules/next/dist/bin/next dev",
@@ -72,7 +72,8 @@
     "verify:v33": "node scripts/verify-v33.mjs",
     "verify:v35": "node scripts/verify-v35.mjs",
     "verify:v36": "node scripts/verify-v36.mjs",
-    "verify:v37": "node scripts/verify-v37.mjs"
+    "verify:v37": "node scripts/verify-v37.mjs",
+    "verify:v38": "node scripts/verify-v38.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
