@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { AlertTriangle, ArrowRight, BriefcaseBusiness, CalendarClock, CircleDashed, Sparkles } from 'lucide-react';
 import { Card } from '@/components/ui/card';
+import { WorkspaceFloatingActions } from '@/components/workspace/floating-actions';
 import { asRoute } from '@/lib/navigation/routes';
 
 function metricTone(value: number, variant: 'danger' | 'warning' | 'neutral' = 'neutral') {
@@ -74,7 +75,7 @@ export function DashboardHero({
             {focusLabel} Revisa la pizarra, prioriza lo que bloquea al equipo y entra directo a ejecución sin perder contexto.
           </p>
 
-          <div className="mt-5 flex flex-wrap gap-3">
+          <div className="mt-5 flex flex-wrap items-center gap-3">
             <Link
               href={asRoute('/app/board')}
               className="inline-flex items-center gap-2 rounded-2xl bg-slate-950 px-4 py-2.5 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-slate-900"
@@ -82,6 +83,7 @@ export function DashboardHero({
               Abrir pizarra
               <ArrowRight className="h-4 w-4" />
             </Link>
+            <WorkspaceFloatingActions />
             <Link
               href={asRoute('/app/planning')}
               className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:-translate-y-0.5 hover:border-emerald-200 hover:text-emerald-700"

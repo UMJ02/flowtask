@@ -5,7 +5,6 @@ import { DashboardHero } from '@/components/dashboard/dashboard-hero';
 import { ProjectHealth } from '@/components/dashboard/project-health';
 import { RecentActivity } from '@/components/dashboard/recent-activity';
 import { UrgentProjects } from '@/components/dashboard/urgent-projects';
-import { WorkspaceFloatingActions } from '@/components/workspace/floating-actions';
 import { getRecentActivitySummary } from '@/lib/queries/activity';
 import { getDashboardData } from '@/lib/queries/dashboard';
 import { safeServerCall } from '@/lib/runtime/safe-server';
@@ -23,10 +22,7 @@ export default async function DashboardPage() {
     (summary?.completedProjects ?? 0);
 
   return (
-    <>
-      <WorkspaceFloatingActions />
-
-      <div className="space-y-5 lg:space-y-6">
+    <div className="space-y-5 lg:space-y-6">
         <DashboardHero
           activeTasks={summary?.activeTasks ?? 0}
           activeProjects={summary?.activeProjects ?? 0}
@@ -49,6 +45,5 @@ export default async function DashboardPage() {
 
         <RecentActivity summary={activitySummary} />
       </div>
-    </>
   );
 }
