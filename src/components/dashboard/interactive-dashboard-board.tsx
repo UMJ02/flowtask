@@ -785,11 +785,8 @@ export function InteractiveDashboardBoard() {
                 Cerrar
               </button>
             </div>
-            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Paneles</p>
+            <div className="grid gap-3 xl:grid-cols-4">
 
-              </div>
               {(['task', 'projects', 'calendar', 'kanban'] as PanelKey[]).map((key) => {
                 const meta = PANEL_META[key];
                 const Icon = meta.icon;
@@ -800,7 +797,7 @@ export function InteractiveDashboardBoard() {
                     type="button"
                     onClick={() => (active ? removePanel(key) : restorePanel(key))}
                     className={cn(
-                      'flex w-full items-start gap-3 rounded-2xl border px-3 py-3 text-left transition duration-200 hover:-translate-y-0.5',
+                      'flex w-full min-w-0 items-start gap-3 rounded-2xl border px-3 py-3 text-left transition duration-200 hover:-translate-y-0.5',
                       active ? 'border-emerald-200 bg-white shadow-[0_10px_24px_rgba(16,185,129,0.10)] ring-2 ring-emerald-100' : 'border-sky-100 bg-white/95 hover:border-sky-200 hover:bg-sky-50/60 hover:shadow-[0_10px_24px_rgba(59,130,246,0.10)]'
                     )}
                   >
