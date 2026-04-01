@@ -58,14 +58,14 @@ export function WorkspaceFloatingActions() {
           type="button"
           onClick={() => setOpen((value) => !value)}
           className={cn(
-            'group absolute left-0 top-1/2 z-10 flex h-[206px] w-[56px] -translate-x-full -translate-y-1/2 flex-col items-center justify-center gap-3 rounded-l-[22px] border border-emerald-200 px-2 py-4 text-emerald-800 shadow-[0_18px_40px_rgba(15,23,42,0.12)] transition duration-200',
+            'group absolute left-0 top-1/2 z-20 flex h-[206px] w-[56px] -translate-x-[90%] -translate-y-1/2 flex-col items-center justify-center gap-3 rounded-l-[22px] border px-2 py-4 text-white shadow-[0_18px_40px_rgba(15,23,42,0.16)] transition duration-300',
             open
-              ? 'bg-[linear-gradient(180deg,rgba(236,253,245,0.98),rgba(255,255,255,0.98))]'
-              : 'bg-[linear-gradient(180deg,rgba(236,253,245,0.98),rgba(255,255,255,0.98))] animate-[float-tab_2.6s_ease-in-out_infinite]'
+              ? 'border-emerald-300 bg-[linear-gradient(180deg,#10b981,#0f766e)]'
+              : 'border-sky-300 bg-[linear-gradient(180deg,#38bdf8,#2563eb)] animate-[float-tab_2.6s_ease-in-out_infinite,color-shift_3.2s_ease-in-out_infinite]'
           )}
           aria-label={open ? 'Ocultar accesos rápidos' : 'Mostrar accesos rápidos'}
         >
-          <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-emerald-500 text-white shadow-sm">
+          <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/20 text-white shadow-sm backdrop-blur">
             {open ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
           </span>
           <span className="text-center text-[10px] font-semibold uppercase leading-none tracking-[0.10em] [writing-mode:vertical-rl] rotate-180 whitespace-nowrap">

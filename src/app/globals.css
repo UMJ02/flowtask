@@ -191,3 +191,10 @@ textarea::placeholder {
   50% { transform: translateY(-6px); }
   100% { transform: translateY(0); }
 }
+
+
+@keyframes color-shift {
+  0% { filter: saturate(1) brightness(1); }
+  50% { filter: saturate(1.08) brightness(1.06); }
+  100% { filter: saturate(1) brightness(1); }
+}
