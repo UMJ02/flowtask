@@ -1,4 +1,3 @@
-
 export const dynamic = 'force-dynamic';
 
 import { Card } from '@/components/ui/card';
@@ -10,6 +9,8 @@ export default async function ProjectNewPage({ searchParams }: { searchParams?: 
     Object.entries(search).flatMap(([key, value]) => typeof value === 'string' && value ? [[key, value]] : [])
   ).toString();
 
+  const clientName = typeof search.clientName === 'string' ? search.clientName : '';
+
   return (
     <div className="space-y-4">
       <Card className="rounded-[28px] border border-slate-200/90 bg-white/[0.92] p-5 shadow-[0_10px_30px_rgba(15,23,42,0.04)]">
@@ -17,7 +18,12 @@ export default async function ProjectNewPage({ searchParams }: { searchParams?: 
         <h1 className="mt-2 text-2xl font-bold text-slate-900">Crear proyecto</h1>
         <p className="mt-2 text-sm text-slate-500">Prepara un frente nuevo con su cliente, deadline, área y modo colaborativo.</p>
       </Card>
-      <ProjectForm redirectTo={queryString ? `/app/projects?${queryString}` as any : '/app/projects'} />
+      <ProjectForm
+        initialData={{
+          clientName,
+        }}
+        redirectTo={queryString ? `/app/projects?${queryString}` as any : '/app/projects'}
+      />
     </div>
   );
 }

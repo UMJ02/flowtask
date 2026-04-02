@@ -1,4 +1,3 @@
-
 export const dynamic = 'force-dynamic';
 
 import { notFound } from 'next/navigation';
@@ -7,7 +6,9 @@ import { TaskStatusForm } from '@/components/tasks/task-status-form';
 import { TaskSharePanel } from '@/components/tasks/task-share-panel';
 import { TaskComments } from '@/components/tasks/task-comments';
 import { TaskAssigneesPanel } from '@/components/tasks/task-assignees-panel';
+import { EntityAttachments } from '@/components/attachments/entity-attachments';
 import { getAssignableUsers, getTaskAssignees, getTaskById, getTaskComments } from '@/lib/queries/tasks';
+import { getTaskAttachments } from '@/lib/queries/attachments';
 import { safeServerCall } from '@/lib/runtime/safe-server';
 
 export default async function TaskDetailPage({
@@ -23,11 +24,12 @@ export default async function TaskDetailPage({
     Object.entries(search).flatMap(([key, value]) => typeof value === 'string' && value ? [[key, value]] : [])
   ).toString();
 
-  const [task, comments, assignableUsers, assignees] = await Promise.all([
+  const [task, comments, assignableUsers, assignees, attachments] = await Promise.all([
     safeServerCall('getTaskById', () => getTaskById(id), null),
     safeServerCall('getTaskComments', () => getTaskComments(id), []),
     safeServerCall('getAssignableUsers', () => getAssignableUsers(id), []),
     safeServerCall('getTaskAssignees', () => getTaskAssignees(id), []),
+    safeServerCall('getTaskAttachments', () => getTaskAttachments(id), []),
   ]);
 
   if (!task) notFound();
@@ -38,6 +40,7 @@ export default async function TaskDetailPage({
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_380px]">
         <div className="space-y-4">
           <TaskComments taskId={task.id} comments={comments} />
+          <EntityAttachments entityType="task" entityId={task.id} attachments={attachments} />
         </div>
         <div className="space-y-4">
           <TaskStatusForm taskId={task.id} status={task.status} dueDate={task.due_date} shareEnabled={task.share_enabled} shareToken={task.share_token} />

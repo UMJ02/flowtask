@@ -1,8 +1,13 @@
 import Link from "next/link";
+import { Plus } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import type { ClientDetailSummary } from "@/types/client";
 
 export function ClientDetailPanels({ client }: { client: ClientDetailSummary }) {
+  const createProjectHref = `/app/projects/new?clientName=${encodeURIComponent(client.name)}`;
+  const createTaskHref = `/app/tasks/new?clientName=${encodeURIComponent(client.name)}`;
+
   return (
     <div className="space-y-4">
       <Card>
@@ -17,6 +22,21 @@ export function ClientDetailPanels({ client }: { client: ClientDetailSummary }) 
             <p><strong>Creado:</strong> {client.createdAtLabel}</p>
             <p><strong>Owner:</strong> {client.accountOwnerEmail || 'Sin asignar'}</p>
           </div>
+        </div>
+
+        <div className="mt-4 flex flex-wrap gap-3">
+          <Link href={createProjectHref} className="inline-flex">
+            <Button type="button">
+              <Plus className="h-4 w-4" />
+              Nuevo proyecto
+            </Button>
+          </Link>
+          <Link href={createTaskHref} className="inline-flex">
+            <Button type="button" variant="secondary">
+              <Plus className="h-4 w-4" />
+              Nueva tarea
+            </Button>
+          </Link>
         </div>
       </Card>
 

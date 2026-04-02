@@ -1,6 +1,6 @@
-
 export const dynamic = 'force-dynamic';
 
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ProjectDetailSummary } from '@/components/projects/project-detail-summary';
 import { ProjectStatusForm } from '@/components/projects/project-status-form';
@@ -8,7 +8,10 @@ import { ProjectTaskList } from '@/components/projects/project-task-list';
 import { ProjectComments } from '@/components/projects/project-comments';
 import { ProjectMembers } from '@/components/projects/project-members';
 import { ProjectSharePanel } from '@/components/projects/project-share-panel';
+import { EntityAttachments } from '@/components/attachments/entity-attachments';
+import { Button } from '@/components/ui/button';
 import { getProjectById, getProjectComments, getProjectMembers, getProjectTasks } from '@/lib/queries/projects';
+import { getProjectAttachments } from '@/lib/queries/attachments';
 import { safeServerCall } from '@/lib/runtime/safe-server';
 
 export default async function ProjectDetailPage({
@@ -24,14 +27,17 @@ export default async function ProjectDetailPage({
     Object.entries(search).flatMap(([key, value]) => typeof value === 'string' && value ? [[key, value]] : [])
   ).toString();
 
-  const [project, comments, tasks, members] = await Promise.all([
+  const [project, comments, tasks, members, attachments] = await Promise.all([
     safeServerCall('getProjectById', () => getProjectById(id), null),
     safeServerCall('getProjectComments', () => getProjectComments(id), []),
     safeServerCall('getProjectTasks', () => getProjectTasks(id), []),
     safeServerCall('getProjectMembers', () => getProjectMembers(id), []),
+    safeServerCall('getProjectAttachments', () => getProjectAttachments(id), []),
   ]);
 
   if (!project) notFound();
+
+  const createTaskHref = `/app/tasks/new?projectId=${encodeURIComponent(project.id)}${project.client_name ? `&clientName=${encodeURIComponent(project.client_name)}` : ''}`;
 
   return (
     <div className="space-y-4">
@@ -40,8 +46,18 @@ export default async function ProjectDetailPage({
         <div className="space-y-4">
           <ProjectTaskList tasks={tasks} />
           <ProjectComments projectId={project.id} comments={comments} />
+          <EntityAttachments entityType="project" entityId={project.id} attachments={attachments} />
         </div>
         <div className="space-y-4">
+          <div className="rounded-[24px] border border-slate-200/90 bg-white/[0.92] p-4 shadow-[0_10px_30px_rgba(15,23,42,0.04)]">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Acción rápida</p>
+            <h3 className="mt-2 text-lg font-bold text-slate-900">Crear tarea desde este proyecto</h3>
+            <p className="mt-1 text-sm text-slate-500">Abre una tarea ya vinculada al proyecto y, si existe, con el cliente precargado.</p>
+            <Link href={createTaskHref} className="mt-4 inline-flex">
+              <Button type="button">Nueva tarea vinculada</Button>
+            </Link>
+          </div>
+
           <ProjectStatusForm projectId={project.id} status={project.status} dueDate={project.due_date} shareEnabled={project.share_enabled} shareToken={project.share_token} />
           <ProjectMembers projectId={project.id} members={members} />
           <ProjectSharePanel enabled={project.share_enabled} token={project.share_token} />
