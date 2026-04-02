@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "52.0.0-organizacion-roles-operativo-regen",
+  "version": "53.1.0-security-access-foundation",
   "private": true,
   "scripts": {
     "dev": "node node_modules/next/dist/bin/next dev",

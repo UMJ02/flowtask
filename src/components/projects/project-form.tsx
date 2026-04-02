@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { getClientWorkspaceContext, findOrganizationClientId } from "@/lib/supabase/workspace-client";
+import { getClientAccessSummary, hasClientAccess } from "@/lib/security/client-access";
 import { DEPARTMENTS } from "@/lib/constants/departments";
 import { PROJECT_STATUSES } from "@/lib/constants/project-status";
 import { projectDetailRoute, projectListRoute, type AppRoute } from "@/lib/navigation/routes";
@@ -82,6 +83,13 @@ export function ProjectForm({
 
     const clientName = values.clientName?.trim() || null;
     const clientId = await findOrganizationClientId(supabase, workspace.activeOrganizationId, clientName);
+    const access = await getClientAccessSummary(supabase as any, user.id, workspace.activeOrganizationId);
+
+    if (clientId && !hasClientAccess(access, clientId, "edit")) {
+      setServerError("No tienes permisos para crear o editar proyectos sobre ese cliente.");
+      setMessage(null);
+      return;
+    }
 
     const payload = {
       title: values.title,

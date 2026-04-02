@@ -1,4 +1,6 @@
 import { createClient } from "@/lib/supabase/client";
+import { filterRowsByClientAccess, getClientAccessSummary, hasClientAccess } from "@/lib/security/client-access";
+
 
 export interface ClientWorkspaceContext {
   supabase: ReturnType<typeof createClient>;
@@ -80,11 +82,14 @@ export async function fetchWorkspaceProjects(
   supabase: ReturnType<typeof createClient>,
   userId: string,
   organizationId?: string | null,
+  mode: "view" | "edit" = "view",
 ) {
+  const access = await getClientAccessSummary(supabase as any, userId, organizationId);
+
   let query = applyClientWorkspaceScope(
     supabase
       .from("projects")
-      .select("id,title,status")
+      .select("id,title,status,client_id")
       .neq("status", "completado")
       .order("title", { ascending: true }),
     userId,
@@ -94,7 +99,7 @@ export async function fetchWorkspaceProjects(
   const { data, error } = await query;
   if (error) return [] as Array<{ id: string; title: string; status: string }>;
 
-  return (data ?? []).map((item: any) => ({
+  return filterRowsByClientAccess((data ?? []) as any[], access, mode).map((item: any) => ({
     id: String(item.id),
     title: String(item.title ?? "Proyecto"),
     status: String(item.status ?? "activo"),

@@ -20,10 +20,11 @@ export interface OrganizationAccessSummary {
 
 export function deriveOrganizationAccess(role: OrganizationRole | null): OrganizationAccessSummary {
   const canManage = role === "admin_global" || role === "manager";
+  const canManageRoles = role === "admin_global";
   return {
     role,
     canManageInvites: canManage,
-    canManageRoles: canManage,
+    canManageRoles,
     canManageClientPermissions: canManage,
     canViewSensitiveOrganizationData: canManage,
   };

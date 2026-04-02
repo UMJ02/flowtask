@@ -1,4 +1,5 @@
 import { getWorkspaceContext, applyWorkspaceScope } from "@/lib/queries/workspace";
+import { filterRowsByClientAccess, getClientAccessSummary, hasClientAccess } from "@/lib/security/client-access";
 import type { ProjectSummary } from "@/types/project";
 
 export interface ProjectFiltersInput {
@@ -45,6 +46,7 @@ export async function getProjects(filters: ProjectFiltersInput = {}): Promise<Pr
           client_name,
           due_date,
           is_collaborative,
+          client_id,
           created_at,
           updated_at,
           departments ( code, name )
@@ -71,14 +73,17 @@ export async function getProjects(filters: ProjectFiltersInput = {}): Promise<Pr
     return [];
   }
 
-  return (data ?? []).map(normalizeProjectRow);
+  const access = await getClientAccessSummary(supabase as any, user.id, activeOrganizationId);
+  return filterRowsByClientAccess((data ?? []) as any[], access, "view").map(normalizeProjectRow);
 }
 
 export async function getProjectClientMetrics(projectId: string) {
-  const { supabase } = await getWorkspaceContext();
+  const { supabase, user, activeOrganizationId } = await getWorkspaceContext();
+  if (!user) return [];
+  const access = await getClientAccessSummary(supabase as any, user.id, activeOrganizationId);
   const { data, error } = await supabase
     .from("tasks")
-    .select("client_name,status")
+    .select("client_name,status,client_id")
     .eq("project_id", projectId);
 
   if (error) {
@@ -87,7 +92,7 @@ export async function getProjectClientMetrics(projectId: string) {
   }
 
   const totals = new Map<string, { name: string; total: number; completed: number; active: number }>();
-  for (const row of data ?? []) {
+  for (const row of filterRowsByClientAccess((data ?? []) as any[], access, "view")) {
     const name = row.client_name?.trim() || "Sin cliente";
     const current = totals.get(name) ?? { name, total: 0, completed: 0, active: 0 };
     current.total += 1;
@@ -116,6 +121,7 @@ export async function getProjectById(projectId: string) {
           client_name,
           due_date,
           is_collaborative,
+          client_id,
           share_enabled,
           share_token,
           created_at,
@@ -132,14 +138,17 @@ export async function getProjectById(projectId: string) {
   const { data, error } = await query.single();
 
   if (error) return null;
-  return data;
+  const access = await getClientAccessSummary(supabase as any, user.id, activeOrganizationId);
+  return hasClientAccess(access, (data as any)?.client_id ?? null, "view") ? data : null;
 }
 
 export async function getProjectTasks(projectId: string) {
-  const { supabase } = await getWorkspaceContext();
+  const { supabase, user, activeOrganizationId } = await getWorkspaceContext();
+  if (!user) return [];
+  const access = await getClientAccessSummary(supabase as any, user.id, activeOrganizationId);
   const { data, error } = await supabase
     .from("tasks")
-    .select("id,title,status,client_name,due_date,priority,completed_at")
+    .select("id,title,status,client_name,due_date,priority,completed_at,client_id")
     .eq("project_id", projectId)
     .order("created_at", { ascending: false });
 
@@ -148,7 +157,7 @@ export async function getProjectTasks(projectId: string) {
     return [];
   }
 
-  return data ?? [];
+  return filterRowsByClientAccess((data ?? []) as any[], access, "view");
 }
 
 export async function getProjectComments(projectId: string) {

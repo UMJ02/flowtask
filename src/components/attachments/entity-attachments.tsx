@@ -64,9 +64,18 @@ export function EntityAttachments({
       return;
     }
 
+    const { data: auth } = await supabase.auth.getUser();
+    const userId = auth.user?.id ?? null;
+    if (!userId) {
+      setError("Sesión no válida para subir adjuntos.");
+      setUploading(false);
+      return;
+    }
+
     const publicUrl = supabase.storage.from("attachments").getPublicUrl(path).data.publicUrl;
 
     const payload = {
+      owner_id: userId,
       file_name: file.name,
       mime_type: file.type || null,
       file_size: file.size,
@@ -116,7 +125,7 @@ export function EntityAttachments({
         <div>
           <h3 className="text-lg font-semibold text-slate-900">Adjuntos</h3>
           <p className="mt-1 text-sm text-slate-500">
-            Sube archivos de respaldo para esta {entityType === "task" ? "tarea" : "proyecto"}. Requiere un bucket público llamado <span className="font-medium text-slate-700">attachments</span>.
+            Sube archivos de respaldo para esta {entityType === "task" ? "tarea" : "proyecto"}. El bucket <span className="font-medium text-slate-700">attachments</span> debe existir y respetar las políticas seguras del workspace.
           </p>
         </div>
         <label className="inline-flex cursor-pointer items-center gap-2 rounded-2xl bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800">

@@ -1,6 +1,7 @@
 import { format } from "date-fns";
 import { createClient } from "@/lib/supabase/server";
 import { getOrganizationContext } from "@/lib/queries/organization";
+import { filterRowsByClientAccess, getClientAccessSummary, hasClientAccess } from "@/lib/security/client-access";
 import type { ClientDashboardItem, ClientDetailSummary, ClientListItem } from "@/types/client";
 
 function formatDate(value?: string | null) {
@@ -23,6 +24,13 @@ export async function getClients(search?: string): Promise<ClientListItem[]> {
   if (!organizationId) return [];
 
   const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return [];
+
+  const access = await getClientAccessSummary(supabase as any, user.id, organizationId);
+
   let query = supabase
     .from("clients")
     .select("id,name,status,notes,created_at")
@@ -38,7 +46,7 @@ export async function getClients(search?: string): Promise<ClientListItem[]> {
     return [];
   }
 
-  const rows = clients ?? [];
+  const rows = filterRowsByClientAccess((clients ?? []) as any[], access, "view");
   const ids = rows.map((row: any) => row.id as string);
   const [projectsRes, openTasksRes, completedTasksRes, overdueTasksRes] = await Promise.all([
     ids.length ? supabase.from("projects").select("id,client_id,status").in("client_id", ids) : Promise.resolve({ data: [] as any[] }),
@@ -80,6 +88,13 @@ export async function getClientById(clientId: string): Promise<ClientDetailSumma
   if (!organizationId) return null;
 
   const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return null;
+
+  const access = await getClientAccessSummary(supabase as any, user.id, organizationId);
+
   const { data: clientRow, error: clientError } = await supabase
     .from("clients")
     .select("id,name,status,notes,created_at,organization_id,account_owner_id")
@@ -92,7 +107,7 @@ export async function getClientById(clientId: string): Promise<ClientDetailSumma
     return null;
   }
 
-  if (!clientRow) return null;
+  if (!clientRow || !hasClientAccess(access, clientRow.id, "view")) return null;
 
   const [{ data: owner }, { data: projects }, { data: tasks }, { data: activity }] = await Promise.all([
     clientRow.account_owner_id ? supabase.from("profiles").select("email").eq("id", clientRow.account_owner_id).maybeSingle() : Promise.resolve({ data: null as any }),

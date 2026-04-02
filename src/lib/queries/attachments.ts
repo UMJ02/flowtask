@@ -1,7 +1,7 @@
-import { createClient } from "@/lib/supabase/server";
+import { getWorkspaceContext } from "@/lib/queries/workspace";
 
 export async function getTaskAttachments(taskId: string) {
-  const supabase = await createClient();
+  const { supabase } = await getWorkspaceContext();
   const { data } = await supabase
     .from("attachments")
     .select("id, file_name, mime_type, file_size, public_url, storage_path, created_at")
@@ -12,7 +12,7 @@ export async function getTaskAttachments(taskId: string) {
 }
 
 export async function getProjectAttachments(projectId: string) {
-  const supabase = await createClient();
+  const { supabase } = await getWorkspaceContext();
   const { data } = await supabase
     .from("attachments")
     .select("id, file_name, mime_type, file_size, public_url, storage_path, created_at")
@@ -23,7 +23,7 @@ export async function getProjectAttachments(projectId: string) {
 }
 
 export async function getProjectSectionPermissions(projectId: string) {
-  const supabase = await createClient();
+  const { supabase } = await getWorkspaceContext();
   const { data } = await supabase
     .from("project_section_permissions")
     .select("id, user_id, section_key, can_view, can_edit")

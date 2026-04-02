@@ -15,13 +15,16 @@ export async function getAdminAccess() {
 
   if (!user) return { canAccess: false, userId: null as string | null };
 
-  const [{ data: platformAdmin }, { data: orgMembership }] = await Promise.all([
-    supabase.from("platform_admins").select("id").eq("user_id", user.id).eq("active", true).maybeSingle(),
-    supabase.from("organization_members").select("role").eq("user_id", user.id).eq("role", "admin_global").limit(1).maybeSingle(),
-  ]);
+  const { data: platformAdmin } = await supabase
+    .from("platform_admins")
+    .select("id")
+    .eq("user_id", user.id)
+    .eq("active", true)
+    .eq("grant_source", "manual")
+    .maybeSingle();
 
   return {
-    canAccess: !!platformAdmin || !!orgMembership,
+    canAccess: !!platformAdmin,
     userId: user.id,
   };
 }

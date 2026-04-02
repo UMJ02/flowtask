@@ -1,4 +1,5 @@
 import { getWorkspaceContext, applyWorkspaceScope } from "@/lib/queries/workspace";
+import { filterRowsByClientAccess, getClientAccessSummary, hasClientAccess } from "@/lib/security/client-access";
 import type { TaskSummary } from "@/types/task";
 
 export interface TaskFiltersInput {
@@ -48,6 +49,7 @@ export async function getTasks(filters: TaskFiltersInput = {}): Promise<TaskSumm
           status,
           priority,
           project_id,
+          client_id,
           client_name,
           due_date,
           created_at,
@@ -80,7 +82,8 @@ export async function getTasks(filters: TaskFiltersInput = {}): Promise<TaskSumm
     return [];
   }
 
-  return (data ?? []).map(normalizeTaskRow);
+  const access = await getClientAccessSummary(supabase as any, user.id, activeOrganizationId);
+  return filterRowsByClientAccess((data ?? []) as any[], access, "view").map(normalizeTaskRow);
 }
 
 export async function getTaskById(taskId: string) {
@@ -98,6 +101,7 @@ export async function getTaskById(taskId: string) {
           title,
           description,
           status,
+          client_id,
           client_name,
           due_date,
           priority,
@@ -118,7 +122,8 @@ export async function getTaskById(taskId: string) {
   const { data, error } = await query.single();
 
   if (error) return null;
-  return data;
+  const access = await getClientAccessSummary(supabase as any, user.id, activeOrganizationId);
+  return hasClientAccess(access, (data as any)?.client_id ?? null, "view") ? data : null;
 }
 
 export async function getTaskComments(taskId: string) {

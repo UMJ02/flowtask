@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { getClientWorkspaceContext, findOrganizationClientId, fetchWorkspaceProjects } from "@/lib/supabase/workspace-client";
+import { getClientAccessSummary, hasClientAccess } from "@/lib/security/client-access";
 import { DEPARTMENTS } from "@/lib/constants/departments";
 import { TASK_STATUSES } from "@/lib/constants/task-status";
 import { TASK_PRIORITIES } from "@/lib/constants/task-priority";
@@ -85,7 +86,7 @@ export function TaskForm({
         }
         return;
       }
-      const rows = await fetchWorkspaceProjects(workspace.supabase, workspace.user.id, workspace.activeOrganizationId);
+      const rows = await fetchWorkspaceProjects(workspace.supabase, workspace.user.id, workspace.activeOrganizationId, "edit");
       if (active) {
         setProjects(rows);
         setLoadingProjects(false);
@@ -121,6 +122,27 @@ export function TaskForm({
 
     const clientName = values.clientName?.trim() || null;
     const clientId = await findOrganizationClientId(supabase, workspace.activeOrganizationId, clientName);
+    const access = await getClientAccessSummary(supabase as any, user.id, workspace.activeOrganizationId);
+
+    if (clientId && !hasClientAccess(access, clientId, "edit")) {
+      setServerError("No tienes permisos para crear o editar tareas sobre ese cliente.");
+      setMessage(null);
+      return;
+    }
+
+    if (values.projectId) {
+      const { data: projectAccessRow } = await supabase.from("projects").select("id, client_id").eq("id", values.projectId).maybeSingle();
+      if (!projectAccessRow) {
+        setServerError("El proyecto seleccionado no existe o no está disponible en tu workspace.");
+        setMessage(null);
+        return;
+      }
+      if (!hasClientAccess(access, (projectAccessRow as any).client_id ?? null, "edit")) {
+        setServerError("No tienes permisos para crear o editar tareas en el proyecto seleccionado.");
+        setMessage(null);
+        return;
+      }
+    }
 
     const payload = {
       title: values.title,
