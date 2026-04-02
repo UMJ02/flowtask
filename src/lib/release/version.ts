@@ -1,2 +1,3 @@
-export const APP_VERSION = "53.4.0-permissions-qa-ux-polish";
-export const APP_RELEASE_NAME = "v53.4 Permissions QA UX Polish";
+export const APP_VERSION = "53.5.0-release-candidate";
+export const APP_RELEASE_NAME = "v53.5 Release Candidate";
+export const APP_RELEASE_STAGE = "release-candidate";
