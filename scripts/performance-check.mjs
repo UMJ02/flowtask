@@ -8,7 +8,7 @@ const expectations = [
   "projects_org_created_idx",
   "tasks_org_status_due_idx",
   "client_permissions_org_user_client_idx",
-  "support_tickets_org_status_created_idx",
+  "internal_support_tickets_org_status_created_idx",
 ];
 
 for (const item of expectations) {

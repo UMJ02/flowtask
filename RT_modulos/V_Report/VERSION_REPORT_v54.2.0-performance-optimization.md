@@ -28,3 +28,10 @@ Reducir latencia percibida y carga redundante en queries críticas sin romper la
 - No cambia contratos de datos del frontend.
 - No cambia reglas RLS.
 - Se puede aplicar por copy/paste sobre V54.1.
+
+
+## Hotfix de migración
+- Corrige la referencia errónea a `public.support_tickets`.
+- Usa como tabla canónica `public.internal_support_tickets`.
+- Si existía un parche manual en `public.support_tickets`, migra sus filas a la tabla canónica y elimina la tabla manual.
+- Reconstituye `error_logs`, `usage_events` e `internal_support_tickets` en caso de que V54.1 hubiera quedado aplicada parcialmente.
