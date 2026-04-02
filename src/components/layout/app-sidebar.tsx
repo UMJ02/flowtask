@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -8,8 +9,7 @@ import { SidebarFooter } from '@/components/layout/sidebar-footer';
 import { useSidebarState } from '@/components/layout/sidebar-state';
 import type { OrganizationSummary } from '@/types/organization';
 
-const footerHrefs = new Set(['/app/organization', '/app/organization/roles', '/app/organization/billing', '/app/organization/support', '/app/platform', '/contact', '/app/settings']);
-const mainNavLinks = appNavLinks.filter((link) => !footerHrefs.has(link.href));
+const mainNavLinks = appNavLinks.filter((link) => link.href !== '/app/settings');
 
 export function AppSidebar({
   organizations = [],

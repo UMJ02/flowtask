@@ -1,18 +1,13 @@
+
 import type { LucideIcon } from 'lucide-react';
 import {
-  BarChart3,
-  Building2,
   ClipboardList,
-  CreditCard,
   FolderKanban,
   LayoutGrid,
   LayoutPanelTop,
   Settings,
-  Shield,
   Users,
-  BrainCircuit,
-  LifeBuoy,
-  ShieldEllipsis,
+  Bell,
 } from 'lucide-react';
 import type { AppRoute } from '@/lib/navigation/routes';
 
@@ -30,12 +25,6 @@ export const appNavLinks: AppNavLink[] = [
   { href: '/app/projects', label: 'Proyectos', hint: 'Fechas y avance', icon: FolderKanban },
   { href: '/app/tasks', label: 'Tareas', hint: 'Pendientes al día', icon: ClipboardList },
   { href: '/app/clients', label: 'Clientes', hint: 'Cuentas activas', icon: Users },
-  { href: '/app/intelligence', label: 'Insights', hint: 'Riesgo y foco', icon: BrainCircuit },
-  { href: '/app/reports', label: 'Reportes', hint: 'Resumen y PDF', icon: BarChart3 },
-  { href: '/app/organization', label: 'Equipo', hint: 'Miembros y espacio', icon: Building2 },
-  { href: '/app/organization/roles', label: 'Roles', hint: 'Accesos', icon: Shield },
-  { href: '/app/organization/billing', label: 'Plan', hint: 'Límites', icon: CreditCard },
-  { href: '/app/organization/support', label: 'Soporte', hint: 'Mesa interna', icon: LifeBuoy },
-  { href: '/app/platform', label: 'Platform', hint: 'SaaS ops', icon: ShieldEllipsis },
+  { href: '/app/notifications', label: 'Notificaciones', hint: 'Alertas y seguimiento', icon: Bell, isNotifications: true },
   { href: '/app/settings', label: 'Ajustes', hint: 'Perfil y preferencias', icon: Settings },
 ];
