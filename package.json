@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "46.0.0-auth-brand-recovery-pro",
+  "version": "47.0.0-mobile-menu-portal-fix",
   "private": true,
   "scripts": {
     "dev": "node node_modules/next/dist/bin/next dev",
@@ -80,7 +80,8 @@
     "verify:v43": "node scripts/verify-v43.mjs",
     "verify:v44": "node scripts/verify-v44.mjs",
     "verify:v45": "node scripts/verify-v45.mjs",
-    "verify:v46": "node scripts/verify-v46.mjs"
+    "verify:v46": "node scripts/verify-v46.mjs",
+    "verify:v47": "node scripts/verify-v47.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
