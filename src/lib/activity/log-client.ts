@@ -1,7 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 type ActivityPayload = {
-  entityType: "task" | "project" | "comment" | "reminder";
+  entityType: string;
   entityId: string;
   action: string;
   metadata?: Record<string, unknown>;

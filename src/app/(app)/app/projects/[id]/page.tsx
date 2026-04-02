@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic';
 
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { ActivityTimeline } from '@/components/activity/activity-timeline';
 import { ProjectDetailSummary } from '@/components/projects/project-detail-summary';
 import { ProjectStatusForm } from '@/components/projects/project-status-form';
 import { ProjectTaskList } from '@/components/projects/project-task-list';
@@ -12,6 +13,7 @@ import { EntityAttachments } from '@/components/attachments/entity-attachments';
 import { Button } from '@/components/ui/button';
 import { getProjectById, getProjectComments, getProjectMembers, getProjectTasks } from '@/lib/queries/projects';
 import { getProjectAttachments } from '@/lib/queries/attachments';
+import { getProjectActivity } from '@/lib/queries/activity';
 import { safeServerCall } from '@/lib/runtime/safe-server';
 
 export default async function ProjectDetailPage({
@@ -27,12 +29,13 @@ export default async function ProjectDetailPage({
     Object.entries(search).flatMap(([key, value]) => typeof value === 'string' && value ? [[key, value]] : [])
   ).toString();
 
-  const [project, comments, tasks, members, attachments] = await Promise.all([
+  const [project, comments, tasks, members, attachments, activity] = await Promise.all([
     safeServerCall('getProjectById', () => getProjectById(id), null),
     safeServerCall('getProjectComments', () => getProjectComments(id), []),
     safeServerCall('getProjectTasks', () => getProjectTasks(id), []),
     safeServerCall('getProjectMembers', () => getProjectMembers(id), []),
     safeServerCall('getProjectAttachments', () => getProjectAttachments(id), []),
+    safeServerCall('getProjectActivity', () => getProjectActivity(id), []),
   ]);
 
   if (!project) notFound();
@@ -47,6 +50,7 @@ export default async function ProjectDetailPage({
           <ProjectTaskList tasks={tasks} />
           <ProjectComments projectId={project.id} comments={comments} />
           <EntityAttachments entityType="project" entityId={project.id} attachments={attachments} />
+          <ActivityTimeline items={activity} title="Bitácora del proyecto" description="Cambios de estado, miembros, adjuntos y edición del proyecto." />
         </div>
         <div className="space-y-4">
           <div className="rounded-[24px] border border-slate-200/90 bg-white/[0.92] p-4 shadow-[0_10px_30px_rgba(15,23,42,0.04)]">

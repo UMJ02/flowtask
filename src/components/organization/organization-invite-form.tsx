@@ -25,7 +25,8 @@ export function OrganizationInviteForm({ organizationId, canInviteManagers = fal
     if (!organizationId || !email.trim()) return;
     setLoading(true);
     setStatus(null);
-    const { error } = await supabase.from("organization_invites").insert({ organization_id: organizationId, email: email.trim().toLowerCase(), role, status: "pending" });
+    const normalizedEmail = email.trim().toLowerCase();
+    const { data, error } = await supabase.from("organization_invites").insert({ organization_id: organizationId, email: normalizedEmail, role, status: "pending" }).select('id').single();
     if (error) { setStatus(error.message); setLoading(false); return; }
     setStatus("Invitación creada correctamente.");
     setEmail("");

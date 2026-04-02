@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { logActivity } from "@/lib/activity/log-client";
 import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
 
@@ -36,18 +37,23 @@ export function TaskAssigneesPanel({
     setIsSaving(true);
 
     const supabase = createClient();
-    const { error: insertError } = await supabase.from("task_assignees").upsert(
+    const selectedUser = options.find((option) => option.id === selectedUserId) ?? null;
+    const { data: upserted, error: insertError } = await supabase.from("task_assignees").upsert(
       {
         task_id: taskId,
         user_id: selectedUserId,
       },
       { onConflict: "task_id,user_id" },
-    );
+    ).select('id').single();
 
     if (insertError) {
       setError(insertError.message);
       setIsSaving(false);
       return;
+    }
+
+    if (upserted?.id) {
+      await logActivity(supabase as any, { entityType: 'task_assignee' as any, entityId: upserted.id, action: 'task_assignee_added', metadata: { task_id: taskId, email: selectedUser?.email ?? '', title: selectedUser?.full_name ?? selectedUser?.email ?? '' } });
     }
 
     setIsSaving(false);
@@ -58,6 +64,8 @@ export function TaskAssigneesPanel({
     setError(null);
     setRemovingId(assignmentId);
     const supabase = createClient();
+    const currentAssignee = assignees.find((item) => item.id === assignmentId) ?? null;
+    const profile = Array.isArray(currentAssignee?.profiles) ? currentAssignee?.profiles[0] : currentAssignee?.profiles;
     const { error: deleteError } = await supabase.from("task_assignees").delete().eq("id", assignmentId);
 
     if (deleteError) {
@@ -66,6 +74,7 @@ export function TaskAssigneesPanel({
       return;
     }
 
+    await logActivity(supabase as any, { entityType: 'task_assignee' as any, entityId: assignmentId, action: 'task_assignee_removed', metadata: { task_id: taskId, email: profile?.email ?? '', title: profile?.full_name ?? profile?.email ?? '' } });
     setRemovingId(null);
     router.refresh();
   };

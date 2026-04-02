@@ -7,6 +7,10 @@ export type ActivityItem = {
   action: string;
   metadata?: Record<string, unknown> | null;
   created_at: string;
+  organization_id?: string | null;
+  client_id?: string | null;
+  project_id?: string | null;
+  task_id?: string | null;
 };
 
 export type RecentActivitySummary = {
@@ -20,11 +24,13 @@ export type RecentActivitySummary = {
   };
 };
 
-async function getActivityByEntity(entityType: "task" | "project", entityId: string) {
+const BASE_SELECT = "id, entity_type, entity_id, action, metadata, created_at, organization_id, client_id, project_id, task_id";
+
+async function getActivityByEntity(entityType: string, entityId: string) {
   const supabase = await createClient();
   const { data } = await supabase
     .from("activity_logs")
-    .select("id, entity_type, entity_id, action, metadata, created_at")
+    .select(BASE_SELECT)
     .eq("entity_type", entityType)
     .eq("entity_id", entityId)
     .order("created_at", { ascending: false })
@@ -41,6 +47,22 @@ export async function getProjectActivity(projectId: string) {
   return getActivityByEntity("project", projectId);
 }
 
+export async function getClientActivity(clientId: string) {
+  return getActivityByEntity("client", clientId);
+}
+
+export async function getOrganizationActivity(organizationId: string, limit = 16) {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("activity_logs")
+    .select(BASE_SELECT)
+    .eq("organization_id", organizationId)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+
+  return (data ?? []) as ActivityItem[];
+}
+
 export async function getRecentActivity(limit = 20) {
   const supabase = await createClient();
   const {
@@ -51,7 +73,7 @@ export async function getRecentActivity(limit = 20) {
 
   const { data } = await supabase
     .from("activity_logs")
-    .select("id, entity_type, entity_id, action, metadata, created_at")
+    .select(BASE_SELECT)
     .eq("user_id", user.id)
     .order("created_at", { ascending: false })
     .limit(limit);

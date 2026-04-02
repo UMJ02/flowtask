@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { logActivity } from "@/lib/activity/log-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
@@ -34,19 +35,23 @@ export function ProjectInviteForm({ projectId }: { projectId: string }) {
       return;
     }
 
-    const { error: insertError } = await supabase.from("project_members").upsert(
+    const { data: upserted, error: insertError } = await supabase.from("project_members").upsert(
       {
         project_id: projectId,
         user_id: profile.id,
         role,
       },
       { onConflict: "project_id,user_id" },
-    );
+    ).select('id').single();
 
     if (insertError) {
       setError(insertError.message);
       setIsSaving(false);
       return;
+    }
+
+    if (upserted?.id) {
+      await logActivity(supabase as any, { entityType: 'project_member' as any, entityId: upserted.id, action: 'project_member_added', metadata: { project_id: projectId, email: profile.email, role } });
     }
 
     setMessage(`Colaborador agregado: ${profile.full_name || profile.email}`);

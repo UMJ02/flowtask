@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { createClient } from "@/lib/supabase/client";
 import { formatDate } from "@/lib/utils/dates";
+import { logActivity } from "@/lib/activity/log-client";
 
 type AttachmentRow = {
   id: string;
@@ -14,15 +15,20 @@ type AttachmentRow = {
   mime_type?: string | null;
   file_size?: number | null;
   public_url?: string | null;
-  storage_path?: string | null;
+  storage_path: string;
   created_at?: string | null;
 };
 
 function formatBytes(bytes?: number | null) {
-  if (!bytes || bytes <= 0) return "-";
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  if (!bytes || bytes <= 0) return "0 KB";
+  const units = ["B", "KB", "MB", "GB"];
+  let value = bytes;
+  let index = 0;
+  while (value >= 1024 && index < units.length - 1) {
+    value /= 1024;
+    index += 1;
+  }
+  return `${value.toFixed(index === 0 ? 0 : 1)} ${units[index]}`;
 }
 
 export function EntityAttachments({
@@ -42,20 +48,25 @@ export function EntityAttachments({
 
   const handleUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    event.target.value = "";
     if (!file) return;
 
     setError(null);
     setUploading(true);
 
-    const ext = file.name.includes(".") ? file.name.split(".").pop() : "bin";
-    const safeExt = ext?.replace(/[^a-zA-Z0-9]/g, "") || "bin";
-    const path = `${entityType}s/${entityId}/${Date.now()}-${crypto.randomUUID()}.${safeExt}`;
+    const { data: auth } = await supabase.auth.getUser();
+    const user = auth.user;
+    if (!user) {
+      setError("Necesitas iniciar sesión para subir archivos.");
+      setUploading(false);
+      return;
+    }
+
+    const safeName = file.name.replace(/\s+/g, "-").replace(/[^a-zA-Z0-9._-]/g, "");
+    const path = `${entityType}/${entityId}/${Date.now()}-${safeName}`;
 
     const upload = await supabase.storage.from("attachments").upload(path, file, {
       cacheControl: "3600",
       upsert: false,
-      contentType: file.type || undefined,
     });
 
     if (upload.error) {
@@ -64,28 +75,18 @@ export function EntityAttachments({
       return;
     }
 
-    const { data: auth } = await supabase.auth.getUser();
-    const userId = auth.user?.id ?? null;
-    if (!userId) {
-      setError("Sesión no válida para subir adjuntos.");
-      setUploading(false);
-      return;
-    }
-
     const publicUrl = supabase.storage.from("attachments").getPublicUrl(path).data.publicUrl;
-
     const payload = {
-      owner_id: userId,
+      owner_id: user.id,
       file_name: file.name,
       mime_type: file.type || null,
       file_size: file.size,
       storage_path: path,
       public_url: publicUrl,
-      task_id: entityType === "task" ? entityId : null,
-      project_id: entityType === "project" ? entityId : null,
+      ...(entityType === "task" ? { task_id: entityId } : { project_id: entityId }),
     };
 
-    const insert = await supabase.from("attachments").insert(payload);
+    const insert = await supabase.from("attachments").insert(payload).select("id").single();
 
     if (insert.error) {
       setError(insert.error.message);
@@ -93,7 +94,21 @@ export function EntityAttachments({
       return;
     }
 
+    if (insert.data?.id) {
+      await logActivity(supabase as any, {
+        entityType: "attachment" as any,
+        entityId: insert.data.id,
+        action: "attachment_uploaded",
+        metadata: {
+          file_name: file.name,
+          task_id: entityType === "task" ? entityId : undefined,
+          project_id: entityType === "project" ? entityId : undefined,
+        },
+      });
+    }
+
     setUploading(false);
+    event.target.value = "";
     router.refresh();
   };
 
@@ -107,6 +122,17 @@ export function EntityAttachments({
       setDeletingId(null);
       return;
     }
+
+    await logActivity(supabase as any, {
+      entityType: "attachment" as any,
+      entityId: attachment.id,
+      action: "attachment_deleted",
+      metadata: {
+        file_name: attachment.file_name,
+        task_id: entityType === "task" ? entityId : undefined,
+        project_id: entityType === "project" ? entityId : undefined,
+      },
+    });
 
     if (attachment.storage_path) {
       const removeStorage = await supabase.storage.from("attachments").remove([attachment.storage_path]);

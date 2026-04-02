@@ -13,6 +13,7 @@ import { projectDetailRoute, projectListRoute, type AppRoute } from "@/lib/navig
 import { generateShareToken } from "@/lib/utils/tokens";
 import { projectSchema } from "@/lib/validations/project";
 import { getDepartmentIdByCode } from "@/lib/queries/departments";
+import { logActivity } from "@/lib/activity/log-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
@@ -114,6 +115,13 @@ export function ProjectForm({
         setMessage(null);
         return;
       }
+
+      await logActivity(supabase as any, {
+        entityType: 'project',
+        entityId: projectId!,
+        action: 'project_updated',
+        metadata: { title: payload.title, status: payload.status, client_id: clientId ?? undefined, organization_id: workspace.activeOrganizationId },
+      });
     } else {
       const shareToken = values.isCollaborative ? generateShareToken() : null;
       const { data, error } = await supabase
@@ -133,13 +141,20 @@ export function ProjectForm({
         return;
       }
 
-      createdProjectId = data?.id ?? null;
+createdProjectId = data?.id ?? null;
 
       if (createdProjectId) {
         await supabase.from("project_members").insert({
           project_id: createdProjectId,
           user_id: user.id,
           role: "owner",
+        });
+
+        await logActivity(supabase as any, {
+          entityType: 'project',
+          entityId: createdProjectId,
+          action: 'project_created',
+          metadata: { title: payload.title, status: payload.status, client_id: clientId ?? undefined, organization_id: workspace.activeOrganizationId },
         });
       }
     }

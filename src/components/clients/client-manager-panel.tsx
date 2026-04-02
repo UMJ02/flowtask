@@ -92,7 +92,6 @@ export function ClientManagerPanel({ items, initialQuery = '' }: { items: Client
         setSaving(false);
         return;
       }
-
       setList((current) => current.map((item) => item.id === draft.id ? { ...item, ...payload } : item));
       setMessage('Cliente actualizado correctamente.');
       setSaving(false);
@@ -134,7 +133,9 @@ export function ClientManagerPanel({ items, initialQuery = '' }: { items: Client
 
     setDeletingId(clientId);
     setError(null);
-    const supabase = createClient();
+    const workspace = await getClientWorkspaceContext();
+    const supabase = workspace.supabase;
+    const target = list.find((item) => item.id === clientId) ?? null;
     const { error: deleteError } = await supabase.from('clients').delete().eq('id', clientId);
 
     if (deleteError) {
@@ -142,7 +143,6 @@ export function ClientManagerPanel({ items, initialQuery = '' }: { items: Client
       setError(deleteError.message);
       return;
     }
-
     setList((current) => current.filter((item) => item.id !== clientId));
     if (draft.id === clientId) resetDraft();
     setDeletingId(null);

@@ -33,9 +33,12 @@ export function OrganizationMembersPanel({ activeOrganization, members, canManag
     setSavingId(memberId);
     setStatus(null);
     const previous = items;
+    const currentMember = items.find((item) => item.id === memberId) ?? null;
     setItems((current) => current.map((item) => (item.id === memberId ? { ...item, role } : item)));
     const { error } = await supabase.from("organization_members").update({ role }).eq("id", memberId);
-    if (error) { setItems(previous); setStatus(error.message); } else { setStatus("Rol actualizado correctamente."); }
+    if (error) { setItems(previous); setStatus(error.message); } else {
+      setStatus("Rol actualizado correctamente.");
+    }
     setSavingId(null);
   }
 

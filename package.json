@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "53.1.0-security-access-foundation",
+  "version": "53.2.0-relational-audit-hardening",
   "private": true,
   "scripts": {
     "dev": "node node_modules/next/dist/bin/next dev",

@@ -15,6 +15,7 @@ export function OrganizationInvitesPanel({ organizationId, invites, canManageInv
   async function revokeInvite(inviteId: string) {
     setRevokingId(inviteId);
     const previous = items;
+    const target = items.find((item) => item.id === inviteId) ?? null;
     setItems((current) => current.map((item) => (item.id === inviteId ? { ...item, status: "revoked" } : item)));
     const { error } = await supabase.from("organization_invites").update({ status: "revoked" }).eq("id", inviteId);
     if (error) setItems(previous);

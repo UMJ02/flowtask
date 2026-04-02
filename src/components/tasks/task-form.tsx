@@ -13,6 +13,7 @@ import { TASK_PRIORITIES } from "@/lib/constants/task-priority";
 import { taskDetailRoute, taskListRoute, type AppRoute } from "@/lib/navigation/routes";
 import { taskSchema } from "@/lib/validations/task";
 import { getDepartmentIdByCode } from "@/lib/queries/departments";
+import { logActivity } from "@/lib/activity/log-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
@@ -173,6 +174,15 @@ export function TaskForm({
     }
 
     const createdTaskId = !isEdit ? ((result as { data?: { id?: string | null } | null }).data?.id ?? null) : null;
+    const activityEntityId = isEdit ? taskId! : createdTaskId;
+    if (activityEntityId) {
+      await logActivity(supabase as any, {
+        entityType: 'task',
+        entityId: activityEntityId,
+        action: isEdit ? 'task_updated' : 'task_created',
+        metadata: { title: payload.title, status: payload.status, client_id: clientId ?? undefined, project_id: values.projectId || undefined, organization_id: workspace.activeOrganizationId },
+      });
+    }
     const okMessage = successMessage ?? (isEdit ? "Cambios guardados al instante." : "Tarea creada y lista para seguir trabajando.");
     setMessage(okMessage);
 

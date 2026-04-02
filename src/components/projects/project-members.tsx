@@ -6,6 +6,7 @@ import { ProjectInviteForm } from "@/components/collaboration/project-invite-for
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { createClient } from "@/lib/supabase/client";
+import { logActivity } from "@/lib/activity/log-client";
 import { formatDate } from "@/lib/utils/dates";
 
 const ROLE_OPTIONS = [
@@ -23,6 +24,7 @@ export function ProjectMembers({ projectId, members }: { projectId: string; memb
     setError(null);
     setRemovingId(memberId);
     const supabase = createClient();
+    const currentMember = members.find((member) => member.id === memberId) ?? null;
     const { error: deleteError } = await supabase.from("project_members").delete().eq("id", memberId);
 
     if (deleteError) {
@@ -31,6 +33,7 @@ export function ProjectMembers({ projectId, members }: { projectId: string; memb
       return;
     }
 
+    await logActivity(supabase as any, { entityType: 'project_member' as any, entityId: memberId, action: 'project_member_removed', metadata: { project_id: projectId, role: currentMember?.role ?? undefined } });
     setRemovingId(null);
     router.refresh();
   };
@@ -39,6 +42,7 @@ export function ProjectMembers({ projectId, members }: { projectId: string; memb
     setError(null);
     setUpdatingId(memberId);
     const supabase = createClient();
+    const currentMember = members.find((member) => member.id === memberId) ?? null;
     const { error: updateError } = await supabase.from("project_members").update({ role }).eq("id", memberId);
 
     if (updateError) {
@@ -47,6 +51,7 @@ export function ProjectMembers({ projectId, members }: { projectId: string; memb
       return;
     }
 
+    await logActivity(supabase as any, { entityType: 'project_member' as any, entityId: memberId, action: 'project_member_updated', metadata: { project_id: projectId, previous_role: currentMember?.role ?? undefined, role } });
     setUpdatingId(null);
     router.refresh();
   };
