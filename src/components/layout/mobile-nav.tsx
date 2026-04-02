@@ -7,15 +7,25 @@ import { createPortal } from 'react-dom';
 import { Menu, X } from 'lucide-react';
 import { appNavLinks } from '@/components/layout/nav-links';
 
+const footerHrefs = new Set([
+  '/app/organization',
+  '/app/organization/roles',
+  '/app/organization/billing',
+  '/app/organization/support',
+  '/app/platform',
+  '/contact',
+  '/app/settings',
+]);
+
+const mainNavLinks = appNavLinks.filter((link) => !footerHrefs.has(link.href));
+
 export function MobileNav() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   const groups = useMemo(() => {
-    const main = appNavLinks.slice(0, 6);
-    const more = appNavLinks.slice(6);
-    return { main, more };
+    return { main: mainNavLinks };
   }, []);
 
   useEffect(() => {
@@ -81,32 +91,6 @@ export function MobileNav() {
               );
             })}
           </nav>
-
-          <div className="border-t border-white/10 pt-4">
-            <p className="mb-2 px-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Equipo y cuenta</p>
-            <nav className="space-y-2 rounded-[28px] border border-white/10 bg-white/[0.03] p-2">
-              {groups.more.map((link) => {
-                const Icon = link.icon;
-                const active = pathname === link.href || pathname?.startsWith(`${link.href}/`);
-                return (
-                  <Link
-                    key={link.href}
-                    className={`flex items-center gap-3 rounded-3xl border px-4 py-3 transition ${active ? 'border-emerald-400/40 bg-white/10' : 'border-white/10 bg-white/5 hover:bg-white/8'}`}
-                    href={link.href}
-                    onClick={() => setOpen(false)}
-                  >
-                    <span className={`inline-flex h-10 w-10 items-center justify-center rounded-2xl ${active ? 'bg-emerald-500 text-white' : 'bg-white/10 text-emerald-300'}`}>
-                      <Icon className="h-5 w-5" />
-                    </span>
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-semibold text-white">{link.label}</p>
-                      <p className="truncate text-xs text-slate-300">{link.hint}</p>
-                    </div>
-                  </Link>
-                );
-              })}
-            </nav>
-          </div>
         </div>
       </div>
     </div>
