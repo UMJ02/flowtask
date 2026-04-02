@@ -1,11 +1,11 @@
 'use client';
 
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createClient } from '@/lib/supabase/client';
-import { safeInternalRoute } from '@/lib/navigation/routes';
 import { registerSchema, type RegisterValues } from '@/lib/validations/auth';
 import { AuthFeedbackModal } from '@/components/auth/auth-feedback-modal';
 import { Button } from '@/components/ui/button';
@@ -20,9 +20,7 @@ function mapRegisterError(message: string) {
 export function RegisterForm({ initialNext }: { initialNext?: string }) {
   const router = useRouter();
   const [serverError, setServerError] = useState<string | null>(null);
-  const [successOpen, setSuccessOpen] = useState(false);
-  const [successMessage, setSuccessMessage] = useState<string>('Cuenta creada correctamente.');
-  const nextRoute = safeInternalRoute(initialNext);
+  const [modalStep, setModalStep] = useState<'idle' | 'created' | 'redirecting'>('idle');
 
   const {
     register,
@@ -35,11 +33,24 @@ export function RegisterForm({ initialNext }: { initialNext?: string }) {
 
   const passwordValue = watch('password');
 
+  useEffect(() => {
+    if (modalStep !== 'created') return;
+    const first = window.setTimeout(() => setModalStep('redirecting'), 5000);
+    const second = window.setTimeout(() => {
+      router.push(initialNext ? `/login?next=${encodeURIComponent(initialNext)}` : '/login');
+      router.refresh();
+    }, 10000);
+    return () => {
+      window.clearTimeout(first);
+      window.clearTimeout(second);
+    };
+  }, [modalStep, router, initialNext]);
+
   const onSubmit = async (values: RegisterValues) => {
     setServerError(null);
     const supabase = createClient();
 
-    const { data, error } = await supabase.auth.signUp({
+    const { error } = await supabase.auth.signUp({
       email: values.email,
       password: values.password,
       options: {
@@ -54,28 +65,22 @@ export function RegisterForm({ initialNext }: { initialNext?: string }) {
       return;
     }
 
-    const hasSession = Boolean(data.session);
-    setSuccessMessage(
-      hasSession
-        ? 'Cuenta creada. Te llevaremos a tu área de trabajo.'
-        : 'Cuenta creada. Revisa tu correo antes de iniciar sesión.'
-    );
-    setSuccessOpen(true);
-
-    if (hasSession) {
-      window.setTimeout(() => {
-        router.push(nextRoute);
-        router.refresh();
-      }, 900);
-    }
+    setModalStep('created');
   };
 
   return (
     <>
       <AuthFeedbackModal
-        open={successOpen}
+        open={modalStep === 'created'}
         title="Registro exitoso"
-        message={successMessage}
+        message="Cuenta creada. Revisa tu correo y confirma para continuar."
+        tone="success"
+        icon="mail"
+      />
+      <AuthFeedbackModal
+        open={modalStep === 'redirecting'}
+        title="Siguiente paso"
+        message="Mientras confirmas, te enviamos a la página de inicio de sesión."
         tone="success"
       />
 
@@ -122,6 +127,13 @@ export function RegisterForm({ initialNext }: { initialNext?: string }) {
         <Button className="h-12 w-full rounded-2xl" loading={isSubmitting} type="submit">
           {isSubmitting ? 'Creando cuenta...' : 'Crear cuenta'}
         </Button>
+
+        <div className="text-center text-sm text-slate-500">
+          ¿Ya tienes cuenta?{" "}
+          <Link href={initialNext ? `/login?next=${encodeURIComponent(initialNext)}` : '/login'} className="font-semibold text-emerald-700 hover:text-emerald-800">
+            Iniciar sesión
+          </Link>
+        </div>
       </form>
     </>
   );

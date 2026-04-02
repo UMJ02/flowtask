@@ -1,18 +1,22 @@
-import Link from "next/link";
+import { AuthBrand } from "@/components/auth/auth-brand";
 import { ForgotPasswordForm } from "@/components/auth/forgot-password-form";
 
 export default function ForgotPasswordPage() {
   return (
-    <main className="min-h-screen bg-slate-50 py-16">
-      <div className="container-page max-w-md">
-        <div className="rounded-[28px] bg-white p-8 shadow-soft">
-          <div className="mb-6 space-y-2 text-center">
-            <Link className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500" href="/">
-              FlowTask
-            </Link>
-            <h1 className="text-3xl font-bold text-slate-900">Recuperar contraseña</h1>
-            <p className="text-sm text-slate-600">Te enviaremos un enlace por correo.</p>
+    <main className="relative min-h-screen overflow-hidden bg-[linear-gradient(180deg,#ecfdf5_0%,#f8fafc_38%,#eef5f2_100%)]">
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute left-[-120px] top-[-90px] h-[280px] w-[280px] rounded-full bg-emerald-200/40 blur-3xl" />
+        <div className="absolute bottom-[-120px] right-[-80px] h-[260px] w-[260px] rounded-full bg-emerald-300/35 blur-3xl" />
+      </div>
+
+      <div className="container-page relative flex min-h-screen items-center justify-center py-8">
+        <div className="w-full max-w-[560px] rounded-[34px] border border-white/80 bg-white/88 p-6 shadow-[0_30px_80px_rgba(15,23,42,0.10)] backdrop-blur-xl md:p-8">
+          <AuthBrand />
+          <div className="mb-8 text-center">
+            <h1 className="text-3xl font-bold text-slate-900 md:text-4xl">Recuperar contraseña</h1>
+            <p className="mt-2 text-sm text-slate-600 md:text-base">Te enviaremos un enlace seguro para restablecer tu acceso.</p>
           </div>
+
           <ForgotPasswordForm />
         </div>
       </div>

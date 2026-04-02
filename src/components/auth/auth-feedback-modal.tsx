@@ -1,6 +1,6 @@
 'use client';
 
-import { CheckCircle2, XCircle } from 'lucide-react';
+import { CheckCircle2, XCircle, MailCheck } from 'lucide-react';
 import { cn } from '@/lib/utils/classnames';
 
 export function AuthFeedbackModal({
@@ -8,11 +8,13 @@ export function AuthFeedbackModal({
   title,
   message,
   tone = 'success',
+  icon = 'default',
 }: {
   open: boolean;
   title: string;
   message: string;
   tone?: 'success' | 'error';
+  icon?: 'default' | 'mail';
 }) {
   if (!open) return null;
 
@@ -33,7 +35,7 @@ export function AuthFeedbackModal({
               isSuccess ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'
             )}
           >
-            {isSuccess ? <CheckCircle2 className="h-5 w-5" /> : <XCircle className="h-5 w-5" />}
+            {icon === 'mail' ? <MailCheck className="h-5 w-5" /> : isSuccess ? <CheckCircle2 className="h-5 w-5" /> : <XCircle className="h-5 w-5" />}
           </span>
 
           <div>

@@ -1,5 +1,4 @@
-import Image from "next/image";
-import Link from "next/link";
+import { AuthBrand } from "@/components/auth/auth-brand";
 import { LoginForm } from "@/components/auth/login-form";
 
 export default async function LoginPage({
@@ -19,25 +18,13 @@ export default async function LoginPage({
 
       <div className="container-page relative flex min-h-screen items-center justify-center py-8">
         <div className="w-full max-w-[560px] rounded-[34px] border border-white/80 bg-white/88 p-6 shadow-[0_30px_80px_rgba(15,23,42,0.10)] backdrop-blur-xl md:p-8">
+          <AuthBrand />
           <div className="mb-8 text-center">
-            <div className="mx-auto mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-slate-950 shadow-[0_16px_36px_rgba(15,23,42,0.16)]">
-              <Image src="/icons/icon.png" alt="FlowTask" width={30} height={30} className="h-[30px] w-[30px] object-contain" priority />
-            </div>
-            <Link className="text-sm font-semibold uppercase tracking-[0.22em] text-emerald-700" href="/">
-              FlowTask
-            </Link>
-            <h1 className="mt-3 text-3xl font-bold text-slate-900 md:text-4xl">Iniciar sesión</h1>
+            <h1 className="text-3xl font-bold text-slate-900 md:text-4xl">Iniciar sesión</h1>
             <p className="mt-2 text-sm text-slate-600 md:text-base">Accede a tu tablero personal y proyectos.</p>
           </div>
 
           <LoginForm initialNext={next} />
-
-          <p className="mt-6 text-center text-sm text-slate-500">
-            ¿Aún no tienes cuenta?{" "}
-            <Link href="/register" className="font-semibold text-emerald-700 hover:text-emerald-800">
-              Crear cuenta
-            </Link>
-          </p>
         </div>
       </div>
     </main>
