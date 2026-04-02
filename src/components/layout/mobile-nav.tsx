@@ -4,8 +4,9 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useMemo, useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Menu, X } from 'lucide-react';
+import { LogOut, Menu, X } from 'lucide-react';
 import { appNavLinks } from '@/components/layout/nav-links';
+import { createClient } from '@/lib/supabase/client';
 
 const footerHrefs = new Set([
   '/app/organization',
@@ -23,6 +24,7 @@ export function MobileNav() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
 
   const groups = useMemo(() => {
     return { main: mainNavLinks };
@@ -42,6 +44,13 @@ export function MobileNav() {
     };
   }, [open]);
 
+  const handleLogout = async () => {
+    setLoggingOut(true);
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    window.location.href = '/login';
+  };
+
   const panel = (
     <div className="fixed inset-0 z-[140] md:hidden">
       <button
@@ -50,7 +59,7 @@ export function MobileNav() {
         type="button"
         aria-label="Cerrar menú"
       />
-      <div className="absolute left-0 top-0 flex h-full w-[88%] max-w-sm flex-col overflow-hidden bg-[linear-gradient(180deg,#020617_0%,#0f172a_100%)] p-4 text-white shadow-[0_24px_60px_rgba(15,23,42,0.35)]">
+      <div className="absolute left-0 top-0 mt-2 flex w-[88%] max-w-sm flex-col overflow-hidden rounded-r-[32px] bg-[linear-gradient(180deg,#020617_0%,#0f172a_100%)] p-4 text-white shadow-[0_24px_60px_rgba(15,23,42,0.35)] max-h-[calc(100vh-1rem)]">
         <div className="mb-4 flex items-center justify-between">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-emerald-300">FlowTask</p>
@@ -66,7 +75,7 @@ export function MobileNav() {
           </button>
         </div>
 
-        <div className="flex-1 space-y-5 overflow-y-auto pr-1">
+        <div className="space-y-4 overflow-y-auto pr-1">
           <nav className="space-y-2 rounded-[28px] border border-white/10 bg-white/[0.03] p-2">
             {groups.main.map((link) => {
               const Icon = link.icon;
@@ -91,6 +100,25 @@ export function MobileNav() {
               );
             })}
           </nav>
+
+          <div className="rounded-[28px] border border-white/10 bg-white/[0.03] p-2">
+            <button
+              type="button"
+              onClick={handleLogout}
+              disabled={loggingOut}
+              className="flex w-full items-center gap-3 rounded-3xl border border-white/10 bg-white/5 px-4 py-3 text-left transition hover:bg-white/8 disabled:opacity-60"
+            >
+              <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-white/10 text-rose-300">
+                <LogOut className="h-5 w-5" />
+              </span>
+              <div className="min-w-0">
+                <p className="truncate text-sm font-semibold text-white">
+                  {loggingOut ? 'Cerrando sesión...' : 'Cerrar sesión'}
+                </p>
+                <p className="truncate text-xs text-slate-300">Salir del workspace</p>
+              </div>
+            </button>
+          </div>
         </div>
       </div>
     </div>
