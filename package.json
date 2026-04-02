@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "54.1.0-observability-support-metrics",
+  "version": "54.2.0-performance-optimization",
   "private": true,
   "scripts": {
     "dev": "node node_modules/next/dist/bin/next dev",
@@ -99,7 +99,10 @@
     "client:final": "npm run qa:full-client && npm run ux:review && npm run release:final",
     "verify:v54.1": "node scripts/verify-v54.1.mjs",
     "ops:check": "node scripts/ops-check.mjs",
-    "release:ops:v54.1": "npm run verify:v54.1 && npm run ops:check"
+    "release:ops:v54.1": "npm run verify:v54.1 && npm run ops:check",
+    "verify:v54.2": "node scripts/verify-v54.2.mjs",
+    "performance:check": "node scripts/performance-check.mjs",
+    "release:performance:v54.2": "npm run verify:v54.2 && npm run performance:check"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

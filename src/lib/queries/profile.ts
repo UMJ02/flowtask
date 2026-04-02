@@ -1,10 +1,7 @@
-import { createClient } from '@/lib/supabase/server';
+import { getAuthenticatedServerContext } from '@/lib/performance/server-cache';
 
 export async function getCurrentProfile() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getAuthenticatedServerContext();
 
   if (!user) return null;
 

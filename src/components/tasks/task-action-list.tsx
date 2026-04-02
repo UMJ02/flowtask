@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { memo, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { CheckCircle2, Eye, Pencil, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -28,12 +28,16 @@ function formatDeadline(value?: string | null) {
   return `${day}/${month}/${year}`;
 }
 
-export function TaskActionList({ tasks, currentQuery = '' }: { tasks: TaskRow[]; currentQuery?: string }) {
+function TaskActionListComponent({ tasks, currentQuery = '' }: { tasks: TaskRow[]; currentQuery?: string }) {
   const router = useRouter();
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
   const [items, setItems] = useState(tasks);
   const [closingId, setClosingId] = useState<string | null>(null);
   const [showCompleted, setShowCompleted] = useState(false);
+
+  useEffect(() => {
+    setItems(tasks);
+  }, [tasks]);
 
   const pendingItems = useMemo(
     () => items.filter((item) => item.status !== 'concluido'),
@@ -207,3 +211,6 @@ export function TaskActionList({ tasks, currentQuery = '' }: { tasks: TaskRow[];
     </div>
   );
 }
+
+
+export const TaskActionList = memo(TaskActionListComponent);

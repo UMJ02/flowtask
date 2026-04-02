@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { memo, useEffect, useMemo, useState } from "react";
 
 import Link from "next/link";
 import { AlertCircle, CheckCircle2, ChevronDown, ChevronUp, Clock3, FolderOpen, GripVertical, Loader2 } from "lucide-react";
@@ -196,8 +196,8 @@ async function persistBoardLayoutConfig(
   await supabase.from("boards").update({ layout_config: nextLayoutConfig }).eq("id", board.id);
 }
 
-export function TaskKanbanBoard({ tasks, showHeader = true, currentQuery }: { tasks: TaskItem[]; showHeader?: boolean; currentQuery?: string }) {
-  const supabase = createClient();
+function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery }: { tasks: TaskItem[]; showHeader?: boolean; currentQuery?: string }) {
+  const supabase = useMemo(() => createClient(), []);
   const serverSignature = useMemo(() => tasks.map((task) => `${task.id}:${task.status}:${task.priority ?? ''}:${task.due_date ?? ''}:${task.title}`).join('|'), [tasks]);
   const [hydrated, setHydrated] = useState(false);
   const [statusOverrides, setStatusOverrides] = useState<Record<string, string>>({});
@@ -534,3 +534,6 @@ export function TaskKanbanBoard({ tasks, showHeader = true, currentQuery }: { ta
     </div>
   );
 }
+
+
+export const TaskKanbanBoard = memo(TaskKanbanBoardComponent);

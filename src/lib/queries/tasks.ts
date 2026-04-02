@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { getWorkspaceContext, applyWorkspaceScope } from "@/lib/queries/workspace";
 import { filterRowsByClientAccess, getClientAccessSummary, hasClientAccess } from "@/lib/security/client-access";
 import type { TaskSummary } from "@/types/task";
@@ -10,6 +11,19 @@ export interface TaskFiltersInput {
   due?: string;
 }
 
+
+const getDepartmentIdByCodeCached = cache(async (departmentCode: string) => {
+  const normalized = departmentCode.trim();
+  if (!normalized) return null;
+  const { supabase } = await getWorkspaceContext();
+  const { data } = await supabase.from("departments").select("id").eq("code", normalized).maybeSingle();
+  return (data?.id as number | null | undefined) ?? null;
+});
+
+const getClientAccessSummaryCached = cache(async (userId: string, organizationId?: string | null) => {
+  const { supabase } = await getWorkspaceContext();
+  return getClientAccessSummary(supabase as any, userId, organizationId);
+});
 function normalizeTaskRow(row: any): TaskSummary {
   const department = Array.isArray(row.departments) ? row.departments[0] : row.departments;
   const dueDate = (row.due_date as string | null | undefined) ?? null;
@@ -66,8 +80,8 @@ export async function getTasks(filters: TaskFiltersInput = {}): Promise<TaskSumm
   if (filters.status) query = query.eq("status", filters.status);
   if (filters.priority) query = query.eq("priority", filters.priority);
   if (filters.department) {
-    const { data: dept } = await supabase.from("departments").select("id").eq("code", filters.department).maybeSingle();
-    if (dept?.id) query = query.eq("department_id", dept.id);
+    const departmentId = await getDepartmentIdByCodeCached(filters.department);
+    if (departmentId) query = query.eq("department_id", departmentId);
   }
 
   const today = new Date().toISOString().slice(0, 10);
@@ -82,7 +96,7 @@ export async function getTasks(filters: TaskFiltersInput = {}): Promise<TaskSumm
     return [];
   }
 
-  const access = await getClientAccessSummary(supabase as any, user.id, activeOrganizationId);
+  const access = await getClientAccessSummaryCached(user.id, activeOrganizationId);
   return filterRowsByClientAccess((data ?? []) as any[], access, "view").map(normalizeTaskRow);
 }
 
@@ -122,7 +136,7 @@ export async function getTaskById(taskId: string) {
   const { data, error } = await query.single();
 
   if (error) return null;
-  const access = await getClientAccessSummary(supabase as any, user.id, activeOrganizationId);
+  const access = await getClientAccessSummaryCached(user.id, activeOrganizationId);
   return hasClientAccess(access, (data as any)?.client_id ?? null, "view") ? data : null;
 }
 

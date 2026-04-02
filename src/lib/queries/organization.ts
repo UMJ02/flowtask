@@ -1,12 +1,9 @@
 import { format } from "date-fns";
-import { createClient } from "@/lib/supabase/server";
+import { getAuthenticatedServerContext, getServerClientCached } from "@/lib/performance/server-cache";
 import { deriveOrganizationAccess } from "@/lib/security/organization-access";
 
 export async function getOrganizationContext() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getAuthenticatedServerContext();
 
   if (!user) return null;
 
@@ -62,7 +59,7 @@ export async function getOrganizationContext() {
 
 export async function getOrganizationInvites(organizationId?: string | null, canManageInvites = false) {
   if (!organizationId || !canManageInvites) return [];
-  const supabase = await createClient();
+  const supabase = await getServerClientCached();
   const { data } = await supabase
     .from("organization_invites")
     .select("id,email,role,status,created_at")
@@ -81,7 +78,7 @@ export async function getOrganizationInvites(organizationId?: string | null, can
 
 export async function getOrganizationMetrics(organizationId?: string | null) {
   if (!organizationId) return null;
-  const supabase = await createClient();
+  const supabase = await getServerClientCached();
   const [members, clients, activeProjects, openTasks, permissions] = await Promise.all([
     supabase.from("organization_members").select("role", { count: "exact" }).eq("organization_id", organizationId),
     supabase.from("clients").select("id", { count: "exact", head: true }).eq("organization_id", organizationId),
@@ -124,7 +121,7 @@ export async function getOrganizationRolesAndPermissions(organizationId?: string
     };
   }
 
-  const supabase = await createClient();
+  const supabase = await getServerClientCached();
   const [roleTemplatesRes, rolePermissionsRes, permissionDefsRes, membersRes] = await Promise.all([
     supabase
       .from("organization_role_templates")

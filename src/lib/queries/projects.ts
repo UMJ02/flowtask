@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { getWorkspaceContext, applyWorkspaceScope } from "@/lib/queries/workspace";
 import { filterRowsByClientAccess, getClientAccessSummary, hasClientAccess } from "@/lib/security/client-access";
 import type { ProjectSummary } from "@/types/project";
@@ -10,6 +11,19 @@ export interface ProjectFiltersInput {
   client?: string;
 }
 
+
+const getDepartmentIdByCodeCached = cache(async (departmentCode: string) => {
+  const normalized = departmentCode.trim();
+  if (!normalized) return null;
+  const { supabase } = await getWorkspaceContext();
+  const { data } = await supabase.from("departments").select("id").eq("code", normalized).maybeSingle();
+  return (data?.id as number | null | undefined) ?? null;
+});
+
+const getClientAccessSummaryCached = cache(async (userId: string, organizationId?: string | null) => {
+  const { supabase } = await getWorkspaceContext();
+  return getClientAccessSummary(supabase as any, userId, organizationId);
+});
 function normalizeProjectRow(row: any): ProjectSummary {
   const department = Array.isArray(row.departments) ? row.departments[0] : row.departments;
   return {
@@ -63,8 +77,8 @@ export async function getProjects(filters: ProjectFiltersInput = {}): Promise<Pr
   if (filters.mode === "collaborative") query = query.eq("is_collaborative", true);
   if (filters.client) query = query.ilike("client_name", `%${filters.client}%`);
   if (filters.department) {
-    const { data: dept } = await supabase.from("departments").select("id").eq("code", filters.department).maybeSingle();
-    if (dept?.id) query = query.eq("department_id", dept.id);
+    const departmentId = await getDepartmentIdByCodeCached(filters.department);
+    if (departmentId) query = query.eq("department_id", departmentId);
   }
 
   const { data, error } = await query;
@@ -73,14 +87,14 @@ export async function getProjects(filters: ProjectFiltersInput = {}): Promise<Pr
     return [];
   }
 
-  const access = await getClientAccessSummary(supabase as any, user.id, activeOrganizationId);
+  const access = await getClientAccessSummaryCached(user.id, activeOrganizationId);
   return filterRowsByClientAccess((data ?? []) as any[], access, "view").map(normalizeProjectRow);
 }
 
 export async function getProjectClientMetrics(projectId: string) {
   const { supabase, user, activeOrganizationId } = await getWorkspaceContext();
   if (!user) return [];
-  const access = await getClientAccessSummary(supabase as any, user.id, activeOrganizationId);
+  const access = await getClientAccessSummaryCached(user.id, activeOrganizationId);
   const { data, error } = await supabase
     .from("tasks")
     .select("client_name,status,client_id")
@@ -138,14 +152,14 @@ export async function getProjectById(projectId: string) {
   const { data, error } = await query.single();
 
   if (error) return null;
-  const access = await getClientAccessSummary(supabase as any, user.id, activeOrganizationId);
+  const access = await getClientAccessSummaryCached(user.id, activeOrganizationId);
   return hasClientAccess(access, (data as any)?.client_id ?? null, "view") ? data : null;
 }
 
 export async function getProjectTasks(projectId: string) {
   const { supabase, user, activeOrganizationId } = await getWorkspaceContext();
   if (!user) return [];
-  const access = await getClientAccessSummary(supabase as any, user.id, activeOrganizationId);
+  const access = await getClientAccessSummaryCached(user.id, activeOrganizationId);
   const { data, error } = await supabase
     .from("tasks")
     .select("id,title,status,client_name,due_date,priority,completed_at,client_id")

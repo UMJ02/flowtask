@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState, type ComponentType } from 'react';
+import { memo, useEffect, useMemo, useState, type ComponentType } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
@@ -231,7 +231,7 @@ function buildBoardSnapshot(args: {
   };
 }
 
-function CalendarPanel({
+const CalendarPanel = memo(function CalendarPanel({
   mode,
   anchorDate,
   onModeChange,
@@ -373,10 +373,11 @@ function CalendarPanel({
       </div>
     </div>
   );
-}
+});
 
-export function InteractiveDashboardBoard() {
+function InteractiveDashboardBoardComponent() {
   const router = useRouter();
+  const supabase = useMemo(() => createClient(), []);
   const [hydrated, setHydrated] = useState(false);
   const [asideOpen, setAsideOpen] = useState(true);
   const [activePanels, setActivePanels] = useState<PanelKey[]>(['kanban', 'task', 'projects', 'calendar']);
@@ -524,8 +525,6 @@ export function InteractiveDashboardBoard() {
     if (!hydrated) return;
 
     let cancelled = false;
-    const supabase = createClient();
-
     async function loadBoardData() {
       setLoadingData(true);
       setDataError(null);
@@ -1080,3 +1079,6 @@ export function InteractiveDashboardBoard() {
     </div>
   );
 }
+
+
+export const InteractiveDashboardBoard = memo(InteractiveDashboardBoardComponent);

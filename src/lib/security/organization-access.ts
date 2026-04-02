@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { getAuthenticatedServerContext } from "@/lib/performance/server-cache";
 
 export const MANAGE_ORG_ROLES = ["admin_global", "manager"] as const;
 export const ADMIN_ONLY_ROLES = ["admin_global"] as const;
@@ -31,10 +31,7 @@ export function deriveOrganizationAccess(role: OrganizationRole | null): Organiz
 }
 
 export async function getActiveMembership() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getAuthenticatedServerContext();
 
   if (!user) {
     return { supabase, user: null, membership: null };
