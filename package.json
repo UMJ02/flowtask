@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "53.5.0-release-candidate",
+  "version": "54.0.0-client-final",
   "private": true,
   "scripts": {
     "dev": "node node_modules/next/dist/bin/next dev",
@@ -93,7 +93,10 @@
     "client:release": "npm run final:bundle && npm run verify:v53.4",
     "verify:v53.5": "node scripts/verify-v53.5.mjs",
     "release:candidate": "npm run verify:v53.5 && node scripts/release-candidate-signoff.mjs",
-    "client:release:candidate": "npm run qa:full-client && npm run ux:review && npm run release:candidate"
+    "client:release:candidate": "npm run qa:full-client && npm run ux:review && npm run release:candidate",
+    "verify:v54.0": "node scripts/verify-v54.0.mjs",
+    "release:final": "npm run verify:v54.0 && node scripts/client-final-signoff.mjs",
+    "client:final": "npm run qa:full-client && npm run ux:review && npm run release:final"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

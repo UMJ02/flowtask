@@ -6,7 +6,7 @@ export function AppFooter() {
       <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
         <div className="flex flex-col">
           <span className="font-medium text-slate-700">FlowTask · Workspace SaaS</span>
-          <span>Cliente-ready · Supabase + Vercel · Entrega controlada</span>
+          <span>Cliente final · Producción controlada · Supabase + Vercel</span>
         </div>
         <div className="flex flex-wrap items-center gap-2 text-xs">
           <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 font-semibold uppercase tracking-[0.14em] text-emerald-700">
