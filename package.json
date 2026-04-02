@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "43.0.0-home-text-white-glow-swap",
+  "version": "44.0.0-home-mobile-glow-readable",
   "private": true,
   "scripts": {
     "dev": "node node_modules/next/dist/bin/next dev",
@@ -77,7 +77,8 @@
     "verify:v40": "node scripts/verify-v40.mjs",
     "verify:v41": "node scripts/verify-v41.mjs",
     "verify:v42": "node scripts/verify-v42.mjs",
-    "verify:v43": "node scripts/verify-v43.mjs"
+    "verify:v43": "node scripts/verify-v43.mjs",
+    "verify:v44": "node scripts/verify-v44.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

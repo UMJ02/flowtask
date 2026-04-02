@@ -4,9 +4,9 @@ import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils/classnames';
 
 const ITEMS = [
-  { label: 'Hoy', value: '3 tareas por vencer', tone: 'border-emerald-200 bg-emerald-50/72 glow-emerald text-glow-active' },
-  { label: 'Proyecto colaborativo', value: 'Lanzamiento campaña abril', tone: 'border-sky-200 bg-sky-50/72 glow-sky text-glow-active' },
-  { label: 'Seguimiento', value: 'Comentarios y cambios con fecha automática', tone: 'border-violet-200 bg-violet-50/72 glow-violet text-glow-active' },
+  { label: 'Hoy', value: '3 tareas por vencer', tone: 'border-emerald-200 bg-emerald-500/90 lg:bg-emerald-50/72 glow-emerald text-glow-active' },
+  { label: 'Proyecto colaborativo', value: 'Lanzamiento campaña abril', tone: 'border-sky-200 bg-sky-500/90 lg:bg-sky-50/72 glow-sky text-glow-active' },
+  { label: 'Seguimiento', value: 'Comentarios y cambios con fecha automática', tone: 'border-violet-200 bg-violet-500/90 lg:bg-violet-50/72 glow-violet text-glow-active' },
 ] as const;
 
 export function HomeShowcaseCard() {
