@@ -35,10 +35,12 @@ export function EntityAttachments({
   entityType,
   entityId,
   attachments,
+  canManage = true,
 }: {
   entityType: "task" | "project";
   entityId: string;
   attachments: AttachmentRow[];
+  canManage?: boolean;
 }) {
   const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
@@ -48,7 +50,7 @@ export function EntityAttachments({
 
   const handleUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (!file) return;
+    if (!file || !canManage) return;
 
     setError(null);
     setUploading(true);
@@ -113,6 +115,7 @@ export function EntityAttachments({
   };
 
   const handleDelete = async (attachment: AttachmentRow) => {
+    if (!canManage) return;
     setError(null);
     setDeletingId(attachment.id);
 
@@ -154,13 +157,14 @@ export function EntityAttachments({
             Sube archivos de respaldo para esta {entityType === "task" ? "tarea" : "proyecto"}. El bucket <span className="font-medium text-slate-700">attachments</span> debe existir y respetar las políticas seguras del workspace.
           </p>
         </div>
-        <label className="inline-flex cursor-pointer items-center gap-2 rounded-2xl bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800">
+        <label className={`inline-flex items-center gap-2 rounded-2xl px-4 py-2 text-sm font-medium ${canManage ? "cursor-pointer bg-slate-900 text-white hover:bg-slate-800" : "cursor-not-allowed bg-slate-200 text-slate-500"}`}>
           <Upload className="h-4 w-4" />
           {uploading ? "Subiendo..." : "Subir archivo"}
-          <input type="file" className="hidden" onChange={handleUpload} disabled={uploading} />
+          <input type="file" className="hidden" onChange={handleUpload} disabled={!canManage || uploading} />
         </label>
       </div>
 
+      {!canManage ? <p className="mt-3 text-sm text-slate-500">Tu acceso actual permite ver adjuntos existentes, pero no subir ni eliminar archivos.</p> : null}
       {error ? <p className="mt-3 text-sm text-red-600">{error}</p> : null}
 
       <div className="mt-4 space-y-3">
@@ -187,7 +191,7 @@ export function EntityAttachments({
                 type="button"
                 variant="secondary"
                 onClick={() => handleDelete(attachment)}
-                disabled={deletingId === attachment.id}
+                disabled={!canManage || deletingId === attachment.id}
               >
                 <Trash2 className="mr-2 h-4 w-4" />
                 {deletingId === attachment.id ? "Quitando..." : "Eliminar"}

@@ -2,7 +2,7 @@ import { CommentComposer } from "@/components/comments/comment-composer";
 import { Card } from "@/components/ui/card";
 import { formatDate } from "@/lib/utils/dates";
 
-export function TaskComments({ taskId, comments }: { taskId: string; comments: any[] }) {
+export function TaskComments({ taskId, comments, canComment = true }: { taskId: string; comments: any[]; canComment?: boolean }) {
   return (
     <Card>
       <div className="flex items-center justify-between gap-3">
@@ -27,7 +27,7 @@ export function TaskComments({ taskId, comments }: { taskId: string; comments: a
       </div>
 
       <div className="mt-4">
-        <CommentComposer taskId={taskId} />
+        <CommentComposer taskId={taskId} canComment={canComment} />
       </div>
     </Card>
   );

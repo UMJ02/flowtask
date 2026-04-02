@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "53.3.0-production-release-hardening",
+  "version": "53.4.0-permissions-qa-ux-polish",
   "private": true,
   "scripts": {
     "dev": "node node_modules/next/dist/bin/next dev",
@@ -88,7 +88,9 @@
     "verify:v51": "node scripts/verify-v51.mjs",
     "verify:v52": "node scripts/verify-v52.mjs",
     "verify:v53.3": "node scripts/verify-v53.3.mjs",
-    "client:release": "npm run final:bundle && npm run verify:v53.3"
+    "verify:v53.4": "node scripts/verify-v53.4.mjs",
+    "client:qa:v53.4": "npm run qa:full-client && npm run ux:review && npm run verify:v53.4",
+    "client:release": "npm run final:bundle && npm run verify:v53.4"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

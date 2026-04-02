@@ -16,9 +16,10 @@ interface ProjectStatusFormProps {
   dueDate: string | null;
   shareEnabled: boolean;
   shareToken: string | null;
+  canEdit?: boolean;
 }
 
-export function ProjectStatusForm({ projectId, status, dueDate, shareEnabled, shareToken }: ProjectStatusFormProps) {
+export function ProjectStatusForm({ projectId, status, dueDate, shareEnabled, shareToken, canEdit = true }: ProjectStatusFormProps) {
   const router = useRouter();
   const [currentStatus, setCurrentStatus] = useState(status);
   const [currentDate, setCurrentDate] = useState(dueDate?.slice(0, 10) ?? "");
@@ -29,6 +30,7 @@ export function ProjectStatusForm({ projectId, status, dueDate, shareEnabled, sh
 
   const handleSave = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (!canEdit) return;
     setError(null);
     setMessage(null);
     setIsSaving(true);
@@ -82,22 +84,23 @@ export function ProjectStatusForm({ projectId, status, dueDate, shareEnabled, sh
         <p className="text-xs text-slate-500">Controla estado, deadline y visibilidad pública.</p>
       </div>
       <div className="grid gap-3 md:grid-cols-2">
-        <Select value={currentStatus} onChange={(event) => setCurrentStatus(event.target.value)}>
+        <Select value={currentStatus} onChange={(event) => setCurrentStatus(event.target.value)} disabled={!canEdit || isSaving}>
           {PROJECT_STATUSES.map((item) => (
             <option key={item.value} value={item.value}>
               {item.label}
             </option>
           ))}
         </Select>
-        <Input type="date" value={currentDate} onChange={(event) => setCurrentDate(event.target.value)} />
+        <Input type="date" value={currentDate} onChange={(event) => setCurrentDate(event.target.value)} disabled={!canEdit || isSaving} />
       </div>
       <label className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700">
-        <input type="checkbox" checked={currentShare} onChange={(event) => setCurrentShare(event.target.checked)} />
+        <input type="checkbox" checked={currentShare} onChange={(event) => setCurrentShare(event.target.checked)} disabled={!canEdit || isSaving} />
         Compartir proyecto por link
       </label>
+      {!canEdit ? <p className="text-sm text-slate-500">Tu acceso actual permite consultar el proyecto, pero no modificar estado, fecha o enlace compartido.</p> : null}
       {error ? <p className="text-sm text-red-600">{error}</p> : null}
       {message ? <p className="text-sm text-emerald-600">{message}</p> : null}
-      <Button disabled={isSaving} type="submit">
+      <Button disabled={!canEdit || isSaving} type="submit">
         {isSaving ? "Guardando..." : "Guardar cambios"}
       </Button>
     </form>

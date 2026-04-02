@@ -1,0 +1,5 @@
+-- FlowTask V53.4
+-- Permissions QA + UX Polish
+-- Esta versión no introduce cambios estructurales de base de datos.
+-- Se reserva este archivo para mantener continuidad de release y trazabilidad.
+-- Los cambios de V53.4 viven principalmente en frontend, guardrails visibles y QA operativo.

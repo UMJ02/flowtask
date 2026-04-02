@@ -13,6 +13,7 @@ export function OrganizationInvitesPanel({ organizationId, invites, canManageInv
   const [revokingId, setRevokingId] = useState<string | null>(null);
 
   async function revokeInvite(inviteId: string) {
+    if (!canManageInvites) return;
     setRevokingId(inviteId);
     const previous = items;
     const target = items.find((item) => item.id === inviteId) ?? null;
@@ -31,6 +32,7 @@ export function OrganizationInvitesPanel({ organizationId, invites, canManageInv
           <p className="mt-2 text-sm text-slate-600">Controla correos invitados y el rol que recibirán al entrar en la organización.</p>
         </div>
       </div>
+      {!canManageInvites ? <p className="mt-4 text-sm text-slate-500">Tu acceso actual solo permite revisar la organización. La revocación de invitaciones está bloqueada.</p> : null}
       <div className="mt-4 overflow-x-auto">
         <table className="min-w-full text-sm">
           <thead className="text-left text-slate-500">

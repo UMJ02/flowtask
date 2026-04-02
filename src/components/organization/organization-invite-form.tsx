@@ -12,7 +12,7 @@ const ROLE_OPTIONS = [
   { value: "viewer", label: "Viewer" },
 ] as const;
 
-export function OrganizationInviteForm({ organizationId, canInviteManagers = false }: { organizationId?: string | null; canInviteManagers?: boolean; }) {
+export function OrganizationInviteForm({ organizationId, canInviteManagers = false, canManageInvites = true }: { organizationId?: string | null; canInviteManagers?: boolean; canManageInvites?: boolean; }) {
   const supabase = useMemo(() => createClient(), []);
   const availableRoles = useMemo(() => ROLE_OPTIONS.filter((option) => canInviteManagers || option.value !== "manager"), [canInviteManagers]);
   const [email, setEmail] = useState("");
@@ -22,7 +22,7 @@ export function OrganizationInviteForm({ organizationId, canInviteManagers = fal
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!organizationId || !email.trim()) return;
+    if (!organizationId || !email.trim() || !canManageInvites) return;
     setLoading(true);
     setStatus(null);
     const normalizedEmail = email.trim().toLowerCase();
@@ -36,9 +36,10 @@ export function OrganizationInviteForm({ organizationId, canInviteManagers = fal
 
   return (
     <form onSubmit={onSubmit} className="grid gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 md:grid-cols-[1.2fr_0.7fr_auto] md:items-end">
-      <div><p className="mb-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Invitar miembro</p><Input type="email" placeholder="correo@empresa.com" value={email} onChange={(event) => setEmail(event.target.value)} disabled={!organizationId || loading} /></div>
-      <div><p className="mb-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Rol</p><Select value={role} onChange={(event) => setRole(event.target.value)} disabled={!organizationId || loading}>{availableRoles.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</Select></div>
-      <Button type="submit" loading={loading} className="h-11">{loading ? "Enviando..." : "Invitar"}</Button>
+      <div><p className="mb-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Invitar miembro</p><Input type="email" placeholder="correo@empresa.com" value={email} onChange={(event) => setEmail(event.target.value)} disabled={!organizationId || !canManageInvites || loading} /></div>
+      <div><p className="mb-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Rol</p><Select value={role} onChange={(event) => setRole(event.target.value)} disabled={!organizationId || !canManageInvites || loading}>{availableRoles.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</Select></div>
+      <Button type="submit" loading={loading} className="h-11" disabled={!organizationId || !canManageInvites}>{loading ? "Enviando..." : "Invitar"}</Button>
+      {!canManageInvites ? <p className="md:col-span-3 text-sm text-slate-500">Tu rol actual no permite enviar nuevas invitaciones en esta organización.</p> : null}
       {status ? <p className="md:col-span-3 text-sm text-slate-600">{status}</p> : null}
     </form>
   );

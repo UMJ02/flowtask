@@ -11,9 +11,10 @@ import { createClientNotification } from "@/lib/notifications/create-client-noti
 interface CommentComposerProps {
   taskId?: string;
   projectId?: string;
+  canComment?: boolean;
 }
 
-export function CommentComposer({ taskId, projectId }: CommentComposerProps) {
+export function CommentComposer({ taskId, projectId, canComment = true }: CommentComposerProps) {
   const router = useRouter();
   const [content, setContent] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -21,6 +22,7 @@ export function CommentComposer({ taskId, projectId }: CommentComposerProps) {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (!canComment) return;
     setError(null);
     setIsSaving(true);
 
@@ -81,14 +83,15 @@ export function CommentComposer({ taskId, projectId }: CommentComposerProps) {
         <p className="text-sm font-medium text-slate-800">Agregar comentario</p>
         <p className="text-xs text-slate-500">Se guardará con fecha automática para trazabilidad.</p>
       </div>
-      <Textarea
+      <Textarea disabled={!canComment || isSaving}
         value={content}
         onChange={(event) => setContent(event.target.value)}
         placeholder="Escribe un avance, bloqueo o comentario de seguimiento"
         required
       />
+      {!canComment ? <p className="text-sm text-slate-500">Tu acceso actual es solo de lectura en comentarios para este elemento.</p> : null}
       {error ? <p className="text-sm text-red-600">{error}</p> : null}
-      <Button disabled={isSaving || !content.trim()} type="submit">
+      <Button disabled={!canComment || isSaving || !content.trim()} type="submit">
         {isSaving ? "Guardando..." : "Guardar comentario"}
       </Button>
     </form>

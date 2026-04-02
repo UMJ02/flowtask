@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 
-export function ProjectInviteForm({ projectId }: { projectId: string }) {
+export function ProjectInviteForm({ projectId, canManage = true }: { projectId: string; canManage?: boolean }) {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("editor");
@@ -18,6 +18,7 @@ export function ProjectInviteForm({ projectId }: { projectId: string }) {
 
   const handleInvite = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (!canManage) return;
     setMessage(null);
     setError(null);
     setIsSaving(true);
@@ -67,15 +68,16 @@ export function ProjectInviteForm({ projectId }: { projectId: string }) {
         <p className="text-sm font-medium text-slate-800">Invitar colaborador</p>
         <p className="text-xs text-slate-500">El tablero principal sigue siendo privado. Solo verá este proyecto.</p>
       </div>
-      <Input value={email} onChange={(event) => setEmail(event.target.value)} placeholder="correo@empresa.com" required />
-      <Select value={role} onChange={(event) => setRole(event.target.value)}>
+      <Input value={email} onChange={(event) => setEmail(event.target.value)} placeholder="correo@empresa.com" required disabled={!canManage || isSaving} />
+      <Select value={role} onChange={(event) => setRole(event.target.value)} disabled={!canManage || isSaving}>
         <option value="viewer">Viewer</option>
         <option value="editor">Editor</option>
         <option value="owner">Owner</option>
       </Select>
+      {!canManage ? <p className="text-sm text-slate-500">Tu acceso actual no permite invitar colaboradores a este proyecto.</p> : null}
       {error ? <p className="text-sm text-red-600">{error}</p> : null}
       {message ? <p className="text-sm text-emerald-600">{message}</p> : null}
-      <Button disabled={isSaving} type="submit">
+      <Button disabled={!canManage || isSaving} type="submit">
         {isSaving ? "Agregando..." : "Agregar al proyecto"}
       </Button>
     </form>

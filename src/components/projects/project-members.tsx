@@ -14,13 +14,14 @@ const ROLE_OPTIONS = [
   { value: "viewer", label: "Viewer" },
 ] as const;
 
-export function ProjectMembers({ projectId, members }: { projectId: string; members: any[] }) {
+export function ProjectMembers({ projectId, members, canManage = true }: { projectId: string; members: any[]; canManage?: boolean }) {
   const router = useRouter();
   const [removingId, setRemovingId] = useState<string | null>(null);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const handleRemove = async (memberId: string) => {
+    if (!canManage) return;
     setError(null);
     setRemovingId(memberId);
     const supabase = createClient();
@@ -39,6 +40,7 @@ export function ProjectMembers({ projectId, members }: { projectId: string; memb
   };
 
   const handleRoleChange = async (memberId: string, role: string) => {
+    if (!canManage) return;
     setError(null);
     setUpdatingId(memberId);
     const supabase = createClient();
@@ -76,7 +78,7 @@ export function ProjectMembers({ projectId, members }: { projectId: string; memb
                   <select
                     className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm"
                     defaultValue={member.role}
-                    disabled={isOwner || updatingId === member.id}
+                    disabled={!canManage || isOwner || updatingId === member.id}
                     onChange={(event) => handleRoleChange(member.id, event.target.value)}
                   >
                     {isOwner ? <option value="owner">Owner</option> : null}
@@ -85,7 +87,7 @@ export function ProjectMembers({ projectId, members }: { projectId: string; memb
                     ))}
                   </select>
                   {!isOwner ? (
-                    <Button type="button" variant="secondary" onClick={() => handleRemove(member.id)} disabled={removingId === member.id || updatingId === member.id}>
+                    <Button type="button" variant="secondary" onClick={() => handleRemove(member.id)} disabled={!canManage || removingId === member.id || updatingId === member.id}>
                       {removingId === member.id ? "Quitando..." : "Quitar"}
                     </Button>
                   ) : null}
@@ -95,9 +97,10 @@ export function ProjectMembers({ projectId, members }: { projectId: string; memb
           );
         }) : <p className="text-sm text-slate-500">Todavía no hay colaboradores agregados.</p>}
       </div>
+      {!canManage ? <p className="mt-3 text-sm text-slate-500">Tu acceso actual es de seguimiento. La gestión de miembros está bloqueada en esta vista.</p> : null}
       {error ? <p className="mt-3 text-sm text-red-600">{error}</p> : null}
       <div className="mt-4">
-        <ProjectInviteForm projectId={projectId} />
+        <ProjectInviteForm projectId={projectId} canManage={canManage} />
       </div>
     </Card>
   );

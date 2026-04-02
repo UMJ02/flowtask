@@ -16,9 +16,10 @@ interface TaskStatusFormProps {
   dueDate: string | null;
   shareEnabled: boolean;
   shareToken: string | null;
+  canEdit?: boolean;
 }
 
-export function TaskStatusForm({ taskId, status, dueDate, shareEnabled, shareToken }: TaskStatusFormProps) {
+export function TaskStatusForm({ taskId, status, dueDate, shareEnabled, shareToken, canEdit = true }: TaskStatusFormProps) {
   const router = useRouter();
   const [currentStatus, setCurrentStatus] = useState(status);
   const [currentDate, setCurrentDate] = useState(dueDate?.slice(0, 10) ?? "");
@@ -30,6 +31,7 @@ export function TaskStatusForm({ taskId, status, dueDate, shareEnabled, shareTok
 
   const handleSave = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (!canEdit) return;
     setError(null);
     setMessage("Aplicando cambios…");
     setIsSaving(true);
@@ -86,22 +88,23 @@ export function TaskStatusForm({ taskId, status, dueDate, shareEnabled, shareTok
         <p className="text-xs text-slate-500">Cambia estado, deadline y visibilidad compartida.</p>
       </div>
       <div className="grid gap-3 md:grid-cols-2">
-        <Select value={currentStatus} onChange={(event) => setCurrentStatus(event.target.value)}>
+        <Select value={currentStatus} onChange={(event) => setCurrentStatus(event.target.value)} disabled={!canEdit || isBusy}>
           {TASK_STATUSES.map((item) => (
             <option key={item.value} value={item.value}>
               {item.label}
             </option>
           ))}
         </Select>
-        <Input type="date" value={currentDate} onChange={(event) => setCurrentDate(event.target.value)} />
+        <Input type="date" value={currentDate} onChange={(event) => setCurrentDate(event.target.value)} disabled={!canEdit || isBusy} />
       </div>
       <label className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700">
-        <input type="checkbox" checked={currentShare} onChange={(event) => setCurrentShare(event.target.checked)} />
+        <input type="checkbox" checked={currentShare} onChange={(event) => setCurrentShare(event.target.checked)} disabled={!canEdit || isBusy} />
         Compartir tarea por link
       </label>
+      {!canEdit ? <p className="text-sm text-slate-500">Tu acceso actual permite seguimiento, pero no editar estado, fecha o link compartido.</p> : null}
       {error ? <p className="text-sm text-red-600">{error}</p> : null}
       {message ? <p className="text-sm text-emerald-600">{message}</p> : null}
-      <Button loading={isBusy} type="submit">
+      <Button loading={isBusy} disabled={!canEdit} type="submit">
         Guardar cambios
       </Button>
     </form>
