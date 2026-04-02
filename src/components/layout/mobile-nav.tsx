@@ -9,7 +9,6 @@ import { appNavLinks } from '@/components/layout/nav-links';
 import { createClient } from '@/lib/supabase/client';
 
 const footerHrefs = new Set([
-  '/app/organization',
   '/app/organization/roles',
   '/app/organization/billing',
   '/app/organization/support',

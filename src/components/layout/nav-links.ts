@@ -8,6 +8,7 @@ import {
   Settings,
   Users,
   Bell,
+  Building2,
 } from 'lucide-react';
 import type { AppRoute } from '@/lib/navigation/routes';
 
@@ -25,6 +26,7 @@ export const appNavLinks: AppNavLink[] = [
   { href: '/app/projects', label: 'Proyectos', hint: 'Fechas y avance', icon: FolderKanban },
   { href: '/app/tasks', label: 'Tareas', hint: 'Pendientes al día', icon: ClipboardList },
   { href: '/app/clients', label: 'Clientes', hint: 'Cuentas activas', icon: Users },
+  { href: '/app/organization', label: 'Equipo', hint: 'Miembros y roles', icon: Building2 },
   { href: '/app/notifications', label: 'Notificaciones', hint: 'Alertas y seguimiento', icon: Bell, isNotifications: true },
   { href: '/app/settings', label: 'Ajustes', hint: 'Perfil y preferencias', icon: Settings },
 ];

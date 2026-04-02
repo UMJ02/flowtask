@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "51.0.0-relaciones-adjuntos-operativo",
+  "version": "52.0.0-organizacion-roles-operativo-regen",
   "private": true,
   "scripts": {
     "dev": "node node_modules/next/dist/bin/next dev",
@@ -85,7 +85,8 @@
     "verify:v48": "node scripts/verify-v48.mjs",
     "verify:v49": "node scripts/verify-v49.mjs",
     "verify:v50": "node scripts/verify-v50.mjs",
-    "verify:v51": "node scripts/verify-v51.mjs"
+    "verify:v51": "node scripts/verify-v51.mjs",
+    "verify:v52": "node scripts/verify-v52.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
