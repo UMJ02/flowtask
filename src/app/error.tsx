@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { useErrorLogger } from "@/hooks/use-error-logger";
 import { Button } from "@/components/ui/button";
 import { ErrorState } from "@/components/ui/error-state";
 
@@ -11,9 +12,16 @@ export default function GlobalError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const logError = useErrorLogger({ source: "frontend" });
+
   useEffect(() => {
     console.error(error);
-  }, [error]);
+    void logError(error, {
+      level: "critical",
+      route: typeof window !== "undefined" ? window.location.pathname : null,
+      details: { digest: error.digest ?? null },
+    });
+  }, [error, logError]);
 
   return (
     <main className="mx-auto flex min-h-screen max-w-2xl items-center justify-center bg-slate-50 px-6 py-16">

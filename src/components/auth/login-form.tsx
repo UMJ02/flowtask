@@ -9,6 +9,7 @@ import { createClient } from '@/lib/supabase/client';
 import { safeInternalRoute } from '@/lib/navigation/routes';
 import { loginSchema, type LoginValues } from '@/lib/validations/auth';
 import { AuthFeedbackModal } from '@/components/auth/auth-feedback-modal';
+import { trackEvent } from '@/lib/telemetry/track-event';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
@@ -47,6 +48,7 @@ export function LoginForm({ initialNext }: { initialNext?: string }) {
     }
 
     setSuccessOpen(true);
+    void trackEvent({ eventName: "login", metadata: { next_route: nextRoute } });
     window.setTimeout(() => {
       router.replace(nextRoute);
       router.refresh();

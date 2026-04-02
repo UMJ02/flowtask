@@ -14,6 +14,7 @@ import { generateShareToken } from "@/lib/utils/tokens";
 import { projectSchema } from "@/lib/validations/project";
 import { getDepartmentIdByCode } from "@/lib/queries/departments";
 import { logActivity } from "@/lib/activity/log-client";
+import { trackEvent } from "@/lib/telemetry/track-event";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
@@ -160,6 +161,16 @@ export function ProjectForm({
         });
       }
     }
+
+    void trackEvent({
+      eventName: isEdit ? "update_project" : "create_project",
+      organizationId: workspace.activeOrganizationId,
+      metadata: {
+        project_id: isEdit ? projectId ?? null : createdProjectId,
+        client_id: clientId,
+        collaborative: values.isCollaborative,
+      },
+    });
 
     const okMessage = successMessage ?? (isEdit ? "Proyecto actualizado al instante." : "Proyecto creado y listo para compartir.");
     setMessage(okMessage);

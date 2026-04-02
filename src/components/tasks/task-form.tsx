@@ -15,6 +15,7 @@ import { taskDetailRoute, taskListRoute, type AppRoute } from "@/lib/navigation/
 import { taskSchema } from "@/lib/validations/task";
 import { getDepartmentIdByCode } from "@/lib/queries/departments";
 import { logActivity } from "@/lib/activity/log-client";
+import { trackEvent } from "@/lib/telemetry/track-event";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
@@ -197,6 +198,17 @@ export function TaskForm({
         metadata: { title: payload.title, status: payload.status, client_id: payload.client_id ?? undefined, client_name: payload.client_name ?? undefined, project_id: values.projectId || undefined, organization_id: workspace.activeOrganizationId },
       });
     }
+    void trackEvent({
+      eventName: isEdit ? "update_task" : "create_task",
+      organizationId: workspace.activeOrganizationId,
+      metadata: {
+        task_id: activityEntityId,
+        client_id: payload.client_id,
+        project_id: payload.project_id,
+        priority: payload.priority,
+      },
+    });
+
     const okMessage = successMessage ?? (isEdit ? "Cambios guardados al instante." : "Tarea creada y lista para seguir trabajando.");
     setMessage(okMessage);
 
