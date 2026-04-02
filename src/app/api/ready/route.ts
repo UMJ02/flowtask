@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   const ready = Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL) && Boolean(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
 
@@ -11,7 +13,7 @@ export async function GET() {
     },
     {
       status: ready ? 200 : 503,
-      headers: { "Cache-Control": "no-store" },
+      headers: { "Cache-Control": "no-store, no-cache, must-revalidate" },
     },
   );
 }

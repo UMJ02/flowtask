@@ -92,12 +92,14 @@ export function ProjectForm({
       return;
     }
 
+    const normalizedClientName = clientName;
+
     const payload = {
       title: values.title,
       description: values.description || null,
       status: values.status,
       department_id: departmentId,
-      client_name: clientName,
+      client_name: normalizedClientName,
       client_id: clientId,
       due_date: values.dueDate || null,
       is_collaborative: values.isCollaborative,
@@ -120,7 +122,7 @@ export function ProjectForm({
         entityType: 'project',
         entityId: projectId!,
         action: 'project_updated',
-        metadata: { title: payload.title, status: payload.status, client_id: clientId ?? undefined, organization_id: workspace.activeOrganizationId },
+        metadata: { title: payload.title, status: payload.status, client_id: clientId ?? undefined, client_name: normalizedClientName ?? undefined, organization_id: workspace.activeOrganizationId },
       });
     } else {
       const shareToken = values.isCollaborative ? generateShareToken() : null;
@@ -141,7 +143,7 @@ export function ProjectForm({
         return;
       }
 
-createdProjectId = data?.id ?? null;
+      createdProjectId = data?.id ?? null;
 
       if (createdProjectId) {
         await supabase.from("project_members").insert({
@@ -154,7 +156,7 @@ createdProjectId = data?.id ?? null;
           entityType: 'project',
           entityId: createdProjectId,
           action: 'project_created',
-          metadata: { title: payload.title, status: payload.status, client_id: clientId ?? undefined, organization_id: workspace.activeOrganizationId },
+          metadata: { title: payload.title, status: payload.status, client_id: clientId ?? undefined, client_name: normalizedClientName ?? undefined, organization_id: workspace.activeOrganizationId },
         });
       }
     }

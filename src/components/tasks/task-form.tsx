@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { getClientWorkspaceContext, findOrganizationClientId, fetchWorkspaceProjects } from "@/lib/supabase/workspace-client";
+import { resolveProjectEntityContext, validateTaskProjectClientIntegrity } from "@/lib/security/entity-integrity";
 import { getClientAccessSummary, hasClientAccess } from "@/lib/security/client-access";
 import { DEPARTMENTS } from "@/lib/constants/departments";
 import { TASK_STATUSES } from "@/lib/constants/task-status";
@@ -124,6 +125,7 @@ export function TaskForm({
     const clientName = values.clientName?.trim() || null;
     const clientId = await findOrganizationClientId(supabase, workspace.activeOrganizationId, clientName);
     const access = await getClientAccessSummary(supabase as any, user.id, workspace.activeOrganizationId);
+    const selectedProject = await resolveProjectEntityContext(supabase as any, values.projectId || null);
 
     if (clientId && !hasClientAccess(access, clientId, "edit")) {
       setServerError("No tienes permisos para crear o editar tareas sobre ese cliente.");
@@ -132,17 +134,29 @@ export function TaskForm({
     }
 
     if (values.projectId) {
-      const { data: projectAccessRow } = await supabase.from("projects").select("id, client_id").eq("id", values.projectId).maybeSingle();
-      if (!projectAccessRow) {
+      if (!selectedProject) {
         setServerError("El proyecto seleccionado no existe o no está disponible en tu workspace.");
         setMessage(null);
         return;
       }
-      if (!hasClientAccess(access, (projectAccessRow as any).client_id ?? null, "edit")) {
+      if (!hasClientAccess(access, selectedProject.clientId ?? null, "edit")) {
         setServerError("No tienes permisos para crear o editar tareas en el proyecto seleccionado.");
         setMessage(null);
         return;
       }
+    }
+
+    const integrity = validateTaskProjectClientIntegrity({
+      selectedProject,
+      selectedClientId: clientId,
+      selectedClientName: clientName,
+      activeOrganizationId: workspace.activeOrganizationId,
+    });
+
+    if (!integrity.ok) {
+      setServerError(integrity.message ?? "La tarea no respeta la integridad del proyecto y cliente seleccionado.");
+      setMessage(null);
+      return;
     }
 
     const payload = {
@@ -151,8 +165,8 @@ export function TaskForm({
       status: values.status,
       priority: values.priority,
       department_id: departmentId,
-      client_name: clientName,
-      client_id: clientId,
+      client_name: integrity.resolvedClientName,
+      client_id: integrity.resolvedClientId,
       due_date: values.dueDate || null,
       project_id: values.projectId || null,
     };
@@ -180,7 +194,7 @@ export function TaskForm({
         entityType: 'task',
         entityId: activityEntityId,
         action: isEdit ? 'task_updated' : 'task_created',
-        metadata: { title: payload.title, status: payload.status, client_id: clientId ?? undefined, project_id: values.projectId || undefined, organization_id: workspace.activeOrganizationId },
+        metadata: { title: payload.title, status: payload.status, client_id: payload.client_id ?? undefined, client_name: payload.client_name ?? undefined, project_id: values.projectId || undefined, organization_id: workspace.activeOrganizationId },
       });
     }
     const okMessage = successMessage ?? (isEdit ? "Cambios guardados al instante." : "Tarea creada y lista para seguir trabajando.");

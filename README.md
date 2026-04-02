@@ -128,3 +128,7 @@ Additional local endpoints:
 
 If `doctor:install` fails, reinstall dependencies from zero before debugging source code.
 If `doctor:supabase` fails, fix environment bindings before testing auth or workspace flows.
+
+
+## Current packaged version
+- v53.3.0-production-release-hardening
