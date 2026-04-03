@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { ImagePlus, KeyRound, Save, UserCircle2 } from 'lucide-react';
+import { KeyRound, Save, UserCircle2 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 
 function getInitials(name: string, email: string) {
@@ -92,29 +92,27 @@ export function ProfileSettingsForm({
 
   return (
     <div className="space-y-4">
-      <div className="grid gap-4 xl:grid-cols-[320px_minmax(0,1fr)]">
-        <div className="rounded-[28px] border border-slate-200 bg-[linear-gradient(180deg,#f8fafc_0%,#eef2ff_100%)] p-5 shadow-sm">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Identidad de perfil</p>
-          <div className="mt-4 flex items-center gap-4">
+      <div className="grid gap-4 xl:grid-cols-[430px_minmax(0,1fr)]">
+        <div className="rounded-[32px] border border-slate-200 bg-[linear-gradient(180deg,#f8fafc_0%,#eef2ff_100%)] px-6 py-7 shadow-sm">
+          <p className="text-center text-xs font-semibold uppercase tracking-[0.28em] text-slate-500">Identidad de perfil</p>
+
+          <div className="mt-6 flex justify-center">
             {avatarUrl ? (
               <img
                 src={avatarUrl}
                 alt="Vista previa del avatar"
-                className="h-20 w-20 rounded-3xl object-cover ring-1 ring-slate-200"
+                className="h-56 w-56 rounded-full object-cover shadow-[0_18px_45px_rgba(15,23,42,0.18)] ring-1 ring-slate-200 lg:h-60 lg:w-60"
               />
             ) : (
-              <div className="inline-flex h-20 w-20 items-center justify-center rounded-3xl bg-slate-950 text-2xl font-bold text-white ring-1 ring-slate-200">
+              <div className="inline-flex h-56 w-56 items-center justify-center rounded-full bg-slate-950 text-5xl font-bold text-white shadow-[0_18px_45px_rgba(15,23,42,0.22)] ring-1 ring-slate-200 lg:h-60 lg:w-60 lg:text-6xl">
                 {initials}
               </div>
             )}
-            <div>
-              <p className="text-lg font-semibold text-slate-900">{fullName.trim() || 'Tu nombre visible'}</p>
-              <p className="mt-1 text-sm text-slate-500 break-all">{email}</p>
-              <p className="mt-3 inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-xs font-medium text-slate-600 ring-1 ring-slate-200">
-                <ImagePlus className="h-3.5 w-3.5" />
-                Usa una URL para actualizar tu imagen de perfil
-              </p>
-            </div>
+          </div>
+
+          <div className="mt-8 px-2">
+            <p className="text-[2rem] font-semibold leading-tight text-slate-900">{fullName.trim() || 'Tu nombre visible'}</p>
+            <p className="mt-2 break-all text-sm text-slate-500 sm:text-base">{email}</p>
           </div>
         </div>
 
