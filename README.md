@@ -1,28 +1,28 @@
-# FlowTask — v54.3.4 Client Release Docs & Handoff
+# FlowTask — v54.3.3 Package & Release Streamline
 
-Base actualizada sobre la **v54.3.3**, enfocada en dejar el repo principal más claro para cierre cliente, con documentación operativa visible y una ruta de entrega más limpia.
+Base actualizada sobre la **v54.3.2**, enfocada en dejar el repo principal todavía más limpio para seguir iterando 1:1 sin arrastrar ruido histórico en el flujo activo.
 
 ## Objetivo de esta versión
 - mantener una sola historia oficial de base de datos en `supabase/migrations/`
 - conservar el histórico técnico solo como archivo interno
-- dejar un checklist claro de release cliente
-- dejar documentación de handoff y operación en el repo
+- simplificar el flujo activo de verificación y release
+- dejar `package.json` más claro para cierre cliente
 
-## Qué cambia en la v54.3.4
+## Qué cambia en la v54.3.3
 - se archiva la verificación anterior:
-  - `scripts/verify-v54.3.3.mjs`
+  - `scripts/verify-v54.3.2.mjs`
 - se agrega la nueva verificación activa:
-  - `scripts/verify-v54.3.4.mjs`
-- se agrega documentación operativa visible:
-  - `docs/release/CLIENT_RELEASE_CHECKLIST.md`
-  - `docs/release/OPERATIONS_HANDOFF.md`
-- se actualiza `package.json`:
-  - se elimina `verify:v54.3.3`
-  - se agrega `verify:v54.3.4`
-  - `verify:current` ahora apunta a `v54.3.4`
-  - se agrega `release:repo:v54.3.4`
-  - `release:repo:current` ahora apunta a `v54.3.4`
-- se actualiza la metadata de release a `54.3.4-client-release-docs`
+  - `scripts/verify-v54.3.3.mjs`
+- se simplifica `package.json`:
+  - se elimina `verify:v54.3.2`
+  - se elimina `release:repo:v54.3.2`
+  - se agrega `verify:current`
+  - se agrega `release:repo:v54.3.3`
+  - `release:repo:current` ahora apunta a `v54.3.3`
+  - `qa:current` ahora incluye la verificación actual
+  - `release:current` consolida repo + QA + validación preproducción + gate final
+- se mueve `testfile` al archivo interno para dejar la raíz más limpia
+- se actualiza la metadata de release a `54.3.3-release-package-streamline`
 
 ## Estructura canónica
 ### Runtime / app
@@ -30,7 +30,6 @@ Base actualizada sobre la **v54.3.3**, enfocada en dejar el repo principal más 
 - `public/`
 - `scripts/` → solo checks activos y operativos actuales
 - `supabase/migrations/` → historia oficial de BD
-- `docs/release/` → checklist y handoff visibles para cierre cliente
 
 ### Archivo interno
 - `archive/internal/legacy_release_history/RT_modulos/`
@@ -63,10 +62,6 @@ npm run qa:current
 npm run release:current
 ```
 
-## Documentación nueva de cierre cliente
-- `docs/release/CLIENT_RELEASE_CHECKLIST.md`
-- `docs/release/OPERATIONS_HANDOFF.md`
-
 ## Notas de entrega
 Este zip no incluye:
 - `__MACOSX`
@@ -78,4 +73,4 @@ Este zip no incluye:
 - `.env.local`
 
 ## Siguiente uso recomendado
-Usa esta **v54.3.4** como nueva base 1:1 para seguir con la etapa de cierre cliente y QA final.
+Usa esta **v54.3.3** como nueva base 1:1 para las siguientes versiones de cierre cliente.
