@@ -1,0 +1,55 @@
+# FlowTask — Client Release Checklist (v54.3.4)
+
+## 1. Base técnica
+- [ ] `npm install`
+- [ ] `cp .env.example .env.local`
+- [ ] variables de entorno completas y correctas
+- [ ] `npm run validate:node`
+- [ ] `npm run validate:env`
+- [ ] `npm run verify:current`
+- [ ] `npm run runtime:check`
+- [ ] `npm run typecheck`
+
+## 2. Repo limpio
+- [ ] sin `node_modules`
+- [ ] sin `.next`
+- [ ] sin `.git` en el zip de entrega
+- [ ] sin `.env` ni `.env.local`
+- [ ] sin `RT_modulos` en raíz
+- [ ] sin patch SQL históricos fuera de `archive/internal`
+- [ ] `supabase/migrations/` confirmado como fuente oficial de BD
+
+## 3. QA funcional mínimo
+- [ ] login
+- [ ] dashboard principal
+- [ ] clientes
+- [ ] proyectos
+- [ ] tareas
+- [ ] board
+- [ ] soporte
+- [ ] platform/admin
+- [ ] permisos por rol
+
+## 4. QA visual
+- [ ] estados vacíos
+- [ ] loaders
+- [ ] mensajes de error
+- [ ] mensajes de éxito
+- [ ] navegación estable desktop
+- [ ] navegación estable mobile básico
+
+## 5. Release técnico
+- [ ] `npm run security:check`
+- [ ] `npm run performance:check`
+- [ ] `npm run ops:check`
+- [ ] `npm run qa:current`
+- [ ] `npm run qa:functional`
+- [ ] `npm run qa:report`
+- [ ] `npm run preprod:validate`
+- [ ] `npm run production:gate`
+
+## 6. Entrega final
+- [ ] zip limpio generado desde esta base
+- [ ] documentación de handoff incluida
+- [ ] cliente recibe solo fuente necesaria
+- [ ] histórico técnico queda solo como archivo interno
