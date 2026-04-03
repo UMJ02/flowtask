@@ -4,7 +4,7 @@ import path from "node:path";
 const root = process.cwd();
 const requiredFiles = [
   "supabase/migrations/0022_v53_4_permissions_qa_ux_polish.sql",
-  "flowtask_supabase_v53_4_patch.sql",
+  "archive/internal/legacy_release_history/RT_modulos/flowtask_supabase_v53_4_patch.sql",
   "src/lib/release/version.ts",
   "src/lib/queries/access-summary.ts",
   "src/components/security/access-summary-card.tsx",

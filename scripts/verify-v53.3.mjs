@@ -7,7 +7,7 @@ const requiredFiles = [
   "src/lib/release/version.ts",
   "src/lib/security/entity-integrity.ts",
   "V_Report/VERSION_REPORT_v53.3.0-production-release-hardening.md",
-  "flowtask_supabase_v53_3_patch.sql",
+  "archive/internal/legacy_release_history/RT_modulos/flowtask_supabase_v53_3_patch.sql",
 ];
 
 const missing = requiredFiles.filter((file) => !fs.existsSync(path.join(root, file)));

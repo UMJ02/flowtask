@@ -4,7 +4,7 @@ import path from "node:path";
 const root = process.cwd();
 const requiredFiles = [
   "supabase/migrations/0023_v53_5_release_candidate.sql",
-  "flowtask_supabase_v53_5_patch.sql",
+  "archive/internal/legacy_release_history/RT_modulos/flowtask_supabase_v53_5_patch.sql",
   "src/lib/release/version.ts",
   "src/components/layout/app-footer.tsx",
   "src/app/api/health/route.ts",

@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "54.2.1-db-cleanup-index-normalization",
+  "version": "54.3.0-repo-cleanup-canonical-history",
   "private": true,
   "scripts": {
     "dev": "node node_modules/next/dist/bin/next dev",
@@ -102,7 +102,9 @@
     "release:ops:v54.1": "npm run verify:v54.1 && npm run ops:check",
     "verify:v54.2": "node scripts/verify-v54.2.mjs",
     "performance:check": "node scripts/performance-check.mjs",
-    "release:performance:v54.2": "npm run verify:v54.2 && npm run performance:check"
+    "release:performance:v54.2": "npm run verify:v54.2 && npm run performance:check",
+    "verify:v54.3": "node scripts/verify-v54.3.mjs",
+    "release:repo:v54.3": "npm run verify:v54.3 && npm run runtime:check && npm run typecheck"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

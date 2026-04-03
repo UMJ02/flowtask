@@ -5,7 +5,7 @@ import path from "node:path";
 const root = process.cwd();
 const required = [
   "supabase/migrations/0027_v54_2_1_db_cleanup_index_normalization.sql",
-  "flowtask_supabase_v54_2_1_patch.sql",
+  "archive/internal/legacy_release_history/RT_modulos/flowtask_supabase_v54_2_1_patch.sql",
   "scripts/db-cleanup-check.mjs",
   "V_Report/VERSION_REPORT_v54.2.1-db-cleanup-index-normalization.md",
 ];
