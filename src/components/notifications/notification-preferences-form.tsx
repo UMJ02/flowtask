@@ -37,14 +37,6 @@ function hourLabel(hour: number) {
   return `${hour.toString().padStart(2, "0")}:00`;
 }
 
-function summaryChannels(state: NotificationPreferences) {
-  return [
-    state.enable_toasts ? "In-app" : null,
-    state.enable_email ? "Correo" : null,
-    state.enable_whatsapp ? "WhatsApp" : null,
-  ].filter(Boolean) as string[];
-}
-
 export function NotificationPreferencesForm({ initialPreferences }: Props) {
   const [state, setState] = useState(initialPreferences);
   const [message, setMessage] = useState<string | null>(null);
@@ -54,14 +46,6 @@ export function NotificationPreferencesForm({ initialPreferences }: Props) {
   const [activeSection, setActiveSection] = useState<DeliverySection>("delivery");
 
   const disabledByDigest = useMemo(() => state.delivery_frequency === "daily", [state.delivery_frequency]);
-  const channels = summaryChannels(state);
-  const enabledTypes = [
-    state.enable_task ? "Tareas" : null,
-    state.enable_project ? "Proyectos" : null,
-    state.enable_comment ? "Comentarios" : null,
-    state.enable_reminder ? "Recordatorios" : null,
-  ].filter(Boolean) as string[];
-
   const updateField = <K extends keyof NotificationPreferences>(key: K, value: NotificationPreferences[K]) => {
     setState((current) => ({ ...current, [key]: value }));
   };
@@ -117,23 +101,6 @@ export function NotificationPreferencesForm({ initialPreferences }: Props) {
             >
               {isPending ? "Guardando..." : "Guardar preferencias"}
             </button>
-          </div>
-        </div>
-
-        <div className="mt-4 grid gap-3 md:grid-cols-3">
-          <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Frecuencia actual</p>
-            <p className="mt-2 text-base font-semibold text-slate-900">{disabledByDigest ? `Resumen diario · ${hourLabel(state.daily_digest_hour)}` : "Inmediata dentro de la app"}</p>
-          </div>
-          <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Tipos activos</p>
-            <p className="mt-2 text-base font-semibold text-slate-900">{enabledTypes.length} de 4 habilitados</p>
-            <p className="mt-1 text-sm text-slate-500">{enabledTypes.join(" · ")}</p>
-          </div>
-          <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Canales</p>
-            <p className="mt-2 text-base font-semibold text-slate-900">{channels.join(" · ")}</p>
-            <p className="mt-1 text-sm text-slate-500">{state.quiet_hours_enabled ? `Silencio: ${hourLabel(state.quiet_hours_start)} → ${hourLabel(state.quiet_hours_end)}` : "Sin horas silenciosas"}</p>
           </div>
         </div>
 
