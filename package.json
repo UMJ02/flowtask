@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "57.4.2-settings-tooltips-refined",
+  "version": "57.4.3-settings-tooltips-refined",
   "private": true,
   "scripts": {
     "dev": "node node_modules/next/dist/bin/next dev",
@@ -78,7 +78,7 @@
     "release:repo:v57.4": "npm run verify:v57.4 && npm run runtime:check && npm run security:check && npm run release:check && npm run typecheck",
     "verify:v57.4.1": "node scripts/verify-v57.4.1.mjs",
     "release:repo:v57.4.1": "npm run verify:v57.4.1 && npm run runtime:check && npm run security:check && npm run release:check && npm run typecheck",
-    "verify:v57.4.2": "node scripts/verify-v57.4.2.mjs"
+    "verify:v57.4.3": "node scripts/verify-v57.4.3.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
