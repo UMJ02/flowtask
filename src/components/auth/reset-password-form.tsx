@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { createClient } from '@/lib/supabase/client';
 import { resetPasswordSchema, type ResetPasswordValues } from '@/lib/validations/auth';
 import { AuthFeedbackModal } from '@/components/auth/auth-feedback-modal';
+import { ActionFeedback } from '@/components/ui/action-feedback';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
@@ -20,6 +21,7 @@ export function ResetPasswordForm() {
   const router = useRouter();
   const [serverError, setServerError] = useState<string | null>(null);
   const [successOpen, setSuccessOpen] = useState(false);
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
   const {
     register,
@@ -34,16 +36,19 @@ export function ResetPasswordForm() {
 
   const onSubmit = async (values: ResetPasswordValues) => {
     setServerError(null);
+    setStatusMessage('Procesando solicitud…');
     const supabase = createClient();
     const { error } = await supabase.auth.updateUser({
       password: values.password,
     });
 
     if (error) {
+      setStatusMessage(null);
       setServerError(mapResetError(error.message));
       return;
     }
 
+    setStatusMessage(null);
     setSuccessOpen(true);
     window.setTimeout(() => {
       router.push('/login');
@@ -61,6 +66,7 @@ export function ResetPasswordForm() {
       />
 
       <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
+        {statusMessage ? <ActionFeedback tone="loading" message={statusMessage} /> : null}
         <div className="space-y-2">
           <div className="flex items-center justify-between gap-3">
             <label className="text-sm font-medium text-slate-700">Nueva contraseña</label>
@@ -80,11 +86,7 @@ export function ResetPasswordForm() {
           {errors.confirmPassword ? <p className="text-sm text-rose-600">{errors.confirmPassword.message}</p> : null}
         </div>
 
-        {serverError ? (
-          <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">
-            {serverError}
-          </div>
-        ) : null}
+        {serverError ? <ActionFeedback tone="error" message={serverError} /> : null}
 
         <Button className="h-12 w-full rounded-2xl" loading={isSubmitting} type="submit">
           {isSubmitting ? 'Guardando...' : 'Guardar nueva contraseña'}

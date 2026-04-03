@@ -73,3 +73,10 @@ Esta **v55** debe usarse como base oficial para seguir cerrando el producto sin 
 - cierre técnico
 - cero secretos en bundles
 - continuidad 1:1 sobre el código estable
+
+
+## Release actual
+
+- versión: `56.0.0-ux-final-client`
+- foco: UX final + experiencia cliente
+- continuidad sugerida: platform control y handoff final

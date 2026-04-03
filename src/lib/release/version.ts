@@ -1,3 +1,3 @@
-export const APP_VERSION = "55.0.0-production-hardening";
-export const APP_RELEASE_NAME = "v55 Production Hardening Base";
-export const APP_RELEASE_STAGE = "production-hardening";
+export const APP_VERSION = "56.0.0-ux-final-client";
+export const APP_RELEASE_NAME = "v56 UX Final + Experiencia Cliente";
+export const APP_RELEASE_STAGE = "ux-final-client";

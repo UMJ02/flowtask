@@ -5,6 +5,7 @@ import { BriefcaseBusiness, FolderOpenDot, Plus, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { EmptyState } from '@/components/ui/empty-state';
+import { PageIntro } from '@/components/ui/page-intro';
 import { ProjectSearchPanel } from '@/components/projects/project-search-panel';
 import { projectDetailRoute, projectNewRoute } from '@/lib/navigation/routes';
 import { getProjects } from '@/lib/queries/projects';
@@ -44,17 +45,20 @@ export default async function ProjectsPage({ searchParams }: { searchParams?: Pr
 
   return (
     <div className="space-y-4">
-      <Card className="flex flex-col gap-4 rounded-[28px] md:flex-row md:items-end md:justify-between">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Proyectos</p>
-          <h1 className="mt-2 text-2xl font-bold text-slate-900">Frentes activos del workspace</h1>
-          <p className="mt-2 max-w-2xl text-sm text-slate-500">Consulta estado, cliente, deadline y abre el detalle completo de cada frente sin perder el contexto de búsqueda.</p>
-        </div>
-        <Link href={projectNewRoute(queryString)} className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-slate-900 px-4 text-sm font-semibold text-white">
-          <Plus className="h-4 w-4" />
-          Nuevo proyecto
-        </Link>
-      </Card>
+      <PageIntro
+        eyebrow="Proyectos"
+        title="Frentes activos del workspace"
+        description="Consulta estado, cliente, deadline y abre el detalle completo de cada frente sin perder el contexto de búsqueda. Esta vista ahora prioriza claridad, filtros rápidos y una lectura más limpia para cliente final."
+        actions={
+          <Link href={projectNewRoute(queryString)}><Button><Plus className="h-4 w-4" />Nuevo proyecto</Button></Link>
+        }
+        aside={
+          <div className="rounded-[22px] border border-emerald-200 bg-emerald-50/80 px-4 py-3">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-emerald-700">Foco UX</p>
+            <p className="mt-2 text-sm leading-6 text-emerald-900">Si un filtro no devuelve resultados, el sistema ahora muestra un estado vacío claro con acciones directas.</p>
+          </div>
+        }
+      />
       <ProjectSearchPanel filters={filters} />
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         {metricCard('Total visible', stats.total, 'resultado actual')}

@@ -10,6 +10,7 @@ import { safeInternalRoute } from '@/lib/navigation/routes';
 import { loginSchema, type LoginValues } from '@/lib/validations/auth';
 import { AuthFeedbackModal } from '@/components/auth/auth-feedback-modal';
 import { trackEvent } from '@/lib/telemetry/track-event';
+import { ActionFeedback } from '@/components/ui/action-feedback';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
@@ -25,6 +26,7 @@ export function LoginForm({ initialNext }: { initialNext?: string }) {
   const nextRoute = useMemo(() => safeInternalRoute(initialNext), [initialNext]);
   const [serverError, setServerError] = useState<string | null>(null);
   const [successOpen, setSuccessOpen] = useState(false);
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
   const {
     register,
@@ -36,6 +38,7 @@ export function LoginForm({ initialNext }: { initialNext?: string }) {
 
   const onSubmit = async (values: LoginValues) => {
     setServerError(null);
+    setStatusMessage('Procesando solicitud…');
     const supabase = createClient();
     const { error } = await supabase.auth.signInWithPassword({
       email: values.email,
@@ -43,10 +46,12 @@ export function LoginForm({ initialNext }: { initialNext?: string }) {
     });
 
     if (error) {
+      setStatusMessage(null);
       setServerError(mapLoginError(error.message));
       return;
     }
 
+    setStatusMessage(null);
     setSuccessOpen(true);
     void trackEvent({ eventName: "login", metadata: { next_route: nextRoute } });
     window.setTimeout(() => {
@@ -65,6 +70,7 @@ export function LoginForm({ initialNext }: { initialNext?: string }) {
       />
 
       <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
+        {statusMessage ? <ActionFeedback tone="loading" message={statusMessage} /> : null}
         <div className="space-y-2">
           <label className="text-sm font-medium text-slate-700">Correo</label>
           <Input className="h-12 bg-white/90" type="email" placeholder="correo@empresa.com" {...register('email')} />
@@ -80,11 +86,7 @@ export function LoginForm({ initialNext }: { initialNext?: string }) {
           {errors.password ? <p className="text-sm text-rose-600">{errors.password.message}</p> : null}
         </div>
 
-        {serverError ? (
-          <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">
-            {serverError}
-          </div>
-        ) : null}
+        {serverError ? <ActionFeedback tone="error" message={serverError} /> : null}
 
         <Button className="h-12 w-full rounded-2xl" loading={isSubmitting} type="submit">
           {isSubmitting ? 'Validando...' : 'Ingresar'}

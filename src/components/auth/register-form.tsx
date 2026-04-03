@@ -8,6 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { createClient } from '@/lib/supabase/client';
 import { registerSchema, type RegisterValues } from '@/lib/validations/auth';
 import { AuthFeedbackModal } from '@/components/auth/auth-feedback-modal';
+import { ActionFeedback } from '@/components/ui/action-feedback';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
@@ -21,6 +22,7 @@ export function RegisterForm({ initialNext }: { initialNext?: string }) {
   const router = useRouter();
   const [serverError, setServerError] = useState<string | null>(null);
   const [modalStep, setModalStep] = useState<'idle' | 'created' | 'redirecting'>('idle');
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
   const {
     register,
@@ -48,6 +50,7 @@ export function RegisterForm({ initialNext }: { initialNext?: string }) {
 
   const onSubmit = async (values: RegisterValues) => {
     setServerError(null);
+    setStatusMessage('Procesando solicitud…');
     const supabase = createClient();
 
     const { error } = await supabase.auth.signUp({
@@ -61,10 +64,12 @@ export function RegisterForm({ initialNext }: { initialNext?: string }) {
     });
 
     if (error) {
+      setStatusMessage(null);
       setServerError(mapRegisterError(error.message));
       return;
     }
 
+    setStatusMessage(null);
     setModalStep('created');
   };
 
@@ -85,6 +90,7 @@ export function RegisterForm({ initialNext }: { initialNext?: string }) {
       />
 
       <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
+        {statusMessage ? <ActionFeedback tone="loading" message={statusMessage} /> : null}
         <div className="space-y-2">
           <label className="text-sm font-medium text-slate-700">Nombre completo</label>
           <Input className="h-12 bg-white/90" placeholder="Tu nombre" {...register('fullName')} />
@@ -118,11 +124,7 @@ export function RegisterForm({ initialNext }: { initialNext?: string }) {
           {errors.confirmPassword ? <p className="text-sm text-rose-600">{errors.confirmPassword.message}</p> : null}
         </div>
 
-        {serverError ? (
-          <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">
-            {serverError}
-          </div>
-        ) : null}
+        {serverError ? <ActionFeedback tone="error" message={serverError} /> : null}
 
         <Button className="h-12 w-full rounded-2xl" loading={isSubmitting} type="submit">
           {isSubmitting ? 'Creando cuenta...' : 'Crear cuenta'}
