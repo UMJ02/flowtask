@@ -1,23 +1,15 @@
-# Internal archive
+# Archivo interno de FlowTask
 
-This folder stores historical release notes, legacy handoff material, and one-off SQL patch files that are **not** part of the canonical runtime history.
+Este espacio conserva historial técnico que ya no debe competir con la base canónica del producto.
 
-## Canonical database history
-The official database migration source of truth is:
-
+## Regla actual
+La fuente oficial viva para base de datos es:
 - `supabase/migrations/`
 
-## Archived content
-- `legacy_release_history/RT_modulos/` contains previous version reports, deploy notes, QA handoff docs, and historical patch SQL files kept only for internal traceability.
-- `legacy_release_history/scripts/` contains old version-specific verification scripts and duplicate TypeScript script variants that were removed from the active root flow.
+El archivo interno conserva solo soporte histórico:
+- `legacy_release_history/RT_modulos/`
+- `legacy_release_history/scripts/`
+- `legacy_release_history/misc/`
 
-## Delivery rule
-For client-ready bundles, keep runtime code and canonical migrations in the main repo, and keep historical release artifacts under this internal archive.
-
-## v54.3.2 consolidation note
-The active root verification path is now:
-
-- `scripts/verify-v54.3.2.mjs`
-- `npm run release:repo:current`
-- `npm run qa:current`
-- `npm run release:current`
+## Estado de la versión
+Base actual: **v54.3.3 — Package & Release Streamline**
