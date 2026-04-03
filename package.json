@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "54.2.0-performance-optimization",
+  "version": "54.2.1-db-cleanup-index-normalization",
   "private": true,
   "scripts": {
     "dev": "node node_modules/next/dist/bin/next dev",
