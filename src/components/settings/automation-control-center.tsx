@@ -38,10 +38,10 @@ export function AutomationControlCenter({ preferences }: { preferences: Notifica
             <Sparkles className="h-5 w-5" />
           </span>
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">Automation center</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">Application center</p>
             <h2 className="mt-2 text-2xl font-bold">Tu rutina de notificaciones ya tiene una estructura clara</h2>
             <p className="mt-2 max-w-2xl text-sm text-slate-300">
-              Aquí ves cómo se combinan tus alertas inmediatas, horas silenciosas y resúmenes para que el sistema trabaje contigo sin saturarte.
+              Aquí ves cómo se combinan tus alertas inmediatas, horas silenciosas y resúmenes para que el sistema trabaje contigo sin saturarte dentro de la aplicación.
             </p>
           </div>
         </div>
@@ -59,7 +59,7 @@ export function AutomationControlCenter({ preferences }: { preferences: Notifica
           <div className="rounded-[26px] bg-white/10 px-4 py-3 ring-1 ring-white/10">
             <p className="text-xs uppercase tracking-[0.16em] text-slate-300">Horas silenciosas</p>
             <p className="mt-2 text-lg font-bold">{quietHours}</p>
-            <p className="mt-1 text-sm text-slate-300">{digestEnabled ? `Resumen diario a las ${hourLabel(preferences.daily_digest_hour)}.` : "Avisos inmediatos dentro de la app."}</p>
+            <p className="mt-1 text-sm text-slate-300">{digestEnabled ? `Resumen diario a las ${hourLabel(preferences.daily_digest_hour)}.` : "Avisos inmediatos dentro de la aplicación."}</p>
           </div>
         </div>
       </div>

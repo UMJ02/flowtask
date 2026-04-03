@@ -2,11 +2,6 @@ import { BellRing, Building2, ShieldCheck, Users } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import type { NotificationPreferences } from '@/lib/queries/notification-preferences';
 
-type ProfileShape = {
-  fullName?: string | null;
-  email?: string | null;
-};
-
 type OrganizationContextShape = {
   activeOrganization?: {
     id: string;
@@ -37,11 +32,9 @@ function activeChannels(preferences: NotificationPreferences | null) {
 }
 
 export function SettingsAccountOverview({
-  profile: _profile,
   organizationContext,
   preferences,
 }: {
-  profile: ProfileShape | null;
   organizationContext: OrganizationContextShape;
   preferences: NotificationPreferences | null;
 }) {
@@ -56,25 +49,25 @@ export function SettingsAccountOverview({
       title: 'Workspace activo',
       value: activeOrganization?.name || 'Personal',
       icon: Building2,
-      helper: activeOrganization ? `Rol: ${roleLabel(activeOrganization.role)}` : 'Modo personal.',
+      helper: activeOrganization ? `Rol actual: ${roleLabel(activeOrganization.role)}.` : 'Estás trabajando en modo personal.',
     },
     {
       title: 'Espacios vinculados',
       value: String(organizationCount),
       icon: Users,
-      helper: organizationCount > 0 ? `${organizationCount} organización(es) disponibles.` : 'Sin organizaciones vinculadas.',
+      helper: organizationCount > 0 ? `${organizationCount} organización(es) disponibles en esta cuenta.` : 'Todavía no hay organizaciones vinculadas.',
     },
     {
       title: 'Clientes editables',
       value: String(editableClients),
       icon: ShieldCheck,
-      helper: editableClients > 0 ? `${editableClients} cliente(s) con edición.` : 'Sin permisos de edición activos.',
+      helper: editableClients > 0 ? `${editableClients} cliente(s) permiten edición desde tu cuenta.` : 'No tienes permisos de edición activos en clientes.',
     },
     {
       title: 'Canales activos',
       value: channels.join(' · '),
       icon: BellRing,
-      helper: `Canales: ${channels.join(', ')}.`,
+      helper: `Canales activos en la aplicación: ${channels.join(', ')}.`,
     },
   ] as const;
 
@@ -83,9 +76,9 @@ export function SettingsAccountOverview({
       <div className="flex flex-col gap-5">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">Settings hub</p>
-          <h1 className="mt-2 max-w-4xl text-3xl font-bold sm:text-4xl">Cuenta, notificaciones y contexto de trabajo</h1>
+          <h1 className="mt-2 max-w-4xl text-3xl font-bold sm:text-4xl">Notificaciones y contexto de la aplicación</h1>
           <p className="mt-3 max-w-3xl text-sm text-slate-300 sm:text-base">
-            Desde aquí validas quién eres en la app, qué organización estás usando y cómo se reparten tus avisos para que FlowTask trabaje con menos fricción.
+            Ajusta cómo se comporta FlowTask dentro de la aplicación, qué workspace estás usando y qué canales quedan listos para acompañar tu trabajo diario.
           </p>
         </div>
 
@@ -103,7 +96,7 @@ export function SettingsAccountOverview({
                   <p className="text-[11px] font-semibold uppercase tracking-[0.16em] sm:text-xs">{card.title}</p>
                 </div>
                 <div className="mt-5 min-h-[64px] pr-1 sm:min-h-[72px]">
-                  <p className="text-[clamp(1.9rem,3.4vw,2.8rem)] font-bold leading-none text-white break-words">
+                  <p className="text-[clamp(1.9rem,3.4vw,2.8rem)] break-words font-bold leading-none text-white">
                     {card.value}
                   </p>
                 </div>

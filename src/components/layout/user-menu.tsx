@@ -34,7 +34,7 @@ export function UserMenu({
   return (
     <>
       <Link
-        href="/app/settings"
+        href="/app/profile"
         aria-label="Abrir perfil"
         className="relative inline-flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 bg-white text-left shadow-sm transition hover:border-emerald-200 hover:bg-emerald-50 md:hidden"
       >
@@ -67,7 +67,7 @@ export function UserMenu({
 
             <div className="mt-3 space-y-2">
               <Link
-                href="/app/settings"
+                href="/app/profile"
                 onClick={() => setOpen(false)}
                 className="flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
               >

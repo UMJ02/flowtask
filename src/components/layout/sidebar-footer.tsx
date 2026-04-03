@@ -55,7 +55,7 @@ export function SidebarFooter({
             ) : null}
             <div className="border-t border-white/10 pt-2.5">
               <p className="px-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Perfil</p>
-              <Link href="/app/settings" className="mt-2 flex items-center gap-3 rounded-[24px] bg-white/6 px-3 py-2.5 ring-1 ring-white/10 transition hover:bg-white/10">
+              <Link href="/app/profile" className="mt-2 flex items-center gap-3 rounded-[24px] bg-white/6 px-3 py-2.5 ring-1 ring-white/10 transition hover:bg-white/10">
                 <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white text-sm font-bold text-slate-950">
                   {initials}
                 </span>
@@ -70,7 +70,7 @@ export function SidebarFooter({
           <div className="flex flex-col items-center gap-2">
             <OrganizationSwitcher organizations={organizations ?? []} activeOrganization={activeOrganization} compact dark collapsed />
             <Link
-              href="/app/settings"
+              href="/app/profile"
               title={displayName}
               className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-white/6 text-white ring-1 ring-white/10 transition hover:bg-white/10"
             >

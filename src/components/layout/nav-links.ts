@@ -30,5 +30,5 @@ export const appNavLinks: AppNavLink[] = [
   { href: '/app/organization', label: 'Equipo', hint: 'Miembros y roles', icon: Building2 },
   { href: '/app/notifications', label: 'Notificaciones', hint: 'Alertas y seguimiento', icon: Bell, isNotifications: true },
   { href: '/app/support', label: 'Soporte', hint: 'Incidencias y observabilidad', icon: ShieldAlert },
-  { href: '/app/settings', label: 'Ajustes', hint: 'Perfil y preferencias', icon: Settings },
+  { href: '/app/settings', label: 'Ajustes', hint: 'Aplicación y avisos', icon: Settings },
 ];

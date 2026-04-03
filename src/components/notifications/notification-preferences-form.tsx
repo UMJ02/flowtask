@@ -125,7 +125,7 @@ export function NotificationPreferencesForm({ initialPreferences }: Props) {
       <Card>
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
-            <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Configuración operativa</h3>
+            <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Configuración de la aplicación</h3>
             <p className="mt-1 text-sm text-slate-500">Un solo contenedor para frecuencia, canales y ventana silenciosa.</p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -177,7 +177,7 @@ export function NotificationPreferencesForm({ initialPreferences }: Props) {
                 <p className="mt-2 text-sm text-slate-500">
                   {disabledByDigest
                     ? "Recibirás un solo consolidado al día con lo más importante."
-                    : "Los avisos aparecerán al momento mientras trabajas en la app."}
+                    : "Los avisos aparecerán al momento mientras trabajas en la aplicación."}
                 </p>
               </div>
 
@@ -196,14 +196,14 @@ export function NotificationPreferencesForm({ initialPreferences }: Props) {
                 </select>
               </label>
 
-              <ToggleRow label="Toasts dentro de la app" description="Mensajes breves en pantalla para avisarte sin interrumpir demasiado." checked={state.enable_toasts} onChange={(value) => updateField("enable_toasts", value)} />
+              <ToggleRow label="Toasts dentro de la aplicación" description="Mensajes breves en pantalla para avisarte sin interrumpir demasiado." checked={state.enable_toasts} onChange={(value) => updateField("enable_toasts", value)} />
 
               <div className="rounded-2xl bg-slate-50 p-4 text-sm text-slate-600">
                 <p className="font-semibold text-slate-900">Resumen de esta frecuencia</p>
                 <p className="mt-1">
                   {disabledByDigest
                     ? `El resumen diario saldrá a las ${hourLabel(state.daily_digest_hour)} con tareas pendientes, cambios importantes y recordatorios.`
-                    : "Trabajarás con avisos inmediatos dentro de la app y podrás pasar a resumen diario cuando lo necesites."}
+                    : "Trabajarás con avisos inmediatos dentro de la aplicación y podrás pasar a resumen diario cuando lo necesites."}
                 </p>
               </div>
             </div>
@@ -217,7 +217,7 @@ export function NotificationPreferencesForm({ initialPreferences }: Props) {
                 <p className="font-semibold text-slate-900">Cómo funciona</p>
                 <ul className="mt-2 space-y-1">
                   <li>• In-app sigue siendo el canal principal mientras trabajas.</li>
-                  <li>• Correo sirve para sacar avisos fuera de la app.</li>
+                  <li>• Correo sirve para sacar avisos fuera de la aplicación.</li>
                   <li>• WhatsApp queda listo para la siguiente capa de automatización.</li>
                 </ul>
               </div>
