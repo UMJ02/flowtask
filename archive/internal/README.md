@@ -12,3 +12,10 @@ The official database migration source of truth is:
 
 ## Delivery rule
 For client-ready bundles, keep runtime code and canonical migrations in the main repo, and keep historical release artifacts under this internal archive.
+
+## v54.3.1 cleanup note
+Legacy version-specific verification scripts and one-off signoff scripts were moved to:
+
+- `archive/internal/legacy_release_history/scripts/`
+
+The active repo keeps only the current verification path for the cleaned canonical base.

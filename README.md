@@ -132,3 +132,8 @@ If `doctor:supabase` fails, fix environment bindings before testing auth or work
 
 ## Current packaged version
 - v53.3.0-production-release-hardening
+
+## Repository policy (v54.3.1)
+- Canonical database history lives in `supabase/migrations/`.
+- Historical release notes, patch SQL files, and legacy version-check scripts live under `archive/internal/`.
+- The active release path should use the current `verify:v54.3` and `verify:v54.3.1` scripts only.
