@@ -56,31 +56,31 @@ export function SettingsAccountOverview({
       title: 'Workspace activo',
       value: activeOrganization?.name || 'Personal',
       icon: Building2,
-      helper: activeOrganization ? `Rol actual: ${roleLabel(activeOrganization.role)}` : 'Modo personal sin organización detectada.',
+      helper: activeOrganization ? `Rol: ${roleLabel(activeOrganization.role)}` : 'Modo personal.',
     },
     {
       title: 'Espacios vinculados',
       value: String(organizationCount),
       icon: Users,
-      helper: organizationCount > 0 ? `${organizationCount} organización(es) asociadas a esta cuenta.` : 'Todavía no hay organizaciones vinculadas.',
+      helper: organizationCount > 0 ? `${organizationCount} organización(es) disponibles.` : 'Sin organizaciones vinculadas.',
     },
     {
       title: 'Clientes editables',
       value: String(editableClients),
       icon: ShieldCheck,
-      helper: editableClients > 0 ? `${editableClients} cliente(s) con edición habilitada.` : 'Sin permisos de edición cargados por ahora.',
+      helper: editableClients > 0 ? `${editableClients} cliente(s) con edición.` : 'Sin permisos de edición activos.',
     },
     {
       title: 'Canales activos',
       value: channels.join(' · '),
       icon: BellRing,
-      helper: `Avisos activos por ${channels.join(', ')}.`,
+      helper: `Canales: ${channels.join(', ')}.`,
     },
   ] as const;
 
   return (
     <Card className="bg-[linear-gradient(135deg,#0f172a_0%,#111827_52%,#1e293b_100%)] text-white shadow-[0_28px_70px_rgba(15,23,42,0.24)]">
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-5">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">Settings hub</p>
           <h1 className="mt-2 max-w-4xl text-3xl font-bold sm:text-4xl">Cuenta, notificaciones y contexto de trabajo</h1>
@@ -89,23 +89,26 @@ export function SettingsAccountOverview({
           </p>
         </div>
 
-        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
           {cards.map((card) => {
             const Icon = card.icon;
             return (
               <div
                 key={card.title}
-                className="group relative min-h-[190px] overflow-hidden rounded-[26px] bg-white/10 px-4 py-4 ring-1 ring-white/10 transition duration-200 hover:-translate-y-0.5 hover:bg-white/14"
+                className="group relative overflow-hidden rounded-[24px] bg-white/10 px-4 py-4 ring-1 ring-white/10 transition duration-200 hover:-translate-y-0.5 hover:bg-white/14 sm:px-5 sm:py-5"
+                title={card.helper}
               >
                 <div className="flex items-center gap-2 text-emerald-300">
-                  <Icon className="h-4 w-4" />
-                  <p className="text-xs uppercase tracking-[0.16em]">{card.title}</p>
+                  <Icon className="h-4 w-4 shrink-0" />
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] sm:text-xs">{card.title}</p>
                 </div>
-                <div className="mt-8 pr-2">
-                  <p className="text-3xl font-bold leading-tight text-white sm:text-4xl">{card.value}</p>
+                <div className="mt-5 min-h-[64px] pr-1 sm:min-h-[72px]">
+                  <p className="text-[clamp(1.9rem,3.4vw,2.8rem)] font-bold leading-none text-white break-words">
+                    {card.value}
+                  </p>
                 </div>
-                <div className="pointer-events-none absolute inset-x-4 bottom-4 translate-y-3 opacity-0 transition duration-200 group-hover:translate-y-0 group-hover:opacity-100">
-                  <div className="rounded-2xl bg-slate-950/75 px-3 py-2 text-xs leading-relaxed text-slate-100 shadow-lg backdrop-blur">
+                <div className="pointer-events-none absolute inset-x-3 bottom-3 translate-y-3 opacity-0 transition duration-200 group-hover:translate-y-0 group-hover:opacity-100 sm:inset-x-4 sm:bottom-4">
+                  <div className="rounded-2xl bg-slate-950/82 px-3 py-2 text-[11px] leading-relaxed text-slate-100 shadow-lg backdrop-blur sm:text-xs">
                     {card.helper}
                   </div>
                 </div>
