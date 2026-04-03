@@ -55,19 +55,19 @@ export function SettingsAccountOverview({
       title: 'Espacios vinculados',
       value: String(organizationCount),
       icon: Users,
-      helper: organizationCount > 0 ? `${organizationCount} organización(es) disponibles en esta cuenta.` : 'Todavía no hay organizaciones vinculadas.',
+      helper: organizationCount > 0 ? `${organizationCount} espacios activos.` : 'Sin espacios',
     },
     {
       title: 'Clientes editables',
       value: String(editableClients),
       icon: ShieldCheck,
-      helper: editableClients > 0 ? `${editableClients} cliente(s) permiten edición desde tu cuenta.` : 'No tienes permisos de edición activos en clientes.',
+      helper: editableClients > 0 ? `${editableClients} clientes listos.` : 'Sin clientes',
     },
     {
       title: 'Canales activos',
       value: channels.join(' · '),
       icon: BellRing,
-      helper: `Canales activos en la aplicación: ${channels.join(', ')}.`,
+      helper: channels.includes('In-app') && channels.length === 1 ? 'Solo in-app' : `Canales: ${channels.slice(0,2).join(' · ')}`,
     },
   ] as const;
 
