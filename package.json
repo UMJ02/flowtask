@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "54.3.1-release-script-cleanup",
+  "version": "54.3.2-release-flow-consolidation",
   "private": true,
   "scripts": {
     "dev": "node node_modules/next/dist/bin/next dev",
@@ -55,10 +55,11 @@
     "debug:hydration": "node scripts/debug-hydration.mjs",
     "ops:check": "node scripts/ops-check.mjs",
     "performance:check": "node scripts/performance-check.mjs",
-    "verify:v54.3": "node scripts/verify-v54.3.mjs",
-    "release:repo:v54.3": "npm run verify:v54.3 && npm run runtime:check && npm run typecheck",
-    "verify:v54.3.1": "node scripts/verify-v54.3.1.mjs",
-    "release:repo:v54.3.1": "npm run verify:v54.3.1 && npm run runtime:check && npm run typecheck"
+    "verify:v54.3.2": "node scripts/verify-v54.3.2.mjs",
+    "release:repo:v54.3.2": "npm run verify:v54.3.2 && npm run runtime:check && npm run typecheck",
+    "release:repo:current": "npm run release:repo:v54.3.2",
+    "qa:current": "npm run validate:node && npm run validate:env && npm run runtime:check && npm run typecheck && npm run security:check && npm run performance:check && npm run ops:check",
+    "release:current": "npm run clean && npm run release:repo:current && npm run qa:functional && npm run qa:report && npm run ux:review && npm run preprod:validate"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

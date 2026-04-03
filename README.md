@@ -1,139 +1,80 @@
-# FlowTask v8.7.0 — Production Guardrails v9
+# FlowTask — v54.3.2 Release Flow Consolidation
 
-Base completa para continuar 1:1 desde la V8, con enfoque en **guardrails de producción**, preflight más fuerte, CI básico y endpoint de salud para deploy.
+Base limpia para seguir trabajando 1:1 desde la **v54.3.1**, con enfoque en dejar el repo principal más claro para cierre de cliente.
 
-## Qué cambia en esta versión
-- se mantiene el source completo de la V8 como base
-- se agrega validación de versión de Node antes del preflight
-- se agrega reporte de preflight para handoff y QA
-- se agrega workflow de GitHub Actions para validación continua
-- se agrega endpoint `api/health` para verificación rápida del entorno
-- se actualiza la metadata del proyecto a `8.7.0-production-guardrails-v9`
+## Objetivo de esta versión
+- mantener una sola historia oficial de base de datos en `supabase/migrations/`
+- conservar historial técnico y patches viejos solo como archivo interno
+- reducir ruido en `scripts/`
+- consolidar una ruta activa de verificación y release para seguir iterando sin romper el app
 
-## Archivos nuevos de esta versión
-- `.github/workflows/ci.yml`
-- `scripts/check-node-version.mjs`
-- `scripts/preflight-report.mjs`
-- `src/app/api/health/route.ts`
-- `V_Report/VERSION_REPORT_v8.7.0-production-guardrails-v9.md`
-- `V_Report/DEPLOY_RUNBOOK_v9.md`
+## Qué cambia en la v54.3.2
+- se archivan scripts duplicados de TypeScript que ya no deben vivir en la raíz operativa:
+  - `scripts/runtime-check.ts`
+  - `scripts/release-check.ts`
+- se archivan las verificaciones de versiones anteriores:
+  - `scripts/verify-v54.3.mjs`
+  - `scripts/verify-v54.3.1.mjs`
+- se agrega una sola verificación activa en raíz:
+  - `scripts/verify-v54.3.2.mjs`
+- se consolidan scripts actuales de repo y release en `package.json`
+- se actualiza la metadata de release a `54.3.2-release-flow-consolidation`
 
-## Variables de entorno requeridas
-### Públicas
-- `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-- `NEXT_PUBLIC_APP_URL`
+## Estructura canónica
+### Runtime / app
+- `src/`
+- `public/`
+- `scripts/` → solo ruta activa y checks operativos actuales
+- `supabase/migrations/` → historia oficial de BD
 
-### Solo servidor
-- `SUPABASE_SERVICE_ROLE_KEY`
+### Archivo interno
+- `archive/internal/legacy_release_history/RT_modulos/`
+- `archive/internal/legacy_release_history/scripts/`
 
-### Opcionales
-- `NEXT_PUBLIC_ENABLE_REALTIME`
-- `CRON_SECRET`
-- `DIGEST_TIMEZONE`
-- `NOTIFICATION_BATCH_SIZE`
+## Regla de trabajo desde esta base
+Todo lo histórico, experimental o ya absorbido por la base canónica se mueve a `archive/internal/`.
 
-## Flujo recomendado para reinstalación limpia
-1. Usar la versión de Node sugerida:
-   - `nvm use`
-2. Instalar dependencias:
-   - `npm install`
-3. Crear variables locales:
-   - `cp .env.example .env.local`
-4. Completar las variables reales de Supabase
-5. Validar Node:
-   - `npm run validate:node`
-6. Correr el preflight completo:
-   - `npm run preflight:full`
-7. Generar reporte de preflight:
-   - `npm run preflight:report`
-8. Correr build:
-   - `npm run build`
-9. Levantar localmente:
-   - `npm run dev`
+El repo principal debe quedarse solo con:
+- código de runtime
+- migraciones canónicas
+- scripts activos de validación/release
+- documentación actual
 
-## Scripts de validación recomendados
-- `npm run validate:node`
-- `npm run validate:env`
-- `npm run security:check`
-- `npm run runtime:check`
-- `npm run typecheck`
-- `npm run preflight:full`
-- `npm run ci:full`
-- `npm run deploy:gate`
-
-## Endpoint operativo
-- `GET /api/health`
-- devuelve estado general de entorno y readiness básico
-- útil para smoke test rápido después de deploy
-
-## Flujo recomendado para Vercel
-1. Confirmar repo y proyecto enlazados correctamente.
-2. Cargar en Vercel las variables equivalentes al `.env.local`.
-3. Validar localmente con `npm run deploy:gate`.
-4. Ejecutar `npm run build`.
-5. Desplegar solo si preflight y build pasan limpios.
-6. Confirmar `GET /api/health` después del deploy.
-
-## Estado honesto de la base
-- esta versión sigue siendo una base completa de continuidad
-- mejora el handoff técnico y la capacidad de validación antes de deploy
-- añade un mínimo de disciplina CI para no romper silenciosamente
-- cualquier secreto expuesto en versiones anteriores debe seguir rotado en Supabase y Vercel
-
-## Notas finales
-- no subir `node_modules`, `.next`, `.env.local` ni secretos
-- usa esta V9 como nueva base 1:1 para los siguientes ciclos de corrección
-- revisa `V_Report/DEPLOY_RUNBOOK_v9.md` antes del siguiente paso de release
-
-## V10 Ops readiness
-
-Flujo recomendado de verificación operativa:
-
+## Flujo recomendado al reinstalar
 ```bash
-npm run smoke:health
-npm run readiness:report
-npm run postdeploy:verify
-```
-
-Comando consolidado de release:
-
-```bash
-npm run release:ops
-```
-
-
-## V11 local QA / bugfix readiness
-
-Recommended validation flow after unpacking the source:
-
-```bash
-rm -rf node_modules .next package-lock.json
 npm install
 cp .env.example .env.local
 npm run validate:node
-npm run doctor:install
 npm run validate:env
-npm run doctor:supabase
 npm run runtime:check
 npm run typecheck
-npm run build
-npm run dev
+npm run verify:v54.3.2
 ```
 
-Additional local endpoints:
+## Flujo actual de repo limpio
+```bash
+npm run release:repo:current
+```
 
-- `GET /api/health` → basic service heartbeat
-- `GET /api/ready` → safe readiness snapshot for local QA (no secrets returned)
+## Flujo actual de QA consolidado
+```bash
+npm run qa:current
+```
 
-If `doctor:install` fails, reinstall dependencies from zero before debugging source code.
-If `doctor:supabase` fails, fix environment bindings before testing auth or workspace flows.
+## Flujo actual de release consolidado
+```bash
+npm run release:current
+```
 
+## Notas de entrega
+Este zip no incluye:
+- `__MACOSX`
+- `.DS_Store`
+- `.next`
+- `node_modules`
+- `.git`
+- `.env`
+- `.env.local`
 
-## Current packaged version
-- v53.3.0-production-release-hardening
-
-## Repository policy (v54.3.1)
-- Canonical database history lives in `supabase/migrations/`.
-- Historical release notes, patch SQL files, and legacy version-check scripts live under `archive/internal/`.
-- The active release path should use the current `verify:v54.3` and `verify:v54.3.1` scripts only.
+## Siguiente uso recomendado
+Usa esta **v54.3.2** como nueva base 1:1 para las siguientes versiones de cierre cliente.

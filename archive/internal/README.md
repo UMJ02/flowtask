@@ -9,13 +9,15 @@ The official database migration source of truth is:
 
 ## Archived content
 - `legacy_release_history/RT_modulos/` contains previous version reports, deploy notes, QA handoff docs, and historical patch SQL files kept only for internal traceability.
+- `legacy_release_history/scripts/` contains old version-specific verification scripts and duplicate TypeScript script variants that were removed from the active root flow.
 
 ## Delivery rule
 For client-ready bundles, keep runtime code and canonical migrations in the main repo, and keep historical release artifacts under this internal archive.
 
-## v54.3.1 cleanup note
-Legacy version-specific verification scripts and one-off signoff scripts were moved to:
+## v54.3.2 consolidation note
+The active root verification path is now:
 
-- `archive/internal/legacy_release_history/scripts/`
-
-The active repo keeps only the current verification path for the cleaned canonical base.
+- `scripts/verify-v54.3.2.mjs`
+- `npm run release:repo:current`
+- `npm run qa:current`
+- `npm run release:current`
