@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { isToday, isYesterday, parseISO } from "date-fns";
+import { ChevronDown, ChevronUp, SlidersHorizontal } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { MarkNotificationReadButton } from "@/components/notifications/mark-notification-read-button";
@@ -161,7 +162,8 @@ export function NotificationsLivePanel({
   const [searchQuery, setSearchQuery] = useState(initialSearch);
   const [liveDeliverySummary, setLiveDeliverySummary] = useState(deliverySummary);
   const [activeInsight, setActiveInsight] = useState<InsightKey>("digest");
-  const { unreadCount, markOneAsRead, markAllAsRead } = useNotificationsState();
+  const [advancedOpen, setAdvancedOpen] = useState(initialFilter !== "all");
+  const { markOneAsRead, markAllAsRead } = useNotificationsState();
 
   useNotificationsRealtime({
     userId,
@@ -213,52 +215,16 @@ export function NotificationsLivePanel({
   return (
     <div className="space-y-6">
       <section className="grid gap-4 xl:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]">
-        <Card className="space-y-5">
-          <div>
+        <Card className="border-slate-200/80 bg-[linear-gradient(180deg,rgba(15,23,42,0.035)_0%,rgba(255,255,255,0.98)_100%)] space-y-5">
+          <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
               <h2 className="text-lg font-semibold text-slate-900">Centro de notificaciones</h2>
               <p className="text-sm text-slate-500">Revisa avisos del equipo y el estado de sus entregas en un solo lugar.</p>
             </div>
-            <div className="mt-4 flex flex-wrap items-center gap-2">
-              <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">En vivo</span>
-            </div>
+            <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">En vivo</span>
           </div>
 
-          <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_220px]">
-            <label className="min-w-0">
-              <span className="mb-1 block text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">Buscar</span>
-              <input
-                value={searchQuery}
-                onChange={(event) => {
-                  const nextValue = event.target.value;
-                  setSearchQuery(nextValue);
-                  syncUrl(activeFilter, nextValue);
-                }}
-                placeholder="Buscar por texto, cliente o proyecto"
-                className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-emerald-300"
-              />
-            </label>
-            <label>
-              <span className="mb-1 block text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">Filtro</span>
-              <select
-                value={activeFilter}
-                onChange={(event) => {
-                  const nextFilter = event.target.value as NotificationFilterKey;
-                  setActiveFilter(nextFilter);
-                  syncUrl(nextFilter, searchQuery);
-                }}
-                className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-emerald-300"
-              >
-                {NOTIFICATION_FILTERS.map((filter) => (
-                  <option key={filter.value} value={filter.value}>
-                    {filter.label}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2 border-t border-slate-100 pt-1 sm:justify-end">
+          <div className="flex flex-wrap items-center gap-2">
             <MarkAllNotificationsReadButton
               ids={unreadVisibleIds}
               disabled={!unreadVisibleIds.length}
@@ -275,6 +241,62 @@ export function NotificationsLivePanel({
             />
           </div>
 
+          <div className="border-t border-slate-200/80" />
+
+          <div className="space-y-3">
+            <div className="flex flex-col gap-3 lg:flex-row">
+              <label className="min-w-0 flex-1">
+                <span className="sr-only">Buscar notificaciones</span>
+                <input
+                  value={searchQuery}
+                  onChange={(event) => {
+                    const nextValue = event.target.value;
+                    setSearchQuery(nextValue);
+                    syncUrl(activeFilter, nextValue);
+                  }}
+                  placeholder="Buscar por texto, cliente o proyecto"
+                  className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-emerald-300"
+                />
+              </label>
+
+              <button
+                type="button"
+                onClick={() => setAdvancedOpen((current) => !current)}
+                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
+              >
+                <SlidersHorizontal className="h-4 w-4" />
+                Búsqueda avanzada
+                {advancedOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+              </button>
+            </div>
+
+            {advancedOpen ? (
+              <div className="rounded-2xl border border-slate-200 bg-white px-4 py-4">
+                <div className="grid gap-3 lg:grid-cols-[220px_minmax(0,1fr)] lg:items-end">
+                  <label>
+                    <span className="mb-1 block text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">Filtro</span>
+                    <select
+                      value={activeFilter}
+                      onChange={(event) => {
+                        const nextFilter = event.target.value as NotificationFilterKey;
+                        setActiveFilter(nextFilter);
+                        syncUrl(nextFilter, searchQuery);
+                      }}
+                      className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-emerald-300"
+                    >
+                      {NOTIFICATION_FILTERS.map((filter) => (
+                        <option key={filter.value} value={filter.value}>
+                          {filter.label}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <p className="text-sm text-slate-500">Usa filtros cuando quieras separar solo pendientes, errores de entrega o notificaciones por tipo.</p>
+                </div>
+              </div>
+            ) : null}
+          </div>
+
           <div className="space-y-4">
             {(["today", "yesterday", "earlier"] as GroupKey[]).map((groupKey) => {
               const items = groupedNotifications[groupKey];
@@ -286,7 +308,7 @@ export function NotificationsLivePanel({
                     {items.map((item) => {
                       const href = buildNotificationHref(item);
                       return (
-                        <div key={item.id} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                        <div key={item.id} className="rounded-2xl border border-slate-200 bg-slate-50/90 p-4">
                           <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
                             <div className="min-w-0 flex-1">
                               <div className="flex flex-wrap items-center gap-2">
@@ -359,7 +381,7 @@ export function NotificationsLivePanel({
                   <span className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-600 ring-1 ring-slate-200">{digestPreview?.status ?? "Pendiente"}</span>
                   <span className="text-xs text-slate-400">{digestPreview?.processed_at ? formatDate(digestPreview.processed_at) : latestReminderText}</span>
                 </div>
-                <h4 className="mt-4 text-lg font-semibold text-slate-900">{digestPreview?.summary_title ?? "Último resumen diario"}</h4>
+                <h4 className="mt-4 text-lg font-semibold text-slate-900">Último resumen diario</h4>
                 <p className="mt-2 text-sm leading-6 text-slate-600">{digestPreview?.summary_body ?? "Todavía no se ha generado un resumen diario."}</p>
               </div>
             ) : null}
@@ -368,7 +390,7 @@ export function NotificationsLivePanel({
               <div>
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="rounded-full bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-700">{liveDeliverySummary.failed} fallidas</span>
-                  <span className="text-xs text-slate-400">{deliverySummary.total} entregas revisadas</span>
+                  <span className="text-xs text-slate-400">{liveDeliverySummary.total} entregas revisadas</span>
                 </div>
                 <h4 className="mt-4 text-lg font-semibold text-slate-900">Entregas fallidas</h4>
                 <div className="mt-3 space-y-3">
