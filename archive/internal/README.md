@@ -12,4 +12,4 @@ El archivo interno conserva solo soporte histórico:
 - `legacy_release_history/misc/`
 
 ## Estado de la versión
-Base actual: **v54.3.4 — Client Release Docs & Handoff**
+Base actual: **v55 — Production Hardening Base**

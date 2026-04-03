@@ -1,4 +1,4 @@
-# FlowTask — Client Release Checklist (v54.3.4)
+# FlowTask — Client Release Checklist (v55)
 
 ## 1. Base técnica
 - [ ] `npm install`

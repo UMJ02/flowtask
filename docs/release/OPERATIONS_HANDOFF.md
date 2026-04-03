@@ -1,4 +1,4 @@
-# FlowTask — Operations Handoff (v54.3.4)
+# FlowTask — Operations Handoff (v55)
 
 ## Fuente canónica actual
 La historia oficial viva del esquema y evolución de base de datos está únicamente en:
