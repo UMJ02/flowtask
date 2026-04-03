@@ -16,11 +16,13 @@ export function AppSidebar({
   activeOrganization = null,
   userEmail,
   userName,
+  canAccessPlatform = false,
 }: {
   organizations?: OrganizationSummary[];
   activeOrganization?: OrganizationSummary | null;
   userEmail: string;
   userName?: string | null;
+  canAccessPlatform?: boolean;
 }) {
   const pathname = usePathname();
   const { collapsed, toggle } = useSidebarState();
@@ -92,6 +94,7 @@ export function AppSidebar({
           userEmail={userEmail}
           userName={userName}
           collapsed={collapsed}
+          canAccessPlatform={canAccessPlatform}
         />
       </div>
     </aside>

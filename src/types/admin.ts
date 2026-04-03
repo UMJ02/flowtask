@@ -3,6 +3,8 @@ export interface AdminMetricSummary {
   users: number;
   activeSubscriptions: number;
   openSupportTickets: number;
+  usageEvents7d: number;
+  criticalErrors7d: number;
 }
 
 export interface AdminOrganizationSummary {
@@ -34,4 +36,39 @@ export interface AdminSupportTicketSummary {
   priority: string;
   source: string;
   createdAtLabel: string;
+}
+
+export interface AdminErrorLogSummary {
+  id: string;
+  level: string;
+  source: string;
+  route: string;
+  message: string;
+  createdAtLabel: string;
+}
+
+export interface AdminUsageTopEvent {
+  eventName: string;
+  count: number;
+}
+
+export interface AdminUsageEventSummary {
+  id: string;
+  eventName: string;
+  organizationName: string;
+  actorLabel: string;
+  route: string;
+  createdAtLabel: string;
+}
+
+export interface AdminUsageInsightSummary {
+  topEvents: AdminUsageTopEvent[];
+  recentEvents: AdminUsageEventSummary[];
+}
+
+export interface AdminPlatformPulse {
+  readinessScore: number;
+  queueHealthLabel: string;
+  eventsTrendLabel: string;
+  riskLabel: string;
 }

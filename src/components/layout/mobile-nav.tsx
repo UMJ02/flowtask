@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useMemo, useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { LogOut, Menu, X } from 'lucide-react';
+import { LayoutPanelTop, LogOut, Menu, X } from 'lucide-react';
 import { appNavLinks } from '@/components/layout/nav-links';
 import { createClient } from '@/lib/supabase/client';
 
@@ -19,7 +19,7 @@ const footerHrefs = new Set([
 
 const mainNavLinks = appNavLinks.filter((link) => !footerHrefs.has(link.href));
 
-export function MobileNav() {
+export function MobileNav({ canAccessPlatform = false }: { canAccessPlatform?: boolean }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -99,6 +99,26 @@ export function MobileNav() {
               );
             })}
           </nav>
+
+          {canAccessPlatform ? (
+            <div className="rounded-[28px] border border-emerald-400/20 bg-emerald-500/10 p-2">
+              <Link
+                href="/app/platform"
+                className="flex items-center justify-between rounded-3xl border border-emerald-400/20 bg-white/5 px-4 py-3 transition hover:bg-white/10"
+                onClick={() => setOpen(false)}
+              >
+                <div className="flex min-w-0 items-center gap-3">
+                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-500 text-white">
+                    <LayoutPanelTop className="h-5 w-5" />
+                  </span>
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold text-white">Platform control</p>
+                    <p className="truncate text-xs text-emerald-200">Observabilidad y operación SaaS</p>
+                  </div>
+                </div>
+              </Link>
+            </div>
+          ) : null}
 
           <div className="rounded-[28px] border border-white/10 bg-white/[0.03] p-2">
             <button

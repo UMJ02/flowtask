@@ -1,12 +1,25 @@
 export const dynamic = 'force-dynamic';
 
+import { ShieldCheck, Activity } from 'lucide-react';
 import { redirect } from 'next/navigation';
+import { AdminErrorsPanel } from '@/components/admin/admin-errors-panel';
 import { AdminMetricsPanel } from '@/components/admin/admin-metrics-panel';
 import { AdminOrganizationsPanel } from '@/components/admin/admin-organizations-panel';
-import { AdminUsersPanel } from '@/components/admin/admin-users-panel';
+import { AdminPlatformPulseCard } from '@/components/admin/admin-platform-pulse';
 import { AdminSupportPanel } from '@/components/admin/admin-support-panel';
-import { Card } from '@/components/ui/card';
-import { getAdminAccess, getAdminMetrics, getAdminOrganizations, getAdminSupportTickets, getAdminUsers } from '@/lib/queries/admin';
+import { AdminUsagePanel } from '@/components/admin/admin-usage-panel';
+import { AdminUsersPanel } from '@/components/admin/admin-users-panel';
+import { PageIntro } from '@/components/ui/page-intro';
+import {
+  getAdminAccess,
+  getAdminErrorLogs,
+  getAdminMetrics,
+  getAdminOrganizations,
+  getAdminPlatformPulse,
+  getAdminSupportTickets,
+  getAdminUsageInsights,
+  getAdminUsers,
+} from '@/lib/queries/admin';
 import { safeServerCall } from '@/lib/runtime/safe-server';
 
 export default async function PlatformPage() {
@@ -15,30 +28,55 @@ export default async function PlatformPage() {
     redirect('/app/dashboard');
   }
 
-  const [metrics, organizations, users, tickets] = await Promise.all([
-    safeServerCall('getAdminMetrics', () => getAdminMetrics(), { organizations: 0, users: 0, activeSubscriptions: 0, openSupportTickets: 0 }),
+  const [metrics, organizations, users, tickets, errors, usageInsights] = await Promise.all([
+    safeServerCall('getAdminMetrics', () => getAdminMetrics(), {
+      organizations: 0,
+      users: 0,
+      activeSubscriptions: 0,
+      openSupportTickets: 0,
+      usageEvents7d: 0,
+      criticalErrors7d: 0,
+    }),
     safeServerCall('getAdminOrganizations', () => getAdminOrganizations(), []),
     safeServerCall('getAdminUsers', () => getAdminUsers(), []),
     safeServerCall('getAdminSupportTickets', () => getAdminSupportTickets(), []),
+    safeServerCall('getAdminErrorLogs', () => getAdminErrorLogs(), []),
+    safeServerCall('getAdminUsageInsights', () => getAdminUsageInsights(), { topEvents: [], recentEvents: [] }),
   ]);
+
+  const pulse = getAdminPlatformPulse(metrics);
 
   return (
     <div className="space-y-4">
-      <Card>
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Platform command center</p>
-            <h1 className="mt-1 text-2xl font-bold text-slate-900">Operación SaaS, soporte y cuentas</h1>
-            <p className="mt-2 max-w-3xl text-sm text-slate-600">Vista ejecutiva para administración global de organizaciones, suscripciones y casos internos de plataforma desde una sola pantalla.</p>
+      <PageIntro
+        eyebrow="Platform control"
+        title="Centro de control SaaS"
+        description="Operación global para cuentas, observabilidad, soporte y adopción de la plataforma. Esta vista es exclusiva para platform admins y no modifica el dashboard operativo del usuario final."
+        actions={
+          <>
+            <div className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700">
+              <ShieldCheck className="h-4 w-4 text-emerald-600" />
+              Admin only
+            </div>
+            <div className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-semibold text-slate-700">
+              <Activity className="h-4 w-4 text-slate-500" />
+              V57 · Platform control
+            </div>
+          </>
+        }
+        aside={
+          <div className="rounded-[24px] border border-emerald-100 bg-emerald-50/70 p-4 text-sm leading-6 text-emerald-900">
+            Aquí monitoreas la salud operativa del SaaS, errores recientes, uso real y la cola interna de soporte desde una sola vista.
           </div>
-          <div className="rounded-2xl bg-slate-950 px-5 py-4 text-white">
-            <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400">Platform readiness</p>
-            <p className="mt-1 text-3xl font-bold">{Math.max(0, 100 - metrics.openSupportTickets * 3)}%</p>
-            <p className="mt-2 text-sm text-slate-300">{metrics.activeSubscriptions} suscripciones bajo observación</p>
-          </div>
-        </div>
-      </Card>
+        }
+      />
+
+      <AdminPlatformPulseCard pulse={pulse} metrics={metrics} />
       <AdminMetricsPanel metrics={metrics} />
+      <div className="grid gap-4 xl:grid-cols-[1.05fr_0.95fr]">
+        <AdminUsagePanel insights={usageInsights} />
+        <AdminErrorsPanel items={errors} />
+      </div>
       <AdminOrganizationsPanel items={organizations} />
       <div className="grid gap-4 xl:grid-cols-[1.05fr_0.95fr]">
         <AdminUsersPanel items={users} />

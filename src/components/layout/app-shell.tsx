@@ -14,6 +14,7 @@ export function AppShell({
   unreadCount,
   organizations = [],
   activeOrganization = null,
+  canAccessPlatform = false,
   children,
 }: {
   userEmail: string;
@@ -22,6 +23,7 @@ export function AppShell({
   unreadCount: number;
   organizations?: OrganizationSummary[];
   activeOrganization?: OrganizationSummary | null;
+  canAccessPlatform?: boolean;
   children: React.ReactNode;
 }) {
   return (
@@ -32,6 +34,7 @@ export function AppShell({
           userName={userName}
           organizations={organizations}
           activeOrganization={activeOrganization}
+          canAccessPlatform={canAccessPlatform}
         >
           {children}
         </ShellFrame>
@@ -45,12 +48,14 @@ function ShellFrame({
   userName,
   organizations = [],
   activeOrganization = null,
+  canAccessPlatform = false,
   children,
 }: {
   userEmail: string;
   userName?: string | null;
   organizations?: OrganizationSummary[];
   activeOrganization?: OrganizationSummary | null;
+  canAccessPlatform?: boolean;
   children: React.ReactNode;
 }) {
   const { collapsed } = useSidebarState();
@@ -58,9 +63,15 @@ function ShellFrame({
   return (
     <div className="min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#f3f7f5_52%,#eef5f2_100%)] px-2 py-2 md:px-3 md:py-4">
       <div className={`mx-auto grid max-w-[1540px] gap-3 transition-[grid-template-columns] duration-300 xl:gap-4 ${collapsed ? 'md:grid-cols-[104px_minmax(0,1fr)]' : 'md:grid-cols-[292px_minmax(0,1fr)]'}`}>
-        <AppSidebar organizations={organizations} activeOrganization={activeOrganization} userEmail={userEmail} userName={userName} />
+        <AppSidebar
+          organizations={organizations}
+          activeOrganization={activeOrganization}
+          userEmail={userEmail}
+          userName={userName}
+          canAccessPlatform={canAccessPlatform}
+        />
         <div className="min-w-0 space-y-3 xl:space-y-4">
-          <AppHeader userEmail={userEmail} userName={userName} />
+          <AppHeader userEmail={userEmail} userName={userName} canAccessPlatform={canAccessPlatform} />
           <main className="min-w-0 space-y-3 xl:space-y-4">{children}</main>
           <div className="page-section px-4 py-3 md:px-5">
             <AppFooter />

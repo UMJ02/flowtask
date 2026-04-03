@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Settings } from 'lucide-react';
+import { LayoutPanelTop, Settings } from 'lucide-react';
 import { OrganizationSwitcher } from '@/components/layout/organization-switcher';
 import type { OrganizationSummary } from '@/types/organization';
 
@@ -16,12 +16,14 @@ export function SidebarFooter({
   userEmail,
   userName,
   collapsed = false,
+  canAccessPlatform = false,
 }: {
   organizations?: OrganizationSummary[];
   activeOrganization?: OrganizationSummary | null;
   userEmail: string;
   userName?: string | null;
   collapsed?: boolean;
+  canAccessPlatform?: boolean;
 }) {
   const displayName = userName?.trim() || 'Mi cuenta';
   const initials = getInitials(displayName, userEmail);
@@ -37,6 +39,20 @@ export function SidebarFooter({
                 <OrganizationSwitcher organizations={organizations ?? []} activeOrganization={activeOrganization} compact dark />
               </div>
             </div>
+            {canAccessPlatform ? (
+              <div className="border-t border-white/10 pt-2.5">
+                <p className="px-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Platform</p>
+                <Link href="/app/platform" className="mt-2 flex items-center gap-3 rounded-[24px] bg-emerald-500/12 px-3 py-2.5 ring-1 ring-emerald-400/20 transition hover:bg-emerald-500/16">
+                  <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-emerald-500 text-white">
+                    <LayoutPanelTop className="h-4 w-4" />
+                  </span>
+                  <div className="min-w-0">
+                    <p className="break-words text-sm font-semibold leading-5 text-white">Platform control</p>
+                    <p className="truncate text-xs text-emerald-200">Operación SaaS y observabilidad</p>
+                  </div>
+                </Link>
+              </div>
+            ) : null}
             <div className="border-t border-white/10 pt-2.5">
               <p className="px-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Perfil</p>
               <Link href="/app/settings" className="mt-2 flex items-center gap-3 rounded-[24px] bg-white/6 px-3 py-2.5 ring-1 ring-white/10 transition hover:bg-white/10">
@@ -60,6 +76,15 @@ export function SidebarFooter({
             >
               <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white text-sm font-bold text-slate-950">{initials}</span>
             </Link>
+            {canAccessPlatform ? (
+              <Link
+                href="/app/platform"
+                aria-label="Abrir platform control"
+                className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-500/15 text-emerald-200 ring-1 ring-emerald-400/20 transition hover:bg-emerald-500/20 hover:text-white"
+              >
+                <LayoutPanelTop className="h-4 w-4" />
+              </Link>
+            ) : null}
             <Link
               href="/app/settings"
               aria-label="Abrir configuración"

@@ -1,4 +1,4 @@
-# FlowTask — v55 Production Hardening Base
+# FlowTask — v57 Platform Control Base
 
 Base actualizada sobre la **v54.3.4**, enfocada en dejar el repo principal listo para cierre técnico, higiene de seguridad y entrega limpia a cliente sin tocar el core funcional del producto.
 
@@ -77,6 +77,14 @@ Esta **v55** debe usarse como base oficial para seguir cerrando el producto sin 
 
 ## Release actual
 
-- versión: `56.0.0-ux-final-client`
-- foco: UX final + experiencia cliente
-- continuidad sugerida: platform control y handoff final
+- versión: `57.0.0-platform-control`
+- foco: platform control + observabilidad SaaS
+- continuidad sugerida: handoff final + QA de entrega
+
+
+## Qué agrega V57
+- centro de control SaaS exclusivo para platform admins
+- métricas globales de plataforma
+- observabilidad visible de errores recientes
+- visibilidad de uso real mediante usage events
+- acceso condicional al módulo platform desde la navegación de admins
