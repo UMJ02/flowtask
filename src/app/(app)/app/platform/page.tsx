@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic';
 
 import { ShieldCheck, Activity } from 'lucide-react';
 import { redirect } from 'next/navigation';
+import { AdminActivationCodesPanel } from '@/components/admin/admin-activation-codes-panel';
 import { AdminErrorsPanel } from '@/components/admin/admin-errors-panel';
 import { AdminMetricsPanel } from '@/components/admin/admin-metrics-panel';
 import { AdminOrganizationsPanel } from '@/components/admin/admin-organizations-panel';
@@ -12,6 +13,7 @@ import { AdminUsersPanel } from '@/components/admin/admin-users-panel';
 import { PageIntro } from '@/components/ui/page-intro';
 import {
   getAdminAccess,
+  getAdminActivationCodes,
   getAdminErrorLogs,
   getAdminMetrics,
   getAdminOrganizations,
@@ -28,7 +30,7 @@ export default async function PlatformPage() {
     redirect('/app/dashboard');
   }
 
-  const [metrics, organizations, users, tickets, errors, usageInsights] = await Promise.all([
+  const [metrics, organizations, users, tickets, errors, usageInsights, activationCodes] = await Promise.all([
     safeServerCall('getAdminMetrics', () => getAdminMetrics(), {
       organizations: 0,
       users: 0,
@@ -42,6 +44,7 @@ export default async function PlatformPage() {
     safeServerCall('getAdminSupportTickets', () => getAdminSupportTickets(), []),
     safeServerCall('getAdminErrorLogs', () => getAdminErrorLogs(), []),
     safeServerCall('getAdminUsageInsights', () => getAdminUsageInsights(), { topEvents: [], recentEvents: [] }),
+    safeServerCall('getAdminActivationCodes', () => getAdminActivationCodes(), []),
   ]);
 
   const pulse = getAdminPlatformPulse(metrics);
@@ -77,6 +80,7 @@ export default async function PlatformPage() {
         <AdminUsagePanel insights={usageInsights} />
         <AdminErrorsPanel items={errors} />
       </div>
+      <AdminActivationCodesPanel items={activationCodes} />
       <AdminOrganizationsPanel items={organizations} />
       <div className="grid gap-4 xl:grid-cols-[1.05fr_0.95fr]">
         <AdminUsersPanel items={users} />

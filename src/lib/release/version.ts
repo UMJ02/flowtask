@@ -1,3 +1,3 @@
-export const APP_VERSION = '57.4.3-footer-refresh';
-export const APP_RELEASE_NAME = 'v57.4.3 Footer Refresh';
-export const APP_RELEASE_STAGE = 'footer-refresh';
+export const APP_VERSION = '57.5-access-onboarding-modernization';
+export const APP_RELEASE_NAME = 'v57.5 Access Onboarding Modernization';
+export const APP_RELEASE_STAGE = 'access-onboarding-modernization';

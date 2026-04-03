@@ -72,3 +72,16 @@ export interface AdminPlatformPulse {
   eventsTrendLabel: string;
   riskLabel: string;
 }
+
+
+export interface AdminActivationCodeSummary {
+  id: string;
+  code: string;
+  planName: string;
+  accountMode: string;
+  billingCycle: string;
+  seatLimit: number | null;
+  isUsed: boolean;
+  expiresAtLabel: string;
+  createdAtLabel: string;
+}

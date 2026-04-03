@@ -9,6 +9,7 @@ import type {
   AdminUsageInsightSummary,
   AdminUsageTopEvent,
   AdminUserSummary,
+  AdminActivationCodeSummary,
 } from '@/types/admin';
 
 function formatDateLabel(value?: string | null) {
@@ -237,6 +238,32 @@ export async function getAdminSupportTickets(): Promise<AdminSupportTicketSummar
     priority: (row.priority as string) ?? 'normal',
     source: (row.source as string) ?? 'in_app',
     createdAtLabel: row.created_at ? format(new Date(row.created_at as string), 'dd/MM/yyyy') : '-',
+  }));
+}
+
+
+
+export async function getAdminActivationCodes(): Promise<AdminActivationCodeSummary[]> {
+  const access = await getAdminAccess();
+  if (!access.canAccess) return [];
+
+  const supabase = await createClient();
+  const { data: codes } = await supabase
+    .from('activation_codes')
+    .select('id,code,plan_name,account_mode,billing_cycle,seat_limit,is_used,expires_at,created_at')
+    .order('created_at', { ascending: false })
+    .limit(8);
+
+  return (codes ?? []).map((row: any) => ({
+    id: row.id as string,
+    code: row.code as string,
+    planName: (row.plan_name as string) ?? 'Plan',
+    accountMode: (row.account_mode as string) ?? 'team_owner',
+    billingCycle: (row.billing_cycle as string) ?? 'annual',
+    seatLimit: (row.seat_limit as number | null | undefined) ?? null,
+    isUsed: Boolean(row.is_used),
+    expiresAtLabel: formatDateLabel(row.expires_at as string | null),
+    createdAtLabel: formatDateLabel(row.created_at as string | null),
   }));
 }
 

@@ -88,3 +88,8 @@ Esta **v55** debe usarse como base oficial para seguir cerrando el producto sin 
 - observabilidad visible de errores recientes
 - visibilidad de uso real mediante usage events
 - acceso condicional al módulo platform desde la navegación de admins
+
+
+## V57.5 — Access onboarding modernization
+
+FlowTask ahora incluye una base moderna para acceso individual, equipo / empresa y códigos corporativos sin duplicar la suscripción organizacional existente.

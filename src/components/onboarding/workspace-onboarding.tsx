@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { asRoute } from '@/lib/navigation/routes';
 import type { WorkspaceOnboardingSummary } from "@/lib/queries/onboarding";
+import { AccountModeConsole } from "@/components/onboarding/account-mode-console";
 
 const categoryStyles: Record<WorkspaceOnboardingSummary["steps"][number]["category"], string> = {
   foundation: "bg-blue-50 text-blue-700 ring-1 ring-blue-100",
@@ -62,20 +63,21 @@ export function WorkspaceOnboarding({ summary, compact = false }: { summary: Wor
 
   return (
     <div className="space-y-4">
+      <AccountModeConsole access={summary.access} />
       <Card className="bg-[linear-gradient(135deg,#06291d_0%,#0f172a_58%,#111827_100%)] text-white shadow-[0_24px_60px_rgba(15,23,42,0.25)]">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">Workspace onboarding</p>
             <h2 className="mt-2 text-3xl font-bold">Centro de arranque y cierre operativo</h2>
             <p className="mt-2 text-sm text-slate-300">
-              Usa esta vista para convertir el workspace en una base lista para escalar, con organización, operación y automatización cerradas.
+              Usa esta vista para definir el modo de cuenta, terminar la base del workspace y cerrar operación y automatización sin duplicar estructura.
             </p>
           </div>
           <div className="grid gap-3 sm:grid-cols-3">
             <div className="rounded-[26px] bg-white/10 px-4 py-3 ring-1 ring-white/10">
               <p className="text-xs uppercase tracking-[0.16em] text-slate-300">Readiness</p>
               <p className="mt-2 text-3xl font-bold">{summary.score}%</p>
-              <p className="mt-1 text-sm text-slate-300">Nivel de cierre del workspace.</p>
+              <p className="mt-1 text-sm text-slate-300">Nivel de cierre del setup actual.</p>
             </div>
             <div className="rounded-[26px] bg-white/10 px-4 py-3 ring-1 ring-white/10">
               <p className="text-xs uppercase tracking-[0.16em] text-slate-300">Organización</p>
