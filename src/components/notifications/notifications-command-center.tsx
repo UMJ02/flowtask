@@ -1,5 +1,6 @@
 import { BellRing, Clock3, Mail, MessageSquareText, ShieldCheck } from 'lucide-react';
 import { Card } from '@/components/ui/card';
+import { TestNotificationButton } from '@/components/notifications/test-notification-button';
 import type { NotificationPreferences } from '@/lib/queries/notification-preferences';
 
 type DeliverySummary = {
@@ -58,10 +59,10 @@ export function NotificationsCommandCenter({
   return (
     <div className="grid gap-4 xl:grid-cols-[1.05fr_0.95fr]">
       <Card className="bg-[linear-gradient(135deg,#062b2a_0%,#0f172a_56%,#111827_100%)] text-white shadow-[0_28px_70px_rgba(2,6,23,0.24)]">
-        <div className="flex flex-col gap-5">
+        <div className="flex h-full flex-col gap-5">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">Notification command</p>
-            <h1 className="mt-2 text-3xl font-bold">Orquesta alertas, entregas y atención del equipo</h1>
+            <h1 className="mt-2 max-w-3xl text-3xl font-bold">Orquesta alertas, entregas y atención del equipo</h1>
             <p className="mt-2 max-w-2xl text-sm text-slate-300">
               Esta vista combina la salud operativa de las notificaciones con tus reglas de envío para que detectes saturación, fallos o espacios de mejora sin salir del centro de avisos.
             </p>
@@ -83,6 +84,9 @@ export function NotificationsCommandCenter({
               <p className="text-xs uppercase tracking-[0.16em] text-slate-300">Readiness</p>
               <p className="mt-2 text-2xl font-bold">{readinessLabel(preferences)}</p>
             </div>
+          </div>
+          <div className="mt-auto rounded-[28px] bg-white/8 p-1.5 ring-1 ring-white/10 backdrop-blur-sm">
+            <TestNotificationButton variant="embedded-dark" />
           </div>
         </div>
       </Card>

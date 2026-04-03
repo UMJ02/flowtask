@@ -1,3 +1,3 @@
-export const APP_VERSION = '57.0.0-platform-control';
-export const APP_RELEASE_NAME = 'v57 Platform Control';
-export const APP_RELEASE_STAGE = 'platform-control';
+export const APP_VERSION = '57.1.0-notifications-refine';
+export const APP_RELEASE_NAME = 'v57.1 Notifications Refinement';
+export const APP_RELEASE_STAGE = 'notifications-refine';

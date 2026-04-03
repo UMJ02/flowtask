@@ -3,7 +3,6 @@ export const dynamic = 'force-dynamic';
 import { NotificationsLivePanel } from '@/components/notifications/notifications-live-panel';
 import { NotificationDeliveryHealth } from '@/components/notifications/notification-delivery-health';
 import { NotificationsCommandCenter } from '@/components/notifications/notifications-command-center';
-import { TestNotificationButton } from '@/components/notifications/test-notification-button';
 import { getNotificationPreferences } from '@/lib/queries/notification-preferences';
 import { getNotificationsPageData } from '@/lib/queries/notifications';
 import { safeServerCall } from '@/lib/runtime/safe-server';
@@ -58,9 +57,6 @@ export default async function NotificationsPage({ searchParams }: { searchParams
         deliverySummary={data.deliverySummary}
         preferences={preferences}
       />
-      <div className="flex justify-end">
-        <TestNotificationButton />
-      </div>
       <NotificationsLivePanel
         userId={data.userId}
         initialNotifications={data.notifications}

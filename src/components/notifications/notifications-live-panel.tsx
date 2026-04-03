@@ -45,6 +45,7 @@ type DeliverySummary = {
 };
 
 type GroupKey = "today" | "yesterday" | "earlier";
+type InsightKey = "digest" | "failed" | "tasks";
 
 const GROUP_LABELS: Record<GroupKey, string> = { today: "Hoy", yesterday: "Ayer", earlier: "Anteriores" };
 
@@ -96,21 +97,42 @@ function summarizeDeliveries(notifications: LiveNotification[]): DeliverySummary
     );
 }
 
-function StatCard({ label, value, tone = "default" }: { label: string; value: string | number; tone?: "default" | "success" | "danger" | "warning" }) {
-  const toneClass =
-    tone === "success"
-      ? "text-emerald-700"
-      : tone === "danger"
-        ? "text-rose-700"
-        : tone === "warning"
-          ? "text-amber-700"
-          : "text-slate-900";
+function InsightSelector({
+  active,
+  onChange,
+  hasFailed,
+  assignedCount,
+}: {
+  active: InsightKey;
+  onChange: (value: InsightKey) => void;
+  hasFailed: boolean;
+  assignedCount: number;
+}) {
+  const items: Array<{ key: InsightKey; label: string; meta: string }> = [
+    { key: "digest", label: "Resumen diario", meta: "Último consolidado" },
+    { key: "failed", label: "Entregas fallidas", meta: hasFailed ? "Requieren atención" : "Sin alertas" },
+    { key: "tasks", label: "Tareas asignadas", meta: assignedCount ? `${assignedCount} activas` : "Sin pendientes" },
+  ];
 
   return (
-    <Card className="p-4">
-      <p className="text-sm font-medium text-slate-500">{label}</p>
-      <p className={`mt-2 break-words text-3xl font-bold ${toneClass}`}>{value}</p>
-    </Card>
+    <div className="grid gap-2 md:grid-cols-3">
+      {items.map((item) => {
+        const isActive = item.key === active;
+        return (
+          <button
+            key={item.key}
+            type="button"
+            onClick={() => onChange(item.key)}
+            className={isActive
+              ? "rounded-2xl border border-slate-900 bg-slate-900 px-4 py-3 text-left text-white shadow-sm"
+              : "rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-left text-slate-700 transition hover:border-slate-300 hover:bg-white"}
+          >
+            <p className={isActive ? "text-sm font-semibold text-white" : "text-sm font-semibold text-slate-900"}>{item.label}</p>
+            <p className={isActive ? "mt-1 text-xs text-slate-200" : "mt-1 text-xs text-slate-500"}>{item.meta}</p>
+          </button>
+        );
+      })}
+    </div>
   );
 }
 
@@ -138,6 +160,7 @@ export function NotificationsLivePanel({
   const [activeFilter, setActiveFilter] = useState<NotificationFilterKey>(initialFilter);
   const [searchQuery, setSearchQuery] = useState(initialSearch);
   const [liveDeliverySummary, setLiveDeliverySummary] = useState(deliverySummary);
+  const [activeInsight, setActiveInsight] = useState<InsightKey>("digest");
   const { unreadCount, markOneAsRead, markAllAsRead } = useNotificationsState();
 
   useNotificationsRealtime({
@@ -156,7 +179,6 @@ export function NotificationsLivePanel({
   useEffect(() => {
     setLiveDeliverySummary(summarizeDeliveries(notifications));
   }, [notifications]);
-
 
   const syncUrl = (nextFilter: NotificationFilterKey, nextQuery: string) => {
     const params = new URLSearchParams();
@@ -180,43 +202,25 @@ export function NotificationsLivePanel({
   );
   const unreadVisibleIds = useMemo(() => visibleNotifications.filter((item) => !item.is_read).map((item) => item.id), [visibleNotifications]);
   const readVisibleIds = useMemo(() => visibleNotifications.filter((item) => item.is_read).map((item) => item.id), [visibleNotifications]);
+  const failedDeliveries = useMemo(
+    () => notifications.flatMap((item) => item.deliveries ?? []).filter((delivery) => delivery.status === "failed").slice(0, 4),
+    [notifications],
+  );
+  const latestReminderText = triggeredReminders.length
+    ? `${triggeredReminders.length} recordatorio${triggeredReminders.length === 1 ? "" : "s"} enviado${triggeredReminders.length === 1 ? "" : "s"} recientemente.`
+    : "Sin recordatorios recientes.";
 
   return (
     <div className="space-y-6">
-      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4">
-        <StatCard label="No leídas" value={unreadCount} />
-        <StatCard label="Tareas asignadas" value={assignedTasks.length} />
-        <StatCard label="Recordatorios enviados" value={triggeredReminders.length} />
-        <StatCard label="Resumen diario" value={digestPreview ? digestPreview.status : "Pendiente"} />
-        <StatCard label="Entregas" value={liveDeliverySummary.total} />
-        <StatCard label="Enviadas" value={liveDeliverySummary.sent} tone="success" />
-        <StatCard label="Fallidas" value={liveDeliverySummary.failed} tone="danger" />
-        <StatCard label="Pendientes" value={liveDeliverySummary.pending} tone="warning" />
-      </section>
-
       <section className="grid gap-4 xl:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]">
-        <Card className="space-y-4">
-          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+        <Card className="space-y-5">
+          <div>
             <div>
               <h2 className="text-lg font-semibold text-slate-900">Centro de notificaciones</h2>
               <p className="text-sm text-slate-500">Revisa avisos del equipo y el estado de sus entregas en un solo lugar.</p>
             </div>
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="mt-4 flex flex-wrap items-center gap-2">
               <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">En vivo</span>
-              <MarkAllNotificationsReadButton
-                ids={unreadVisibleIds}
-                disabled={!unreadVisibleIds.length}
-                onMarked={() => {
-                  setNotifications((current) => current.map((row) => (unreadVisibleIds.includes(row.id) ? { ...row, is_read: true } : row)));
-                  markAllAsRead(unreadVisibleIds.length);
-                }}
-              />
-              <ArchiveReadNotificationsButton
-                disabled={!readVisibleIds.length}
-                onArchived={() => {
-                  setNotifications((current) => current.filter((row) => !readVisibleIds.includes(row.id)));
-                }}
-              />
             </div>
           </div>
 
@@ -252,6 +256,23 @@ export function NotificationsLivePanel({
                 ))}
               </select>
             </label>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2 border-t border-slate-100 pt-1 sm:justify-end">
+            <MarkAllNotificationsReadButton
+              ids={unreadVisibleIds}
+              disabled={!unreadVisibleIds.length}
+              onMarked={() => {
+                setNotifications((current) => current.map((row) => (unreadVisibleIds.includes(row.id) ? { ...row, is_read: true } : row)));
+                markAllAsRead(unreadVisibleIds.length);
+              }}
+            />
+            <ArchiveReadNotificationsButton
+              disabled={!readVisibleIds.length}
+              onArchived={() => {
+                setNotifications((current) => current.filter((row) => !readVisibleIds.includes(row.id)));
+              }}
+            />
           </div>
 
           <div className="space-y-4">
@@ -318,46 +339,76 @@ export function NotificationsLivePanel({
           </div>
         </Card>
 
-        <div className="space-y-4">
-          <Card>
-            <h3 className="text-lg font-semibold text-slate-900">Último resumen diario</h3>
-            <p className="mt-3 text-sm leading-6 text-slate-600">
-              {digestPreview?.summary_body ?? "Todavía no se ha generado un resumen diario."}
-            </p>
-          </Card>
+        <Card className="space-y-4">
+          <div>
+            <h3 className="text-lg font-semibold text-slate-900">Panel de seguimiento</h3>
+            <p className="mt-1 text-sm text-slate-500">Concentra el resumen diario, las fallas de entrega y las tareas asignadas en un solo bloque para reducir ruido visual.</p>
+          </div>
 
-          <Card>
-            <h3 className="text-lg font-semibold text-slate-900">Entregas fallidas</h3>
-            <div className="mt-3 space-y-3">
-              {notifications.flatMap((item) => item.deliveries ?? []).filter((delivery) => delivery.status === "failed").slice(0, 3).length ? (
-                notifications.flatMap((item) => item.deliveries ?? []).filter((delivery) => delivery.status === "failed").slice(0, 3).map((delivery) => (
-                  <div key={delivery.id} className="rounded-2xl bg-slate-50 p-3 text-sm text-slate-600">
-                    <p className="font-semibold text-slate-900">{delivery.channel}</p>
-                    <p className="mt-1">{delivery.error_message ?? "No se pudo completar el envío."}</p>
-                  </div>
-                ))
-              ) : (
-                <p className="text-sm text-slate-600">No hay entregas fallidas recientes.</p>
-              )}
-            </div>
-          </Card>
+          <InsightSelector
+            active={activeInsight}
+            onChange={setActiveInsight}
+            hasFailed={failedDeliveries.length > 0 || liveDeliverySummary.failed > 0}
+            assignedCount={assignedTasks.length}
+          />
 
-          <Card>
-            <h3 className="text-lg font-semibold text-slate-900">Tareas asignadas</h3>
-            <div className="mt-3 space-y-3">
-              {assignedTasks.length ? (
-                assignedTasks.slice(0, 4).map((task) => (
-                  <div key={task.id} className="rounded-2xl bg-slate-50 p-3 text-sm text-slate-600">
-                    <p className="font-semibold text-slate-900">{task.tasks?.title ?? "Tarea sin título"}</p>
-                    <p className="mt-1">{task.tasks?.client_name ?? "Sin cliente"} · {task.tasks?.status ?? "Pendiente"}</p>
-                  </div>
-                ))
-              ) : (
-                <p className="text-sm text-slate-600">No tienes tareas asignadas recientes.</p>
-              )}
-            </div>
-          </Card>
-        </div>
+          <div className="rounded-[24px] border border-slate-200 bg-slate-50 p-4">
+            {activeInsight === "digest" ? (
+              <div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-600 ring-1 ring-slate-200">{digestPreview?.status ?? "Pendiente"}</span>
+                  <span className="text-xs text-slate-400">{digestPreview?.processed_at ? formatDate(digestPreview.processed_at) : latestReminderText}</span>
+                </div>
+                <h4 className="mt-4 text-lg font-semibold text-slate-900">{digestPreview?.summary_title ?? "Último resumen diario"}</h4>
+                <p className="mt-2 text-sm leading-6 text-slate-600">{digestPreview?.summary_body ?? "Todavía no se ha generado un resumen diario."}</p>
+              </div>
+            ) : null}
+
+            {activeInsight === "failed" ? (
+              <div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="rounded-full bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-700">{liveDeliverySummary.failed} fallidas</span>
+                  <span className="text-xs text-slate-400">{deliverySummary.total} entregas revisadas</span>
+                </div>
+                <h4 className="mt-4 text-lg font-semibold text-slate-900">Entregas fallidas</h4>
+                <div className="mt-3 space-y-3">
+                  {failedDeliveries.length ? (
+                    failedDeliveries.map((delivery) => (
+                      <div key={delivery.id} className="rounded-2xl border border-slate-200 bg-white p-3 text-sm text-slate-600">
+                        <p className="font-semibold text-slate-900">{delivery.channel}</p>
+                        <p className="mt-1">{delivery.error_message ?? "No se pudo completar el envío."}</p>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-sm text-slate-600">No hay entregas fallidas recientes.</p>
+                  )}
+                </div>
+              </div>
+            ) : null}
+
+            {activeInsight === "tasks" ? (
+              <div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700">{assignedTasks.length} asignadas</span>
+                  <span className="text-xs text-slate-400">{latestReminderText}</span>
+                </div>
+                <h4 className="mt-4 text-lg font-semibold text-slate-900">Tareas asignadas</h4>
+                <div className="mt-3 space-y-3">
+                  {assignedTasks.length ? (
+                    assignedTasks.slice(0, 4).map((task) => (
+                      <div key={task.id} className="rounded-2xl border border-slate-200 bg-white p-3 text-sm text-slate-600">
+                        <p className="font-semibold text-slate-900">{task.tasks?.title ?? "Tarea sin título"}</p>
+                        <p className="mt-1">{task.tasks?.client_name ?? "Sin cliente"} · {task.tasks?.status ?? "Pendiente"}</p>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-sm text-slate-600">No tienes tareas asignadas recientes.</p>
+                  )}
+                </div>
+              </div>
+            ) : null}
+          </div>
+        </Card>
       </section>
     </div>
   );
