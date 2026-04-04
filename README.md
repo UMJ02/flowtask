@@ -1,26 +1,26 @@
-# FlowTask — V58.10 Organization UI Polish
+# FlowTask — V58.10.1 Deploy Pipeline Fix
 
-Esta versión toma como base **V58.9** y pule la experiencia visual de la pantalla de **Equipo** sin alterar la lógica de permisos ni la arquitectura del proyecto.
+Esta versión toma como base **V58.10** y corrige el pipeline de deploy/preflight sin tocar la UI recién trabajada en la pantalla de **Equipo**.
 
 ## Objetivo
-- reforzar la jerarquía visual del modo activo y permisos
-- hacer más clara la lectura de acceso efectivo
-- dejar el bloque de crear equipo con mejor balance visual
-- mantener la continuidad 1:1 sin romper flujo funcional
+- corregir el preflight de deploy sin alterar componentes de UI
+- alinear versiones, readiness y verificación con la realidad de V58.10.1
+- dejar compatibilidad clara con Vercel y desarrollo local
+- mantener continuidad 1:1 sin romper flujo funcional
 
-## Qué cambia en la V58.10
-- metadata y scripts alineados a `V58.10`
-- nuevo `scripts/verify-v58.10.mjs`
-- nuevo release doc `docs/release/V58_10_ORGANIZATION_UI_POLISH.md`
-- cintillo de estado de acceso más sólido y con fallback si faltan `ck.png`/`dn.png`
-- botón y despliegue de permisos refinados
-- permisos en chips compactos listos para una sola línea en desktop
-- formulario de creación de equipo con labels alineados y mejor proporción visual
+## Qué cambia en la V58.10.1
+- metadata y scripts alineados a `V58.10.1`
+- nuevo `scripts/verify-v58.10.1.mjs`
+- nuevo release doc `docs/release/V58_10_1_DEPLOY_PIPELINE_FIX.md`
+- `.env.example`, `.nvmrc` y `.github/workflows/ci.yml` agregados
+- `check-node-version.mjs` ajustado para permitir Node 22 local sin bloquear deploy en Node 20
+- `build-deploy-readiness.mjs` corregido para aceptar `npm ci` o `npm install` y validar V58.10.1
+- `deploy-production-readiness.mjs` alineado a V58.10.1 y al pipeline actual de Vercel
 
 ## Scripts principales
-- `npm run verify:v58.10`
+- `npm run verify:v58.10.1`
 - `npm run verify:current`
 - `npm run release:repo:current`
 
 ## Base de continuidad
-Usa esta **V58.10** como base para seguir con ajustes UX/UI del workspace o cierre visual final de producto.
+Usa esta **V58.10.1** como base para seguir con cambios funcionales o nuevos ajustes UX/UI sin reabrir problemas del pipeline de deploy.
