@@ -1,4 +1,4 @@
-# FlowTask — Client Release Checklist (V58.6)
+# FlowTask — Client Release Checklist (V58.7)
 
 ## 1. Base técnica
 - [ ] `npm install`
@@ -11,6 +11,7 @@
 - [ ] `npm run typecheck`
 - [ ] `npm run deploy:readiness`
 - [ ] `npm run client:readiness:check`
+- [ ] `npm run deploy:production:ready`
 
 ## 2. Repo limpio
 - [ ] sin `node_modules`
@@ -43,7 +44,18 @@
 - [ ] navegación estable desktop
 - [ ] navegación estable mobile básico
 
-## 5. Release técnico
+## 5. Deploy real
+- [ ] variables cargadas en Vercel Preview y Production
+- [ ] dominio/base URL confirmada
+- [ ] `npm run vercel:preflight` completado
+- [ ] deploy preview sin errores
+- [ ] deploy production sin errores
+- [ ] `/api/health` = 200
+- [ ] `/api/ready` = 200
+- [ ] `npm run postdeploy:smoke` OK
+- [ ] rollback documentado
+
+## 6. Release técnico
 - [ ] `npm run security:check`
 - [ ] `npm run performance:check`
 - [ ] `npm run ops:check`
@@ -53,7 +65,7 @@
 - [ ] `npm run preprod:validate`
 - [ ] `npm run production:gate`
 
-## 6. Entrega final
+## 7. Entrega final
 - [ ] zip limpio generado desde esta base
 - [ ] documentación de handoff incluida
 - [ ] cliente recibe solo fuente necesaria

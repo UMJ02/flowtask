@@ -1,28 +1,29 @@
-# FlowTask — V58.6 Functional Closeout + Client Readiness
+# FlowTask — V58.7 Deploy + Producción Real
 
-Esta versión toma como base **V58.5** y consolida el board para uso real de cliente sin rehacer la arquitectura existente.
+Esta versión toma como base **V58.6** y cierra la capa operativa para despliegue real, validación postdeploy y handoff técnico sin reabrir la arquitectura existente.
 
 ## Objetivo
-- cerrar el flujo funcional diario sobre tareas reales
-- dejar la agenda visible orientada a favoritas
-- permitir cierre rápido de tareas desde el board
-- mantener la base estable para demo, QA y entrega cliente
+- dejar el repo listo para despliegue técnico reproducible
+- endurecer el flujo de preflight, deploy y postdeploy
+- documentar la corrida operativa mínima para Vercel/producción
+- mantener estable la base funcional y de board ya cerrada en V58.6
 
-## Qué cambia en la V58.6
-- board actualizado a persistencia local `flowtask.board.v586`
-- agenda del calendario con acciones reales: abrir tarea, abrir proyecto y completar
-- panel lateral “Lo que sigue hoy” ahora muestra tareas destacadas reales
-- CTA para agregar la tarea recién creada a la agenda visible
-- cierre rápido de tareas desde board con actualización a base de datos
-- nueva verificación `scripts/verify-v58.6.mjs`
-- nuevo chequeo `scripts/client-readiness-check.mjs`
-- documentación de release actualizada a `V58.6`
+## Qué cambia en la V58.7
+- metadata y scripts alineados a `V58.7`
+- nueva verificación `scripts/verify-v58.7.mjs`
+- nuevo chequeo `scripts/deploy-production-readiness.mjs`
+- nuevo smoke postdeploy `scripts/postdeploy-smoke.mjs`
+- `production-gate` y `deploy-summary` corregidos a la línea viva `V58.x`
+- `vercel.json` reforzado con headers y build reproducible
+- se agrega workflow base `.github/workflows/ci.yml`
+- documentación de release y runbook operativo actualizada a `V58.7`
 
 ## Scripts principales
-- `npm run verify:v58.6`
-- `npm run client:readiness:check`
+- `npm run verify:v58.7`
+- `npm run deploy:production:ready`
+- `npm run postdeploy:smoke`
 - `npm run verify:current`
 - `npm run release:repo:current`
 
 ## Base de continuidad
-Usa esta **V58.6** como nueva base 1:1 para seguir con cierre de deploy, QA final y bundle cliente.
+Usa esta **V58.7** como nueva base 1:1 para deploy final, QA postdeploy y bundle cliente listo para producción.

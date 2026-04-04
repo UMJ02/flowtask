@@ -1,3 +1,3 @@
-export const APP_VERSION = "58.6-functional-closeout-client-ready";
-export const APP_RELEASE_NAME = "v58.6 Functional Closeout + Client Readiness";
-export const APP_RELEASE_STAGE = "functional-closeout-client-ready";
+export const APP_VERSION = "58.7-deploy-production-real";
+export const APP_RELEASE_NAME = "v58.7 Deploy + Producción Real";
+export const APP_RELEASE_STAGE = "deploy-production-real";

@@ -26,6 +26,7 @@ const optionalVars = [
   'CRON_SECRET',
   'DIGEST_TIMEZONE',
   'NOTIFICATION_BATCH_SIZE',
+  'FLOWTASK_BASE_URL',
 ];
 
 const missingRequired = [...requiredPublic, ...requiredServer].filter(

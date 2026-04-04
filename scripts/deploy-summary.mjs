@@ -6,12 +6,19 @@ const root = process.cwd();
 const pkg = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
 const checklist = [
   '.env.example',
+  '.nvmrc',
   'README.md',
+  'vercel.json',
+  'docs/release/V58_7_DEPLOY_PRODUCTION_REAL.md',
+  'docs/release/DEPLOY_PRODUCTION_RUNBOOK.md',
   'scripts/validate-env.mjs',
   'scripts/check-node-version.mjs',
   'scripts/preflight-report.mjs',
   'scripts/smoke-health.mjs',
+  'scripts/deploy-production-readiness.mjs',
+  'scripts/postdeploy-smoke.mjs',
   'src/app/api/health/route.ts',
+  'src/app/api/ready/route.ts',
   '.github/workflows/ci.yml'
 ];
 
@@ -28,4 +35,4 @@ if (missing.length) {
   process.exit(1);
 }
 
-console.log('[readiness-report] Release readiness pack present');
+console.log('[readiness-report] Deploy + production pack present');
