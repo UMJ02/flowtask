@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "58.3-release-hardening-base",
+  "version": "58.4-build-deploy-readiness",
   "private": true,
   "scripts": {
     "dev": "node node_modules/next/dist/bin/next dev",
@@ -19,7 +19,7 @@
     "prebuild": "npm run runtime:check",
     "ci:check": "npm run typecheck && npm run runtime:check",
     "reinstall:clean": "rm -rf node_modules package-lock.json .next tsconfig.tsbuildinfo",
-    "vercel:build": "npm run clean && npm run runtime:check && node node_modules/next/dist/bin/next build",
+    "vercel:build": "npm run clean && npm run build:preflight && node node_modules/next/dist/bin/next build",
     "build:strict": "npm run clean && npm run release:check && node node_modules/next/dist/bin/next build",
     "vercel:preflight": "npm run clean && npm run runtime:check && npm run typecheck",
     "vercel:deploy-check": "npm run vercel:preflight && echo \"[vercel-deploy-check] Ready to run npm run build\"",
@@ -55,16 +55,20 @@
     "debug:hydration": "node scripts/debug-hydration.mjs",
     "ops:check": "node scripts/ops-check.mjs",
     "performance:check": "node scripts/performance-check.mjs",
-    "release:repo:current": "npm run release:repo:v58.3",
+    "release:repo:current": "npm run release:repo:v58.4",
     "qa:current": "npm run validate:node && npm run validate:env && npm run verify:current && npm run runtime:check && npm run typecheck && npm run security:check && npm run performance:check && npm run ops:check",
     "release:current": "npm run clean && npm run release:repo:current && npm run qa:current && npm run qa:functional && npm run qa:report && npm run ux:review && npm run preprod:validate && npm run production:gate",
-    "verify:current": "npm run verify:v58.3",
+    "verify:current": "npm run verify:v58.4",
     "release:repo:v54.3.3": "npm run verify:current && npm run runtime:check && npm run typecheck",
     "verify:v54.3.4": "node scripts/verify-v54.3.4.mjs",
     "release:repo:v54.3.4": "npm run verify:current && npm run runtime:check && npm run typecheck",
     "verify:v58.0": "node scripts/verify-v58.0.mjs",
     "verify:v58.3": "node scripts/verify-v58.3.mjs",
-    "release:repo:v58.3": "npm run verify:current && npm run runtime:check && npm run typecheck"
+    "release:repo:v58.3": "npm run verify:current && npm run runtime:check && npm run typecheck",
+    "verify:v58.4": "node scripts/verify-v58.4.mjs",
+    "release:repo:v58.4": "npm run verify:current && npm run runtime:check && npm run typecheck && npm run deploy:readiness",
+    "deploy:readiness": "node scripts/build-deploy-readiness.mjs",
+    "build:preflight": "npm run validate:node && npm run validate:env && npm run verify:current && npm run runtime:check && npm run typecheck && npm run deploy:readiness"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
