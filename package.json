@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "58.2-organization-access-completion",
+  "version": "58.3-release-hardening-base",
   "private": true,
   "scripts": {
     "dev": "node node_modules/next/dist/bin/next dev",
@@ -55,14 +55,16 @@
     "debug:hydration": "node scripts/debug-hydration.mjs",
     "ops:check": "node scripts/ops-check.mjs",
     "performance:check": "node scripts/performance-check.mjs",
-    "release:repo:current": "npm run release:repo:v54.3.4",
+    "release:repo:current": "npm run release:repo:v58.3",
     "qa:current": "npm run validate:node && npm run validate:env && npm run verify:current && npm run runtime:check && npm run typecheck && npm run security:check && npm run performance:check && npm run ops:check",
     "release:current": "npm run clean && npm run release:repo:current && npm run qa:current && npm run qa:functional && npm run qa:report && npm run ux:review && npm run preprod:validate && npm run production:gate",
-    "verify:current": "npm run verify:v54.3.4",
+    "verify:current": "npm run verify:v58.3",
     "release:repo:v54.3.3": "npm run verify:current && npm run runtime:check && npm run typecheck",
     "verify:v54.3.4": "node scripts/verify-v54.3.4.mjs",
     "release:repo:v54.3.4": "npm run verify:current && npm run runtime:check && npm run typecheck",
-    "verify:v58.0": "node scripts/verify-v58.0.mjs"
+    "verify:v58.0": "node scripts/verify-v58.0.mjs",
+    "verify:v58.3": "node scripts/verify-v58.3.mjs",
+    "release:repo:v58.3": "npm run verify:current && npm run runtime:check && npm run typecheck"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

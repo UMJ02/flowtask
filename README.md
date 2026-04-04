@@ -1,36 +1,29 @@
-# FlowTask — v54.3.4 Client Release Docs & Handoff
+# FlowTask — V58.3 Release Hardening Base
 
-Base actualizada sobre la **v54.3.3**, enfocada en dejar el repo principal más claro para cierre cliente, con documentación operativa visible y una ruta de entrega más limpia.
+Base actualizada sobre la **V58.2**, enfocada en dejar el repo y el bundle de entrega en un estado más seguro, coherente y listo para seguir iteraciones 1:1 sin contaminar la base.
 
 ## Objetivo de esta versión
-- mantener una sola historia oficial de base de datos en `supabase/migrations/`
-- conservar el histórico técnico solo como archivo interno
-- dejar un checklist claro de release cliente
-- dejar documentación de handoff y operación en el repo
+- limpiar la base para entregas manuales
+- normalizar el contrato de variables de entorno
+- alinear scripts, versión activa y documentación de release
+- mantener el proyecto listo para continuar sin romper lógica funcional
 
-## Qué cambia en la v54.3.4
-- se archiva la verificación anterior:
-  - `scripts/verify-v54.3.3.mjs`
-- se agrega la nueva verificación activa:
-  - `scripts/verify-v54.3.4.mjs`
-- se agrega documentación operativa visible:
-  - `docs/release/CLIENT_RELEASE_CHECKLIST.md`
-  - `docs/release/OPERATIONS_HANDOFF.md`
-- se actualiza `package.json`:
-  - se elimina `verify:v54.3.3`
-  - se agrega `verify:v54.3.4`
-  - `verify:current` ahora apunta a `v54.3.4`
-  - se agrega `release:repo:v54.3.4`
-  - `release:repo:current` ahora apunta a `v54.3.4`
-- se actualiza la metadata de release a `54.3.4-client-release-docs`
+## Qué cambia en la V58.3
+- se agrega `scripts/verify-v58.3.mjs`
+- `verify:current` ahora apunta a `v58.3`
+- `release:repo:current` ahora apunta a `v58.3`
+- se agrega `.env.example` con el contrato actual de FlowTask
+- `validate-env.mjs` ahora carga `.env.local` y `.env` igual que `runtime-check`
+- se actualiza metadata de release a `58.3-release-hardening-base`
+- se agrega documentación de entrega para `V58.3`
 
 ## Estructura canónica
 ### Runtime / app
 - `src/`
 - `public/`
-- `scripts/` → solo checks activos y operativos actuales
+- `scripts/` → checks activos y operativos actuales
 - `supabase/migrations/` → historia oficial de BD
-- `docs/release/` → checklist y handoff visibles para cierre cliente
+- `docs/release/` → checklist, handoff y notas de entrega
 
 ### Archivo interno
 - `archive/internal/legacy_release_history/RT_modulos/`
@@ -63,9 +56,10 @@ npm run qa:current
 npm run release:current
 ```
 
-## Documentación nueva de cierre cliente
+## Documentación de cierre cliente
 - `docs/release/CLIENT_RELEASE_CHECKLIST.md`
 - `docs/release/OPERATIONS_HANDOFF.md`
+- `docs/release/V58_3_DELIVERY_NOTES.md`
 
 ## Notas de entrega
 Este zip no incluye:
@@ -76,6 +70,7 @@ Este zip no incluye:
 - `.git`
 - `.env`
 - `.env.local`
+- `tsconfig.tsbuildinfo`
 
 ## Siguiente uso recomendado
-Usa esta **v54.3.4** como nueva base 1:1 para seguir con la etapa de cierre cliente y QA final.
+Usa esta **V58.3** como nueva base 1:1 para continuar cierre técnico, QA funcional y siguientes iteraciones de producto.

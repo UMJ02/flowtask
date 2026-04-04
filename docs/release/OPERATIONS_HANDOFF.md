@@ -1,4 +1,4 @@
-# FlowTask — Operations Handoff (v54.3.4)
+# FlowTask — Operations Handoff (V58.3)
 
 ## Fuente canónica actual
 La historia oficial viva del esquema y evolución de base de datos está únicamente en:
@@ -16,8 +16,8 @@ Todo material histórico que no debe competir con la fuente oficial se conserva 
 No volver a introducir en la raíz del repo:
 - `RT_modulos`
 - patch SQL históricos sueltos
-- reportes de versiones cerradas
 - artefactos de build
+- secretos reales dentro del zip de entrega
 
 ## Flujo recomendado
 ```bash
@@ -31,6 +31,7 @@ npm run release:current
 ## Objetivo de esta base
 Esta versión deja el repo en un estado más claro para cierre cliente:
 - repo principal limpio
+- contrato de variables consistente
 - histórico aislado
 - documentación operativa visible
 - una sola historia oficial de base de datos

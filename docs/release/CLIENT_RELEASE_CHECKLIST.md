@@ -1,4 +1,4 @@
-# FlowTask — Client Release Checklist (v54.3.4)
+# FlowTask — Client Release Checklist (V58.3)
 
 ## 1. Base técnica
 - [ ] `npm install`
@@ -18,6 +18,7 @@
 - [ ] sin `RT_modulos` en raíz
 - [ ] sin patch SQL históricos fuera de `archive/internal`
 - [ ] `supabase/migrations/` confirmado como fuente oficial de BD
+- [ ] sin `tsconfig.tsbuildinfo` en el bundle
 
 ## 3. QA funcional mínimo
 - [ ] login
@@ -53,3 +54,4 @@
 - [ ] documentación de handoff incluida
 - [ ] cliente recibe solo fuente necesaria
 - [ ] histórico técnico queda solo como archivo interno
+- [ ] llaves reales rotadas si en algún momento salieron del entorno seguro

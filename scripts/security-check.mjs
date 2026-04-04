@@ -1,4 +1,4 @@
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 
 const cwd = process.cwd();
@@ -8,6 +8,9 @@ const riskyPaths = [
   'tsconfig.tsbuildinfo',
   '.DS_Store',
   '__MACOSX',
+  '.git',
+  '.env',
+  '.env.local',
 ];
 
 const warnings = [];
@@ -15,12 +18,16 @@ const notes = [];
 
 for (const rel of riskyPaths) {
   if (existsSync(path.join(cwd, rel))) {
-    warnings.push(`- Found local artifact: ${rel}`);
+    warnings.push(`- Found local artifact or sensitive path: ${rel}`);
   }
 }
 
-if (existsSync(path.join(cwd, '.env.local'))) {
-  notes.push('- .env.local detected locally. Keep it out of Git/Vercel uploads and set Production vars in Vercel Settings.');
+const envExamplePath = path.join(cwd, '.env.example');
+if (existsSync(envExamplePath)) {
+  const envExample = readFileSync(envExamplePath, 'utf8');
+  if (envExample.includes('your-service-role-key')) {
+    notes.push('- .env.example is templated correctly and does not expose a real service role key.');
+  }
 }
 
 console.log('[security-check] Project hygiene summary');
