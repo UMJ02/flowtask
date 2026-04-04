@@ -19,6 +19,8 @@ import {
   Plus,
   Star,
   StickyNote,
+  RefreshCcw,
+  RotateCcw,
   Trash2,
   X,
 } from 'lucide-react';
@@ -71,7 +73,7 @@ type ProjectRow = {
   created_at?: string | null;
 };
 
-const STORAGE_KEY = 'flowtask.board.v622';
+const STORAGE_KEY = 'flowtask.board.v585';
 const BOARD_LAYOUT_KEY = 'interactiveDashboardBoard';
 
 const PANEL_META: Record<PanelKey, { label: string; icon: ComponentType<{ className?: string }>; description: string }> = {
@@ -133,6 +135,24 @@ function buildMonthDays(anchor: Date) {
     cursor.setDate(cursor.getDate() + 1);
   }
   return days;
+}
+
+function isValidIsoDate(value: string | null | undefined) {
+  return Boolean(value && /^\d{4}-\d{2}-\d{2}$/.test(value));
+}
+
+function clampToBusinessDay(date: Date) {
+  const copy = new Date(date);
+  copy.setHours(0, 0, 0, 0);
+  while (isWeekend(copy)) {
+    copy.setDate(copy.getDate() + 1);
+  }
+  return copy;
+}
+
+function normalizeSelectedDate(value: string | null | undefined, fallback = new Date()) {
+  if (isValidIsoDate(value)) return value as string;
+  return isoDate(clampToBusinessDay(fallback));
 }
 
 function formatStatus(status: string | null | undefined) {
@@ -197,7 +217,7 @@ function applyBoardSnapshot(snapshot: any, apply: {
   if (snapshot.expanded && typeof snapshot.expanded === 'object') apply.setExpanded(snapshot.expanded);
   if (snapshot.calendarMode === 'week' || snapshot.calendarMode === 'month') apply.setCalendarMode(snapshot.calendarMode);
   if (snapshot.anchorDate) apply.setAnchorDate(new Date(snapshot.anchorDate));
-  if (snapshot.selectedDate) apply.setSelectedDate(snapshot.selectedDate);
+  apply.setSelectedDate(normalizeSelectedDate(snapshot.selectedDate));
   if (typeof snapshot.noteDraft === 'string') apply.setNoteDraft(snapshot.noteDraft);
   if (Array.isArray(snapshot.savedNotes)) apply.setSavedNotes(snapshot.savedNotes);
   if (typeof snapshot.editingNoteId === 'string' || snapshot.editingNoteId === null) apply.setEditingNoteId(snapshot.editingNoteId);
@@ -320,7 +340,7 @@ const CalendarPanel = memo(function CalendarPanel({
                     'flex min-w-0 flex-col justify-start rounded-lg border p-3 text-left transition',
                     mode === 'week' ? 'min-h-[88px]' : 'min-h-[84px]',
                     isSelected
-                      ? 'border-sky-400 bg-white ring-1 ring-sky-100'
+                      ? 'border-sky-500 bg-white shadow-sm'
                       : inMonth
                         ? 'border-slate-200 bg-slate-50/70 hover:border-slate-300 hover:bg-white'
                         : 'border-slate-100 bg-slate-50/30 text-slate-400 hover:border-slate-200'
@@ -354,18 +374,20 @@ const CalendarPanel = memo(function CalendarPanel({
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <p className="text-sm font-semibold text-slate-800">{item.title}</p>
+                      <div className="flex items-center gap-2">
+                        <p className="truncate text-sm font-semibold text-slate-800">{item.title}</p>
+                        <button type="button" onClick={() => onOpenTask(item.id)} className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-emerald-200 text-emerald-700 transition hover:bg-emerald-50" title="Abrir tarea" aria-label="Abrir tarea">
+                          <ExternalLink className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
                       <p className="mt-1 text-xs text-slate-500">{item.client_name?.trim() || 'Sin cliente'} · {formatStatus(item.status)}</p>
                     </div>
-                    <button type="button" onClick={() => onOpenTask(item.id)} className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-emerald-200 text-emerald-700 transition hover:bg-emerald-50" title="Abrir tarea" aria-label="Abrir tarea">
-                      <ExternalLink className="h-3.5 w-3.5" />
-                    </button>
                   </div>
                 </div>
               ))
             ) : (
               <div className="rounded-lg border border-dashed border-slate-200 bg-white px-3 py-4 text-sm text-slate-500">
-                No hay tareas favoritas programadas para esta fecha.
+                No hay tareas favoritas programadas para esta fecha. Márcalas con la estrella en el panel de tareas para mostrarlas aquí.
               </div>
             )}
           </div>
@@ -384,7 +406,7 @@ function InteractiveDashboardBoardComponent() {
   const [expanded, setExpanded] = useState<Record<PanelKey, boolean>>({ task: true, projects: true, calendar: true, kanban: true });
   const [calendarMode, setCalendarMode] = useState<CalendarMode>('week');
   const [anchorDate, setAnchorDate] = useState(new Date());
-  const [selectedDate, setSelectedDate] = useState(isoDate(new Date()));
+  const [selectedDate, setSelectedDate] = useState(normalizeSelectedDate(undefined));
   const [noteDraft, setNoteDraft] = useState('');
   const [savedNotes, setSavedNotes] = useState<BoardNote[]>([]);
   const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
@@ -401,6 +423,8 @@ function InteractiveDashboardBoardComponent() {
   const [favoriteTaskIds, setFavoriteTaskIds] = useState<Set<string>>(new Set());
   const [boardId, setBoardId] = useState<string | null>(null);
   const [boardLayoutBase, setBoardLayoutBase] = useState<Record<string, any>>({});
+  const [lastSyncedAt, setLastSyncedAt] = useState<string | null>(null);
+  const [refreshTick, setRefreshTick] = useState(0);
 
   useEffect(() => {
     try {
@@ -595,6 +619,7 @@ function InteractiveDashboardBoardComponent() {
         setBoardTasks(((tasks as TaskRow[] | null) ?? []).sort((a, b) => (a.due_date ?? '9999-12-31').localeCompare(b.due_date ?? '9999-12-31')));
         setBoardProjects((projects as ProjectRow[] | null) ?? []);
         setLoadingData(false);
+        setLastSyncedAt(new Date().toISOString());
       }
     }
 
@@ -602,12 +627,20 @@ function InteractiveDashboardBoardComponent() {
     return () => {
       cancelled = true;
     };
-  }, [hydrated]);
+  }, [hydrated, refreshTick, supabase]);
 
   const openTasks = useMemo(() => boardTasks.filter((item) => item.status !== 'concluido'), [boardTasks]);
   const tasksToday = useMemo(() => openTasks.filter((item) => item.due_date === isoDate(new Date())), [openTasks]);
   const nextTasks = useMemo(() => openTasks.slice(0, 4), [openTasks]);
   const activeProjects = useMemo(() => boardProjects.filter((item) => item.status !== 'completado').slice(0, 4), [boardProjects]);
+  const selectedAgendaItems = useMemo(() => boardTasks.filter((item) => item.due_date === selectedDate && favoriteTaskIds.has(item.id)), [boardTasks, selectedDate, favoriteTaskIds]);
+  const visibleDueCount = useMemo(() => boardTasks.filter((item) => item.due_date).length, [boardTasks]);
+  const favoriteCount = favoriteTaskIds.size;
+
+  useEffect(() => {
+    const next = normalizeSelectedDate(selectedDate);
+    if (next !== selectedDate) setSelectedDate(next);
+  }, [selectedDate]);
 
   if (!hydrated) {
     return (
@@ -743,6 +776,33 @@ function InteractiveDashboardBoardComponent() {
     router.push(taskDetailRoute(taskId));
   }
 
+  function refreshBoard() {
+    setRefreshTick((current) => current + 1);
+  }
+
+  function resetBoardView() {
+    const today = normalizeSelectedDate(undefined);
+    setAsideOpen(true);
+    setActivePanels(['kanban', 'task', 'projects', 'calendar']);
+    setExpanded({ task: true, projects: true, calendar: true, kanban: true });
+    setCalendarMode('week');
+    setAnchorDate(new Date());
+    setSelectedDate(today);
+    setNoteDraft('');
+    setSavedNotes([]);
+    setEditingNoteId(null);
+    setReminders([
+      { id: 'r1', label: 'Revisar entregables del día', done: false },
+      { id: 'r2', label: 'Confirmar avance con el cliente', done: false },
+    ]);
+    setCreatedTaskId(null);
+    try {
+      window.localStorage.removeItem(STORAGE_KEY);
+    } catch {
+      // ignore reset persistence errors
+    }
+  }
+
   return (
     <div className="space-y-4">
       <Card className="border-slate-200 bg-white px-5 py-5 shadow-sm">
@@ -754,11 +814,35 @@ function InteractiveDashboardBoardComponent() {
             <div className="mt-3 flex flex-wrap gap-2">
               <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-600">{activeCount} paneles activos</span>
               <span className="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">{activeOrganizationId ? 'Workspace de organización activo' : 'Workspace personal activo'}</span>
+              <span className="inline-flex items-center rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-medium text-amber-700">{favoriteCount} favorita(s) en memoria</span>
+            </div>
+            <div className="mt-4 grid gap-3 sm:grid-cols-3">
+              <div className="rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-3">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">Vence hoy</p>
+                <p className="mt-2 text-2xl font-bold text-slate-950">{tasksToday.length}</p>
+                <p className="text-xs text-slate-500">Tareas abiertas con fecha de hoy.</p>
+              </div>
+              <div className="rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-3">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">Agenda filtrada</p>
+                <p className="mt-2 text-2xl font-bold text-slate-950">{selectedAgendaItems.length}</p>
+                <p className="text-xs text-slate-500">Favoritas visibles en la fecha seleccionada.</p>
+              </div>
+              <div className="rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-3">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">Tablero cargado</p>
+                <p className="mt-2 text-2xl font-bold text-slate-950">{visibleDueCount}</p>
+                <p className="text-xs text-slate-500">Tareas con fecha y {activeProjects.length} proyectos activos.</p>
+              </div>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <button type="button" onClick={() => setAsideOpen((v) => !v)} className="inline-flex h-11 items-center gap-2 rounded-lg border border-sky-200 bg-sky-50/70 px-4 text-sm font-semibold text-sky-800 transition hover:-translate-y-0.5 hover:bg-sky-100/70">
               <Menu className="h-4 w-4" /> {asideOpen ? 'Ocultar paneles' : 'Mostrar paneles'}
+            </button>
+            <button type="button" onClick={refreshBoard} className="inline-flex h-11 items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:-translate-y-0.5 hover:bg-slate-50">
+              <RefreshCcw className="h-4 w-4" /> Refrescar datos
+            </button>
+            <button type="button" onClick={resetBoardView} className="inline-flex h-11 items-center gap-2 rounded-lg border border-rose-200 bg-rose-50 px-4 text-sm font-semibold text-rose-700 transition hover:-translate-y-0.5 hover:bg-rose-100/70">
+              <RotateCcw className="h-4 w-4" /> Resetear vista
             </button>
             <Link href="/app/dashboard" className="inline-flex h-11 items-center rounded-lg border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:-translate-y-0.5 hover:bg-slate-50">
               Volver al dashboard
@@ -824,7 +908,7 @@ function InteractiveDashboardBoardComponent() {
                   <p className="text-xs text-slate-500">Quita paneles, vuelve a activarlos desde el lateral y deja solo lo que usarás hoy.</p>
                 </div>
               </div>
-              <span className="inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-600">Estado guardado automáticamente</span>
+              <div className="flex flex-col items-end gap-1 text-right"><span className="inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-600">Estado guardado automáticamente</span>{lastSyncedAt ? <span className="text-[11px] text-slate-500">Última sincronización: {new Intl.DateTimeFormat('es-CR', { hour: '2-digit', minute: '2-digit' }).format(new Date(lastSyncedAt))}</span> : null}</div>
             </div>
             {dataError ? <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">{dataError}</div> : null}
             {activePanels.includes('kanban') ? (
@@ -947,7 +1031,7 @@ function InteractiveDashboardBoardComponent() {
                     </div>
                     <div className="flex items-center gap-2">
                       <button type="button" onClick={() => removePanel('projects')} className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition hover:-translate-y-0.5 hover:bg-slate-50"><X className="h-4 w-4" /></button>
-                      <button type="button" className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition hover:-translate-y-0.5 hover:bg-slate-50"><Grip className="h-4 w-4" /></button>
+                      <span className="inline-flex h-10 items-center rounded-full border border-slate-200 bg-slate-50 px-3 text-xs font-semibold text-slate-500">CRUD rápido</span>
                       <Link href="/app/projects/new" className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500 text-white transition hover:-translate-y-0.5 hover:bg-emerald-400"><Plus className="h-4 w-4" /></Link>
                     </div>
                   </div>
@@ -981,7 +1065,7 @@ function InteractiveDashboardBoardComponent() {
                   </div>
                   <div className="flex items-center gap-2">
                     <button type="button" onClick={() => removePanel('calendar')} className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition hover:-translate-y-0.5 hover:bg-slate-50"><X className="h-4 w-4" /></button>
-                    <button type="button" className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition hover:-translate-y-0.5 hover:bg-slate-50"><Grip className="h-4 w-4" /></button>
+                    <span className="inline-flex h-10 items-center rounded-full border border-slate-200 bg-slate-50 px-3 text-xs font-semibold text-slate-500">CRUD rápido</span>
                   </div>
                 </div>
                 <CalendarPanel mode={calendarMode} anchorDate={anchorDate} onModeChange={setCalendarMode} onStep={stepCalendar} selectedDate={selectedDate} onSelectDate={setSelectedDate} tasks={boardTasks.filter((item) => Boolean(item.due_date))} favoriteTaskIds={favoriteTaskIds} onOpenTask={openTask} />

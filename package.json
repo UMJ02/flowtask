@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "58.4-build-deploy-readiness",
+  "version": "58.5-ux-ui-polish-board-stabilization",
   "private": true,
   "scripts": {
     "dev": "node node_modules/next/dist/bin/next dev",
@@ -55,10 +55,10 @@
     "debug:hydration": "node scripts/debug-hydration.mjs",
     "ops:check": "node scripts/ops-check.mjs",
     "performance:check": "node scripts/performance-check.mjs",
-    "release:repo:current": "npm run release:repo:v58.4",
+    "release:repo:current": "npm run release:repo:v58.5",
     "qa:current": "npm run validate:node && npm run validate:env && npm run verify:current && npm run runtime:check && npm run typecheck && npm run security:check && npm run performance:check && npm run ops:check",
     "release:current": "npm run clean && npm run release:repo:current && npm run qa:current && npm run qa:functional && npm run qa:report && npm run ux:review && npm run preprod:validate && npm run production:gate",
-    "verify:current": "npm run verify:v58.4",
+    "verify:current": "npm run verify:v58.5",
     "release:repo:v54.3.3": "npm run verify:current && npm run runtime:check && npm run typecheck",
     "verify:v54.3.4": "node scripts/verify-v54.3.4.mjs",
     "release:repo:v54.3.4": "npm run verify:current && npm run runtime:check && npm run typecheck",
@@ -67,8 +67,11 @@
     "release:repo:v58.3": "npm run verify:current && npm run runtime:check && npm run typecheck",
     "verify:v58.4": "node scripts/verify-v58.4.mjs",
     "release:repo:v58.4": "npm run verify:current && npm run runtime:check && npm run typecheck && npm run deploy:readiness",
+    "verify:v58.5": "node scripts/verify-v58.5.mjs",
+    "release:repo:v58.5": "npm run verify:current && npm run runtime:check && npm run typecheck && npm run deploy:readiness && npm run board:stability",
     "deploy:readiness": "node scripts/build-deploy-readiness.mjs",
-    "build:preflight": "npm run validate:node && npm run validate:env && npm run verify:current && npm run runtime:check && npm run typecheck && npm run deploy:readiness"
+    "board:stability": "node scripts/board-stabilization-check.mjs",
+    "build:preflight": "npm run validate:node && npm run validate:env && npm run verify:current && npm run runtime:check && npm run typecheck && npm run deploy:readiness && npm run board:stability"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
