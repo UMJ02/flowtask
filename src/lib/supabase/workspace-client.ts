@@ -6,7 +6,6 @@ export interface ClientWorkspaceContext {
   supabase: ReturnType<typeof createClient>;
   user: { id: string; email?: string | null } | null;
   activeOrganizationId: string | null;
-  accountMode: "individual" | "team_owner" | "team_member" | null;
   boardId: string | null;
   layoutConfig: Record<string, any>;
 }
@@ -22,13 +21,12 @@ export async function getClientWorkspaceContext(): Promise<ClientWorkspaceContex
       supabase,
       user: null,
       activeOrganizationId: null,
-      accountMode: null,
       boardId: null,
       layoutConfig: {},
     };
   }
 
-  const [membershipRes, boardRes, accountModeRes] = await Promise.all([
+  const [membershipRes, boardRes] = await Promise.all([
     supabase
       .from("organization_members")
       .select("organization_id, is_default")
@@ -41,18 +39,12 @@ export async function getClientWorkspaceContext(): Promise<ClientWorkspaceContex
       .select("id, layout_config")
       .eq("user_id", user.id)
       .maybeSingle(),
-    supabase
-      .from("user_account_modes")
-      .select("account_mode")
-      .eq("user_id", user.id)
-      .maybeSingle(),
   ]);
 
   return {
     supabase,
     user,
     activeOrganizationId: (membershipRes.data?.organization_id as string | null | undefined) ?? null,
-    accountMode: (accountModeRes.data?.account_mode as ClientWorkspaceContext["accountMode"] | undefined) ?? null,
     boardId: (boardRes.data?.id as string | null | undefined) ?? null,
     layoutConfig: (boardRes.data?.layout_config as Record<string, any> | null | undefined) ?? {},
   };

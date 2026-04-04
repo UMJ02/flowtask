@@ -1,8 +1,8 @@
 import { getNotificationPreferences } from "@/lib/queries/notification-preferences";
 import { getOrganizationContext, getOrganizationMetrics, getOrganizationRolesAndPermissions } from "@/lib/queries/organization";
 import { getCurrentProfile } from "@/lib/queries/profile";
-import { getAccountAccessSummary, type AccountAccessSummary } from "@/lib/queries/account-access";
 import { getWorkspaceContext, applyWorkspaceScope } from "@/lib/queries/workspace";
+import { formatOrganizationRole } from "@/lib/organization/labels";
 
 export type OnboardingStep = {
   id: string;
@@ -15,7 +15,6 @@ export type OnboardingStep = {
 };
 
 export type WorkspaceOnboardingSummary = {
-  access: AccountAccessSummary;
   score: number;
   completed: number;
   total: number;
@@ -32,19 +31,18 @@ export type WorkspaceOnboardingSummary = {
 };
 
 export async function getWorkspaceOnboardingSummary(): Promise<WorkspaceOnboardingSummary | null> {
-  const [profile, organizationContext, preferences, workspace, access] = await Promise.all([
+  const [profile, organizationContext, preferences, workspace] = await Promise.all([
     getCurrentProfile(),
     getOrganizationContext(),
     getNotificationPreferences(),
     getWorkspaceContext(),
-    getAccountAccessSummary(),
   ]);
 
   if (!workspace.user) return null;
 
   const organizationId = organizationContext?.activeOrganization?.id ?? null;
-  const role = organizationContext?.activeOrganization?.role ?? "member";
-  const organizationName = organizationContext?.activeOrganization?.name ?? "Sin organización";
+  const role = organizationContext?.activeOrganization?.role ?? null;
+  const organizationName = organizationContext?.activeOrganization?.name ?? "Sin organización activa";
 
   const [organizationMetrics, rolesData, projectsRes, tasksRes] = await Promise.all([
     getOrganizationMetrics(organizationId),
@@ -66,9 +64,6 @@ export async function getWorkspaceOnboardingSummary(): Promise<WorkspaceOnboardi
   const activeProjects = organizationMetrics?.activeProjects ?? projectsRes.count ?? 0;
   const openTasks = organizationMetrics?.openTasks ?? tasksRes.count ?? 0;
   const hasOrganization = Boolean(organizationId);
-  const isIndividual = access.currentMode === 'individual';
-  const isTeam = access.currentMode === 'team_owner' || access.currentMode === 'team_member';
-  const hasAccountMode = Boolean(access.currentMode);
   const hasProfile = Boolean(profile?.fullName?.trim() && profile?.email?.trim());
   const hasClientPermissions = (organizationContext?.clientPermissions?.length ?? 0) > 0;
   const hasClients = clients > 0;
@@ -85,27 +80,18 @@ export async function getWorkspaceOnboardingSummary(): Promise<WorkspaceOnboardi
       id: "profile",
       title: "Completa tu perfil",
       description: "Asegura nombre visible y correo correcto para asignaciones, comentarios y notificaciones.",
-      href: "/app/profile",
-      cta: "Completar perfil",
+      href: "/app/settings",
+      cta: "Ir a configuración",
       done: hasProfile,
       category: "foundation",
     },
     {
-      id: "account",
-      title: "Define cómo usarás FlowTask",
-      description: "Elige si trabajarás en modo individual o si vas a activar un workspace de equipo con plan o código.",
-      href: "/app/onboarding",
-      cta: "Configurar acceso",
-      done: hasAccountMode,
-      category: "foundation",
-    },
-    {
       id: "organization",
-      title: "Prepara tu workspace",
-      description: "Si usarás FlowTask con equipo, crea o valida la organización activa antes de seguir con miembros y clientes.",
+      title: "Define organización activa",
+      description: "Confirma la organización desde donde vas a trabajar para mantener el contexto del workspace.",
       href: "/app/organization",
       cta: "Revisar organización",
-      done: isIndividual ? true : hasOrganization,
+      done: hasOrganization,
       category: "foundation",
     },
     {
@@ -114,7 +100,7 @@ export async function getWorkspaceOnboardingSummary(): Promise<WorkspaceOnboardi
       description: "Agrega al menos un cliente para empezar a vincular proyectos, permisos y actividad.",
       href: "/app/clients",
       cta: "Abrir clientes",
-      done: isIndividual ? hasClients || hasProjects || hasTasks : hasClients,
+      done: hasClients,
       category: "operation",
     },
     {
@@ -141,7 +127,7 @@ export async function getWorkspaceOnboardingSummary(): Promise<WorkspaceOnboardi
       description: "Deja roles y acceso por cliente bien resueltos antes de crecer el workspace.",
       href: "/app/organization/roles",
       cta: "Ver permisos",
-      done: isIndividual ? true : hasTeam && (hasRoles || hasClientPermissions),
+      done: hasTeam && (hasRoles || hasClientPermissions),
       category: "foundation",
     },
     {
@@ -160,8 +146,7 @@ export async function getWorkspaceOnboardingSummary(): Promise<WorkspaceOnboardi
   const score = total ? Math.round((completed / total) * 100) : 0;
 
   const recommendations = [
-    !hasAccountMode ? "Define primero si vas a usar FlowTask de forma individual o como workspace de equipo." : null,
-    isTeam && !hasOrganization ? "Crea o activa una organización para que el workspace tenga un contexto correcto antes de invitar miembros." : null,
+    !hasOrganization ? "Activa o crea una organización antes de seguir para mantener el workspace con scoping correcto." : null,
     !hasClients ? "Carga por lo menos un cliente para que la capa operativa tenga un punto real de trabajo." : null,
     !hasProjects ? "Crea un proyecto inicial para habilitar seguimiento, watchlist y reportes con señal útil." : null,
     !hasTasks ? "Registra tareas activas para que dashboard, kanban y vencimientos muestren prioridad real." : null,
@@ -169,11 +154,10 @@ export async function getWorkspaceOnboardingSummary(): Promise<WorkspaceOnboardi
   ].filter(Boolean) as string[];
 
   return {
-    access,
     score,
     completed,
     total,
-    role,
+    role: formatOrganizationRole(role),
     organizationName,
     recommendations,
     quickStats: {

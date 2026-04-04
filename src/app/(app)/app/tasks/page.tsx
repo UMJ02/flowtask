@@ -5,9 +5,6 @@ import { FolderClock, ListChecks, Plus } from 'lucide-react';
 import { TaskSearchPanel } from '@/components/tasks/task-search-panel';
 import { TaskWorkspace } from '@/components/tasks/task-workspace';
 import { Card } from '@/components/ui/card';
-import { EmptyState } from '@/components/ui/empty-state';
-import { Button } from '@/components/ui/button';
-import { PageIntro } from '@/components/ui/page-intro';
 import { taskNewRoute } from '@/lib/navigation/routes';
 import { getTasks } from '@/lib/queries/tasks';
 import { safeServerCall } from '@/lib/runtime/safe-server';
@@ -45,27 +42,20 @@ export default async function TasksPage({ searchParams }: { searchParams?: Promi
     highPriority: tasks.filter((task) => task.priority === 'alta').length,
   };
 
+
   return (
     <div className="space-y-4">
-      <PageIntro
-        eyebrow="Tareas"
-        title="Workspace de tareas"
-        description="Filtra por estado, prioridad, fecha o área. Mantén el foco y entra al detalle sin perder contexto. Esta capa de V56 deja la vista más clara para usuarios finales y para demos con cliente."
-        actions={
-          <Link href={taskNewRoute(queryString)}>
-            <Button>
-              <Plus className="h-4 w-4" />
-              Nueva tarea
-            </Button>
-          </Link>
-        }
-        aside={
-          <div className="rounded-[22px] border border-sky-200 bg-sky-50/80 px-4 py-3">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-sky-700">Lectura rápida</p>
-            <p className="mt-2 text-sm leading-6 text-sky-900">Las métricas resumen y el estado vacío ahora quedan alineados con el flujo de trabajo real del usuario.</p>
-          </div>
-        }
-      />
+      <Card className="flex flex-col gap-4 rounded-[28px] md:flex-row md:items-end md:justify-between">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Tareas</p>
+          <h1 className="mt-2 text-2xl font-bold text-slate-900">Workspace de tareas</h1>
+          <p className="mt-2 max-w-2xl text-sm text-slate-500">Filtra por estado, prioridad, fecha o área. Mantén el foco y entra al detalle sin perder contexto.</p>
+        </div>
+        <Link href={taskNewRoute(queryString)} className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-slate-900 px-4 text-sm font-semibold text-white">
+          <Plus className="h-4 w-4" />
+          Nueva tarea
+        </Link>
+      </Card>
 
       <TaskSearchPanel filters={filters} />
 
@@ -77,29 +67,24 @@ export default async function TasksPage({ searchParams }: { searchParams?: Promi
         {metricCard('Prioridad alta', stats.highPriority, 'foco inmediato')}
       </div>
 
-      {!tasks.length ? (
-        <EmptyState
-          icon={<FolderClock className="h-6 w-6" />}
-          title="No encontramos tareas para esta combinación"
-          description="Prueba limpiando filtros o crea una nueva tarea para empezar a mover el flujo de trabajo desde esta vista."
-          action={
-            <div className="flex flex-wrap justify-center gap-2">
-              <Link href="/app/tasks"><Button variant="secondary">Limpiar filtros</Button></Link>
-              <Link href={taskNewRoute(queryString)}><Button>Nueva tarea</Button></Link>
-            </div>
-          }
-        />
-      ) : (
-        <TaskWorkspace tasks={tasks.map((task) => ({
-          id: task.id,
-          title: task.title,
-          status: task.status,
-          priority: task.priority,
-          client_name: task.client_name,
-          due_date: task.due_date,
-          project_id: task.project_id,
-        }))} filters={filters} currentView={filters.view} currentQuery={queryString} />
+      {tasks.length ? null : (
+        <Card className="rounded-[24px] border border-amber-200 bg-amber-50/70 px-4 py-4 text-sm text-amber-900">
+          <div className="flex flex-wrap items-center gap-3">
+            <FolderClock className="h-4 w-4" />
+            No encontramos tareas para esta combinación. Prueba limpiando filtros o creando una nueva tarea.
+          </div>
+        </Card>
       )}
+
+      <TaskWorkspace tasks={tasks.map((task) => ({
+        id: task.id,
+        title: task.title,
+        status: task.status,
+        priority: task.priority,
+        client_name: task.client_name,
+        due_date: task.due_date,
+        project_id: task.project_id,
+      }))} filters={filters} currentView={filters.view} currentQuery={queryString} />
 
       <Card className="rounded-[22px] border border-slate-200/90 bg-white/[0.90] p-4">
         <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
@@ -107,7 +92,7 @@ export default async function TasksPage({ searchParams }: { searchParams?: Promi
             <ListChecks className="h-4 w-4 text-emerald-700" />
             Consejo: usa la vista lista para revisar rápido y la pizarra cuando necesites mover tareas visualmente.
           </div>
-          <span className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">FlowTask · UX final</span>
+          <span className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">FlowTask · Client polish</span>
         </div>
       </Card>
     </div>

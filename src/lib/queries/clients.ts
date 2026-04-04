@@ -33,9 +33,11 @@ export async function getClients(search?: string): Promise<ClientListItem[]> {
   let query = supabase
     .from("clients")
     .select("id,name,status,notes,created_at")
-    .eq(organizationId ? "organization_id" : "account_owner_id", organizationId ?? user.id)
     .order("name", { ascending: true })
     .limit(30);
+
+  if (organizationId) query = query.eq("organization_id", organizationId);
+  else query = query.eq("account_owner_id", user.id);
 
   if (search?.trim()) query = query.ilike("name", `%${search.trim()}%`);
 
@@ -45,7 +47,7 @@ export async function getClients(search?: string): Promise<ClientListItem[]> {
     return [];
   }
 
-  const rows = organizationId ? filterRowsByClientAccess((clients ?? []) as any[], access, "view") : ((clients ?? []) as any[]);
+  const rows = filterRowsByClientAccess((clients ?? []) as any[], access, "view");
   const ids = rows.map((row: any) => row.id as string);
   const [projectsRes, openTasksRes, completedTasksRes, overdueTasksRes] = await Promise.all([
     ids.length ? supabase.from("projects").select("id,client_id,status").in("client_id", ids) : Promise.resolve({ data: [] as any[] }),
@@ -96,7 +98,6 @@ export async function getClientById(clientId: string): Promise<ClientDetailSumma
   const { data: clientRow, error: clientError } = await supabase
     .from("clients")
     .select("id,name,status,notes,created_at,organization_id,account_owner_id")
-    .eq(organizationId ? "organization_id" : "account_owner_id", organizationId ?? user.id)
     .eq("id", clientId)
     .maybeSingle();
 
@@ -105,7 +106,7 @@ export async function getClientById(clientId: string): Promise<ClientDetailSumma
     return null;
   }
 
-  if (!clientRow || (organizationId ? !hasClientAccess(access, clientRow.id, "view") : false)) return null;
+  if (!clientRow || !hasClientAccess(access, clientRow.id, "view")) return null;
 
   const [{ data: owner }, { data: projects }, { data: tasks }, { data: activity }] = await Promise.all([
     clientRow.account_owner_id ? supabase.from("profiles").select("email").eq("id", clientRow.account_owner_id).maybeSingle() : Promise.resolve({ data: null as any }),

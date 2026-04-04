@@ -11,14 +11,11 @@ const checkpoints = [
   { label: 'Task detail summary', file: 'src/components/tasks/task-detail-summary.tsx' },
   { label: 'Project detail summary', file: 'src/components/projects/project-detail-summary.tsx' },
   { label: 'Empty state', file: 'src/components/ui/empty-state.tsx' },
-  { label: 'Action feedback', file: 'src/components/ui/action-feedback.tsx' },
-  { label: 'Page intro', file: 'src/components/ui/page-intro.tsx' },
-  { label: 'Permission state', file: 'src/components/ui/permission-state.tsx' },
 ];
 
 let failures = 0;
 
-console.log('\n[ux-review] Flowtask V56 client-ready pass\n');
+console.log('\n[ux-review] Flowtask V7 client-ready pass\n');
 
 for (const item of checkpoints) {
   const full = path.join(root, item.file);

@@ -71,8 +71,8 @@ export function ClientManagerPanel({ items, initialQuery = '' }: { items: Client
 
     setSaving(true);
     const workspace = await getClientWorkspaceContext();
-    if (!workspace.user || !workspace.activeOrganizationId) {
-      setError('No encontramos un contexto disponible para guardar este cliente.');
+    if (!workspace.user) {
+      setError('No encontramos una sesión activa para guardar este cliente.');
       setSaving(false);
       return;
     }
@@ -156,7 +156,7 @@ export function ClientManagerPanel({ items, initialQuery = '' }: { items: Client
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Clientes</p>
             <h1 className="mt-2 text-2xl font-bold text-slate-900">Clientes activos del workspace</h1>
-            <p className="mt-2 max-w-2xl text-sm text-slate-500">Administra clientes, revisa su carga actual y entra al detalle para ver proyectos y tareas relacionados, incluso en modo personal.</p>
+            <p className="mt-2 max-w-2xl text-sm text-slate-500">Administra clientes, revisa su carga actual y entra al detalle para ver proyectos y tareas relacionados.</p>
           </div>
           <div className="flex flex-wrap gap-3 text-sm">
             <span className="rounded-2xl border border-slate-200 bg-white px-4 py-2 font-semibold text-slate-700">Total: {stats.total}</span>
@@ -171,7 +171,7 @@ export function ClientManagerPanel({ items, initialQuery = '' }: { items: Client
           <div className="flex items-center justify-between gap-3">
             <div>
               <h2 className="text-lg font-semibold text-slate-900">Listado de clientes</h2>
-              <p className="text-sm text-slate-500">Resultado actual {initialQuery ? `para “${initialQuery}”` : 'del contexto actual'}.</p>
+              <p className="text-sm text-slate-500">Resultado actual {initialQuery ? `para “${initialQuery}”` : 'de la organización activa'}.</p>
             </div>
             <button
               type="button"
@@ -193,7 +193,7 @@ export function ClientManagerPanel({ items, initialQuery = '' }: { items: Client
                       <span className="text-xs text-slate-500">Creado: {item.createdAtLabel}</span>
                     </div>
                     <h3 className="mt-3 text-lg font-semibold text-slate-900">{item.name}</h3>
-                    <p className="mt-1 text-sm text-slate-500">{item.notes || 'Cliente listo para agrupar proyectos, tareas y actividad por organización.'}</p>
+                    <p className="mt-1 text-sm text-slate-500">{item.notes || 'Cliente listo para agrupar proyectos, tareas y actividad del workspace o de tu cuenta personal.'}</p>
                   </div>
                   <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-100 text-slate-600">
                     <Building2 className="h-5 w-5" />

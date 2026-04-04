@@ -14,6 +14,7 @@ import { getTaskAttachments } from '@/lib/queries/attachments';
 import { getTaskActivity } from '@/lib/queries/activity';
 import { getTaskAccessSummary } from '@/lib/queries/access-summary';
 import { safeServerCall } from '@/lib/runtime/safe-server';
+import { formatOrganizationRole } from '@/lib/organization/labels';
 
 export default async function TaskDetailPage({
   params,
@@ -46,7 +47,7 @@ export default async function TaskDetailPage({
       <AccessSummaryCard
         title="Permisos visibles de la tarea"
         description="La UI ya muestra qué acciones puedes ejecutar en esta tarea según rol organizacional, asignación y acceso efectivo por cliente."
-        roleLabel={access.projectMemberRole ? `Proyecto: ${access.projectMemberRole}` : access.role ? `Org: ${access.role.replace('_', ' ')}` : 'Sin rol'}
+        roleLabel={access.projectMemberRole ? `Proyecto: ${access.projectMemberRole}` : access.role ? `Org: ${formatOrganizationRole(access.role)}` : 'Sin organización activa'}
         items={[
           { label: 'Editar tarea', enabled: access.canEdit },
           { label: 'Gestionar responsables', enabled: access.canManageAssignees },

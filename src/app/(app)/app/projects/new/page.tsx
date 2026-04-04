@@ -1,6 +1,5 @@
 export const dynamic = 'force-dynamic';
 
-import { PageIntro } from '@/components/ui/page-intro';
 import { Card } from '@/components/ui/card';
 import { ProjectForm } from '@/components/projects/project-form';
 
@@ -14,23 +13,15 @@ export default async function ProjectNewPage({ searchParams }: { searchParams?: 
 
   return (
     <div className="space-y-4">
-      <PageIntro
-        eyebrow="Nuevo proyecto"
-        title="Crear proyecto"
-        description="Prepara un frente nuevo con su cliente, deadline, área y modo colaborativo. Esta pantalla ya incluye feedback visual, validaciones visibles y mensajes más claros para un flujo de cliente real."
-        aside={
-          <Card className="rounded-[24px] border border-emerald-200 bg-emerald-50/75 px-4 py-4">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-emerald-700">Checklist rápido</p>
-            <ul className="mt-3 space-y-2 text-sm leading-6 text-emerald-900">
-              <li>• Define un nombre entendible para el equipo</li>
-              <li>• Asigna cliente si aplica</li>
-              <li>• Marca colaborativo solo si compartirán miembros</li>
-            </ul>
-          </Card>
-        }
-      />
+      <Card className="rounded-[28px] border border-slate-200/90 bg-white/[0.92] p-5 shadow-[0_10px_30px_rgba(15,23,42,0.04)]">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Nuevo proyecto</p>
+        <h1 className="mt-2 text-2xl font-bold text-slate-900">Crear proyecto</h1>
+        <p className="mt-2 text-sm text-slate-500">Prepara un frente nuevo con su cliente, deadline, área y modo colaborativo.</p>
+      </Card>
       <ProjectForm
-        initialData={{ clientName }}
+        initialData={{
+          clientName,
+        }}
         redirectTo={queryString ? `/app/projects?${queryString}` as any : '/app/projects'}
       />
     </div>

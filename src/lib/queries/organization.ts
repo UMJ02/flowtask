@@ -9,7 +9,7 @@ export async function getOrganizationContext() {
 
   const { data: memberships } = await supabase
     .from("organization_members")
-    .select("id, role, is_default, organizations!inner ( id, name, slug, owner_id )")
+    .select("id, role, is_default, organizations!inner ( id, name, slug )")
     .eq("user_id", user.id)
     .order("is_default", { ascending: false })
     .limit(20);
@@ -21,7 +21,6 @@ export async function getOrganizationContext() {
       name: organization?.name as string,
       slug: organization?.slug as string,
       role: row.role as "admin_global" | "manager" | "member" | "viewer",
-      ownerId: organization?.owner_id as string | null | undefined,
       isDefault: row.is_default ?? false,
     };
   }).filter((item: any) => item.id && item.name);

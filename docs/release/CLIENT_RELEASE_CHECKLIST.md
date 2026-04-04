@@ -1,4 +1,4 @@
-# FlowTask — Client Release Checklist (v57)
+# FlowTask — Client Release Checklist (v54.3.4)
 
 ## 1. Base técnica
 - [ ] `npm install`
@@ -53,8 +53,3 @@
 - [ ] documentación de handoff incluida
 - [ ] cliente recibe solo fuente necesaria
 - [ ] histórico técnico queda solo como archivo interno
-
-## V57.9 final closure update
-- QA matrix added for auth, onboarding, organization, billing and individual mode.
-- Production checklist updated to include migrations 0028 through 0031.
-- Release target normalized to v57.9 final QA / production readiness.

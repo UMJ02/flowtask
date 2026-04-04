@@ -9,7 +9,7 @@ function toneClass(percent: number) {
 
 export function BillingCommandCenter({ summary, usage }: { summary?: OrganizationPlanSummary | null; usage: OrganizationUsageMetric[] }) {
   const hottest = [...usage].sort((a, b) => b.percentage - a.percentage)[0] ?? null;
-  const readiness = summary?.softLocked ? 18 : hottest ? Math.max(0, 100 - hottest.percentage) : 100;
+  const readiness = hottest ? Math.max(0, 100 - hottest.percentage) : 100;
 
   return (
     <Card>
@@ -17,7 +17,7 @@ export function BillingCommandCenter({ summary, usage }: { summary?: Organizatio
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Billing command center</p>
           <h2 className="mt-1 text-xl font-bold text-slate-900">Pulso financiero y capacidad operativa</h2>
-          <p className="mt-2 max-w-2xl text-sm text-slate-600">Resume el estado del plan actual, la vigencia, la renovación anual y el nivel de presión sobre límites para que la organización no choque con bloqueos evitables.</p>
+          <p className="mt-2 max-w-2xl text-sm text-slate-600">Te resume en una sola lectura el plan activo, la presión de límites y la ventana de renovación para que la organización no choque con topes de uso.</p>
         </div>
         <div className="rounded-2xl bg-slate-950 px-5 py-4 text-white">
           <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400">Readiness</p>
@@ -28,7 +28,7 @@ export function BillingCommandCenter({ summary, usage }: { summary?: Organizatio
 
       <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
         <Metric label="Plan" value={summary?.planName ?? "Sin plan"} hint={summary ? `Estado ${summary.status}` : "Configura suscripción"} />
-        <Metric label="Vigencia" value={summary?.expiresAtLabel ?? summary?.trialEndsAtLabel ?? "Pendiente"} hint={summary?.autoRenew ? "Renueva automáticamente" : "Requiere renovación manual"} />
+        <Metric label="Renovación" value={summary?.renewalDateLabel ?? "Pendiente"} hint="Próximo hito comercial" />
         <Metric label="Uso más presionado" value={hottest ? hottest.label : "Estable"} hint={hottest ? `${hottest.percentage}% del límite` : "Sin presión detectada"} />
         <Metric label="Asientos libres" value={summary ? String(Math.max(summary.seatsIncluded - summary.seatsUsed, 0)) : "0"} hint="Capacidad disponible hoy" />
       </div>

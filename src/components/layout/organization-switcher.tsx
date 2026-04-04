@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { Building2, ChevronDown, Check } from 'lucide-react';
 import type { OrganizationSummary } from '@/types/organization';
+import { formatOrganizationRole } from '@/lib/organization/labels';
 
 function formatRole(role?: string | null) {
   if (!role) return 'Miembro';
@@ -48,7 +49,7 @@ export function OrganizationSwitcher({
                 >
                   <div className="min-w-0">
                     <p className="truncate text-sm font-semibold">{organization.name}</p>
-                    <p className="text-xs opacity-80">{formatRole(organization.role)}</p>
+                    <p className="text-xs opacity-80">{formatOrganizationRole(organization.role)}</p>
                   </div>
                   {organization.id === activeOrganization?.id ? <Check className="h-4 w-4 shrink-0" /> : null}
                 </div>
@@ -95,7 +96,7 @@ export function OrganizationSwitcher({
               >
                 <div className="min-w-0">
                   <p className="truncate text-sm font-semibold">{organization.name}</p>
-                  <p className="text-xs opacity-80">{formatRole(organization.role)}</p>
+                  <p className="text-xs opacity-80">{formatOrganizationRole(organization.role)}</p>
                 </div>
                 {organization.id === activeOrganization?.id ? <Check className="h-4 w-4 shrink-0" /> : null}
               </div>

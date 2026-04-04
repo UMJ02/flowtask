@@ -1,11 +1,8 @@
-export type OrganizationRole = "admin_global" | "manager" | "member" | "viewer";
-
 export interface OrganizationSummary {
   id: string;
   name: string;
   slug: string;
-  role: OrganizationRole;
-  ownerId?: string | null;
+  role: "admin_global" | "manager" | "member" | "viewer";
   isDefault?: boolean;
 }
 
@@ -19,19 +16,9 @@ export interface ClientPermissionSummary {
 export interface OrganizationInviteSummary {
   id: string;
   email: string;
-  role: OrganizationRole;
+  role: "admin_global" | "manager" | "member" | "viewer";
   status: string;
   createdAtLabel: string;
-}
-
-export interface OrganizationMemberSummary {
-  id: string;
-  userId: string;
-  role: OrganizationRole;
-  isDefault: boolean;
-  isOwner: boolean;
-  fullName: string;
-  email: string;
 }
 
 export interface OrganizationMetricSummary {

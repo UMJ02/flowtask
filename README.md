@@ -1,43 +1,36 @@
-# FlowTask — v57 Platform Control Base
+# FlowTask — v54.3.4 Client Release Docs & Handoff
 
-Base actualizada sobre la **v54.3.4**, enfocada en dejar el repo principal listo para cierre técnico, higiene de seguridad y entrega limpia a cliente sin tocar el core funcional del producto.
+Base actualizada sobre la **v54.3.3**, enfocada en dejar el repo principal más claro para cierre cliente, con documentación operativa visible y una ruta de entrega más limpia.
 
 ## Objetivo de esta versión
-- endurecer la base del repo para release cliente
-- formalizar el contrato de variables de entorno
-- evitar que secretos y artefactos locales vuelvan al bundle de entrega
-- dejar verificación explícita para repo limpio + hardening
-- mantener intacta la arquitectura y el comportamiento estable del app
+- mantener una sola historia oficial de base de datos en `supabase/migrations/`
+- conservar el histórico técnico solo como archivo interno
+- dejar un checklist claro de release cliente
+- dejar documentación de handoff y operación en el repo
 
-## Qué cambia en la v55
-- se elimina del bundle de entrega todo artefacto local no deployable:
-  - `.env`
-  - `.env.local`
-  - `.next`
-  - `node_modules`
-  - `.git`
-  - `__MACOSX`
-  - `.DS_Store`
-  - `tsconfig.tsbuildinfo`
-- se fortalece `.gitignore` para evitar reincidencias de archivos locales
-- se agrega `.env.example` completo con contrato público + server + opcionales
-- se reemplaza la verificación anterior activa por:
-  - `scripts/verify-v55.mjs`
-- se endurecen checks operativos:
-  - `scripts/security-check.mjs`
-  - `scripts/release-check.mjs`
-- se agrega documentación visible de hardening:
-  - `docs/release/V55_HARDENING_CHECKLIST.md`
-  - `docs/release/V55_DELIVERY_NOTES.md`
-- se actualiza metadata de release a `55.0.0-production-hardening`
+## Qué cambia en la v54.3.4
+- se archiva la verificación anterior:
+  - `scripts/verify-v54.3.3.mjs`
+- se agrega la nueva verificación activa:
+  - `scripts/verify-v54.3.4.mjs`
+- se agrega documentación operativa visible:
+  - `docs/release/CLIENT_RELEASE_CHECKLIST.md`
+  - `docs/release/OPERATIONS_HANDOFF.md`
+- se actualiza `package.json`:
+  - se elimina `verify:v54.3.3`
+  - se agrega `verify:v54.3.4`
+  - `verify:current` ahora apunta a `v54.3.4`
+  - se agrega `release:repo:v54.3.4`
+  - `release:repo:current` ahora apunta a `v54.3.4`
+- se actualiza la metadata de release a `54.3.4-client-release-docs`
 
 ## Estructura canónica
 ### Runtime / app
 - `src/`
 - `public/`
-- `scripts/` → checks activos y operativos actuales
+- `scripts/` → solo checks activos y operativos actuales
 - `supabase/migrations/` → historia oficial de BD
-- `docs/release/` → checklist, handoff y guía de cierre técnico
+- `docs/release/` → checklist y handoff visibles para cierre cliente
 
 ### Archivo interno
 - `archive/internal/legacy_release_history/RT_modulos/`
@@ -52,7 +45,6 @@ npm run validate:node
 npm run validate:env
 npm run verify:current
 npm run runtime:check
-npm run security:check
 npm run typecheck
 ```
 
@@ -66,30 +58,24 @@ npm run release:repo:current
 npm run qa:current
 ```
 
-## Regla principal de esta base
-Esta **v55** debe usarse como base oficial para seguir cerrando el producto sin rehacer ni refactorizar el núcleo. El enfoque es:
-- hardening
-- limpieza de repo
-- cierre técnico
-- cero secretos en bundles
-- continuidad 1:1 sobre el código estable
+## Flujo actual de release consolidado
+```bash
+npm run release:current
+```
 
+## Documentación nueva de cierre cliente
+- `docs/release/CLIENT_RELEASE_CHECKLIST.md`
+- `docs/release/OPERATIONS_HANDOFF.md`
 
-## Release actual
+## Notas de entrega
+Este zip no incluye:
+- `__MACOSX`
+- `.DS_Store`
+- `.next`
+- `node_modules`
+- `.git`
+- `.env`
+- `.env.local`
 
-- versión: `57.0.0-platform-control`
-- foco: platform control + observabilidad SaaS
-- continuidad sugerida: handoff final + QA de entrega
-
-
-## Qué agrega V57
-- centro de control SaaS exclusivo para platform admins
-- métricas globales de plataforma
-- observabilidad visible de errores recientes
-- visibilidad de uso real mediante usage events
-- acceso condicional al módulo platform desde la navegación de admins
-
-
-## V57.5 — Access onboarding modernization
-
-FlowTask ahora incluye una base moderna para acceso individual, equipo / empresa y códigos corporativos sin duplicar la suscripción organizacional existente.
+## Siguiente uso recomendado
+Usa esta **v54.3.4** como nueva base 1:1 para seguir con la etapa de cierre cliente y QA final.

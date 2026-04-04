@@ -5,15 +5,6 @@ export interface OrganizationPlanSummary {
   billingCycle: "monthly" | "annual";
   trialEndsAtLabel?: string | null;
   renewalDateLabel?: string | null;
-  expiresAtLabel?: string | null;
-  lastRenewedAtLabel?: string | null;
-  renewalGraceEndsAtLabel?: string | null;
-  autoRenew: boolean;
-  softLocked: boolean;
-  softLockReason?: string | null;
-  scheduledPlanCode?: string | null;
-  scheduledPlanName?: string | null;
-  activationCode?: string | null;
   seatsIncluded: number;
   seatsUsed: number;
   projectsIncluded: number;

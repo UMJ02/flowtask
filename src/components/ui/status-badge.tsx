@@ -16,16 +16,6 @@ const STATUS_STYLES: Record<string, string> = {
   cerrado: 'bg-slate-100 text-slate-600 ring-1 ring-slate-200',
   paused: 'bg-rose-50 text-rose-700 ring-1 ring-rose-100',
   en_pausa: 'bg-rose-50 text-rose-700 ring-1 ring-rose-100',
-  open: 'bg-amber-50 text-amber-700 ring-1 ring-amber-100',
-  resolved: 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100',
-  trial: 'bg-sky-50 text-sky-700 ring-1 ring-sky-100',
-  past_due: 'bg-rose-50 text-rose-700 ring-1 ring-rose-100',
-  warning: 'bg-amber-50 text-amber-700 ring-1 ring-amber-100',
-  error: 'bg-rose-50 text-rose-700 ring-1 ring-rose-100',
-  critical: 'bg-rose-100 text-rose-800 ring-1 ring-rose-200',
-  low: 'bg-slate-100 text-slate-700 ring-1 ring-slate-200',
-  normal: 'bg-blue-50 text-blue-700 ring-1 ring-blue-100',
-  high: 'bg-amber-50 text-amber-700 ring-1 ring-amber-100',
 };
 
 function toLabel(value?: string | null) {

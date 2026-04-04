@@ -17,6 +17,7 @@ import { getProjectAttachments } from '@/lib/queries/attachments';
 import { getProjectActivity } from '@/lib/queries/activity';
 import { getProjectAccessSummary } from '@/lib/queries/access-summary';
 import { safeServerCall } from '@/lib/runtime/safe-server';
+import { formatOrganizationRole } from '@/lib/organization/labels';
 
 export default async function ProjectDetailPage({
   params,
@@ -51,7 +52,7 @@ export default async function ProjectDetailPage({
       <AccessSummaryCard
         title="Permisos visibles del proyecto"
         description="Esta vista refleja lo que puedes ejecutar sin depender de prueba y error. Si una acción aparece bloqueada, también debe estar protegida por RLS en la base."
-        roleLabel={access.projectMemberRole ? `Proyecto: ${access.projectMemberRole}` : access.role ? `Org: ${access.role.replace('_', ' ')}` : 'Sin rol'}
+        roleLabel={access.projectMemberRole ? `Proyecto: ${access.projectMemberRole}` : access.role ? `Org: ${formatOrganizationRole(access.role)}` : 'Sin organización activa'}
         items={[
           { label: 'Editar proyecto', enabled: access.canEdit },
           { label: 'Gestionar miembros', enabled: access.canManageMembers },
