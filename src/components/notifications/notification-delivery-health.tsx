@@ -20,9 +20,11 @@ type DigestPreview = {
 export function NotificationDeliveryHealth({
   deliverySummary,
   digestPreview,
+  modeLabel = 'Workspace',
 }: {
   deliverySummary: DeliverySummary;
   digestPreview: DigestPreview;
+  modeLabel?: string;
 }) {
   const successRate = deliverySummary.total ? Math.round((deliverySummary.sent / deliverySummary.total) * 100) : 0;
 
@@ -35,7 +37,7 @@ export function NotificationDeliveryHealth({
           </span>
           <div>
             <h2 className="text-lg font-semibold text-slate-900">Salud de entregas</h2>
-            <p className="mt-1 text-sm text-slate-500">Mide si tus avisos están saliendo como deben y detecta rápido si hay algo que revisar.</p>
+            <p className="mt-1 text-sm text-slate-500">Mide si tus avisos están saliendo como deben y detecta rápido si hay algo que revisar en {modeLabel.toLowerCase()}.</p>
           </div>
         </div>
         <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">

@@ -72,7 +72,7 @@ export function ClientManagerPanel({ items, initialQuery = '' }: { items: Client
     setSaving(true);
     const workspace = await getClientWorkspaceContext();
     if (!workspace.user || !workspace.activeOrganizationId) {
-      setError('No encontramos una organización activa para guardar este cliente.');
+      setError('No encontramos un contexto disponible para guardar este cliente.');
       setSaving(false);
       return;
     }
@@ -80,6 +80,7 @@ export function ClientManagerPanel({ items, initialQuery = '' }: { items: Client
     const supabase = workspace.supabase;
     const payload = {
       organization_id: workspace.activeOrganizationId,
+      account_owner_id: workspace.activeOrganizationId ? null : workspace.user.id,
       name: draft.name.trim(),
       status: draft.status,
       notes: draft.notes.trim() || null,
@@ -155,7 +156,7 @@ export function ClientManagerPanel({ items, initialQuery = '' }: { items: Client
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Clientes</p>
             <h1 className="mt-2 text-2xl font-bold text-slate-900">Clientes activos del workspace</h1>
-            <p className="mt-2 max-w-2xl text-sm text-slate-500">Administra clientes, revisa su carga actual y entra al detalle para ver proyectos y tareas relacionados.</p>
+            <p className="mt-2 max-w-2xl text-sm text-slate-500">Administra clientes, revisa su carga actual y entra al detalle para ver proyectos y tareas relacionados, incluso en modo personal.</p>
           </div>
           <div className="flex flex-wrap gap-3 text-sm">
             <span className="rounded-2xl border border-slate-200 bg-white px-4 py-2 font-semibold text-slate-700">Total: {stats.total}</span>
@@ -170,7 +171,7 @@ export function ClientManagerPanel({ items, initialQuery = '' }: { items: Client
           <div className="flex items-center justify-between gap-3">
             <div>
               <h2 className="text-lg font-semibold text-slate-900">Listado de clientes</h2>
-              <p className="text-sm text-slate-500">Resultado actual {initialQuery ? `para “${initialQuery}”` : 'de la organización activa'}.</p>
+              <p className="text-sm text-slate-500">Resultado actual {initialQuery ? `para “${initialQuery}”` : 'del contexto actual'}.</p>
             </div>
             <button
               type="button"

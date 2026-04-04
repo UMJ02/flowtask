@@ -54,11 +54,11 @@ export function ProjectForm({ projectId, initialData, submitLabel, successMessag
       const workspace = await getClientWorkspaceContext();
       if (!active) return;
       if (!workspace.user) { setWorkspaceBlockedReason('Tu sesión no está disponible. Vuelve a iniciar sesión antes de crear o editar proyectos.'); setRoleLabel('Sin sesión activa'); return; }
-      if (!workspace.activeOrganizationId) { setWorkspaceBlockedReason('No encontramos una organización activa. Asigna una organización antes de continuar.'); setRoleLabel('Sin organización activa'); return; }
+      if (!workspace.activeOrganizationId && workspace.accountMode !== 'individual') { setWorkspaceBlockedReason('No encontramos una organización activa. Asigna una organización antes de continuar.'); setRoleLabel('Sin organización activa'); return; }
       const access = await getClientAccessSummary(workspace.supabase as any, workspace.user.id, workspace.activeOrganizationId);
       if (!active) return;
       const roleMap: Record<string, string> = { admin_global: 'Administrador global', manager: 'Manager', member: 'Miembro', viewer: 'Viewer' };
-      setRoleLabel(access.role ? roleMap[access.role] ?? access.role : 'Acceso personalizado');
+      setRoleLabel(workspace.activeOrganizationId ? (access.role ? roleMap[access.role] ?? access.role : 'Acceso personalizado') : 'Modo individual');
       setWorkspaceBlockedReason(null);
     };
     void loadWorkspaceState();
@@ -71,13 +71,15 @@ export function ProjectForm({ projectId, initialData, submitLabel, successMessag
     const workspace = await getClientWorkspaceContext();
     const supabase = workspace.supabase; const user = workspace.user;
     if (!user) { setServerError('Sesión no válida.'); setStatusMessage(null); return; }
-    if (!workspace.activeOrganizationId) { setServerError('No hay una organización activa para registrar este proyecto.'); setStatusMessage(null); return; }
+    if (!workspace.activeOrganizationId && workspace.accountMode !== 'individual') { setServerError('No hay una organización activa para registrar este proyecto.'); setStatusMessage(null); return; }
     let departmentId: number | null = null;
     try { departmentId = await getDepartmentIdByCode(values.department); } catch (error) { setServerError(error instanceof Error ? error.message : 'No fue posible cargar el departamento.'); setStatusMessage(null); return; }
     const normalizedClientName = values.clientName?.trim() || null;
-    const clientId = await findOrganizationClientId(supabase, workspace.activeOrganizationId, normalizedClientName);
+    const clientId = workspace.activeOrganizationId
+      ? await findOrganizationClientId(supabase, workspace.activeOrganizationId, normalizedClientName)
+      : null;
     const access = await getClientAccessSummary(supabase as any, user.id, workspace.activeOrganizationId);
-    if (clientId && !hasClientAccess(access, clientId, 'edit')) { setServerError('No tienes permisos para crear o editar proyectos sobre ese cliente.'); setStatusMessage(null); return; }
+    if (workspace.activeOrganizationId && clientId && !hasClientAccess(access, clientId, 'edit')) { setServerError('No tienes permisos para crear o editar proyectos sobre ese cliente.'); setStatusMessage(null); return; }
     const payload = { title: values.title, description: values.description || null, status: values.status, department_id: departmentId, client_name: normalizedClientName, client_id: clientId, due_date: values.dueDate || null, is_collaborative: values.isCollaborative, share_token: values.isCollaborative ? (initialData?.shareToken ?? generateShareToken()) : null };
     let createdProjectId: string | null = null;
     if (isEdit) {
@@ -86,11 +88,13 @@ export function ProjectForm({ projectId, initialData, submitLabel, successMessag
       createdProjectId = projectId!;
       await logActivity(supabase as any, { entityType: 'project', entityId: projectId!, action: 'project_updated', metadata: { title: payload.title, status: payload.status, client_id: clientId ?? undefined, client_name: normalizedClientName ?? undefined, organization_id: workspace.activeOrganizationId } });
     } else {
-      const { data, error } = await supabase.from('projects').insert({ owner_id: user.id, organization_id: workspace.activeOrganizationId, ...payload }).select('id').single();
+      const { data, error } = await supabase.from('projects').insert({ owner_id: user.id, organization_id: workspace.activeOrganizationId ?? null, ...payload }).select('id').single();
       if (error) { setServerError(error.message); setStatusMessage(null); return; }
       createdProjectId = data?.id ?? null;
       if (createdProjectId) {
-        await supabase.from('project_members').insert({ project_id: createdProjectId, user_id: user.id, role: 'owner' });
+        if (workspace.activeOrganizationId) {
+          await supabase.from('project_members').insert({ project_id: createdProjectId, user_id: user.id, role: 'owner' });
+        }
         await logActivity(supabase as any, { entityType: 'project', entityId: createdProjectId, action: 'project_created', metadata: { title: payload.title, status: payload.status, client_id: clientId ?? undefined, client_name: normalizedClientName ?? undefined, organization_id: workspace.activeOrganizationId } });
       }
     }

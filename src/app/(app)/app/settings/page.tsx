@@ -6,12 +6,14 @@ import { AutomationControlCenter } from '@/components/settings/automation-contro
 import { SettingsAccountOverview } from '@/components/settings/settings-account-overview';
 import { getNotificationPreferences } from '@/lib/queries/notification-preferences';
 import { getOrganizationContext } from '@/lib/queries/organization';
+import { getAccountAccessSummary } from '@/lib/queries/account-access';
 import { safeServerCall } from '@/lib/runtime/safe-server';
 
 export default async function SettingsPage() {
-  const [preferences, organizationContext] = await Promise.all([
+  const [preferences, organizationContext, access] = await Promise.all([
     safeServerCall('getNotificationPreferences', () => getNotificationPreferences(), null),
     safeServerCall('getOrganizationContext', () => getOrganizationContext(), null),
+    safeServerCall('getAccountAccessSummary', () => getAccountAccessSummary(), null),
   ]);
 
   return (
@@ -23,7 +25,7 @@ export default async function SettingsPage() {
       <Card>
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Ajustes</p>
         <h1 className="mt-2 text-2xl font-bold text-slate-900">Preferencias de la aplicación</h1>
-        <p className="mt-2 text-sm text-slate-600">Define avisos, automatizaciones y contexto de trabajo sin mezclar esta vista con la identidad del usuario.</p>
+        <p className="mt-2 text-sm text-slate-600">Define avisos, automatizaciones y contexto de trabajo sin mezclar esta vista con la identidad del usuario. En modo individual la aplicación mantiene un contexto personal claro.</p>
       </Card>
       {preferences ? <NotificationPreferencesForm initialPreferences={preferences} /> : null}
       {preferences ? <AutomationControlCenter preferences={preferences} /> : null}
@@ -33,7 +35,7 @@ export default async function SettingsPage() {
           <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
             <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Organización activa</p>
             <p className="mt-2 text-lg font-semibold text-slate-900">{organizationContext?.activeOrganization?.name ?? 'Sin organización'}</p>
-            <p className="mt-1 text-sm text-slate-600">{organizationContext?.activeOrganization?.slug ?? 'Modo personal o pendiente de contexto'}</p>
+            <p className="mt-1 text-sm text-slate-600">{organizationContext?.activeOrganization?.slug ?? (access?.currentMode === 'individual' ? 'Modo individual activo' : 'Pendiente de contexto')}</p>
           </div>
           <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
             <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Rol actual</p>

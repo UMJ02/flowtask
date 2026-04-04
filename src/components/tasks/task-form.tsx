@@ -57,7 +57,7 @@ export function TaskForm({ taskId, initialData, submitLabel, successMessage, red
       const access = await getClientAccessSummary(workspace.supabase as any, workspace.user.id, workspace.activeOrganizationId);
       if (!active) return;
       const roleMap: Record<string, string> = { admin_global: 'Administrador global', manager: 'Manager', member: 'Miembro', viewer: 'Viewer' };
-      setRoleLabel(access.role ? roleMap[access.role] ?? access.role : 'Acceso personalizado');
+      setRoleLabel(workspace.activeOrganizationId ? (access.role ? roleMap[access.role] ?? access.role : 'Acceso personalizado') : 'Modo individual');
       setWorkspaceBlockedReason(null);
       const rows = await fetchWorkspaceProjects(workspace.supabase, workspace.user.id, workspace.activeOrganizationId, 'edit');
       if (active) { setProjects(rows); setLoadingProjects(false); }
@@ -72,22 +72,24 @@ export function TaskForm({ taskId, initialData, submitLabel, successMessage, red
     const workspace = await getClientWorkspaceContext();
     const supabase = workspace.supabase; const user = workspace.user;
     if (!user) { setServerError('Sesión no válida.'); setStatusMessage(null); return; }
-    if (!workspace.activeOrganizationId) { setServerError('No hay una organización activa para registrar esta tarea.'); setStatusMessage(null); return; }
+    if (!workspace.activeOrganizationId && workspace.accountMode !== 'individual') { setServerError('No hay una organización activa para registrar esta tarea.'); setStatusMessage(null); return; }
     let departmentId: number | null = null;
     try { departmentId = await getDepartmentIdByCode(values.department); } catch (error) { setServerError(error instanceof Error ? error.message : 'No fue posible cargar el departamento.'); setStatusMessage(null); return; }
     const clientName = values.clientName?.trim() || null;
-    const clientId = await findOrganizationClientId(supabase, workspace.activeOrganizationId, clientName);
+    const clientId = workspace.activeOrganizationId
+      ? await findOrganizationClientId(supabase, workspace.activeOrganizationId, clientName)
+      : null;
     const access = await getClientAccessSummary(supabase as any, user.id, workspace.activeOrganizationId);
     const selectedProject = await resolveProjectEntityContext(supabase as any, values.projectId || null);
-    if (clientId && !hasClientAccess(access, clientId, 'edit')) { setServerError('No tienes permisos para crear o editar tareas sobre ese cliente.'); setStatusMessage(null); return; }
+    if (workspace.activeOrganizationId && clientId && !hasClientAccess(access, clientId, 'edit')) { setServerError('No tienes permisos para crear o editar tareas sobre ese cliente.'); setStatusMessage(null); return; }
     if (values.projectId) {
       if (!selectedProject) { setServerError('El proyecto seleccionado no existe o no está disponible en tu workspace.'); setStatusMessage(null); return; }
-      if (!hasClientAccess(access, selectedProject.clientId ?? null, 'edit')) { setServerError('No tienes permisos para crear o editar tareas en el proyecto seleccionado.'); setStatusMessage(null); return; }
+      if (workspace.activeOrganizationId && !hasClientAccess(access, selectedProject.clientId ?? null, 'edit')) { setServerError('No tienes permisos para crear o editar tareas en el proyecto seleccionado.'); setStatusMessage(null); return; }
     }
     const integrity = validateTaskProjectClientIntegrity({ selectedProject, selectedClientId: clientId, selectedClientName: clientName, activeOrganizationId: workspace.activeOrganizationId });
     if (!integrity.ok) { setServerError(integrity.message ?? 'La tarea no respeta la integridad del proyecto y cliente seleccionado.'); setStatusMessage(null); return; }
     const payload = { title: values.title, description: values.description || null, status: values.status, priority: values.priority, department_id: departmentId, client_name: integrity.resolvedClientName, client_id: integrity.resolvedClientId, due_date: values.dueDate || null, project_id: values.projectId || null };
-    const result = isEdit ? await supabase.from('tasks').update(payload).eq('id', taskId!) : await supabase.from('tasks').insert({ owner_id: user.id, organization_id: workspace.activeOrganizationId, ...payload }).select('id').single();
+    const result = isEdit ? await supabase.from('tasks').update(payload).eq('id', taskId!) : await supabase.from('tasks').insert({ owner_id: user.id, organization_id: workspace.activeOrganizationId ?? null, ...payload }).select('id').single();
     const error = result.error;
     if (error) { setServerError(error.message); setStatusMessage(null); return; }
     const createdTaskId = !isEdit ? ((result as { data?: { id?: string | null } | null }).data?.id ?? null) : null;
@@ -117,7 +119,7 @@ export function TaskForm({ taskId, initialData, submitLabel, successMessage, red
           <div className="rounded-[22px] border border-slate-200 bg-slate-50/80 px-4 py-3">
             <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">Rol actual</p>
             <p className="mt-2 text-sm font-semibold text-slate-900">{roleLabel}</p>
-            <p className="mt-1 text-xs leading-5 text-slate-500">La disponibilidad de proyectos editables depende de tu acceso real.</p>
+            <p className="mt-1 text-xs leading-5 text-slate-500">La disponibilidad depende de tu acceso real o del modo individual activo.</p>
           </div>
         </div>
       </Card>

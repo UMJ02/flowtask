@@ -4,6 +4,7 @@ import { NotificationsLivePanel } from '@/components/notifications/notifications
 import { NotificationDeliveryHealth } from '@/components/notifications/notification-delivery-health';
 import { NotificationsCommandCenter } from '@/components/notifications/notifications-command-center';
 import { getNotificationPreferences } from '@/lib/queries/notification-preferences';
+import { getAccountAccessSummary } from '@/lib/queries/account-access';
 import { getNotificationsPageData } from '@/lib/queries/notifications';
 import { safeServerCall } from '@/lib/runtime/safe-server';
 
@@ -43,11 +44,12 @@ export default async function NotificationsPage({ searchParams }: { searchParams
   const initialFilter = parseNotificationFilter(typeof params.filter === 'string' ? params.filter : undefined);
   const initialSearch = typeof params.q === 'string' ? params.q : '';
 
-  const [data, preferences] = await Promise.all([
+  const [data, preferences, access] = await Promise.all([
     safeServerCall('getNotificationsPageData', () => getNotificationsPageData(), {
       userId: '', notifications: [], assignedTasks: [], triggeredReminders: [], unreadCount: 0, digestPreview: null, deliverySummary: { total: 0, sent: 0, failed: 0, pending: 0 },
     }),
     safeServerCall('getNotificationPreferences', () => getNotificationPreferences(), null),
+    safeServerCall('getAccountAccessSummary', () => getAccountAccessSummary(), null),
   ]);
 
   return (
@@ -67,7 +69,7 @@ export default async function NotificationsPage({ searchParams }: { searchParams
         initialFilter={initialFilter}
         initialSearch={initialSearch}
       />
-      <NotificationDeliveryHealth deliverySummary={data.deliverySummary} digestPreview={data.digestPreview} />
+      <NotificationDeliveryHealth deliverySummary={data.deliverySummary} digestPreview={data.digestPreview} modeLabel={access?.currentMode === 'individual' ? 'Modo individual' : 'Workspace'} />
     </div>
   );
 }
