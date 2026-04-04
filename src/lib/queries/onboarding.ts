@@ -66,6 +66,8 @@ export async function getWorkspaceOnboardingSummary(): Promise<WorkspaceOnboardi
   const activeProjects = organizationMetrics?.activeProjects ?? projectsRes.count ?? 0;
   const openTasks = organizationMetrics?.openTasks ?? tasksRes.count ?? 0;
   const hasOrganization = Boolean(organizationId);
+  const isIndividual = access.currentMode === 'individual';
+  const isTeam = access.currentMode === 'team_owner' || access.currentMode === 'team_member';
   const hasAccountMode = Boolean(access.currentMode);
   const hasProfile = Boolean(profile?.fullName?.trim() && profile?.email?.trim());
   const hasClientPermissions = (organizationContext?.clientPermissions?.length ?? 0) > 0;
@@ -103,7 +105,7 @@ export async function getWorkspaceOnboardingSummary(): Promise<WorkspaceOnboardi
       description: "Si usarás FlowTask con equipo, crea o valida la organización activa antes de seguir con miembros y clientes.",
       href: "/app/organization",
       cta: "Revisar organización",
-      done: access.currentMode === 'individual' ? true : hasOrganization,
+      done: isIndividual ? true : hasOrganization,
       category: "foundation",
     },
     {
@@ -112,7 +114,7 @@ export async function getWorkspaceOnboardingSummary(): Promise<WorkspaceOnboardi
       description: "Agrega al menos un cliente para empezar a vincular proyectos, permisos y actividad.",
       href: "/app/clients",
       cta: "Abrir clientes",
-      done: hasClients,
+      done: isIndividual ? hasClients || hasProjects || hasTasks : hasClients,
       category: "operation",
     },
     {
@@ -139,7 +141,7 @@ export async function getWorkspaceOnboardingSummary(): Promise<WorkspaceOnboardi
       description: "Deja roles y acceso por cliente bien resueltos antes de crecer el workspace.",
       href: "/app/organization/roles",
       cta: "Ver permisos",
-      done: hasTeam && (hasRoles || hasClientPermissions),
+      done: isIndividual ? true : hasTeam && (hasRoles || hasClientPermissions),
       category: "foundation",
     },
     {
@@ -159,7 +161,7 @@ export async function getWorkspaceOnboardingSummary(): Promise<WorkspaceOnboardi
 
   const recommendations = [
     !hasAccountMode ? "Define primero si vas a usar FlowTask de forma individual o como workspace de equipo." : null,
-    access.currentMode !== 'individual' && !hasOrganization ? "Crea o activa una organización para que el workspace tenga un contexto correcto antes de invitar miembros." : null,
+    isTeam && !hasOrganization ? "Crea o activa una organización para que el workspace tenga un contexto correcto antes de invitar miembros." : null,
     !hasClients ? "Carga por lo menos un cliente para que la capa operativa tenga un punto real de trabajo." : null,
     !hasProjects ? "Crea un proyecto inicial para habilitar seguimiento, watchlist y reportes con señal útil." : null,
     !hasTasks ? "Registra tareas activas para que dashboard, kanban y vencimientos muestren prioridad real." : null,

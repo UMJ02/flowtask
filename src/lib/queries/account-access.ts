@@ -14,6 +14,7 @@ export interface AccountAccessSummary {
   activeOrganizationId: string | null;
   activeOrganizationName: string | null;
   activeRole: string | null;
+  redirectTarget: string;
 }
 
 export async function getAccountAccessSummary(): Promise<AccountAccessSummary> {
@@ -33,6 +34,7 @@ export async function getAccountAccessSummary(): Promise<AccountAccessSummary> {
       activeOrganizationId: null,
       activeOrganizationName: null,
       activeRole: null,
+      redirectTarget: '/app/onboarding',
     };
   }
 
@@ -63,6 +65,14 @@ export async function getAccountAccessSummary(): Promise<AccountAccessSummary> {
       : 'individual';
 
   const hasWorkspace = Boolean(membership?.organization_id);
+  const onboardingCompleted = Boolean(mode?.onboarding_completed);
+  const redirectTarget = hasWorkspace
+    ? '/app/dashboard'
+    : inferredMode === 'team_owner'
+      ? '/app/organization'
+      : inferredMode === 'individual' && onboardingCompleted
+        ? '/app/dashboard'
+        : '/app/onboarding';
 
   return {
     currentMode: inferredMode,
@@ -70,11 +80,12 @@ export async function getAccountAccessSummary(): Promise<AccountAccessSummary> {
     selectedPlanName: (mode?.selected_plan_name as string | null | undefined) ?? null,
     billingCycle: ((mode?.billing_cycle as 'monthly' | 'annual' | null | undefined) ?? null),
     activationSource: (mode?.activation_source as string | null | undefined) ?? null,
-    onboardingCompleted: Boolean(mode?.onboarding_completed),
+    onboardingCompleted,
     hasWorkspace,
     canCreateWorkspace: inferredMode === 'team_owner' && !hasWorkspace,
     activeOrganizationId: (membership?.organization_id as string | null | undefined) ?? null,
     activeOrganizationName: membership?.organizations?.name ?? null,
     activeRole: (membership?.role as string | null | undefined) ?? null,
+    redirectTarget,
   };
 }

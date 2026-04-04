@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "57.5-access-onboarding-modernization",
+  "version": "57.5.1-access-flow-rebased",
   "private": true,
   "scripts": {
     "dev": "node node_modules/next/dist/bin/next dev",

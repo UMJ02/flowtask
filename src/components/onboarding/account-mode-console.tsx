@@ -45,15 +45,15 @@ export function AccountModeConsole({ access }: { access: AccountAccessSummary })
     setMessage(null); setError(null);
     startTransition(async () => {
       try {
-        await postJson('/api/account/select-mode', {
+        const result = await postJson('/api/account/select-mode', {
           accountMode: 'individual',
           selectedPlanCode: 'individual',
           selectedPlanName: 'Individual',
           billingCycle: 'annual',
-          onboardingCompleted: true,
         });
-        setMessage('Tu cuenta quedó lista en modo individual.');
+        setMessage(result.message ?? 'Tu cuenta quedó lista en modo individual.');
         router.refresh();
+        if (result.redirectTo) router.push(result.redirectTo as string);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'No se pudo activar el modo individual.');
       }
@@ -64,15 +64,15 @@ export function AccountModeConsole({ access }: { access: AccountAccessSummary })
     setMessage(null); setError(null);
     startTransition(async () => {
       try {
-        await postJson('/api/account/select-mode', {
+        const result = await postJson('/api/account/select-mode', {
           accountMode: 'team_owner',
           selectedPlanCode: activePlan.code,
           selectedPlanName: activePlan.name,
           billingCycle: 'annual',
-          onboardingCompleted: false,
         });
-        setMessage(`Plan ${activePlan.name} listo. Ahora puedes crear tu organización.`);
+        setMessage(result.message ?? `Plan ${activePlan.name} listo. Ahora puedes crear tu organización.`);
         router.refresh();
+        if (result.redirectTo) router.push(result.redirectTo as string);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'No se pudo activar el plan de equipo.');
       }
@@ -87,6 +87,7 @@ export function AccountModeConsole({ access }: { access: AccountAccessSummary })
         setCode('');
         setMessage(result.message ?? 'Código aplicado correctamente.');
         router.refresh();
+        if (result.redirectTo) router.push(result.redirectTo as string);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'No se pudo validar el código.');
       }
@@ -100,6 +101,7 @@ export function AccountModeConsole({ access }: { access: AccountAccessSummary })
         const result = await postJson('/api/account/create-workspace', { name: workspaceName, slug: workspaceSlug });
         setMessage(result.message ?? 'Workspace creado correctamente.');
         router.refresh();
+        if (result.redirectTo) router.push(result.redirectTo as string);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'No se pudo crear la organización.');
       }
@@ -117,6 +119,7 @@ export function AccountModeConsole({ access }: { access: AccountAccessSummary })
         <div className="rounded-[24px] border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
           Modo actual: <span className="font-semibold">{access.currentMode ? access.currentMode.replace('_', ' ') : 'Sin definir'}</span>
           {access.selectedPlanName ? <span className="ml-2 text-emerald-700">· {access.selectedPlanName}</span> : null}
+          {access.hasWorkspace && access.activeOrganizationName ? <span className="ml-2 text-emerald-700">· {access.activeOrganizationName}</span> : null}
         </div>
       </div>
 

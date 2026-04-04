@@ -70,7 +70,7 @@ export function WorkspaceOnboarding({ summary, compact = false }: { summary: Wor
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">Workspace onboarding</p>
             <h2 className="mt-2 text-3xl font-bold">Centro de arranque y cierre operativo</h2>
             <p className="mt-2 text-sm text-slate-300">
-              Usa esta vista para definir el modo de cuenta, terminar la base del workspace y cerrar operación y automatización sin duplicar estructura.
+              Usa esta vista para definir el modo de cuenta, cerrar el plan correcto y salir con redirección limpia hacia dashboard u organización, sin duplicar estructura.
             </p>
           </div>
           <div className="grid gap-3 sm:grid-cols-3">

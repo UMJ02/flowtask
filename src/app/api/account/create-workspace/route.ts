@@ -39,9 +39,11 @@ export async function POST(request: NextRequest) {
     if (!user) return NextResponse.json({ ok: false, error: 'unauthorized' }, { status: 401 });
 
     const admin = createAdminClient();
-    const [modeRes, membershipRes] = await Promise.all([
+    const [modeRes, membershipRes, organizationsRes, activationRes] = await Promise.all([
       admin.from('user_account_modes').select('*').eq('user_id', user.id).maybeSingle(),
       admin.from('organization_members').select('organization_id, role').eq('user_id', user.id).in('role', ['admin_global', 'manager']).limit(1).maybeSingle(),
+      admin.from('organization_members').select('organization_id', { count: 'exact', head: true }).eq('user_id', user.id).in('role', ['admin_global', 'manager']),
+      admin.from('activation_codes').select('id, organization_limit, seat_limit, project_limit, storage_gb_limit').eq('used_by_user_id', user.id).eq('is_used', true).is('organization_id', null).order('used_at', { ascending: false }).limit(1).maybeSingle(),
     ]);
 
     const account = modeRes.data;
@@ -50,6 +52,11 @@ export async function POST(request: NextRequest) {
     }
     if (membershipRes.data?.organization_id) {
       return NextResponse.json({ ok: false, error: 'Tu cuenta ya administra una organización activa.' }, { status: 400 });
+    }
+    const managedOrganizations = organizationsRes.count ?? 0;
+    const organizationLimit = activationRes.data?.organization_limit ?? 1;
+    if (managedOrganizations >= organizationLimit) {
+      return NextResponse.json({ ok: false, error: 'Tu plan actual ya alcanzó el límite de organizaciones disponibles.' }, { status: 400 });
     }
 
     const baseSlug = slugify(customSlug || name) || `workspace-${user.id.slice(0, 6)}`;
@@ -61,6 +68,9 @@ export async function POST(request: NextRequest) {
     }
 
     const limits = resolvePlanLimits(account.selected_plan_code as string | null | undefined);
+    const resolvedSeats = activationRes.data?.seat_limit ?? limits.seats;
+    const resolvedProjects = activationRes.data?.project_limit ?? limits.projects;
+    const resolvedStorage = activationRes.data?.storage_gb_limit ?? limits.storage;
     const billingCycle = account.billing_cycle === 'monthly' ? 'monthly' : 'annual';
     const subscriptionStatus = account.activation_source === 'activation_code' ? 'active' : 'trial';
 
@@ -83,11 +93,11 @@ export async function POST(request: NextRequest) {
       billing_cycle: billingCycle,
       trial_ends_at: subscriptionStatus === 'trial' ? new Date(Date.now() + 1000 * 60 * 60 * 24 * 14).toISOString() : null,
       renews_at: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365).toISOString(),
-      seats_included: limits.seats,
+      seats_included: resolvedSeats,
       seats_used: 1,
-      projects_included: limits.projects,
+      projects_included: resolvedProjects,
       projects_used: 0,
-      storage_gb_included: limits.storage,
+      storage_gb_included: resolvedStorage,
       storage_gb_used: 0,
     }, { onConflict: 'organization_id' });
     const modeUpdate = await admin.from('user_account_modes').update({ default_organization_id: organization.id, onboarding_completed: true }).eq('user_id', user.id);
@@ -98,7 +108,7 @@ export async function POST(request: NextRequest) {
     const anyError = resetDefaults.error ?? memberAttach.error ?? subscriptionUpsert.error ?? modeUpdate.error ?? codeLink.error;
     if (anyError) return NextResponse.json({ ok: false, error: anyError.message }, { status: 400 });
 
-    return NextResponse.json({ ok: true, message: `Workspace ${organization.name} creado. Ya quedaste como admin inicial.`, data: { organizationId: organization.id, slug: organization.slug } });
+    return NextResponse.json({ ok: true, message: `Workspace ${organization.name} creado. Ya quedaste como admin inicial.`, redirectTo: '/app/organization', data: { organizationId: organization.id, slug: organization.slug } });
   } catch {
     return NextResponse.json({ ok: false, error: 'unexpected_error' }, { status: 500 });
   }

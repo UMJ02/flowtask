@@ -49,6 +49,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       ok: true,
+      redirectTo: activation.account_mode === 'individual' ? '/app/dashboard' : '/app/organization',
       message: activation.account_mode === 'individual'
         ? `Código aplicado. Tu cuenta quedó activa en modo ${activation.plan_name}.`
         : `Código aplicado. Ya puedes crear tu organización con el plan ${activation.plan_name}.`,
