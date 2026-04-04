@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "57.8-individual-mode-hardened",
+  "version": "57.9-final-qa-production-ready",
   "private": true,
   "scripts": {
     "dev": "node node_modules/next/dist/bin/next dev",
@@ -55,10 +55,10 @@
     "debug:hydration": "node scripts/debug-hydration.mjs",
     "ops:check": "node scripts/ops-check.mjs",
     "performance:check": "node scripts/performance-check.mjs",
-    "release:repo:current": "npm run release:repo:v57.5",
+    "release:repo:current": "npm run release:repo:v57.9",
     "qa:current": "npm run validate:node && npm run validate:env && npm run verify:current && npm run runtime:check && npm run typecheck && npm run security:check && npm run performance:check && npm run ops:check",
     "release:current": "npm run clean && npm run release:repo:current && npm run qa:current && npm run qa:functional && npm run qa:report && npm run ux:review && npm run preprod:validate && npm run production:gate",
-    "verify:current": "npm run verify:v57.5",
+    "verify:current": "npm run verify:v57.9",
     "release:repo:v54.3.3": "npm run verify:current && npm run runtime:check && npm run typecheck",
     "verify:v55": "node scripts/verify-v55.mjs",
     "release:repo:v55": "npm run verify:current && npm run runtime:check && npm run security:check && npm run release:check && npm run typecheck",
@@ -82,7 +82,9 @@
     "verify:v57.5": "node scripts/verify-v57.5.mjs",
     "release:repo:v57.5": "npm run verify:v57.5 && npm run runtime:check && npm run security:check && npm run release:check && npm run typecheck",
     "verify:v57.6": "node scripts/verify-v57.6.mjs",
-    "verify:v57.7": "node scripts/verify-v57.7.mjs"
+    "verify:v57.7": "node scripts/verify-v57.7.mjs",
+    "verify:v57.9": "node scripts/verify-v57.9.mjs",
+    "release:repo:v57.9": "npm run verify:v57.9 && npm run runtime:check && npm run security:check && npm run release:check && npm run typecheck"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

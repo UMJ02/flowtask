@@ -34,3 +34,8 @@ Esta versión deja el repo en un estado más claro para cierre cliente:
 - histórico aislado
 - documentación operativa visible
 - una sola historia oficial de base de datos
+
+## V57.9 operational note
+- Use `npm run verify:v57.9` before typecheck/build.
+- Final go-live depends on local `npm run typecheck` and `npm run build` passing on the deployment branch.
+- Validate the QA matrix after migrations are applied.
