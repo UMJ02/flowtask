@@ -9,7 +9,7 @@ export async function getOrganizationContext() {
 
   const { data: memberships } = await supabase
     .from("organization_members")
-    .select("id, role, is_default, organizations!inner ( id, name, slug )")
+    .select("id, role, is_default, organizations!inner ( id, name, slug, owner_id )")
     .eq("user_id", user.id)
     .order("is_default", { ascending: false })
     .limit(20);
@@ -22,6 +22,7 @@ export async function getOrganizationContext() {
       slug: organization?.slug as string,
       role: row.role as "admin_global" | "manager" | "member" | "viewer",
       isDefault: row.is_default ?? false,
+      ownerId: (organization?.owner_id as string | null | undefined) ?? null,
     };
   }).filter((item: any) => item.id && item.name);
 
@@ -176,4 +177,36 @@ export async function getOrganizationRolesAndPermissions(organizationId?: string
     })),
     membersByRole: Array.from(counts.entries()).map(([role, count]) => ({ role, count })),
   };
+}
+
+
+export async function getPendingOrganizationInvitesForCurrentUser() {
+  const supabase = await getServerClientCached();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const email = user?.email?.trim().toLowerCase();
+  if (!email) return [];
+
+  const { data } = await supabase
+    .from("organization_invites")
+    .select("id,email,role,status,created_at,organization_id,organizations!inner(id,name,slug)")
+    .eq("status", "pending")
+    .eq("email", email)
+    .order("created_at", { ascending: false })
+    .limit(8);
+
+  return (data ?? []).map((row: any) => {
+    const organization = Array.isArray(row.organizations) ? row.organizations[0] : row.organizations;
+    return {
+      id: row.id as string,
+      email: row.email as string,
+      role: row.role as any,
+      organizationId: row.organization_id as string,
+      organizationName: (organization?.name as string | null | undefined) ?? "Organización",
+      organizationSlug: (organization?.slug as string | null | undefined) ?? "workspace",
+      createdAtLabel: row.created_at ? format(new Date(row.created_at as string), "dd/MM/yyyy") : "-",
+    };
+  });
 }

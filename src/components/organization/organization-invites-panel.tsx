@@ -1,26 +1,37 @@
 'use client';
 
-import { useMemo, useState } from "react";
-import { Ban } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import type { OrganizationInviteSummary } from "@/types/organization";
+import { useState } from 'react';
+import { Ban } from 'lucide-react';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import type { OrganizationInviteSummary } from '@/types/organization';
+import { formatOrganizationRole } from '@/lib/organization/labels';
 
 export function OrganizationInvitesPanel({ organizationId, invites, canManageInvites = false }: { organizationId?: string | null; invites: OrganizationInviteSummary[]; canManageInvites?: boolean; canInviteManagers?: boolean; }) {
-  const supabase = useMemo(() => createClient(), []);
   const [items, setItems] = useState(invites);
   const [revokingId, setRevokingId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   async function revokeInvite(inviteId: string) {
     if (!canManageInvites) return;
     setRevokingId(inviteId);
+    setError(null);
     const previous = items;
-    const target = items.find((item) => item.id === inviteId) ?? null;
-    setItems((current) => current.map((item) => (item.id === inviteId ? { ...item, status: "revoked" } : item)));
-    const { error } = await supabase.from("organization_invites").update({ status: "revoked" }).eq("id", inviteId);
-    if (error) setItems(previous);
-    setRevokingId(null);
+    setItems((current) => current.map((item) => (item.id === inviteId ? { ...item, status: 'revoked' } : item)));
+    try {
+      const response = await fetch('/api/organization/invites', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ inviteId, status: 'revoked' }),
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(payload?.error || 'No fue posible revocar la invitación.');
+    } catch (err) {
+      setItems(previous);
+      setError(err instanceof Error ? err.message : 'No fue posible revocar la invitación.');
+    } finally {
+      setRevokingId(null);
+    }
   }
 
   return (
@@ -29,10 +40,11 @@ export function OrganizationInvitesPanel({ organizationId, invites, canManageInv
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Invitaciones</p>
           <h2 className="mt-1 text-lg font-semibold text-slate-900">Bandeja de acceso</h2>
-          <p className="mt-2 text-sm text-slate-600">Controla correos invitados y el rol que recibirán al entrar en la organización.</p>
+          <p className="mt-2 text-sm text-slate-600">Controla correos invitados, su rol futuro y el estado real del cupo reservado.</p>
         </div>
       </div>
       {!canManageInvites ? <p className="mt-4 text-sm text-slate-500">Tu acceso actual solo permite revisar la organización. La revocación de invitaciones está bloqueada.</p> : null}
+      {error ? <p className="mt-4 text-sm text-rose-700">{error}</p> : null}
       <div className="mt-4 overflow-x-auto">
         <table className="min-w-full text-sm">
           <thead className="text-left text-slate-500">
@@ -42,12 +54,12 @@ export function OrganizationInvitesPanel({ organizationId, invites, canManageInv
             {items.length ? items.map((invite) => (
               <tr key={invite.id} className="border-t border-slate-100">
                 <td className="py-3 pr-4 font-medium text-slate-900">{invite.email}</td>
-                <td className="py-3 pr-4 text-slate-600">{invite.role}</td>
+                <td className="py-3 pr-4 text-slate-600">{formatOrganizationRole(invite.role)}</td>
                 <td className="py-3 pr-4 text-slate-600">{invite.status}</td>
                 <td className="py-3 pr-4 text-slate-600">{invite.createdAtLabel}</td>
-                {canManageInvites ? <td className="py-3 pr-4">{invite.status === "pending" ? <Button type="button" variant="secondary" className="h-9 rounded-xl" onClick={() => revokeInvite(invite.id)} disabled={revokingId === invite.id}><Ban className="h-4 w-4" />{revokingId === invite.id ? "Revocando..." : "Revocar"}</Button> : <span className="text-xs text-slate-400">Sin acción</span>}</td> : null}
+                {canManageInvites ? <td className="py-3 pr-4">{invite.status === 'pending' ? <Button type="button" variant="secondary" className="h-9 rounded-xl" onClick={() => revokeInvite(invite.id)} disabled={revokingId === invite.id}><Ban className="h-4 w-4" />{revokingId === invite.id ? 'Revocando...' : 'Revocar'}</Button> : <span className="text-xs text-slate-400">Sin acción</span>}</td> : null}
               </tr>
-            )) : <tr><td colSpan={canManageInvites ? 5 : 4} className="py-6 text-sm text-slate-500">{canManageInvites ? "Todavía no hay invitaciones para esta organización." : "No tienes acceso a la bandeja de invitaciones de esta organización."}</td></tr>}
+            )) : <tr><td colSpan={canManageInvites ? 5 : 4} className="py-6 text-sm text-slate-500">{canManageInvites ? 'Todavía no hay invitaciones para esta organización.' : 'No tienes acceso a la bandeja de invitaciones de esta organización.'}</td></tr>}
           </tbody>
         </table>
       </div>

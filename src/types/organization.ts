@@ -4,6 +4,7 @@ export interface OrganizationSummary {
   slug: string;
   role: "admin_global" | "manager" | "member" | "viewer";
   isDefault?: boolean;
+  ownerId?: string | null;
 }
 
 export interface ClientPermissionSummary {
@@ -60,4 +61,15 @@ export interface OrganizationAccessSummary {
   canManageRoles: boolean;
   canManageClientPermissions: boolean;
   canViewSensitiveOrganizationData: boolean;
+}
+
+
+export interface PendingOrganizationInviteSummary {
+  id: string;
+  email: string;
+  role: "admin_global" | "manager" | "member" | "viewer";
+  organizationId: string;
+  organizationName: string;
+  organizationSlug: string;
+  createdAtLabel: string;
 }
