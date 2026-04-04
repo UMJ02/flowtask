@@ -68,15 +68,14 @@ export function OrganizationBootstrapCard() {
         </span>
       </div>
 
-      <form onSubmit={onSubmit} className="mt-5 grid gap-3 md:grid-cols-[1.1fr_0.9fr_auto] md:items-end">
+      <form onSubmit={onSubmit} className="mt-5 grid gap-4 md:grid-cols-[1.1fr_0.9fr_auto] md:items-end">
         <div>
-          <p className="mb-1 text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Nombre del workspace</p>
+          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Nombre del workspace</p>
           <Input value={name} onChange={(event) => setName(event.target.value)} placeholder="Ej. Canvas Gráfica CR" disabled={isPending} />
         </div>
         <div>
-          <p className="mb-1 text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Slug</p>
+          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Slug</p>
           <Input value={slug} onChange={(event) => setSlug(event.target.value)} placeholder="canvas-grafica-cr" disabled={isPending} />
-          <p className="mt-1 text-xs text-slate-500">Se guardará como /{computedSlug || "tu-workspace"}</p>
         </div>
         <Button type="submit" loading={isPending} className="h-11" disabled={isPending || !name.trim()}>
           <Building2 className="mr-2 h-4 w-4" />

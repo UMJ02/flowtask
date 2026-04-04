@@ -1,15 +1,15 @@
-# FlowTask — V58.8.1 Deploy Fix
+# FlowTask — V58.8 Performance + Hardening Final
 
-Esta versión toma como base **V58.8** y corrige el pipeline de deploy real para dejar FlowTask listo para Vercel sin romper la base funcional.
+Esta versión toma como base **V58.7** y cierra la capa final de performance/hardening para cliente sin reabrir la arquitectura ni mezclar líneas paralelas.
 
 ## Objetivo
-- corregir el pipeline real de deploy en Vercel
-- alinear Node, scripts de verificación y metadata viva
-- eliminar falsos negativos en readiness checks
-- mantener intacta la base funcional y de hardening de V58.8
+- endurecer el repo final antes de release cliente
+- bajar riesgo operativo en scripts de entorno sin depender de paquetes extra
+- reforzar configuración base de Next/Vercel para producción
+- dejar una base limpia para cierre final o handoff técnico
 
-## Qué cambia en la V58.8.1
-- metadata y scripts alineados a `V58.8.1`
+## Qué cambia en la V58.8
+- metadata y scripts alineados a `V58.8`
 - nuevo loader local `scripts/load-env.mjs` para que checks de entorno funcionen incluso sin dependencias instaladas
 - nueva verificación `scripts/verify-v58.8.mjs`
 - nuevo chequeo `scripts/hardening-final-check.mjs`
@@ -26,15 +26,3 @@ Esta versión toma como base **V58.8** y corrige el pipeline de deploy real para
 
 ## Base de continuidad
 Usa esta **V58.8** como base 1:1 para release final, performance review, cierre cliente o una V58.9 si quieres un polishing final visual sin tocar arquitectura.
-
-
-## Ajustes de deploy fix
-- `engines.node` fijado a `20.x`
-- `.nvmrc` normalizado a `20`
-- nuevo `scripts/verify-v58.8.1.mjs`
-- `verify:current` y `release:repo:current` apuntan a `V58.8.1`
-- `build-deploy-readiness.mjs` ya valida `V58.8.1` y acepta `npm ci` en `vercel.json`
-- `deploy-production-readiness.mjs` mantiene chequeos reales de archivos y headers
-
-## Base de continuidad
-Usa esta **V58.8.1** como base 1:1 para deploy en Vercel o continuidad hacia una siguiente versión funcional.

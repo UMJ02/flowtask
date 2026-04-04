@@ -41,7 +41,6 @@ export default async function OrganizationPage() {
     <div className="space-y-4">
       <AccessSummaryCard
         title="Administración y permisos del equipo"
-        description="La interfaz oculta o bloquea acciones según tu rol actual y los permisos efectivos del equipo activo o de tu modo individual."
         roleLabel={formatOrganizationRole(accessSummary.role)}
         items={[
           { label: 'Ver datos sensibles', enabled: accessSummary.canViewSensitiveOrganizationData },
@@ -49,7 +48,8 @@ export default async function OrganizationPage() {
           { label: 'Gestionar roles', enabled: accessSummary.canManageRoles },
           { label: 'Gestionar permisos de cliente', enabled: accessSummary.canManageClientPermissions },
         ]}
-        compact
+        modeLabel={activeOrganization ? "Equipo Activo" : "Modo individual"}
+        isTeamMode={Boolean(activeOrganization)}
       />
       {pendingInvitesForCurrentUser.length ? <OrganizationPendingInvitesCard invites={pendingInvitesForCurrentUser} /> : null}
       {!activeOrganization ? (
