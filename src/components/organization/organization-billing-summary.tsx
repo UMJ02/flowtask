@@ -29,15 +29,29 @@ export function OrganizationBillingSummary({ summary }: { summary?: Organization
         </div>
         <a href="/app/organization/billing" className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white">Gestionar plan</a>
       </div>
+      {summary.softLocked ? (
+        <div className="mt-4 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800">
+          <p className="font-semibold">Bloqueo suave activo</p>
+          <p className="mt-1">{summary.softLockReason ?? 'La organización conserva acceso de lectura, pero debe regularizar su plan para seguir creciendo.'}</p>
+        </div>
+      ) : null}
       <div className="mt-4 grid gap-3 sm:grid-cols-3">
         <Metric label="Usuarios" value={`${summary.seatsUsed}/${summary.seatsIncluded}`} />
         <Metric label="Proyectos" value={`${summary.projectsUsed}/${summary.projectsIncluded}`} />
         <Metric label="Storage" value={`${summary.storageGbUsed}/${summary.storageGbIncluded} GB`} />
       </div>
-      <div className="mt-4 grid gap-3 md:grid-cols-2 text-sm text-slate-600">
+      <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4 text-sm text-slate-600">
         <div className="rounded-2xl border border-slate-200 p-4">Renovación: <strong className="text-slate-900">{summary.renewalDateLabel ?? "-"}</strong></div>
-        <div className="rounded-2xl border border-slate-200 p-4">Fin de prueba: <strong className="text-slate-900">{summary.trialEndsAtLabel ?? "-"}</strong></div>
+        <div className="rounded-2xl border border-slate-200 p-4">Vigencia: <strong className="text-slate-900">{summary.expiresAtLabel ?? summary.trialEndsAtLabel ?? "-"}</strong></div>
+        <div className="rounded-2xl border border-slate-200 p-4">Renovación auto: <strong className="text-slate-900">{summary.autoRenew ? 'Activa' : 'Desactivada'}</strong></div>
+        <div className="rounded-2xl border border-slate-200 p-4">Código corporativo: <strong className="text-slate-900">{summary.activationCode ?? 'Self-serve'}</strong></div>
       </div>
+      {summary.scheduledPlanName ? (
+        <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+          <p className="font-semibold">Cambio programado</p>
+          <p className="mt-1">El plan cambiará a <strong>{summary.scheduledPlanName}</strong> en la próxima renovación.</p>
+        </div>
+      ) : null}
     </Card>
   );
 }

@@ -4,6 +4,7 @@ import { OrganizationBillingSummary } from '@/components/organization/organizati
 import { OrganizationPlanLimitsPanel } from '@/components/organization/organization-plan-limits-panel';
 import { OrganizationUsagePanel } from '@/components/organization/organization-usage-panel';
 import { BillingCommandCenter } from '@/components/organization/billing-command-center';
+import { OrganizationSubscriptionLifecyclePanel } from '@/components/organization/organization-subscription-lifecycle-panel';
 import { getOrganizationContext } from '@/lib/queries/organization';
 import { getOrganizationBillingSummary, getOrganizationUsageMetrics, getOrganizationInvoices } from '@/lib/queries/billing';
 import { safeServerCall } from '@/lib/runtime/safe-server';
@@ -21,6 +22,7 @@ export default async function OrganizationBillingPage() {
     <div className="space-y-4">
       <BillingCommandCenter summary={summary} usage={usage} />
       <OrganizationBillingSummary summary={summary} />
+      <OrganizationSubscriptionLifecyclePanel summary={summary} />
       <OrganizationPlanLimitsPanel items={usage} />
       <OrganizationUsagePanel invoices={invoices} />
     </div>

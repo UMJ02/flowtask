@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "57.5.1-access-flow-rebased",
+  "version": "57.7-billing-commercial-closure",
   "private": true,
   "scripts": {
     "dev": "node node_modules/next/dist/bin/next dev",
@@ -80,7 +80,9 @@
     "release:repo:v57.4.1": "npm run verify:v57.4.1 && npm run runtime:check && npm run security:check && npm run release:check && npm run typecheck",
     "verify:v57.4.2": "node scripts/verify-v57.4.2.mjs",
     "verify:v57.5": "node scripts/verify-v57.5.mjs",
-    "release:repo:v57.5": "npm run verify:v57.5 && npm run runtime:check && npm run security:check && npm run release:check && npm run typecheck"
+    "release:repo:v57.5": "npm run verify:v57.5 && npm run runtime:check && npm run security:check && npm run release:check && npm run typecheck",
+    "verify:v57.6": "node scripts/verify-v57.6.mjs",
+    "verify:v57.7": "node scripts/verify-v57.7.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

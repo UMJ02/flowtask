@@ -1,3 +1,3 @@
-export const APP_VERSION = '57.5.1-access-flow-rebased';
-export const APP_RELEASE_NAME = 'v57.5.1 Access Flow Rebased';
-export const APP_RELEASE_STAGE = 'access-flow-rebased';
+export const APP_VERSION = '57.7-billing-commercial-closure';
+export const APP_RELEASE_NAME = 'v57.7 Billing Commercial Closure';
+export const APP_RELEASE_STAGE = 'billing-commercial-closure';

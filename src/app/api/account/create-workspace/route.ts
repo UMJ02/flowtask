@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
       admin.from('user_account_modes').select('*').eq('user_id', user.id).maybeSingle(),
       admin.from('organization_members').select('organization_id, role').eq('user_id', user.id).in('role', ['admin_global', 'manager']).limit(1).maybeSingle(),
       admin.from('organization_members').select('organization_id', { count: 'exact', head: true }).eq('user_id', user.id).in('role', ['admin_global', 'manager']),
-      admin.from('activation_codes').select('id, organization_limit, seat_limit, project_limit, storage_gb_limit').eq('used_by_user_id', user.id).eq('is_used', true).is('organization_id', null).order('used_at', { ascending: false }).limit(1).maybeSingle(),
+      admin.from('activation_codes').select('id, organization_limit, seat_limit, project_limit, storage_gb_limit, billing_cycle').eq('used_by_user_id', user.id).eq('is_used', true).is('organization_id', null).order('used_at', { ascending: false }).limit(1).maybeSingle(),
     ]);
 
     const account = modeRes.data;
@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
     const resolvedSeats = activationRes.data?.seat_limit ?? limits.seats;
     const resolvedProjects = activationRes.data?.project_limit ?? limits.projects;
     const resolvedStorage = activationRes.data?.storage_gb_limit ?? limits.storage;
-    const billingCycle = account.billing_cycle === 'monthly' ? 'monthly' : 'annual';
+    const billingCycle = (activationRes.data?.billing_cycle ?? account.billing_cycle) === 'monthly' ? 'monthly' : 'annual';
     const subscriptionStatus = account.activation_source === 'activation_code' ? 'active' : 'trial';
 
     const { data: organization, error: organizationError } = await admin
@@ -93,6 +93,10 @@ export async function POST(request: NextRequest) {
       billing_cycle: billingCycle,
       trial_ends_at: subscriptionStatus === 'trial' ? new Date(Date.now() + 1000 * 60 * 60 * 24 * 14).toISOString() : null,
       renews_at: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365).toISOString(),
+      expires_at: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365).toISOString(),
+      last_renewed_at: new Date().toISOString(),
+      auto_renew: true,
+      activation_code_id: activationRes.data?.id ?? null,
       seats_included: resolvedSeats,
       seats_used: 1,
       projects_included: resolvedProjects,
