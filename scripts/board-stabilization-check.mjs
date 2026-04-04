@@ -6,12 +6,13 @@ const boardFile = path.join(root, "src/components/dashboard/interactive-dashboar
 const text = fs.readFileSync(boardFile, "utf8");
 
 const checks = [
-  "flowtask.board.v585",
+  "flowtask.board.v586",
   "Refrescar datos",
   "Resetear vista",
   "Última sincronización",
   "Agenda del día",
   "favoriteTaskIds",
+  "Tareas destacadas",
 ];
 
 const missing = checks.filter((item) => !text.includes(item));

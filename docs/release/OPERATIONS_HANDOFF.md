@@ -1,4 +1,4 @@
-# FlowTask — Operations Handoff (V58.5)
+# FlowTask — Operations Handoff (V58.6)
 
 ## Fuente canónica actual
 La historia oficial viva del esquema y evolución de base de datos está únicamente en:
@@ -30,15 +30,14 @@ npm install
 cp .env.example .env.local
 npm run release:repo:current
 npm run qa:current
-npm run deploy:readiness
+npm run client:readiness:check
 npm run release:current
 ```
 
 ## Objetivo de esta base
-Esta versión deja el repo más claro para cierre técnico y despliegue:
-- repo principal limpio
-- contrato de variables consistente
-- histórico aislado
+Esta versión deja el repo listo para avanzar a deploy final y bundle cliente:
+- board con agenda diaria funcional
+- cierre inline de tareas destacadas
 - documentación operativa visible
-- referencia de Node fijada
-- build/deploy readiness explícito
+- chequeos de readiness cliente explícitos
+- base estable para QA final y entrega

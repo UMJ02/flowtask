@@ -1,29 +1,28 @@
-# FlowTask — V58.5 UX/UI Polish + Board Stabilization
+# FlowTask — V58.6 Functional Closeout + Client Readiness
 
-Esta versión toma como base **V58.4** y se enfoca en pulir la experiencia del tablero visual sin romper la lógica existente del workspace.
+Esta versión toma como base **V58.5** y consolida el board para uso real de cliente sin rehacer la arquitectura existente.
 
 ## Objetivo
-- estabilizar la pizarra visual para uso diario
-- mejorar lectura y acciones del board
-- reforzar persistencia y recuperación de estado
-- dejar una base más sólida para próximas iteraciones de cliente final
+- cerrar el flujo funcional diario sobre tareas reales
+- dejar la agenda visible orientada a favoritas
+- permitir cierre rápido de tareas desde el board
+- mantener la base estable para demo, QA y entrega cliente
 
-## Qué cambia en la V58.5
-- mejora de UX/UI en `interactive-dashboard-board.tsx`
-- refresco manual del tablero
-- reseteo seguro de la vista de board
-- métricas rápidas del board en header
-- agenda del día más clara y con acceso inline a la tarea
-- persistencia local versionada a `flowtask.board.v585`
-- nueva verificación `scripts/verify-v58.5.mjs`
-- nuevo chequeo `scripts/board-stabilization-check.mjs`
-- documentación de release actualizada a `V58.5`
+## Qué cambia en la V58.6
+- board actualizado a persistencia local `flowtask.board.v586`
+- agenda del calendario con acciones reales: abrir tarea, abrir proyecto y completar
+- panel lateral “Lo que sigue hoy” ahora muestra tareas destacadas reales
+- CTA para agregar la tarea recién creada a la agenda visible
+- cierre rápido de tareas desde board con actualización a base de datos
+- nueva verificación `scripts/verify-v58.6.mjs`
+- nuevo chequeo `scripts/client-readiness-check.mjs`
+- documentación de release actualizada a `V58.6`
 
 ## Scripts principales
-- `npm run verify:v58.5`
-- `npm run board:stability`
+- `npm run verify:v58.6`
+- `npm run client:readiness:check`
 - `npm run verify:current`
 - `npm run release:repo:current`
 
 ## Base de continuidad
-Usa esta **V58.5** como nueva base 1:1 para seguir con iteraciones de cliente, UX/UI y cierre funcional del board.
+Usa esta **V58.6** como nueva base 1:1 para seguir con cierre de deploy, QA final y bundle cliente.

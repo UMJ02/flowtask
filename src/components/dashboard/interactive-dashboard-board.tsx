@@ -73,7 +73,7 @@ type ProjectRow = {
   created_at?: string | null;
 };
 
-const STORAGE_KEY = 'flowtask.board.v585';
+const STORAGE_KEY = 'flowtask.board.v586';
 const BOARD_LAYOUT_KEY = 'interactiveDashboardBoard';
 
 const PANEL_META: Record<PanelKey, { label: string; icon: ComponentType<{ className?: string }>; description: string }> = {
@@ -197,6 +197,14 @@ function favoriteTaskSet() {
   return new Set(readWorkspaceMemory().favorites.filter((item) => item.type === 'task').map((item) => item.id));
 }
 
+function isTaskCompleted(task: TaskRow) {
+  return task.status === 'concluido';
+}
+
+function sortTasksByDueDate(tasks: TaskRow[]) {
+  return [...tasks].sort((a, b) => (a.due_date ?? '9999-12-31').localeCompare(b.due_date ?? '9999-12-31'));
+}
+
 
 function applyBoardSnapshot(snapshot: any, apply: {
   setAsideOpen: (value: boolean) => void;
@@ -261,6 +269,10 @@ const CalendarPanel = memo(function CalendarPanel({
   tasks,
   favoriteTaskIds,
   onOpenTask,
+  onOpenProject,
+  onToggleFavorite,
+  onCompleteTask,
+  statusUpdatingTaskId,
 }: {
   mode: CalendarMode;
   anchorDate: Date;
@@ -271,6 +283,10 @@ const CalendarPanel = memo(function CalendarPanel({
   tasks: TaskRow[];
   favoriteTaskIds: Set<string>;
   onOpenTask: (taskId: string) => void;
+  onOpenProject: (projectId: string | null) => void;
+  onToggleFavorite: (task: TaskRow) => void;
+  onCompleteTask: (task: TaskRow) => void;
+  statusUpdatingTaskId: string | null;
 }) {
   const days = mode === 'week' ? buildWeekDays(anchorDate) : buildMonthDays(anchorDate);
 
@@ -283,7 +299,8 @@ const CalendarPanel = memo(function CalendarPanel({
     return map;
   }, [tasks]);
 
-  const selectedItems = (itemsByDate[selectedDate] ?? []).filter((task) => favoriteTaskIds.has(task.id));
+  const dueItems = itemsByDate[selectedDate] ?? [];
+  const selectedItems = dueItems.filter((task) => favoriteTaskIds.has(task.id));
 
   return (
     <div className="space-y-4">
@@ -363,31 +380,67 @@ const CalendarPanel = memo(function CalendarPanel({
         </div>
 
         <div className="rounded-xl border border-slate-200 bg-slate-50/80 p-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Agenda del día</p>
-          <h4 className="mt-2 text-base font-semibold text-slate-900 capitalize">{formatLongDate(new Date(selectedDate))}</h4>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Agenda del día</p>
+              <h4 className="mt-2 text-base font-semibold text-slate-900 capitalize">{formatLongDate(new Date(selectedDate))}</h4>
+            </div>
+            <span className="inline-flex items-center rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-[11px] font-semibold text-amber-700">{selectedItems.length} favorita(s)</span>
+          </div>
           <div className="mt-4 space-y-3">
             {selectedItems.length ? (
-              selectedItems.map((item) => (
-                <div
-                  key={item.id}
-                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-3 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-emerald-200 hover:shadow"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-2">
-                        <p className="truncate text-sm font-semibold text-slate-800">{item.title}</p>
-                        <button type="button" onClick={() => onOpenTask(item.id)} className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-emerald-200 text-emerald-700 transition hover:bg-emerald-50" title="Abrir tarea" aria-label="Abrir tarea">
-                          <ExternalLink className="h-3.5 w-3.5" />
-                        </button>
+              selectedItems.map((item) => {
+                const isUpdating = statusUpdatingTaskId === item.id;
+                return (
+                  <div
+                    key={item.id}
+                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-3 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-emerald-200 hover:shadow"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2">
+                          <p className="truncate text-sm font-semibold text-slate-800">{item.title}</p>
+                          <button type="button" onClick={() => onOpenTask(item.id)} className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-emerald-200 text-emerald-700 transition hover:bg-emerald-50" title="Abrir tarea" aria-label="Abrir tarea">
+                            <ExternalLink className="h-3.5 w-3.5" />
+                          </button>
+                          {item.project_id ? (
+                            <button type="button" onClick={() => onOpenProject(item.project_id)} className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-slate-200 text-slate-600 transition hover:bg-slate-50" title="Abrir proyecto" aria-label="Abrir proyecto">
+                              <FolderKanban className="h-3.5 w-3.5" />
+                            </button>
+                          ) : null}
+                        </div>
+                        <p className="mt-1 text-xs text-slate-500">{item.client_name?.trim() || 'Sin cliente'} · {formatStatus(item.status)}</p>
                       </div>
-                      <p className="mt-1 text-xs text-slate-500">{item.client_name?.trim() || 'Sin cliente'} · {formatStatus(item.status)}</p>
+                      <button
+                        type="button"
+                        onClick={() => onToggleFavorite(item)}
+                        className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-amber-200 bg-amber-50 text-amber-600 transition hover:bg-amber-100"
+                        title="Quitar de agenda del día"
+                        aria-label="Quitar de agenda del día"
+                      >
+                        <Star className="h-4 w-4 fill-current" />
+                      </button>
+                    </div>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        onClick={() => onCompleteTask(item)}
+                        disabled={isUpdating}
+                        className="inline-flex items-center rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-800 transition hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-60"
+                      >
+                        {isUpdating ? 'Guardando…' : 'Completar'}
+                      </button>
                     </div>
                   </div>
-                </div>
-              ))
+                );
+              })
+            ) : dueItems.length ? (
+              <div className="rounded-lg border border-dashed border-amber-200 bg-white px-3 py-4 text-sm text-amber-800">
+                Hay {dueItems.length} tarea(s) con fecha para este día, pero ninguna está marcada como favorita. Usa la estrella en el panel de tareas para traerlas a la agenda visible.
+              </div>
             ) : (
               <div className="rounded-lg border border-dashed border-slate-200 bg-white px-3 py-4 text-sm text-slate-500">
-                No hay tareas favoritas programadas para esta fecha. Márcalas con la estrella en el panel de tareas para mostrarlas aquí.
+                No hay tareas programadas para esta fecha. Puedes crear una tarea rápida desde el panel lateral.
               </div>
             )}
           </div>
@@ -425,6 +478,7 @@ function InteractiveDashboardBoardComponent() {
   const [boardLayoutBase, setBoardLayoutBase] = useState<Record<string, any>>({});
   const [lastSyncedAt, setLastSyncedAt] = useState<string | null>(null);
   const [refreshTick, setRefreshTick] = useState(0);
+  const [statusUpdatingTaskId, setStatusUpdatingTaskId] = useState<string | null>(null);
 
   useEffect(() => {
     try {
@@ -616,7 +670,7 @@ function InteractiveDashboardBoardComponent() {
         if (tasksError || projectsError) {
           setDataError(tasksError?.message ?? projectsError?.message ?? 'No se pudieron cargar tareas y proyectos.');
         }
-        setBoardTasks(((tasks as TaskRow[] | null) ?? []).sort((a, b) => (a.due_date ?? '9999-12-31').localeCompare(b.due_date ?? '9999-12-31')));
+        setBoardTasks(sortTasksByDueDate((tasks as TaskRow[] | null) ?? []));
         setBoardProjects((projects as ProjectRow[] | null) ?? []);
         setLoadingData(false);
         setLastSyncedAt(new Date().toISOString());
@@ -629,13 +683,18 @@ function InteractiveDashboardBoardComponent() {
     };
   }, [hydrated, refreshTick, supabase]);
 
-  const openTasks = useMemo(() => boardTasks.filter((item) => item.status !== 'concluido'), [boardTasks]);
-  const tasksToday = useMemo(() => openTasks.filter((item) => item.due_date === isoDate(new Date())), [openTasks]);
+  const todayIso = useMemo(() => normalizeSelectedDate(undefined), []);
+  const openTasks = useMemo(() => sortTasksByDueDate(boardTasks.filter((item) => !isTaskCompleted(item))), [boardTasks]);
+  const tasksToday = useMemo(() => openTasks.filter((item) => item.due_date === todayIso), [openTasks, todayIso]);
   const nextTasks = useMemo(() => openTasks.slice(0, 4), [openTasks]);
   const activeProjects = useMemo(() => boardProjects.filter((item) => item.status !== 'completado').slice(0, 4), [boardProjects]);
-  const selectedAgendaItems = useMemo(() => boardTasks.filter((item) => item.due_date === selectedDate && favoriteTaskIds.has(item.id)), [boardTasks, selectedDate, favoriteTaskIds]);
+  const selectedDateOpenTasks = useMemo(() => openTasks.filter((item) => item.due_date === selectedDate), [openTasks, selectedDate]);
+  const selectedAgendaItems = useMemo(() => selectedDateOpenTasks.filter((item) => favoriteTaskIds.has(item.id)), [selectedDateOpenTasks, favoriteTaskIds]);
+  const selectedDateOverflowCount = Math.max(selectedDateOpenTasks.length - selectedAgendaItems.length, 0);
   const visibleDueCount = useMemo(() => boardTasks.filter((item) => item.due_date).length, [boardTasks]);
   const favoriteCount = favoriteTaskIds.size;
+  const selectedDateIsToday = selectedDate === todayIso;
+  const createdTask = useMemo(() => boardTasks.find((item) => item.id === createdTaskId) ?? null, [boardTasks, createdTaskId]);
 
   useEffect(() => {
     const next = normalizeSelectedDate(selectedDate);
@@ -691,6 +750,29 @@ function InteractiveDashboardBoardComponent() {
     setFavoriteTaskIds(favoriteTaskSet());
   }
 
+  async function updateTaskStatus(taskId: string, nextStatus: 'en_proceso' | 'en_espera' | 'concluido') {
+    const previousTasks = boardTasks;
+    setStatusUpdatingTaskId(taskId);
+    setDataError(null);
+    setBoardTasks((current) => sortTasksByDueDate(current.map((item) => (item.id === taskId ? { ...item, status: nextStatus } : item))));
+
+    const { error } = await supabase.from('tasks').update({ status: nextStatus }).eq('id', taskId);
+
+    if (error) {
+      setBoardTasks(previousTasks);
+      setDataError(error.message || 'No se pudo actualizar el estado de la tarea.');
+    } else {
+      setLastSyncedAt(new Date().toISOString());
+    }
+
+    setStatusUpdatingTaskId(null);
+  }
+
+  function markTaskComplete(task: TaskRow) {
+    if (isTaskCompleted(task) || statusUpdatingTaskId === task.id) return;
+    void updateTaskStatus(task.id, 'concluido');
+  }
+
   async function addQuickTask() {
     const title = taskDraft.title.trim();
     const detail = taskDraft.detail.trim();
@@ -727,7 +809,7 @@ function InteractiveDashboardBoardComponent() {
     }
 
     const created = data as TaskRow;
-    setBoardTasks((current) => [created, ...current].sort((a, b) => (a.due_date ?? '9999-12-31').localeCompare(b.due_date ?? '9999-12-31')));
+    setBoardTasks((current) => sortTasksByDueDate([created, ...current]));
     setTaskDraft({ title: '', detail: '' });
     setCreatedTaskId(created.id);
     setSelectedDate(created.due_date ?? isoDate(new Date()));
@@ -776,7 +858,13 @@ function InteractiveDashboardBoardComponent() {
     router.push(taskDetailRoute(taskId));
   }
 
+  function openProject(projectId: string | null) {
+    if (!projectId) return;
+    router.push(projectDetailRoute(projectId));
+  }
+
   function refreshBoard() {
+    setDataError(null);
     setRefreshTick((current) => current + 1);
   }
 
@@ -814,7 +902,7 @@ function InteractiveDashboardBoardComponent() {
             <div className="mt-3 flex flex-wrap gap-2">
               <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-600">{activeCount} paneles activos</span>
               <span className="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">{activeOrganizationId ? 'Workspace de organización activo' : 'Workspace personal activo'}</span>
-              <span className="inline-flex items-center rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-medium text-amber-700">{favoriteCount} favorita(s) en memoria</span>
+              <span className="inline-flex items-center rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-medium text-amber-700">{favoriteCount} favorita(s) listas para agenda</span>
             </div>
             <div className="mt-4 grid gap-3 sm:grid-cols-3">
               <div className="rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-3">
@@ -823,14 +911,14 @@ function InteractiveDashboardBoardComponent() {
                 <p className="text-xs text-slate-500">Tareas abiertas con fecha de hoy.</p>
               </div>
               <div className="rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-3">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">Agenda filtrada</p>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">Agenda cliente</p>
                 <p className="mt-2 text-2xl font-bold text-slate-950">{selectedAgendaItems.length}</p>
-                <p className="text-xs text-slate-500">Favoritas visibles en la fecha seleccionada.</p>
+                <p className="text-xs text-slate-500">Favoritas abiertas en la fecha seleccionada.</p>
               </div>
               <div className="rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-3">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">Tablero cargado</p>
-                <p className="mt-2 text-2xl font-bold text-slate-950">{visibleDueCount}</p>
-                <p className="text-xs text-slate-500">Tareas con fecha y {activeProjects.length} proyectos activos.</p>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">Pendientes fecha</p>
+                <p className="mt-2 text-2xl font-bold text-slate-950">{selectedDateOpenTasks.length}</p>
+                <p className="text-xs text-slate-500">Abiertas para la fecha activa y {activeProjects.length} proyectos activos.</p>
               </div>
             </div>
           </div>
@@ -989,6 +1077,9 @@ function InteractiveDashboardBoardComponent() {
                           <div className="mt-2 flex flex-wrap gap-2">
                             <button type="button" onClick={() => openTask(createdTaskId)} className="inline-flex items-center rounded-lg bg-white px-3 py-2 text-xs font-semibold text-emerald-700 shadow-sm">Abrir detalle</button>
                             <Link href={taskEditRoute(createdTaskId)} className="inline-flex items-center rounded-lg border border-emerald-200 bg-emerald-100/60 px-3 py-2 text-xs font-semibold text-emerald-700">Completar en tareas</Link>
+                            {createdTask ? (
+                              <button type="button" onClick={() => toggleTaskFavorite(createdTask)} className="inline-flex items-center rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-700">{favoriteTaskIds.has(createdTask.id) ? 'Quitar de agenda' : 'Agregar a agenda'}</button>
+                            ) : null}
                           </div>
                         </div>
                       ) : null}
@@ -1068,7 +1159,21 @@ function InteractiveDashboardBoardComponent() {
                     <span className="inline-flex h-10 items-center rounded-full border border-slate-200 bg-slate-50 px-3 text-xs font-semibold text-slate-500">CRUD rápido</span>
                   </div>
                 </div>
-                <CalendarPanel mode={calendarMode} anchorDate={anchorDate} onModeChange={setCalendarMode} onStep={stepCalendar} selectedDate={selectedDate} onSelectDate={setSelectedDate} tasks={boardTasks.filter((item) => Boolean(item.due_date))} favoriteTaskIds={favoriteTaskIds} onOpenTask={openTask} />
+                <CalendarPanel
+                  mode={calendarMode}
+                  anchorDate={anchorDate}
+                  onModeChange={setCalendarMode}
+                  onStep={stepCalendar}
+                  selectedDate={selectedDate}
+                  onSelectDate={setSelectedDate}
+                  tasks={boardTasks.filter((item) => Boolean(item.due_date))}
+                  favoriteTaskIds={favoriteTaskIds}
+                  onOpenTask={openTask}
+                  onOpenProject={openProject}
+                  onToggleFavorite={toggleTaskFavorite}
+                  onCompleteTask={markTaskComplete}
+                  statusUpdatingTaskId={statusUpdatingTaskId}
+                />
               </div>
             ) : null}
           </Card>
@@ -1121,12 +1226,54 @@ function InteractiveDashboardBoardComponent() {
             <Card className="border-slate-200 bg-white p-4 md:p-5 transition hover:shadow-md">
               <div>
                 <p className="text-lg font-semibold text-slate-900">Lo que sigue hoy</p>
-                <p className="mt-1 text-sm text-slate-500">Marca lo resuelto o agrega un aviso rápido para no perder el foco.</p>
+                <p className="mt-1 text-sm text-slate-500">Cierra tareas destacadas y deja avisos rápidos para que el board quede listo para cliente.</p>
               </div>
               <div className="mt-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Agenda de hoy</p>
-                <p className="mt-2 text-2xl font-bold text-slate-900">{tasksToday.length}</p>
-                <p className="text-sm text-slate-500">tareas abiertas con fecha para hoy</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Agenda visible</p>
+                <p className="mt-2 text-2xl font-bold text-slate-900">{selectedAgendaItems.length}</p>
+                <p className="text-sm text-slate-500">{selectedDateIsToday ? 'favoritas abiertas para hoy' : 'favoritas abiertas para la fecha seleccionada'}</p>
+              </div>
+              <div className="mt-3 rounded-xl border border-slate-200 bg-white px-4 py-4">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Tareas destacadas</p>
+                    <p className="mt-1 text-sm text-slate-500">Solo favoritas abiertas para mantener una agenda limpia.</p>
+                  </div>
+                  <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[11px] font-semibold text-slate-600">{selectedDateIsToday ? 'Hoy' : 'Fecha activa'}</span>
+                </div>
+                <div className="mt-4 space-y-3">
+                  {selectedAgendaItems.length ? selectedAgendaItems.map((task) => {
+                    const isUpdating = statusUpdatingTaskId === task.id;
+                    return (
+                      <div key={task.id} className="rounded-xl border border-slate-200 bg-slate-50/80 px-3 py-3">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0">
+                            <button type="button" onClick={() => openTask(task.id)} className="text-left">
+                              <p className="text-sm font-semibold text-slate-900">{task.title}</p>
+                              <p className="mt-1 text-xs text-slate-500">{task.client_name?.trim() || 'Sin cliente'} · {formatStatus(task.status)}</p>
+                            </button>
+                          </div>
+                          <button type="button" onClick={() => toggleTaskFavorite(task)} className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-amber-200 bg-amber-50 text-amber-600 transition hover:bg-amber-100" title="Quitar de agenda" aria-label="Quitar de agenda">
+                            <Star className="h-4 w-4 fill-current" />
+                          </button>
+                        </div>
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          <button type="button" onClick={() => openTask(task.id)} className="inline-flex items-center rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50">Abrir</button>
+                          {task.project_id ? <button type="button" onClick={() => openProject(task.project_id)} className="inline-flex items-center rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50">Proyecto</button> : null}
+                          <button type="button" onClick={() => markTaskComplete(task)} disabled={isUpdating} className="inline-flex items-center rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-800 transition hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-60">{isUpdating ? 'Guardando…' : 'Completar'}</button>
+                        </div>
+                      </div>
+                    );
+                  }) : selectedDateOpenTasks.length ? (
+                    <div className="rounded-xl border border-dashed border-amber-200 bg-amber-50/60 px-4 py-4 text-sm text-amber-800">
+                      Tienes {selectedDateOverflowCount} tarea(s) abierta(s) en esta fecha, pero ninguna marcada como favorita. Usa la estrella del panel de tareas para convertirlas en agenda visible.
+                    </div>
+                  ) : (
+                    <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50/80 px-4 py-4 text-sm text-slate-500">
+                      No hay tareas abiertas para esta fecha. Crea una tarea rápida o mueve la fecha desde el calendario.
+                    </div>
+                  )}
+                </div>
               </div>
               <div className="mt-4 flex gap-2">
                 <input
@@ -1140,6 +1287,7 @@ function InteractiveDashboardBoardComponent() {
                 </button>
               </div>
               <div className="mt-4 space-y-3">
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Avisos rápidos</p>
                 {reminders.length ? reminders.map((item) => (
                   <div key={item.id} className={cn('flex items-start gap-3 rounded-lg border px-3 py-3 transition', item.done ? 'border-emerald-200 bg-emerald-50 text-emerald-900' : 'border-slate-200 bg-slate-50 text-slate-700 hover:bg-white')}>
                     <button type="button" onClick={() => toggleReminder(item.id)} className={cn('mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border', item.done ? 'border-emerald-500 bg-emerald-500 text-white' : 'border-slate-300 bg-white text-transparent')}>
