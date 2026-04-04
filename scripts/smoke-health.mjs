@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import fs from "node:fs";
 import path from "node:path";
-import dotenv from "dotenv";
+import { loadEnvFiles } from './load-env.mjs';
 
 const root = process.cwd();
 const routePaths = [
@@ -12,9 +12,7 @@ const envPath = path.join(root, ".env.local");
 const envExamplePath = path.join(root, ".env.example");
 const problems = [];
 
-if (fs.existsSync(envPath)) {
-  dotenv.config({ path: envPath, override: false });
-}
+loadEnvFiles({ cwd: root });
 
 for (const routePath of routePaths) {
   if (!fs.existsSync(routePath)) {

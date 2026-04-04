@@ -1,4 +1,4 @@
-# FlowTask — Client Release Checklist (V58.7)
+# FlowTask — Client Release Checklist (V58.8)
 
 ## 1. Base técnica
 - [ ] `npm install`
@@ -12,6 +12,7 @@
 - [ ] `npm run deploy:readiness`
 - [ ] `npm run client:readiness:check`
 - [ ] `npm run deploy:production:ready`
+- [ ] `npm run hardening:final:check`
 
 ## 2. Repo limpio
 - [ ] sin `node_modules`
@@ -58,6 +59,7 @@
 ## 6. Release técnico
 - [ ] `npm run security:check`
 - [ ] `npm run performance:check`
+- [ ] `npm run hardening:final:check`
 - [ ] `npm run ops:check`
 - [ ] `npm run qa:current`
 - [ ] `npm run qa:functional`

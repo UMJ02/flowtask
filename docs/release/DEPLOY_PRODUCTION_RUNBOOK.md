@@ -1,52 +1,51 @@
-# FlowTask — Deploy Production Runbook (V58.7)
+# FlowTask — Deploy Production Runbook (V58.8)
 
 ## 1. Preparación local
 ```bash
 npm install
 cp .env.example .env.local
-npm run vercel:preflight
+npm run validate:node
+npm run validate:env
+npm run verify:current
+npm run runtime:check
+npm run typecheck
 npm run deploy:production:ready
+npm run hardening:final:check
 ```
 
-## 2. Variables mínimas
+## 2. Preflight de build
+```bash
+npm run vercel:preflight
+npm run build
+```
+
+## 3. Variables mínimas
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - `NEXT_PUBLIC_APP_URL`
 - `SUPABASE_SERVICE_ROLE_KEY`
-- `FLOWTASK_BASE_URL` (recomendado para smoke postdeploy)
+- `FLOWTASK_BASE_URL` (recomendado para smoke y postdeploy)
 
-## 3. Vercel
-- vincular el repo/proyecto correcto
-- cargar variables de entorno en Preview y Production
-- confirmar `Build Command` = `npm run vercel:build`
-- confirmar versión de Node usando `.nvmrc`
+## 4. Deploy
+- conectar repo/proyecto en Vercel
+- cargar variables en Preview y Production
+- confirmar dominio/base URL
+- ejecutar deploy preview
+- ejecutar deploy production
 
-## 4. Predeploy gate
+## 5. Verificación postdeploy
 ```bash
-npm run verify:current
-npm run qa:current
-npm run qa:functional
-npm run release:check
+npm run smoke:health
+npm run postdeploy:smoke
+npm run readiness:report
+```
+
+## 6. Gate final
+```bash
 npm run production:gate
 ```
 
-## 5. Postdeploy smoke
-```bash
-npm run postdeploy:smoke
-npm run postdeploy:verify
-```
-
-## 6. Rutas mínimas a validar
-- `/`
-- `/login`
-- `/app/dashboard`
-- `/app/projects`
-- `/app/tasks`
-- `/app/clients`
-- `/api/health`
-- `/api/ready`
-
 ## 7. Rollback
-- no publicar sin punto de rollback identificado
-- mantener el último zip estable y el último deploy estable
-- si falla smoke postdeploy, revertir antes de abrir a cliente
+- conservar último build estable
+- documentar versión anterior y commit/tag asociado
+- si el smoke falla en producción, revertir al último deploy estable antes de continuar

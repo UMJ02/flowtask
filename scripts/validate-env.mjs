@@ -1,18 +1,6 @@
-import fs from 'node:fs';
-import path from 'node:path';
-import dotenv from 'dotenv';
+import { loadEnvFiles } from './load-env.mjs';
 
-const cwd = process.cwd();
-const candidateFiles = ['.env.local', '.env'];
-const loadedFrom = [];
-
-for (const file of candidateFiles) {
-  const fullPath = path.join(cwd, file);
-  if (fs.existsSync(fullPath)) {
-    dotenv.config({ path: fullPath, override: false });
-    loadedFrom.push(file);
-  }
-}
+const loadedFrom = loadEnvFiles();
 
 const requiredPublic = [
   'NEXT_PUBLIC_SUPABASE_URL',

@@ -13,6 +13,7 @@ const requiredFiles = [
   'docs/release/CLIENT_RELEASE_CHECKLIST.md',
   'docs/release/OPERATIONS_HANDOFF.md',
   'docs/release/V58_7_DEPLOY_PRODUCTION_REAL.md',
+  'docs/release/V58_8_PERFORMANCE_HARDENING_FINAL.md',
   'docs/release/DEPLOY_PRODUCTION_RUNBOOK.md',
   'scripts/functional-qa.mjs',
   'scripts/ux-review.mjs',
@@ -28,7 +29,7 @@ const requiredFiles = [
 
 let failures = 0;
 
-console.log('\n[production-gate] FlowTask V58.7 production gate\n');
+console.log('\n[production-gate] FlowTask V58.8 production gate\n');
 
 for (const file of requiredFiles) {
   const full = path.join(root, file);

@@ -1,15 +1,7 @@
 #!/usr/bin/env node
-import fs from 'node:fs';
-import path from 'node:path';
-import dotenv from 'dotenv';
+import { loadEnvFiles } from './load-env.mjs';
 
-const root = process.cwd();
-for (const file of ['.env.local', '.env']) {
-  const full = path.join(root, file);
-  if (fs.existsSync(full)) {
-    dotenv.config({ path: full, override: false });
-  }
-}
+loadEnvFiles();
 
 const baseUrl = (process.env.FLOWTASK_BASE_URL || process.env.NEXT_PUBLIC_APP_URL || '').trim().replace(/\/$/, '');
 if (!/^https?:\/\//.test(baseUrl)) {

@@ -1,4 +1,4 @@
-# FlowTask — Operations Handoff (V58.7)
+# FlowTask — Operations Handoff (V58.8)
 
 ## Fuente canónica actual
 La historia oficial viva del esquema y evolución de base de datos está únicamente en:
@@ -24,6 +24,7 @@ No volver a introducir en la raíz del repo:
 - build técnico Vercel: `npm run vercel:build`
 - preflight de build local: `npm run build:preflight`
 - smoke postdeploy: `npm run postdeploy:smoke`
+- hardening final: `npm run hardening:final:check`
 
 ## Flujo recomendado
 ```bash
@@ -36,9 +37,8 @@ npm run postdeploy:verify
 ```
 
 ## Objetivo de esta base
-Esta versión deja el repo listo para deploy final y validación productiva:
+Esta versión deja el repo listo para cierre final y operación controlada:
 - board y agenda diaria ya funcionales
-- scripts de readiness de producción explícitos
-- health/ready listos para smoke real
-- workflow base para CI
-- documentación operativa visible para release y rollback
+- scripts de readiness más robustos sin dependencia extra para leer env
+- Next/Vercel con endurecimiento base adicional
+- documentación operativa visible para release, rollback y bundle cliente

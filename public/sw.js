@@ -1,4 +1,4 @@
-const CACHE_NAME = 'flowtask-v2-1-1';
+const CACHE_NAME = 'flowtask-v58-8';
 const STATIC_CACHE = [
   '/manifest.webmanifest',
   '/icons/icon-192.png',
