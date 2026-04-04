@@ -38,7 +38,7 @@ export default async function OrganizationPage() {
   ]);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <AccessSummaryCard
         title="Administración y permisos del equipo"
         roleLabel={formatOrganizationRole(accessSummary.role)}
