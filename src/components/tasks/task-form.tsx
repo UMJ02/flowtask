@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { getClientWorkspaceContext, findOrganizationClientId, fetchWorkspaceProjects } from "@/lib/supabase/workspace-client";
+import { getClientWorkspaceContext, findWorkspaceClientId, fetchWorkspaceProjects } from "@/lib/supabase/workspace-client";
 import { resolveProjectEntityContext, validateTaskProjectClientIntegrity } from "@/lib/security/entity-integrity";
 import { getClientAccessSummary, hasClientAccess } from "@/lib/security/client-access";
 import { DEPARTMENTS } from "@/lib/constants/departments";
@@ -114,11 +114,6 @@ export function TaskForm({
       return;
     }
 
-    if (!workspace.activeOrganizationId) {
-      setServerError("Antes de crear tareas debes activar una organización desde Equipo.");
-      setMessage(null);
-      return;
-    }
 
     let departmentId: number | null = null;
     try {
@@ -130,11 +125,11 @@ export function TaskForm({
     }
 
     const clientName = values.clientName?.trim() || null;
-    const clientId = await findOrganizationClientId(supabase, workspace.activeOrganizationId, clientName);
+    const clientId = await findWorkspaceClientId(supabase, user.id, workspace.activeOrganizationId, clientName);
     const access = await getClientAccessSummary(supabase as any, user.id, workspace.activeOrganizationId);
     const selectedProject = await resolveProjectEntityContext(supabase as any, values.projectId || null);
 
-    if (clientId && !hasClientAccess(access, clientId, "edit")) {
+    if (workspace.activeOrganizationId && clientId && !hasClientAccess(access, clientId, "edit")) {
       setServerError("No tienes permisos para crear o editar tareas sobre ese cliente.");
       setMessage(null);
       return;
@@ -146,7 +141,7 @@ export function TaskForm({
         setMessage(null);
         return;
       }
-      if (!hasClientAccess(access, selectedProject.clientId ?? null, "edit")) {
+      if (workspace.activeOrganizationId && !hasClientAccess(access, selectedProject.clientId ?? null, "edit")) {
         setServerError("No tienes permisos para crear o editar tareas en el proyecto seleccionado.");
         setMessage(null);
         return;

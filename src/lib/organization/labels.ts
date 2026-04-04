@@ -11,7 +11,7 @@ export function formatOrganizationRole(role?: OrganizationRole | string | null) 
     case "viewer":
       return "Viewer";
     default:
-      return "Sin organización activa";
+      return "Modo individual";
   }
 }
 

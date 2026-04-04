@@ -58,22 +58,24 @@ export function applyClientWorkspaceScope<T extends { eq: (...args: any[]) => T;
   return query.eq("owner_id", userId);
 }
 
-export async function findOrganizationClientId(
+export async function findWorkspaceClientId(
   supabase: ReturnType<typeof createClient>,
+  userId: string,
   organizationId: string | null,
   clientName?: string | null,
 ) {
   const normalized = clientName?.trim();
-  if (!organizationId || !normalized) return null;
+  if (!normalized) return null;
 
-  const { data } = await supabase
-    .from("clients")
-    .select("id")
-    .eq("organization_id", organizationId)
-    .ilike("name", normalized)
-    .limit(1)
-    .maybeSingle();
+  let query = supabase.from("clients").select("id").ilike("name", normalized).limit(1);
 
+  if (organizationId) {
+    query = query.eq("organization_id", organizationId);
+  } else {
+    query = query.eq("account_owner_id", userId);
+  }
+
+  const { data } = await query.maybeSingle();
   return (data?.id as string | null | undefined) ?? null;
 }
 
@@ -99,7 +101,9 @@ export async function fetchWorkspaceProjects(
   const { data, error } = await query;
   if (error) return [] as Array<{ id: string; title: string; status: string }>;
 
-  return filterRowsByClientAccess((data ?? []) as any[], access, mode).map((item: any) => ({
+  const scopedRows = !organizationId ? ((data ?? []) as any[]) : filterRowsByClientAccess((data ?? []) as any[], access, mode);
+
+  return scopedRows.map((item: any) => ({
     id: String(item.id),
     title: String(item.title ?? "Proyecto"),
     status: String(item.status ?? "activo"),

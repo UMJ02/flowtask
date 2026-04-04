@@ -78,7 +78,7 @@ export function OrganizationSwitcher({
             <Building2 className="h-5 w-5" />
           </span>
           <div className="min-w-0">
-            <p className={`text-[11px] font-semibold uppercase tracking-[0.16em] ${dark ? 'text-slate-400' : 'text-slate-500'}`}>Organización</p>
+            <p className={`text-[11px] font-semibold uppercase tracking-[0.16em] ${dark ? 'text-slate-400' : 'text-slate-500'}`}>Equipo</p>
             <p className={`truncate text-sm font-semibold ${dark ? 'text-white' : 'text-slate-900'}`}>{label}</p>
             <p className={`truncate text-xs ${dark ? 'text-slate-400' : 'text-slate-500'}`}>Rol: {formatRole(activeOrganization?.role)}</p>
           </div>

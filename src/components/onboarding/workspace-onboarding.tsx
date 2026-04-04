@@ -68,7 +68,7 @@ export function WorkspaceOnboarding({ summary, compact = false }: { summary: Wor
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">Workspace onboarding</p>
             <h2 className="mt-2 text-3xl font-bold">Centro de arranque y cierre operativo</h2>
             <p className="mt-2 text-sm text-slate-300">
-              Usa esta vista para convertir el workspace en una base lista para escalar, con organización, operación y automatización cerradas.
+              Usa esta vista para convertir el workspace en una base lista para escalar, con modo individual o equipo, operación y automatización cerradas.
             </p>
           </div>
           <div className="grid gap-3 sm:grid-cols-3">
@@ -78,7 +78,7 @@ export function WorkspaceOnboarding({ summary, compact = false }: { summary: Wor
               <p className="mt-1 text-sm text-slate-300">Nivel de cierre del workspace.</p>
             </div>
             <div className="rounded-[26px] bg-white/10 px-4 py-3 ring-1 ring-white/10">
-              <p className="text-xs uppercase tracking-[0.16em] text-slate-300">Organización</p>
+              <p className="text-xs uppercase tracking-[0.16em] text-slate-300">Equipo</p>
               <p className="mt-2 text-lg font-bold">{summary.organizationName}</p>
               <p className="mt-1 text-sm text-slate-300">Rol actual: {summary.role}</p>
             </div>

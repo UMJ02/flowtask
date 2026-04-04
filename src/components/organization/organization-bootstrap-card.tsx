@@ -43,11 +43,11 @@ export function OrganizationBootstrapCard() {
       const payload = await response.json().catch(() => ({}));
 
       if (!response.ok) {
-        setError(payload?.error ?? "No fue posible crear la organización.");
+        setError(payload?.error ?? "No fue posible crear el equipo.");
         return;
       }
 
-      setMessage("Organización creada. Ahora eres Owner · Admin del workspace.");
+      setMessage("Equipo creado. Ahora eres Owner · Admin del workspace.");
       router.refresh();
       router.push(payload?.redirectTo ?? "/app/organization");
     });
@@ -57,10 +57,10 @@ export function OrganizationBootstrapCard() {
     <Card className="border border-emerald-200/80 bg-emerald-50/80 shadow-[0_16px_44px_rgba(16,185,129,0.10)]">
       <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
         <div className="max-w-2xl">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-700">Crear organización</p>
-          <h2 className="mt-2 text-2xl font-bold text-slate-900">Activa un workspace real antes de operar con equipo, clientes y tareas</h2>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-700">Crear equipo</p>
+          <h2 className="mt-2 text-2xl font-bold text-slate-900">Crea un equipo cuando necesites colaborar con más personas</h2>
           <p className="mt-2 text-sm text-slate-600">
-            En esta base, clientes, permisos y gobierno trabajan sobre una organización activa. Al crearla quedas con rol <strong>{formatOrganizationRole("admin_global")}</strong> y se crea la suscripción inicial del workspace.
+            Puedes seguir usando FlowTask de forma individual sin crear equipo. Si decides crear uno, quedas con rol <strong>{formatOrganizationRole("admin_global")}</strong> y se activa la configuración inicial del workspace compartido.
           </p>
         </div>
         <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-emerald-700 ring-1 ring-emerald-200">
@@ -80,7 +80,7 @@ export function OrganizationBootstrapCard() {
         </div>
         <Button type="submit" loading={isPending} className="h-11" disabled={isPending || !name.trim()}>
           <Building2 className="mr-2 h-4 w-4" />
-          Crear organización
+          Crear equipo
         </Button>
       </form>
 

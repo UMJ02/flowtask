@@ -40,9 +40,9 @@ export default async function SettingsPage() {
         <h2 className="text-lg font-semibold text-slate-900">Contexto de workspace</h2>
         <div className="mt-4 grid gap-3 md:grid-cols-3">
           <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Organización activa</p>
-            <p className="mt-2 text-lg font-semibold text-slate-900">{organizationContext?.activeOrganization?.name ?? 'Sin organización'}</p>
-            <p className="mt-1 text-sm text-slate-600">{organizationContext?.activeOrganization?.slug ?? 'Crea una organización para activar clientes, equipo y permisos' }</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Equipo activo</p>
+            <p className="mt-2 text-lg font-semibold text-slate-900">{organizationContext?.activeOrganization?.name ?? 'Modo individual'}</p>
+            <p className="mt-1 text-sm text-slate-600">{organizationContext?.activeOrganization?.slug ?? 'Puedes seguir trabajando solo o crear un equipo cuando necesites colaboración y permisos.' }</p>
           </div>
           <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
             <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Rol actual</p>

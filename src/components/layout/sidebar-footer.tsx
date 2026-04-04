@@ -32,7 +32,7 @@ export function SidebarFooter({
         {!collapsed ? (
           <>
             <div>
-              <p className="px-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Organización</p>
+              <p className="px-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Equipo</p>
               <div className="mt-2">
                 <OrganizationSwitcher organizations={organizations ?? []} activeOrganization={activeOrganization} compact dark />
               </div>
