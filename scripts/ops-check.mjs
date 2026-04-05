@@ -4,7 +4,7 @@ import path from "node:path";
 
 const root = process.cwd();
 const checks = [
-  ["package.json", '"verify:v58.10.5"'],
+  ["package.json", '"verify:v54.1"'],
   ["package.json", '"ops:check"'],
   ["src/app/error.tsx", "useErrorLogger"],
   ["src/components/auth/login-form.tsx", 'eventName: "login"'],
