@@ -31,7 +31,7 @@ const expectations = [
   ["vercel security headers", vercel.includes("X-Content-Type-Options") && vercel.includes("X-Frame-Options")],
   ["env has NEXT_PUBLIC_APP_URL", envExample.includes("NEXT_PUBLIC_APP_URL")],
   ["env has FLOWTASK_BASE_URL helper", envExample.includes("FLOWTASK_BASE_URL")],
-  ["readme mentions V58.10.1", readme.includes("V58.10.1")],
+  ["readme mentions V58.10.2", readme.includes("V58.10.2")],
 ];
 
 const failedExpectations = expectations.filter(([, ok]) => !ok);

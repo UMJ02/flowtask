@@ -3,8 +3,8 @@ import path from "node:path";
 
 const root = process.cwd();
 const failures = [];
-const expectedVersion = "58.10.1-deploy-pipeline-fix";
-const expectedReleaseLabel = "V58.10.1";
+const expectedVersion = "58.10.2-deploy-files-lock";
+const expectedReleaseLabel = "V58.10.2";
 
 function requireFile(rel) {
   if (!fs.existsSync(path.join(root, rel))) {
@@ -29,7 +29,7 @@ requireFile(".nvmrc");
 requireFile(".env.example");
 requireFile("scripts/runtime-check.mjs");
 requireFile("scripts/validate-env.mjs");
-requireFile("scripts/verify-v58.10.1.mjs");
+requireFile("scripts/verify-v58.10.2.mjs");
 
 const pkg = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
 const scripts = pkg.scripts ?? {};
