@@ -1226,54 +1226,7 @@ function InteractiveDashboardBoardComponent() {
             <Card className="border-slate-200 bg-white p-4 md:p-5 transition hover:shadow-md">
               <div>
                 <p className="text-lg font-semibold text-slate-900">Lo que sigue hoy</p>
-                <p className="mt-1 text-sm text-slate-500">Cierra tareas destacadas y deja avisos rápidos para que el board quede listo para cliente.</p>
-              </div>
-              <div className="mt-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Agenda visible</p>
-                <p className="mt-2 text-2xl font-bold text-slate-900">{selectedAgendaItems.length}</p>
-                <p className="text-sm text-slate-500">{selectedDateIsToday ? 'favoritas abiertas para hoy' : 'favoritas abiertas para la fecha seleccionada'}</p>
-              </div>
-              <div className="mt-3 rounded-xl border border-slate-200 bg-white px-4 py-4">
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Tareas destacadas</p>
-                    <p className="mt-1 text-sm text-slate-500">Solo favoritas abiertas para mantener una agenda limpia.</p>
-                  </div>
-                  <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[11px] font-semibold text-slate-600">{selectedDateIsToday ? 'Hoy' : 'Fecha activa'}</span>
-                </div>
-                <div className="mt-4 space-y-3">
-                  {selectedAgendaItems.length ? selectedAgendaItems.map((task) => {
-                    const isUpdating = statusUpdatingTaskId === task.id;
-                    return (
-                      <div key={task.id} className="rounded-xl border border-slate-200 bg-slate-50/80 px-3 py-3">
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="min-w-0">
-                            <button type="button" onClick={() => openTask(task.id)} className="text-left">
-                              <p className="text-sm font-semibold text-slate-900">{task.title}</p>
-                              <p className="mt-1 text-xs text-slate-500">{task.client_name?.trim() || 'Sin cliente'} · {formatStatus(task.status)}</p>
-                            </button>
-                          </div>
-                          <button type="button" onClick={() => toggleTaskFavorite(task)} className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-amber-200 bg-amber-50 text-amber-600 transition hover:bg-amber-100" title="Quitar de agenda" aria-label="Quitar de agenda">
-                            <Star className="h-4 w-4 fill-current" />
-                          </button>
-                        </div>
-                        <div className="mt-3 flex flex-wrap gap-2">
-                          <button type="button" onClick={() => openTask(task.id)} className="inline-flex items-center rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50">Abrir</button>
-                          {task.project_id ? <button type="button" onClick={() => openProject(task.project_id)} className="inline-flex items-center rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50">Proyecto</button> : null}
-                          <button type="button" onClick={() => markTaskComplete(task)} disabled={isUpdating} className="inline-flex items-center rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-800 transition hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-60">{isUpdating ? 'Guardando…' : 'Completar'}</button>
-                        </div>
-                      </div>
-                    );
-                  }) : selectedDateOpenTasks.length ? (
-                    <div className="rounded-xl border border-dashed border-amber-200 bg-amber-50/60 px-4 py-4 text-sm text-amber-800">
-                      Tienes {selectedDateOverflowCount} tarea(s) abierta(s) en esta fecha, pero ninguna marcada como favorita. Usa la estrella del panel de tareas para convertirlas en agenda visible.
-                    </div>
-                  ) : (
-                    <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50/80 px-4 py-4 text-sm text-slate-500">
-                      No hay tareas abiertas para esta fecha. Crea una tarea rápida o mueve la fecha desde el calendario.
-                    </div>
-                  )}
-                </div>
+                <p className="mt-1 text-sm text-slate-500">Deja avisos rápidos para organizarte durante el dia.</p>
               </div>
               <div className="mt-4 flex gap-2">
                 <input
@@ -1282,7 +1235,7 @@ function InteractiveDashboardBoardComponent() {
                   placeholder="Agregar aviso"
                   className="h-10 flex-1 rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-emerald-300"
                 />
-                <button type="button" onClick={addReminder} className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-500 text-white transition hover:-translate-y-0.5 hover:bg-emerald-400">
+                <button type="button" onClick={addReminder} className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-500 text-white transition hover:-translate-y-0.5 hover:bg-emerald-400" aria-label="Agregar aviso">
                   <Plus className="h-4 w-4" />
                 </button>
               </div>
