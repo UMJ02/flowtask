@@ -1,6 +1,7 @@
-import { BellRing, Building2, Mail, ShieldCheck, Users } from 'lucide-react';
+import { BellRing, Building2, ShieldCheck, Users } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import type { NotificationPreferences } from '@/lib/queries/notification-preferences';
+import { formatOrganizationRole } from '@/lib/organization/labels';
 
 type ProfileShape = {
   fullName?: string | null;
@@ -19,12 +20,6 @@ type OrganizationContextShape = {
   clientPermissions?: Array<{ clientName: string; canView: boolean; canEdit: boolean; canManageMembers: boolean }>;
 } | null;
 
-import { formatOrganizationRole } from '@/lib/organization/labels';
-
-function hourLabel(hour: number) {
-  return `${hour.toString().padStart(2, '0')}:00`;
-}
-
 function activeChannels(preferences: NotificationPreferences | null) {
   if (!preferences) return ['In-app'];
   return [
@@ -33,6 +28,13 @@ function activeChannels(preferences: NotificationPreferences | null) {
     preferences.enable_whatsapp ? 'WhatsApp' : null,
   ].filter(Boolean) as string[];
 }
+
+const HOVER_COPY = {
+  workspace: 'Espacio activo actual',
+  spaces: 'Equipos en esta cuenta',
+  clients: 'Clientes con edición',
+  channels: 'Canales activos ahora',
+} as const;
 
 export function SettingsAccountOverview({
   profile,
@@ -48,123 +50,80 @@ export function SettingsAccountOverview({
   const clientPermissions = organizationContext?.clientPermissions ?? [];
   const organizationCount = organizationContext?.organizations?.length ?? 0;
   const editableClients = clientPermissions.filter((item) => item.canEdit).length;
-  const managedClients = clientPermissions.filter((item) => item.canManageMembers).length;
+
+  const items = [
+    {
+      key: 'workspace',
+      icon: Building2,
+      label: 'Workspace activo',
+      value: activeOrganization?.name || 'Personal',
+      helper: HOVER_COPY.workspace,
+    },
+    {
+      key: 'spaces',
+      icon: Users,
+      label: 'Espacios vinculados',
+      value: String(organizationCount),
+      meta: organizationCount === 1 ? 'organización' : 'organizaciones',
+      helper: HOVER_COPY.spaces,
+    },
+    {
+      key: 'clients',
+      icon: ShieldCheck,
+      label: 'Clientes editables',
+      value: String(editableClients),
+      meta: editableClients === 1 ? 'cliente' : 'clientes',
+      helper: HOVER_COPY.clients,
+    },
+    {
+      key: 'channels',
+      icon: BellRing,
+      label: 'Canales activos',
+      value: channels.join(' · ') || 'In-app',
+      helper: HOVER_COPY.channels,
+    },
+  ] as const;
 
   return (
-    <div className="grid gap-4 xl:grid-cols-[1.2fr_0.8fr]">
-      <Card className="bg-[linear-gradient(135deg,#0f172a_0%,#111827_52%,#1e293b_100%)] text-white shadow-[0_28px_70px_rgba(15,23,42,0.24)]">
-        <div className="flex flex-col gap-6">
-          <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">Settings hub</p>
-              <h1 className="mt-2 text-3xl font-bold">Cuenta, notificaciones y contexto de trabajo</h1>
-              <p className="mt-2 max-w-2xl text-sm text-slate-300">
-                Desde aquí validas quién eres en la app, qué organización estás usando y cómo se reparten tus avisos para que FlowTask trabaje con menos fricción.
-              </p>
-            </div>
-            <div className="rounded-[24px] bg-white/10 px-4 py-3 ring-1 ring-white/10">
-              <p className="text-xs uppercase tracking-[0.16em] text-slate-300">Sesión</p>
-              <p className="mt-2 text-lg font-semibold">{profile?.fullName?.trim() || 'Usuario FlowTask'}</p>
-              <p className="mt-1 text-sm text-slate-300">{profile?.email || 'Sin correo disponible'}</p>
-            </div>
-          </div>
-
-          <div className="grid gap-3 md:grid-cols-4">
-            <div className="rounded-[26px] bg-white/10 px-4 py-3 ring-1 ring-white/10">
-              <div className="flex items-center gap-2 text-emerald-300">
-                <Building2 className="h-4 w-4" />
-                <p className="text-xs uppercase tracking-[0.16em]">Workspace activo</p>
-              </div>
-              <p className="mt-3 text-lg font-semibold">{activeOrganization?.name || 'Personal'}</p>
-              <p className="mt-1 text-sm text-slate-300">{activeOrganization ? formatOrganizationRole(activeOrganization.role) : 'Crea tu primera organización para activar el workspace'}</p>
-            </div>
-            <div className="rounded-[26px] bg-white/10 px-4 py-3 ring-1 ring-white/10">
-              <div className="flex items-center gap-2 text-emerald-300">
-                <Users className="h-4 w-4" />
-                <p className="text-xs uppercase tracking-[0.16em]">Espacios vinculados</p>
-              </div>
-              <p className="mt-3 text-3xl font-bold">{organizationCount}</p>
-              <p className="mt-1 text-sm text-slate-300">Organizaciones disponibles para esta cuenta.</p>
-            </div>
-            <div className="rounded-[26px] bg-white/10 px-4 py-3 ring-1 ring-white/10">
-              <div className="flex items-center gap-2 text-emerald-300">
-                <ShieldCheck className="h-4 w-4" />
-                <p className="text-xs uppercase tracking-[0.16em]">Clientes editables</p>
-              </div>
-              <p className="mt-3 text-3xl font-bold">{editableClients}</p>
-              <p className="mt-1 text-sm text-slate-300">Clientes donde puedes intervenir contenido o tareas.</p>
-            </div>
-            <div className="rounded-[26px] bg-white/10 px-4 py-3 ring-1 ring-white/10">
-              <div className="flex items-center gap-2 text-emerald-300">
-                <BellRing className="h-4 w-4" />
-                <p className="text-xs uppercase tracking-[0.16em]">Canales activos</p>
-              </div>
-              <p className="mt-3 text-lg font-semibold">{channels.join(' · ')}</p>
-              <p className="mt-1 text-sm text-slate-300">Tu mezcla actual de comunicación.</p>
-            </div>
+    <Card className="bg-[linear-gradient(135deg,#0f172a_0%,#111827_58%,#1e293b_100%)] text-white shadow-[0_28px_70px_rgba(15,23,42,0.24)]">
+      <div className="flex flex-col gap-6">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">Settings hub</p>
+          <h1 className="mt-2 max-w-4xl text-3xl font-bold md:text-4xl">Cuenta, notificaciones y contexto de trabajo</h1>
+          <p className="mt-2 max-w-3xl text-sm text-slate-300 md:text-base">
+            Reordena cómo recibes avisos y revisa el contexto operativo activo sin duplicar información con el perfil.
+          </p>
+          <div className="mt-3 flex flex-wrap items-center gap-2 text-sm text-slate-300">
+            <span className="rounded-full bg-white/10 px-3 py-1 ring-1 ring-white/10">{profile?.fullName?.trim() || 'Cuenta FlowTask'}</span>
+            <span className="rounded-full bg-white/10 px-3 py-1 ring-1 ring-white/10">
+              {activeOrganization ? formatOrganizationRole(activeOrganization.role) : 'Modo individual'}
+            </span>
           </div>
         </div>
-      </Card>
 
-      <Card>
-        <h2 className="text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">Estado ejecutivo</h2>
-        <div className="mt-4 space-y-3">
-          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-            <div className="flex items-start gap-3">
-              <Mail className="mt-0.5 h-4 w-4 text-slate-600" />
-              <div>
-                <p className="text-sm font-semibold text-slate-900">Resumen de identidad</p>
-                <p className="mt-1 text-sm text-slate-600">
-                  {profile?.fullName?.trim() || 'Tu nombre aún no está personalizado'} · {profile?.email || 'correo no disponible'}
-                </p>
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          {items.map((item) => {
+            const Icon = item.icon;
+            return (
+              <div
+                key={item.key}
+                className="group relative min-h-[152px] rounded-[26px] bg-white/10 px-4 py-4 ring-1 ring-white/10 transition duration-200 hover:-translate-y-0.5 hover:bg-white/12"
+                title={item.helper}
+              >
+                <div className="flex items-center gap-2 text-emerald-300">
+                  <Icon className="h-4 w-4" />
+                  <p className="text-xs uppercase tracking-[0.16em]">{item.label}</p>
+                </div>
+                <p className="mt-5 break-words text-3xl font-bold leading-tight text-white">{item.value}</p>
+                {'meta' in item && item.meta ? <p className="mt-1 text-sm text-slate-300">{item.meta}</p> : null}
+                <div className="pointer-events-none absolute inset-x-4 bottom-4 translate-y-2 rounded-2xl bg-slate-950/85 px-3 py-2 text-xs text-slate-200 opacity-0 shadow-lg transition duration-200 group-hover:translate-y-0 group-hover:opacity-100">
+                  {item.helper}
+                </div>
               </div>
-            </div>
-          </div>
-          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-            <div className="flex items-start gap-3">
-              <Building2 className="mt-0.5 h-4 w-4 text-slate-600" />
-              <div>
-                <p className="text-sm font-semibold text-slate-900">Organización activa</p>
-                <p className="mt-1 text-sm text-slate-600">
-                  {activeOrganization
-                    ? `${activeOrganization.name} · ${formatOrganizationRole(activeOrganization.role)}`
-                    : 'Tu sesión está operando sin una organización activa detectada.'}
-                </p>
-              </div>
-            </div>
-          </div>
-          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-            <div className="flex items-start gap-3">
-              <BellRing className="mt-0.5 h-4 w-4 text-slate-600" />
-              <div>
-                <p className="text-sm font-semibold text-slate-900">Política de avisos</p>
-                <p className="mt-1 text-sm text-slate-600">
-                  {preferences
-                    ? preferences.delivery_frequency === 'daily'
-                      ? `Resumen diario a las ${hourLabel(preferences.daily_digest_hour)} con ${channels.join(', ')}.`
-                      : `Alertas inmediatas por ${channels.join(', ')}.`
-                    : 'Se usarán las preferencias por defecto hasta que guardes tu configuración.'}
-                </p>
-              </div>
-            </div>
-          </div>
-          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-            <div className="flex items-start gap-3">
-              <ShieldCheck className="mt-0.5 h-4 w-4 text-slate-600" />
-              <div>
-                <p className="text-sm font-semibold text-slate-900">Capacidad operativa</p>
-                <p className="mt-1 text-sm text-slate-600">
-                  {managedClients > 0
-                    ? `Puedes gestionar miembros en ${managedClients} cliente(s) y editar ${editableClients}.`
-                    : editableClients > 0
-                      ? `Puedes editar ${editableClients} cliente(s), aunque no administras miembros.`
-                      : 'Tu cuenta no tiene permisos detallados de clientes cargados en este momento.'}
-                </p>
-              </div>
-            </div>
-          </div>
+            );
+          })}
         </div>
-      </Card>
-    </div>
+      </div>
+    </Card>
   );
 }
