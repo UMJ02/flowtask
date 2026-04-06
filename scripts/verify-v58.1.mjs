@@ -5,7 +5,7 @@ const required = [
   'src/app/api/organization/invites/accept/route.ts',
   'src/app/api/organization/members/update-role/route.ts',
   'src/components/organization/organization-pending-invites-card.tsx',
-  'supabase/migrations/0023_v58_1_organization_access_completion.sql',
+  'supabase/migrations/0029_v58_1_organization_access_completion.sql',
   'src/lib/release/version.ts',
 ];
 

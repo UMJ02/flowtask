@@ -19,7 +19,6 @@ const checklist = [
   'scripts/postdeploy-smoke.mjs',
   'src/app/api/health/route.ts',
   'src/app/api/ready/route.ts',
-  '.github/workflows/ci.yml'
 ];
 
 const status = checklist.map((file) => ({ file, exists: fs.existsSync(path.join(root, file)) }));

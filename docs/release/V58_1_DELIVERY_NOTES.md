@@ -11,7 +11,7 @@ Base usada: **V58.0 Organization Bootstrap & Consistency**
 - mostrar mejor el contexto de capacidad y gobierno del workspace
 
 ## Cambios principales
-- nueva migración `0023_v58_1_organization_access_completion.sql`
+- nueva migración `0029_v58_1_organization_access_completion.sql`
 - nuevas rutas API:
   - `/api/organization/invites`
   - `/api/organization/invites/accept`

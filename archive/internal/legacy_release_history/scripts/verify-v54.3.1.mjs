@@ -60,7 +60,7 @@ const forbiddenPackageScripts = [
   "verify:v53.4",
   "verify:v53.5",
   "verify:v54.0",
-  "verify:v54.1",
+  "verify:current",
   "verify:v54.2",
   "client:release",
   "client:final",

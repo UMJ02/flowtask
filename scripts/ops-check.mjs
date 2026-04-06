@@ -4,8 +4,9 @@ import path from "node:path";
 
 const root = process.cwd();
 const checks = [
-  ["package.json", '"verify:v54.1"'],
+  ["package.json", '"verify:current"'],
   ["package.json", '"ops:check"'],
+  ["package.json", '"release:current"'],
   ["src/app/error.tsx", "useErrorLogger"],
   ["src/components/auth/login-form.tsx", 'eventName: "login"'],
   ["src/components/projects/project-form.tsx", 'eventName: isEdit ? "update_project" : "create_project"'],
@@ -14,7 +15,12 @@ const checks = [
 
 const failures = [];
 for (const [rel, token] of checks) {
-  const content = fs.readFileSync(path.join(root, rel), "utf8");
+  const full = path.join(root, rel);
+  if (!fs.existsSync(full)) {
+    failures.push(`${rel} missing`);
+    continue;
+  }
+  const content = fs.readFileSync(full, "utf8");
   if (!content.includes(token)) failures.push(`${rel} missing ${token}`);
 }
 

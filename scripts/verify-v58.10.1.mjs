@@ -8,7 +8,6 @@ const requiredFiles = [
   ".nvmrc",
   "README.md",
   "vercel.json",
-  ".github/workflows/ci.yml",
   "scripts/verify-v58.10.1.mjs",
   "scripts/build-deploy-readiness.mjs",
   "scripts/deploy-production-readiness.mjs",

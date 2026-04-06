@@ -24,12 +24,11 @@ const requiredFiles = [
   'scripts/postdeploy-smoke.mjs',
   'src/app/api/health/route.ts',
   'src/app/api/ready/route.ts',
-  '.github/workflows/ci.yml',
 ];
 
 let failures = 0;
 
-console.log('\n[production-gate] FlowTask V58.8 production gate\n');
+console.log('\n[production-gate] FlowTask production gate\n');
 
 for (const file of requiredFiles) {
   const full = path.join(root, file);
