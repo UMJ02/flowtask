@@ -10,14 +10,12 @@ import { ProjectComments } from '@/components/projects/project-comments';
 import { ProjectMembers } from '@/components/projects/project-members';
 import { ProjectSharePanel } from '@/components/projects/project-share-panel';
 import { EntityAttachments } from '@/components/attachments/entity-attachments';
-import { AccessSummaryCard } from '@/components/security/access-summary-card';
 import { Button } from '@/components/ui/button';
 import { getProjectById, getProjectComments, getProjectMembers, getProjectTasks } from '@/lib/queries/projects';
 import { getProjectAttachments } from '@/lib/queries/attachments';
 import { getProjectActivity } from '@/lib/queries/activity';
 import { getProjectAccessSummary } from '@/lib/queries/access-summary';
 import { safeServerCall } from '@/lib/runtime/safe-server';
-import { formatOrganizationRole } from '@/lib/organization/labels';
 
 export default async function ProjectDetailPage({
   params,
@@ -49,19 +47,6 @@ export default async function ProjectDetailPage({
   return (
     <div className="space-y-4">
       <ProjectDetailSummary project={project} currentQuery={queryString} />
-      <AccessSummaryCard
-        title="Permisos visibles del proyecto"
-        description="Esta vista refleja lo que puedes ejecutar sin depender de prueba y error. Si una acción aparece bloqueada, también debe estar protegida por RLS en la base."
-        roleLabel={access.projectMemberRole ? `Proyecto: ${access.projectMemberRole}` : access.role ? `Org: ${formatOrganizationRole(access.role)}` : 'Sin organización activa'}
-        items={[
-          { label: 'Editar proyecto', enabled: access.canEdit },
-          { label: 'Gestionar miembros', enabled: access.canManageMembers },
-          { label: 'Comentar', enabled: access.canComment },
-          { label: 'Subir adjuntos', enabled: access.canUploadAttachments },
-          { label: 'Compartir por link', enabled: access.canShare },
-          { label: 'Crear tarea desde proyecto', enabled: access.canCreateTask },
-        ]}
-      />
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_380px]">
         <div className="space-y-4">
           <ProjectTaskList tasks={tasks} />

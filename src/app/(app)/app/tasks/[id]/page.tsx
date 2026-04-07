@@ -8,13 +8,12 @@ import { TaskSharePanel } from '@/components/tasks/task-share-panel';
 import { TaskComments } from '@/components/tasks/task-comments';
 import { TaskAssigneesPanel } from '@/components/tasks/task-assignees-panel';
 import { EntityAttachments } from '@/components/attachments/entity-attachments';
-import { AccessSummaryCard } from '@/components/security/access-summary-card';
+import { TaskPermissionBadge } from '@/components/tasks/task-permission-badge';
 import { getAssignableUsers, getTaskAssignees, getTaskById, getTaskComments } from '@/lib/queries/tasks';
 import { getTaskAttachments } from '@/lib/queries/attachments';
 import { getTaskActivity } from '@/lib/queries/activity';
 import { getTaskAccessSummary } from '@/lib/queries/access-summary';
 import { safeServerCall } from '@/lib/runtime/safe-server';
-import { formatOrganizationRole } from '@/lib/organization/labels';
 
 export default async function TaskDetailPage({
   params,
@@ -44,19 +43,7 @@ export default async function TaskDetailPage({
   return (
     <div className="space-y-4">
       <TaskDetailSummary task={task} currentQuery={queryString} />
-      <AccessSummaryCard
-        title="Permisos visibles de la tarea"
-        description="La UI ya muestra qué acciones puedes ejecutar en esta tarea según rol organizacional, asignación y acceso efectivo por cliente."
-        roleLabel={access.projectMemberRole ? `Proyecto: ${access.projectMemberRole}` : access.role ? `Org: ${formatOrganizationRole(access.role)}` : 'Sin organización activa'}
-        items={[
-          { label: 'Editar tarea', enabled: access.canEdit },
-          { label: 'Gestionar responsables', enabled: access.canManageAssignees },
-          { label: 'Comentar', enabled: access.canComment },
-          { label: 'Subir adjuntos', enabled: access.canUploadAttachments },
-          { label: 'Compartir por link', enabled: access.canShare },
-        ]}
-        compact
-      />
+      <TaskPermissionBadge canEdit={access.canEdit} canManage={access.canManageAssignees} canShare={access.canShare} />
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_380px]">
         <div className="space-y-4">
           <TaskComments taskId={task.id} comments={comments} canComment={access.canComment} />

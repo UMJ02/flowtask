@@ -6,14 +6,22 @@ import { SettingsAccountOverview } from '@/components/settings/settings-account-
 import { getNotificationPreferences } from '@/lib/queries/notification-preferences';
 import { getOrganizationContext } from '@/lib/queries/organization';
 import { getCurrentProfile } from '@/lib/queries/profile';
+import { getOrganizationWorkspaceAccessSummary } from '@/lib/queries/access-summary';
+import { getOrganizationBillingSummary } from '@/lib/queries/billing';
 import { safeServerCall } from '@/lib/runtime/safe-server';
+import { AccessControlSettingsCard } from '@/components/settings/access-control-settings-card';
 
 export default async function SettingsPage() {
-  const [profile, preferences, organizationContext] = await Promise.all([
+  const [profile, preferences, organizationContext, accessSummary] = await Promise.all([
     safeServerCall('getCurrentProfile', () => getCurrentProfile(), null),
     safeServerCall('getNotificationPreferences', () => getNotificationPreferences(), null),
     safeServerCall('getOrganizationContext', () => getOrganizationContext(), null),
+    safeServerCall('getOrganizationWorkspaceAccessSummary', () => getOrganizationWorkspaceAccessSummary(), null),
   ]);
+
+  const resolvedBillingSummary = organizationContext?.activeOrganization?.id
+    ? await safeServerCall('getOrganizationBillingSummary', () => getOrganizationBillingSummary(organizationContext.activeOrganization?.id ?? null), null)
+    : null;
 
   return (
     <div className="space-y-4 md:space-y-5">
@@ -21,6 +29,12 @@ export default async function SettingsPage() {
         profile={profile}
         preferences={preferences}
         organizationContext={organizationContext}
+      />
+
+      <AccessControlSettingsCard
+        accessSummary={accessSummary}
+        organizationContext={organizationContext}
+        billingSummary={resolvedBillingSummary}
       />
 
       <Card className="rounded-[22px]">
