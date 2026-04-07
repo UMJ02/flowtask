@@ -94,14 +94,14 @@ export function NotificationPreferencesForm({ initialPreferences }: Props) {
 
   return (
     <div className="space-y-4">
-      <Card>
+      <Card className="overflow-hidden">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div>
             <h2 className="text-lg font-semibold text-slate-900">Preferencias de notificaciones</h2>
-            <p className="mt-1 text-sm text-slate-500">Elige qué avisos quieres ver y cuándo prefieres recibirlos.</p>
+            <p className="mt-1 max-w-2xl text-sm text-slate-500">Elige qué avisos quieres ver y cuándo prefieres recibirlos, con una vista más clara y compacta.</p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <Button type="button" variant="secondary" onClick={() => setTypesExpanded((value) => !value)}>
+            <Button type="button" variant="secondary" onClick={() => setTypesExpanded((value) => !value)} aria-expanded={typesExpanded}>
               {typesExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
               Seleccionar
             </Button>
@@ -115,7 +115,7 @@ export function NotificationPreferencesForm({ initialPreferences }: Props) {
         {error ? <p className="mt-3 text-sm font-medium text-rose-700">{error}</p> : null}
 
         {typesExpanded ? (
-          <div className="mt-4 rounded-[26px] border border-slate-200 bg-slate-50 p-4">
+          <div className="mt-4 rounded-[26px] border border-slate-200 bg-slate-50 p-4 md:p-5">
             <div className="flex items-center gap-2 text-slate-900">
               <Layers3 className="h-4 w-4" />
               <h3 className="text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">Tipos de notificación</h3>
@@ -130,11 +130,11 @@ export function NotificationPreferencesForm({ initialPreferences }: Props) {
         ) : null}
       </Card>
 
-      <Card>
+      <Card className="overflow-hidden">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <h3 className="text-lg font-semibold text-slate-900">Canales y automatización</h3>
-            <p className="mt-1 text-sm text-slate-500">Agrupamos la configuración en una sola vista con cejillas para reducir ruido visual.</p>
+            <p className="mt-1 max-w-2xl text-sm text-slate-500">Agrupamos la configuración en una sola vista con cejillas para reducir ruido visual y mantener una lectura más limpia.</p>
           </div>
           <div className="flex flex-wrap gap-2">
             {tabButton("delivery", "Entrega y frecuencia")}

@@ -85,7 +85,7 @@ export function SettingsAccountOverview({
   ] as const;
 
   return (
-    <Card className="bg-[linear-gradient(135deg,#0f172a_0%,#111827_58%,#1e293b_100%)] text-white shadow-[0_28px_70px_rgba(15,23,42,0.24)]">
+    <Card className="overflow-hidden bg-[linear-gradient(135deg,#0f172a_0%,#111827_58%,#1e293b_100%)] text-white shadow-[0_28px_70px_rgba(15,23,42,0.24)]">
       <div className="flex flex-col gap-6">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">Settings hub</p>
@@ -114,9 +114,11 @@ export function SettingsAccountOverview({
                   <Icon className="h-4 w-4" />
                   <p className="text-xs uppercase tracking-[0.16em]">{item.label}</p>
                 </div>
-                <p className="mt-5 break-words text-2xl font-bold leading-tight text-white md:text-3xl">{item.value}</p>
+                <p title={item.value} className="mt-5 line-clamp-2 break-words text-2xl font-bold leading-tight text-white md:text-3xl">
+                  {item.value}
+                </p>
                 {'meta' in item && item.meta ? <p className="mt-1 text-sm text-slate-300">{item.meta}</p> : null}
-                <div className="pointer-events-none absolute inset-x-4 bottom-4 translate-y-2 rounded-2xl bg-slate-950/85 px-3 py-2 text-xs text-slate-200 opacity-0 shadow-lg transition duration-200 group-hover:translate-y-0 group-hover:opacity-100">
+                <div className="pointer-events-none absolute inset-x-4 bottom-4 hidden translate-y-2 rounded-2xl bg-slate-950/85 px-3 py-2 text-xs text-slate-200 opacity-0 shadow-lg transition duration-200 group-hover:translate-y-0 group-hover:opacity-100 md:block">
                   {item.helper}
                 </div>
               </div>

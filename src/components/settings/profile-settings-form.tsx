@@ -2,7 +2,7 @@
 
 import { useMemo, useRef, useState, type ChangeEvent, type FormEvent } from 'react';
 import Image from 'next/image';
-import { ImagePlus, LockKeyhole, Mail, Trash2, Upload, UserRound } from 'lucide-react';
+import { Camera, ImagePlus, Link2, LockKeyhole, Mail, Trash2, Upload, UserRound } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -18,6 +18,18 @@ function normalizeFileName(name: string) {
   return name.toLowerCase().replace(/[^a-z0-9.-]+/g, '-').replace(/-+/g, '-');
 }
 
+function extractStoragePath(publicUrl: string, bucket: string) {
+  try {
+    const url = new URL(publicUrl);
+    const marker = `/storage/v1/object/public/${bucket}/`;
+    const idx = url.pathname.indexOf(marker);
+    if (idx === -1) return null;
+    return decodeURIComponent(url.pathname.slice(idx + marker.length));
+  } catch {
+    return null;
+  }
+}
+
 export function ProfileSettingsForm({
   initialFullName,
   email,
@@ -30,6 +42,7 @@ export function ProfileSettingsForm({
   const [fullName, setFullName] = useState(initialFullName ?? '');
   const [nextEmail, setNextEmail] = useState(email);
   const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl ?? '');
+  const [lastUploadedAvatarUrl, setLastUploadedAvatarUrl] = useState(initialAvatarUrl ?? '');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [saving, setSaving] = useState(false);
@@ -93,7 +106,13 @@ export function ProfileSettingsForm({
       return;
     }
 
+    const oldPath = lastUploadedAvatarUrl ? extractStoragePath(lastUploadedAvatarUrl, 'profile-avatars') : null;
+    if (oldPath && oldPath !== filePath) {
+      await supabase.storage.from('profile-avatars').remove([oldPath]);
+    }
+
     setAvatarUrl(publicUrl);
+    setLastUploadedAvatarUrl(publicUrl);
     setUploadingAvatar(false);
     setMessage('Tu foto de perfil se actualizó correctamente.');
     event.target.value = '';
@@ -101,7 +120,7 @@ export function ProfileSettingsForm({
 
   const handleRemoveAvatar = async () => {
     setAvatarUrl('');
-    setMessage('La foto se quitará cuando guardes los cambios del perfil.');
+    setMessage('La foto quedará vacía cuando guardes los cambios del perfil.');
     setError(null);
   };
 
@@ -123,6 +142,13 @@ export function ProfileSettingsForm({
       return;
     }
 
+    const cleanedAvatarUrl = avatarUrl.trim();
+    if (cleanedAvatarUrl && !/^https?:\/\//i.test(cleanedAvatarUrl)) {
+      setSaving(false);
+      setError('La URL de la foto debe iniciar con http:// o https://.');
+      return;
+    }
+
     const supabase = createClient();
     const {
       data: { user },
@@ -137,7 +163,7 @@ export function ProfileSettingsForm({
     const profilePayload = {
       full_name: fullName.trim() || null,
       email: nextEmail.trim() || null,
-      avatar_url: avatarUrl.trim() || null,
+      avatar_url: cleanedAvatarUrl || null,
     };
 
     const { error: profileError } = await supabase.from('profiles').update(profilePayload).eq('id', user.id);
@@ -169,6 +195,16 @@ export function ProfileSettingsForm({
       }
     }
 
+    if (!cleanedAvatarUrl && lastUploadedAvatarUrl) {
+      const oldPath = extractStoragePath(lastUploadedAvatarUrl, 'profile-avatars');
+      if (oldPath) {
+        await supabase.storage.from('profile-avatars').remove([oldPath]);
+      }
+      setLastUploadedAvatarUrl('');
+    } else if (cleanedAvatarUrl) {
+      setLastUploadedAvatarUrl(cleanedAvatarUrl);
+    }
+
     setSaving(false);
     setPassword('');
     setConfirmPassword('');
@@ -177,28 +213,42 @@ export function ProfileSettingsForm({
 
   return (
     <form className="space-y-4" onSubmit={handleSubmit}>
-      <div className="grid gap-4 xl:grid-cols-[320px_minmax(0,1fr)]">
+      <div className="grid gap-4 xl:grid-cols-[360px_minmax(0,1fr)]">
         <div className="rounded-[30px] border border-slate-200 bg-slate-50 p-5">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Foto de perfil</p>
 
           <div className="mt-6 flex justify-center">
             {avatarUrl ? (
-              <div className="relative h-52 w-52 overflow-hidden rounded-full border border-slate-200 bg-slate-950">
+              <div className="relative h-52 w-52 overflow-hidden rounded-full border border-slate-200 bg-slate-950 shadow-sm">
                 <Image src={avatarUrl} alt="Foto de perfil" fill className="object-cover" sizes="208px" unoptimized />
               </div>
             ) : (
-              <div className="flex h-52 w-52 items-center justify-center rounded-full bg-slate-950 text-5xl font-bold text-white">
+              <div className="flex h-52 w-52 items-center justify-center rounded-full bg-slate-950 text-5xl font-bold text-white shadow-sm">
                 {initials}
               </div>
             )}
           </div>
 
-          <div className="mt-6 space-y-2">
+          <div className="mt-6 space-y-1">
             <p className="text-xl font-semibold text-slate-900">Imagen visible en tu cuenta</p>
             <p className="text-sm leading-6 text-slate-500">
-              Sube una foto cuadrada y limpia. Se usará en tu perfil, espacios compartidos y vistas del equipo.
+              Usa una foto clara y cuadrada. También puedes pegar una URL si quieres controlar la imagen desde fuera.
             </p>
           </div>
+
+          <label className="mt-5 block">
+            <p className="mb-2 text-sm font-medium text-slate-700">URL de la foto</p>
+            <div className="relative">
+              <Link2 className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <Input
+                value={avatarUrl}
+                onChange={(event) => setAvatarUrl(event.target.value)}
+                placeholder="https://..."
+                className="pl-11"
+                inputMode="url"
+              />
+            </div>
+          </label>
 
           <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
 
@@ -215,8 +265,8 @@ export function ProfileSettingsForm({
 
           <div className="mt-4 rounded-2xl border border-dashed border-slate-200 bg-white px-4 py-3 text-sm text-slate-500">
             <div className="flex items-start gap-2">
-              <ImagePlus className="mt-0.5 h-4 w-4 text-slate-400" />
-              <p>Formatos sugeridos: JPG, PNG o WEBP. Mientras más clara sea la imagen, mejor se verá en la app.</p>
+              <Camera className="mt-0.5 h-4 w-4 text-slate-400" />
+              <p>Formatos sugeridos: JPG, PNG o WEBP. Tamaño recomendado: 800×800 o superior para verse bien en toda la app.</p>
             </div>
           </div>
         </div>

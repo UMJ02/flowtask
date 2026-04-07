@@ -229,7 +229,7 @@ export function NotificationsLivePanel({
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <h2 className="text-lg font-semibold text-slate-900">Centro de notificaciones</h2>
-          <p className="text-sm text-slate-500">Usa búsqueda y filtros inteligentes para revisar solo lo que de verdad requiere atención.</p>
+          <p className="max-w-2xl text-sm text-slate-500">Usa búsqueda y filtros inteligentes para revisar solo lo que de verdad requiere atención.</p>
         </div>
         <span className="inline-flex w-fit rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
           En vivo · {visibleNotifications.length}
@@ -349,7 +349,9 @@ export function NotificationsLivePanel({
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-2 border-t border-slate-200 pt-4">
+      <div className="flex flex-col gap-3 border-t border-slate-200 pt-4 sm:flex-row sm:flex-wrap sm:items-center">
+        <div className="text-sm text-slate-500">{selectedVisibleIds.length ? `${selectedVisibleIds.length} seleccionada(s)` : 'Selecciona una o varias notificaciones para aplicar acciones.'}</div>
+        <div className="flex flex-wrap items-center gap-2">
         <Button type="button" variant="secondary" onClick={handleMarkSelectedRead} disabled={!selectedVisibleIds.length || isMarkingRead}>
           <CheckCheck className="h-4 w-4" />
           {isMarkingRead ? "Marcando..." : "Marcar como leídas"}
@@ -362,6 +364,7 @@ export function NotificationsLivePanel({
           <Trash2 className="h-4 w-4" />
           {isDeleting ? 'Eliminando...' : 'Eliminar'}
         </Button>
+        </div>
       </div>
     </Card>
   );
