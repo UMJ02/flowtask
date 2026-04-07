@@ -23,7 +23,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
           Volver a clientes
         </Link>
       </Card>
-      <ClientDetailPanels client={client} />
+      <ClientDetailPanels client={client!} />
     </div>
   );
 }

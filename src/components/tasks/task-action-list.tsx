@@ -284,7 +284,7 @@ function TaskActionListComponent({ tasks, currentQuery = "" }: { tasks: TaskRow[
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         @keyframes slideInFromRight {
           from {
             opacity: 0;
