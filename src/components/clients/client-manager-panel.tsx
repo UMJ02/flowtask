@@ -249,11 +249,12 @@ export function ClientManagerPanel({ items, initialQuery = '' }: { items: Client
 
     try {
       const workspace = await getClientWorkspaceContext();
-      if (!workspace.user) throw new Error('No encontramos una sesión activa para importar clientes.');
+      if (!workspace.user && !workspace.activeOrganizationId) throw new Error('No encontramos una sesión activa para importar clientes.');
       const supabase = workspace.supabase;
+      const accountOwnerId = workspace.activeOrganizationId ? null : workspace.user?.id ?? null;
       const payload = rows.map((row) => ({
         organization_id: workspace.activeOrganizationId,
-        account_owner_id: workspace.activeOrganizationId ? null : workspace.user.id,
+        account_owner_id: accountOwnerId,
         name: row.name,
         contact_email: row.contactEmail,
         status: row.status,
@@ -327,7 +328,7 @@ export function ClientManagerPanel({ items, initialQuery = '' }: { items: Client
             </div>
             <button
               type="button"
-              onClick={resetDraft}
+              onClick={() => resetDraft()}
               className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
             >
               <Plus className="h-4 w-4" />
@@ -405,7 +406,7 @@ export function ClientManagerPanel({ items, initialQuery = '' }: { items: Client
                 <h2 className="mt-2 text-lg font-semibold text-slate-900">{mode === 'edit' ? draft.name || 'Editar cliente' : 'Crear cliente'}</h2>
               </div>
               {mode === 'edit' ? (
-                <button type="button" onClick={resetDraft} className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50">
+                <button type="button" onClick={() => resetDraft()} className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50">
                   <X className="h-4 w-4" />
                 </button>
               ) : null}
@@ -444,7 +445,7 @@ export function ClientManagerPanel({ items, initialQuery = '' }: { items: Client
                   <Save className="h-4 w-4" />
                   {mode === 'edit' ? 'Guardar cambios' : 'Crear cliente'}
                 </Button>
-                <Button type="button" variant="secondary" onClick={resetDraft}>
+                <Button type="button" variant="secondary" onClick={() => resetDraft()}>
                   Restablecer
                 </Button>
               </div>
