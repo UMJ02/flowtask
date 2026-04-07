@@ -5,6 +5,7 @@ export interface ClientBase {
   name: string;
   status: ClientStatus;
   notes?: string | null;
+  contactEmail?: string | null;
 }
 
 export interface ClientListItem extends ClientBase {
@@ -16,7 +17,7 @@ export interface ClientListItem extends ClientBase {
 }
 
 export interface ClientDetailSummary extends ClientListItem {
-  organizationId: string;
+  organizationId: string | null;
   accountOwnerEmail?: string | null;
   recentProjects: Array<{ id: string; title: string; status: string; dueDateLabel: string }>;
   recentTasks: Array<{ id: string; title: string; status: string; dueDateLabel: string }>;

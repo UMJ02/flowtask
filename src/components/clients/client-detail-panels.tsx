@@ -20,6 +20,7 @@ export function ClientDetailPanels({ client }: { client: ClientDetailSummary }) 
           <div className="rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-600">
             <p><strong>Estado:</strong> {client.status.replace('_', ' ')}</p>
             <p><strong>Creado:</strong> {client.createdAtLabel}</p>
+            <p><strong>Correo cliente:</strong> {client.contactEmail || 'Sin correo cargado'}</p>
             <p><strong>Owner:</strong> {client.accountOwnerEmail || 'Sin asignar'}</p>
           </div>
         </div>

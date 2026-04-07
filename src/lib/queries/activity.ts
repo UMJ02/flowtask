@@ -65,6 +65,7 @@ export async function getOrganizationActivity(organizationId: string, limit = 16
 
 export async function getRecentActivity(limit = 20) {
   const supabase = await createClient();
+  const since = new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString();
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -75,6 +76,7 @@ export async function getRecentActivity(limit = 20) {
     .from("activity_logs")
     .select(BASE_SELECT)
     .eq("user_id", user.id)
+    .gte("created_at", since)
     .order("created_at", { ascending: false })
     .limit(limit);
 
