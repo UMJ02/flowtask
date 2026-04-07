@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useMemo } from 'react';
-import { ArrowLeft, CalendarClock, FileSpreadsheet, Home, Printer } from 'lucide-react';
+import { ArrowLeft, CalendarClock, FileSpreadsheet, Home, Printer, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { decodeAnalyticsShareToken, downloadAnalyticsCsv } from '@/lib/share/analytics-share';
@@ -38,14 +38,14 @@ export function SharedAnalyticsLanding({ token, autoPrint = false }: { token: st
   }
 
   return (
-    <main className="min-h-screen bg-[linear-gradient(180deg,#020617_0%,#111827_45%,#f8fafc_45%,#f8fafc_100%)] py-8 print:bg-white print:py-0">
+    <main className="min-h-screen bg-[linear-gradient(180deg,#052e2b_0%,#0f172a_36%,#f8fafc_36%,#f8fafc_100%)] py-8 print:bg-white print:py-0">
       <div className="container-page max-w-6xl space-y-4 print:max-w-none print:px-0">
-        <Card className="border-white/10 bg-[linear-gradient(135deg,#0f172a_0%,#312e81_42%,#6d28d9_100%)] text-white print:shadow-none">
+        <Card className="border-white/10 bg-[linear-gradient(135deg,#052e2b_0%,#0b3954_42%,#0f172a_100%)] text-white print:shadow-none">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
             <div className="max-w-3xl">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet-100/80">FlowTask · executive share</p>
-              <h1 className="mt-2 text-3xl font-bold leading-tight">Reporte ejecutivo listo para compartir</h1>
-              <p className="mt-3 text-sm leading-6 text-violet-50/90">{payload.workspaceName} · actualizado {payload.generatedAtLabel}. Vista resumida para jefatura con foco, pipeline, deadlines y estado operativo.</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-100/80">FlowTask · executive share</p>
+              <h1 className="mt-2 text-3xl font-bold leading-tight">Resumen ejecutivo listo para compartir</h1>
+              <p className="mt-3 text-sm leading-6 text-slate-100/90">{payload.workspaceName} · actualizado {payload.generatedAtLabel}. Esta vista resume prioridades, proyectos, fechas clave y avance general sin necesidad de entrar a la app.</p>
             </div>
             <div className="flex flex-wrap gap-2 print:hidden">
               <Link href="/"><Button variant="secondary"><Home className="h-4 w-4" />Página principal</Button></Link>
@@ -56,10 +56,10 @@ export function SharedAnalyticsLanding({ token, autoPrint = false }: { token: st
         </Card>
 
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <MetricCard label="Health score" value={`${payload.kpis.healthScore}%`} />
-          <MetricCard label="Intelligence" value={`${payload.kpis.intelligenceScore}%`} />
-          <MetricCard label="Prioritarios" value={String(payload.shareDigest.priorityCount)} />
-          <MetricCard label="Concluidos" value={String(payload.shareDigest.completedCount)} />
+          <MetricCard label="Salud" value={`${payload.kpis.healthScore}%`} helper="Pulso general" />
+          <MetricCard label="Ritmo" value={`${payload.kpis.intelligenceScore}%`} helper="Seguimiento activo" />
+          <MetricCard label="Prioritarios" value={String(payload.shareDigest.priorityCount)} helper="Lo primero" />
+          <MetricCard label="Concluidos" value={String(payload.shareDigest.completedCount)} helper="Trabajo entregado" />
         </div>
 
         <div className="grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
@@ -67,7 +67,7 @@ export function SharedAnalyticsLanding({ token, autoPrint = false }: { token: st
             <div className="flex items-center justify-between gap-3">
               <div>
                 <h2 className="text-xl font-semibold text-slate-900">Foco semanal</h2>
-                <p className="mt-1 text-sm text-slate-500">Lo que conviene revisar primero durante esta semana.</p>
+                <p className="mt-1 text-sm text-slate-500">Lo que conviene revisar primero esta semana.</p>
               </div>
               <span className="kicker-chip">Prioridades</span>
             </div>
@@ -81,10 +81,10 @@ export function SharedAnalyticsLanding({ token, autoPrint = false }: { token: st
           <Card>
             <div className="flex items-center justify-between gap-3">
               <div>
-                <h2 className="text-xl font-semibold text-slate-900">Share summary</h2>
-                <p className="mt-1 text-sm text-slate-500">Resumen ejecutivo rápido para acompañar el envío del link.</p>
+                <h2 className="text-xl font-semibold text-slate-900">Resumen para compartir</h2>
+                <p className="mt-1 text-sm text-slate-500">Una lectura corta para acompañar el enlace o el correo.</p>
               </div>
-              <CalendarClock className="h-5 w-5 text-slate-400" />
+              <Share2 className="h-5 w-5 text-slate-400" />
             </div>
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
               <DigestCard label="Favoritos" value={payload.shareDigest.priorityCount} />
@@ -103,7 +103,7 @@ export function SharedAnalyticsLanding({ token, autoPrint = false }: { token: st
         <div className="grid gap-4 xl:grid-cols-[1fr_1fr]">
           <Card>
             <h2 className="text-xl font-semibold text-slate-900">Pipeline de proyectos</h2>
-            <p className="mt-1 text-sm text-slate-500">Proyectos activos y deadlines visibles para seguimiento ejecutivo.</p>
+            <p className="mt-1 text-sm text-slate-500">Proyectos activos y fechas visibles para seguimiento ejecutivo.</p>
             <div className="mt-5 space-y-3">
               {payload.projectPipeline.map((item) => (
                 <FeedItem key={`${item.source}-${item.id}`} item={item} />
@@ -133,11 +133,12 @@ export function SharedAnalyticsLanding({ token, autoPrint = false }: { token: st
   );
 }
 
-function MetricCard({ label, value }: { label: string; value: string }) {
+function MetricCard({ label, value, helper }: { label: string; value: string; helper: string }) {
   return (
     <Card className="print:shadow-none">
       <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">{label}</p>
       <p className="mt-2 text-3xl font-bold text-slate-950">{value}</p>
+      <p className="mt-1 text-xs text-slate-500">{helper}</p>
     </Card>
   );
 }
