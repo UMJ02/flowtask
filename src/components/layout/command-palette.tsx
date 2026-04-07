@@ -95,6 +95,15 @@ const COMMANDS: CommandItem[] = [
     section: 'Accesos',
   },
   {
+    id: 'analytics',
+    label: 'Abrir analytics',
+    description: 'Ve salud operativa, adopción y foco desde una sola vista.',
+    href: '/app/analytics',
+    keywords: ['analytics', 'metricas', 'salud', 'adopcion', 'escala'],
+    icon: BarChart3,
+    section: 'Accesos',
+  },
+  {
     id: 'intelligence',
     label: 'Abrir insights',
     description: 'Ve riesgos, foco y capacidad en una sola vista.',

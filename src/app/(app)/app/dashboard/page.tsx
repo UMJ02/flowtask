@@ -2,17 +2,20 @@ export const dynamic = 'force-dynamic';
 
 import { DashboardStartState } from '@/components/dashboard/dashboard-start-state';
 import { DashboardHero } from '@/components/dashboard/dashboard-hero';
+import { AnalyticsOverview } from '@/components/analytics/analytics-overview';
 import { ProjectHealth } from '@/components/dashboard/project-health';
 import { RecentActivity } from '@/components/dashboard/recent-activity';
 import { UrgentProjects } from '@/components/dashboard/urgent-projects';
 import { getRecentActivitySummary } from '@/lib/queries/activity';
+import { getWorkspaceAnalyticsSummary } from '@/lib/queries/analytics';
 import { getDashboardData } from '@/lib/queries/dashboard';
 import { safeServerCall } from '@/lib/runtime/safe-server';
 
 export default async function DashboardPage() {
-  const [summary, activitySummary] = await Promise.all([
+  const [summary, activitySummary, analyticsSummary] = await Promise.all([
     safeServerCall('getDashboardData', () => getDashboardData(), null),
     safeServerCall('getRecentActivitySummary', () => getRecentActivitySummary(12), null),
+    safeServerCall('getWorkspaceAnalyticsSummary', () => getWorkspaceAnalyticsSummary(), null),
   ]);
 
   const totalVisibleItems =
@@ -32,6 +35,8 @@ export default async function DashboardPage() {
         />
 
         {totalVisibleItems === 0 ? <DashboardStartState /> : null}
+
+        {analyticsSummary ? <AnalyticsOverview summary={analyticsSummary} compact /> : null}
 
         <div className="grid gap-5 xl:grid-cols-[minmax(0,0.95fr)_minmax(340px,0.65fr)]">
           <ProjectHealth
