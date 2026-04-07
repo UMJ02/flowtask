@@ -16,17 +16,17 @@ export default async function SettingsPage() {
   ]);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 md:space-y-5">
       <SettingsAccountOverview
         profile={profile}
         preferences={preferences}
         organizationContext={organizationContext}
       />
 
-      <Card>
+      <Card className="rounded-[22px]">
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Settings</p>
-        <h2 className="mt-2 text-2xl font-bold text-slate-900">Preferencias operativas</h2>
-        <p className="mt-2 max-w-3xl text-sm text-slate-600">
+        <h2 className="mt-2 text-2xl font-bold text-slate-900 md:text-[28px]">Preferencias operativas</h2>
+        <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
           Aquí decides qué avisos quieres ver, cómo se entregan y qué ventanas prefieres mantener en silencio.
         </p>
       </Card>

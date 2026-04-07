@@ -24,14 +24,14 @@ function ToggleRow({
   onChange: (value: boolean) => void;
 }) {
   return (
-    <label className="flex items-start justify-between gap-4 rounded-2xl border border-slate-200 bg-white px-4 py-3 transition hover:border-slate-300">
+    <label className="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 transition hover:border-slate-300 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
       <div className="min-w-0">
         <p className="text-sm font-semibold text-slate-900">{label}</p>
         <p className="mt-1 text-sm text-slate-500">{description}</p>
       </div>
       <input
         type="checkbox"
-        className="mt-1 h-4 w-4 rounded border-slate-300"
+        className="h-4 w-4 shrink-0 rounded border-slate-300 self-end sm:mt-1 sm:self-auto"
         checked={checked}
         onChange={(event) => onChange(event.target.checked)}
       />
@@ -84,7 +84,7 @@ export function NotificationPreferencesForm({ initialPreferences }: Props) {
         type="button"
         onClick={() => setActiveTab(value)}
         className={active
-          ? "rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white"
+          ? "rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm"
           : "rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50"}
       >
         {label}
@@ -93,19 +93,19 @@ export function NotificationPreferencesForm({ initialPreferences }: Props) {
   };
 
   return (
-    <div className="space-y-4">
-      <Card className="overflow-hidden">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+    <div className="space-y-4 md:space-y-5">
+      <Card className="overflow-hidden rounded-[22px]">
+        <div className="flex flex-col gap-4 md:gap-5 lg:flex-row lg:items-start lg:justify-between">
           <div>
             <h2 className="text-lg font-semibold text-slate-900">Preferencias de notificaciones</h2>
-            <p className="mt-1 max-w-2xl text-sm text-slate-500">Elige qué avisos quieres ver y cuándo prefieres recibirlos, con una vista más clara y compacta.</p>
+            <p className="mt-1 max-w-2xl text-sm leading-6 text-slate-500">Elige qué avisos quieres ver y cuándo prefieres recibirlos, con una vista más clara y compacta.</p>
           </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <Button type="button" variant="secondary" onClick={() => setTypesExpanded((value) => !value)} aria-expanded={typesExpanded}>
+          <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+            <Button type="button" variant="secondary" onClick={() => setTypesExpanded((value) => !value)} aria-expanded={typesExpanded} className="w-full sm:w-auto">
               {typesExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
               Seleccionar
             </Button>
-            <Button type="button" onClick={handleSave} disabled={isPending} className="rounded-full">
+            <Button type="button" onClick={handleSave} disabled={isPending} className="w-full rounded-full sm:w-auto">
               {isPending ? "Guardando..." : "Guardar preferencias"}
             </Button>
           </div>
@@ -115,7 +115,7 @@ export function NotificationPreferencesForm({ initialPreferences }: Props) {
         {error ? <p className="mt-3 text-sm font-medium text-rose-700">{error}</p> : null}
 
         {typesExpanded ? (
-          <div className="mt-4 rounded-[26px] border border-slate-200 bg-slate-50 p-4 md:p-5">
+          <div className="mt-4 rounded-[24px] border border-slate-200 bg-slate-50 p-4 md:p-5">
             <div className="flex items-center gap-2 text-slate-900">
               <Layers3 className="h-4 w-4" />
               <h3 className="text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">Tipos de notificación</h3>
@@ -130,20 +130,20 @@ export function NotificationPreferencesForm({ initialPreferences }: Props) {
         ) : null}
       </Card>
 
-      <Card className="overflow-hidden">
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+      <Card className="overflow-hidden rounded-[22px]">
+        <div className="flex flex-col gap-3 md:gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <h3 className="text-lg font-semibold text-slate-900">Canales y automatización</h3>
-            <p className="mt-1 max-w-2xl text-sm text-slate-500">Agrupamos la configuración en una sola vista con cejillas para reducir ruido visual y mantener una lectura más limpia.</p>
+            <p className="mt-1 max-w-2xl text-sm leading-6 text-slate-500">Agrupamos la configuración en una sola vista con cejillas para reducir ruido visual y mantener una lectura más limpia.</p>
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2 md:gap-3">
             {tabButton("delivery", "Entrega y frecuencia")}
             {tabButton("channels", "Canales externos")}
             {tabButton("quiet", "Horas silenciosas")}
           </div>
         </div>
 
-        <div className="mt-4 rounded-[26px] border border-slate-200 bg-slate-50 p-4 md:p-5">
+        <div className="mt-4 rounded-[24px] border border-slate-200 bg-slate-50 p-4 md:p-5">
           {activeTab === "delivery" ? (
             <div className="space-y-4">
               <div>
