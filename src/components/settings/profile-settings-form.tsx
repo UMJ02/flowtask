@@ -1,8 +1,8 @@
 'use client';
 
-import { useMemo, useRef, useState, type ChangeEvent, type FormEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent } from 'react';
 import Image from 'next/image';
-import { Camera, ImagePlus, Link2, LockKeyhole, Mail, Trash2, Upload, UserRound } from 'lucide-react';
+import { CircleHelp, Link2, LockKeyhole, Mail, Trash2, Upload, UserRound } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -47,11 +47,26 @@ export function ProfileSettingsForm({
   const [confirmPassword, setConfirmPassword] = useState('');
   const [saving, setSaving] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [showAvatarInfo, setShowAvatarInfo] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const avatarInfoRef = useRef<HTMLDivElement | null>(null);
 
   const initials = useMemo(() => getInitials(fullName, nextEmail), [fullName, nextEmail]);
+
+  useEffect(() => {
+    if (!showAvatarInfo) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (!avatarInfoRef.current?.contains(event.target as Node)) {
+        setShowAvatarInfo(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showAvatarInfo]);
 
   const handleAvatarUpload = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -219,11 +234,11 @@ export function ProfileSettingsForm({
 
           <div className="mt-6 flex justify-center">
             {avatarUrl ? (
-              <div className="relative h-52 w-52 overflow-hidden rounded-full border border-slate-200 bg-slate-950 shadow-sm">
-                <Image src={avatarUrl} alt="Foto de perfil" fill className="object-cover" sizes="208px" unoptimized />
+              <div className="relative h-[193px] w-[193px] overflow-hidden rounded-full border border-slate-200 bg-slate-950 shadow-sm">
+                <Image src={avatarUrl} alt="Foto de perfil" fill className="object-cover" sizes="193px" unoptimized />
               </div>
             ) : (
-              <div className="flex h-52 w-52 items-center justify-center rounded-full bg-slate-950 text-5xl font-bold text-white shadow-sm">
+              <div className="flex h-[193px] w-[193px] items-center justify-center rounded-full bg-slate-950 text-5xl font-bold text-white shadow-sm">
                 {initials}
               </div>
             )}
@@ -231,9 +246,7 @@ export function ProfileSettingsForm({
 
           <div className="mt-6 space-y-1">
             <p className="text-xl font-semibold text-slate-900">Imagen visible en tu cuenta</p>
-            <p className="text-sm leading-6 text-slate-500">
-              Usa una foto clara y cuadrada. También puedes pegar una URL si quieres controlar la imagen desde fuera.
-            </p>
+            <p className="text-[13px] leading-6 text-slate-500 sm:whitespace-nowrap">Usa una foto clara y cuadrada o pega una URL externa.</p>
           </div>
 
           <label className="mt-5 block">
@@ -252,7 +265,7 @@ export function ProfileSettingsForm({
 
           <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
 
-          <div className="mt-5 flex flex-wrap gap-2">
+          <div className="mt-5 flex flex-wrap items-center gap-2">
             <Button type="button" variant="secondary" onClick={() => fileInputRef.current?.click()} loading={uploadingAvatar}>
               <Upload className="h-4 w-4" />
               {uploadingAvatar ? 'Subiendo...' : 'Subir imagen'}
@@ -261,12 +274,23 @@ export function ProfileSettingsForm({
               <Trash2 className="h-4 w-4" />
               Quitar
             </Button>
-          </div>
 
-          <div className="mt-4 rounded-2xl border border-dashed border-slate-200 bg-white px-4 py-3 text-sm text-slate-500">
-            <div className="flex items-start gap-2">
-              <Camera className="mt-0.5 h-4 w-4 text-slate-400" />
-              <p>Formatos sugeridos: JPG, PNG o WEBP. Tamaño recomendado: 800×800 o superior para verse bien en toda la app.</p>
+            <div className="relative" ref={avatarInfoRef}>
+              <button
+                type="button"
+                onClick={() => setShowAvatarInfo((prev) => !prev)}
+                className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-500 transition-colors hover:border-emerald-200 hover:text-slate-900"
+                aria-label="Ver recomendaciones de imagen"
+                aria-expanded={showAvatarInfo}
+              >
+                <CircleHelp className="h-4 w-4" />
+              </button>
+
+              {showAvatarInfo ? (
+                <div className="absolute right-0 top-full z-20 mt-2 w-[300px] rounded-2xl border border-slate-200 bg-white p-4 text-sm leading-6 text-slate-600 shadow-[0_18px_45px_rgba(15,23,42,0.14)]">
+                  Formatos sugeridos: JPG, PNG o WEBP. Tamaño recomendado: 800×800 o superior para verse bien en toda la app.
+                </div>
+              ) : null}
             </div>
           </div>
         </div>
