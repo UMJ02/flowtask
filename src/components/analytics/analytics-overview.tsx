@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, type ComponentType } from 'react';
-import { ExternalLink, ListTodo, Share2, Workflow } from 'lucide-react';
+import { ChevronDown, ListTodo, Workflow } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { ShareCenterCard } from '@/components/analytics/share-center-card';
 import type { AnalyticsFeedItem, AnalyticsTone, WorkspaceAnalyticsSummary } from '@/lib/queries/analytics';
@@ -18,10 +18,10 @@ function toneLabel(tone: AnalyticsTone) {
 
 export function AnalyticsOverview({ summary, compact = false }: { summary: WorkspaceAnalyticsSummary; compact?: boolean }) {
   const heroCards = [
-    { label: 'Salud', value: `${summary.kpis.healthScore}%`, helper: 'Pulso general' },
+    { label: 'Pulso', value: `${summary.kpis.healthScore}%`, helper: 'Panorama general' },
     { label: 'Ritmo', value: `${summary.kpis.intelligenceScore}%`, helper: 'Seguimiento activo' },
-    { label: 'Pendientes sem.', value: String(summary.pipeline.dueThisWeek), helper: 'Por revisar' },
-    { label: 'Vencidos', value: String(summary.pipeline.overdueLoad), helper: 'Necesitan atención' },
+    { label: 'Por vencer', value: String(summary.pipeline.dueThisWeek), helper: 'Esta semana' },
+    { label: 'Vencidas', value: String(summary.pipeline.overdueLoad), helper: 'Piden atención' },
   ];
 
   if (compact) {
@@ -29,9 +29,9 @@ export function AnalyticsOverview({ summary, compact = false }: { summary: Works
       <Card className="border-slate-200 bg-[linear-gradient(135deg,#ffffff_0%,#f8fafc_55%,#eef6ff_100%)]">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-700">Analytics v4.3</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-700">Analytics v4.4</p>
             <h3 className="mt-2 text-xl font-bold text-slate-900">Pulso del workspace</h3>
-            <p className="mt-2 max-w-2xl text-sm text-slate-600">Una lectura corta para saber qué atender primero, qué proyectos siguen activos y qué puedes compartir con jefatura.</p>
+            <p className="mt-2 max-w-2xl text-sm text-slate-600">Una lectura corta para priorizar, revisar proyectos activos y dejar listo un reporte para compartir.</p>
           </div>
         </div>
         <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
@@ -52,10 +52,10 @@ export function AnalyticsOverview({ summary, compact = false }: { summary: Works
       <Card className="bg-[linear-gradient(135deg,#052e2b_0%,#0b3954_42%,#0f172a_100%)] text-white shadow-[0_24px_60px_rgba(8,47,73,0.2)]">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-3xl min-w-0">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-100/80">FlowTask v4.3 · analytics center</p>
-            <h1 className="mt-2 text-3xl font-bold leading-[1.08] sm:text-[2.55rem] lg:max-w-3xl">Visibilidad clara para decidir, priorizar y compartir avances</h1>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-100/80">FlowTask v4.4 · analytics center</p>
+            <h1 className="mt-2 text-3xl font-bold leading-[1.08] sm:text-[2.45rem] lg:max-w-3xl">Tu semana clara para priorizar, compartir y anticipar movimiento</h1>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-100/90 sm:text-base">
-              {summary.organizationName} · actualizado {summary.generatedAtLabel}. Aquí ves lo importante de la semana y dejas listo un reporte profesional para compartir fuera de la app.
+              {summary.organizationName} · actualizado {summary.generatedAtLabel}. Aquí se concentra lo que merece seguimiento ejecutivo sin llenar la vista de métricas repetidas.
             </p>
           </div>
           <div className="grid gap-3 sm:grid-cols-2 lg:min-w-[320px] xl:min-w-[360px]">
@@ -66,7 +66,7 @@ export function AnalyticsOverview({ summary, compact = false }: { summary: Works
         </div>
       </Card>
 
-      <div className="grid gap-4 xl:grid-cols-[1fr_1fr]">
+      <div className="grid items-start gap-4 xl:grid-cols-[1fr_1fr]">
         <ExpandableFeedCard
           title="Foco de la semana"
           subtitle="Tres tareas visibles para mantener la vista ligera. Si necesitas más, despliegas el resto con un click."
@@ -94,9 +94,9 @@ export function AnalyticsOverview({ summary, compact = false }: { summary: Works
 
 function HeroMetric({ label, value, helper }: { label: string; value: string; helper: string }) {
   return (
-    <div className="rounded-[24px] bg-white/10 px-4 py-3 ring-1 ring-white/10 backdrop-blur-sm">
+    <div className="rounded-[22px] bg-white/10 px-4 py-3 ring-1 ring-white/10 backdrop-blur-sm">
       <p className="text-[11px] uppercase tracking-[0.16em] text-cyan-100/80">{label}</p>
-      <p className="mt-2 text-2xl font-bold leading-none text-white sm:text-[1.9rem]">{value}</p>
+      <p className="mt-2 text-2xl font-bold leading-none text-white sm:text-[1.8rem]">{value}</p>
       <p className="mt-1 text-xs text-slate-200/80">{helper}</p>
     </div>
   );
@@ -129,7 +129,7 @@ function ExpandableFeedCard({
           <h2 className="text-lg font-semibold text-slate-900">{title}</h2>
           <p className="mt-1 text-sm text-slate-500">{subtitle}</p>
         </div>
-        <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-700 ring-1 ring-cyan-100">
+        <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-700 ring-1 ring-cyan-100">
           <Icon className="h-5 w-5" />
         </span>
       </div>
@@ -142,7 +142,7 @@ function ExpandableFeedCard({
               <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${toneClasses[item.tone]}`}>{toneLabel(item.tone)}</span>
               <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">{item.statusLabel}</span>
             </div>
-            <p className="mt-3 text-sm font-semibold text-slate-900">{item.title}</p>
+            <p className="mt-3 line-clamp-2 text-base font-semibold leading-snug text-slate-900">{item.title}</p>
             <p className="mt-1 text-sm text-slate-500">{item.meta}</p>
           </div>
         )) : <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-5 text-sm text-slate-600">{emptyLabel}</div>}
@@ -155,7 +155,7 @@ function ExpandableFeedCard({
             onClick={() => setExpanded((value) => !value)}
             className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-cyan-200 hover:text-cyan-700"
           >
-            <ExternalLink className={`h-4 w-4 transition ${expanded ? 'rotate-45' : ''}`} />
+            <ChevronDown className={`h-4 w-4 transition ${expanded ? 'rotate-180' : ''}`} />
             {expanded ? collapseLabel : expandLabel}
           </button>
         </div>

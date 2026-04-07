@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useMemo } from 'react';
-import { ArrowLeft, CalendarClock, FileSpreadsheet, Home, Printer, Share2 } from 'lucide-react';
+import { ArrowLeft, FileSpreadsheet, Home, Printer, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { decodeAnalyticsShareToken, downloadAnalyticsCsv } from '@/lib/share/analytics-share';
@@ -38,13 +38,13 @@ export function SharedAnalyticsLanding({ token, autoPrint = false }: { token: st
   }
 
   return (
-    <main className="min-h-screen bg-[linear-gradient(180deg,#052e2b_0%,#0f172a_36%,#f8fafc_36%,#f8fafc_100%)] py-8 print:bg-white print:py-0">
+    <main className="min-h-screen bg-[linear-gradient(180deg,#052e2b_0%,#0b3954_36%,#f8fafc_36%,#f8fafc_100%)] py-8 print:bg-white print:py-0">
       <div className="container-page max-w-6xl space-y-4 print:max-w-none print:px-0">
         <Card className="border-white/10 bg-[linear-gradient(135deg,#052e2b_0%,#0b3954_42%,#0f172a_100%)] text-white print:shadow-none">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
             <div className="max-w-3xl">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-100/80">FlowTask · executive share</p>
-              <h1 className="mt-2 text-3xl font-bold leading-tight">Resumen ejecutivo listo para compartir</h1>
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-100/80">FlowTask · reporte compartido</p>
+              <h1 className="mt-2 text-3xl font-bold leading-tight">Reporte ejecutivo listo para compartir</h1>
               <p className="mt-3 text-sm leading-6 text-slate-100/90">{payload.workspaceName} · actualizado {payload.generatedAtLabel}. Esta vista resume prioridades, proyectos, fechas clave y avance general sin necesidad de entrar a la app.</p>
             </div>
             <div className="flex flex-wrap gap-2 print:hidden">
@@ -56,9 +56,9 @@ export function SharedAnalyticsLanding({ token, autoPrint = false }: { token: st
         </Card>
 
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <MetricCard label="Salud" value={`${payload.kpis.healthScore}%`} helper="Pulso general" />
+          <MetricCard label="Pulso" value={`${payload.kpis.healthScore}%`} helper="Panorama general" />
           <MetricCard label="Ritmo" value={`${payload.kpis.intelligenceScore}%`} helper="Seguimiento activo" />
-          <MetricCard label="Prioritarios" value={String(payload.shareDigest.priorityCount)} helper="Lo primero" />
+          <MetricCard label="Favoritos" value={String(payload.shareDigest.priorityCount)} helper="Lo más importante" />
           <MetricCard label="Concluidos" value={String(payload.shareDigest.completedCount)} helper="Trabajo entregado" />
         </div>
 
