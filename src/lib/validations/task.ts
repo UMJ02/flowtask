@@ -9,4 +9,5 @@ export const taskSchema = z.object({
   clientName: z.string().optional(),
   dueDate: z.string().optional(),
   projectId: z.string().optional(),
+  country: z.string().optional(),
 });

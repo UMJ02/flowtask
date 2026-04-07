@@ -1,14 +1,15 @@
-'use client';
+"use client";
 
-import { memo, useEffect, useMemo, useState } from 'react';
-import Link from 'next/link';
-import { CheckCircle2, Eye, Pencil, Trash2 } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { createClient } from '@/lib/supabase/client';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { StatusBadge } from '@/components/ui/status-badge';
-import { taskDetailRoute, taskEditRoute } from '@/lib/navigation/routes';
+import { memo, useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import { ArrowLeft, ArrowRight, CheckCircle2, Eye, Pencil, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Select } from "@/components/ui/select";
+import { StatusBadge } from "@/components/ui/status-badge";
+import { taskDetailRoute, taskEditRoute } from "@/lib/navigation/routes";
 
 type TaskRow = {
   id: string;
@@ -20,43 +21,59 @@ type TaskRow = {
   project_id?: string | null;
 };
 
+type PageAnimationState = "idle" | "out-next" | "out-prev" | "in-next" | "in-prev";
+
 function formatDeadline(value?: string | null) {
-  if (!value) return 'Sin deadline';
+  if (!value) return "Sin deadline";
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
   if (!match) return value;
   const [, year, month, day] = match;
   return `${day}/${month}/${year}`;
 }
 
-function TaskActionListComponent({ tasks, currentQuery = '' }: { tasks: TaskRow[]; currentQuery?: string }) {
+function TaskActionListComponent({ tasks, currentQuery = "" }: { tasks: TaskRow[]; currentQuery?: string }) {
   const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
   const [items, setItems] = useState(tasks);
   const [closingId, setClosingId] = useState<string | null>(null);
   const [showCompleted, setShowCompleted] = useState(false);
+  const [pageSize, setPageSize] = useState<5 | 10>(5);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageAnimation, setPageAnimation] = useState<PageAnimationState>("idle");
 
   useEffect(() => {
     setItems(tasks);
   }, [tasks]);
 
-  const pendingItems = useMemo(
-    () => items.filter((item) => item.status !== 'concluido'),
-    [items]
-  );
-  const completedItems = useMemo(
-    () => items.filter((item) => item.status === 'concluido'),
-    [items]
-  );
+  const pendingItems = useMemo(() => items.filter((item) => item.status !== "concluido"), [items]);
+  const completedItems = useMemo(() => items.filter((item) => item.status === "concluido"), [items]);
+  const totalPages = Math.max(1, Math.ceil(pendingItems.length / pageSize));
+
+  useEffect(() => {
+    setCurrentPage((value) => Math.min(value, totalPages));
+  }, [totalPages]);
+
+  const currentItems = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return pendingItems.slice(start, start + pageSize);
+  }, [currentPage, pageSize, pendingItems]);
+
+  const animatePage = (direction: "next" | "prev", targetPage: number) => {
+    setPageAnimation(direction === "next" ? "out-next" : "out-prev");
+    window.setTimeout(() => {
+      setCurrentPage(targetPage);
+      setPageAnimation(direction === "next" ? "in-next" : "in-prev");
+      window.setTimeout(() => setPageAnimation("idle"), 220);
+    }, 120);
+  };
 
   const markComplete = async (taskId: string) => {
     setClosingId(taskId);
     window.setTimeout(async () => {
-      setItems((current) =>
-        current.map((item) => (item.id === taskId ? { ...item, status: 'concluido' } : item))
-      );
+      setItems((current) => current.map((item) => (item.id === taskId ? { ...item, status: "concluido" } : item)));
       setClosingId(null);
 
-      const { error } = await supabase.from('tasks').update({ status: 'concluido' }).eq('id', taskId);
+      const { error } = await supabase.from("tasks").update({ status: "concluido" }).eq("id", taskId);
       if (error) {
         router.refresh();
       }
@@ -64,16 +81,16 @@ function TaskActionListComponent({ tasks, currentQuery = '' }: { tasks: TaskRow[
   };
 
   const deleteTask = async (taskId: string) => {
-    const ok = window.confirm('¿Deseas eliminar esta tarea? Esta acción no se puede deshacer.');
+    const ok = window.confirm("¿Deseas eliminar esta tarea? Esta acción no se puede deshacer.");
     if (!ok) return;
 
     const current = items;
     setItems((list) => list.filter((item) => item.id !== taskId));
 
-    const { error } = await supabase.from('tasks').delete().eq('id', taskId);
+    const { error } = await supabase.from("tasks").delete().eq("id", taskId);
     if (error) {
       setItems(current);
-      window.alert('No se pudo eliminar la tarea.');
+      window.alert("No se pudo eliminar la tarea.");
     }
   };
 
@@ -84,15 +101,15 @@ function TaskActionListComponent({ tasks, currentQuery = '' }: { tasks: TaskRow[
       <div
         key={task.id}
         className={[
-          'rounded-[24px] border border-slate-200 bg-white px-4 py-4 shadow-[0_10px_24px_rgba(15,23,42,0.04)] transition-all duration-300',
-          completed ? 'bg-slate-50/80' : 'hover:-translate-y-0.5 hover:shadow-[0_14px_28px_rgba(15,23,42,0.08)]',
-          isClosing ? 'scale-[0.98] opacity-0 translate-x-3' : 'opacity-100'
-        ].join(' ')}
+          "rounded-[24px] border border-slate-200 bg-white px-4 py-4 shadow-[0_10px_24px_rgba(15,23,42,0.04)] transition-all duration-300",
+          completed ? "bg-slate-50/80" : "hover:-translate-y-0.5 hover:shadow-[0_14px_28px_rgba(15,23,42,0.08)]",
+          isClosing ? "scale-[0.98] opacity-0 translate-x-3" : "opacity-100",
+        ].join(" ")}
       >
         <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
-              <StatusBadge value={completed ? 'concluido' : task.status} />
+              <StatusBadge value={completed ? "concluido" : task.status} />
               {task.client_name ? (
                 <span className="rounded-full bg-sky-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-sky-700 ring-1 ring-sky-100">
                   {task.client_name}
@@ -112,7 +129,7 @@ function TaskActionListComponent({ tasks, currentQuery = '' }: { tasks: TaskRow[
                 Deadline: {formatDeadline(task.due_date)}
               </span>
               <span className="rounded-full bg-slate-100 px-3 py-1.5 font-medium text-slate-600">
-                {task.project_id ? 'Con proyecto' : 'Sin proyecto'}
+                {task.project_id ? "Con proyecto" : "Sin proyecto"}
               </span>
             </div>
           </div>
@@ -158,7 +175,7 @@ function TaskActionListComponent({ tasks, currentQuery = '' }: { tasks: TaskRow[
   return (
     <div className="space-y-4">
       <Card className="rounded-[28px] border border-slate-200/90 p-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)] md:p-6">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Lista de tareas</p>
             <h2 className="mt-2 text-[1.45rem] font-bold tracking-tight text-slate-900">Todo lo que sigue, en una sola vista</h2>
@@ -167,18 +184,74 @@ function TaskActionListComponent({ tasks, currentQuery = '' }: { tasks: TaskRow[
             </p>
           </div>
 
-          <button
-            type="button"
-            onClick={() => setShowCompleted((value) => !value)}
-            className="inline-flex h-11 items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
-          >
-            {showCompleted ? 'Ocultar concluidas' : `Ver tareas concluidas (${completedItems.length})`}
-          </button>
+          <div className="flex flex-wrap items-center gap-3 xl:justify-end">
+            <div className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-600">
+              <span className="font-medium">Mostrar</span>
+              <Select
+                aria-label="Cantidad de tareas por página"
+                className="h-9 min-w-[88px] border-none bg-transparent px-1 py-0 text-sm font-semibold text-slate-900 focus:border-none"
+                value={String(pageSize)}
+                onChange={(event) => {
+                  setPageSize(Number(event.target.value) as 5 | 10);
+                  setCurrentPage(1);
+                }}
+              >
+                <option value="5">5 tareas</option>
+                <option value="10">10 tareas</option>
+              </Select>
+            </div>
+
+            <div className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-2 py-2">
+              <Button
+                type="button"
+                variant="ghost"
+                className="h-9 rounded-xl px-3"
+                disabled={currentPage <= 1 || pageAnimation !== "idle"}
+                onClick={() => animatePage("prev", currentPage - 1)}
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Atrás
+              </Button>
+              <span className="min-w-[88px] text-center text-sm font-semibold text-slate-700">
+                Página {currentPage} de {totalPages}
+              </span>
+              <Button
+                type="button"
+                variant="ghost"
+                className="h-9 rounded-xl px-3"
+                disabled={currentPage >= totalPages || pageAnimation !== "idle"}
+                onClick={() => animatePage("next", currentPage + 1)}
+              >
+                Siguiente
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setShowCompleted((value) => !value)}
+              className="inline-flex h-11 items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+            >
+              {showCompleted ? "Ocultar concluidas" : `Ver tareas concluidas (${completedItems.length})`}
+            </button>
+          </div>
         </div>
       </Card>
 
-      <div className="space-y-3">
-        {pendingItems.length ? pendingItems.map((task) => renderItem(task, false)) : (
+      <div
+        className={[
+          "space-y-3 transition-all duration-300",
+          pageAnimation === "out-next" && "translate-x-4 opacity-0",
+          pageAnimation === "out-prev" && "-translate-x-4 opacity-0",
+          pageAnimation === "in-next" && "animate-[slideInFromRight_220ms_ease-out]",
+          pageAnimation === "in-prev" && "animate-[slideInFromLeft_220ms_ease-out]",
+        ]
+          .filter(Boolean)
+          .join(" ")}
+      >
+        {currentItems.length ? (
+          currentItems.map((task) => renderItem(task, false))
+        ) : (
           <Card className="rounded-[24px] border border-slate-200 bg-slate-50/80 p-6 text-sm text-slate-500">
             No hay tareas activas en esta vista.
           </Card>
@@ -187,9 +260,9 @@ function TaskActionListComponent({ tasks, currentQuery = '' }: { tasks: TaskRow[
 
       <div
         className={[
-          'grid overflow-hidden transition-all duration-300',
-          showCompleted ? 'mt-6 grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
-        ].join(' ')}
+          "grid overflow-hidden transition-all duration-300",
+          showCompleted ? "mt-6 grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
+        ].join(" ")}
       >
         <div className="min-h-0">
           <Card className="rounded-[28px] border border-slate-200/90 bg-[linear-gradient(180deg,rgba(248,250,252,0.96),rgba(255,255,255,0.98))] p-5 md:p-6">
@@ -199,7 +272,9 @@ function TaskActionListComponent({ tasks, currentQuery = '' }: { tasks: TaskRow[
             </div>
 
             <div className="space-y-3">
-              {completedItems.length ? completedItems.map((task) => renderItem(task, true)) : (
+              {completedItems.length ? (
+                completedItems.map((task) => renderItem(task, true))
+              ) : (
                 <div className="rounded-[22px] border border-slate-200 bg-white px-4 py-4 text-sm text-slate-500">
                   Aún no hay tareas concluidas para mostrar.
                 </div>
@@ -208,9 +283,31 @@ function TaskActionListComponent({ tasks, currentQuery = '' }: { tasks: TaskRow[
           </Card>
         </div>
       </div>
+
+      <style jsx>{`
+        @keyframes slideInFromRight {
+          from {
+            opacity: 0;
+            transform: translateX(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+        @keyframes slideInFromLeft {
+          from {
+            opacity: 0;
+            transform: translateX(-20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+      `}</style>
     </div>
   );
 }
-
 
 export const TaskActionList = memo(TaskActionListComponent);

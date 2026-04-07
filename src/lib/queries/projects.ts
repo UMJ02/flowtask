@@ -41,6 +41,7 @@ function normalizeProjectRow(row: any): ProjectSummary {
     departmentCode: (department?.code as string | null | undefined) ?? null,
     departmentName: (department?.name as string | null | undefined) ?? null,
     departments: row.departments ?? null,
+    country: (row.country as string | null | undefined) ?? null,
   };
 }
 
@@ -59,8 +60,10 @@ export async function getProjects(filters: ProjectFiltersInput = {}): Promise<Pr
           status,
           client_name,
           due_date,
+          country,
           is_collaborative,
           client_id,
+          country,
           created_at,
           updated_at,
           departments ( code, name )
@@ -134,6 +137,7 @@ export async function getProjectById(projectId: string) {
           status,
           client_name,
           due_date,
+          country,
           is_collaborative,
           client_id,
           share_enabled,

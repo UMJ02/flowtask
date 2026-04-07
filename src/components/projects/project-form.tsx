@@ -8,6 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { getClientWorkspaceContext, findWorkspaceClientId } from "@/lib/supabase/workspace-client";
 import { getClientAccessSummary, hasClientAccess } from "@/lib/security/client-access";
 import { DEPARTMENTS } from "@/lib/constants/departments";
+import { COUNTRIES } from "@/lib/constants/countries";
 import { PROJECT_STATUSES } from "@/lib/constants/project-status";
 import { projectDetailRoute, projectListRoute, type AppRoute } from "@/lib/navigation/routes";
 import { generateShareToken } from "@/lib/utils/tokens";
@@ -58,6 +59,7 @@ export function ProjectForm({
       clientName: initialData?.clientName ?? "",
       dueDate: initialData?.dueDate ?? "",
       isCollaborative: initialData?.isCollaborative ?? false,
+      country: initialData?.country ?? "",
     },
   });
 
@@ -73,7 +75,6 @@ export function ProjectForm({
       setMessage(null);
       return;
     }
-
 
     let departmentId: number | null = null;
     try {
@@ -106,6 +107,7 @@ export function ProjectForm({
       due_date: values.dueDate || null,
       is_collaborative: values.isCollaborative,
       share_enabled: values.isCollaborative,
+      country: values.country || null,
     };
 
     let createdProjectId: string | null = null;
@@ -121,10 +123,17 @@ export function ProjectForm({
       }
 
       await logActivity(supabase as any, {
-        entityType: 'project',
+        entityType: "project",
         entityId: projectId!,
-        action: 'project_updated',
-        metadata: { title: payload.title, status: payload.status, client_id: clientId ?? undefined, client_name: normalizedClientName ?? undefined, organization_id: workspace.activeOrganizationId },
+        action: "project_updated",
+        metadata: {
+          title: payload.title,
+          status: payload.status,
+          client_id: clientId ?? undefined,
+          client_name: normalizedClientName ?? undefined,
+          organization_id: workspace.activeOrganizationId,
+          country: payload.country ?? undefined,
+        },
       });
     } else {
       const shareToken = values.isCollaborative ? generateShareToken() : null;
@@ -155,10 +164,17 @@ export function ProjectForm({
         });
 
         await logActivity(supabase as any, {
-          entityType: 'project',
+          entityType: "project",
           entityId: createdProjectId,
-          action: 'project_created',
-          metadata: { title: payload.title, status: payload.status, client_id: clientId ?? undefined, client_name: normalizedClientName ?? undefined, organization_id: workspace.activeOrganizationId },
+          action: "project_created",
+          metadata: {
+            title: payload.title,
+            status: payload.status,
+            client_id: clientId ?? undefined,
+            client_name: normalizedClientName ?? undefined,
+            organization_id: workspace.activeOrganizationId,
+            country: payload.country ?? undefined,
+          },
         });
       }
     }
@@ -170,6 +186,7 @@ export function ProjectForm({
         project_id: isEdit ? projectId ?? null : createdProjectId,
         client_id: clientId,
         collaborative: values.isCollaborative,
+        country: payload.country,
       },
     });
 
@@ -226,6 +243,17 @@ export function ProjectForm({
           <p className="text-xs text-slate-500">Usa clientes del workspace activo para mantener proyectos y tareas en el mismo contexto.</p>
         </div>
         <div className="space-y-2">
+          <label className="text-sm font-medium text-slate-700">País</label>
+          <Select {...register("country")}>
+            <option value="">Seleccionar país</option>
+            {COUNTRIES.map((item) => (
+              <option key={item.code} value={item.label}>
+                {item.label}
+              </option>
+            ))}
+          </Select>
+        </div>
+        <div className="space-y-2 md:col-span-2">
           <label className="text-sm font-medium text-slate-700">Deadline</label>
           <Input {...register("dueDate")} type="date" />
         </div>
@@ -253,6 +281,7 @@ export function ProjectForm({
               clientName: initialData?.clientName ?? "",
               dueDate: initialData?.dueDate ?? "",
               isCollaborative: initialData?.isCollaborative ?? false,
+              country: initialData?.country ?? "",
             })
           }
         >

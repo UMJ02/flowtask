@@ -8,4 +8,5 @@ export const projectSchema = z.object({
   department: z.string().optional(),
   dueDate: z.string().optional(),
   isCollaborative: z.boolean().default(false),
+  country: z.string().optional(),
 });

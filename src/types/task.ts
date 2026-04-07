@@ -21,4 +21,5 @@ export interface TaskSummary extends TaskBase {
   client_name?: string | null;
   due_date?: string | null;
   departments?: { code?: string | null; name?: string | null }[] | { code?: string | null; name?: string | null } | null;
+  country?: string | null;
 }

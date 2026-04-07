@@ -6,4 +6,7 @@ export const DEPARTMENTS = [
   { code: "finanzas", label: "Finanzas" },
   { code: "ti", label: "TI" },
   { code: "inco", label: "INCO" },
+  { code: "respaldo_tecnico", label: "Respaldo técnico" },
+  { code: "comercial", label: "Comercial" },
+  { code: "proyectos", label: "Proyectos" },
 ] as const;

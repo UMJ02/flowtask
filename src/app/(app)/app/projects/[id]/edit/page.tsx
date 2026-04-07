@@ -40,6 +40,7 @@ export default async function ProjectEditPage({
           department: department?.code ?? '',
           clientName: project.client_name ?? '',
           dueDate: project.due_date ?? '',
+          country: (project as any).country ?? '',
           isCollaborative: project.is_collaborative ?? false,
           shareToken: project.share_token ?? null,
         }}

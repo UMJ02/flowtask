@@ -9,6 +9,7 @@ import { getClientWorkspaceContext, findWorkspaceClientId, fetchWorkspaceProject
 import { resolveProjectEntityContext, validateTaskProjectClientIntegrity } from "@/lib/security/entity-integrity";
 import { getClientAccessSummary, hasClientAccess } from "@/lib/security/client-access";
 import { DEPARTMENTS } from "@/lib/constants/departments";
+import { COUNTRIES } from "@/lib/constants/countries";
 import { TASK_STATUSES } from "@/lib/constants/task-status";
 import { TASK_PRIORITIES } from "@/lib/constants/task-priority";
 import { taskDetailRoute, taskListRoute, type AppRoute } from "@/lib/navigation/routes";
@@ -63,19 +64,24 @@ export function TaskForm({
       clientName: initialData?.clientName ?? "",
       dueDate: initialData?.dueDate ?? "",
       projectId: initialData?.projectId ?? "",
+      country: initialData?.country ?? "",
     },
   });
 
-  const resetValues = useMemo(() => ({
-    title: initialData?.title ?? "",
-    description: initialData?.description ?? "",
-    status: initialData?.status ?? "en_proceso",
-    priority: initialData?.priority ?? "media",
-    department: initialData?.department ?? "",
-    clientName: initialData?.clientName ?? "",
-    dueDate: initialData?.dueDate ?? "",
-    projectId: initialData?.projectId ?? "",
-  }), [initialData]);
+  const resetValues = useMemo(
+    () => ({
+      title: initialData?.title ?? "",
+      description: initialData?.description ?? "",
+      status: initialData?.status ?? "en_proceso",
+      priority: initialData?.priority ?? "media",
+      department: initialData?.department ?? "",
+      clientName: initialData?.clientName ?? "",
+      dueDate: initialData?.dueDate ?? "",
+      projectId: initialData?.projectId ?? "",
+      country: initialData?.country ?? "",
+    }),
+    [initialData],
+  );
 
   useEffect(() => {
     let active = true;
@@ -113,7 +119,6 @@ export function TaskForm({
       setMessage(null);
       return;
     }
-
 
     let departmentId: number | null = null;
     try {
@@ -171,6 +176,7 @@ export function TaskForm({
       client_id: integrity.resolvedClientId,
       due_date: values.dueDate || null,
       project_id: values.projectId || null,
+      country: values.country || null,
     };
 
     const result = isEdit
@@ -193,10 +199,18 @@ export function TaskForm({
     const activityEntityId = isEdit ? taskId! : createdTaskId;
     if (activityEntityId) {
       await logActivity(supabase as any, {
-        entityType: 'task',
+        entityType: "task",
         entityId: activityEntityId,
-        action: isEdit ? 'task_updated' : 'task_created',
-        metadata: { title: payload.title, status: payload.status, client_id: payload.client_id ?? undefined, client_name: payload.client_name ?? undefined, project_id: values.projectId || undefined, organization_id: workspace.activeOrganizationId },
+        action: isEdit ? "task_updated" : "task_created",
+        metadata: {
+          title: payload.title,
+          status: payload.status,
+          client_id: payload.client_id ?? undefined,
+          client_name: payload.client_name ?? undefined,
+          project_id: values.projectId || undefined,
+          organization_id: workspace.activeOrganizationId,
+          country: payload.country ?? undefined,
+        },
       });
     }
     void trackEvent({
@@ -207,6 +221,7 @@ export function TaskForm({
         client_id: payload.client_id,
         project_id: payload.project_id,
         priority: payload.priority,
+        country: payload.country,
       },
     });
 
@@ -223,6 +238,7 @@ export function TaskForm({
         clientName: "",
         dueDate: "",
         projectId: "",
+        country: "",
       });
     }
 
@@ -294,7 +310,18 @@ export function TaskForm({
           <label className="text-sm font-medium text-slate-700">Cliente</label>
           <Input {...register("clientName")} placeholder="Nombre del cliente" />
         </div>
-        <div className="space-y-2 md:col-span-2">
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-slate-700">País</label>
+          <Select {...register("country")}>
+            <option value="">Seleccionar país</option>
+            {COUNTRIES.map((item) => (
+              <option key={item.code} value={item.label}>
+                {item.label}
+              </option>
+            ))}
+          </Select>
+        </div>
+        <div className="space-y-2">
           <label className="text-sm font-medium text-slate-700">Deadline</label>
           <Input {...register("dueDate")} type="date" />
         </div>

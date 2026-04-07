@@ -43,6 +43,7 @@ function normalizeTaskRow(row: any): TaskSummary {
     departmentCode: (department?.code as string | null | undefined) ?? null,
     departmentName: (department?.name as string | null | undefined) ?? null,
     departments: row.departments ?? null,
+    country: (row.country as string | null | undefined) ?? null,
     isOverdue: Boolean(dueDate && dueDate < today && row.status !== "concluido"),
     isDueToday: Boolean(dueDate && dueDate === today && row.status !== "concluido"),
   };
@@ -66,6 +67,7 @@ export async function getTasks(filters: TaskFiltersInput = {}): Promise<TaskSumm
           client_id,
           client_name,
           due_date,
+          country,
           created_at,
           updated_at,
           departments ( code, name )
@@ -118,6 +120,7 @@ export async function getTaskById(taskId: string) {
           client_id,
           client_name,
           due_date,
+          country,
           priority,
           share_enabled,
           share_token,
