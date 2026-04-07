@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { isToday, isYesterday, parseISO } from "date-fns";
 import { Search, SlidersHorizontal, Trash2, CheckCheck, Eye } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -47,7 +47,6 @@ type DeliverySummary = {
 type GroupKey = "today" | "yesterday" | "earlier";
 
 const GROUP_LABELS: Record<GroupKey, string> = { today: "Hoy", yesterday: "Ayer", earlier: "Anteriores" };
-const HIDDEN_STORAGE_KEY = "flowtask:hidden-notifications";
 
 function getGroupKey(createdAt: string): GroupKey {
   const date = parseISO(createdAt);
@@ -112,8 +111,8 @@ export function NotificationsLivePanel({
   const [searchQuery, setSearchQuery] = useState(initialSearch);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [filtersOpen, setFiltersOpen] = useState(false);
-  const [hiddenIds, setHiddenIds] = useState<string[]>([]);
   const [isMarkingRead, setIsMarkingRead] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const { unreadCount, markOneAsRead, markAllAsRead, setUnreadCount } = useNotificationsState();
@@ -121,27 +120,17 @@ export function NotificationsLivePanel({
   useNotificationsRealtime({
     userId,
     onInsert: (row) => setNotifications((current) => [row, ...current.filter((item) => item.id !== row.id)].slice(0, 100)),
-    onUpdate: (row) => setNotifications((current) => current.map((item) => (item.id === row.id ? { ...item, ...row } : item))),
+    onUpdate: (row) => {
+      if (row.deleted_at) {
+        setNotifications((current) => current.filter((item) => item.id !== row.id));
+        return;
+      }
+      setNotifications((current) => current.map((item) => (item.id === row.id ? { ...item, ...row } : item)));
+    },
     onDeliveryInsert: (delivery) => {
       setNotifications((current) => withDelivery(current, delivery));
     },
   });
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    try {
-      const raw = window.localStorage.getItem(HIDDEN_STORAGE_KEY);
-      const parsed = raw ? JSON.parse(raw) : [];
-      if (Array.isArray(parsed)) {
-        setHiddenIds(parsed.filter((item): item is string => typeof item === "string"));
-      }
-    } catch {}
-  }, []);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    window.localStorage.setItem(HIDDEN_STORAGE_KEY, JSON.stringify(hiddenIds));
-  }, [hiddenIds]);
 
   const syncUrl = (nextFilter: NotificationFilterKey, nextQuery: string) => {
     const params = new URLSearchParams();
@@ -151,10 +140,7 @@ export function NotificationsLivePanel({
   };
 
   const filteredNotifications = useNotificationFilters(notifications, activeFilter, searchQuery);
-  const visibleNotifications = useMemo(
-    () => filteredNotifications.filter((item) => !hiddenIds.includes(item.id)),
-    [filteredNotifications, hiddenIds],
-  );
+  const visibleNotifications = useMemo(() => filteredNotifications, [filteredNotifications]);
 
   const groupedNotifications = useMemo(
     () =>
@@ -211,15 +197,30 @@ export function NotificationsLivePanel({
     setError(null);
   };
 
-  const handleDeleteSelected = () => {
+  const handleDeleteSelected = async () => {
     if (!selectedVisibleIds.length) return;
-    setHiddenIds((current) => Array.from(new Set([...current, ...selectedVisibleIds])));
+    setIsDeleting(true);
+    setMessage(null);
+    setError(null);
+    const supabase = createClient();
+    const { error: updateError } = await supabase
+      .from("notifications")
+      .update({ deleted_at: new Date().toISOString() })
+      .in("id", selectedVisibleIds);
+    setIsDeleting(false);
+
+    if (updateError) {
+      setError("No se pudieron eliminar las notificaciones seleccionadas.");
+      return;
+    }
+
     const unreadHidden = visibleNotifications.filter((item) => selectedVisibleIds.includes(item.id) && !item.is_read).length;
     if (unreadHidden > 0) {
       setUnreadCount(Math.max(0, unreadCount - unreadHidden));
     }
+    setNotifications((current) => current.filter((item) => !selectedVisibleIds.includes(item.id)));
     setSelectedIds([]);
-    setMessage("Las seleccionadas se ocultaron del centro de notificaciones.");
+    setMessage("Las seleccionadas se eliminaron del centro de notificaciones.");
     setError(null);
   };
 
@@ -228,7 +229,7 @@ export function NotificationsLivePanel({
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <h2 className="text-lg font-semibold text-slate-900">Centro de notificaciones</h2>
-          <p className="text-sm text-slate-500">Busca, filtra y actúa sobre los avisos que realmente importan.</p>
+          <p className="text-sm text-slate-500">Usa búsqueda y filtros inteligentes para revisar solo lo que de verdad requiere atención.</p>
         </div>
         <span className="inline-flex w-fit rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
           En vivo · {visibleNotifications.length}
@@ -251,7 +252,7 @@ export function NotificationsLivePanel({
         </label>
         <Button type="button" variant="secondary" onClick={() => setFiltersOpen((value) => !value)} className="rounded-2xl">
           <SlidersHorizontal className="h-4 w-4" />
-          Filtros
+          {filtersOpen ? 'Ocultar filtros' : 'Filtros'}
         </Button>
       </div>
 
@@ -342,7 +343,7 @@ export function NotificationsLivePanel({
 
           {!visibleNotifications.length ? (
             <div className="rounded-2xl border border-dashed border-slate-200 bg-white p-6 text-sm text-slate-600">
-              No hay notificaciones para este filtro. Ajusta la búsqueda o despliega los filtros inteligentes.
+              No hay notificaciones para este filtro. Ajusta la búsqueda o abre los filtros inteligentes.
             </div>
           ) : null}
         </div>
@@ -357,9 +358,9 @@ export function NotificationsLivePanel({
           <Eye className="h-4 w-4" />
           Marcar visibles
         </Button>
-        <Button type="button" variant="secondary" onClick={handleDeleteSelected} disabled={!selectedVisibleIds.length}>
+        <Button type="button" variant="secondary" onClick={handleDeleteSelected} disabled={!selectedVisibleIds.length || isDeleting}>
           <Trash2 className="h-4 w-4" />
-          Eliminar
+          {isDeleting ? 'Eliminando...' : 'Eliminar'}
         </Button>
       </div>
     </Card>

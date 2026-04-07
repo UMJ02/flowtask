@@ -1,7 +1,8 @@
 'use client';
 
-import { useMemo, useState, type FormEvent } from 'react';
-import { Camera, LockKeyhole, Mail, UserRound } from 'lucide-react';
+import { useMemo, useRef, useState, type ChangeEvent, type FormEvent } from 'react';
+import Image from 'next/image';
+import { ImagePlus, LockKeyhole, Mail, Trash2, Upload, UserRound } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,6 +12,10 @@ function getInitials(name: string, email: string) {
   const parts = source.split(/\s+/).filter(Boolean);
   if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
   return `${parts[0]?.[0] ?? ''}${parts[1]?.[0] ?? ''}`.toUpperCase();
+}
+
+function normalizeFileName(name: string) {
+  return name.toLowerCase().replace(/[^a-z0-9.-]+/g, '-').replace(/-+/g, '-');
 }
 
 export function ProfileSettingsForm({
@@ -28,10 +33,77 @@ export function ProfileSettingsForm({
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [saving, setSaving] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const initials = useMemo(() => getInitials(fullName, nextEmail), [fullName, nextEmail]);
+
+  const handleAvatarUpload = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setUploadingAvatar(true);
+    setMessage(null);
+    setError(null);
+
+    if (!file.type.startsWith('image/')) {
+      setUploadingAvatar(false);
+      setError('Selecciona una imagen válida para tu foto de perfil.');
+      event.target.value = '';
+      return;
+    }
+
+    const supabase = createClient();
+    const { data: authData, error: authError } = await supabase.auth.getUser();
+
+    if (authError || !authData.user) {
+      setUploadingAvatar(false);
+      setError('No pudimos validar tu sesión para subir la foto.');
+      event.target.value = '';
+      return;
+    }
+
+    const extension = file.name.includes('.') ? file.name.split('.').pop() : 'png';
+    const safeName = normalizeFileName(file.name || `avatar.${extension}`);
+    const filePath = `${authData.user.id}/avatar-${Date.now()}-${safeName}`;
+
+    const uploadRes = await supabase.storage.from('profile-avatars').upload(filePath, file, {
+      cacheControl: '3600',
+      upsert: true,
+      contentType: file.type,
+    });
+
+    if (uploadRes.error) {
+      setUploadingAvatar(false);
+      setError('No se pudo subir la foto de perfil.');
+      event.target.value = '';
+      return;
+    }
+
+    const publicUrl = supabase.storage.from('profile-avatars').getPublicUrl(filePath).data.publicUrl;
+
+    const { error: profileError } = await supabase.from('profiles').update({ avatar_url: publicUrl }).eq('id', authData.user.id);
+
+    if (profileError) {
+      setUploadingAvatar(false);
+      setError('La foto se subió, pero no pudimos guardarla en tu perfil.');
+      event.target.value = '';
+      return;
+    }
+
+    setAvatarUrl(publicUrl);
+    setUploadingAvatar(false);
+    setMessage('Tu foto de perfil se actualizó correctamente.');
+    event.target.value = '';
+  };
+
+  const handleRemoveAvatar = async () => {
+    setAvatarUrl('');
+    setMessage('La foto se quitará cuando guardes los cambios del perfil.');
+    setError(null);
+  };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -84,15 +156,15 @@ export function ProfileSettingsForm({
     const shouldUpdateAuth = Boolean(password || nextEmail.trim() !== email.trim() || Object.keys(metadataUpdates).length);
 
     if (shouldUpdateAuth) {
-      const { error: authError } = await supabase.auth.updateUser({
+      const { error: authUpdateError } = await supabase.auth.updateUser({
         email: nextEmail.trim() !== email.trim() ? nextEmail.trim() : undefined,
         password: password || undefined,
         data: Object.keys(metadataUpdates).length ? metadataUpdates : undefined,
       });
 
-      if (authError) {
+      if (authUpdateError) {
         setSaving(false);
-        setError(authError.message || 'No se pudo actualizar tu cuenta.');
+        setError('Actualizamos el perfil, pero faltó confirmar algunos cambios de acceso.');
         return;
       }
     }
@@ -100,88 +172,113 @@ export function ProfileSettingsForm({
     setSaving(false);
     setPassword('');
     setConfirmPassword('');
-    setMessage(
-      nextEmail.trim() !== email.trim()
-        ? 'Perfil actualizado. Revisa tu correo para confirmar el cambio de email si Supabase lo solicita.'
-        : 'Perfil actualizado correctamente.',
-    );
+    setMessage('Perfil actualizado correctamente.');
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
-      <div className="grid gap-5 xl:grid-cols-[300px_minmax(0,1fr)]">
-        <div className="rounded-[26px] border border-slate-200 bg-slate-50 p-5">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Foto de perfil</p>
-          <div className="mt-4 flex items-center gap-4">
-            {avatarUrl.trim() ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={avatarUrl} alt="Foto de perfil" className="h-20 w-20 rounded-full object-cover ring-4 ring-white shadow-sm" />
+    <form className="space-y-4" onSubmit={handleSubmit}>
+      <div className="grid gap-4 xl:grid-cols-[320px_minmax(0,1fr)]">
+        <div className="rounded-[30px] border border-slate-200 bg-slate-50 p-5">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Foto de perfil</p>
+
+          <div className="mt-6 flex justify-center">
+            {avatarUrl ? (
+              <div className="relative h-52 w-52 overflow-hidden rounded-full border border-slate-200 bg-slate-950">
+                <Image src={avatarUrl} alt="Foto de perfil" fill className="object-cover" sizes="208px" unoptimized />
+              </div>
             ) : (
-              <div className="flex h-20 w-20 items-center justify-center rounded-full bg-slate-950 text-2xl font-bold text-white ring-4 ring-white shadow-sm">
+              <div className="flex h-52 w-52 items-center justify-center rounded-full bg-slate-950 text-5xl font-bold text-white">
                 {initials}
               </div>
             )}
-            <div className="min-w-0">
-              <p className="text-sm font-semibold text-slate-900">Imagen visible en tu cuenta</p>
-              <p className="mt-1 text-sm leading-6 text-slate-500">Pega la URL de tu foto para actualizar el avatar sin afectar Vercel ni el flujo actual.</p>
+          </div>
+
+          <div className="mt-6 space-y-2">
+            <p className="text-xl font-semibold text-slate-900">Imagen visible en tu cuenta</p>
+            <p className="text-sm leading-6 text-slate-500">
+              Sube una foto cuadrada y limpia. Se usará en tu perfil, espacios compartidos y vistas del equipo.
+            </p>
+          </div>
+
+          <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
+
+          <div className="mt-5 flex flex-wrap gap-2">
+            <Button type="button" variant="secondary" onClick={() => fileInputRef.current?.click()} loading={uploadingAvatar}>
+              <Upload className="h-4 w-4" />
+              {uploadingAvatar ? 'Subiendo...' : 'Subir imagen'}
+            </Button>
+            <Button type="button" variant="ghost" onClick={handleRemoveAvatar} disabled={!avatarUrl}>
+              <Trash2 className="h-4 w-4" />
+              Quitar
+            </Button>
+          </div>
+
+          <div className="mt-4 rounded-2xl border border-dashed border-slate-200 bg-white px-4 py-3 text-sm text-slate-500">
+            <div className="flex items-start gap-2">
+              <ImagePlus className="mt-0.5 h-4 w-4 text-slate-400" />
+              <p>Formatos sugeridos: JPG, PNG o WEBP. Mientras más clara sea la imagen, mejor se verá en la app.</p>
             </div>
           </div>
-          <label className="mt-4 block space-y-2">
-            <span className="text-sm font-medium text-slate-700">URL de la foto</span>
-            <div className="relative">
-              <Camera className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-              <Input value={avatarUrl} onChange={(event) => setAvatarUrl(event.target.value)} placeholder="https://..." className="pl-10" />
-            </div>
-          </label>
         </div>
 
-        <div className="grid gap-5">
-          <div className="rounded-[26px] border border-slate-200 bg-white p-5">
+        <div className="space-y-4">
+          <div className="rounded-[30px] border border-slate-200 bg-slate-50 p-5">
             <div className="flex items-center gap-2 text-slate-900">
-              <UserRound className="h-4 w-4" />
-              <h2 className="text-base font-semibold">Datos de usuario</h2>
+              <UserRound className="h-5 w-5" />
+              <h3 className="text-xl font-semibold">Datos de usuario</h3>
             </div>
-            <div className="mt-4 grid gap-4 md:grid-cols-2">
-              <label className="space-y-2">
-                <span className="text-sm font-medium text-slate-700">Nombre</span>
-                <Input value={fullName} onChange={(event) => setFullName(event.target.value)} placeholder="Cómo quieres que te vean en la app" />
+
+            <div className="mt-5 grid gap-4 lg:grid-cols-2">
+              <label className="block">
+                <p className="mb-2 text-sm font-medium text-slate-700">Nombre</p>
+                <Input value={fullName} onChange={(event) => setFullName(event.target.value)} placeholder="Tu nombre visible" />
               </label>
-              <label className="space-y-2">
-                <span className="text-sm font-medium text-slate-700">Correo</span>
+
+              <label className="block">
+                <p className="mb-2 text-sm font-medium text-slate-700">Correo</p>
                 <div className="relative">
-                  <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-                  <Input value={nextEmail} onChange={(event) => setNextEmail(event.target.value)} placeholder="tu@correo.com" className="pl-10" />
+                  <Mail className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                  <Input
+                    value={nextEmail}
+                    onChange={(event) => setNextEmail(event.target.value)}
+                    placeholder="nombre@correo.com"
+                    className="pl-11"
+                    type="email"
+                  />
                 </div>
               </label>
             </div>
           </div>
 
-          <div className="rounded-[26px] border border-slate-200 bg-white p-5">
+          <div className="rounded-[30px] border border-slate-200 bg-slate-50 p-5">
             <div className="flex items-center gap-2 text-slate-900">
-              <LockKeyhole className="h-4 w-4" />
-              <h2 className="text-base font-semibold">Cambio de contraseña</h2>
+              <LockKeyhole className="h-5 w-5" />
+              <h3 className="text-xl font-semibold">Cambio de contraseña</h3>
             </div>
-            <div className="mt-4 grid gap-4 md:grid-cols-2">
-              <label className="space-y-2">
-                <span className="text-sm font-medium text-slate-700">Nueva contraseña</span>
-                <Input type="password" value={password} onChange={(event) => setPassword(event.target.value)} placeholder="••••••••" autoComplete="new-password" />
+
+            <div className="mt-5 grid gap-4 lg:grid-cols-2">
+              <label className="block">
+                <p className="mb-2 text-sm font-medium text-slate-700">Nueva contraseña</p>
+                <Input value={password} onChange={(event) => setPassword(event.target.value)} type="password" placeholder="••••••••" />
               </label>
-              <label className="space-y-2">
-                <span className="text-sm font-medium text-slate-700">Confirmar contraseña</span>
-                <Input type="password" value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} placeholder="••••••••" autoComplete="new-password" />
+              <label className="block">
+                <p className="mb-2 text-sm font-medium text-slate-700">Confirmar contraseña</p>
+                <Input value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} type="password" placeholder="••••••••" />
               </label>
             </div>
-            <p className="mt-3 text-sm text-slate-500">Solo completa estos campos cuando quieras actualizar tu acceso.</p>
+
+            <p className="mt-4 text-sm text-slate-500">Completa estos campos solo cuando quieras actualizar tu acceso.</p>
           </div>
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-3">
-        <Button type="submit" className="min-w-[190px] rounded-full bg-emerald-500 text-slate-950 hover:bg-emerald-400" disabled={saving}>
-          {saving ? 'Actualizando...' : 'Guardar actualización'}
+      {message ? <p className="text-sm font-medium text-emerald-700">{message}</p> : null}
+      {error ? <p className="text-sm font-medium text-rose-700">{error}</p> : null}
+
+      <div className="flex flex-wrap justify-end gap-2 border-t border-slate-200 pt-4">
+        <Button type="submit" loading={saving} className="min-w-[180px]">
+          {saving ? 'Guardando...' : 'Guardar cambios'}
         </Button>
-        {message ? <p className="text-sm font-medium text-emerald-700">{message}</p> : null}
-        {error ? <p className="text-sm font-medium text-rose-700">{error}</p> : null}
       </div>
     </form>
   );

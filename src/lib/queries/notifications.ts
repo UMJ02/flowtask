@@ -13,7 +13,8 @@ export async function getUnreadNotificationsCount() {
     .from("notifications")
     .select("id", { count: "exact", head: true })
     .eq("user_id", user.id)
-    .eq("is_read", false);
+    .eq("is_read", false)
+    .is("deleted_at", null);
 
   if (error) {
     console.error("[getUnreadNotificationsCount]", error.message);
@@ -38,8 +39,9 @@ export async function getNotificationsPageData() {
   const [notificationsRes, assignedTasksRes, triggeredRemindersRes, unreadCountRes, latestDigestRes] = await Promise.all([
     supabase
       .from("notifications")
-      .select("id, user_id, title, body, kind, entity_type, entity_id, is_read, created_at, read_at")
+      .select("id, user_id, title, body, kind, entity_type, entity_id, is_read, created_at, read_at, deleted_at")
       .eq("user_id", user.id)
+      .is("deleted_at", null)
       .order("created_at", { ascending: false })
       .limit(30),
     supabase
@@ -56,7 +58,7 @@ export async function getNotificationsPageData() {
       .gte("sent_at", since)
       .order("sent_at", { ascending: false })
       .limit(10),
-    supabase.from("notifications").select("id", { count: "exact", head: true }).eq("user_id", user.id).eq("is_read", false),
+    supabase.from("notifications").select("id", { count: "exact", head: true }).eq("user_id", user.id).eq("is_read", false).is("deleted_at", null),
     supabase
       .from("daily_notification_digests")
       .select("id, digest_date, status, total_notifications, summary_title, summary_body, processed_at")
