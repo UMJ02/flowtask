@@ -1,4 +1,8 @@
+"use client";
+
+import { useMemo, useState } from "react";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { formatDate } from "@/lib/utils/dates";
 import type { ActivityItem } from "@/lib/queries/activity";
 
@@ -88,13 +92,7 @@ function extractDetail(item: ActivityItem) {
   const role = typeof item.metadata?.role === "string" ? item.metadata.role : null;
   const previousRole = typeof item.metadata?.previous_role === "string" ? item.metadata.previous_role : null;
 
-  return {
-    title,
-    status,
-    description,
-    role,
-    previousRole,
-  };
+  return { title, status, description, role, previousRole };
 }
 
 export function ActivityTimeline({
@@ -102,12 +100,25 @@ export function ActivityTimeline({
   title = "Actividad reciente",
   description = "Últimos cambios registrados.",
   compact = false,
+  defaultVisibleCount,
+  expandLabel = "Ver más movimientos",
+  collapseLabel = "Ver menos movimientos",
 }: {
   items: ActivityItem[];
   title?: string;
   description?: string;
   compact?: boolean;
+  defaultVisibleCount?: number;
+  expandLabel?: string;
+  collapseLabel?: string;
 }) {
+  const [expanded, setExpanded] = useState(false);
+  const shouldClamp = typeof defaultVisibleCount === "number" && defaultVisibleCount > 0;
+  const visibleItems = useMemo(() => {
+    if (!shouldClamp) return items;
+    return expanded ? items : items.slice(0, defaultVisibleCount);
+  }, [defaultVisibleCount, expanded, items, shouldClamp]);
+
   return (
     <Card>
       <div>
@@ -115,8 +126,8 @@ export function ActivityTimeline({
         <p className="text-sm text-slate-500">{description}</p>
       </div>
       <div className="mt-4 space-y-3">
-        {items.length ? (
-          items.map((item) => {
+        {visibleItems.length ? (
+          visibleItems.map((item) => {
             const detail = extractDetail(item);
             return (
               <div key={item.id} className="rounded-2xl border border-slate-200 bg-white px-4 py-3">
@@ -144,6 +155,13 @@ export function ActivityTimeline({
           <p className="text-sm text-slate-500">Todavía no hay movimientos registrados.</p>
         )}
       </div>
+      {shouldClamp && items.length > defaultVisibleCount ? (
+        <div className="mt-4 flex justify-center">
+          <Button type="button" variant="secondary" className="h-10 rounded-xl px-4" onClick={() => setExpanded((value) => !value)}>
+            {expanded ? collapseLabel : expandLabel}
+          </Button>
+        </div>
+      ) : null}
     </Card>
   );
 }
