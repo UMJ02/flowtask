@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 
-export function ProjectDeleteButton({ projectId, compact = false }: { projectId: string; compact?: boolean }) {
+export function ProjectDeleteButton({ projectId }: { projectId: string }) {
   const router = useRouter();
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -31,7 +31,7 @@ export function ProjectDeleteButton({ projectId, compact = false }: { projectId:
 
   return (
     <div className="space-y-2">
-      <Button type="button" variant="secondary" onClick={handleDelete} disabled={isDeleting} className={compact ? "h-12 rounded-full px-5" : undefined}>
+      <Button type="button" variant="secondary" onClick={handleDelete} disabled={isDeleting}>
         {isDeleting ? "Eliminando..." : "Eliminar proyecto"}
       </Button>
       {error ? <p className="text-sm text-red-600">{error}</p> : null}
