@@ -123,19 +123,19 @@ export const getWorkspaceAnalyticsSummary = cache(async (): Promise<WorkspaceAna
     .map(({ id, title, meta, statusLabel, tone, source }) => ({ id, title, meta, statusLabel, tone, source }));
 
   const recommendations: string[] = [];
-  if (overdueLoad > 0) recommendations.push(`Tienes ${overdueLoad} elementos vencidos abiertos. Conviene limpiarlos antes de abrir más trabajo.`);
-  if (reports.kpis.dueThisWeek > 0) recommendations.push(`${reports.kpis.dueThisWeek} tarea(s) vencen esta semana. Úsalas como foco principal del equipo.`);
+  if (overdueLoad > 0) recommendations.push(`Hay ${overdueLoad} elemento(s) vencidos abiertos. Conviene limpiarlos antes de abrir más trabajo.`);
+  if (reports.kpis.dueThisWeek > 0) recommendations.push(`${reports.kpis.dueThisWeek} tarea(s) vencen esta semana. Vale la pena priorizarlas primero.`);
   if (risk.kpis.pressuredClients > 0) recommendations.push(`${risk.kpis.pressuredClients} cliente(s) muestran presión operativa. Revisa seguimiento y capacidad.`);
-  if ((dashboard?.dueSoonTasks ?? 0) > 0) recommendations.push(`${dashboard?.dueSoonTasks ?? 0} tarea(s) vencen en los próximos 3 días y merecen revisión anticipada.`);
-  if (activityLast48h <= 2) recommendations.push('La actividad reciente está baja. Vale la pena reactivar seguimiento, comentarios y cierre de pendientes.');
+  if ((dashboard?.dueSoonTasks ?? 0) > 0) recommendations.push(`${dashboard?.dueSoonTasks ?? 0} tarea(s) vencen en los próximos 3 días y conviene revisarlas hoy.`);
+  if (activityLast48h <= 2) recommendations.push('La actividad reciente está baja. Vale la pena retomar seguimiento, comentarios y cierre de pendientes.');
   if (usage.supportEvents > 0) recommendations.push('Hubo actividad de soporte reciente. Úsala como señal para reforzar estabilidad y documentación interna.');
   if (!recommendations.length) recommendations.push('El workspace viene estable. Esta vista te sirve para sostener ritmo y anticipar desvíos antes de que crezcan.');
 
   const shareSummary: string[] = [
-    `${priorityCount} prioridad(es) activas listas para seguimiento ejecutivo.`,
+    `${priorityCount} prioridad(es) activas listas para seguimiento.`,
     `${inProgressCount} frente(s) siguen en movimiento entre tareas y proyectos.`,
-    `${reports.kpis.waitingTasks} elemento(s) están en espera y conviene destrabarlos.`,
-    `${completedCount} elemento(s) ya quedaron concluidos y sirven como señal de avance.`,
+    `${reports.kpis.waitingTasks} elemento(s) siguen en espera y conviene destrabarlos.`,
+    `${completedCount} elemento(s) ya quedaron concluidos y muestran avance real.`,
   ];
 
   return {

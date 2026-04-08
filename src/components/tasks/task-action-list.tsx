@@ -129,13 +129,13 @@ function TaskActionListComponent({ tasks, currentQuery = "" }: { tasks: TaskRow[
       >
         <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
           <div className="min-w-0 flex-1">
-            <h3 className="text-[1.15rem] font-bold leading-tight text-slate-900 md:text-[1.3rem]">{task.title}</h3>
+            <h3 className="text-[1.08rem] font-bold leading-tight text-slate-900 md:text-[1.22rem]">{task.title}</h3>
 
             <div className="mt-3 flex flex-wrap gap-2 text-sm text-slate-500">
-              <span className="rounded-full bg-slate-100 px-3 py-1.5 font-medium text-slate-600">
+              <span className="rounded-full bg-slate-100 px-3 py-1 font-medium text-slate-600">
                 Deadline: {formatDeadline(task.due_date)}
               </span>
-              <span className={`rounded-full border px-3 py-1.5 font-semibold ${priorityTone(task.priority)}`}>
+              <span className={`rounded-full border px-3 py-1 font-semibold ${priorityTone(task.priority)}`}>
                 {priorityLabel(task.priority)}
               </span>
               {isFavorite ? <span className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 font-semibold text-amber-700">Favorita</span> : null}
@@ -147,7 +147,7 @@ function TaskActionListComponent({ tasks, currentQuery = "" }: { tasks: TaskRow[
               <button
                 type="button"
                 onClick={() => markComplete(task.id)}
-                className="inline-flex h-10 items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3.5 text-sm font-semibold text-emerald-800 transition hover:bg-emerald-100"
+                className="inline-flex h-9 items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3.5 text-sm font-semibold text-emerald-800 transition hover:bg-emerald-100"
               >
                 <CheckCircle2 className="h-4 w-4" />
                 Finalizar
@@ -155,7 +155,7 @@ function TaskActionListComponent({ tasks, currentQuery = "" }: { tasks: TaskRow[
             ) : null}
 
             <Link href={taskDetailRoute(task.id, currentQuery)}>
-              <Button type="button" variant="secondary" className="h-10 rounded-xl px-3.5 text-sm">
+              <Button type="button" variant="secondary" className="h-9 rounded-full px-3.5 text-sm">
                 <Eye className="h-4 w-4" />
                 Ver
               </Button>
@@ -163,14 +163,14 @@ function TaskActionListComponent({ tasks, currentQuery = "" }: { tasks: TaskRow[
 
             {!completed ? (
               <Link href={taskEditRoute(task.id, currentQuery)}>
-                <Button type="button" variant="secondary" className="h-10 rounded-xl px-3.5 text-sm">
+                <Button type="button" variant="secondary" className="h-9 rounded-full px-3.5 text-sm">
                   <Pencil className="h-4 w-4" />
                   Editar
                 </Button>
               </Link>
             ) : null}
 
-            <Button type="button" variant="secondary" className="h-10 rounded-xl px-3.5 text-sm" onClick={() => deleteTask(task.id)}>
+            <Button type="button" variant="secondary" className="h-9 rounded-full px-3.5 text-sm" onClick={() => deleteTask(task.id)}>
               <Trash2 className="h-4 w-4" />
               Borrar
             </Button>
@@ -212,7 +212,7 @@ function TaskActionListComponent({ tasks, currentQuery = "" }: { tasks: TaskRow[
         )}
       </div>
 
-      <Card className="rounded-[24px] border border-slate-200/90 bg-white/95 px-4 py-4 shadow-[0_10px_24px_rgba(15,23,42,0.04)]">
+      <Card className="rounded-[24px] border border-slate-200/90 bg-white/95 px-4 py-3.5 shadow-[0_10px_24px_rgba(15,23,42,0.04)]">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex flex-wrap items-center gap-2">
             <button

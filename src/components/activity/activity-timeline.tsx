@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { ChevronDown } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { formatDate } from "@/lib/utils/dates";
@@ -34,7 +35,7 @@ const labels: Record<string, string> = {
   attachment_uploaded: "Adjunto cargado",
   attachment_deleted: "Adjunto eliminado",
   comment_added: "Comentario agregado",
-  reminder_sent: "Recordatorio disparado",
+  reminder_sent: "Recordatorio enviado",
 };
 
 const entityStyles: Record<string, string> = {
@@ -47,7 +48,7 @@ const entityStyles: Record<string, string> = {
   organization_member: "bg-emerald-50 text-emerald-700 ring-emerald-100",
   organization_invite: "bg-emerald-50 text-emerald-700 ring-emerald-100",
   attachment: "bg-slate-100 text-slate-700 ring-slate-200",
-  comment: "bg-amber-50 text-amber-700 ring-amber-100",
+  comment: "bg-cyan-50 text-cyan-700 ring-cyan-100",
   reminder: "bg-emerald-50 text-emerald-700 ring-emerald-100",
 };
 
@@ -120,44 +121,61 @@ export function ActivityTimeline({
   }, [defaultVisibleCount, expanded, items, shouldClamp]);
 
   return (
-    <Card>
+    <Card className="rounded-[26px] border border-slate-200/90 bg-white/[0.94] p-5 shadow-[0_12px_30px_rgba(15,23,42,0.05)] md:p-6">
       <div>
-        <h3 className="text-lg font-semibold text-slate-900">{title}</h3>
-        <p className="text-sm text-slate-500">{description}</p>
+        <h3 className="text-xl font-bold tracking-tight text-slate-900">{title}</h3>
+        <p className="mt-1 text-sm leading-6 text-slate-500">{description}</p>
       </div>
+
       <div className="mt-4 space-y-3">
         {visibleItems.length ? (
           visibleItems.map((item) => {
             const detail = extractDetail(item);
             return (
-              <div key={item.id} className="rounded-2xl border border-slate-200 bg-white px-4 py-3">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className={`inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold ring-1 ${resolveEntityStyle(item)}`}>
-                      {resolveEntityLabel(item)}
-                    </span>
-                    <p className="text-sm font-medium text-slate-900">{labels[item.action] ?? item.action}</p>
+              <div
+                key={item.id}
+                className="rounded-[22px] border border-slate-200/90 bg-white px-4 py-3 transition hover:border-slate-300 hover:shadow-[0_12px_26px_rgba(15,23,42,0.06)]"
+              >
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className={`inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold ring-1 ${resolveEntityStyle(item)}`}>
+                        {resolveEntityLabel(item)}
+                      </span>
+                      <p className="text-sm font-semibold text-slate-900">{labels[item.action] ?? item.action}</p>
+                    </div>
+
+                    {detail.title ? <p className="mt-2 text-base leading-6 text-slate-800">{detail.title}</p> : null}
+                    {detail.role ? (
+                      <p className="mt-2 text-xs text-slate-500">
+                        Rol{detail.previousRole ? `: ${detail.previousRole} → ${detail.role}` : `: ${detail.role}`}
+                      </p>
+                    ) : null}
+                    {!compact && detail.description ? <p className="mt-2 text-sm leading-6 text-slate-500">{detail.description}</p> : null}
+                    {detail.status ? <p className="mt-2 text-xs text-slate-500">Estado: {detail.status.replaceAll("_", " ")}</p> : null}
                   </div>
-                  <p className="text-xs text-slate-500">{formatDate(item.created_at)}</p>
+
+                  <p className="shrink-0 text-sm font-medium text-slate-400">{formatDate(item.created_at)}</p>
                 </div>
-                {detail.title ? <p className="mt-2 text-sm text-slate-700">{detail.title}</p> : null}
-                {detail.role ? (
-                  <p className="mt-2 text-xs text-slate-500">
-                    Rol{detail.previousRole ? `: ${detail.previousRole} → ${detail.role}` : `: ${detail.role}`}
-                  </p>
-                ) : null}
-                {!compact && detail.description ? <p className="mt-2 text-sm text-slate-500">{detail.description}</p> : null}
-                {detail.status ? <p className="mt-2 text-xs text-slate-500">Estado: {detail.status}</p> : null}
               </div>
             );
           })
         ) : (
-          <p className="text-sm text-slate-500">Todavía no hay movimientos registrados.</p>
+          <div className="rounded-[22px] border border-dashed border-slate-300 bg-slate-50 px-4 py-5 text-sm text-slate-500">
+            Todavía no hay movimientos registrados.
+          </div>
         )}
       </div>
+
       {shouldClamp && items.length > defaultVisibleCount ? (
         <div className="mt-4 flex justify-center">
-          <Button type="button" variant="secondary" className="h-10 rounded-xl px-4" onClick={() => setExpanded((value) => !value)}>
+          <Button
+            type="button"
+            variant="secondary"
+            className="h-10 rounded-full px-4"
+            onClick={() => setExpanded((value) => !value)}
+          >
+            <ChevronDown className={`h-4 w-4 transition ${expanded ? "rotate-180" : ""}`} />
             {expanded ? collapseLabel : expandLabel}
           </Button>
         </div>
