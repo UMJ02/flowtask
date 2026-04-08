@@ -44,8 +44,8 @@ export function SharedAnalyticsLanding({ token, autoPrint = false }: { token: st
           <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
             <div className="max-w-3xl">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-100/80">FlowTask · reporte compartido</p>
-              <h1 className="mt-2 text-3xl font-bold leading-tight">Un reporte ejecutivo claro, bonito y listo para compartir</h1>
-              <p className="mt-3 text-sm leading-6 text-slate-100/90">{payload.workspaceName} · actualizado {payload.generatedAtLabel}. Esta vista resume prioridades, proyectos y fechas clave sin necesidad de entrar a la app.</p>
+              <h1 className="mt-2 text-3xl font-bold leading-tight">Reporte ejecutivo listo para compartir</h1>
+              <p className="mt-3 text-sm leading-6 text-slate-100/90">{payload.workspaceName} · actualizado {payload.generatedAtLabel}. Esta vista resume prioridades, proyectos, fechas clave y avance general sin necesidad de entrar a la app.</p>
             </div>
             <div className="flex flex-wrap gap-2 print:hidden">
               <Link href="/"><Button variant="secondary"><Home className="h-4 w-4" />Página principal</Button></Link>
@@ -56,13 +56,13 @@ export function SharedAnalyticsLanding({ token, autoPrint = false }: { token: st
         </Card>
 
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <MetricCard label="Pulso general" value={`${payload.kpis.healthScore}%`} helper="Panorama del momento" />
-          <MetricCard label="Ritmo del equipo" value={`${payload.kpis.intelligenceScore}%`} helper="Seguimiento activo" />
+          <MetricCard label="Pulso" value={`${payload.kpis.healthScore}%`} helper="Panorama general" />
+          <MetricCard label="Ritmo" value={`${payload.kpis.intelligenceScore}%`} helper="Seguimiento activo" />
           <MetricCard label="Favoritos" value={String(payload.shareDigest.priorityCount)} helper="Lo más importante" />
           <MetricCard label="Concluidos" value={String(payload.shareDigest.completedCount)} helper="Trabajo entregado" />
         </div>
 
-        <div className="grid gap-4 xl:grid-cols-[1.15fr_0.85fr]">
+        <div className="grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
           <Card>
             <div className="flex items-center justify-between gap-3">
               <div>
@@ -81,19 +81,21 @@ export function SharedAnalyticsLanding({ token, autoPrint = false }: { token: st
           <Card>
             <div className="flex items-center justify-between gap-3">
               <div>
-                <h2 className="text-xl font-semibold text-slate-900">Share center</h2>
-                <p className="mt-1 text-sm text-slate-500">Un resumen corto para acompañar el enlace o el correo.</p>
+                <h2 className="text-xl font-semibold text-slate-900">Resumen para compartir</h2>
+                <p className="mt-1 text-sm text-slate-500">Una lectura corta para acompañar el enlace o el correo.</p>
               </div>
               <Share2 className="h-5 w-5 text-slate-400" />
             </div>
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
-              <DigestCard label="Favoritos" value={payload.shareDigest.priorityCount} helper="Seguimiento clave" />
-              <DigestCard label="En proceso" value={payload.shareDigest.inProgressCount} helper="Trabajo activo" />
-              <DigestCard label="En espera" value={payload.shareDigest.waitingCount} helper="Pide destrabe" />
-              <DigestCard label="Concluidos" value={payload.shareDigest.completedCount} helper="Avance visible" />
+              <DigestCard label="Favoritos" value={payload.shareDigest.priorityCount} />
+              <DigestCard label="En proceso" value={payload.shareDigest.inProgressCount} />
+              <DigestCard label="En espera" value={payload.shareDigest.waitingCount} />
+              <DigestCard label="Concluidos" value={payload.shareDigest.completedCount} />
             </div>
-            <div className="mt-5 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4">
-              <p className="text-sm text-slate-700">Pensado para compartir prioridades, avance y fechas clave con una lectura rápida y presentable.</p>
+            <div className="mt-5 space-y-3">
+              {payload.shareDigest.shareSummary.map((item) => (
+                <div key={item} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">{item}</div>
+              ))}
             </div>
           </Card>
         </div>
@@ -141,12 +143,11 @@ function MetricCard({ label, value, helper }: { label: string; value: string; he
   );
 }
 
-function DigestCard({ label, value, helper }: { label: string; value: number; helper: string }) {
+function DigestCard({ label, value }: { label: string; value: number }) {
   return (
     <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3">
       <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">{label}</p>
       <p className="mt-2 text-2xl font-bold text-slate-950">{value}</p>
-      <p className="mt-1 text-xs text-slate-500">{helper}</p>
     </div>
   );
 }
