@@ -4,7 +4,6 @@ import { getPlanningOverview } from '@/lib/queries/planning';
 import { getProjects } from '@/lib/queries/projects';
 import { getRecentActivitySummary } from '@/lib/queries/activity';
 import { getTasks } from '@/lib/queries/tasks';
-import { isTaskOverdue } from '@/lib/tasks/status-rules';
 
 type TaskRow = Awaited<ReturnType<typeof getTasks>>[number];
 type ProjectRow = Awaited<ReturnType<typeof getProjects>>[number];
@@ -86,7 +85,7 @@ export async function getControlTowerSummary(): Promise<ControlTowerSummary> {
 
   const overdueTasks = openTasks.filter((task) => {
     const dueDate = parseDate(task.due_date);
-    return isTaskOverdue(task.due_date, task.status);
+    return dueDate ? dueDate < today : false;
   });
 
   const atRiskProjects = activeProjects.filter((project) => {

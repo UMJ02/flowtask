@@ -2,7 +2,6 @@ import { endOfWeek, format, isWithinInterval, parseISO, startOfToday, addDays } 
 import { getClients } from '@/lib/queries/clients';
 import { getProjects } from '@/lib/queries/projects';
 import { getTasks } from '@/lib/queries/tasks';
-import { isTaskOverdue } from '@/lib/tasks/status-rules';
 
 type TaskRow = Awaited<ReturnType<typeof getTasks>>[number];
 type ProjectRow = Awaited<ReturnType<typeof getProjects>>[number];

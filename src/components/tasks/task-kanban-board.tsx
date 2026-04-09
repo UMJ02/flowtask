@@ -7,7 +7,6 @@ import { AlertCircle, CheckCircle2, ChevronDown, ChevronUp, Clock3, FolderOpen, 
 import { createClient } from "@/lib/supabase/client";
 import { Card } from "@/components/ui/card";
 import { taskDetailRoute } from "@/lib/navigation/routes";
-import { getTaskDateForStatusChange } from "@/lib/tasks/status-rules";
 
 export type TaskItem = {
   id: string;
@@ -334,7 +333,7 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery }: { 
 
     try {
       if (currentTask.status !== nextStatus) {
-        const { error: updateError } = await supabase.from("tasks").update({ status: nextStatus, due_date: getTaskDateForStatusChange(nextStatus) }).eq("id", taskId);
+        const { error: updateError } = await supabase.from("tasks").update({ status: nextStatus }).eq("id", taskId);
         if (updateError) throw updateError;
       }
 

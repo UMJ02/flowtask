@@ -3,7 +3,6 @@ import { createClient } from "@/lib/supabase/server";
 import { getOrganizationContext } from "@/lib/queries/organization";
 import { filterRowsByClientAccess, getClientAccessSummary, hasClientAccess } from "@/lib/security/client-access";
 import type { ClientDashboardItem, ClientDetailSummary, ClientListItem } from "@/types/client";
-import { isTaskOverdue } from "@/lib/tasks/status-rules";
 
 function formatDate(value?: string | null) {
   if (!value) return "Sin fecha";
@@ -12,6 +11,11 @@ function formatDate(value?: string | null) {
   } catch {
     return "Sin fecha";
   }
+}
+
+function isOverdue(value?: string | null, status?: string | null) {
+  if (!value || status === "concluido") return false;
+  return value < new Date().toISOString().slice(0, 10);
 }
 
 export async function getClients(search?: string): Promise<ClientListItem[]> {
@@ -62,7 +66,7 @@ export async function getClients(search?: string): Promise<ClientListItem[]> {
     projectsCount: (projectsRes.data ?? []).filter((item: any) => item.client_id === row.id && item.status !== "completado").length,
     openTasksCount: (openTasksRes.data ?? []).filter((item: any) => item.client_id === row.id).length,
     completedTasksCount: (completedTasksRes.data ?? []).filter((item: any) => item.client_id === row.id).length,
-    overdueTasksCount: (overdueTasksRes.data ?? []).filter((item: any) => item.client_id === row.id && isTaskOverdue(item.due_date as string | null | undefined, item.status as string | null | undefined)).length,
+    overdueTasksCount: (overdueTasksRes.data ?? []).filter((item: any) => item.client_id === row.id && isOverdue(item.due_date as string | null | undefined, item.status as string | null | undefined)).length,
   }));
 }
 
@@ -114,7 +118,7 @@ export async function getClientById(clientId: string): Promise<ClientDetailSumma
 
   const openTasksCount = (tasks ?? []).filter((item: any) => item.status !== "concluido").length;
   const completedTasksCount = (tasks ?? []).filter((item: any) => item.status === "concluido").length;
-  const overdueTasksCount = (tasks ?? []).filter((item: any) => isTaskOverdue(item.due_date as string | null | undefined, item.status as string | null | undefined)).length;
+  const overdueTasksCount = (tasks ?? []).filter((item: any) => isOverdue(item.due_date as string | null | undefined, item.status as string | null | undefined)).length;
 
   return {
     id: clientRow.id as string,
