@@ -44,8 +44,8 @@ function normalizeTaskRow(row: any): TaskSummary {
     departmentName: (department?.name as string | null | undefined) ?? null,
     departments: row.departments ?? null,
     country: (row.country as string | null | undefined) ?? null,
-    isOverdue: Boolean(dueDate && dueDate < today && row.status !== "concluido"),
-    isDueToday: Boolean(dueDate && dueDate === today && row.status !== "concluido"),
+    isOverdue: Boolean(dueDate && dueDate < today && row.status !== "concluido" && row.status !== "en_espera"),
+    isDueToday: Boolean(dueDate && dueDate === today && row.status !== "concluido" && row.status !== "en_espera"),
   };
 }
 
@@ -87,9 +87,9 @@ export async function getTasks(filters: TaskFiltersInput = {}): Promise<TaskSumm
   }
 
   const today = new Date().toISOString().slice(0, 10);
-  if (filters.due === "overdue") query = query.lt("due_date", today).neq("status", "concluido");
-  if (filters.due === "today") query = query.eq("due_date", today).neq("status", "concluido");
-  if (filters.due === "soon") query = query.gte("due_date", today).neq("status", "concluido");
+  if (filters.due === "overdue") query = query.lt("due_date", today).neq("status", "concluido").neq("status", "en_espera");
+  if (filters.due === "today") query = query.eq("due_date", today).neq("status", "concluido").neq("status", "en_espera");
+  if (filters.due === "soon") query = query.gte("due_date", today).neq("status", "concluido").neq("status", "en_espera");
   if (filters.due === "none") query = query.is("due_date", null);
 
   const { data, error } = await query;

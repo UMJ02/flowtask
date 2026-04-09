@@ -2,10 +2,9 @@
 
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { getAppUrl } from "@/lib/utils/app-url";
 
-export function ProjectSharePanel({ enabled, token }: { enabled: boolean; token: string | null }) {
+export function ProjectSharePanel({ enabled, token, embedded = false }: { enabled: boolean; token: string | null; embedded?: boolean }) {
   const [copied, setCopied] = useState(false);
   const link = useMemo(() => (enabled && token ? `${getAppUrl()}/share/project/${token}` : null), [enabled, token]);
 
@@ -17,7 +16,7 @@ export function ProjectSharePanel({ enabled, token }: { enabled: boolean; token:
   };
 
   return (
-    <Card>
+    <div className={embedded ? "" : "rounded-2xl bg-white"}>
       <h3 className="text-lg font-semibold text-slate-900">Enlace compartido</h3>
       {!link ? (
         <p className="mt-2 text-sm text-slate-500">Activa la opción de compartir para generar la vista de jefatura.</p>
@@ -32,6 +31,6 @@ export function ProjectSharePanel({ enabled, token }: { enabled: boolean; token:
           </div>
         </>
       )}
-    </Card>
+    </div>
   );
 }

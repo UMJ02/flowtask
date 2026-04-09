@@ -59,7 +59,7 @@ function formatDueLabel(value?: string | null) {
 }
 
 function isOpenTask(task: TaskRow) {
-  return task.status !== 'concluido';
+  return task.status !== 'concluido' && task.status !== 'en_espera';
 }
 
 function isActiveProject(project: ProjectRow) {

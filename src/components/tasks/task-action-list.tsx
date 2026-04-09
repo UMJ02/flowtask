@@ -138,8 +138,7 @@ function TaskActionListComponent({ tasks, currentQuery = "" }: { tasks: TaskRow[
               <span className={`rounded-full border px-3 py-1.5 font-semibold ${priorityTone(task.priority)}`}>
                 {priorityLabel(task.priority)}
               </span>
-              {isFavorite ? <span className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 font-semibold text-amber-700">Favorita</span> : null}
-            </div>
+                          </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-2 xl:justify-end">
@@ -147,7 +146,7 @@ function TaskActionListComponent({ tasks, currentQuery = "" }: { tasks: TaskRow[
               <button
                 type="button"
                 onClick={() => markComplete(task.id)}
-                className="inline-flex h-10 items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3.5 text-sm font-semibold text-emerald-800 transition hover:bg-emerald-100"
+                className="inline-flex h-9 items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 text-sm font-semibold text-emerald-800 transition hover:bg-emerald-100"
               >
                 <CheckCircle2 className="h-4 w-4" />
                 Finalizar
@@ -155,7 +154,7 @@ function TaskActionListComponent({ tasks, currentQuery = "" }: { tasks: TaskRow[
             ) : null}
 
             <Link href={taskDetailRoute(task.id, currentQuery)}>
-              <Button type="button" variant="secondary" className="h-10 rounded-xl px-3.5 text-sm">
+              <Button type="button" variant="secondary" className="h-9 rounded-xl px-3 text-sm">
                 <Eye className="h-4 w-4" />
                 Ver
               </Button>
@@ -163,14 +162,14 @@ function TaskActionListComponent({ tasks, currentQuery = "" }: { tasks: TaskRow[
 
             {!completed ? (
               <Link href={taskEditRoute(task.id, currentQuery)}>
-                <Button type="button" variant="secondary" className="h-10 rounded-xl px-3.5 text-sm">
+                <Button type="button" variant="secondary" className="h-9 rounded-xl px-3 text-sm">
                   <Pencil className="h-4 w-4" />
                   Editar
                 </Button>
               </Link>
             ) : null}
 
-            <Button type="button" variant="secondary" className="h-10 rounded-xl px-3.5 text-sm" onClick={() => deleteTask(task.id)}>
+            <Button type="button" variant="secondary" className="h-9 rounded-xl px-3 text-sm" onClick={() => deleteTask(task.id)}>
               <Trash2 className="h-4 w-4" />
               Borrar
             </Button>
@@ -183,38 +182,15 @@ function TaskActionListComponent({ tasks, currentQuery = "" }: { tasks: TaskRow[
   return (
     <div className="space-y-4">
       <Card className="rounded-[28px] border border-slate-200/90 p-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)] md:p-6">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Lista de tareas</p>
-          <h2 className="mt-2 text-[1.35rem] font-bold tracking-tight text-slate-900">Vista limpia para resolver más rápido</h2>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
-            Deja al frente solo el nombre, la prioridad y la fecha para decidir rápido qué sigue.
-          </p>
-        </div>
-      </Card>
-
-      <div
-        className={[
-          "space-y-3 transition-all duration-300",
-          pageAnimation === "out-next" && "translate-x-4 opacity-0",
-          pageAnimation === "out-prev" && "-translate-x-4 opacity-0",
-          pageAnimation === "in-next" && "animate-[slideInFromRight_220ms_ease-out]",
-          pageAnimation === "in-prev" && "animate-[slideInFromLeft_220ms_ease-out]",
-        ]
-          .filter(Boolean)
-          .join(" ")}
-      >
-        {currentItems.length ? (
-          currentItems.map((task) => renderItem(task, false))
-        ) : (
-          <Card className="rounded-[24px] border border-slate-200 bg-slate-50/80 p-6 text-sm text-slate-500">
-            No hay tareas activas para este filtro.
-          </Card>
-        )}
-      </div>
-
-      <Card className="rounded-[24px] border border-slate-200/90 bg-white/95 px-4 py-4 shadow-[0_10px_24px_rgba(15,23,42,0.04)]">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Lista de tareas</p>
+            <h2 className="mt-2 text-[1.35rem] font-bold tracking-tight text-slate-900">Vista limpia para resolver más rápido</h2>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
+              Deja al frente solo el nombre, la prioridad y la fecha para decidir rápido qué sigue.
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2 md:justify-end">
             <button
               type="button"
               onClick={() => setFavoritesOnly((value) => !value)}
@@ -240,8 +216,32 @@ function TaskActionListComponent({ tasks, currentQuery = "" }: { tasks: TaskRow[
               </Select>
             </div>
           </div>
+        </div>
+      </Card>
 
-          <div className="flex flex-wrap items-center gap-2 md:justify-end">
+      <div
+        className={[
+          "space-y-3 transition-all duration-300",
+          pageAnimation === "out-next" && "translate-x-4 opacity-0",
+          pageAnimation === "out-prev" && "-translate-x-4 opacity-0",
+          pageAnimation === "in-next" && "animate-[slideInFromRight_220ms_ease-out]",
+          pageAnimation === "in-prev" && "animate-[slideInFromLeft_220ms_ease-out]",
+        ]
+          .filter(Boolean)
+          .join(" ")}
+      >
+        {currentItems.length ? (
+          currentItems.map((task) => renderItem(task, false))
+        ) : (
+          <Card className="rounded-[24px] border border-slate-200 bg-slate-50/80 p-6 text-sm text-slate-500">
+            No hay tareas activas para este filtro.
+          </Card>
+        )}
+      </div>
+
+      <Card className="rounded-[24px] border border-slate-200/90 bg-white/95 px-4 py-4 shadow-[0_10px_24px_rgba(15,23,42,0.04)]">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+<div className="flex flex-wrap items-center gap-2 md:justify-end">
             <div className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-2 py-2">
               <Button
                 type="button"

@@ -36,7 +36,7 @@ export async function getDashboardData() {
     applyWorkspaceScope(supabase.from("tasks").select("id", { count: "exact", head: true }).eq("status", "concluido"), user.id, activeOrganizationId),
     applyWorkspaceScope(supabase.from("tasks").select("id", { count: "exact", head: true }).eq("status", "en_espera"), user.id, activeOrganizationId),
     applyWorkspaceScope(
-      supabase.from("tasks").select("id", { count: "exact", head: true }).neq("status", "concluido").lt("due_date", today.toISOString().slice(0, 10)),
+      supabase.from("tasks").select("id", { count: "exact", head: true }).neq("status", "concluido").neq("status", "en_espera").lt("due_date", today.toISOString().slice(0, 10)),
       user.id,
       activeOrganizationId,
     ),
@@ -45,6 +45,7 @@ export async function getDashboardData() {
         .from("tasks")
         .select("id", { count: "exact", head: true })
         .neq("status", "concluido")
+        .neq("status", "en_espera")
         .gte("due_date", today.toISOString().slice(0, 10))
         .lte("due_date", in3Days.toISOString().slice(0, 10)),
       user.id,

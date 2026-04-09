@@ -102,7 +102,7 @@ export async function getRiskRadarSummary(): Promise<RiskRadarSummary> {
 
   const today = startOfToday();
   const nextWeekEnd = endOfWeek(addDays(today, 7), { weekStartsOn: 1 });
-  const activeTasks = typedTasks.filter((task) => task.status !== 'concluido');
+  const activeTasks = typedTasks.filter((task) => task.status !== 'concluido' && task.status !== 'en_espera');
   const activeProjects = typedProjects.filter((project) => project.status !== 'completado');
 
   const overdueTasks = activeTasks.filter((task) => getTaskUrgency(task, today, nextWeekEnd) === 'critical');
