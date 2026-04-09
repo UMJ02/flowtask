@@ -10,7 +10,7 @@ import { Card } from "@/components/ui/card";
 import { Select } from "@/components/ui/select";
 import { taskDetailRoute, taskEditRoute } from "@/lib/navigation/routes";
 import { useWorkspaceMemory } from "@/hooks/use-workspace-memory";
-import { getNextDueDateForTaskStatus } from "@/lib/tasks/status";
+import { getTaskStatusUpdatePayload, todayIsoDate } from "@/lib/tasks/status";
 
 type TaskRow = {
   id: string;
@@ -91,11 +91,10 @@ function TaskActionListComponent({ tasks, currentQuery = "" }: { tasks: TaskRow[
   const markComplete = async (taskId: string) => {
     setClosingId(taskId);
     window.setTimeout(async () => {
-      const nextDueDate = getNextDueDateForTaskStatus("concluido", items.find((item) => item.id === taskId)?.due_date ?? null);
-      setItems((current) => current.map((item) => (item.id === taskId ? { ...item, status: "concluido", due_date: nextDueDate } : item)));
+      setItems((current) => current.map((item) => (item.id === taskId ? { ...item, status: "concluido", due_date: todayIsoDate() } : item)));
       setClosingId(null);
 
-      const { error } = await supabase.from("tasks").update({ status: "concluido", due_date: nextDueDate }).eq("id", taskId);
+      const { error } = await supabase.from("tasks").update(getTaskStatusUpdatePayload("concluido")).eq("id", taskId);
       if (error) {
         router.refresh();
       }
@@ -185,7 +184,7 @@ function TaskActionListComponent({ tasks, currentQuery = "" }: { tasks: TaskRow[
   return (
     <div className="space-y-4">
       <Card className="rounded-[28px] border border-slate-200/90 p-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)] md:p-6">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Lista de tareas</p>
             <h2 className="mt-2 text-[1.35rem] font-bold tracking-tight text-slate-900">Vista limpia para resolver más rápido</h2>
@@ -193,7 +192,7 @@ function TaskActionListComponent({ tasks, currentQuery = "" }: { tasks: TaskRow[
               Deja al frente solo el nombre, la prioridad y la fecha para decidir rápido qué sigue.
             </p>
           </div>
-          <div className="flex flex-wrap items-center gap-2 lg:justify-end">
+          <div className="flex flex-wrap items-center gap-2 xl:justify-end">
             <button
               type="button"
               onClick={() => setFavoritesOnly((value) => !value)}
@@ -243,8 +242,7 @@ function TaskActionListComponent({ tasks, currentQuery = "" }: { tasks: TaskRow[
       </div>
 
       <Card className="rounded-[24px] border border-slate-200/90 bg-white/95 px-4 py-4 shadow-[0_10px_24px_rgba(15,23,42,0.04)]">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex flex-wrap items-center gap-2 md:justify-end">
+        <div className="flex flex-wrap items-center justify-end gap-2 md:justify-end">
             <div className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-2 py-2">
               <Button
                 type="button"
@@ -279,7 +277,6 @@ function TaskActionListComponent({ tasks, currentQuery = "" }: { tasks: TaskRow[
               {showCompleted ? "Ocultar concluidas" : `Ver tareas concluidas (${completedItems.length})`}
             </button>
           </div>
-        </div>
       </Card>
 
       <div

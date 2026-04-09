@@ -1,8 +1,8 @@
+import { isTaskOverdue } from "@/lib/tasks/status";
 import { cache } from "react";
 import { getWorkspaceContext, applyWorkspaceScope } from "@/lib/queries/workspace";
 import { filterRowsByClientAccess, getClientAccessSummary, hasClientAccess } from "@/lib/security/client-access";
 import type { TaskSummary } from "@/types/task";
-import { isTaskOverdue } from "@/lib/tasks/status";
 
 export interface TaskFiltersInput {
   q?: string;
@@ -45,8 +45,8 @@ function normalizeTaskRow(row: any): TaskSummary {
     departmentName: (department?.name as string | null | undefined) ?? null,
     departments: row.departments ?? null,
     country: (row.country as string | null | undefined) ?? null,
-    isOverdue: isTaskOverdue(dueDate, row.status as string | null | undefined, today),
-    isDueToday: Boolean(dueDate && dueDate === today && row.status !== "concluido" && row.status !== "en_espera"),
+    isOverdue: Boolean(dueDate && dueDate < today && row.status !== "concluido"),
+    isDueToday: Boolean(dueDate && dueDate === today && row.status !== "concluido"),
   };
 }
 
@@ -88,7 +88,7 @@ export async function getTasks(filters: TaskFiltersInput = {}): Promise<TaskSumm
   }
 
   const today = new Date().toISOString().slice(0, 10);
-  if (filters.due === "overdue") query = query.lt("due_date", today).not("status", "in", "(concluido,en_espera)");
+  if (filters.due === "overdue") query = query.lt("due_date", today).not("status", "in", '(concluido,en_espera)');
   if (filters.due === "today") query = query.eq("due_date", today).neq("status", "concluido");
   if (filters.due === "soon") query = query.gte("due_date", today).neq("status", "concluido");
   if (filters.due === "none") query = query.is("due_date", null);

@@ -1,9 +1,9 @@
+import { isTaskOverdue } from "@/lib/tasks/status";
 import { endOfWeek, format, isToday, isWithinInterval, parseISO, startOfToday } from "date-fns";
 import { getRecentActivitySummary } from "@/lib/queries/activity";
 import { getClients } from "@/lib/queries/clients";
 import { getProjects } from "@/lib/queries/projects";
 import { getTasks } from "@/lib/queries/tasks";
-import { isTaskOverdue, isTaskPaused } from "@/lib/tasks/status";
 
 type TaskRow = Awaited<ReturnType<typeof getTasks>>[number];
 type ProjectRow = Awaited<ReturnType<typeof getProjects>>[number];
@@ -89,7 +89,7 @@ function buildProjectUrgency(project: ProjectRow, today: Date, weekEnd: Date): "
 
   try {
     const dueDate = parseISO(project.due_date);
-    if (dueDate < today) return "overdue";
+    if (isTaskOverdue(project.due_date, project.status)) return "overdue";
     if (isWithinInterval(dueDate, { start: today, end: weekEnd })) return "this_week";
   } catch {
     return "planned";
@@ -175,7 +175,7 @@ export async function getReportsOverview(): Promise<ReportsOverview> {
         try {
           const dueDate = parseISO(task.due_date);
           dueLabel = format(dueDate, "dd/MM/yyyy");
-          if (isTaskOverdue(task.due_date, task.status, today.toISOString().slice(0, 10))) urgency = "overdue";
+          if (isTaskOverdue(task.due_date, task.status)) urgency = "overdue";
           else if (isToday(dueDate)) urgency = "today";
         } catch {
           dueLabel = task.due_date;

@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { logActivity } from "@/lib/activity/log-client";
 import { createClientNotification } from "@/lib/notifications/create-client-notification";
-import { getNextDueDateForTaskStatus } from "@/lib/tasks/status";
+import { getTaskStatusUpdatePayload, todayIsoDate } from "@/lib/tasks/status";
 
 interface TaskStatusFormProps {
   taskId: string;
@@ -18,10 +18,9 @@ interface TaskStatusFormProps {
   shareEnabled: boolean;
   shareToken: string | null;
   canEdit?: boolean;
-  embedded?: boolean;
 }
 
-export function TaskStatusForm({ taskId, status, dueDate, shareEnabled, shareToken, canEdit = true, embedded = false }: TaskStatusFormProps) {
+export function TaskStatusForm({ taskId, status, dueDate, shareEnabled, shareToken, canEdit = true }: TaskStatusFormProps) {
   const router = useRouter();
   const [currentStatus, setCurrentStatus] = useState(status);
   const [currentDate, setCurrentDate] = useState(dueDate?.slice(0, 10) ?? "");
@@ -39,15 +38,14 @@ export function TaskStatusForm({ taskId, status, dueDate, shareEnabled, shareTok
     setIsSaving(true);
 
     const supabase = createClient();
-    const nextDueDate = getNextDueDateForTaskStatus(currentStatus, currentDate || dueDate || null);
     const { data: authData } = await supabase.auth.getUser();
     const user = authData.user;
 
+    const nextDueDate = currentStatus === "en_proceso" || currentStatus === "concluido" ? todayIsoDate() : (currentDate || null);
     const { error: updateError } = await supabase
       .from("tasks")
       .update({
-        status: currentStatus,
-        due_date: nextDueDate,
+        ...getTaskStatusUpdatePayload(currentStatus, nextDueDate),
         share_enabled: currentShare,
         share_token: currentShare ? shareToken : null,
       })
@@ -78,7 +76,7 @@ export function TaskStatusForm({ taskId, status, dueDate, shareEnabled, shareTok
     }
 
     setCurrentDate(nextDueDate ?? "");
-    setMessage("Cambios aplicados.");
+    setMessage(currentStatus === "en_proceso" || currentStatus === "concluido" ? "Cambios aplicados. La fecha se actualizó al día del cambio." : "Cambios aplicados.");
     setIsSaving(false);
     startRefresh(() => router.refresh());
   };
@@ -86,12 +84,12 @@ export function TaskStatusForm({ taskId, status, dueDate, shareEnabled, shareTok
   const isBusy = isSaving || isRefreshing;
 
   return (
-    <form className={`space-y-3 rounded-2xl ${embedded ? "border border-slate-200 bg-white p-4 shadow-sm" : "bg-slate-50 p-4"} transition-all duration-200`} onSubmit={handleSave}>
+    <form className="h-full space-y-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 transition-all duration-200" onSubmit={handleSave}>
       <div>
         <p className="text-sm font-medium text-slate-800">Actualizar seguimiento</p>
-        <p className="text-xs text-slate-500">Cambia estado, deadline y visibilidad compartida.</p>
+        <p className="text-xs text-slate-500">Una tarea en espera conserva su tiempo. Si pasa a proceso o concluida, la fecha se ajusta al día del cambio.</p>
       </div>
-      <div className={`grid gap-3 ${embedded ? "xl:grid-cols-1" : "md:grid-cols-2"}`}>
+      <div className="grid gap-3 md:grid-cols-2">
         <Select value={currentStatus} onChange={(event) => setCurrentStatus(event.target.value)} disabled={!canEdit || isBusy}>
           {TASK_STATUSES.map((item) => (
             <option key={item.value} value={item.value}>

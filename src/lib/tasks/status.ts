@@ -1,22 +1,17 @@
-export function todayIso() {
+export const TASK_OVERDUE_EXCLUDED_STATUSES = new Set(["concluido", "en_espera"]);
+
+export function todayIsoDate() {
   return new Date().toISOString().slice(0, 10);
 }
 
-export function isTaskPaused(status?: string | null) {
-  return status === 'en_espera';
+export function isTaskOverdue(dueDate?: string | null, status?: string | null) {
+  if (!dueDate || TASK_OVERDUE_EXCLUDED_STATUSES.has(status ?? "")) return false;
+  return dueDate < todayIsoDate();
 }
 
-export function isTaskCompleted(status?: string | null) {
-  return status === 'concluido';
-}
-
-export function isTaskOverdue(value?: string | null, status?: string | null, referenceDate = todayIso()) {
-  if (!value) return false;
-  if (isTaskCompleted(status) || isTaskPaused(status)) return false;
-  return value < referenceDate;
-}
-
-export function getNextDueDateForTaskStatus(nextStatus: string, fallbackDate?: string | null, referenceDate = todayIso()) {
-  if (nextStatus === 'en_proceso' || nextStatus === 'concluido') return referenceDate;
-  return fallbackDate ?? null;
+export function getTaskStatusUpdatePayload(nextStatus: string, currentDueDate?: string | null) {
+  return {
+    status: nextStatus,
+    due_date: nextStatus === "en_proceso" || nextStatus === "concluido" ? todayIsoDate() : (currentDueDate ?? null),
+  };
 }

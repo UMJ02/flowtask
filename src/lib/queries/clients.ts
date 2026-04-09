@@ -1,9 +1,9 @@
 import { format } from "date-fns";
 import { createClient } from "@/lib/supabase/server";
+import { isTaskOverdue } from "@/lib/tasks/status";
 import { getOrganizationContext } from "@/lib/queries/organization";
 import { filterRowsByClientAccess, getClientAccessSummary, hasClientAccess } from "@/lib/security/client-access";
 import type { ClientDashboardItem, ClientDetailSummary, ClientListItem } from "@/types/client";
-import { isTaskOverdue } from "@/lib/tasks/status";
 
 function formatDate(value?: string | null) {
   if (!value) return "Sin fecha";
@@ -13,6 +13,7 @@ function formatDate(value?: string | null) {
     return "Sin fecha";
   }
 }
+
 
 export async function getClients(search?: string): Promise<ClientListItem[]> {
   const context = await getOrganizationContext();

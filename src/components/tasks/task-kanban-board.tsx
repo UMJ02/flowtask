@@ -7,7 +7,7 @@ import { AlertCircle, CheckCircle2, ChevronDown, ChevronUp, Clock3, FolderOpen, 
 import { createClient } from "@/lib/supabase/client";
 import { Card } from "@/components/ui/card";
 import { taskDetailRoute } from "@/lib/navigation/routes";
-import { getNextDueDateForTaskStatus } from "@/lib/tasks/status";
+import { getTaskStatusUpdatePayload, todayIsoDate } from "@/lib/tasks/status";
 
 export type TaskItem = {
   id: string;
@@ -321,8 +321,7 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery }: { 
     const previousTasks = boardTasks;
     const previousStatusOverrides = statusOverrides;
     const previousOrderOverrides = orderOverrides;
-    const nextDueDate = getNextDueDateForTaskStatus(nextStatus, currentTask.due_date ?? null);
-    const nextTasks = normalizedTasks.map((item) => (item.id === taskId ? { ...item, status: nextStatus, due_date: item.id === taskId ? nextDueDate : item.due_date } : item));
+    const nextTasks = normalizedTasks.map((item) => (item.id === taskId ? { ...item, status: nextStatus, due_date: nextStatus === "en_proceso" || nextStatus === "concluido" ? todayIsoDate() : item.due_date } : item));
     const nextStatusOverrides = { ...statusOverrides, [taskId]: nextStatus };
     const nextOrderOverrides = buildNextOrderOverrides(orderOverrides, taskId, nextStatus, beforeTaskId);
 
@@ -335,8 +334,7 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery }: { 
 
     try {
       if (currentTask.status !== nextStatus) {
-        const nextDueDate = getNextDueDateForTaskStatus(nextStatus, currentTask.due_date ?? null);
-        const { error: updateError } = await supabase.from("tasks").update({ status: nextStatus, due_date: nextDueDate }).eq("id", taskId);
+        const { error: updateError } = await supabase.from("tasks").update(getTaskStatusUpdatePayload(nextStatus, currentTask.due_date ?? null)).eq("id", taskId);
         if (updateError) throw updateError;
       }
 
