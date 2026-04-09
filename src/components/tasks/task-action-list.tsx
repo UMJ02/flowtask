@@ -10,7 +10,6 @@ import { Card } from "@/components/ui/card";
 import { Select } from "@/components/ui/select";
 import { taskDetailRoute, taskEditRoute } from "@/lib/navigation/routes";
 import { useWorkspaceMemory } from "@/hooks/use-workspace-memory";
-import { buildTaskStatusUpdate, todayIsoDate } from "@/lib/tasks/status-rules";
 
 type TaskRow = {
   id: string;
@@ -91,11 +90,10 @@ function TaskActionListComponent({ tasks, currentQuery = "" }: { tasks: TaskRow[
   const markComplete = async (taskId: string) => {
     setClosingId(taskId);
     window.setTimeout(async () => {
-      setItems((current) => current.map((item) => (item.id === taskId ? { ...item, status: "concluido", due_date: todayIsoDate() } : item)));
+      setItems((current) => current.map((item) => (item.id === taskId ? { ...item, status: "concluido" } : item)));
       setClosingId(null);
 
-      const task = items.find((item) => item.id === taskId);
-      const { error } = await supabase.from("tasks").update(buildTaskStatusUpdate("concluido", task?.due_date)).eq("id", taskId);
+      const { error } = await supabase.from("tasks").update({ status: "concluido" }).eq("id", taskId);
       if (error) {
         router.refresh();
       }
@@ -185,37 +183,12 @@ function TaskActionListComponent({ tasks, currentQuery = "" }: { tasks: TaskRow[
   return (
     <div className="space-y-4">
       <Card className="rounded-[28px] border border-slate-200/90 p-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)] md:p-6">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Lista de tareas</p>
-            <h2 className="mt-2 text-[1.35rem] font-bold tracking-tight text-slate-900">Vista limpia para resolver más rápido</h2>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
-              Deja al frente solo el nombre, la prioridad y la fecha para decidir rápido qué sigue.
-            </p>
-          </div>
-          <div className="flex flex-wrap items-center gap-2 lg:justify-end">
-            <button
-              type="button"
-              onClick={() => setFavoritesOnly((value) => !value)}
-              className={`inline-flex h-10 items-center gap-2 rounded-xl border px-3.5 text-sm font-semibold transition ${favoritesOnly ? "border-amber-200 bg-amber-50 text-amber-700" : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"}`}
-            >
-              <Star className={`h-4 w-4 ${favoritesOnly ? "fill-current" : ""}`} />
-              Favoritos del día
-            </button>
-
-            <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-600">
-              <span className="font-medium">Mostrar</span>
-              <Select
-                aria-label="Cantidad de tareas por página"
-                className="h-8 min-w-[84px] border-none bg-transparent px-1 py-0 text-sm font-semibold text-slate-900 shadow-none focus-visible:ring-0"
-                value={String(pageSize)}
-                onChange={(event) => setPageSize(Number(event.target.value) as 5 | 10)}
-              >
-                <option value="5">5</option>
-                <option value="10">10</option>
-              </Select>
-            </div>
-          </div>
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Lista de tareas</p>
+          <h2 className="mt-2 text-[1.35rem] font-bold tracking-tight text-slate-900">Vista limpia para resolver más rápido</h2>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
+            Deja al frente solo el nombre, la prioridad y la fecha para decidir rápido qué sigue.
+          </p>
         </div>
       </Card>
 
@@ -240,7 +213,35 @@ function TaskActionListComponent({ tasks, currentQuery = "" }: { tasks: TaskRow[
       </div>
 
       <Card className="rounded-[24px] border border-slate-200/90 bg-white/95 px-4 py-4 shadow-[0_10px_24px_rgba(15,23,42,0.04)]">
-        <div className="flex flex-wrap items-center justify-end gap-2">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setFavoritesOnly((value) => !value)}
+              className={`inline-flex h-10 items-center gap-2 rounded-xl border px-3.5 text-sm font-semibold transition ${favoritesOnly ? "border-amber-200 bg-amber-50 text-amber-700" : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"}`}
+            >
+              <Star className={`h-4 w-4 ${favoritesOnly ? "fill-current" : ""}`} />
+              Favoritos del día
+            </button>
+
+            <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-600">
+              <span className="font-medium">Mostrar</span>
+              <Select
+                aria-label="Cantidad de tareas por página"
+                className="h-8 min-w-[84px] border-none bg-transparent px-1 py-0 text-sm font-semibold text-slate-900 focus:border-none"
+                value={String(pageSize)}
+                onChange={(event) => {
+                  setPageSize(Number(event.target.value) as 5 | 10);
+                  setCurrentPage(1);
+                }}
+              >
+                <option value="5">5</option>
+                <option value="10">10</option>
+              </Select>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2 md:justify-end">
             <div className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-2 py-2">
               <Button
                 type="button"
@@ -274,6 +275,7 @@ function TaskActionListComponent({ tasks, currentQuery = "" }: { tasks: TaskRow[
             >
               {showCompleted ? "Ocultar concluidas" : `Ver tareas concluidas (${completedItems.length})`}
             </button>
+          </div>
         </div>
       </Card>
 

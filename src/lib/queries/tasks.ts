@@ -2,7 +2,6 @@ import { cache } from "react";
 import { getWorkspaceContext, applyWorkspaceScope } from "@/lib/queries/workspace";
 import { filterRowsByClientAccess, getClientAccessSummary, hasClientAccess } from "@/lib/security/client-access";
 import type { TaskSummary } from "@/types/task";
-import { isTaskDueToday, isTaskOverdue, todayIsoDate } from "@/lib/tasks/status-rules";
 
 export interface TaskFiltersInput {
   q?: string;
@@ -28,7 +27,7 @@ const getClientAccessSummaryCached = cache(async (userId: string, organizationId
 function normalizeTaskRow(row: any): TaskSummary {
   const department = Array.isArray(row.departments) ? row.departments[0] : row.departments;
   const dueDate = (row.due_date as string | null | undefined) ?? null;
-  const today = todayIsoDate();
+  const today = new Date().toISOString().slice(0, 10);
   return {
     id: String(row.id),
     title: String(row.title ?? "Tarea"),
@@ -45,8 +44,8 @@ function normalizeTaskRow(row: any): TaskSummary {
     departmentName: (department?.name as string | null | undefined) ?? null,
     departments: row.departments ?? null,
     country: (row.country as string | null | undefined) ?? null,
-    isOverdue: isTaskOverdue(dueDate, row.status as string | null | undefined),
-    isDueToday: isTaskDueToday(dueDate, row.status as string | null | undefined),
+    isOverdue: Boolean(dueDate && dueDate < today && row.status !== "concluido"),
+    isDueToday: Boolean(dueDate && dueDate === today && row.status !== "concluido"),
   };
 }
 
@@ -87,7 +86,7 @@ export async function getTasks(filters: TaskFiltersInput = {}): Promise<TaskSumm
     if (departmentId) query = query.eq("department_id", departmentId);
   }
 
-  const today = todayIsoDate();
+  const today = new Date().toISOString().slice(0, 10);
   if (filters.due === "overdue") query = query.lt("due_date", today).neq("status", "concluido");
   if (filters.due === "today") query = query.eq("due_date", today).neq("status", "concluido");
   if (filters.due === "soon") query = query.gte("due_date", today).neq("status", "concluido");
