@@ -89,15 +89,16 @@ function TaskActionListComponent({ tasks, currentQuery = "" }: { tasks: TaskRow[
 
   const markComplete = async (taskId: string) => {
     setClosingId(taskId);
+    const today = new Date().toISOString().slice(0, 10);
     window.setTimeout(async () => {
-      setItems((current) => current.map((item) => (item.id === taskId ? { ...item, status: "concluido" } : item)));
+      setItems((current) => current.map((item) => (item.id === taskId ? { ...item, status: "concluido", due_date: today } : item)));
       setClosingId(null);
 
-      const { error } = await supabase.from("tasks").update({ status: "concluido" }).eq("id", taskId);
+      const { error } = await supabase.from("tasks").update({ status: "concluido", due_date: today }).eq("id", taskId);
       if (error) {
         router.refresh();
       }
-    }, 260);
+    }, 220);
   };
 
   const deleteTask = async (taskId: string) => {
@@ -115,21 +116,20 @@ function TaskActionListComponent({ tasks, currentQuery = "" }: { tasks: TaskRow[
   };
 
   const renderItem = (task: TaskRow, completed = false) => {
-    const isFavorite = favoriteTaskIds.has(task.id);
     const isClosing = closingId === task.id;
 
     return (
       <div
         key={task.id}
         className={[
-          "rounded-[22px] border border-slate-200 bg-white px-4 py-4 shadow-[0_10px_24px_rgba(15,23,42,0.04)] transition-all duration-300",
-          completed ? "bg-slate-50/80" : "hover:-translate-y-0.5 hover:shadow-[0_14px_28px_rgba(15,23,42,0.08)]",
+          "rounded-[20px] border border-slate-200 bg-white px-4 py-4 shadow-[0_8px_20px_rgba(15,23,42,0.04)] transition-all duration-300",
+          completed ? "bg-slate-50/80" : "hover:-translate-y-0.5 hover:shadow-[0_12px_24px_rgba(15,23,42,0.07)]",
           isClosing ? "scale-[0.98] opacity-0 translate-x-3" : "opacity-100",
         ].join(" ")}
       >
         <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
           <div className="min-w-0 flex-1">
-            <h3 className="text-[1.15rem] font-bold leading-tight text-slate-900 md:text-[1.3rem]">{task.title}</h3>
+            <h3 className="text-[1.08rem] font-bold leading-tight text-slate-900 md:text-[1.2rem]">{task.title}</h3>
 
             <div className="mt-3 flex flex-wrap gap-2 text-sm text-slate-500">
               <span className="rounded-full bg-slate-100 px-3 py-1.5 font-medium text-slate-600">
@@ -138,7 +138,6 @@ function TaskActionListComponent({ tasks, currentQuery = "" }: { tasks: TaskRow[
               <span className={`rounded-full border px-3 py-1.5 font-semibold ${priorityTone(task.priority)}`}>
                 {priorityLabel(task.priority)}
               </span>
-              {isFavorite ? <span className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 font-semibold text-amber-700">Favorita</span> : null}
             </div>
           </div>
 
@@ -147,7 +146,7 @@ function TaskActionListComponent({ tasks, currentQuery = "" }: { tasks: TaskRow[
               <button
                 type="button"
                 onClick={() => markComplete(task.id)}
-                className="inline-flex h-10 items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3.5 text-sm font-semibold text-emerald-800 transition hover:bg-emerald-100"
+                className="inline-flex h-9 items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 text-sm font-semibold text-emerald-800 transition hover:bg-emerald-100"
               >
                 <CheckCircle2 className="h-4 w-4" />
                 Finalizar
@@ -155,7 +154,7 @@ function TaskActionListComponent({ tasks, currentQuery = "" }: { tasks: TaskRow[
             ) : null}
 
             <Link href={taskDetailRoute(task.id, currentQuery)}>
-              <Button type="button" variant="secondary" className="h-10 rounded-xl px-3.5 text-sm">
+              <Button type="button" variant="secondary" className="h-9 rounded-xl px-3 text-sm">
                 <Eye className="h-4 w-4" />
                 Ver
               </Button>
@@ -163,14 +162,14 @@ function TaskActionListComponent({ tasks, currentQuery = "" }: { tasks: TaskRow[
 
             {!completed ? (
               <Link href={taskEditRoute(task.id, currentQuery)}>
-                <Button type="button" variant="secondary" className="h-10 rounded-xl px-3.5 text-sm">
+                <Button type="button" variant="secondary" className="h-9 rounded-xl px-3 text-sm">
                   <Pencil className="h-4 w-4" />
                   Editar
                 </Button>
               </Link>
             ) : null}
 
-            <Button type="button" variant="secondary" className="h-10 rounded-xl px-3.5 text-sm" onClick={() => deleteTask(task.id)}>
+            <Button type="button" variant="secondary" className="h-9 rounded-xl px-3 text-sm" onClick={() => deleteTask(task.id)}>
               <Trash2 className="h-4 w-4" />
               Borrar
             </Button>
@@ -183,38 +182,16 @@ function TaskActionListComponent({ tasks, currentQuery = "" }: { tasks: TaskRow[
   return (
     <div className="space-y-4">
       <Card className="rounded-[28px] border border-slate-200/90 p-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)] md:p-6">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Lista de tareas</p>
-          <h2 className="mt-2 text-[1.35rem] font-bold tracking-tight text-slate-900">Vista limpia para resolver más rápido</h2>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
-            Deja al frente solo el nombre, la prioridad y la fecha para decidir rápido qué sigue.
-          </p>
-        </div>
-      </Card>
+        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Lista de tareas</p>
+            <h2 className="mt-2 text-[1.35rem] font-bold tracking-tight text-slate-900">Vista limpia para resolver más rápido</h2>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
+              Deja al frente solo el nombre, la prioridad y la fecha para decidir rápido qué sigue.
+            </p>
+          </div>
 
-      <div
-        className={[
-          "space-y-3 transition-all duration-300",
-          pageAnimation === "out-next" && "translate-x-4 opacity-0",
-          pageAnimation === "out-prev" && "-translate-x-4 opacity-0",
-          pageAnimation === "in-next" && "animate-[slideInFromRight_220ms_ease-out]",
-          pageAnimation === "in-prev" && "animate-[slideInFromLeft_220ms_ease-out]",
-        ]
-          .filter(Boolean)
-          .join(" ")}
-      >
-        {currentItems.length ? (
-          currentItems.map((task) => renderItem(task, false))
-        ) : (
-          <Card className="rounded-[24px] border border-slate-200 bg-slate-50/80 p-6 text-sm text-slate-500">
-            No hay tareas activas para este filtro.
-          </Card>
-        )}
-      </div>
-
-      <Card className="rounded-[24px] border border-slate-200/90 bg-white/95 px-4 py-4 shadow-[0_10px_24px_rgba(15,23,42,0.04)]">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2 md:justify-end">
             <button
               type="button"
               onClick={() => setFavoritesOnly((value) => !value)}
@@ -240,42 +217,64 @@ function TaskActionListComponent({ tasks, currentQuery = "" }: { tasks: TaskRow[
               </Select>
             </div>
           </div>
+        </div>
+      </Card>
 
-          <div className="flex flex-wrap items-center gap-2 md:justify-end">
-            <div className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-2 py-2">
-              <Button
-                type="button"
-                variant="ghost"
-                className="h-9 rounded-xl px-3"
-                disabled={currentPage <= 1 || pageAnimation !== "idle"}
-                onClick={() => animatePage("prev", currentPage - 1)}
-              >
-                <ArrowLeft className="h-4 w-4" />
-                Atrás
-              </Button>
-              <span className="min-w-[88px] text-center text-sm font-semibold text-slate-700">
-                Página {currentPage} de {totalPages}
-              </span>
-              <Button
-                type="button"
-                variant="ghost"
-                className="h-9 rounded-xl px-3"
-                disabled={currentPage >= totalPages || pageAnimation !== "idle"}
-                onClick={() => animatePage("next", currentPage + 1)}
-              >
-                Siguiente
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-            </div>
+      <div
+        className={[
+          "space-y-3 transition-all duration-300",
+          pageAnimation === "out-next" && "translate-x-4 opacity-0",
+          pageAnimation === "out-prev" && "-translate-x-4 opacity-0",
+          pageAnimation === "in-next" && "animate-[slideInFromRight_220ms_ease-out]",
+          pageAnimation === "in-prev" && "animate-[slideInFromLeft_220ms_ease-out]",
+        ]
+          .filter(Boolean)
+          .join(" ")}
+      >
+        {currentItems.length ? (
+          currentItems.map((task) => renderItem(task, false))
+        ) : (
+          <Card className="rounded-[24px] border border-slate-200 bg-slate-50/80 p-6 text-sm text-slate-500">
+            No hay tareas activas para este filtro.
+          </Card>
+        )}
+      </div>
 
-            <button
+      <Card className="rounded-[24px] border border-slate-200/90 bg-white/95 px-4 py-4 shadow-[0_10px_24px_rgba(15,23,42,0.04)]">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-2 py-2">
+            <Button
               type="button"
-              onClick={() => setShowCompleted((value) => !value)}
-              className="inline-flex h-11 items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+              variant="ghost"
+              className="h-9 rounded-xl px-3"
+              disabled={currentPage <= 1 || pageAnimation !== "idle"}
+              onClick={() => animatePage("prev", currentPage - 1)}
             >
-              {showCompleted ? "Ocultar concluidas" : `Ver tareas concluidas (${completedItems.length})`}
-            </button>
+              <ArrowLeft className="h-4 w-4" />
+              Atrás
+            </Button>
+            <span className="min-w-[88px] text-center text-sm font-semibold text-slate-700">
+              Página {currentPage} de {totalPages}
+            </span>
+            <Button
+              type="button"
+              variant="ghost"
+              className="h-9 rounded-xl px-3"
+              disabled={currentPage >= totalPages || pageAnimation !== "idle"}
+              onClick={() => animatePage("next", currentPage + 1)}
+            >
+              Siguiente
+              <ArrowRight className="h-4 w-4" />
+            </Button>
           </div>
+
+          <button
+            type="button"
+            onClick={() => setShowCompleted((value) => !value)}
+            className="inline-flex h-11 items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+          >
+            {showCompleted ? "Ocultar concluidas" : `Ver tareas concluidas (${completedItems.length})`}
+          </button>
         </div>
       </Card>
 

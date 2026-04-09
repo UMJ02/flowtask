@@ -120,7 +120,7 @@ export async function getReportsOverview(): Promise<ReportsOverview> {
 
   const today = startOfToday();
   const weekEnd = endOfWeek(today, { weekStartsOn: 1 });
-  const activeTasks = typedTasks.filter((task) => task.status !== "concluido");
+  const activeTasks = typedTasks.filter((task) => task.status !== "concluido" && task.status !== "en_espera");
   const overdueTasks = activeTasks.filter((task) => {
     if (!task.due_date) return false;
     try {

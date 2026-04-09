@@ -21,30 +21,30 @@ export function TaskDetailSummary({ task, currentQuery = "" }: { task: any; curr
   const project = Array.isArray(task.projects) ? task.projects[0] : task.projects;
 
   return (
-    <Card className="rounded-[34px] border border-slate-200/85 bg-white p-5 shadow-[0_18px_40px_rgba(15,23,42,0.06)] md:p-6">
+    <Card className="rounded-[34px] border border-slate-200/85 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-5 shadow-[0_18px_40px_rgba(15,23,42,0.06)] md:p-6">
       <div className="flex flex-col gap-5">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div className="min-w-0 flex-1">
-            <Link href={taskListRoute(currentQuery)} className="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 transition hover:text-slate-900" aria-label="Volver al listado">
-              <span aria-hidden>←</span> Volver al listado
+            <Link href={taskListRoute(currentQuery)} className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition hover:text-slate-900" aria-label="Volver al listado">
+              <span aria-hidden>←</span>
             </Link>
             <h1 className="mt-5 text-3xl font-bold tracking-tight text-slate-900 md:text-4xl">{task.title}</h1>
             <p className="mt-4 max-w-3xl text-base leading-7 text-slate-600">{task.description || "Sin descripción todavía."}</p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2 lg:max-w-[520px] lg:justify-end">
+          <div className="flex flex-wrap items-center gap-2 lg:max-w-[620px] lg:justify-end">
             <EntityMemoryActions entity={{ id: task.id, type: 'task', title: task.title, subtitle: task.client_name || "Tarea", href: taskDetailRoute(task.id, currentQuery), updatedAt: task.updated_at ?? task.created_at ?? task.due_date ?? '1970-01-01T00:00:00.000Z' }} />
             <TaskDeleteButton taskId={task.id} />
-            <Link href={taskEditRoute(task.id, currentQuery)} className="inline-flex h-14 items-center justify-center rounded-[24px] border border-slate-200 bg-white px-7 text-sm font-semibold text-slate-900 transition hover:-translate-y-0.5 hover:bg-slate-50">
+            <Link href={taskEditRoute(task.id, currentQuery)} className="inline-flex h-12 items-center justify-center rounded-[20px] border border-slate-200 bg-white px-6 text-sm font-semibold text-slate-900 transition hover:bg-slate-50">
               Editar tarea
             </Link>
             <button
               type="button"
               onClick={() => setDetailsOpen((value) => !value)}
-              className="inline-flex h-14 items-center gap-2 rounded-[24px] border border-slate-200 bg-white px-6 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+              className="inline-flex h-12 items-center gap-2 rounded-[20px] border border-slate-200 bg-white px-5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
             >
               {detailsOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-              {detailsOpen ? "Ocultar detalles" : "Ver detalles"}
+              Ver detalles
             </button>
           </div>
         </div>

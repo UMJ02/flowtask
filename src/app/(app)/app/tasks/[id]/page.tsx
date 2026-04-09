@@ -9,6 +9,7 @@ import { TaskComments } from '@/components/tasks/task-comments';
 import { TaskAssigneesPanel } from '@/components/tasks/task-assignees-panel';
 import { EntityAttachments } from '@/components/attachments/entity-attachments';
 import { TaskPermissionBadge } from '@/components/tasks/task-permission-badge';
+import { Card } from '@/components/ui/card';
 import { getAssignableUsers, getTaskAssignees, getTaskById, getTaskComments } from '@/lib/queries/tasks';
 import { getTaskAttachments } from '@/lib/queries/attachments';
 import { getTaskActivity } from '@/lib/queries/activity';
@@ -44,16 +45,26 @@ export default async function TaskDetailPage({
     <div className="space-y-4">
       <TaskDetailSummary task={task} currentQuery={queryString} />
       <TaskPermissionBadge canEdit={access.canEdit} canManage={access.canManageAssignees} canShare={access.canShare} />
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_380px]">
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_420px]">
         <div className="space-y-4">
           <TaskComments taskId={task.id} comments={comments} canComment={access.canComment} />
           <EntityAttachments entityType="task" entityId={task.id} attachments={attachments} canManage={access.canUploadAttachments} />
           {access.canViewActivity ? <ActivityTimeline items={activity} title="Bitácora de la tarea" description="Seguimiento de estado, responsables, comentarios y adjuntos." compact defaultVisibleCount={3} expandLabel="Ver más movimientos" collapseLabel="Ver menos movimientos" /> : null}
         </div>
         <div className="space-y-4">
-          <TaskStatusForm taskId={task.id} status={task.status} dueDate={task.due_date} shareEnabled={task.share_enabled} shareToken={task.share_token} canEdit={access.canEdit} />
-          <TaskAssigneesPanel taskId={task.id} options={assignableUsers} assignees={assignees} canManage={access.canManageAssignees} />
-          {access.canShare ? <TaskSharePanel enabled={task.share_enabled} token={task.share_token} /> : null}
+          <Card className="rounded-[24px] border border-slate-200/90 bg-white/[0.94] p-4 shadow-[0_10px_30px_rgba(15,23,42,0.04)]">
+            <div className="grid gap-4 xl:grid-cols-3">
+              <div className="rounded-[20px] border border-slate-200 bg-slate-50/70 p-4">
+                <TaskStatusForm taskId={task.id} status={task.status} dueDate={task.due_date} shareEnabled={task.share_enabled} shareToken={task.share_token} canEdit={access.canEdit} embedded />
+              </div>
+              <div className="rounded-[20px] border border-slate-200 bg-slate-50/70 p-4">
+                <TaskAssigneesPanel taskId={task.id} options={assignableUsers} assignees={assignees} canManage={access.canManageAssignees} embedded />
+              </div>
+              <div className="rounded-[20px] border border-slate-200 bg-slate-50/70 p-4">
+                {access.canShare ? <TaskSharePanel enabled={task.share_enabled} token={task.share_token} embedded /> : <p className="text-sm text-slate-500">Tu acceso actual no permite compartir esta tarea por enlace.</p>}
+              </div>
+            </div>
+          </Card>
         </div>
       </div>
     </div>
