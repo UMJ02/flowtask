@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { getAppUrl } from "@/lib/utils/app-url";
 
-export function TaskSharePanel({ enabled, token, embedded = false }: { enabled: boolean; token: string | null; embedded?: boolean }) {
+export function TaskSharePanel({ enabled, token }: { enabled: boolean; token: string | null }) {
   const [copied, setCopied] = useState(false);
   const link = useMemo(() => (enabled && token ? `${getAppUrl()}/share/task/${token}` : null), [enabled, token]);
 
@@ -17,7 +17,7 @@ export function TaskSharePanel({ enabled, token, embedded = false }: { enabled: 
   };
 
   return (
-    <Card className={embedded ? "border-none bg-transparent p-0 shadow-none" : undefined}>
+    <Card>
       <h3 className="text-lg font-semibold text-slate-900">Enlace compartido</h3>
       {!link ? (
         <p className="mt-2 text-sm text-slate-500">Activa la opción de compartir para mostrar esta tarea a jefatura.</p>

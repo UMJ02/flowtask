@@ -130,24 +130,24 @@ export function ActivityTimeline({
           visibleItems.map((item) => {
             const detail = extractDetail(item);
             return (
-              <div key={item.id} className={compact ? "rounded-xl border border-slate-200 bg-white px-3 py-2.5" : "rounded-2xl border border-slate-200 bg-white px-4 py-3"}>
+              <div key={item.id} className="rounded-2xl border border-slate-200 bg-white px-4 py-3">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="flex flex-wrap items-center gap-2">
                     <span className={`inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold ring-1 ${resolveEntityStyle(item)}`}>
                       {resolveEntityLabel(item)}
                     </span>
-                    <p className={compact ? "text-sm font-medium text-slate-900" : "text-sm font-medium text-slate-900"}>{labels[item.action] ?? item.action}</p>
+                    <p className="text-sm font-medium text-slate-900">{labels[item.action] ?? item.action}</p>
                   </div>
                   <p className="text-xs text-slate-500">{formatDate(item.created_at)}</p>
                 </div>
-                {detail.title ? <p className={compact ? "mt-1.5 text-sm text-slate-700" : "mt-2 text-sm text-slate-700"}>{detail.title}</p> : null}
+                {detail.title ? <p className="mt-2 text-sm text-slate-700">{detail.title}</p> : null}
                 {detail.role ? (
-                  <p className={compact ? "mt-1 text-xs text-slate-500" : "mt-2 text-xs text-slate-500"}>
+                  <p className="mt-2 text-xs text-slate-500">
                     Rol{detail.previousRole ? `: ${detail.previousRole} → ${detail.role}` : `: ${detail.role}`}
                   </p>
                 ) : null}
                 {!compact && detail.description ? <p className="mt-2 text-sm text-slate-500">{detail.description}</p> : null}
-                {detail.status ? <p className={compact ? "mt-1 text-xs text-slate-500" : "mt-2 text-xs text-slate-500"}>Estado: {detail.status}</p> : null}
+                {detail.status ? <p className="mt-2 text-xs text-slate-500">Estado: {detail.status}</p> : null}
               </div>
             );
           })

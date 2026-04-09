@@ -19,7 +19,7 @@ interface TaskStatusFormProps {
   canEdit?: boolean;
 }
 
-export function TaskStatusForm({ taskId, status, dueDate, shareEnabled, shareToken, canEdit = true, embedded = false }: TaskStatusFormProps & { embedded?: boolean }) {
+export function TaskStatusForm({ taskId, status, dueDate, shareEnabled, shareToken, canEdit = true }: TaskStatusFormProps) {
   const router = useRouter();
   const [currentStatus, setCurrentStatus] = useState(status);
   const [currentDate, setCurrentDate] = useState(dueDate?.slice(0, 10) ?? "");
@@ -40,12 +40,11 @@ export function TaskStatusForm({ taskId, status, dueDate, shareEnabled, shareTok
     const { data: authData } = await supabase.auth.getUser();
     const user = authData.user;
 
-    const nextDate = currentStatus === "en_espera" ? (currentDate || null) : new Date().toISOString().slice(0, 10);
     const { error: updateError } = await supabase
       .from("tasks")
       .update({
         status: currentStatus,
-        due_date: nextDate,
+        due_date: currentDate || null,
         share_enabled: currentShare,
         share_token: currentShare ? shareToken : null,
       })
@@ -83,7 +82,7 @@ export function TaskStatusForm({ taskId, status, dueDate, shareEnabled, shareTok
   const isBusy = isSaving || isRefreshing;
 
   return (
-    <form className={embedded ? "space-y-3" : "space-y-3 rounded-2xl bg-slate-50 p-4 transition-all duration-200"} onSubmit={handleSave}>
+    <form className="space-y-3 rounded-2xl bg-slate-50 p-4 transition-all duration-200" onSubmit={handleSave}>
       <div>
         <p className="text-sm font-medium text-slate-800">Actualizar seguimiento</p>
         <p className="text-xs text-slate-500">Cambia estado, deadline y visibilidad compartida.</p>
