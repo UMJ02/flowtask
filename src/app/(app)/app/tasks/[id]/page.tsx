@@ -3,8 +3,10 @@ export const dynamic = 'force-dynamic';
 import { notFound } from 'next/navigation';
 import { ActivityTimeline } from '@/components/activity/activity-timeline';
 import { TaskDetailSummary } from '@/components/tasks/task-detail-summary';
+import { TaskStatusForm } from '@/components/tasks/task-status-form';
+import { TaskSharePanel } from '@/components/tasks/task-share-panel';
 import { TaskComments } from '@/components/tasks/task-comments';
-import { TaskOperationsCard } from '@/components/tasks/task-operations-card';
+import { TaskAssigneesPanel } from '@/components/tasks/task-assignees-panel';
 import { EntityAttachments } from '@/components/attachments/entity-attachments';
 import { TaskPermissionBadge } from '@/components/tasks/task-permission-badge';
 import { getAssignableUsers, getTaskAssignees, getTaskById, getTaskComments } from '@/lib/queries/tasks';
@@ -42,25 +44,16 @@ export default async function TaskDetailPage({
     <div className="space-y-4">
       <TaskDetailSummary task={task} currentQuery={queryString} />
       <TaskPermissionBadge canEdit={access.canEdit} canManage={access.canManageAssignees} canShare={access.canShare} />
-      <TaskOperationsCard
-        taskId={task.id}
-        status={task.status}
-        dueDate={task.due_date}
-        shareEnabled={task.share_enabled}
-        shareToken={task.share_token}
-        canEdit={access.canEdit}
-        canManageAssignees={access.canManageAssignees}
-        canShare={access.canShare}
-        assignableUsers={assignableUsers}
-        assignees={assignees}
-      />
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,0.95fr)_minmax(340px,0.7fr)]">
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_380px]">
         <div className="space-y-4">
           <TaskComments taskId={task.id} comments={comments} canComment={access.canComment} />
+          <EntityAttachments entityType="task" entityId={task.id} attachments={attachments} canManage={access.canUploadAttachments} />
           {access.canViewActivity ? <ActivityTimeline items={activity} title="Bitácora de la tarea" description="Seguimiento de estado, responsables, comentarios y adjuntos." compact defaultVisibleCount={3} expandLabel="Ver más movimientos" collapseLabel="Ver menos movimientos" /> : null}
         </div>
         <div className="space-y-4">
-          <EntityAttachments entityType="task" entityId={task.id} attachments={attachments} canManage={access.canUploadAttachments} />
+          <TaskStatusForm taskId={task.id} status={task.status} dueDate={task.due_date} shareEnabled={task.share_enabled} shareToken={task.share_token} canEdit={access.canEdit} />
+          <TaskAssigneesPanel taskId={task.id} options={assignableUsers} assignees={assignees} canManage={access.canManageAssignees} />
+          {access.canShare ? <TaskSharePanel enabled={task.share_enabled} token={task.share_token} /> : null}
         </div>
       </div>
     </div>

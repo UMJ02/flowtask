@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ProjectInviteForm } from "@/components/collaboration/project-invite-form";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { createClient } from "@/lib/supabase/client";
 import { logActivity } from "@/lib/activity/log-client";
 import { formatDate } from "@/lib/utils/dates";
@@ -13,7 +14,7 @@ const ROLE_OPTIONS = [
   { value: "viewer", label: "Viewer" },
 ] as const;
 
-export function ProjectMembers({ projectId, members, canManage = true, embedded = false }: { projectId: string; members: any[]; canManage?: boolean; embedded?: boolean }) {
+export function ProjectMembers({ projectId, members, canManage = true }: { projectId: string; members: any[]; canManage?: boolean }) {
   const router = useRouter();
   const [removingId, setRemovingId] = useState<string | null>(null);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
@@ -58,7 +59,7 @@ export function ProjectMembers({ projectId, members, canManage = true, embedded 
   };
 
   return (
-    <div className={embedded ? "" : "rounded-2xl bg-white"}>
+    <Card>
       <h3 className="text-lg font-semibold text-slate-900">Miembros del proyecto</h3>
       <p className="mt-1 text-sm text-slate-500">Owner, editor y viewer para controlar mejor quién edita y quién solo revisa.</p>
       <div className="mt-4 space-y-3">
@@ -101,6 +102,6 @@ export function ProjectMembers({ projectId, members, canManage = true, embedded 
       <div className="mt-4">
         <ProjectInviteForm projectId={projectId} canManage={canManage} />
       </div>
-    </div>
+    </Card>
   );
 }
