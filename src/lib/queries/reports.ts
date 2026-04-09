@@ -122,7 +122,6 @@ export async function getReportsOverview(): Promise<ReportsOverview> {
   const weekEnd = endOfWeek(today, { weekStartsOn: 1 });
   const activeTasks = typedTasks.filter((task) => task.status !== "concluido");
   const overdueTasks = activeTasks.filter((task) => {
-    if (task.status === "en_espera") return false;
     if (!task.due_date) return false;
     try {
       return parseISO(task.due_date) < today;
@@ -131,7 +130,6 @@ export async function getReportsOverview(): Promise<ReportsOverview> {
     }
   });
   const dueToday = activeTasks.filter((task) => {
-    if (task.status === "en_espera") return false;
     if (!task.due_date) return false;
     try {
       return isToday(parseISO(task.due_date));
@@ -140,7 +138,6 @@ export async function getReportsOverview(): Promise<ReportsOverview> {
     }
   });
   const dueThisWeek = activeTasks.filter((task) => {
-    if (task.status === "en_espera") return false;
     if (!task.due_date) return false;
     try {
       return isWithinInterval(parseISO(task.due_date), { start: today, end: weekEnd });

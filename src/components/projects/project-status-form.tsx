@@ -17,10 +17,9 @@ interface ProjectStatusFormProps {
   shareEnabled: boolean;
   shareToken: string | null;
   canEdit?: boolean;
-  embedded?: boolean;
 }
 
-export function ProjectStatusForm({ projectId, status, dueDate, shareEnabled, shareToken, canEdit = true, embedded = false }: ProjectStatusFormProps) {
+export function ProjectStatusForm({ projectId, status, dueDate, shareEnabled, shareToken, canEdit = true }: ProjectStatusFormProps) {
   const router = useRouter();
   const [currentStatus, setCurrentStatus] = useState(status);
   const [currentDate, setCurrentDate] = useState(dueDate?.slice(0, 10) ?? "");
@@ -78,10 +77,8 @@ export function ProjectStatusForm({ projectId, status, dueDate, shareEnabled, sh
     router.refresh();
   };
 
-  const shellClassName = embedded ? "space-y-3" : "space-y-3 rounded-2xl bg-slate-50 p-4";
-
   return (
-    <form className={shellClassName} onSubmit={handleSave}>
+    <form className="space-y-3 rounded-2xl bg-slate-50 p-4" onSubmit={handleSave}>
       <div>
         <p className="text-sm font-medium text-slate-800">Actualizar proyecto</p>
         <p className="text-xs text-slate-500">Controla estado, deadline y visibilidad pública.</p>

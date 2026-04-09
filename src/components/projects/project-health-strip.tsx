@@ -5,7 +5,7 @@ export function ProjectHealthStrip({ tasks }: { tasks: Array<{ status?: string |
   const total = tasks.length;
   const completed = tasks.filter((item) => item.status === "concluido").length;
   const active = tasks.filter((item) => item.status !== "concluido").length;
-  const overdue = tasks.filter((item) => Boolean(item.due_date && item.due_date < today && item.status !== "concluido" && item.status !== "en_espera")).length;
+  const overdue = tasks.filter((item) => Boolean(item.due_date && item.due_date < today && item.status !== "concluido")).length;
 
   const cards = [
     { label: "Tareas totales", value: total },

@@ -18,13 +18,11 @@ export function TaskAssigneesPanel({
   options,
   assignees,
   canManage = true,
-  embedded = false,
 }: {
   taskId: string;
   options: UserOption[];
   assignees: Array<{ id: string; user_id: string; profiles?: UserOption | UserOption[] | null }>;
   canManage?: boolean;
-  embedded?: boolean;
 }) {
   const router = useRouter();
   const [selectedUserId, setSelectedUserId] = useState(options[0]?.id ?? "");
@@ -86,7 +84,7 @@ export function TaskAssigneesPanel({
   };
 
   return (
-    <div className={embedded ? "space-y-4" : "space-y-4 rounded-[24px] bg-white p-5 shadow-soft"}>
+    <div className="space-y-4 rounded-[24px] bg-white p-5 shadow-soft">
       <div>
         <h3 className="text-lg font-semibold text-slate-900">Responsables</h3>
         <p className="text-sm text-slate-500">Asigna personas relacionadas al proyecto para seguimiento.</p>

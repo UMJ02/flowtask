@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 
-export function TaskDeleteButton({ taskId, compact = false }: { taskId: string; compact?: boolean }) {
+export function TaskDeleteButton({ taskId }: { taskId: string }) {
   const router = useRouter();
   const [isDeleting, setIsDeleting] = useState(false);
   const [isRedirecting, startRedirect] = useTransition();
@@ -34,7 +34,7 @@ export function TaskDeleteButton({ taskId, compact = false }: { taskId: string; 
 
   return (
     <div className="space-y-2">
-      <Button type="button" variant="secondary" onClick={handleDelete} loading={isDeleting || isRedirecting} className={compact ? "h-12 rounded-[22px] px-5" : undefined}>
+      <Button type="button" variant="secondary" onClick={handleDelete} loading={isDeleting || isRedirecting}>
         Eliminar tarea
       </Button>
       {error ? <p className="text-sm text-red-600">{error}</p> : null}

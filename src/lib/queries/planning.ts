@@ -93,7 +93,6 @@ function formatDueLabel(value?: string | null) {
 }
 
 function getTaskUrgency(task: TaskRow, today: Date, nextWeekEnd: Date): PlanningOverview['weeklyFocus'][number]['urgency'] {
-  if (task.status === "en_espera") return "planned";
   const dueDate = parseDate(task.due_date);
   if (!dueDate) return 'planned';
   const diff = differenceInCalendarDays(dueDate, today);

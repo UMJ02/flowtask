@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { getAppUrl } from "@/lib/utils/app-url";
 
-export function ProjectSharePanel({ enabled, token, embedded = false }: { enabled: boolean; token: string | null; embedded?: boolean }) {
+export function ProjectSharePanel({ enabled, token }: { enabled: boolean; token: string | null }) {
   const [copied, setCopied] = useState(false);
   const link = useMemo(() => (enabled && token ? `${getAppUrl()}/share/project/${token}` : null), [enabled, token]);
 
@@ -15,25 +15,6 @@ export function ProjectSharePanel({ enabled, token, embedded = false }: { enable
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
   };
-
-  if (embedded) {
-    return (
-      <div>
-        <h3 className="text-sm font-semibold text-slate-900">Enlace compartido</h3>
-        {!link ? (
-          <p className="mt-2 text-sm text-slate-500">Activa compartir para generar la vista de jefatura.</p>
-        ) : (
-          <>
-            <p className="mt-2 break-all rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-700">{link}</p>
-            <div className="mt-4 flex flex-wrap gap-3">
-              <Button type="button" onClick={copyLink}>{copied ? "Copiado" : "Copiar link"}</Button>
-              <a className="inline-flex h-11 items-center justify-center rounded-2xl bg-slate-100 px-4 text-sm font-medium text-slate-700" href={link} target="_blank" rel="noreferrer">Abrir vista</a>
-            </div>
-          </>
-        )}
-      </div>
-    );
-  }
 
   return (
     <Card>
