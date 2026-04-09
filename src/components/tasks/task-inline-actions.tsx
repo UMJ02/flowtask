@@ -40,7 +40,9 @@ export function TaskInlineActions({ taskId, status }: { taskId: string; status: 
     setCurrentStatus(nextStatus);
 
     const supabase = createClient();
-    const { error } = await supabase.from('tasks').update({ status: nextStatus }).eq('id', taskId);
+    const nextDate = nextStatus === 'en_espera' ? undefined : new Date().toISOString().slice(0, 10);
+    const payload = nextStatus === 'en_espera' ? { status: nextStatus } : { status: nextStatus, due_date: nextDate };
+    const { error } = await supabase.from('tasks').update(payload).eq('id', taskId);
 
     if (error) {
       setCurrentStatus(previousStatus);

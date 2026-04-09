@@ -28,6 +28,7 @@ function getDepartmentName(reference: DepartmentReference) {
 }
 
 function getTaskUrgency(task: TaskRow, today: Date, nextWeekEnd: Date): 'critical' | 'attention' | 'stable' {
+  if (task.status === 'en_espera') return 'stable';
   if (!task.due_date) return 'stable';
   try {
     const dueDate = parseISO(task.due_date);

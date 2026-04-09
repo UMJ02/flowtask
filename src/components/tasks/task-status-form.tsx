@@ -17,9 +17,10 @@ interface TaskStatusFormProps {
   shareEnabled: boolean;
   shareToken: string | null;
   canEdit?: boolean;
+  embedded?: boolean;
 }
 
-export function TaskStatusForm({ taskId, status, dueDate, shareEnabled, shareToken, canEdit = true }: TaskStatusFormProps) {
+export function TaskStatusForm({ taskId, status, dueDate, shareEnabled, shareToken, canEdit = true, embedded = false }: TaskStatusFormProps) {
   const router = useRouter();
   const [currentStatus, setCurrentStatus] = useState(status);
   const [currentDate, setCurrentDate] = useState(dueDate?.slice(0, 10) ?? "");
@@ -40,11 +41,14 @@ export function TaskStatusForm({ taskId, status, dueDate, shareEnabled, shareTok
     const { data: authData } = await supabase.auth.getUser();
     const user = authData.user;
 
+    const today = new Date().toISOString().slice(0, 10);
+    const nextDate = currentStatus === "en_espera" ? (currentDate || null) : today;
+
     const { error: updateError } = await supabase
-      .from("tasks")
+.from("tasks")
       .update({
         status: currentStatus,
-        due_date: currentDate || null,
+        due_date: nextDate,
         share_enabled: currentShare,
         share_token: currentShare ? shareToken : null,
       })
@@ -81,11 +85,13 @@ export function TaskStatusForm({ taskId, status, dueDate, shareEnabled, shareTok
 
   const isBusy = isSaving || isRefreshing;
 
+  const shellClassName = embedded ? "space-y-3" : "space-y-3 rounded-2xl bg-slate-50 p-4 transition-all duration-200";
+
   return (
-    <form className="space-y-3 rounded-2xl bg-slate-50 p-4 transition-all duration-200" onSubmit={handleSave}>
+    <form className={shellClassName} onSubmit={handleSave}>
       <div>
         <p className="text-sm font-medium text-slate-800">Actualizar seguimiento</p>
-        <p className="text-xs text-slate-500">Cambia estado, deadline y visibilidad compartida.</p>
+        <p className="text-xs text-slate-500">Si vuelve a proceso o se concluye, la fecha se actualiza al día del cambio.</p>
       </div>
       <div className="grid gap-3 md:grid-cols-2">
         <Select value={currentStatus} onChange={(event) => setCurrentStatus(event.target.value)} disabled={!canEdit || isBusy}>
