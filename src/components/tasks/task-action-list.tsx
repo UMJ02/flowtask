@@ -8,6 +8,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Select } from "@/components/ui/select";
+import { getTaskDateForStatusChange } from "@/lib/tasks/status-rules";
 import { taskDetailRoute, taskEditRoute } from "@/lib/navigation/routes";
 import { useWorkspaceMemory } from "@/hooks/use-workspace-memory";
 
@@ -93,7 +94,7 @@ function TaskActionListComponent({ tasks, currentQuery = "" }: { tasks: TaskRow[
       setItems((current) => current.map((item) => (item.id === taskId ? { ...item, status: "concluido" } : item)));
       setClosingId(null);
 
-      const { error } = await supabase.from("tasks").update({ status: "concluido" }).eq("id", taskId);
+      const { error } = await supabase.from("tasks").update({ status: "concluido", due_date: getTaskDateForStatusChange("concluido") ?? null }).eq("id", taskId);
       if (error) {
         router.refresh();
       }
@@ -183,38 +184,15 @@ function TaskActionListComponent({ tasks, currentQuery = "" }: { tasks: TaskRow[
   return (
     <div className="space-y-4">
       <Card className="rounded-[28px] border border-slate-200/90 p-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)] md:p-6">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Lista de tareas</p>
-          <h2 className="mt-2 text-[1.35rem] font-bold tracking-tight text-slate-900">Vista limpia para resolver más rápido</h2>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
-            Deja al frente solo el nombre, la prioridad y la fecha para decidir rápido qué sigue.
-          </p>
-        </div>
-      </Card>
-
-      <div
-        className={[
-          "space-y-3 transition-all duration-300",
-          pageAnimation === "out-next" && "translate-x-4 opacity-0",
-          pageAnimation === "out-prev" && "-translate-x-4 opacity-0",
-          pageAnimation === "in-next" && "animate-[slideInFromRight_220ms_ease-out]",
-          pageAnimation === "in-prev" && "animate-[slideInFromLeft_220ms_ease-out]",
-        ]
-          .filter(Boolean)
-          .join(" ")}
-      >
-        {currentItems.length ? (
-          currentItems.map((task) => renderItem(task, false))
-        ) : (
-          <Card className="rounded-[24px] border border-slate-200 bg-slate-50/80 p-6 text-sm text-slate-500">
-            No hay tareas activas para este filtro.
-          </Card>
-        )}
-      </div>
-
-      <Card className="rounded-[24px] border border-slate-200/90 bg-white/95 px-4 py-4 shadow-[0_10px_24px_rgba(15,23,42,0.04)]">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Lista de tareas</p>
+            <h2 className="mt-2 text-[1.35rem] font-bold tracking-tight text-slate-900">Vista limpia para resolver más rápido</h2>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
+              Deja al frente solo el nombre, la prioridad y la fecha para decidir rápido qué sigue.
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2 xl:justify-end">
             <button
               type="button"
               onClick={() => setFavoritesOnly((value) => !value)}
@@ -240,7 +218,31 @@ function TaskActionListComponent({ tasks, currentQuery = "" }: { tasks: TaskRow[
               </Select>
             </div>
           </div>
+        </div>
+      </Card>
 
+      <div
+        className={[
+          "space-y-3 transition-all duration-300",
+          pageAnimation === "out-next" && "translate-x-4 opacity-0",
+          pageAnimation === "out-prev" && "-translate-x-4 opacity-0",
+          pageAnimation === "in-next" && "animate-[slideInFromRight_220ms_ease-out]",
+          pageAnimation === "in-prev" && "animate-[slideInFromLeft_220ms_ease-out]",
+        ]
+          .filter(Boolean)
+          .join(" ")}
+      >
+        {currentItems.length ? (
+          currentItems.map((task) => renderItem(task, false))
+        ) : (
+          <Card className="rounded-[24px] border border-slate-200 bg-slate-50/80 p-6 text-sm text-slate-500">
+            No hay tareas activas para este filtro.
+          </Card>
+        )}
+      </div>
+
+      <Card className="rounded-[24px] border border-slate-200/90 bg-white/95 px-4 py-4 shadow-[0_10px_24px_rgba(15,23,42,0.04)]">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex flex-wrap items-center gap-2 md:justify-end">
             <div className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-2 py-2">
               <Button

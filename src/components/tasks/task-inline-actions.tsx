@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils/classnames';
+import { getTaskDateForStatusChange } from '@/lib/tasks/status-rules';
 
 const OPTIONS = [
   { value: 'en_proceso', label: 'En proceso', icon: CircleDot },
@@ -40,7 +41,7 @@ export function TaskInlineActions({ taskId, status }: { taskId: string; status: 
     setCurrentStatus(nextStatus);
 
     const supabase = createClient();
-    const { error } = await supabase.from('tasks').update({ status: nextStatus }).eq('id', taskId);
+    const { error } = await supabase.from('tasks').update({ status: nextStatus, due_date: getTaskDateForStatusChange(nextStatus) }).eq('id', taskId);
 
     if (error) {
       setCurrentStatus(previousStatus);

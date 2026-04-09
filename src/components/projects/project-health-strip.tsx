@@ -1,11 +1,11 @@
 import { Card } from "@/components/ui/card";
+import { isTaskOverdue } from "@/lib/tasks/status-rules";
 
 export function ProjectHealthStrip({ tasks }: { tasks: Array<{ status?: string | null; due_date?: string | null }> }) {
-  const today = '9999-12-31';
   const total = tasks.length;
   const completed = tasks.filter((item) => item.status === "concluido").length;
   const active = tasks.filter((item) => item.status !== "concluido").length;
-  const overdue = tasks.filter((item) => Boolean(item.due_date && item.due_date < today && item.status !== "concluido")).length;
+  const overdue = tasks.filter((item) => isTaskOverdue(item.due_date, item.status)).length;
 
   const cards = [
     { label: "Tareas totales", value: total },

@@ -3,6 +3,7 @@ import { getRecentActivitySummary } from "@/lib/queries/activity";
 import { getClients } from "@/lib/queries/clients";
 import { getProjects } from "@/lib/queries/projects";
 import { getTasks } from "@/lib/queries/tasks";
+import { isTaskOverdue } from "@/lib/tasks/status-rules";
 
 type TaskRow = Awaited<ReturnType<typeof getTasks>>[number];
 type ProjectRow = Awaited<ReturnType<typeof getProjects>>[number];
@@ -124,7 +125,7 @@ export async function getReportsOverview(): Promise<ReportsOverview> {
   const overdueTasks = activeTasks.filter((task) => {
     if (!task.due_date) return false;
     try {
-      return parseISO(task.due_date) < today;
+      return isTaskOverdue(task.due_date, task.status);
     } catch {
       return false;
     }
@@ -174,7 +175,7 @@ export async function getReportsOverview(): Promise<ReportsOverview> {
         try {
           const dueDate = parseISO(task.due_date);
           dueLabel = format(dueDate, "dd/MM/yyyy");
-          if (dueDate < today) urgency = "overdue";
+          if (isTaskOverdue(task.due_date, task.status)) urgency = "overdue";
           else if (isToday(dueDate)) urgency = "today";
         } catch {
           dueLabel = task.due_date;

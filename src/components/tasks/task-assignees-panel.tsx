@@ -18,11 +18,13 @@ export function TaskAssigneesPanel({
   options,
   assignees,
   canManage = true,
+  compact = false,
 }: {
   taskId: string;
   options: UserOption[];
   assignees: Array<{ id: string; user_id: string; profiles?: UserOption | UserOption[] | null }>;
   canManage?: boolean;
+  compact?: boolean;
 }) {
   const router = useRouter();
   const [selectedUserId, setSelectedUserId] = useState(options[0]?.id ?? "");
@@ -84,7 +86,7 @@ export function TaskAssigneesPanel({
   };
 
   return (
-    <div className="space-y-4 rounded-[24px] bg-white p-5 shadow-soft">
+    <div className={`space-y-4 rounded-[24px] border border-slate-200 bg-white p-5 shadow-soft ${compact ? "h-full" : ""}`}>
       <div>
         <h3 className="text-lg font-semibold text-slate-900">Responsables</h3>
         <p className="text-sm text-slate-500">Asigna personas relacionadas al proyecto para seguimiento.</p>

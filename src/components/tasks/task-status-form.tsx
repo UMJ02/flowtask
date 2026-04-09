@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { logActivity } from "@/lib/activity/log-client";
 import { createClientNotification } from "@/lib/notifications/create-client-notification";
+import { getTaskDateForStatusChange } from "@/lib/tasks/status-rules";
 
 interface TaskStatusFormProps {
   taskId: string;
@@ -17,9 +18,10 @@ interface TaskStatusFormProps {
   shareEnabled: boolean;
   shareToken: string | null;
   canEdit?: boolean;
+  compact?: boolean;
 }
 
-export function TaskStatusForm({ taskId, status, dueDate, shareEnabled, shareToken, canEdit = true }: TaskStatusFormProps) {
+export function TaskStatusForm({ taskId, status, dueDate, shareEnabled, shareToken, canEdit = true, compact = false }: TaskStatusFormProps) {
   const router = useRouter();
   const [currentStatus, setCurrentStatus] = useState(status);
   const [currentDate, setCurrentDate] = useState(dueDate?.slice(0, 10) ?? "");
@@ -40,11 +42,13 @@ export function TaskStatusForm({ taskId, status, dueDate, shareEnabled, shareTok
     const { data: authData } = await supabase.auth.getUser();
     const user = authData.user;
 
+    const nextDueDate = getTaskDateForStatusChange(currentStatus) ?? (currentDate || null);
+
     const { error: updateError } = await supabase
       .from("tasks")
       .update({
         status: currentStatus,
-        due_date: currentDate || null,
+        due_date: nextDueDate,
         share_enabled: currentShare,
         share_token: currentShare ? shareToken : null,
       })
@@ -74,6 +78,7 @@ export function TaskStatusForm({ taskId, status, dueDate, shareEnabled, shareTok
       });
     }
 
+    setCurrentDate(nextDueDate ?? "");
     setMessage("Cambios aplicados.");
     setIsSaving(false);
     startRefresh(() => router.refresh());
@@ -82,7 +87,7 @@ export function TaskStatusForm({ taskId, status, dueDate, shareEnabled, shareTok
   const isBusy = isSaving || isRefreshing;
 
   return (
-    <form className="space-y-3 rounded-2xl bg-slate-50 p-4 transition-all duration-200" onSubmit={handleSave}>
+    <form className={`space-y-3 rounded-2xl border border-slate-200 bg-slate-50/80 p-4 transition-all duration-200 ${compact ? "h-full" : ""}`} onSubmit={handleSave}>
       <div>
         <p className="text-sm font-medium text-slate-800">Actualizar seguimiento</p>
         <p className="text-xs text-slate-500">Cambia estado, deadline y visibilidad compartida.</p>
