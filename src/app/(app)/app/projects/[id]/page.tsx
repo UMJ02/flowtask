@@ -52,7 +52,7 @@ export default async function ProjectDetailPage({
           <ProjectTaskList tasks={tasks} />
           <ProjectComments projectId={project.id} comments={comments} canComment={access.canComment} />
           <EntityAttachments entityType="project" entityId={project.id} attachments={attachments} canManage={access.canUploadAttachments} />
-          {access.canViewActivity ? <ActivityTimeline items={activity} title="Bitácora del proyecto" description="Cambios de estado, miembros, adjuntos y edición del proyecto." defaultVisibleCount={3} expandLabel="Ver más actividad del proyecto" collapseLabel="Ver menos actividad del proyecto" /> : null}
+          {access.canViewActivity ? <ActivityTimeline items={activity} title="Bitácora del proyecto" description="Cambios de estado, miembros, adjuntos y edición del proyecto." compact defaultVisibleCount={3} expandLabel="Ver más actividad del proyecto" collapseLabel="Ver menos actividad del proyecto" /> : null}
         </div>
         <div className="space-y-4">
           <div className="rounded-[24px] border border-slate-200/90 bg-white/[0.92] p-4 shadow-[0_10px_30px_rgba(15,23,42,0.04)]">

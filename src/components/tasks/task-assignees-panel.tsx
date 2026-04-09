@@ -18,11 +18,13 @@ export function TaskAssigneesPanel({
   options,
   assignees,
   canManage = true,
+  embedded = false,
 }: {
   taskId: string;
   options: UserOption[];
   assignees: Array<{ id: string; user_id: string; profiles?: UserOption | UserOption[] | null }>;
   canManage?: boolean;
+  embedded?: boolean;
 }) {
   const router = useRouter();
   const [selectedUserId, setSelectedUserId] = useState(options[0]?.id ?? "");
@@ -84,7 +86,7 @@ export function TaskAssigneesPanel({
   };
 
   return (
-    <div className="space-y-4 rounded-[24px] bg-white p-5 shadow-soft">
+    <div className={`space-y-4 rounded-[24px] ${embedded ? "border border-slate-200 bg-white p-4 shadow-sm" : "bg-white p-5 shadow-soft"}`}>
       <div>
         <h3 className="text-lg font-semibold text-slate-900">Responsables</h3>
         <p className="text-sm text-slate-500">Asigna personas relacionadas al proyecto para seguimiento.</p>
@@ -107,7 +109,7 @@ export function TaskAssigneesPanel({
         }) : <p className="text-sm text-slate-500">Todavía no hay responsables asignados.</p>}
       </div>
 
-      <form className="space-y-3 rounded-2xl border border-slate-200 p-4" onSubmit={handleAssign}>
+      <form className={`space-y-3 rounded-2xl border border-slate-200 ${embedded ? "bg-slate-50/70 p-3.5" : "p-4"}`} onSubmit={handleAssign}>
         <p className="text-sm font-medium text-slate-800">Asignar responsable</p>
         <Select value={selectedUserId} onChange={(event) => setSelectedUserId(event.target.value)} disabled={!canManage || isSaving}>
           {options.map((option) => (

@@ -2,6 +2,7 @@ import { addDays, differenceInCalendarDays, format, parseISO, startOfDay } from 
 import { getProjects } from '@/lib/queries/projects';
 import { getTasks } from '@/lib/queries/tasks';
 import { getClients } from '@/lib/queries/clients';
+import { isTaskOverdue, isTaskPaused } from '@/lib/tasks/status';
 
 type TaskRow = Awaited<ReturnType<typeof getTasks>>[number];
 type ProjectRow = Awaited<ReturnType<typeof getProjects>>[number];
@@ -139,7 +140,7 @@ export async function getPlanningOverview(): Promise<PlanningOverview> {
 
   const overdueOpenTasks = openTasks.filter((task) => {
     const dueDate = parseDate(task.due_date);
-    return dueDate ? dueDate < today : false;
+    return dueDate ? isTaskOverdue(task.due_date, task.status, today.toISOString().slice(0, 10)) : false;
   }).length;
 
   const dueBuckets: PlanningOverview['dueBuckets'] = [
