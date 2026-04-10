@@ -232,3 +232,13 @@ textarea::placeholder {
   50% { transform: translateY(-2px); filter: saturate(1.04); }
   100% { transform: translateY(0); filter: saturate(1); }
 }
+
+
+.route-loader-leaving {
+  animation: routeLoaderFadeOut 360ms ease forwards;
+}
+
+@keyframes routeLoaderFadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
