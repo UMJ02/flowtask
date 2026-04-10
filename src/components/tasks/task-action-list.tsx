@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useEffect, useMemo, useState, useTransition } from "react";
+import { memo, useEffect, useMemo, useState, useTransition, type ReactNode } from "react";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, CheckCircle2, Eye, LayoutGrid, List, Pencil, Star, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -69,10 +69,12 @@ function TaskActionListComponent({
   tasks,
   currentQuery = "",
   initialView = "cards",
+  searchPanel,
 }: {
   tasks: TaskRow[];
   currentQuery?: string;
   initialView?: string;
+  searchPanel?: ReactNode;
 }) {
   const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
@@ -311,6 +313,8 @@ function TaskActionListComponent({
           </div>
         </div>
       </Card>
+
+      {searchPanel ? <div>{searchPanel}</div> : null}
 
       <div
         className={[

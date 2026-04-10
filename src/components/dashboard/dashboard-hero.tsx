@@ -2,7 +2,8 @@ import Link from 'next/link';
 import { AlertTriangle, ArrowRight, BriefcaseBusiness, CalendarClock, CircleDashed, Sparkles } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { WorkspaceFloatingActions } from '@/components/workspace/floating-actions';
-import { asRoute, projectListRoute, taskListRoute, type AppRoute } from '@/lib/navigation/routes';
+import { asRoute, projectListRoute, taskListRoute } from '@/lib/navigation/routes';
+import type { AppRoute } from '@/lib/navigation/routes';
 
 function metricTone(value: number, variant: 'danger' | 'warning' | 'neutral' = 'neutral') {
   if (variant === 'danger') return value > 0 ? 'text-rose-700 bg-rose-50 ring-rose-100' : 'text-slate-700 bg-slate-50 ring-slate-100';
@@ -21,36 +22,36 @@ const hoverThemes: Record<MetricVariant, {
   button: string;
 }> = {
   waiting: {
-    border: 'group-hover:border-amber-200',
-    shadow: 'group-hover:shadow-[0_18px_34px_rgba(245,158,11,0.14)]',
-    surface: 'group-hover:bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(255,251,235,0.98))]',
-    icon: 'group-hover:border-amber-200 group-hover:bg-amber-50 group-hover:text-amber-700',
+    border: 'hover:border-amber-300 hover:ring-2 hover:ring-amber-200/70',
+    shadow: 'hover:shadow-[0_18px_34px_rgba(245,158,11,0.18)]',
+    surface: 'hover:bg-amber-50/70',
+    icon: 'group-hover:border-amber-300 group-hover:bg-amber-100 group-hover:text-amber-800',
     text: 'group-hover:text-amber-950',
-    button: 'group-hover:border-amber-200 group-hover:bg-amber-50 group-hover:text-amber-700',
+    button: 'group-hover:border-amber-300 group-hover:bg-amber-100 group-hover:text-amber-800',
   },
   overdue: {
-    border: 'group-hover:border-rose-200',
-    shadow: 'group-hover:shadow-[0_18px_34px_rgba(244,63,94,0.14)]',
-    surface: 'group-hover:bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(255,241,242,0.98))]',
-    icon: 'group-hover:border-rose-200 group-hover:bg-rose-50 group-hover:text-rose-700',
+    border: 'hover:border-rose-300 hover:ring-2 hover:ring-rose-200/70',
+    shadow: 'hover:shadow-[0_18px_34px_rgba(244,63,94,0.18)]',
+    surface: 'hover:bg-rose-50/70',
+    icon: 'group-hover:border-rose-300 group-hover:bg-rose-100 group-hover:text-rose-800',
     text: 'group-hover:text-rose-950',
-    button: 'group-hover:border-rose-200 group-hover:bg-rose-50 group-hover:text-rose-700',
+    button: 'group-hover:border-rose-300 group-hover:bg-rose-100 group-hover:text-rose-800',
   },
   dueSoon: {
-    border: 'group-hover:border-orange-200',
-    shadow: 'group-hover:shadow-[0_18px_34px_rgba(249,115,22,0.14)]',
-    surface: 'group-hover:bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(255,247,237,0.98))]',
-    icon: 'group-hover:border-orange-200 group-hover:bg-orange-50 group-hover:text-orange-700',
+    border: 'hover:border-orange-300 hover:ring-2 hover:ring-orange-200/70',
+    shadow: 'hover:shadow-[0_18px_34px_rgba(249,115,22,0.18)]',
+    surface: 'hover:bg-orange-50/70',
+    icon: 'group-hover:border-orange-300 group-hover:bg-orange-100 group-hover:text-orange-800',
     text: 'group-hover:text-orange-950',
-    button: 'group-hover:border-orange-200 group-hover:bg-orange-50 group-hover:text-orange-700',
+    button: 'group-hover:border-orange-300 group-hover:bg-orange-100 group-hover:text-orange-800',
   },
   projects: {
-    border: 'group-hover:border-emerald-200',
-    shadow: 'group-hover:shadow-[0_18px_34px_rgba(16,185,129,0.14)]',
-    surface: 'group-hover:bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(236,253,245,0.98))]',
-    icon: 'group-hover:border-emerald-200 group-hover:bg-emerald-50 group-hover:text-emerald-700',
+    border: 'hover:border-emerald-300 hover:ring-2 hover:ring-emerald-200/70',
+    shadow: 'hover:shadow-[0_18px_34px_rgba(16,185,129,0.18)]',
+    surface: 'hover:bg-emerald-50/70',
+    icon: 'group-hover:border-emerald-300 group-hover:bg-emerald-100 group-hover:text-emerald-800',
     text: 'group-hover:text-emerald-950',
-    button: 'group-hover:border-emerald-200 group-hover:bg-emerald-50 group-hover:text-emerald-700',
+    button: 'group-hover:border-emerald-300 group-hover:bg-emerald-100 group-hover:text-emerald-800',
   },
 };
 
@@ -60,14 +61,12 @@ export function DashboardHero({
   overdueTasks,
   dueSoonTasks,
   activeProjects,
-  activeProjectHref,
 }: {
   activeTasks: number;
   waitingTasks: number;
   overdueTasks: number;
   dueSoonTasks: number;
   activeProjects: number;
-  activeProjectHref?: AppRoute;
 }) {
   const focusLabel = overdueTasks > 0
     ? 'Tu foco inmediato está en resolver vencimientos y destrabar pendientes críticos.'
@@ -117,7 +116,7 @@ export function DashboardHero({
       helper: 'frentes abiertos',
       icon: BriefcaseBusiness,
       tone: metricTone(activeProjects),
-      href: activeProjectHref ?? projectListRoute('status=activo'),
+      href: projectListRoute('status=activo'),
       variant: 'projects',
     },
   ];
@@ -164,7 +163,7 @@ export function DashboardHero({
                 key={metric.label}
                 href={metric.href}
                 className={[
-                  'group relative overflow-hidden rounded-[24px] border border-white/70 bg-white/[0.90] p-4 shadow-[0_12px_26px_rgba(15,23,42,0.05)] ring-1 ring-slate-100 backdrop-blur transition-all duration-300 hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-200',
+                  'group relative overflow-hidden rounded-[24px] border border-slate-200 bg-white p-4 shadow-[0_12px_26px_rgba(15,23,42,0.05)] ring-1 ring-slate-100 transition-all duration-300 hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-200',
                   theme.border,
                   theme.shadow,
                   theme.surface,

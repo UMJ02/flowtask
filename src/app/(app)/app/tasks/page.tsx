@@ -57,8 +57,6 @@ export default async function TasksPage({ searchParams }: { searchParams?: Promi
         </Link>
       </Card>
 
-      <TaskSearchPanel filters={filters} />
-
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
         {metricCard('Total visible', stats.total, 'resultado actual')}
         {metricCard('En progreso', stats.inProgress, 'trabajo activo')}
@@ -76,7 +74,7 @@ export default async function TasksPage({ searchParams }: { searchParams?: Promi
         </Card>
       )}
 
-      <TaskWorkspace tasks={tasks.map((task) => ({
+      <TaskWorkspace searchPanel={<TaskSearchPanel filters={filters} />} tasks={tasks.map((task) => ({
         id: task.id,
         title: task.title,
         status: task.status,
