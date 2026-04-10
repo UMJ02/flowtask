@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { AlertTriangle, ArrowRight, BriefcaseBusiness, CalendarClock, CircleDashed, Sparkles } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { WorkspaceFloatingActions } from '@/components/workspace/floating-actions';
-import { asRoute } from '@/lib/navigation/routes';
+import { asRoute, projectListRoute, taskListRoute } from '@/lib/navigation/routes';
 
 function metricTone(value: number, variant: 'danger' | 'warning' | 'neutral' = 'neutral') {
   if (variant === 'danger') return value > 0 ? 'text-rose-700 bg-rose-50 ring-rose-100' : 'text-slate-700 bg-slate-50 ring-slate-100';
@@ -36,6 +36,7 @@ export function DashboardHero({
       helper: 'requieren seguimiento',
       icon: CircleDashed,
       tone: metricTone(waitingTasks, 'warning'),
+      href: taskListRoute('status=en_espera&view=list'),
     },
     {
       label: 'Vencidas',
@@ -43,6 +44,7 @@ export function DashboardHero({
       helper: 'prioridad máxima',
       icon: AlertTriangle,
       tone: metricTone(overdueTasks, 'danger'),
+      href: taskListRoute('due=overdue&view=list'),
     },
     {
       label: 'Próximas por vencer',
@@ -50,6 +52,7 @@ export function DashboardHero({
       helper: 'siguiente ventana',
       icon: CalendarClock,
       tone: metricTone(dueSoonTasks, 'warning'),
+      href: taskListRoute('due=soon&view=list'),
     },
     {
       label: 'Proyectos activos',
@@ -57,6 +60,7 @@ export function DashboardHero({
       helper: 'frentes abiertos',
       icon: BriefcaseBusiness,
       tone: metricTone(activeProjects),
+      href: projectListRoute('status=activo'),
     },
   ];
 
@@ -97,18 +101,25 @@ export function DashboardHero({
           {metrics.map((metric) => {
             const Icon = metric.icon;
             return (
-              <div key={metric.label} className="rounded-[24px] border border-white/70 bg-white/[0.90] p-4 shadow-[0_12px_26px_rgba(15,23,42,0.05)] ring-1 ring-slate-100 backdrop-blur">
+              <Link
+                key={metric.label}
+                href={metric.href}
+                className="group rounded-[24px] border border-white/70 bg-white/[0.90] p-4 shadow-[0_12px_26px_rgba(15,23,42,0.05)] ring-1 ring-slate-100 backdrop-blur transition duration-200 hover:-translate-y-1 hover:shadow-[0_18px_34px_rgba(15,23,42,0.10)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-200"
+              >
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className="text-sm font-semibold text-slate-900">{metric.label}</p>
+                    <p className="text-sm font-semibold text-slate-900 transition group-hover:text-slate-950">{metric.label}</p>
                     <p className="mt-1 text-xs text-slate-500">{metric.helper}</p>
                   </div>
-                  <span className={`inline-flex h-11 w-11 items-center justify-center rounded-2xl ring-1 ${metric.tone}`}>
+                  <span className={`inline-flex h-11 w-11 items-center justify-center rounded-2xl ring-1 transition duration-200 group-hover:scale-105 ${metric.tone}`}>
                     <Icon className="h-5 w-5" />
                   </span>
                 </div>
-                <p className="mt-5 text-4xl font-bold tracking-tight text-slate-900">{metric.value}</p>
-              </div>
+                <div className="mt-5 flex items-end justify-between gap-3">
+                  <p className="text-4xl font-bold tracking-tight text-slate-900">{metric.value}</p>
+                  <span className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400 transition group-hover:text-emerald-600">Abrir</span>
+                </div>
+              </Link>
             );
           })}
         </div>

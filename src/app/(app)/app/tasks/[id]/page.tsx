@@ -3,10 +3,8 @@ export const dynamic = 'force-dynamic';
 import { notFound } from 'next/navigation';
 import { ActivityTimeline } from '@/components/activity/activity-timeline';
 import { TaskDetailSummary } from '@/components/tasks/task-detail-summary';
-import { TaskStatusForm } from '@/components/tasks/task-status-form';
-import { TaskSharePanel } from '@/components/tasks/task-share-panel';
 import { TaskComments } from '@/components/tasks/task-comments';
-import { TaskAssigneesPanel } from '@/components/tasks/task-assignees-panel';
+import { TaskOperationalPanel } from '@/components/tasks/task-operational-panel';
 import { EntityAttachments } from '@/components/attachments/entity-attachments';
 import { TaskPermissionBadge } from '@/components/tasks/task-permission-badge';
 import { getAssignableUsers, getTaskAssignees, getTaskById, getTaskComments } from '@/lib/queries/tasks';
@@ -51,11 +49,18 @@ export default async function TaskDetailPage({
             <h2 className="mt-2 text-lg font-bold text-slate-900">Seguimiento, responsables y enlace en un solo bloque</h2>
             <p className="mt-1 text-sm text-slate-500">Todo el control de esta tarea debajo del acceso operativo, sin repartir la edición en varios cards.</p>
           </div>
-          <div className="mt-4 grid gap-4 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)_minmax(0,0.9fr)]">
-            <TaskStatusForm taskId={task.id} status={task.status} dueDate={task.due_date} shareEnabled={task.share_enabled} shareToken={task.share_token} canEdit={access.canEdit} />
-            <TaskAssigneesPanel taskId={task.id} options={assignableUsers} assignees={assignees} canManage={access.canManageAssignees} />
-            {access.canShare ? <TaskSharePanel enabled={task.share_enabled} token={task.share_token} /> : <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50/80 px-4 py-4 text-sm text-slate-500">Sin acceso para compartir esta tarea.</div>}
-          </div>
+          <TaskOperationalPanel
+            taskId={task.id}
+            status={task.status}
+            dueDate={task.due_date}
+            shareEnabled={task.share_enabled}
+            shareToken={task.share_token}
+            options={assignableUsers}
+            assignees={assignees}
+            canEdit={access.canEdit}
+            canManageAssignees={access.canManageAssignees}
+            canShare={access.canShare}
+          />
         </div>
         <TaskComments taskId={task.id} comments={comments} canComment={access.canComment} />
         <EntityAttachments entityType="task" entityId={task.id} attachments={attachments} canManage={access.canUploadAttachments} />

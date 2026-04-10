@@ -1,34 +1,48 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { TASK_STATUSES } from "@/lib/constants/task-status";
+import { logActivity } from "@/lib/activity/log-client";
+import { createClientNotification } from "@/lib/notifications/create-client-notification";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
-import { logActivity } from "@/lib/activity/log-client";
-import { createClientNotification } from "@/lib/notifications/create-client-notification";
+import { generateShareToken } from "@/lib/utils/tokens";
 import { getTaskStatusUpdatePayload, todayIsoDate } from "@/lib/tasks/status";
 
 interface TaskStatusFormProps {
   taskId: string;
   status: string;
-  dueDate: string | null;
+  dueDate?: string | null;
   shareEnabled: boolean;
   shareToken: string | null;
   canEdit?: boolean;
+  onSaved?: (next: { status: string; dueDate: string | null; shareEnabled: boolean; shareToken: string | null }) => void;
 }
 
-export function TaskStatusForm({ taskId, status, dueDate, shareEnabled, shareToken, canEdit = true }: TaskStatusFormProps) {
+export function TaskStatusForm({ taskId, status, dueDate, shareEnabled, shareToken, canEdit = true, onSaved }: TaskStatusFormProps) {
   const router = useRouter();
   const [currentStatus, setCurrentStatus] = useState(status);
-  const [currentDate, setCurrentDate] = useState(dueDate?.slice(0, 10) ?? "");
+  const [currentDate, setCurrentDate] = useState(dueDate ?? "");
   const [currentShare, setCurrentShare] = useState(shareEnabled);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isRefreshing, startRefresh] = useTransition();
+
+  useEffect(() => {
+    setCurrentStatus(status);
+  }, [status]);
+
+  useEffect(() => {
+    setCurrentDate(dueDate ?? "");
+  }, [dueDate]);
+
+  useEffect(() => {
+    setCurrentShare(shareEnabled);
+  }, [shareEnabled]);
 
   const handleSave = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -42,12 +56,14 @@ export function TaskStatusForm({ taskId, status, dueDate, shareEnabled, shareTok
     const user = authData.user;
 
     const nextDueDate = currentStatus === "en_proceso" || currentStatus === "concluido" ? todayIsoDate() : (currentDate || null);
+    const nextShareToken = currentShare ? shareToken ?? generateShareToken() : null;
+
     const { error: updateError } = await supabase
       .from("tasks")
       .update({
         ...getTaskStatusUpdatePayload(currentStatus, nextDueDate),
         share_enabled: currentShare,
-        share_token: currentShare ? shareToken : null,
+        share_token: nextShareToken,
       })
       .eq("id", taskId);
 
@@ -63,7 +79,7 @@ export function TaskStatusForm({ taskId, status, dueDate, shareEnabled, shareTok
         entityType: "task",
         entityId: taskId,
         action: "task_status_changed",
-        metadata: { status: currentStatus },
+        metadata: { status: currentStatus, due_date: nextDueDate, share_enabled: currentShare },
       });
       await createClientNotification(supabase, {
         userId: user.id,
@@ -76,6 +92,7 @@ export function TaskStatusForm({ taskId, status, dueDate, shareEnabled, shareTok
     }
 
     setCurrentDate(nextDueDate ?? "");
+    onSaved?.({ status: currentStatus, dueDate: nextDueDate, shareEnabled: currentShare, shareToken: nextShareToken });
     setMessage(currentStatus === "en_proceso" || currentStatus === "concluido" ? "Cambios aplicados. La fecha se actualizó al día del cambio." : "Cambios aplicados.");
     setIsSaving(false);
     startRefresh(() => router.refresh());

@@ -28,7 +28,6 @@ const getClientAccessSummaryCached = cache(async (userId: string, organizationId
 function normalizeTaskRow(row: any): TaskSummary {
   const department = Array.isArray(row.departments) ? row.departments[0] : row.departments;
   const dueDate = (row.due_date as string | null | undefined) ?? null;
-  const today = new Date().toISOString().slice(0, 10);
   return {
     id: String(row.id),
     title: String(row.title ?? "Tarea"),
@@ -45,8 +44,8 @@ function normalizeTaskRow(row: any): TaskSummary {
     departmentName: (department?.name as string | null | undefined) ?? null,
     departments: row.departments ?? null,
     country: (row.country as string | null | undefined) ?? null,
-    isOverdue: Boolean(dueDate && dueDate < today && row.status !== "concluido"),
-    isDueToday: Boolean(dueDate && dueDate === today && row.status !== "concluido"),
+    isOverdue: isTaskOverdue(dueDate, row.status as string | null | undefined),
+    isDueToday: Boolean(dueDate && dueDate === new Date().toISOString().slice(0, 10) && row.status !== "concluido" && row.status !== "en_espera"),
   };
 }
 

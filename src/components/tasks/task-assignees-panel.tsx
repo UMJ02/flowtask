@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { logActivity } from "@/lib/activity/log-client";
@@ -13,30 +13,46 @@ interface UserOption {
   email?: string | null;
 }
 
+type AssigneeItem = { id: string; user_id: string; profiles?: UserOption | UserOption[] | null };
+
 export function TaskAssigneesPanel({
   taskId,
   options,
   assignees,
   canManage = true,
+  onChange,
 }: {
   taskId: string;
   options: UserOption[];
-  assignees: Array<{ id: string; user_id: string; profiles?: UserOption | UserOption[] | null }>;
+  assignees: AssigneeItem[];
   canManage?: boolean;
+  onChange?: (next: AssigneeItem[]) => void;
 }) {
   const router = useRouter();
   const [selectedUserId, setSelectedUserId] = useState(options[0]?.id ?? "");
+  const [localAssignees, setLocalAssignees] = useState<AssigneeItem[]>(assignees);
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [removingId, setRemovingId] = useState<string | null>(null);
+  const [, startRefresh] = useTransition();
 
-  const currentIds = new Set(assignees.map((item) => item.user_id));
+  useEffect(() => {
+    setLocalAssignees(assignees);
+  }, [assignees]);
+
+  useEffect(() => {
+    if (options.length && !options.some((option) => option.id === selectedUserId)) {
+      setSelectedUserId(options[0]?.id ?? "");
+    }
+  }, [options, selectedUserId]);
+
+  const currentIds = useMemo(() => new Set(localAssignees.map((item) => item.user_id)), [localAssignees]);
 
   const handleAssign = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!canManage) return;
     setError(null);
-    if (!selectedUserId) return;
+    if (!selectedUserId || currentIds.has(selectedUserId)) return;
     setIsSaving(true);
 
     const supabase = createClient();
@@ -55,12 +71,20 @@ export function TaskAssigneesPanel({
       return;
     }
 
+    const nextAssignees: AssigneeItem[] = [
+      { id: String(upserted?.id ?? selectedUserId), user_id: selectedUserId, profiles: selectedUser },
+      ...localAssignees.filter((item) => item.user_id !== selectedUserId),
+    ];
+    setLocalAssignees(nextAssignees);
+    onChange?.(nextAssignees);
+
     if (upserted?.id) {
       await logActivity(supabase as any, { entityType: 'task_assignee' as any, entityId: upserted.id, action: 'task_assignee_added', metadata: { task_id: taskId, email: selectedUser?.email ?? '', title: selectedUser?.full_name ?? selectedUser?.email ?? '' } });
     }
 
+    setSelectedUserId(options.find((option) => !nextAssignees.some((item) => item.user_id === option.id))?.id ?? selectedUserId);
     setIsSaving(false);
-    router.refresh();
+    startRefresh(() => router.refresh());
   };
 
   const handleRemove = async (assignmentId: string) => {
@@ -68,19 +92,26 @@ export function TaskAssigneesPanel({
     setError(null);
     setRemovingId(assignmentId);
     const supabase = createClient();
-    const currentAssignee = assignees.find((item) => item.id === assignmentId) ?? null;
+    const currentAssignee = localAssignees.find((item) => item.id === assignmentId) ?? null;
     const profile = Array.isArray(currentAssignee?.profiles) ? currentAssignee?.profiles[0] : currentAssignee?.profiles;
+    const previousAssignees = localAssignees;
+    const nextAssignees = localAssignees.filter((item) => item.id !== assignmentId);
+    setLocalAssignees(nextAssignees);
+    onChange?.(nextAssignees);
+
     const { error: deleteError } = await supabase.from("task_assignees").delete().eq("id", assignmentId);
 
     if (deleteError) {
       setError(deleteError.message);
+      setLocalAssignees(previousAssignees);
+      onChange?.(previousAssignees);
       setRemovingId(null);
       return;
     }
 
     await logActivity(supabase as any, { entityType: 'task_assignee' as any, entityId: assignmentId, action: 'task_assignee_removed', metadata: { task_id: taskId, email: profile?.email ?? '', title: profile?.full_name ?? profile?.email ?? '' } });
     setRemovingId(null);
-    router.refresh();
+    startRefresh(() => router.refresh());
   };
 
   return (
@@ -91,7 +122,7 @@ export function TaskAssigneesPanel({
       </div>
 
       <div className="space-y-3">
-        {assignees.length ? assignees.map((item) => {
+        {localAssignees.length ? localAssignees.map((item) => {
           const profile = Array.isArray(item.profiles) ? item.profiles[0] : item.profiles;
           return (
             <div key={item.id} className="flex items-center justify-between gap-3 rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-700">
@@ -118,7 +149,7 @@ export function TaskAssigneesPanel({
         </Select>
         {!canManage ? <p className="text-sm text-slate-500">Tu acceso actual no permite asignar o remover responsables en esta tarea.</p> : null}
         {error ? <p className="text-sm text-red-600">{error}</p> : null}
-        <Button disabled={!canManage || isSaving || !selectedUserId} type="submit">
+        <Button disabled={!canManage || isSaving || !selectedUserId || currentIds.has(selectedUserId)} type="submit">
           {isSaving ? "Guardando..." : "Asignar"}
         </Button>
       </form>
