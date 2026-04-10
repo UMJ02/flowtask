@@ -10,7 +10,9 @@ export function HomeAuthActions() {
 
   const navigate = (path: '/login' | '/register', next: 'login' | 'register') => {
     setTarget(next);
-    router.push(path);
+    window.setTimeout(() => {
+      router.push(path);
+    }, 820);
   };
 
   return (

@@ -2,7 +2,7 @@ import { BrandLoader } from '@/components/ui/brand-loader';
 
 export function LoadingState({
   title = 'Preparando tu espacio…',
-  description = 'Cargando tarjetas, accesos y contenido para que todo aparezca de forma clara.',
+  description = 'Estamos acomodando la vista para que todo aparezca claro, ordenado y sin saltos visuales.',
   cards = 3,
 }: {
   title?: string;
@@ -10,26 +10,18 @@ export function LoadingState({
   cards?: number;
 }) {
   return (
-    <div className="space-y-3 animate-fade-in">
-      <div className="rounded-[24px] border border-slate-200/80 bg-white/[0.9] p-4 shadow-[0_12px_26px_rgba(15,23,42,0.05)] md:p-[18px]">
-        <div className="flex flex-col gap-3 md:flex-row md:items-center">
-          <BrandLoader className="md:min-w-[116px]" label="FlowTask" />
-          <div className="min-w-0 flex-1 space-y-2.5">
-            <div className="space-y-1.5">
-              <div className="skeleton h-3 w-20 rounded-full" />
-              <div className="skeleton h-7 w-full max-w-[280px] rounded-full" />
-            </div>
-            <div className="skeleton h-3 w-full max-w-2xl rounded-full" />
-            <div className="rounded-[20px] border border-emerald-100 bg-emerald-50/80 px-3.5 py-3">
-              <div className="text-sm font-semibold text-emerald-700">{title}</div>
-              <p className="mt-1 text-sm leading-6 text-emerald-800/80">{description}</p>
-            </div>
-          </div>
+    <div className="flex min-h-[54vh] flex-col items-center justify-center gap-7 px-4 py-8 animate-fade-in">
+      <div className="mx-auto flex max-w-[420px] flex-col items-center text-center">
+        <BrandLoader label="FlowTask" />
+        <div className="mt-2 space-y-2">
+          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">Cargando vista</p>
+          <h2 className="text-[1.35rem] font-bold leading-tight text-slate-900 md:text-[1.55rem]">{title}</h2>
+          <p className="text-sm leading-6 text-slate-600 md:text-[15px]">{description}</p>
         </div>
       </div>
-      <div className="grid gap-3 md:grid-cols-3">
+      <div className="grid w-full max-w-4xl gap-3 md:grid-cols-3">
         {Array.from({ length: cards }).map((_, index) => (
-          <div key={index} className="skeleton h-28 rounded-[20px]" />
+          <div key={index} className="skeleton h-24 rounded-[22px]" />
         ))}
       </div>
     </div>

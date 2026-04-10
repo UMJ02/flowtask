@@ -26,7 +26,9 @@ export function ShareCenterCard({ summary }: { summary: WorkspaceAnalyticsSummar
 
   const openLanding = () => {
     setOpeningLanding(true);
-    router.push(`/share?data=${encodeAnalyticsShareToken(sharePayload)}`);
+    window.setTimeout(() => {
+      router.push(`/share?data=${encodeAnalyticsShareToken(sharePayload)}`);
+    }, 920);
   };
 
   const handleCopy = async () => {
