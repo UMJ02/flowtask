@@ -1,13 +1,8 @@
-import type { AnalyticsFeedItem, SharedReportTaskItem, WorkspaceAnalyticsSummary } from '@/lib/queries/analytics';
+import type { SharedReportTaskItem, WorkspaceAnalyticsSummary } from '@/lib/queries/analytics';
 
 export type SharedAnalyticsPayload = {
   workspaceName: string;
   generatedAtLabel: string;
-  kpis: WorkspaceAnalyticsSummary['kpis'];
-  pipeline: WorkspaceAnalyticsSummary['pipeline'];
-  weeklyFocus: AnalyticsFeedItem[];
-  projectPipeline: AnalyticsFeedItem[];
-  recommendations: string[];
   shareDigest: WorkspaceAnalyticsSummary['shareDigest'];
   reportModules: WorkspaceAnalyticsSummary['reportModules'];
 };
@@ -16,11 +11,6 @@ export function buildSharedAnalyticsPayload(summary: WorkspaceAnalyticsSummary):
   return {
     workspaceName: summary.organizationName,
     generatedAtLabel: summary.generatedAtLabel,
-    kpis: summary.kpis,
-    pipeline: summary.pipeline,
-    weeklyFocus: summary.weeklyFocus.slice(0, 8),
-    projectPipeline: summary.projectPipeline.slice(0, 8),
-    recommendations: summary.recommendations.slice(0, 4),
     shareDigest: summary.shareDigest,
     reportModules: summary.reportModules,
   };

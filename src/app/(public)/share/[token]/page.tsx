@@ -2,7 +2,7 @@ import { SharedAnalyticsLanding } from '@/components/shared/shared-analytics-lan
 
 export const dynamic = 'force-dynamic';
 
-export default function SharedAnalyticsPage({
+export default function SharedAnalyticsTokenPage({
   params,
   searchParams,
 }: {

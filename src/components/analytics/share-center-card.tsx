@@ -13,7 +13,7 @@ export function ShareCenterCard({ summary }: { summary: WorkspaceAnalyticsSummar
   const shareUrl = useMemo(() => {
     const payload = buildSharedAnalyticsPayload(summary);
     const token = encodeAnalyticsShareToken(payload);
-    return typeof window === 'undefined' ? `/share/${token}` : `${window.location.origin}/share/${token}`;
+    return typeof window === 'undefined' ? `/share?data=${token}` : `${window.location.origin}/share?data=${token}`;
   }, [summary]);
 
   const sharePayload = useMemo(() => buildSharedAnalyticsPayload(summary), [summary]);
