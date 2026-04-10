@@ -3,8 +3,8 @@ import { LoadingState } from '@/components/ui/loading-state';
 export default function AppLoading() {
   return (
     <LoadingState
-      title="Preparando tu espacio…"
-      description="Cargando tarjetas, listas y accesos rápidos para que todo aparezca de una forma más fluida."
+      title="Preparando la vista…"
+      description="Estamos acomodando el contenido para que la navegación interna se vea clara y sin saltos visuales."
       cards={3}
     />
   );

@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { PwaRegister } from "@/components/pwa/pwa-register";
-import { RouteLoadingOverlay } from "@/components/ui/route-loading-overlay";
 
 export const metadata: Metadata = {
   title: "FlowTask",
@@ -29,7 +28,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="es">
       <body>
-        <RouteLoadingOverlay />
         {children}
         <PwaRegister />
       </body>
