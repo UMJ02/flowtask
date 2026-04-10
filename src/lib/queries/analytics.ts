@@ -1,4 +1,5 @@
 import { cache } from 'react';
+import { endOfWeek, format, isToday, isWithinInterval, parseISO, startOfWeek } from 'date-fns';
 import { getRecentActivitySummary } from '@/lib/queries/activity';
 import { getDashboardData } from '@/lib/queries/dashboard';
 import { getOrganizationContext } from '@/lib/queries/organization';
@@ -6,6 +7,7 @@ import { getUsageEventMetrics } from '@/lib/queries/observability';
 import { getWorkspaceOnboardingSummary } from '@/lib/queries/onboarding';
 import { getReportsOverview } from '@/lib/queries/reports';
 import { getRiskRadarSummary } from '@/lib/queries/risk-radar';
+import { getTaskComments, getTasks } from '@/lib/queries/tasks';
 
 export type AnalyticsTone = 'critical' | 'attention' | 'stable';
 
@@ -16,6 +18,17 @@ export type AnalyticsFeedItem = {
   statusLabel: string;
   tone: AnalyticsTone;
   source: 'Tasks' | 'Projects' | 'Clients' | 'Workspace';
+};
+
+export type SharedReportTaskItem = {
+  id: string;
+  title: string;
+  createdAtLabel: string;
+  deadlineLabel: string;
+  statusLabel: string;
+  clientLabel: string;
+  priorityLabel: string;
+  lastComment: string | null;
 };
 
 export type WorkspaceAnalyticsSummary = {
@@ -53,6 +66,11 @@ export type WorkspaceAnalyticsSummary = {
     deadlineItems: Array<Pick<AnalyticsFeedItem, 'id' | 'title' | 'meta' | 'statusLabel' | 'tone' | 'source'>>;
     shareSummary: string[];
   };
+  reportModules: {
+    dayTasks: SharedReportTaskItem[];
+    weeklyInProgress: SharedReportTaskItem[];
+    waitingTasks: SharedReportTaskItem[];
+  };
   recommendations: string[];
 };
 
@@ -65,17 +83,56 @@ function statusLabel(value?: string | null) {
   return value.replaceAll('_', ' ').replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
+function priorityLabel(value?: string | null) {
+  if (!value) return 'Media';
+  if (value === 'alta') return 'Alta';
+  if (value === 'baja') return 'Baja';
+  return 'Media';
+}
+
+function formatShortDate(value?: string | null) {
+  if (!value) return 'Sin fecha';
+  try {
+    return format(parseISO(value), 'dd/MM/yyyy');
+  } catch {
+    return value;
+  }
+}
+
+function buildReportTaskItem(task: Awaited<ReturnType<typeof getTasks>>[number], lastComment: string | null = null): SharedReportTaskItem {
+  return {
+    id: task.id,
+    title: task.title,
+    createdAtLabel: formatShortDate(task.created_at),
+    deadlineLabel: formatShortDate(task.due_date),
+    statusLabel: statusLabel(task.status),
+    clientLabel: task.client_name || 'Sin cliente',
+    priorityLabel: priorityLabel(task.priority),
+    lastComment,
+  };
+}
+
+function sortByDateWeight<T extends { due_date?: string | null; created_at?: string | null }>(items: T[]) {
+  return [...items].sort((a, b) => {
+    const dueA = a.due_date ?? '9999-12-31';
+    const dueB = b.due_date ?? '9999-12-31';
+    if (dueA !== dueB) return dueA.localeCompare(dueB);
+    return (b.created_at ?? '').localeCompare(a.created_at ?? '');
+  });
+}
+
 export const getWorkspaceAnalyticsSummary = cache(async (): Promise<WorkspaceAnalyticsSummary | null> => {
   const organizationContext = await getOrganizationContext();
   const activeOrganizationId = organizationContext?.activeOrganization?.id ?? null;
 
-  const [dashboard, reports, risk, onboarding, usage, activity] = await Promise.all([
+  const [dashboard, reports, risk, onboarding, usage, activity, allTasks] = await Promise.all([
     getDashboardData(),
     getReportsOverview(),
     getRiskRadarSummary(),
     getWorkspaceOnboardingSummary(),
     getUsageEventMetrics(activeOrganizationId),
     getRecentActivitySummary(10),
+    getTasks({}),
   ]);
 
   const readinessScore = onboarding?.score ?? 0;
@@ -138,9 +195,49 @@ export const getWorkspaceAnalyticsSummary = cache(async (): Promise<WorkspaceAna
     `${completedCount} elemento(s) ya quedaron concluidos y sirven como señal de avance.`,
   ];
 
+  const now = new Date();
+  const weekStart = startOfWeek(now, { weekStartsOn: 1 });
+  const weekEnd = endOfWeek(now, { weekStartsOn: 1 });
+  const openTasks = allTasks.filter((task) => task.status !== 'concluido');
+
+  const dayTaskBase = sortByDateWeight(
+    openTasks.filter((task) => {
+      if (!task.due_date) return false;
+      try {
+        return isToday(parseISO(task.due_date));
+      } catch {
+        return false;
+      }
+    }),
+  );
+  const fallbackDayTasks = sortByDateWeight(openTasks).slice(0, 8);
+  const dayTasks = (dayTaskBase.length ? dayTaskBase : fallbackDayTasks).slice(0, 8).map((task) => buildReportTaskItem(task));
+
+  const weeklyInProgress = sortByDateWeight(
+    openTasks.filter((task) => {
+      if (task.status !== 'en_proceso' || !task.due_date) return false;
+      try {
+        return isWithinInterval(parseISO(task.due_date), { start: weekStart, end: weekEnd });
+      } catch {
+        return false;
+      }
+    }),
+  )
+    .slice(0, 10)
+    .map((task) => buildReportTaskItem(task));
+
+  const waitingBase = sortByDateWeight(openTasks.filter((task) => task.status === 'en_espera')).slice(0, 12);
+  const waitingTasks = await Promise.all(
+    waitingBase.map(async (task) => {
+      const comments = await getTaskComments(task.id);
+      const latestComment = comments[0]?.content?.trim() || null;
+      return buildReportTaskItem(task, latestComment);
+    }),
+  );
+
   return {
     organizationName: organizationContext?.activeOrganization?.name ?? 'Workspace personal',
-    generatedAtLabel: new Date().toLocaleString('es-CR', {
+    generatedAtLabel: now.toLocaleString('es-CR', {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',
@@ -173,6 +270,11 @@ export const getWorkspaceAnalyticsSummary = cache(async (): Promise<WorkspaceAna
       completedCount,
       deadlineItems,
       shareSummary,
+    },
+    reportModules: {
+      dayTasks,
+      weeklyInProgress,
+      waitingTasks,
     },
     recommendations: recommendations.slice(0, 5),
   };

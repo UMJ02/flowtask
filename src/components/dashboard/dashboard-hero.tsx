@@ -104,20 +104,22 @@ export function DashboardHero({
               <Link
                 key={metric.label}
                 href={metric.href}
-                className="group rounded-[24px] border border-white/70 bg-white/[0.90] p-4 shadow-[0_12px_26px_rgba(15,23,42,0.05)] ring-1 ring-slate-100 backdrop-blur transition duration-200 hover:-translate-y-1 hover:shadow-[0_18px_34px_rgba(15,23,42,0.10)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-200"
+                className="group rounded-[24px] border border-white/70 bg-white/[0.90] p-4 shadow-[0_12px_26px_rgba(15,23,42,0.05)] ring-1 ring-slate-100 backdrop-blur transition duration-300 hover:-translate-y-1 hover:border-emerald-200 hover:bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(236,253,245,0.98))] hover:shadow-[0_18px_34px_rgba(15,23,42,0.10)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-200"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className="text-sm font-semibold text-slate-900 transition group-hover:text-slate-950">{metric.label}</p>
-                    <p className="mt-1 text-xs text-slate-500">{metric.helper}</p>
+                    <p className="text-sm font-semibold text-slate-900 transition group-hover:text-emerald-900">{metric.label}</p>
+                    <p className="mt-1 text-xs text-slate-500 transition group-hover:text-slate-600">{metric.helper}</p>
                   </div>
-                  <span className={`inline-flex h-11 w-11 items-center justify-center rounded-2xl ring-1 transition duration-200 group-hover:scale-105 ${metric.tone}`}>
+                  <span className={`inline-flex h-11 w-11 items-center justify-center rounded-2xl ring-1 transition duration-300 group-hover:scale-105 group-hover:rotate-3 ${metric.tone}`}>
                     <Icon className="h-5 w-5" />
                   </span>
                 </div>
                 <div className="mt-5 flex items-end justify-between gap-3">
                   <p className="text-4xl font-bold tracking-tight text-slate-900">{metric.value}</p>
-                  <span className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400 transition group-hover:text-emerald-600">Abrir</span>
+                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition duration-300 group-hover:border-emerald-200 group-hover:bg-emerald-50 group-hover:text-emerald-700">
+                    <ArrowRight className="h-4 w-4 transition duration-300 group-hover:translate-x-0.5" />
+                  </span>
                 </div>
               </Link>
             );

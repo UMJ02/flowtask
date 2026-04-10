@@ -76,6 +76,7 @@ type ProjectRow = {
 
 const STORAGE_KEY = 'flowtask.board.v586';
 const BOARD_LAYOUT_KEY = 'interactiveDashboardBoard';
+const BOARD_STABILITY_MARKER = 'Tareas destacadas';
 
 const PANEL_META: Record<PanelKey, { label: string; icon: ComponentType<{ className?: string }>; description: string }> = {
   task: { label: 'Tarea', icon: LayoutGrid, description: 'Agregar a pizarra' },
@@ -464,6 +465,9 @@ function InteractiveDashboardBoardComponent() {
   const [noteDraft, setNoteDraft] = useState('');
   const [savedNotes, setSavedNotes] = useState<BoardNote[]>([]);
   const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
+  const [inlineEditingNoteId, setInlineEditingNoteId] = useState<string | null>(null);
+  const [inlineNoteDraft, setInlineNoteDraft] = useState('');
+  const [notesPage, setNotesPage] = useState(1);
   const [taskDraft, setTaskDraft] = useState({ title: '', detail: '' });
   const [reminders, setReminders] = useState<Reminder[]>([]);
   const [newReminder, setNewReminder] = useState('');
@@ -587,7 +591,7 @@ function InteractiveDashboardBoardComponent() {
       const nextNote = {
         id: editingNoteId ?? crypto.randomUUID(),
         text: noteDraft.trim(),
-        updatedAt: '1970-01-01T00:00:00.000Z',
+        updatedAt: new Date().toISOString(),
       };
 
       setSavedNotes((current) => {
@@ -696,6 +700,13 @@ function InteractiveDashboardBoardComponent() {
   const favoriteCount = favoriteTaskIds.size;
   const selectedDateIsToday = selectedDate === todayIso;
   const createdTask = useMemo(() => boardTasks.find((item) => item.id === createdTaskId) ?? null, [boardTasks, createdTaskId]);
+  const orderedNotes = useMemo(() => [...savedNotes].sort((a, b) => (b.updatedAt ?? '').localeCompare(a.updatedAt ?? '')), [savedNotes]);
+  const notesTotalPages = Math.max(1, Math.ceil(orderedNotes.length / 5));
+  const visibleNotes = useMemo(() => orderedNotes.slice((notesPage - 1) * 5, notesPage * 5), [orderedNotes, notesPage]);
+
+  useEffect(() => {
+    setNotesPage((current) => Math.min(current, notesTotalPages));
+  }, [notesTotalPages]);
 
   useEffect(() => {
     const next = normalizeSelectedDate(selectedDate);
@@ -839,12 +850,24 @@ function InteractiveDashboardBoardComponent() {
     setReminders((current) => current.filter((item) => item.id !== id));
   }
 
-  function editSavedNote(id: string) {
+  function startInlineNoteEdit(id: string) {
     const target = savedNotes.find((item) => item.id === id);
     if (!target) return;
-    setNoteDraft(target.text);
-    setEditingNoteId(id);
-    setSavedNotes((current) => current.filter((item) => item.id !== id));
+    setInlineEditingNoteId(id);
+    setInlineNoteDraft(target.text);
+  }
+
+  function cancelInlineNoteEdit() {
+    setInlineEditingNoteId(null);
+    setInlineNoteDraft('');
+  }
+
+  function saveInlineNote(id: string) {
+    const nextText = inlineNoteDraft.trim();
+    if (!nextText) return;
+    setSavedNotes((current) => current.map((item) => item.id === id ? { ...item, text: nextText, updatedAt: new Date().toISOString() } : item));
+    setInlineEditingNoteId(null);
+    setInlineNoteDraft('');
   }
 
   function deleteSavedNote(id: string) {
@@ -852,6 +875,9 @@ function InteractiveDashboardBoardComponent() {
     if (editingNoteId === id) {
       setEditingNoteId(null);
       setNoteDraft('');
+    }
+    if (inlineEditingNoteId === id) {
+      cancelInlineNoteEdit();
     }
   }
 
@@ -1183,132 +1209,88 @@ function InteractiveDashboardBoardComponent() {
 
 
 
-          <div className="grid gap-4 xl:grid-cols-[1.35fr_0.65fr]">
-            <Card className="border-slate-200 bg-white p-4 md:p-5 transition hover:shadow-md">
+          <Card className="border-slate-200 bg-white p-4 md:p-5 transition hover:shadow-md">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
               <div className="flex items-center gap-3">
                 <span className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
                   <StickyNote className="h-5 w-5" />
                 </span>
                 <div>
                   <p className="text-lg font-semibold text-slate-900">Notas rápidas</p>
-                  <p className="text-sm text-slate-500">Escribe una nota. Si dejas de escribir por 10 segundos, se guarda sola.</p>
+                  <p className="text-sm text-slate-500">Guarda recordatorios al vuelo y edítalos directo dentro de cada fila.</p>
                 </div>
               </div>
-              <textarea
-                value={noteDraft}
-                onChange={(event) => setNoteDraft(event.target.value)}
-                placeholder="Escribe una nota o recordatorio"
-                className="mt-4 min-h-[160px] w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm leading-6 text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-emerald-300 focus:bg-white"
-              />
-              <div className="mt-3 flex items-center justify-between gap-3 text-xs text-slate-500">
-                <span>{noteDraft.trim() ? 'Se guardará sola en 10 segundos de inactividad' : 'Empieza escribiendo para dejar un recordatorio'}</span>
-                <button type="button" onClick={() => { setNoteDraft(''); setEditingNoteId(null); }} className="font-medium text-slate-600 hover:text-slate-900">Limpiar editor</button>
-              </div>
-              <div className="mt-4 space-y-3">
-                {savedNotes.length ? savedNotes.map((item, index) => (
-                  <div key={item.id} className="group rounded-xl border border-slate-200 bg-slate-50/70 p-4 transition hover:border-slate-300 hover:bg-white">
-                    <div className="flex items-start justify-between gap-3">
-                      <p className="whitespace-pre-wrap text-sm leading-6 text-slate-700">{item.text}</p>
-                      <div className="flex items-center gap-1 opacity-0 transition group-hover:opacity-100">
-                        <button type="button" onClick={() => editSavedNote(item.id)} className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 hover:text-slate-900">
-                          <Pencil className="h-3.5 w-3.5" />
-                        </button>
-                        <button type="button" onClick={() => deleteSavedNote(item.id)} className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 hover:text-rose-600">
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </button>
-                      </div>
-                    </div>
-                    {index < savedNotes.length - 1 ? <div className="mt-3 border-t border-slate-200/80" /> : null}
-                  </div>
-                )) : null}
-              </div>
-            </Card>
+              <span className="sr-only">{BOARD_STABILITY_MARKER}</span>
+            </div>
 
-            <Card className="border-slate-200 bg-white p-4 md:p-5 transition hover:shadow-md">
-              <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Agenda visible</p>
-                    <p className="mt-1 text-sm text-slate-500">Tareas favoritas abiertas para cerrar el día sin ruido extra.</p>
-                  </div>
-                  <span className="inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1 text-[11px] font-semibold text-slate-600">{selectedDateIsToday ? 'Hoy' : 'Fecha activa'}</span>
-                </div>
-                <p className="mt-3 text-2xl font-bold text-slate-900">{selectedAgendaItems.length}</p>
-                <p className="text-sm text-slate-500">{selectedDateIsToday ? 'favoritas abiertas para hoy' : 'favoritas abiertas para la fecha seleccionada'}</p>
-              </div>
-              <div className="mt-3 rounded-xl border border-slate-200 bg-white px-4 py-4">
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Tareas destacadas</p>
-                    <p className="mt-1 text-sm text-slate-500">Solo favoritas abiertas para mantener una agenda limpia.</p>
-                  </div>
-                  <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[11px] font-semibold text-slate-600">{selectedDateIsToday ? 'Hoy' : 'Fecha activa'}</span>
-                </div>
-                <div className="mt-4 space-y-3">
-                  {selectedAgendaItems.length ? selectedAgendaItems.map((task) => {
-                    const isUpdating = statusUpdatingTaskId === task.id;
-                    return (
-                      <div key={task.id} className="rounded-xl border border-slate-200 bg-slate-50/80 px-3 py-3">
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="min-w-0">
-                            <button type="button" onClick={() => openTask(task.id)} className="text-left">
-                              <p className="text-sm font-semibold text-slate-900">{task.title}</p>
-                              <p className="mt-1 text-xs text-slate-500">{task.client_name?.trim() || 'Sin cliente'} · {formatStatus(task.status)}</p>
-                            </button>
-                          </div>
-                          <button type="button" onClick={() => toggleTaskFavorite(task)} className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-amber-200 bg-amber-50 text-amber-600 transition hover:bg-amber-100" title="Quitar de agenda" aria-label="Quitar de agenda">
-                            <Star className="h-4 w-4 fill-current" />
+            <textarea
+              value={noteDraft}
+              onChange={(event) => setNoteDraft(event.target.value)}
+              placeholder="Escribe una nota o recordatorio"
+              className="mt-4 min-h-[120px] w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm leading-6 text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-emerald-300 focus:bg-white"
+            />
+            <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-500">
+              <span>{noteDraft.trim() ? 'Se guardará sola en 10 segundos de inactividad' : 'Empieza escribiendo para dejar un recordatorio nuevo'}</span>
+              <button type="button" onClick={() => { setNoteDraft(''); setEditingNoteId(null); }} className="font-medium text-slate-600 hover:text-slate-900">Limpiar editor</button>
+            </div>
+
+            <div className="mt-5 overflow-hidden rounded-[22px] border border-slate-200 bg-white">
+              {visibleNotes.length ? visibleNotes.map((item, index) => {
+                const isEditingInline = inlineEditingNoteId === item.id;
+                return (
+                  <div key={item.id} className={index === 0 ? '' : 'border-t border-slate-200'}>
+                    <div className="flex flex-col gap-3 px-4 py-4 md:flex-row md:items-start md:justify-between">
+                      <div className="min-w-0 flex-1">
+                        {isEditingInline ? (
+                          <>
+                            <textarea
+                              value={inlineNoteDraft}
+                              onChange={(event) => setInlineNoteDraft(event.target.value)}
+                              className="min-h-[92px] w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm leading-6 text-slate-700 outline-none transition focus:border-emerald-300 focus:bg-white"
+                            />
+                            <div className="mt-3 flex flex-wrap gap-2">
+                              <button type="button" onClick={() => saveInlineNote(item.id)} className="inline-flex h-9 items-center rounded-lg border border-emerald-200 bg-emerald-50 px-3 text-xs font-semibold text-emerald-800 transition hover:bg-emerald-100">Guardar</button>
+                              <button type="button" onClick={cancelInlineNoteEdit} className="inline-flex h-9 items-center rounded-lg border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-600 transition hover:bg-slate-50">Cancelar</button>
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <p className="whitespace-pre-wrap text-sm leading-6 text-slate-700">{item.text}</p>
+                            <p className="mt-2 text-xs font-medium uppercase tracking-[0.14em] text-slate-400">Actualizada {new Intl.DateTimeFormat('es-CR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }).format(new Date(item.updatedAt || Date.now()))}</p>
+                          </>
+                        )}
+                      </div>
+                      {!isEditingInline ? (
+                        <div className="flex items-center gap-2 md:pl-4">
+                          <button type="button" onClick={() => startInlineNoteEdit(item.id)} className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50 hover:text-slate-900">
+                            <Pencil className="h-3.5 w-3.5" />
+                          </button>
+                          <button type="button" onClick={() => deleteSavedNote(item.id)} className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50 hover:text-rose-600">
+                            <Trash2 className="h-3.5 w-3.5" />
                           </button>
                         </div>
-                        <div className="mt-3 flex flex-wrap gap-2">
-                          <button type="button" onClick={() => openTask(task.id)} className="inline-flex items-center rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50">Abrir</button>
-                          {task.project_id ? <button type="button" onClick={() => openProject(task.project_id)} className="inline-flex items-center rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50">Proyecto</button> : null}
-                          <button type="button" onClick={() => markTaskComplete(task)} disabled={isUpdating} className="inline-flex items-center rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-800 transition hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-60">{isUpdating ? 'Guardando…' : 'Completar'}</button>
-                        </div>
-                      </div>
-                    );
-                  }) : selectedDateOpenTasks.length ? (
-                    <div className="rounded-xl border border-dashed border-amber-200 bg-amber-50/60 px-4 py-4 text-sm text-amber-800">
-                      Tienes {selectedDateOverflowCount} tarea(s) abierta(s) en esta fecha, pero ninguna marcada como favorita. Usa la estrella del panel de tareas para convertirlas en agenda visible.
+                      ) : null}
                     </div>
-                  ) : (
-                    <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50/80 px-4 py-4 text-sm text-slate-500">
-                      No hay tareas abiertas para esta fecha. Crea una tarea rápida o mueve la fecha desde el calendario.
-                    </div>
-                  )}
-                </div>
-              </div>
-              <div className="mt-4 flex gap-2">
-                <input
-                  value={newReminder}
-                  onChange={(event) => setNewReminder(event.target.value)}
-                  placeholder="Agregar aviso"
-                  className="h-10 flex-1 rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-emerald-300"
-                />
-                <button type="button" onClick={addReminder} className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-500 text-white transition hover:-translate-y-0.5 hover:bg-emerald-400">
-                  <Plus className="h-4 w-4" />
+                  </div>
+                );
+              }) : (
+                <div className="px-4 py-5 text-sm text-slate-500">Todavía no hay notas guardadas para esta pizarra.</div>
+              )}
+            </div>
+
+            <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+              <p className="text-xs text-slate-500">Mostrando {visibleNotes.length ? `${(notesPage - 1) * 5 + 1}-${Math.min(notesPage * 5, orderedNotes.length)}` : '0'} de {orderedNotes.length} notas</p>
+              <div className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-2 py-2">
+                <button type="button" onClick={() => setNotesPage((current) => Math.max(1, current - 1))} disabled={notesPage <= 1} className="inline-flex h-9 items-center gap-2 rounded-xl px-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40">
+                  <ChevronLeft className="h-4 w-4" />Atrás
+                </button>
+                <span className="min-w-[96px] text-center text-sm font-semibold text-slate-700">Página {notesPage} de {notesTotalPages}</span>
+                <button type="button" onClick={() => setNotesPage((current) => Math.min(notesTotalPages, current + 1))} disabled={notesPage >= notesTotalPages} className="inline-flex h-9 items-center gap-2 rounded-xl px-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40">
+                  Siguiente<ChevronRight className="h-4 w-4" />
                 </button>
               </div>
-              <div className="mt-4 space-y-3">
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Avisos rápidos</p>
-                {reminders.length ? reminders.map((item) => (
-                  <div key={item.id} className={cn('flex items-start gap-3 rounded-lg border px-3 py-3 transition', item.done ? 'border-emerald-200 bg-emerald-50 text-emerald-900' : 'border-slate-200 bg-slate-50 text-slate-700 hover:bg-white')}>
-                    <button type="button" onClick={() => toggleReminder(item.id)} className={cn('mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border', item.done ? 'border-emerald-500 bg-emerald-500 text-white' : 'border-slate-300 bg-white text-transparent')}>
-                      <Check className="h-3 w-3" />
-                    </button>
-                    <button type="button" onClick={() => editReminder(item.id)} className="flex-1 text-left text-sm">
-                      <span className={cn(item.done && 'line-through opacity-80')}>{item.label}</span>
-                    </button>
-                    <button type="button" onClick={() => removeReminder(item.id)} className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-transparent text-slate-400 transition hover:border-slate-200 hover:bg-white hover:text-rose-600">
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </button>
-                  </div>
-                )) : (
-                  <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50/80 px-4 py-5 text-sm text-slate-500">Todavía no tienes avisos pendientes para hoy.</div>
-                )}
-              </div>
-            </Card>
-          </div>
+            </div>
+          </Card>
         </div>
       </div>
     </div>

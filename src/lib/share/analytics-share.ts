@@ -1,4 +1,4 @@
-import type { AnalyticsFeedItem, WorkspaceAnalyticsSummary } from '@/lib/queries/analytics';
+import type { AnalyticsFeedItem, SharedReportTaskItem, WorkspaceAnalyticsSummary } from '@/lib/queries/analytics';
 
 export type SharedAnalyticsPayload = {
   workspaceName: string;
@@ -9,6 +9,7 @@ export type SharedAnalyticsPayload = {
   projectPipeline: AnalyticsFeedItem[];
   recommendations: string[];
   shareDigest: WorkspaceAnalyticsSummary['shareDigest'];
+  reportModules: WorkspaceAnalyticsSummary['reportModules'];
 };
 
 export function buildSharedAnalyticsPayload(summary: WorkspaceAnalyticsSummary): SharedAnalyticsPayload {
@@ -21,6 +22,7 @@ export function buildSharedAnalyticsPayload(summary: WorkspaceAnalyticsSummary):
     projectPipeline: summary.projectPipeline.slice(0, 8),
     recommendations: summary.recommendations.slice(0, 4),
     shareDigest: summary.shareDigest,
+    reportModules: summary.reportModules,
   };
 }
 
@@ -77,26 +79,39 @@ function downloadBlob(filename: string, blob: Blob) {
   window.setTimeout(() => URL.revokeObjectURL(url), 600);
 }
 
+function reportRows(section: string, items: SharedReportTaskItem[]) {
+  return items.map((item) => [
+    section,
+    item.title,
+    item.createdAtLabel,
+    item.deadlineLabel,
+    item.statusLabel,
+    item.clientLabel,
+    item.priorityLabel,
+    item.lastComment ?? '',
+  ]);
+}
+
 export function downloadAnalyticsCsv(payload: SharedAnalyticsPayload) {
   const rows: string[][] = [
-    ['Sección', 'Título', 'Meta', 'Estado', 'Origen'],
-    ...payload.weeklyFocus.map((item) => ['Foco semanal', item.title, item.meta, item.statusLabel, item.source]),
-    ...payload.projectPipeline.map((item) => ['Pipeline de proyectos', item.title, item.meta, item.statusLabel, item.source]),
-    ...payload.shareDigest.deadlineItems.map((item) => ['Deadlines', item.title, item.meta, item.statusLabel, item.source]),
+    ['Módulo', 'Tarea', 'Fecha ingreso', 'Deadline', 'Estado', 'Cliente', 'Prioridad', 'Último comentario'],
+    ...reportRows('Tareas del día', payload.reportModules.dayTasks),
+    ...reportRows('Tareas en proceso semanal', payload.reportModules.weeklyInProgress),
+    ...reportRows('Tareas en espera', payload.reportModules.waitingTasks),
   ];
 
-  rows.push(['', '', '', '', '']);
-  rows.push(['Resumen', 'Valor', '', '', '']);
-  rows.push(['Prioritarios', String(payload.shareDigest.priorityCount), '', '', '']);
-  rows.push(['En proceso', String(payload.shareDigest.inProgressCount), '', '', '']);
-  rows.push(['En espera', String(payload.shareDigest.waitingCount), '', '', '']);
-  rows.push(['Concluidos', String(payload.shareDigest.completedCount), '', '', '']);
+  rows.push(['', '', '', '', '', '', '', '']);
+  rows.push(['Resumen', 'Valor', '', '', '', '', '', '']);
+  rows.push(['Favoritos', String(payload.shareDigest.priorityCount), '', '', '', '', '', '']);
+  rows.push(['En proceso', String(payload.shareDigest.inProgressCount), '', '', '', '', '', '']);
+  rows.push(['En espera', String(payload.shareDigest.waitingCount), '', '', '', '', '', '']);
+  rows.push(['Concluidos', String(payload.shareDigest.completedCount), '', '', '', '', '', '']);
 
   const csv = rows
     .map((row) => row.map((cell) => `"${String(cell ?? '').replaceAll('"', '""')}"`).join(','))
     .join('\n');
 
-  downloadBlob('flowtask-analytics-share.csv', new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
+  downloadBlob('flowtask-reporte-compartido.csv', new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
 }
 
 export function triggerAnalyticsPdf(shareUrl: string) {

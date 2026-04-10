@@ -2,16 +2,10 @@
 
 import Link from 'next/link';
 import { useEffect, useMemo } from 'react';
-import { ArrowLeft, FileSpreadsheet, Home, Printer, Share2 } from 'lucide-react';
+import { ArrowLeft, FileSpreadsheet, Home, Printer } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { decodeAnalyticsShareToken, downloadAnalyticsCsv } from '@/lib/share/analytics-share';
-
-const toneClasses = {
-  critical: 'bg-rose-50 text-rose-700 ring-1 ring-rose-100',
-  attention: 'bg-amber-50 text-amber-700 ring-1 ring-amber-100',
-  stable: 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100',
-} as const;
 
 export function SharedAnalyticsLanding({ token, autoPrint = false }: { token: string; autoPrint?: boolean }) {
   const payload = useMemo(() => decodeAnalyticsShareToken(token), [token]);
@@ -25,12 +19,12 @@ export function SharedAnalyticsLanding({ token, autoPrint = false }: { token: st
 
   if (!payload) {
     return (
-      <main className="min-h-screen bg-slate-950 py-10 text-white">
-        <div className="container-page max-w-5xl">
-          <Card className="border-white/10 bg-white/5 text-white">
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-300">FlowTask</p>
+      <main className="min-h-screen bg-white py-10 text-slate-900">
+        <div className="mx-auto w-full max-w-[1080px] px-4">
+          <Card>
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">FlowTask</p>
             <h1 className="mt-3 text-3xl font-bold">No se pudo abrir este reporte</h1>
-            <p className="mt-3 text-sm text-slate-300">El enlace compartido es inválido o quedó incompleto.</p>
+            <p className="mt-3 text-sm text-slate-500">El enlace compartido es inválido o quedó incompleto.</p>
           </Card>
         </div>
       </main>
@@ -38,14 +32,17 @@ export function SharedAnalyticsLanding({ token, autoPrint = false }: { token: st
   }
 
   return (
-    <main className="min-h-screen bg-[linear-gradient(180deg,#052e2b_0%,#0b3954_36%,#f8fafc_36%,#f8fafc_100%)] py-8 print:bg-white print:py-0">
-      <div className="container-page max-w-6xl space-y-4 print:max-w-none print:px-0">
-        <Card className="border-white/10 bg-[linear-gradient(135deg,#052e2b_0%,#0b3954_42%,#0f172a_100%)] text-white print:shadow-none">
+    <main className="min-h-screen bg-white py-8 text-slate-900 print:bg-white print:py-0">
+      <div className="mx-auto w-full max-w-[1080px] space-y-5 px-4 print:max-w-none print:px-0">
+        <Card className="rounded-[28px] border border-slate-200 bg-white print:shadow-none">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
             <div className="max-w-3xl">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-100/80">FlowTask · reporte compartido</p>
-              <h1 className="mt-2 text-3xl font-bold leading-tight">Reporte ejecutivo listo para compartir</h1>
-              <p className="mt-3 text-sm leading-6 text-slate-100/90">{payload.workspaceName} · actualizado {payload.generatedAtLabel}. Esta vista resume prioridades, proyectos, fechas clave y avance general sin necesidad de entrar a la app.</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">FlowTask · reporte compartido</p>
+              <h1 className="mt-2 text-3xl font-bold leading-tight">Reporte general de trabajo</h1>
+              <div className="mt-3 space-y-2 text-sm leading-6 text-slate-600">
+                <p>Usuario: <span className="font-semibold text-slate-900">{payload.workspaceName}</span></p>
+                <p>Reporte general de trabajo: Esta vista resume prioridades, proyectos y deadlines con un formato simple para compartir.</p>
+              </div>
             </div>
             <div className="flex flex-wrap gap-2 print:hidden">
               <Link href="/"><Button variant="secondary"><Home className="h-4 w-4" />Página principal</Button></Link>
@@ -55,112 +52,99 @@ export function SharedAnalyticsLanding({ token, autoPrint = false }: { token: st
           </div>
         </Card>
 
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <MetricCard label="Pulso" value={`${payload.kpis.healthScore}%`} helper="Panorama general" />
-          <MetricCard label="Ritmo" value={`${payload.kpis.intelligenceScore}%`} helper="Seguimiento activo" />
-          <MetricCard label="Favoritos" value={String(payload.shareDigest.priorityCount)} helper="Lo más importante" />
-          <MetricCard label="Concluidos" value={String(payload.shareDigest.completedCount)} helper="Trabajo entregado" />
-        </div>
+        <ReportModule
+          title="Tareas del día"
+          accentClassName="bg-sky-50 text-sky-800 border-sky-100"
+          description="Tareas del día visibles para resolver rápido."
+          items={payload.reportModules.dayTasks}
+          emptyLabel="No hay tareas del día visibles en este reporte."
+        />
 
-        <div className="grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
-          <Card>
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <h2 className="text-xl font-semibold text-slate-900">Foco semanal</h2>
-                <p className="mt-1 text-sm text-slate-500">Lo que conviene revisar primero esta semana.</p>
-              </div>
-              <span className="kicker-chip">Prioridades</span>
-            </div>
-            <div className="mt-5 space-y-3">
-              {payload.weeklyFocus.map((item) => (
-                <FeedItem key={`${item.source}-${item.id}`} item={item} />
-              ))}
-            </div>
-          </Card>
+        <ReportModule
+          title="Tareas en proceso semanal"
+          accentClassName="bg-emerald-50 text-emerald-800 border-emerald-100"
+          description="Máximo 10 tareas en proceso con fechas cercanas de la semana actual."
+          items={payload.reportModules.weeklyInProgress}
+          emptyLabel="No hay tareas en proceso para esta semana."
+        />
 
-          <Card>
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <h2 className="text-xl font-semibold text-slate-900">Resumen para compartir</h2>
-                <p className="mt-1 text-sm text-slate-500">Una lectura corta para acompañar el enlace o el correo.</p>
-              </div>
-              <Share2 className="h-5 w-5 text-slate-400" />
-            </div>
-            <div className="mt-5 grid gap-3 sm:grid-cols-2">
-              <DigestCard label="Favoritos" value={payload.shareDigest.priorityCount} />
-              <DigestCard label="En proceso" value={payload.shareDigest.inProgressCount} />
-              <DigestCard label="En espera" value={payload.shareDigest.waitingCount} />
-              <DigestCard label="Concluidos" value={payload.shareDigest.completedCount} />
-            </div>
-            <div className="mt-5 space-y-3">
-              {payload.shareDigest.shareSummary.map((item) => (
-                <div key={item} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">{item}</div>
-              ))}
-            </div>
-          </Card>
-        </div>
+        <ReportModule
+          title="Tareas en espera"
+          accentClassName="bg-amber-50 text-amber-800 border-amber-100"
+          description="Tareas en espera con su último comentario para entender el bloqueo actual."
+          items={payload.reportModules.waitingTasks}
+          emptyLabel="No hay tareas en espera para mostrar."
+          showLastComment
+        />
 
-        <div className="grid gap-4 xl:grid-cols-[1fr_1fr]">
-          <Card>
-            <h2 className="text-xl font-semibold text-slate-900">Pipeline de proyectos</h2>
-            <p className="mt-1 text-sm text-slate-500">Proyectos activos y fechas visibles para seguimiento ejecutivo.</p>
-            <div className="mt-5 space-y-3">
-              {payload.projectPipeline.map((item) => (
-                <FeedItem key={`${item.source}-${item.id}`} item={item} />
-              ))}
-            </div>
-          </Card>
+        <footer className="border-t border-slate-200 pt-4 text-xs text-slate-500 print:border-none print:pt-2">
+          Generado por FlowTask · {payload.generatedAtLabel}
+        </footer>
 
-          <Card>
-            <h2 className="text-xl font-semibold text-slate-900">Deadlines y próximos pasos</h2>
-            <p className="mt-1 text-sm text-slate-500">Fechas relevantes y señales para anticipar carga.</p>
-            <div className="mt-5 space-y-3">
-              {payload.shareDigest.deadlineItems.length ? payload.shareDigest.deadlineItems.map((item) => (
-                <FeedItem key={`${item.source}-${item.id}-deadline`} item={item} />
-              )) : <p className="text-sm text-slate-500">No hay deadlines destacados para este reporte.</p>}
-            </div>
-            <div className="mt-5 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 print:hidden">
-              <p className="text-sm font-semibold text-slate-900">¿Necesitas volver a FlowTask?</p>
-              <p className="mt-1 text-sm text-slate-500">Esta vista es pública y resumida. Para operar el detalle, vuelve a la plataforma principal.</p>
-              <div className="mt-3">
-                <Link href="/"><Button variant="secondary"><ArrowLeft className="h-4 w-4" />Ir a la página principal</Button></Link>
-              </div>
-            </div>
-          </Card>
+        <div className="print:hidden">
+          <Link href="/">
+            <Button variant="secondary"><ArrowLeft className="h-4 w-4" />Ir a FlowTask</Button>
+          </Link>
         </div>
       </div>
     </main>
   );
 }
 
-function MetricCard({ label, value, helper }: { label: string; value: string; helper: string }) {
+function ReportModule({
+  title,
+  description,
+  items,
+  emptyLabel,
+  accentClassName,
+  showLastComment = false,
+}: {
+  title: string;
+  description: string;
+  items: Array<{
+    id: string;
+    title: string;
+    createdAtLabel: string;
+    deadlineLabel: string;
+    statusLabel: string;
+    clientLabel: string;
+    priorityLabel: string;
+    lastComment: string | null;
+  }>;
+  emptyLabel: string;
+  accentClassName: string;
+  showLastComment?: boolean;
+}) {
   return (
-    <Card className="print:shadow-none">
-      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">{label}</p>
-      <p className="mt-2 text-3xl font-bold text-slate-950">{value}</p>
-      <p className="mt-1 text-xs text-slate-500">{helper}</p>
-    </Card>
-  );
-}
-
-function DigestCard({ label, value }: { label: string; value: number }) {
-  return (
-    <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3">
-      <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">{label}</p>
-      <p className="mt-2 text-2xl font-bold text-slate-950">{value}</p>
-    </div>
-  );
-}
-
-function FeedItem({ item }: { item: { title: string; meta: string; statusLabel: string; tone: 'critical' | 'attention' | 'stable'; source: string } }) {
-  return (
-    <div className="rounded-2xl border border-slate-200 bg-white px-4 py-4">
-      <div className="flex flex-wrap items-center gap-2">
-        <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">{item.source}</span>
-        <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${toneClasses[item.tone]}`}>{item.statusLabel}</span>
+    <section className="rounded-[24px] border border-slate-200 bg-white print:shadow-none">
+      <div className={`rounded-t-[24px] border-b px-5 py-4 ${accentClassName}`}>
+        <h2 className="text-lg font-bold">{title}</h2>
+        <p className="mt-1 text-sm opacity-90">{description}</p>
       </div>
-      <p className="mt-3 text-sm font-semibold text-slate-900">{item.title}</p>
-      <p className="mt-1 text-sm text-slate-500">{item.meta}</p>
-    </div>
+
+      <div className="divide-y divide-slate-200">
+        {items.length ? items.map((item) => (
+          <article key={item.id} className="px-5 py-4">
+            <div className="flex flex-wrap items-start gap-3">
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-semibold text-slate-900">{item.title}</p>
+                <div className="mt-2 flex flex-wrap gap-x-4 gap-y-2 text-sm text-slate-600">
+                  <span><span className="font-medium text-slate-700">Ingreso:</span> {item.createdAtLabel}</span>
+                  <span><span className="font-medium text-slate-700">Deadline:</span> {item.deadlineLabel}</span>
+                  <span><span className="font-medium text-slate-700">Status:</span> {item.statusLabel}</span>
+                  <span><span className="font-medium text-slate-700">Cliente:</span> {item.clientLabel}</span>
+                  <span><span className="font-medium text-slate-700">Prioridad:</span> {item.priorityLabel}</span>
+                </div>
+                {showLastComment ? (
+                  <p className="mt-3 rounded-2xl bg-slate-50 px-3 py-2 text-sm text-slate-600">
+                    <span className="font-medium text-slate-700">Último comentario:</span> {item.lastComment || 'Sin comentario registrado.'}
+                  </p>
+                ) : null}
+              </div>
+            </div>
+          </article>
+        )) : <div className="px-5 py-5 text-sm text-slate-500">{emptyLabel}</div>}
+      </div>
+    </section>
   );
 }
