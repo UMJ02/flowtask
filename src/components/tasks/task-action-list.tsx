@@ -171,7 +171,7 @@ function TaskActionListComponent({
         <button
           type="button"
           onClick={() => markComplete(task.id)}
-          className="inline-flex h-10 items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3.5 text-sm font-semibold text-emerald-800 transition hover:bg-emerald-100"
+          className="inline-flex h-9 items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3.5 text-sm font-semibold text-emerald-800 transition hover:bg-emerald-100"
         >
           <CheckCircle2 className="h-4 w-4" />
           Finalizar
@@ -179,7 +179,7 @@ function TaskActionListComponent({
       ) : null}
 
       <Link href={taskDetailRoute(task.id, currentQuery)}>
-        <Button type="button" variant="secondary" className="h-10 rounded-xl px-3.5 text-sm">
+        <Button type="button" variant="secondary" className="h-10 rounded-xl px-3 text-sm">
           <Eye className="h-4 w-4" />
           Ver
         </Button>
@@ -187,14 +187,14 @@ function TaskActionListComponent({
 
       {!completed ? (
         <Link href={taskEditRoute(task.id, currentQuery)}>
-          <Button type="button" variant="secondary" className="h-10 rounded-xl px-3.5 text-sm">
+          <Button type="button" variant="secondary" className="h-10 rounded-xl px-3 text-sm">
             <Pencil className="h-4 w-4" />
             Editar
           </Button>
         </Link>
       ) : null}
 
-      <Button type="button" variant="secondary" className="h-10 rounded-xl px-3.5 text-sm" onClick={() => deleteTask(task.id)}>
+      <Button type="button" variant="secondary" className="h-10 rounded-xl px-3 text-sm" onClick={() => deleteTask(task.id)}>
         <Trash2 className="h-4 w-4" />
         Borrar
       </Button>
@@ -210,20 +210,20 @@ function TaskActionListComponent({
         <div
           key={task.id}
           className={[
-            "grid gap-4 px-4 py-4 transition-all duration-300 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,0.9fr)] xl:items-center",
+            "grid gap-3 px-3.5 py-3.5 transition-all duration-300 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,0.9fr)] xl:items-center",
             completed ? "bg-slate-50/70" : "bg-white",
             isClosing ? "opacity-60" : "opacity-100",
           ].join(" ")}
         >
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
-              <h3 className="truncate text-[1.05rem] font-bold leading-tight text-slate-900 md:text-[1.15rem]">{task.title}</h3>
+              <h3 className="truncate text-base font-bold leading-tight text-slate-900 md:text-[1.05rem]">{task.title}</h3>
               {isFavorite ? <span className="rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-700">Favorita</span> : null}
             </div>
             <div className="mt-3 flex flex-wrap gap-2 text-sm text-slate-500">
-              <span className="rounded-full bg-slate-100 px-3 py-1.5 font-medium text-slate-600">Deadline: {formatDeadline(task.due_date)}</span>
-              <span className={`rounded-full border px-3 py-1.5 font-semibold ${priorityTone(task.priority)}`}>{priorityLabel(task.priority)}</span>
-              <span className={`rounded-full border px-3 py-1.5 font-semibold ${statusTone(task.status)}`}>{statusLabel(task.status)}</span>
+              <span className="rounded-full bg-slate-100 px-2.5 py-1.5 font-medium text-slate-600">Deadline: {formatDeadline(task.due_date)}</span>
+              <span className={`rounded-full border px-2.5 py-1.5 font-semibold ${priorityTone(task.priority)}`}>{priorityLabel(task.priority)}</span>
+              <span className={`rounded-full border px-2.5 py-1.5 font-semibold ${statusTone(task.status)}`}>{statusLabel(task.status)}</span>
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2 xl:justify-end">{renderActions(task, completed)}</div>
@@ -235,18 +235,18 @@ function TaskActionListComponent({
       <div
         key={task.id}
         className={[
-          "rounded-[22px] border border-slate-200 bg-white px-4 py-4 shadow-[0_10px_24px_rgba(15,23,42,0.04)] transition-all duration-300",
+          "rounded-[18px] border border-slate-200 bg-white px-3.5 py-3.5 shadow-[0_8px_20px_rgba(15,23,42,0.04)] transition-all duration-300",
           completed ? "bg-slate-50/80" : "hover:-translate-y-0.5 hover:shadow-[0_14px_28px_rgba(15,23,42,0.08)]",
           isClosing ? "scale-[0.99] opacity-60" : "opacity-100",
         ].join(" ")}
       >
         <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
           <div className="min-w-0 flex-1">
-            <h3 className="text-[1.15rem] font-bold leading-tight text-slate-900 md:text-[1.3rem]">{task.title}</h3>
+            <h3 className="text-base font-bold leading-tight text-slate-900 md:text-[1.05rem]">{task.title}</h3>
             <div className="mt-3 flex flex-wrap gap-2 text-sm text-slate-500">
-              <span className="rounded-full bg-slate-100 px-3 py-1.5 font-medium text-slate-600">Deadline: {formatDeadline(task.due_date)}</span>
-              <span className={`rounded-full border px-3 py-1.5 font-semibold ${priorityTone(task.priority)}`}>{priorityLabel(task.priority)}</span>
-              <span className={`rounded-full border px-3 py-1.5 font-semibold ${statusTone(task.status)}`}>{statusLabel(task.status)}</span>
+              <span className="rounded-full bg-slate-100 px-2.5 py-1.5 font-medium text-slate-600">Deadline: {formatDeadline(task.due_date)}</span>
+              <span className={`rounded-full border px-2.5 py-1.5 font-semibold ${priorityTone(task.priority)}`}>{priorityLabel(task.priority)}</span>
+              <span className={`rounded-full border px-2.5 py-1.5 font-semibold ${statusTone(task.status)}`}>{statusLabel(task.status)}</span>
               {isFavorite ? <span className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 font-semibold text-amber-700">Favorita</span> : null}
             </div>
           </div>
@@ -289,7 +289,7 @@ function TaskActionListComponent({
             <button
               type="button"
               onClick={() => setFavoritesOnly((value) => !value)}
-              className={`inline-flex h-10 items-center gap-2 rounded-xl border px-3.5 text-sm font-semibold transition ${favoritesOnly ? "border-amber-200 bg-amber-50 text-amber-700" : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"}`}
+              className={`inline-flex h-9 items-center gap-2 rounded-xl border px-3.5 text-sm font-semibold transition ${favoritesOnly ? "border-amber-200 bg-amber-50 text-amber-700" : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"}`}
             >
               <Star className={`h-4 w-4 ${favoritesOnly ? "fill-current" : ""}`} />
               Favoritos del día

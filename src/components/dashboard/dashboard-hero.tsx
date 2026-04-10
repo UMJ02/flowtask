@@ -122,21 +122,21 @@ export function DashboardHero({
   ];
 
   return (
-    <Card className="rounded-[32px] border border-slate-200/80 bg-[radial-gradient(circle_at_top_left,_rgba(16,185,129,0.16),_transparent_28%),radial-gradient(circle_at_top_right,_rgba(59,130,246,0.10),_transparent_22%),linear-gradient(135deg,rgba(255,255,255,0.98),rgba(248,250,252,0.98))] p-5 shadow-[0_20px_46px_rgba(15,23,42,0.08)] md:p-7">
+    <Card className="rounded-[28px] border border-slate-200/80 bg-[radial-gradient(circle_at_top_left,_rgba(16,185,129,0.16),_transparent_28%),radial-gradient(circle_at_top_right,_rgba(59,130,246,0.10),_transparent_22%),linear-gradient(135deg,rgba(255,255,255,0.98),rgba(248,250,252,0.98))] p-4 shadow-[0_16px_36px_rgba(15,23,42,0.07)] md:p-6">
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1.3fr)_minmax(360px,0.9fr)] xl:items-start">
         <div>
           <div className="inline-flex items-center gap-2 rounded-full bg-white/[0.85] px-3 py-1 text-xs font-semibold tracking-[0.16em] text-emerald-700 ring-1 ring-emerald-100">
             <Sparkles className="h-3.5 w-3.5" />
             Workspace overview
           </div>
-          <h1 className="mt-4 text-2xl font-bold tracking-tight text-slate-900 md:text-4xl">
+          <h1 className="mt-3 text-[1.9rem] font-bold tracking-tight text-slate-900 md:text-[2.7rem]">
             Tu jornada arranca con {activeTasks} tareas activas y {activeProjects} proyectos en movimiento.
           </h1>
-          <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600 md:text-[15px]">
+          <p className="mt-2.5 max-w-2xl text-sm leading-6 text-slate-600 md:text-[15px]">
             {focusLabel} Revisa la pizarra, prioriza lo que bloquea al equipo y entra directo a ejecución sin perder contexto.
           </p>
 
-          <div className="mt-5 flex flex-wrap items-center gap-3 lg:flex-nowrap">
+          <div className="mt-4 flex flex-wrap items-center gap-2.5 lg:flex-nowrap">
             <Link
               href={asRoute('/app/board')}
               className="inline-flex items-center gap-2 rounded-2xl bg-slate-950 px-4 py-2.5 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-slate-900"
@@ -163,7 +163,7 @@ export function DashboardHero({
                 key={metric.label}
                 href={metric.href}
                 className={[
-                  'group relative overflow-hidden rounded-[24px] border border-slate-200 bg-white p-4 shadow-[0_12px_26px_rgba(15,23,42,0.05)] ring-1 ring-slate-100 transition-all duration-300 hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-200',
+                  'group relative overflow-hidden rounded-[20px] border border-slate-200 bg-white p-3.5 shadow-[0_10px_22px_rgba(15,23,42,0.05)] ring-1 ring-slate-100 transition-all duration-300 hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-200',
                   theme.border,
                   theme.shadow,
                   theme.surface,
@@ -174,11 +174,11 @@ export function DashboardHero({
                     <p className={`text-sm font-semibold text-slate-900 transition duration-300 ${theme.text}`}>{metric.label}</p>
                     <p className="mt-1 text-xs text-slate-500 transition duration-300 group-hover:text-slate-600">{metric.helper}</p>
                   </div>
-                  <span className={`inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-transparent ring-1 transition duration-300 group-hover:scale-105 ${metric.tone} ${theme.icon}`}>
+                  <span className={`inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-transparent ring-1 transition duration-300 group-hover:scale-105 ${metric.tone} ${theme.icon}`}>
                     <Icon className="h-5 w-5" />
                   </span>
                 </div>
-                <div className="mt-5 flex items-end justify-between gap-3">
+                <div className="mt-4 flex items-end justify-between gap-3">
                   <p className={`text-4xl font-bold tracking-tight text-slate-900 transition duration-300 ${theme.text}`}>{metric.value}</p>
                   <span className={`inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition duration-300 ${theme.button}`}>
                     <ArrowRight className="h-4 w-4 transition duration-300 group-hover:translate-x-0.5" />

@@ -1,3 +1,0 @@
--- FlowTask V53.4 patch
--- Sin cambios SQL obligatorios.
--- Mantener este archivo como marcador de release para continuidad del historial.

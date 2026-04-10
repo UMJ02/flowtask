@@ -16,11 +16,11 @@ export default async function LoginPage({
         <div className="absolute bottom-[-120px] right-[-80px] h-[260px] w-[260px] rounded-full bg-emerald-300/35 blur-3xl" />
       </div>
 
-      <div className="container-page relative flex min-h-screen items-center justify-center py-8">
-        <div className="w-full max-w-[560px] rounded-[34px] border border-white/80 bg-white/88 p-6 shadow-[0_30px_80px_rgba(15,23,42,0.10)] backdrop-blur-xl md:p-8">
+      <div className="container-page relative flex min-h-screen items-center justify-center py-6">
+        <div className="w-full max-w-[540px] rounded-[28px] border border-white/80 bg-white/90 p-5 shadow-[0_24px_64px_rgba(15,23,42,0.10)] backdrop-blur-xl md:p-7">
           <AuthBrand />
-          <div className="mb-8 text-center">
-            <h1 className="text-3xl font-bold text-slate-900 md:text-4xl">Iniciar sesión</h1>
+          <div className="mb-6 text-center">
+            <h1 className="text-[1.95rem] font-bold text-slate-900 md:text-[2.25rem]">Iniciar sesión</h1>
             <p className="mt-2 text-sm text-slate-600 md:text-base">Accede a tu tablero personal y proyectos.</p>
           </div>
 

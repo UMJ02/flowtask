@@ -23,7 +23,7 @@ export function SharedAnalyticsLanding({ token, autoPrint = false }: { token: st
         <div className="mx-auto w-full max-w-[1080px] px-4">
           <Card>
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">FlowTask</p>
-            <h1 className="mt-3 text-3xl font-bold">No se pudo abrir este reporte</h1>
+            <h1 className="mt-3 text-[1.85rem] font-bold">No se pudo abrir este reporte</h1>
             <p className="mt-3 text-sm text-slate-500">El enlace compartido es inválido o quedó incompleto.</p>
           </Card>
         </div>
@@ -33,13 +33,13 @@ export function SharedAnalyticsLanding({ token, autoPrint = false }: { token: st
 
   return (
     <main className="min-h-screen bg-white py-8 text-slate-900 print:bg-white print:py-0">
-      <div className="mx-auto w-full max-w-[1080px] space-y-5 px-4 print:max-w-none print:px-0">
-        <Card className="rounded-[28px] border border-slate-200 bg-white print:shadow-none">
+      <div className="mx-auto w-full max-w-[1040px] space-y-4 px-4 print:max-w-none print:px-0">
+        <Card className="rounded-[24px] border border-slate-200 bg-white print:shadow-none">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
             <div className="max-w-3xl">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">FlowTask · reporte compartido</p>
-              <h1 className="mt-2 text-3xl font-bold leading-tight">Reporte general de trabajo</h1>
-              <div className="mt-3 space-y-2 text-sm leading-6 text-slate-600">
+              <h1 className="mt-2 text-[1.85rem] font-bold leading-tight">Reporte general de trabajo</h1>
+              <div className="mt-3 space-y-1.5 text-sm leading-6 text-slate-600">
                 <p>Usuario: <span className="font-semibold text-slate-900">{payload.workspaceName}</span></p>
                 <p>Reporte general de trabajo: Esta vista resume prioridades, proyectos y deadlines con un formato simple para compartir.</p>
               </div>
@@ -117,14 +117,14 @@ function ReportModule({
 }) {
   return (
     <section className="rounded-[24px] border border-slate-200 bg-white print:shadow-none">
-      <div className={`rounded-t-[24px] border-b px-5 py-4 ${accentClassName}`}>
-        <h2 className="text-lg font-bold">{title}</h2>
+      <div className={`rounded-t-[24px] border-b px-4 py-3.5 ${accentClassName}`}>
+        <h2 className="text-base font-bold">{title}</h2>
         <p className="mt-1 text-sm opacity-90">{description}</p>
       </div>
 
       <div className="divide-y divide-slate-200">
         {items.length ? items.map((item) => (
-          <article key={item.id} className="px-5 py-4">
+          <article key={item.id} className="px-4 py-3.5">
             <div className="flex flex-wrap items-start gap-3">
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-semibold text-slate-900">{item.title}</p>
@@ -143,7 +143,7 @@ function ReportModule({
               </div>
             </div>
           </article>
-        )) : <div className="px-5 py-5 text-sm text-slate-500">{emptyLabel}</div>}
+        )) : <div className="px-4 py-4 text-sm text-slate-500">{emptyLabel}</div>}
       </div>
     </section>
   );
