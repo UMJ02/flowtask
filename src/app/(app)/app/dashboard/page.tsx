@@ -5,6 +5,7 @@ import { DashboardHero } from '@/components/dashboard/dashboard-hero';
 import { ProjectHealth } from '@/components/dashboard/project-health';
 import { RecentActivity } from '@/components/dashboard/recent-activity';
 import { UrgentProjects } from '@/components/dashboard/urgent-projects';
+import { projectDetailRoute, projectListRoute } from '@/lib/navigation/routes';
 import { getRecentActivitySummary } from '@/lib/queries/activity';
 import { getDashboardData } from '@/lib/queries/dashboard';
 import { safeServerCall } from '@/lib/runtime/safe-server';
@@ -21,6 +22,10 @@ export default async function DashboardPage() {
     (summary?.completedTasks ?? 0) +
     (summary?.completedProjects ?? 0);
 
+  const activeProjectHref = summary?.urgentProjects?.[0]?.id
+    ? projectDetailRoute(summary.urgentProjects[0].id)
+    : projectListRoute('status=activo');
+
   return (
     <div className="space-y-5 lg:space-y-6">
         <DashboardHero
@@ -29,6 +34,7 @@ export default async function DashboardPage() {
           waitingTasks={summary?.waitingTasks ?? 0}
           overdueTasks={summary?.overdueTasks ?? 0}
           dueSoonTasks={summary?.dueSoonTasks ?? 0}
+          activeProjectHref={activeProjectHref}
         />
 
         {totalVisibleItems === 0 ? <DashboardStartState /> : null}

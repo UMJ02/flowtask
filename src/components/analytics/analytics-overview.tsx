@@ -18,10 +18,10 @@ function toneLabel(tone: AnalyticsTone) {
 
 export function AnalyticsOverview({ summary, compact = false }: { summary: WorkspaceAnalyticsSummary; compact?: boolean }) {
   const heroCards = [
-    { label: 'Pulso', value: `${summary.kpis.healthScore}%`, helper: 'Panorama general', tone: 'sky' },
-    { label: 'Ritmo', value: `${summary.kpis.intelligenceScore}%`, helper: 'Seguimiento activo', tone: 'violet' },
-    { label: 'Por vencer', value: String(summary.pipeline.dueThisWeek), helper: 'Esta semana', tone: 'amber' },
-    { label: 'Vencidas', value: String(summary.pipeline.overdueLoad), helper: 'Requieren atención', tone: 'rose' },
+    { label: 'Pulso', value: `${summary.kpis.healthScore}%`, helper: 'panorama general', tone: 'sky' },
+    { label: 'Ritmo', value: `${summary.kpis.intelligenceScore}%`, helper: 'seguimiento activo', tone: 'violet' },
+    { label: 'En espera', value: String(summary.shareDigest.waitingCount), helper: 'tareas trabadas', tone: 'amber' },
+    { label: 'En proceso', value: String(summary.shareDigest.inProgressCount), helper: 'trabajo en curso', tone: 'emerald' },
   ] as const;
 
   if (compact) {
@@ -30,7 +30,7 @@ export function AnalyticsOverview({ summary, compact = false }: { summary: Works
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-700">Analytics v4.4</p>
-            <h3 className="mt-2 text-xl font-bold text-slate-900">Pulso del workspace</h3>
+            <h3 className="mt-2 text-xl font-bold text-slate-900">Lectura rápida del workspace</h3>
             <p className="mt-2 max-w-2xl text-sm text-slate-600">Una lectura corta para priorizar, revisar proyectos activos y dejar listo un reporte para compartir.</p>
           </div>
         </div>
@@ -43,7 +43,7 @@ export function AnalyticsOverview({ summary, compact = false }: { summary: Works
                 tone === 'sky' && 'border-sky-100 bg-sky-50/80',
                 tone === 'violet' && 'border-violet-100 bg-violet-50/80',
                 tone === 'amber' && 'border-amber-100 bg-amber-50/85',
-                tone === 'rose' && 'border-rose-100 bg-rose-50/85',
+                tone === 'emerald' && 'border-emerald-100 bg-emerald-50/85',
               ].filter(Boolean).join(' ')}
             >
               <span className="text-sm text-slate-600">{label}</span>
@@ -58,18 +58,18 @@ export function AnalyticsOverview({ summary, compact = false }: { summary: Works
 
   return (
     <div className="space-y-4">
-      <Card className="bg-[linear-gradient(135deg,#052e2b_0%,#0b3954_42%,#0f172a_100%)] text-white shadow-[0_24px_60px_rgba(8,47,73,0.2)]">
-        <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+      <Card className="border-cyan-200/70 bg-[linear-gradient(135deg,rgba(5,46,43,0.98)_0%,rgba(11,57,84,0.97)_44%,rgba(15,23,42,0.98)_100%)] px-5 py-5 text-white shadow-[0_22px_50px_rgba(8,47,73,0.18)] md:px-6 md:py-6">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div className="max-w-3xl min-w-0">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-100/80">FlowTask v4.4 · analytics center</p>
-            <h1 className="mt-2 text-3xl font-bold leading-[1.08] sm:text-[2.45rem] lg:max-w-3xl">Tu semana clara para priorizar, compartir y anticipar movimiento</h1>
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-100/90 sm:text-base">
-              {summary.organizationName} · actualizado {summary.generatedAtLabel}. Aquí se concentra lo que merece seguimiento ejecutivo sin llenar la vista de métricas repetidas.
+            <h1 className="mt-2 text-[1.95rem] font-bold leading-[1.08] sm:text-[2.15rem] lg:max-w-3xl">Un resumen claro para priorizar sin llenar la vista</h1>
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-100/90 sm:text-[15px]">
+              {summary.organizationName} · actualizado {summary.generatedAtLabel}. Aquí ves el ritmo del workspace, lo que sigue en espera y el volumen que hoy está en movimiento.
             </p>
           </div>
           <div className="grid gap-3 sm:grid-cols-2 lg:min-w-[320px] xl:min-w-[360px]">
-            {heroCards.map(({ label, value, helper }) => (
-              <HeroMetric key={label} label={label} value={value} helper={helper} />
+            {heroCards.map(({ label, value, helper, tone }) => (
+              <HeroMetric key={label} label={label} value={value} helper={helper} tone={tone} />
             ))}
           </div>
         </div>
@@ -101,9 +101,17 @@ export function AnalyticsOverview({ summary, compact = false }: { summary: Works
   );
 }
 
-function HeroMetric({ label, value, helper }: { label: string; value: string; helper: string }) {
+function HeroMetric({ label, value, helper, tone }: { label: string; value: string; helper: string; tone: 'sky' | 'violet' | 'amber' | 'emerald' }) {
+  const theme = tone === 'sky'
+    ? 'border-sky-200/25 bg-white/10 text-cyan-100'
+    : tone === 'violet'
+      ? 'border-violet-200/25 bg-white/10 text-cyan-100'
+      : tone === 'amber'
+        ? 'border-amber-200/25 bg-white/10 text-cyan-100'
+        : 'border-emerald-200/25 bg-white/10 text-cyan-100';
+
   return (
-    <div className="rounded-[22px] bg-white/10 px-4 py-3 ring-1 ring-white/10 backdrop-blur-sm">
+    <div className={`rounded-[20px] border px-4 py-3.5 backdrop-blur-sm ${theme}`}>
       <p className="text-[11px] uppercase tracking-[0.16em] text-cyan-100/80">{label}</p>
       <p className="mt-2 text-2xl font-bold leading-none text-white sm:text-[1.8rem]">{value}</p>
       <p className="mt-1 text-xs text-slate-200/80">{helper}</p>

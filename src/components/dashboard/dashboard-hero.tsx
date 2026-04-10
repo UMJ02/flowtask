@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { AlertTriangle, ArrowRight, BriefcaseBusiness, CalendarClock, CircleDashed, Sparkles } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { WorkspaceFloatingActions } from '@/components/workspace/floating-actions';
-import { asRoute, projectListRoute, taskListRoute } from '@/lib/navigation/routes';
+import { asRoute, projectListRoute, taskListRoute, type AppRoute } from '@/lib/navigation/routes';
 
 function metricTone(value: number, variant: 'danger' | 'warning' | 'neutral' = 'neutral') {
   if (variant === 'danger') return value > 0 ? 'text-rose-700 bg-rose-50 ring-rose-100' : 'text-slate-700 bg-slate-50 ring-slate-100';
@@ -10,18 +10,64 @@ function metricTone(value: number, variant: 'danger' | 'warning' | 'neutral' = '
   return 'text-emerald-700 bg-emerald-50 ring-emerald-100';
 }
 
+type MetricVariant = 'waiting' | 'overdue' | 'dueSoon' | 'projects';
+
+const hoverThemes: Record<MetricVariant, {
+  border: string;
+  shadow: string;
+  surface: string;
+  icon: string;
+  text: string;
+  button: string;
+}> = {
+  waiting: {
+    border: 'group-hover:border-amber-200',
+    shadow: 'group-hover:shadow-[0_18px_34px_rgba(245,158,11,0.14)]',
+    surface: 'group-hover:bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(255,251,235,0.98))]',
+    icon: 'group-hover:border-amber-200 group-hover:bg-amber-50 group-hover:text-amber-700',
+    text: 'group-hover:text-amber-950',
+    button: 'group-hover:border-amber-200 group-hover:bg-amber-50 group-hover:text-amber-700',
+  },
+  overdue: {
+    border: 'group-hover:border-rose-200',
+    shadow: 'group-hover:shadow-[0_18px_34px_rgba(244,63,94,0.14)]',
+    surface: 'group-hover:bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(255,241,242,0.98))]',
+    icon: 'group-hover:border-rose-200 group-hover:bg-rose-50 group-hover:text-rose-700',
+    text: 'group-hover:text-rose-950',
+    button: 'group-hover:border-rose-200 group-hover:bg-rose-50 group-hover:text-rose-700',
+  },
+  dueSoon: {
+    border: 'group-hover:border-orange-200',
+    shadow: 'group-hover:shadow-[0_18px_34px_rgba(249,115,22,0.14)]',
+    surface: 'group-hover:bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(255,247,237,0.98))]',
+    icon: 'group-hover:border-orange-200 group-hover:bg-orange-50 group-hover:text-orange-700',
+    text: 'group-hover:text-orange-950',
+    button: 'group-hover:border-orange-200 group-hover:bg-orange-50 group-hover:text-orange-700',
+  },
+  projects: {
+    border: 'group-hover:border-emerald-200',
+    shadow: 'group-hover:shadow-[0_18px_34px_rgba(16,185,129,0.14)]',
+    surface: 'group-hover:bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(236,253,245,0.98))]',
+    icon: 'group-hover:border-emerald-200 group-hover:bg-emerald-50 group-hover:text-emerald-700',
+    text: 'group-hover:text-emerald-950',
+    button: 'group-hover:border-emerald-200 group-hover:bg-emerald-50 group-hover:text-emerald-700',
+  },
+};
+
 export function DashboardHero({
   activeTasks,
   waitingTasks,
   overdueTasks,
   dueSoonTasks,
   activeProjects,
+  activeProjectHref,
 }: {
   activeTasks: number;
   waitingTasks: number;
   overdueTasks: number;
   dueSoonTasks: number;
   activeProjects: number;
+  activeProjectHref?: AppRoute;
 }) {
   const focusLabel = overdueTasks > 0
     ? 'Tu foco inmediato está en resolver vencimientos y destrabar pendientes críticos.'
@@ -29,7 +75,15 @@ export function DashboardHero({
       ? 'Tienes entregas cercanas que conviene anticipar hoy para proteger la operación.'
       : 'Tu operación se ve estable; este es buen momento para avanzar en trabajo profundo.';
 
-  const metrics = [
+  const metrics: Array<{
+    label: string;
+    value: number;
+    helper: string;
+    icon: typeof CircleDashed;
+    tone: string;
+    href: AppRoute;
+    variant: MetricVariant;
+  }> = [
     {
       label: 'Pendientes en espera',
       value: waitingTasks,
@@ -37,6 +91,7 @@ export function DashboardHero({
       icon: CircleDashed,
       tone: metricTone(waitingTasks, 'warning'),
       href: taskListRoute('status=en_espera&view=list'),
+      variant: 'waiting',
     },
     {
       label: 'Vencidas',
@@ -45,6 +100,7 @@ export function DashboardHero({
       icon: AlertTriangle,
       tone: metricTone(overdueTasks, 'danger'),
       href: taskListRoute('due=overdue&view=list'),
+      variant: 'overdue',
     },
     {
       label: 'Próximas por vencer',
@@ -53,6 +109,7 @@ export function DashboardHero({
       icon: CalendarClock,
       tone: metricTone(dueSoonTasks, 'warning'),
       href: taskListRoute('due=soon&view=list'),
+      variant: 'dueSoon',
     },
     {
       label: 'Proyectos activos',
@@ -60,7 +117,8 @@ export function DashboardHero({
       helper: 'frentes abiertos',
       icon: BriefcaseBusiness,
       tone: metricTone(activeProjects),
-      href: projectListRoute('status=activo'),
+      href: activeProjectHref ?? projectListRoute('status=activo'),
+      variant: 'projects',
     },
   ];
 
@@ -100,25 +158,30 @@ export function DashboardHero({
         <div className="grid gap-3 sm:grid-cols-2">
           {metrics.map((metric) => {
             const Icon = metric.icon;
+            const theme = hoverThemes[metric.variant];
             return (
               <Link
                 key={metric.label}
                 href={metric.href}
-                className="group relative overflow-hidden rounded-[24px] border border-white/70 bg-white/[0.90] p-4 shadow-[0_12px_26px_rgba(15,23,42,0.05)] ring-1 ring-slate-100 backdrop-blur transition-all duration-300 hover:-translate-y-1 hover:border-emerald-200 hover:bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(236,253,245,0.98))] hover:shadow-[0_18px_34px_rgba(15,23,42,0.10)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-200"
+                className={[
+                  'group relative overflow-hidden rounded-[24px] border border-white/70 bg-white/[0.90] p-4 shadow-[0_12px_26px_rgba(15,23,42,0.05)] ring-1 ring-slate-100 backdrop-blur transition-all duration-300 hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-200',
+                  theme.border,
+                  theme.shadow,
+                  theme.surface,
+                ].join(' ')}
               >
-                <span className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-emerald-400/0 via-emerald-400/80 to-cyan-400/0 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className="text-sm font-semibold text-slate-900 transition duration-300 group-hover:text-emerald-900">{metric.label}</p>
+                    <p className={`text-sm font-semibold text-slate-900 transition duration-300 ${theme.text}`}>{metric.label}</p>
                     <p className="mt-1 text-xs text-slate-500 transition duration-300 group-hover:text-slate-600">{metric.helper}</p>
                   </div>
-                  <span className={`inline-flex h-11 w-11 items-center justify-center rounded-2xl ring-1 transition duration-300 group-hover:scale-105 group-hover:rotate-3 ${metric.tone}`}>
+                  <span className={`inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-transparent ring-1 transition duration-300 group-hover:scale-105 ${metric.tone} ${theme.icon}`}>
                     <Icon className="h-5 w-5" />
                   </span>
                 </div>
                 <div className="mt-5 flex items-end justify-between gap-3">
-                  <p className="text-4xl font-bold tracking-tight text-slate-900 transition duration-300 group-hover:text-emerald-950">{metric.value}</p>
-                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition duration-300 group-hover:border-emerald-200 group-hover:bg-emerald-50 group-hover:text-emerald-700">
+                  <p className={`text-4xl font-bold tracking-tight text-slate-900 transition duration-300 ${theme.text}`}>{metric.value}</p>
+                  <span className={`inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition duration-300 ${theme.button}`}>
                     <ArrowRight className="h-4 w-4 transition duration-300 group-hover:translate-x-0.5" />
                   </span>
                 </div>
