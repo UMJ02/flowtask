@@ -29,7 +29,7 @@ export function AnalyticsOverview({ summary, compact = false }: { summary: Works
   if (compact) {
     return (
       <Card className="border-slate-200 bg-[linear-gradient(135deg,#ffffff_0%,#f8fafc_55%,#eef6ff_100%)]">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex flex-col gap-3.5 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-700">Analytics v4.4</p>
             <h3 className="mt-2 text-xl font-bold text-slate-900">Lectura rápida del workspace</h3>
@@ -61,16 +61,16 @@ export function AnalyticsOverview({ summary, compact = false }: { summary: Works
 
   return (
     <div className="space-y-4">
-      <Card className="border-cyan-200/70 bg-[linear-gradient(135deg,rgba(5,46,43,0.98)_0%,rgba(11,57,84,0.97)_44%,rgba(15,23,42,0.98)_100%)] px-4 py-3.5 text-white shadow-[0_16px_34px_rgba(8,47,73,0.15)] md:px-5 md:py-4">
+      <Card className="border-cyan-200/70 bg-[linear-gradient(135deg,rgba(5,46,43,0.98)_0%,rgba(11,57,84,0.97)_44%,rgba(15,23,42,0.98)_100%)] px-4 py-3 text-white shadow-[0_16px_34px_rgba(8,47,73,0.15)] md:px-5 md:py-3.5">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div className="max-w-3xl min-w-0">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-100/80">FlowTask v4.4 · analytics center</p>
-            <h1 className="mt-2 text-[1.45rem] font-bold leading-[1.08] sm:text-[1.7rem] lg:max-w-3xl">Resumen para priorizar acciones</h1>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-100/88 sm:text-[14px]">
+            <h1 className="mt-1.5 text-[1.3rem] font-bold leading-[1.08] sm:text-[1.5rem] lg:max-w-3xl">Resumen para priorizar acciones</h1>
+            <p className="mt-1.5 max-w-2xl text-[14px] leading-6 text-slate-100/88 sm:text-[14px]">
               Workspace personal · analiza tu estado en una sola pantalla con las actividades más importantes y lo que necesita atención hoy. Actualizado {summary.generatedAtLabel}.
             </p>
           </div>
-          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3 lg:min-w-[420px] xl:min-w-[560px]">
+          <div className="grid gap-2.5 sm:grid-cols-2 xl:grid-cols-3 lg:min-w-[420px] xl:min-w-[560px]">
             {heroCards.map(({ label, value, helper, tone }) => (
               <HeroMetric key={label} label={label} value={value} helper={helper} tone={tone} />
             ))}

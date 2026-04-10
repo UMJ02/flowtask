@@ -38,7 +38,7 @@ function RecommendationCarousel({ recommendations }: { recommendations: string[]
 
   return (
     <Card className="p-4 md:p-5">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div className="flex flex-col gap-3.5 md:flex-row md:items-center md:justify-between">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Recomendaciones</p>
           <h3 className="mt-1 text-lg font-semibold text-slate-900">Qué conviene revisar primero</h3>
@@ -126,7 +126,7 @@ function PlanningModules({ summary }: { summary: PlanningOverview }) {
         <div className="pt-3">
           <h3 className="text-lg font-semibold text-slate-900">Capacidad por departamento</h3>
           <p className="mt-1 text-sm text-slate-500">Qué bloques tienen más presión cerca.</p>
-          <div className="mt-3 divide-y divide-slate-200 rounded-[18px] border border-slate-200 bg-white">
+          <div className="mt-3 divide-y divide-slate-200 rounded-[16px] border border-slate-200 bg-white">
             {summary.departmentCapacity.length ? summary.departmentCapacity.slice(0, limit).map((item) => (
               <div key={item.name} className="flex items-start justify-between gap-3 px-3.5 py-3.5">
                 <div>
@@ -146,7 +146,7 @@ function PlanningModules({ summary }: { summary: PlanningOverview }) {
         <div className="pt-3">
           <h3 className="text-lg font-semibold text-slate-900">Foco semanal</h3>
           <p className="mt-1 text-sm text-slate-500">Las tareas que conviene resolver primero.</p>
-          <div className="mt-3 divide-y divide-slate-200 rounded-[18px] border border-slate-200 bg-white">
+          <div className="mt-3 divide-y divide-slate-200 rounded-[16px] border border-slate-200 bg-white">
             {summary.weeklyFocus.length ? summary.weeklyFocus.slice(0, limit).map((task) => (
               <Link key={task.id} href={asRoute(`/app/tasks/${task.id}`)} className="flex items-start justify-between gap-3 px-3.5 py-3.5 transition hover:bg-violet-50/40">
                 <div>
@@ -164,7 +164,7 @@ function PlanningModules({ summary }: { summary: PlanningOverview }) {
         <div className="pt-3">
           <h3 className="text-lg font-semibold text-slate-900">Clientes con más movimiento</h3>
           <p className="mt-1 text-sm text-slate-500">Te ayuda a planificar llamadas, revisiones y seguimiento.</p>
-          <div className="mt-3 divide-y divide-slate-200 rounded-[18px] border border-slate-200 bg-white">
+          <div className="mt-3 divide-y divide-slate-200 rounded-[16px] border border-slate-200 bg-white">
             {summary.clientMomentum.length ? summary.clientMomentum.slice(0, limit).map((client) => (
               <Link key={client.id} href={asRoute(`/app/clients/${client.id}`)} className="flex items-start justify-between gap-3 px-3.5 py-3.5 transition hover:bg-violet-50/40">
                 <div>
@@ -182,7 +182,7 @@ function PlanningModules({ summary }: { summary: PlanningOverview }) {
         <div className="pt-3">
           <h3 className="text-lg font-semibold text-slate-900">Pipeline de proyectos</h3>
           <p className="mt-1 text-sm text-slate-500">Proyectos activos ordenados por cercanía y coordinación.</p>
-          <div className="mt-3 divide-y divide-slate-200 rounded-[18px] border border-slate-200 bg-white">
+          <div className="mt-3 divide-y divide-slate-200 rounded-[16px] border border-slate-200 bg-white">
             {summary.projectPipeline.length ? summary.projectPipeline.slice(0, limit).map((project) => (
               <Link key={project.id} href={asRoute(`/app/projects/${project.id}`)} className="flex items-start justify-between gap-3 px-3.5 py-3.5 transition hover:bg-violet-50/40">
                 <div>
@@ -245,20 +245,20 @@ export function PlanningCenter({ summary, compact = false }: { summary: Planning
   }
 
   return (
-    <div className="space-y-3">
-      <Card className="bg-[linear-gradient(135deg,#221b55_0%,#342d8d_58%,#151c4a_100%)] px-4 py-3.5 text-white shadow-[0_18px_42px_rgba(49,46,129,0.15)] md:px-5 md:py-4">
+    <div className="space-y-2.5">
+      <Card className="bg-[linear-gradient(135deg,#221b55_0%,#342d8d_58%,#151c4a_100%)] px-4 py-3 text-white shadow-[0_18px_42px_rgba(49,46,129,0.15)] md:px-5 md:py-3.5">
         <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
           <div className="max-w-3xl">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet-200">Planning center</p>
-            <h2 className="mt-2 text-[1.6rem] font-bold md:text-[2rem]">Tu ventana de capacidad de los próximos 14 días</h2>
-            <p className="mt-1.5 text-sm text-violet-100/88">Esta vista te ayuda a prevenir sobrecarga, ordenar prioridades y detectar qué cliente o frente necesita atención primero.</p>
+            <h2 className="mt-1.5 text-[1.45rem] font-bold md:text-[1.8rem]">Tu ventana de capacidad de los próximos 14 días</h2>
+            <p className="mt-1 text-[14px] text-violet-100/88">Esta vista te ayuda a prevenir sobrecarga, ordenar prioridades y detectar qué cliente o frente necesita atención primero.</p>
           </div>
           <div className="grid gap-3 sm:grid-cols-2 xl:min-w-[320px]">
-            <div className="rounded-[18px] bg-white/10 px-3.5 py-2.5 ring-1 ring-white/10">
+            <div className="rounded-[16px] bg-white/10 px-3 py-2.5 ring-1 ring-white/10">
               <p className="text-xs uppercase tracking-[0.16em] text-violet-100/80">Clientes activos</p>
               <p className="mt-2 text-3xl font-bold">{summary.kpis.activeClients}</p>
             </div>
-            <div className="rounded-[18px] bg-white/10 px-3.5 py-2.5 ring-1 ring-white/10">
+            <div className="rounded-[16px] bg-white/10 px-3 py-2.5 ring-1 ring-white/10">
               <p className="text-xs uppercase tracking-[0.16em] text-violet-100/80">Colaborativos</p>
               <p className="mt-2 text-3xl font-bold">{summary.kpis.collaborativeProjects}</p>
             </div>

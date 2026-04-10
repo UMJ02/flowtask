@@ -19,8 +19,8 @@ export function SharedAnalyticsLanding({ token, autoPrint = false }: { token: st
 
   if (!payload) {
     return (
-      <main className="min-h-screen bg-white py-10 text-slate-900">
-        <div className="mx-auto w-full max-w-[1080px] px-4">
+      <main className="min-h-screen bg-white py-8 text-slate-900">
+        <div className="mx-auto w-full max-w-[1040px] px-4">
           <Card>
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">FlowTask</p>
             <h1 className="mt-3 text-[1.85rem] font-bold">No se pudo abrir este reporte</h1>

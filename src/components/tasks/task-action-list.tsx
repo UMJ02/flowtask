@@ -171,7 +171,7 @@ function TaskActionListComponent({
         <button
           type="button"
           onClick={() => markComplete(task.id)}
-          className="inline-flex h-9 items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3.5 text-sm font-semibold text-emerald-800 transition hover:bg-emerald-100"
+          className="inline-flex h-9 items-center gap-2 rounded-[11px] border border-emerald-200 bg-emerald-50 px-3.5 text-sm font-semibold text-emerald-800 transition hover:bg-emerald-100"
         >
           <CheckCircle2 className="h-4 w-4" />
           Finalizar
@@ -179,7 +179,7 @@ function TaskActionListComponent({
       ) : null}
 
       <Link href={taskDetailRoute(task.id, currentQuery)}>
-        <Button type="button" variant="secondary" className="h-10 rounded-xl px-3 text-sm">
+        <Button type="button" variant="secondary" className="h-10 rounded-[11px] px-3 text-sm">
           <Eye className="h-4 w-4" />
           Ver
         </Button>
@@ -187,14 +187,14 @@ function TaskActionListComponent({
 
       {!completed ? (
         <Link href={taskEditRoute(task.id, currentQuery)}>
-          <Button type="button" variant="secondary" className="h-10 rounded-xl px-3 text-sm">
+          <Button type="button" variant="secondary" className="h-10 rounded-[11px] px-3 text-sm">
             <Pencil className="h-4 w-4" />
             Editar
           </Button>
         </Link>
       ) : null}
 
-      <Button type="button" variant="secondary" className="h-10 rounded-xl px-3 text-sm" onClick={() => deleteTask(task.id)}>
+      <Button type="button" variant="secondary" className="h-10 rounded-[11px] px-3 text-sm" onClick={() => deleteTask(task.id)}>
         <Trash2 className="h-4 w-4" />
         Borrar
       </Button>
@@ -268,7 +268,7 @@ function TaskActionListComponent({
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2 xl:justify-end">
-            <div className="inline-flex rounded-xl border border-slate-200 bg-white p-1 shadow-sm">
+            <div className="inline-flex rounded-[11px] border border-slate-200 bg-white p-1 shadow-sm">
               <button
                 type="button"
                 onClick={() => setViewMode("cards")}
@@ -289,13 +289,13 @@ function TaskActionListComponent({
             <button
               type="button"
               onClick={() => setFavoritesOnly((value) => !value)}
-              className={`inline-flex h-9 items-center gap-2 rounded-xl border px-3.5 text-sm font-semibold transition ${favoritesOnly ? "border-amber-200 bg-amber-50 text-amber-700" : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"}`}
+              className={`inline-flex h-9 items-center gap-2 rounded-[11px] border px-3.5 text-sm font-semibold transition ${favoritesOnly ? "border-amber-200 bg-amber-50 text-amber-700" : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"}`}
             >
               <Star className={`h-4 w-4 ${favoritesOnly ? "fill-current" : ""}`} />
               Favoritos del día
             </button>
 
-            <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-600">
+            <div className="flex items-center gap-2 rounded-[11px] border border-slate-200 bg-white px-3 py-2 text-sm text-slate-600">
               <span className="font-medium">Mostrar</span>
               <Select
                 aria-label="Cantidad de tareas por página"
@@ -347,7 +347,7 @@ function TaskActionListComponent({
             <Button
               type="button"
               variant="ghost"
-              className="h-9 rounded-xl px-3"
+              className="h-9 rounded-[11px] px-3"
               disabled={currentPage <= 1 || pageAnimation !== "idle"}
               onClick={() => animatePage("prev", currentPage - 1)}
             >
@@ -360,7 +360,7 @@ function TaskActionListComponent({
             <Button
               type="button"
               variant="ghost"
-              className="h-9 rounded-xl px-3"
+              className="h-9 rounded-[11px] px-3"
               disabled={currentPage >= totalPages || pageAnimation !== "idle"}
               onClick={() => animatePage("next", currentPage + 1)}
             >

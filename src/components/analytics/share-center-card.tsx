@@ -41,11 +41,11 @@ export function ShareCenterCard({ summary }: { summary: WorkspaceAnalyticsSummar
 
   return (
     <Card className="border-slate-200/80 bg-white px-4 py-4 shadow-[0_12px_28px_rgba(15,23,42,0.05)] md:px-5 md:py-4">
-      <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+      <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
         <div className="max-w-3xl min-w-0">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-700">Share center</p>
-          <h2 className="mt-2 text-[1.35rem] font-bold leading-tight text-slate-900 md:text-[1.5rem]">Comparte un reporte ejecutivo sin complicarlo</h2>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600 sm:text-[15px]">
+          <h2 className="mt-1.5 text-[1.2rem] font-bold leading-tight text-slate-900 md:text-[1.35rem]">Comparte un reporte ejecutivo sin complicarlo</h2>
+          <p className="mt-1.5 max-w-2xl text-[14px] leading-6 text-slate-600 sm:text-[15px]">
             Copia el link, abre la landing o envíala por correo desde un bloque más limpio y directo para jefatura.
           </p>
           {feedback ? <p className="mt-2 text-xs font-semibold text-emerald-700">{feedback}</p> : null}
