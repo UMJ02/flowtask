@@ -226,19 +226,19 @@ export function ProjectForm({
   const cancelHref = redirectTo ?? projectListRoute();
 
   return (
-    <form className="space-y-4 rounded-[24px] bg-white p-5 shadow-soft transition-all duration-200" onSubmit={handleSubmit(onSubmit)}>
-      <div className="grid gap-4 md:grid-cols-2">
-        <div className="space-y-2 md:col-span-2">
-          <label className="text-sm font-medium text-slate-700">Nombre del proyecto</label>
+    <form className="form-shell space-y-3.5 rounded-[20px] bg-white p-4 transition-all duration-200" onSubmit={handleSubmit(onSubmit)}>
+      <div className="grid gap-3.5 md:grid-cols-2">
+        <div className="space-y-1.5 md:col-span-2">
+          <label className="text-[13px] font-semibold text-slate-700">Nombre del proyecto</label>
           <Input {...register("title")} placeholder="Ej. Lanzamiento web interna" />
           {errors.title ? <p className="text-sm text-red-600">{errors.title.message}</p> : null}
         </div>
-        <div className="space-y-2 md:col-span-2">
-          <label className="text-sm font-medium text-slate-700">Descripción</label>
+        <div className="space-y-1.5 md:col-span-2">
+          <label className="text-[13px] font-semibold text-slate-700">Descripción</label>
           <Textarea {...register("description")} placeholder="Detalle del proyecto" />
         </div>
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-slate-700">Estado</label>
+        <div className="space-y-1.5">
+          <label className="text-[13px] font-semibold text-slate-700">Estado</label>
           <Select {...register("status")}>
             {PROJECT_STATUSES.map((item) => (
               <option key={item.value} value={item.value}>
@@ -247,8 +247,8 @@ export function ProjectForm({
             ))}
           </Select>
         </div>
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-slate-700">Departamento</label>
+        <div className="space-y-1.5">
+          <label className="text-[13px] font-semibold text-slate-700">Departamento</label>
           <Select {...register("department")}>
             <option value="">Seleccionar</option>
             {departmentOptions.map((item) => (
@@ -258,8 +258,8 @@ export function ProjectForm({
             ))}
           </Select>
         </div>
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-slate-700">Registro</label>
+        <div className="space-y-1.5">
+          <label className="text-[13px] font-semibold text-slate-700">Registro</label>
           <Input {...register("clientName")} placeholder="Nombre del registro" list="project-registry-client-options" />
           <datalist id="project-registry-client-options">
             {clientOptions.map((item) => (
@@ -268,8 +268,8 @@ export function ProjectForm({
           </datalist>
           <p className="text-xs text-slate-500">Usa registros del workspace activo para mantener proyectos y tareas en el mismo contexto.</p>
         </div>
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-slate-700">País</label>
+        <div className="space-y-1.5">
+          <label className="text-[13px] font-semibold text-slate-700">País</label>
           <Select {...register("country")}>
             <option value="">Seleccionar país</option>
             {countryOptions.map((item) => (
@@ -279,8 +279,8 @@ export function ProjectForm({
             ))}
           </Select>
         </div>
-        <div className="space-y-2 md:col-span-2">
-          <label className="text-sm font-medium text-slate-700">Deadline</label>
+        <div className="space-y-1.5 md:col-span-2">
+          <label className="text-[13px] font-semibold text-slate-700">Deadline</label>
           <Input {...register("dueDate")} type="date" />
         </div>
         <label className="flex items-center gap-3 rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-700 md:col-span-2">
@@ -313,7 +313,7 @@ export function ProjectForm({
         >
           Restablecer
         </Button>
-        <Link href={cancelHref} className="inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-900 transition hover:border-emerald-200 hover:bg-emerald-50">
+        <Link href={cancelHref} className="inline-flex items-center justify-center rounded-[16px] border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-900 transition hover:border-emerald-200 hover:bg-emerald-50">
           Cancelar
         </Link>
       </div>

@@ -266,19 +266,19 @@ export function TaskForm({
   const cancelHref = redirectTo ?? taskListRoute();
 
   return (
-    <form className="space-y-4 rounded-[24px] bg-white p-5 shadow-soft transition-all duration-200" onSubmit={handleSubmit(onSubmit)}>
-      <div className="grid gap-4 md:grid-cols-2">
-        <div className="space-y-2 md:col-span-2">
-          <label className="text-sm font-medium text-slate-700">Título</label>
+    <form className="form-shell space-y-3.5 rounded-[20px] bg-white p-4 transition-all duration-200" onSubmit={handleSubmit(onSubmit)}>
+      <div className="grid gap-3.5 md:grid-cols-2">
+        <div className="space-y-1.5 md:col-span-2">
+          <label className="text-[13px] font-semibold text-slate-700">Título</label>
           <Input {...register("title")} placeholder="Ej. Diseñar propuesta cliente" />
           {errors.title ? <p className="text-sm text-red-600">{errors.title.message}</p> : null}
         </div>
-        <div className="space-y-2 md:col-span-2">
-          <label className="text-sm font-medium text-slate-700">Descripción</label>
+        <div className="space-y-1.5 md:col-span-2">
+          <label className="text-[13px] font-semibold text-slate-700">Descripción</label>
           <Textarea {...register("description")} placeholder="Detalle de la tarea" />
         </div>
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-slate-700">Estado</label>
+        <div className="space-y-1.5">
+          <label className="text-[13px] font-semibold text-slate-700">Estado</label>
           <Select {...register("status")}>
             {TASK_STATUSES.map((item) => (
               <option key={item.value} value={item.value}>
@@ -287,8 +287,8 @@ export function TaskForm({
             ))}
           </Select>
         </div>
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-slate-700">Prioridad</label>
+        <div className="space-y-1.5">
+          <label className="text-[13px] font-semibold text-slate-700">Prioridad</label>
           <Select {...register("priority")}>
             {TASK_PRIORITIES.map((item) => (
               <option key={item.value} value={item.value}>
@@ -297,8 +297,8 @@ export function TaskForm({
             ))}
           </Select>
         </div>
-        <div className="space-y-2 md:col-span-2">
-          <label className="text-sm font-medium text-slate-700">Proyecto vinculado</label>
+        <div className="space-y-1.5 md:col-span-2">
+          <label className="text-[13px] font-semibold text-slate-700">Proyecto vinculado</label>
           <Select {...register("projectId")}>
             <option value="">Sin proyecto</option>
             {projects.map((item) => (
@@ -307,8 +307,8 @@ export function TaskForm({
           </Select>
           <p className="text-xs text-slate-500">{loadingProjects ? "Cargando proyectos del workspace…" : "Opcional: asigna esta tarea a un proyecto activo."}</p>
         </div>
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-slate-700">Departamento</label>
+        <div className="space-y-1.5">
+          <label className="text-[13px] font-semibold text-slate-700">Departamento</label>
           <Select {...register("department")}>
             <option value="">Seleccionar</option>
             {departmentOptions.map((item) => (
@@ -318,8 +318,8 @@ export function TaskForm({
             ))}
           </Select>
         </div>
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-slate-700">Registro</label>
+        <div className="space-y-1.5">
+          <label className="text-[13px] font-semibold text-slate-700">Registro</label>
           <Input {...register("clientName")} placeholder="Nombre del registro" list="registry-client-options" />
           <datalist id="registry-client-options">
             {clientOptions.map((item) => (
@@ -327,8 +327,8 @@ export function TaskForm({
             ))}
           </datalist>
         </div>
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-slate-700">País</label>
+        <div className="space-y-1.5">
+          <label className="text-[13px] font-semibold text-slate-700">País</label>
           <Select {...register("country")}>
             <option value="">Seleccionar país</option>
             {countryOptions.map((item) => (
@@ -338,8 +338,8 @@ export function TaskForm({
             ))}
           </Select>
         </div>
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-slate-700">Deadline</label>
+        <div className="space-y-1.5">
+          <label className="text-[13px] font-semibold text-slate-700">Deadline</label>
           <Input {...register("dueDate")} type="date" />
         </div>
       </div>
@@ -352,7 +352,7 @@ export function TaskForm({
         <Button type="button" variant="secondary" disabled={isBusy} onClick={() => reset(resetValues)}>
           Restablecer
         </Button>
-        <Link href={cancelHref} className="inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-900 transition hover:border-emerald-200 hover:bg-emerald-50">
+        <Link href={cancelHref} className="inline-flex items-center justify-center rounded-[16px] border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-900 transition hover:border-emerald-200 hover:bg-emerald-50">
           Cancelar
         </Link>
       </div>
