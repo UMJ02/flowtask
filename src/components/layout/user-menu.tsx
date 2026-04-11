@@ -1,9 +1,19 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { LogOut, Settings, UserCircle2 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
+
+const PROFILE_STORAGE_KEY = 'flowtask.profile-shell';
+const PROFILE_UPDATED_EVENT = 'flowtask:profile-updated';
+
+type ProfileShellPayload = {
+  fullName?: string | null;
+  email?: string | null;
+  avatarUrl?: string | null;
+};
 
 function getInitials(name: string, email: string) {
   const source = name?.trim() || email?.trim() || 'U';
@@ -12,17 +22,78 @@ function getInitials(name: string, email: string) {
   return `${parts[0][0] ?? ''}${parts[1][0] ?? ''}`.toUpperCase();
 }
 
+function readShellProfile(): ProfileShellPayload | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = window.localStorage.getItem(PROFILE_STORAGE_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw) as ProfileShellPayload;
+  } catch {
+    return null;
+  }
+}
+
+function AvatarBadge({ avatarUrl, initials }: { avatarUrl?: string | null; initials: string }) {
+  return avatarUrl ? (
+    <span className="relative inline-flex h-9 w-9 overflow-hidden rounded-full ring-1 ring-slate-200/80">
+      <Image src={avatarUrl} alt="Avatar del usuario" fill className="object-cover" sizes="36px" unoptimized />
+    </span>
+  ) : (
+    <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-slate-950 text-sm font-bold text-white">
+      {initials}
+    </span>
+  );
+}
+
 export function UserMenu({
   fullName,
   email,
+  avatarUrl,
 }: {
   fullName?: string | null;
   email: string;
+  avatarUrl?: string | null;
 }) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const initials = useMemo(() => getInitials(fullName ?? '', email), [fullName, email]);
-  const displayName = fullName?.trim() || 'Mi perfil';
+  const [liveFullName, setLiveFullName] = useState(fullName ?? '');
+  const [liveEmail, setLiveEmail] = useState(email);
+  const [liveAvatarUrl, setLiveAvatarUrl] = useState(avatarUrl ?? '');
+
+  useEffect(() => {
+    setLiveFullName(fullName ?? '');
+  }, [fullName]);
+
+  useEffect(() => {
+    setLiveEmail(email);
+  }, [email]);
+
+  useEffect(() => {
+    setLiveAvatarUrl(avatarUrl ?? '');
+  }, [avatarUrl]);
+
+  useEffect(() => {
+    const shellProfile = readShellProfile();
+    if (shellProfile) {
+      if (typeof shellProfile.fullName === 'string') setLiveFullName(shellProfile.fullName);
+      if (typeof shellProfile.email === 'string' && shellProfile.email) setLiveEmail(shellProfile.email);
+      if ('avatarUrl' in shellProfile) setLiveAvatarUrl(shellProfile.avatarUrl ?? '');
+    }
+
+    const handleProfileUpdated = (event: Event) => {
+      const detail = (event as CustomEvent<ProfileShellPayload>).detail;
+      if (!detail) return;
+      if (typeof detail.fullName === 'string') setLiveFullName(detail.fullName);
+      if (typeof detail.email === 'string' && detail.email) setLiveEmail(detail.email);
+      if ('avatarUrl' in detail) setLiveAvatarUrl(detail.avatarUrl ?? '');
+    };
+
+    window.addEventListener(PROFILE_UPDATED_EVENT, handleProfileUpdated as EventListener);
+    return () => window.removeEventListener(PROFILE_UPDATED_EVENT, handleProfileUpdated as EventListener);
+  }, []);
+
+  const initials = useMemo(() => getInitials(liveFullName ?? '', liveEmail), [liveFullName, liveEmail]);
+  const displayName = liveFullName?.trim() || 'Mi perfil';
 
   const handleLogout = async () => {
     setLoading(true);
@@ -38,9 +109,7 @@ export function UserMenu({
         aria-label="Abrir perfil"
         className="relative inline-flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 bg-white text-left shadow-sm transition hover:border-emerald-200 hover:bg-emerald-50 md:hidden"
       >
-        <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-slate-950 text-sm font-bold text-white">
-          {initials}
-        </span>
+        <AvatarBadge avatarUrl={liveAvatarUrl} initials={initials} />
       </Link>
 
       <div className="relative hidden md:block">
@@ -50,11 +119,9 @@ export function UserMenu({
           onClick={() => setOpen((value) => !value)}
           className="group relative inline-flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 bg-white text-left shadow-sm transition hover:border-emerald-200 hover:bg-emerald-50"
         >
-          <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-slate-950 text-sm font-bold text-white">
-            {initials}
-          </span>
+          <AvatarBadge avatarUrl={liveAvatarUrl} initials={initials} />
           <span className="pointer-events-none absolute -bottom-10 left-1/2 hidden -translate-x-1/2 whitespace-nowrap rounded-xl bg-slate-950 px-3 py-1.5 text-xs font-medium text-white shadow-lg group-hover:block">
-            {email}
+            {liveEmail}
           </span>
         </button>
 
@@ -62,7 +129,7 @@ export function UserMenu({
           <div className="absolute right-0 top-[calc(100%+10px)] z-40 w-72 rounded-[24px] border border-slate-200 bg-white p-3 shadow-[0_24px_50px_rgba(15,23,42,0.16)]">
             <div className="rounded-2xl bg-slate-50 px-4 py-3">
               <p className="text-sm font-semibold text-slate-900">{displayName}</p>
-              <p className="mt-1 break-all text-xs text-slate-500">{email}</p>
+              <p className="mt-1 break-all text-xs text-slate-500">{liveEmail}</p>
             </div>
 
             <div className="mt-3 space-y-2">

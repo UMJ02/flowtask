@@ -11,7 +11,15 @@ function getFirstName(name?: string | null) {
   return clean.split(/\s+/)[0] ?? clean;
 }
 
-export function AppHeader({ userEmail, userName }: { userEmail: string; userName?: string | null }) {
+export function AppHeader({
+  userEmail,
+  userName,
+  avatarUrl,
+}: {
+  userEmail: string;
+  userName?: string | null;
+  avatarUrl?: string | null;
+}) {
   const firstName = getFirstName(userName);
 
   return (
@@ -35,7 +43,7 @@ export function AppHeader({ userEmail, userName }: { userEmail: string; userName
           </div>
           <CommandPalette />
           <NotificationBell />
-          <UserMenu fullName={userName} email={userEmail} />
+          <UserMenu fullName={userName} email={userEmail} avatarUrl={avatarUrl} />
         </div>
       </div>
     </header>

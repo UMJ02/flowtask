@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent } from 'react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { CircleHelp, Link2, LockKeyhole, Mail, Trash2, Upload, UserRound } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -16,6 +17,16 @@ function getInitials(name: string, email: string) {
 
 function normalizeFileName(name: string) {
   return name.toLowerCase().replace(/[^a-z0-9.-]+/g, '-').replace(/-+/g, '-');
+}
+
+
+const PROFILE_STORAGE_KEY = 'flowtask.profile-shell';
+const PROFILE_UPDATED_EVENT = 'flowtask:profile-updated';
+
+function syncProfileShell(payload: { fullName?: string | null; email?: string | null; avatarUrl?: string | null }) {
+  if (typeof window === 'undefined') return;
+  window.localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(payload));
+  window.dispatchEvent(new CustomEvent(PROFILE_UPDATED_EVENT, { detail: payload }));
 }
 
 function extractStoragePath(publicUrl: string, bucket: string) {
@@ -51,6 +62,7 @@ export function ProfileSettingsForm({
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const router = useRouter();
   const avatarInfoRef = useRef<HTMLDivElement | null>(null);
 
   const initials = useMemo(() => getInitials(fullName, nextEmail), [fullName, nextEmail]);
@@ -128,8 +140,10 @@ export function ProfileSettingsForm({
 
     setAvatarUrl(publicUrl);
     setLastUploadedAvatarUrl(publicUrl);
+    syncProfileShell({ fullName, email: nextEmail, avatarUrl: publicUrl });
+    router.refresh();
     setUploadingAvatar(false);
-    setMessage('Tu foto de perfil se actualizó correctamente.');
+    setMessage('Tu foto de perfil se actualizó correctamente y ya se reflejó en el header.');
     event.target.value = '';
   };
 
@@ -220,6 +234,8 @@ export function ProfileSettingsForm({
       setLastUploadedAvatarUrl(cleanedAvatarUrl);
     }
 
+    syncProfileShell({ fullName, email: nextEmail.trim() || email, avatarUrl: cleanedAvatarUrl || null });
+    router.refresh();
     setSaving(false);
     setPassword('');
     setConfirmPassword('');

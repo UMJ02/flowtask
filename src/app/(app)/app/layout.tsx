@@ -19,6 +19,7 @@ export default async function PrivateAppLayout({ children }: { children: React.R
     <AppShell
       userEmail={profile?.email || user.email || 'Usuario'}
       userName={profile?.fullName || user.user_metadata?.full_name || null}
+      userAvatarUrl={profile?.avatarUrl || null}
       userId={user.id}
       unreadCount={unreadCount}
       organizations={organizationContext?.organizations ?? []}
