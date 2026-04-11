@@ -97,11 +97,12 @@ export function downloadAnalyticsCsv(payload: SharedAnalyticsPayload) {
   rows.push(['En espera', String(payload.shareDigest.waitingCount), '', '', '', '', '', '']);
   rows.push(['Concluidos', String(payload.shareDigest.completedCount), '', '', '', '', '', '']);
 
+  const BOM = '﻿';
   const csv = rows
-    .map((row) => row.map((cell) => `"${String(cell ?? '').replaceAll('"', '""')}"`).join(','))
-    .join('\n');
+    .map((row) => row.map((cell) => `"${String(cell ?? '').replaceAll('"', '""')}"`).join(';'))
+    .join('\r\n');
 
-  downloadBlob('flowtask-reporte-compartido.csv', new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
+  downloadBlob('flowtask-reporte-compartido.csv', new Blob([`${BOM}${csv}`], { type: 'text/csv;charset=utf-8;' }));
 }
 
 export function triggerAnalyticsPdf(shareUrl: string) {
