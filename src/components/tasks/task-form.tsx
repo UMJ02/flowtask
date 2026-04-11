@@ -5,11 +5,9 @@ import { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { getClientWorkspaceContext, findWorkspaceClientId, fetchWorkspaceProjects } from "@/lib/supabase/workspace-client";
+import { getClientWorkspaceContext, findWorkspaceClientId, fetchWorkspaceClientsDirectory, fetchWorkspaceCountries, fetchWorkspaceDepartments, fetchWorkspaceProjects } from "@/lib/supabase/workspace-client";
 import { resolveProjectEntityContext, validateTaskProjectClientIntegrity } from "@/lib/security/entity-integrity";
 import { getClientAccessSummary, hasClientAccess } from "@/lib/security/client-access";
-import { DEPARTMENTS } from "@/lib/constants/departments";
-import { COUNTRIES } from "@/lib/constants/countries";
 import { TASK_STATUSES } from "@/lib/constants/task-status";
 import { TASK_PRIORITIES } from "@/lib/constants/task-priority";
 import { taskDetailRoute, taskListRoute, type AppRoute } from "@/lib/navigation/routes";
@@ -44,6 +42,9 @@ export function TaskForm({
   const [serverError, setServerError] = useState<string | null>(null);
   const [isRefreshing, startRefresh] = useTransition();
   const [projects, setProjects] = useState<Array<{ id: string; title: string; status: string }>>([]);
+  const [departmentOptions, setDepartmentOptions] = useState<Array<{ id: string; code: string; name: string }>>([]);
+  const [countryOptions, setCountryOptions] = useState<Array<{ id: string; code: string; name: string }>>([]);
+  const [clientOptions, setClientOptions] = useState<Array<{ id: string; name: string }>>([]);
   const [loadingProjects, setLoadingProjects] = useState(true);
   const router = useRouter();
   const isEdit = Boolean(taskId);
@@ -85,23 +86,34 @@ export function TaskForm({
 
   useEffect(() => {
     let active = true;
-    const loadProjects = async () => {
+    const loadRegistryOptions = async () => {
       setLoadingProjects(true);
       const workspace = await getClientWorkspaceContext();
       if (!workspace.user) {
         if (active) {
           setProjects([]);
+          setDepartmentOptions([]);
+          setCountryOptions([]);
+          setClientOptions([]);
           setLoadingProjects(false);
         }
         return;
       }
-      const rows = await fetchWorkspaceProjects(workspace.supabase, workspace.user.id, workspace.activeOrganizationId, "edit");
+      const [projectRows, departmentRows, countryRows, clientRows] = await Promise.all([
+        fetchWorkspaceProjects(workspace.supabase, workspace.user.id, workspace.activeOrganizationId, "edit"),
+        fetchWorkspaceDepartments(workspace.supabase, workspace.user.id, workspace.activeOrganizationId),
+        fetchWorkspaceCountries(workspace.supabase, workspace.user.id, workspace.activeOrganizationId),
+        fetchWorkspaceClientsDirectory(workspace.supabase, workspace.user.id, workspace.activeOrganizationId),
+      ]);
       if (active) {
-        setProjects(rows);
+        setProjects(projectRows);
+        setDepartmentOptions(departmentRows);
+        setCountryOptions(countryRows);
+        setClientOptions(clientRows);
         setLoadingProjects(false);
       }
     };
-    void loadProjects();
+    void loadRegistryOptions();
     return () => {
       active = false;
     };
@@ -299,24 +311,29 @@ export function TaskForm({
           <label className="text-sm font-medium text-slate-700">Departamento</label>
           <Select {...register("department")}>
             <option value="">Seleccionar</option>
-            {DEPARTMENTS.map((item) => (
-              <option key={item.code} value={item.code}>
-                {item.label}
+            {departmentOptions.map((item) => (
+              <option key={item.id} value={item.code}>
+                {item.name}
               </option>
             ))}
           </Select>
         </div>
         <div className="space-y-2">
-          <label className="text-sm font-medium text-slate-700">Cliente</label>
-          <Input {...register("clientName")} placeholder="Nombre del cliente" />
+          <label className="text-sm font-medium text-slate-700">Registro</label>
+          <Input {...register("clientName")} placeholder="Nombre del registro" list="registry-client-options" />
+          <datalist id="registry-client-options">
+            {clientOptions.map((item) => (
+              <option key={item.id} value={item.name} />
+            ))}
+          </datalist>
         </div>
         <div className="space-y-2">
           <label className="text-sm font-medium text-slate-700">País</label>
           <Select {...register("country")}>
             <option value="">Seleccionar país</option>
-            {COUNTRIES.map((item) => (
-              <option key={item.code} value={item.label}>
-                {item.label}
+            {countryOptions.map((item) => (
+              <option key={item.id} value={item.name}>
+                {item.name}
               </option>
             ))}
           </Select>

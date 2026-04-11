@@ -1,14 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { getClientWorkspaceContext, findWorkspaceClientId } from "@/lib/supabase/workspace-client";
+import { getClientWorkspaceContext, findWorkspaceClientId, fetchWorkspaceClientsDirectory, fetchWorkspaceCountries, fetchWorkspaceDepartments } from "@/lib/supabase/workspace-client";
 import { getClientAccessSummary, hasClientAccess } from "@/lib/security/client-access";
-import { DEPARTMENTS } from "@/lib/constants/departments";
-import { COUNTRIES } from "@/lib/constants/countries";
 import { PROJECT_STATUSES } from "@/lib/constants/project-status";
 import { projectDetailRoute, projectListRoute, type AppRoute } from "@/lib/navigation/routes";
 import { generateShareToken } from "@/lib/utils/tokens";
@@ -41,6 +39,9 @@ export function ProjectForm({
 }: ProjectFormProps) {
   const [message, setMessage] = useState<string | null>(null);
   const [serverError, setServerError] = useState<string | null>(null);
+  const [departmentOptions, setDepartmentOptions] = useState<Array<{ id: string; code: string; name: string }>>([]);
+  const [countryOptions, setCountryOptions] = useState<Array<{ id: string; code: string; name: string }>>([]);
+  const [clientOptions, setClientOptions] = useState<Array<{ id: string; name: string }>>([]);
   const [isRefreshing, startRefresh] = useTransition();
   const router = useRouter();
   const isEdit = Boolean(projectId);
@@ -62,6 +63,26 @@ export function ProjectForm({
       country: initialData?.country ?? "",
     },
   });
+
+
+  useEffect(() => {
+    let active = true;
+    const loadRegistryOptions = async () => {
+      const workspace = await getClientWorkspaceContext();
+      if (!workspace.user) return;
+      const [departmentRows, countryRows, clientRows] = await Promise.all([
+        fetchWorkspaceDepartments(workspace.supabase, workspace.user.id, workspace.activeOrganizationId),
+        fetchWorkspaceCountries(workspace.supabase, workspace.user.id, workspace.activeOrganizationId),
+        fetchWorkspaceClientsDirectory(workspace.supabase, workspace.user.id, workspace.activeOrganizationId),
+      ]);
+      if (!active) return;
+      setDepartmentOptions(departmentRows);
+      setCountryOptions(countryRows);
+      setClientOptions(clientRows);
+    };
+    void loadRegistryOptions();
+    return () => { active = false; };
+  }, []);
 
   const onSubmit = async (values: ProjectValues) => {
     setMessage(isEdit ? "Guardando cambios…" : "Creando proyecto…");
@@ -230,25 +251,30 @@ export function ProjectForm({
           <label className="text-sm font-medium text-slate-700">Departamento</label>
           <Select {...register("department")}>
             <option value="">Seleccionar</option>
-            {DEPARTMENTS.map((item) => (
-              <option key={item.code} value={item.code}>
-                {item.label}
+            {departmentOptions.map((item) => (
+              <option key={item.id} value={item.code}>
+                {item.name}
               </option>
             ))}
           </Select>
         </div>
         <div className="space-y-2">
-          <label className="text-sm font-medium text-slate-700">Cliente</label>
-          <Input {...register("clientName")} placeholder="Nombre del cliente" />
-          <p className="text-xs text-slate-500">Usa clientes del workspace activo para mantener proyectos y tareas en el mismo contexto.</p>
+          <label className="text-sm font-medium text-slate-700">Registro</label>
+          <Input {...register("clientName")} placeholder="Nombre del registro" list="project-registry-client-options" />
+          <datalist id="project-registry-client-options">
+            {clientOptions.map((item) => (
+              <option key={item.id} value={item.name} />
+            ))}
+          </datalist>
+          <p className="text-xs text-slate-500">Usa registros del workspace activo para mantener proyectos y tareas en el mismo contexto.</p>
         </div>
         <div className="space-y-2">
           <label className="text-sm font-medium text-slate-700">País</label>
           <Select {...register("country")}>
             <option value="">Seleccionar país</option>
-            {COUNTRIES.map((item) => (
-              <option key={item.code} value={item.label}>
-                {item.label}
+            {countryOptions.map((item) => (
+              <option key={item.id} value={item.name}>
+                {item.name}
               </option>
             ))}
           </Select>

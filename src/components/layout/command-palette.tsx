@@ -248,7 +248,7 @@ export function CommandPalette() {
 
     const clientViews = readSavedViews('flowtask:filters:clients').map((item) => ({
       id: `client-view-${item.id}`,
-      label: `Clientes · ${item.label}`,
+      label: `Registros · ${item.label}`,
       description: item.query || 'Búsqueda guardada de clientes',
       href: item.query ? asRoute(`/app/clients?${item.query}`) : asRoute('/app/clients'),
       keywords: [item.label, item.query, 'clientes', 'vista guardada'],

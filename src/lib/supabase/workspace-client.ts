@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/client";
 import { filterRowsByClientAccess, getClientAccessSummary, hasClientAccess } from "@/lib/security/client-access";
-
+import { DEPARTMENTS } from "@/lib/constants/departments";
+import { COUNTRIES } from "@/lib/constants/countries";
 
 export interface ClientWorkspaceContext {
   supabase: ReturnType<typeof createClient>;
@@ -8,6 +9,20 @@ export interface ClientWorkspaceContext {
   activeOrganizationId: string | null;
   boardId: string | null;
   layoutConfig: Record<string, any>;
+}
+
+export type WorkspaceClientOption = { id: string; name: string };
+export type WorkspaceDepartmentOption = { id: string; code: string; name: string; phone?: string | null };
+export type WorkspaceCountryOption = { id: string; code: string; name: string };
+
+export function slugifyWorkspaceValue(value: string) {
+  return value
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 48);
 }
 
 export async function getClientWorkspaceContext(): Promise<ClientWorkspaceContext> {
@@ -79,7 +94,6 @@ export async function findWorkspaceClientId(
   return (data?.id as string | null | undefined) ?? null;
 }
 
-
 export async function fetchWorkspaceProjects(
   supabase: ReturnType<typeof createClient>,
   userId: string,
@@ -88,7 +102,7 @@ export async function fetchWorkspaceProjects(
 ) {
   const access = await getClientAccessSummary(supabase as any, userId, organizationId);
 
-  let query = applyClientWorkspaceScope(
+  const query = applyClientWorkspaceScope(
     supabase
       .from("projects")
       .select("id,title,status,client_id")
@@ -108,4 +122,58 @@ export async function fetchWorkspaceProjects(
     title: String(item.title ?? "Proyecto"),
     status: String(item.status ?? "activo"),
   }));
+}
+
+export async function fetchWorkspaceClientsDirectory(
+  supabase: ReturnType<typeof createClient>,
+  userId: string,
+  organizationId?: string | null,
+) {
+  let query = supabase.from('clients').select('id,name').order('name', { ascending: true }).limit(200);
+  query = organizationId ? query.eq('organization_id', organizationId) : query.eq('account_owner_id', userId);
+  const { data, error } = await query;
+  if (error) return [] as WorkspaceClientOption[];
+  return (data ?? []).map((item: any) => ({ id: String(item.id), name: String(item.name ?? '') })).filter((item: WorkspaceClientOption) => item.name);
+}
+
+export async function fetchWorkspaceDepartments(
+  supabase: ReturnType<typeof createClient>,
+  userId: string,
+  organizationId?: string | null,
+) {
+  try {
+    const { data, error } = await supabase
+      .from('departments')
+      .select('id,code,name,phone,organization_id,account_owner_id')
+      .order('name', { ascending: true });
+    if (error) throw error;
+    const rows = (data ?? []).filter((item: any) => {
+      if (!organizationId) return !item.organization_id ? !item.account_owner_id || item.account_owner_id === userId : false;
+      return !item.organization_id || item.organization_id === organizationId;
+    });
+    return rows.map((item: any) => ({ id: String(item.id), code: String(item.code), name: String(item.name), phone: (item.phone as string | null | undefined) ?? null })) as WorkspaceDepartmentOption[];
+  } catch {
+    return DEPARTMENTS.map((item) => ({ id: item.code, code: item.code, name: item.label, phone: null }));
+  }
+}
+
+export async function fetchWorkspaceCountries(
+  supabase: ReturnType<typeof createClient>,
+  userId: string,
+  organizationId?: string | null,
+) {
+  try {
+    const { data, error } = await supabase
+      .from('countries')
+      .select('id,code,name,organization_id,account_owner_id')
+      .order('name', { ascending: true });
+    if (error) throw error;
+    const rows = (data ?? []).filter((item: any) => {
+      if (!organizationId) return !item.organization_id ? !item.account_owner_id || item.account_owner_id === userId : false;
+      return !item.organization_id || item.organization_id === organizationId;
+    });
+    return rows.map((item: any) => ({ id: String(item.id), code: String(item.code), name: String(item.name) })) as WorkspaceCountryOption[];
+  } catch {
+    return COUNTRIES.map((item) => ({ id: item.code, code: item.code, name: item.label }));
+  }
 }
