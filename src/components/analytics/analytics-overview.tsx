@@ -61,12 +61,12 @@ export function AnalyticsOverview({ summary, compact = false }: { summary: Works
 
   return (
     <div className="space-y-4">
-      <Card className="border-cyan-200/70 bg-[linear-gradient(135deg,rgba(5,46,43,0.98)_0%,rgba(11,57,84,0.97)_44%,rgba(15,23,42,0.98)_100%)] px-4 py-3 text-white shadow-[0_16px_34px_rgba(8,47,73,0.15)] md:px-5 md:py-3.5">
+      <Card className="border-cyan-200/70 bg-[linear-gradient(135deg,rgba(5,46,43,0.98)_0%,rgba(11,57,84,0.97)_44%,rgba(15,23,42,0.98)_100%)] px-4 py-3 text-white shadow-[0_18px_36px_rgba(8,47,73,0.16)] md:px-5 md:py-3.5">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div className="max-w-3xl min-w-0">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-100/80">FlowTask v4.4 · analytics center</p>
-            <h1 className="mt-1.5 text-[1.3rem] font-bold leading-[1.08] sm:text-[1.5rem] lg:max-w-3xl">Resumen para priorizar acciones</h1>
-            <p className="mt-1.5 max-w-2xl text-[14px] leading-6 text-slate-100/88 sm:text-[14px]">
+            <h1 className="mt-1.5 text-[1.22rem] font-bold leading-[1.08] sm:text-[1.42rem] lg:max-w-3xl">Resumen para priorizar acciones</h1>
+            <p className="mt-1.5 max-w-2xl text-[13px] leading-5 text-slate-100/88 sm:text-[13px]">
               Workspace personal · analiza tu estado en una sola pantalla con las actividades más importantes y lo que necesita atención hoy. Actualizado {summary.generatedAtLabel}.
             </p>
           </div>
@@ -116,9 +116,9 @@ function HeroMetric({ label, value, helper, tone }: { label: string; value: stri
           : 'border-emerald-200/25 bg-white/10 text-cyan-100';
 
   return (
-    <div className={`rounded-[16px] border px-3.5 py-3 backdrop-blur-sm ${theme}`}>
+    <div className={`rounded-[14px] border px-3 py-2.5 backdrop-blur-sm shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] ${theme}`}>
       <p className="text-[11px] uppercase tracking-[0.16em] text-cyan-100/80">{label}</p>
-      <p className="mt-2 text-[1.85rem] font-bold leading-none text-white">{value}</p>
+      <p className="mt-2 text-[1.65rem] font-bold leading-none text-white">{value}</p>
       <p className="mt-1 text-xs text-slate-200/80">{helper}</p>
     </div>
   );
@@ -145,7 +145,7 @@ function ExpandableFeedCard({
   const visibleItems = expanded ? items : items.slice(0, 3);
 
   return (
-    <Card>
+    <Card className="rounded-[16px] border-slate-200/85">
       <div className="flex items-center justify-between gap-3">
         <div>
           <h2 className="text-lg font-semibold text-slate-900">{title}</h2>
@@ -158,7 +158,7 @@ function ExpandableFeedCard({
 
       <div className="mt-4 space-y-2.5">
         {visibleItems.length ? visibleItems.map((item) => (
-          <div key={`${item.source}-${item.id}`} className="rounded-[18px] border border-slate-200 bg-white px-3.5 py-3.5 transition hover:-translate-y-0.5 hover:border-cyan-200 hover:shadow-[0_12px_26px_rgba(15,23,42,0.08)]">
+          <div key={`${item.source}-${item.id}`} className="rounded-[14px] border border-slate-200/85 bg-white px-3 py-3 transition hover:-translate-y-0.5 hover:border-cyan-200 hover:shadow-[0_12px_24px_rgba(15,23,42,0.07)]">
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">{item.source}</span>
               <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${toneClasses[item.tone]}`}>{toneLabel(item.tone)}</span>

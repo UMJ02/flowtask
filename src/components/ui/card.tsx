@@ -4,7 +4,7 @@ export function Card({ className, children }: { className?: string; children: Re
   return (
     <div
       className={cn(
-        'min-w-0 overflow-hidden rounded-[15px] border border-slate-200/80 bg-white/[0.95] p-3.5 shadow-[0_8px_22px_rgba(15,23,42,0.045)] backdrop-blur md:p-4',
+        'min-w-0 overflow-hidden rounded-[14px] border border-slate-200/75 bg-white/[0.96] p-3 shadow-[0_10px_24px_rgba(15,23,42,0.05)] ring-1 ring-white/70 backdrop-blur md:p-3.5',
         className,
       )}
     >

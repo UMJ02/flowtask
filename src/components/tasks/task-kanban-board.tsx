@@ -288,13 +288,13 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery }: { 
         {columns.map((column) => {
           const Icon = column.icon;
           return (
-            <Card key={column.value} className="rounded-[32px] border border-slate-200 bg-white p-5 shadow-[0_16px_36px_rgba(15,23,42,0.04)]">
+            <Card key={column.value} className="rounded-[20px] border border-slate-200/85 bg-white p-4 shadow-[0_14px_30px_rgba(15,23,42,0.045)]">
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <span className="inline-flex h-14 w-14 items-center justify-center rounded-full border border-slate-200 text-slate-500"><Icon className="h-7 w-7" /></span>
+                  <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200/90 text-slate-500 bg-slate-50"><Icon className="h-7 w-7" /></span>
                   <h3 className="text-2xl font-bold tracking-tight text-slate-950">{column.label}</h3>
                 </div>
-                <span className="inline-flex h-14 min-w-14 items-center justify-center rounded-full border border-slate-200 px-4 text-xl font-semibold text-slate-700">0</span>
+                <span className="inline-flex h-11 min-w-11 items-center justify-center rounded-2xl border border-slate-200/90 px-3 text-lg font-semibold text-slate-700 bg-white">0</span>
               </div>
             </Card>
           );
@@ -358,7 +358,7 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery }: { 
   return (
     <div className="space-y-4">
       {showHeader ? (
-        <Card className="rounded-[28px] border border-slate-200/90 p-5 shadow-[0_14px_30px_rgba(15,23,42,0.05)] md:p-6">
+        <Card className="rounded-[18px] border border-slate-200/85 p-4 shadow-[0_14px_28px_rgba(15,23,42,0.05)] md:p-4.5">
           <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
             <div className="max-w-2xl">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Pizarra</p>
@@ -368,7 +368,7 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery }: { 
               {grouped.map((column) => {
                 const Icon = column.icon;
                 return (
-                  <span key={column.value} className="inline-flex min-h-[72px] items-center justify-center gap-2.5 rounded-[22px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700 shadow-[inset_0_1px_0_rgba(255,255,255,0.75)]">
+                  <span key={column.value} className="inline-flex min-h-[60px] items-center justify-center gap-2 rounded-[16px] border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm font-semibold text-slate-700 shadow-[inset_0_1px_0_rgba(255,255,255,0.75)]">
                     <Icon className="h-4 w-4 shrink-0" />
                     <span>{column.label}: {column.allItems.length}</span>
                   </span>
@@ -391,8 +391,8 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery }: { 
           return (
             <section
               key={column.value}
-              className={`rounded-[24px] border p-4 transition ${
-                isActiveDropzone || isRecentDrop ? "border-emerald-300 bg-emerald-50/60 shadow-[0_12px_28px_rgba(16,185,129,0.08)]" : "border-slate-200 bg-slate-50/90"
+              className={`rounded-[18px] border p-3.5 transition ${
+                isActiveDropzone || isRecentDrop ? "border-emerald-300 bg-emerald-50/60 shadow-[0_12px_28px_rgba(16,185,129,0.08)]" : column.value === "en_proceso" ? "border-sky-200 bg-sky-50/45" : column.value === "en_espera" ? "border-amber-200 bg-amber-50/45" : "border-emerald-200 bg-emerald-50/45"
               }`}
               onDragOver={(event) => {
                 event.preventDefault();
@@ -406,14 +406,14 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery }: { 
                 if (taskId) void moveTask(taskId, column.value);
               }}
             >
-              <div className="mb-3 flex items-center justify-between gap-3 border-b border-slate-200/80 pb-3">
+              <div className="mb-3 flex items-center justify-between gap-3 border-b border-slate-200/80 pb-2.5">
                 <div className="flex min-w-0 items-center gap-3">
                   <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-white text-slate-600 ring-1 ring-slate-200">
                     <Icon className="h-4 w-4" />
                   </span>
                   <p className="text-[1.2rem] font-bold tracking-tight text-slate-900 md:text-[1.35rem]">{column.label}</p>
                 </div>
-                <span className="inline-flex h-10 min-w-10 items-center justify-center rounded-full bg-white px-3 text-sm font-semibold text-slate-700 ring-1 ring-slate-200 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]">
+                <span className="inline-flex h-9 min-w-9 items-center justify-center rounded-xl bg-white px-3 text-sm font-semibold text-slate-700 ring-1 ring-slate-200 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]">
                   {column.allItems.length}
                 </span>
               </div>
@@ -457,7 +457,7 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery }: { 
                         }}
                         className={draggingId === task.id ? "opacity-60" : "opacity-100"}
                       >
-                        <Card className={`rounded-[20px] border bg-white/95 p-3 shadow-[0_6px_18px_rgba(15,23,42,0.04)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_26px_rgba(15,23,42,0.08)] ${
+                        <Card className={`rounded-[16px] border bg-white/95 p-2.5 shadow-[0_8px_18px_rgba(15,23,42,0.04)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_24px_rgba(15,23,42,0.08)] ${
                           isHoverCard ? "border-emerald-300 ring-2 ring-emerald-100" : "border-white/70 hover:border-slate-200"
                         }`}>
                           <div className="space-y-3">
@@ -470,13 +470,13 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery }: { 
                                 <GripVertical className="h-4 w-4" />
                               </span>
                               <div className="min-w-0 flex-1">
-                                <Link href={taskDetailRoute(task.id, currentQuery)} className="block line-clamp-2 text-[1.02rem] font-bold leading-tight tracking-tight text-slate-900 transition hover:text-emerald-700">
+                                <Link href={taskDetailRoute(task.id, currentQuery)} className="block line-clamp-2 text-[0.98rem] font-bold leading-tight tracking-tight text-slate-900 transition hover:text-emerald-700">
                                   {task.title}
                                 </Link>
                               </div>
                             </div>
 
-                            <div className="flex items-center justify-between gap-2 border-t border-slate-100 pt-2">
+                            <div className="flex items-center justify-between gap-2 border-t border-slate-100 pt-1.5">
                               <span className="inline-flex shrink-0 items-center rounded-full bg-white px-2.5 py-1 text-[12px] font-semibold text-slate-700 ring-1 ring-slate-200">
                                 {formatDate(task.due_date)}
                               </span>
@@ -512,7 +512,7 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery }: { 
                     );
                   })
                 ) : (
-                  <div className="rounded-2xl border border-dashed border-slate-300 bg-white/60 px-4 py-8 text-center text-sm text-slate-500">
+                  <div className="rounded-2xl border border-dashed border-slate-300 bg-white/60 px-4 py-6 text-center text-sm text-slate-500">
                     {isActiveDropzone ? "Suelta para moverla aquí." : "Suelta una tarea aquí."}
                   </div>
                 )}
