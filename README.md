@@ -1,32 +1,31 @@
-# FlowTask — V58.10.4 Release Exports Fix
+# FlowTask — V58.10.5 Master Alignment Continuity Fix
 
-Esta versión toma como base **V58.10** y corrige el pipeline de deploy/preflight sin tocar la UI recién trabajada en la pantalla de **Equipo**.
+Esta versión toma como base **V58.10.4** y prepara la continuidad oficial del proyecto para el depuramiento maestro, sin alterar la estructura funcional ni reabrir cambios innecesarios de UI/UX.
 
 ## Objetivo
-- consolidar los ajustes de deploy/readiness iniciados en V58.10.3
-- corregir exports de release para que typecheck y build no fallen
-- mantener intacta la UI recién trabajada
-- dejar continuidad limpia sobre la base V58.10.4
+- sanear la exportación del proyecto como base oficial de continuidad
+- alinear metadata, scripts y documentación a `V58.10.5`
+- declarar la cadena real de migraciones como fuente de verdad para base de datos
+- conservar el master SQL histórico solo como referencia de arranque
+- dejar una base limpia para seguir con depuración y siguientes versiones
 
-## Qué cambia en la V58.10.4
-- metadata y scripts alineados a `V58.10.4`
-- nuevo `scripts/verify-v58.10.3.mjs
-- nuevo `scripts/verify-v58.10.4.mjs``
-- nuevo release doc `docs/release/V58_10_1_DEPLOY_PIPELINE_FIX.md`
-- `.env.example`, `.nvmrc` y `.github/workflows/ci.yml` agregados
-- `check-node-version.mjs` ajustado para permitir Node 22 local sin bloquear deploy en Node 20
-- `build-deploy-readiness.mjs` corregido para aceptar `npm ci` o `npm install` y validar V58.10.4
-- `deploy-production-readiness.mjs` alineado a V58.10.4 y al pipeline actual de Vercel
+## Qué cambia en la V58.10.5
+- metadata y scripts alineados a `V58.10.5`
+- nuevo `scripts/verify-v58.10.5.mjs`
+- nuevo release doc `docs/release/V58_10_5_MASTER_ALIGNMENT_CONTINUITY_FIX.md`
+- nuevo documento de continuidad BD `docs/release/DB_CONTINUITY_SOURCE_OF_TRUTH.md`
+- copia de referencia del master SQL histórico en `supabase/master/flowtask_supabase_master_fixed.sql`
+- `.gitignore` reforzado para exportaciones limpias de continuidad
+- base de continuidad declarada: proyecto actual + migraciones `0001-0034`
 
 ## Scripts principales
-- `npm run verify:v58.10.2`
+- `npm run verify:v58.10.5`
 - `npm run verify:current`
 - `npm run release:repo:current`
 
 ## Base de continuidad
-Usa esta **V58.10.4** como base para seguir con cambios funcionales o nuevos ajustes UX/UI sin reabrir problemas del pipeline de deploy.
-
+Usa esta **V58.10.5** como base oficial para el depuramiento maestro. La app debe continuar sobre el proyecto actual y la base de datos debe regirse por la cadena real de migraciones dentro de `supabase/migrations`.
 
 ## Continuidad técnica incorporada
-- cambios de V58.10.3 integrados: verify alineado, sin dependencia obligatoria de `.github/workflows/ci.yml`, `.nvmrc` y `.env.example` como obligatorios
-- cambios de V58.10.4 integrados: `APP_VERSION`, `APP_RELEASE_NAME` y `APP_RELEASE_STAGE` restaurados y alineados
+- cambios de V58.10.4 preservados: pipeline de deploy, release exports y checks de continuidad
+- V58.10.5 consolida la regla de trabajo para próximas versiones: ZIP limpio, estructura intacta y base SQL alineada a migraciones reales

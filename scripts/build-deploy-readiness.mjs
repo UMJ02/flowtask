@@ -3,8 +3,8 @@ import path from "node:path";
 
 const root = process.cwd();
 const failures = [];
-const expectedVersion = "58.10.4-release-exports-fix";
-const expectedReleaseLabel = "V58.10.4";
+const expectedVersion = "58.10.5-master-alignment-continuity-fix";
+const expectedReleaseLabel = "V58.10.5";
 
 function requireFile(rel) {
   if (!fs.existsSync(path.join(root, rel))) {
@@ -29,7 +29,9 @@ requireFile(".nvmrc");
 requireFile(".env.example");
 requireFile("scripts/runtime-check.mjs");
 requireFile("scripts/validate-env.mjs");
-requireFile("scripts/verify-v58.10.4.mjs");
+requireFile("scripts/verify-v58.10.5.mjs");
+requireFile("docs/release/V58_10_5_MASTER_ALIGNMENT_CONTINUITY_FIX.md");
+requireFile("docs/release/DB_CONTINUITY_SOURCE_OF_TRUTH.md");
 
 const pkg = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
 const scripts = pkg.scripts ?? {};
@@ -37,8 +39,8 @@ for (const scriptName of ["build", "vercel:build", "deploy:readiness", "build:pr
   if (!scripts[scriptName]) failures.push(`Missing package script: ${scriptName}`);
 }
 if (pkg.version !== expectedVersion) failures.push(`Unexpected package version: ${pkg.version}`);
-if (scripts["verify:current"] !== "npm run verify:v58.10.4") failures.push("verify:current must target verify:v58.10.4");
-if (scripts["verify:v58.10.4"] !== "node scripts/verify-v58.10.4.mjs") failures.push("verify:v58.10.4 must target scripts/verify-v58.10.4.mjs");
+if (scripts["verify:current"] !== "npm run verify:v58.10.5") failures.push("verify:current must target verify:v58.10.5");
+if (scripts["verify:v58.10.5"] !== "node scripts/verify-v58.10.5.mjs") failures.push("verify:v58.10.5 must target scripts/verify-v58.10.5.mjs");
 
 const vercel = JSON.parse(fs.readFileSync(path.join(root, "vercel.json"), "utf8"));
 if (vercel.framework !== "nextjs") failures.push("vercel.json framework must be nextjs");
@@ -52,6 +54,7 @@ requireIncludes(".env.example", "SUPABASE_SERVICE_ROLE_KEY");
 requireIncludes("src/lib/release/version.ts", expectedVersion);
 requireIncludes("src/lib/release/version.ts", "APP_RELEASE_STAGE");
 requireIncludes("README.md", expectedReleaseLabel);
+requireIncludes("docs/release/DB_CONTINUITY_SOURCE_OF_TRUTH.md", "0001-0034");
 
 if (failures.length) {
   console.error("[build-deploy-readiness] Failed checks:");
@@ -59,4 +62,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log("[build-deploy-readiness] OK — package, env, release exports y deploy config alineados.");
+console.log("[build-deploy-readiness] OK — package, env, release exports y continuidad maestra alineados.");

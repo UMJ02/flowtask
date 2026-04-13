@@ -12,6 +12,7 @@ const checks = [
   "scripts/smoke-health.mjs",
   "scripts/postdeploy-smoke.mjs",
   "docs/release/DEPLOY_PRODUCTION_RUNBOOK.md",
+  "docs/release/V58_10_5_MASTER_ALIGNMENT_CONTINUITY_FIX.md",
   "src/lib/release/version.ts",
 ];
 
@@ -32,7 +33,7 @@ const expectations = [
   ["vercel security headers", vercel.includes("X-Content-Type-Options") && vercel.includes("X-Frame-Options")],
   ["env has NEXT_PUBLIC_APP_URL", envExample.includes("NEXT_PUBLIC_APP_URL")],
   ["env has FLOWTASK_BASE_URL helper", envExample.includes("FLOWTASK_BASE_URL")],
-  ["readme mentions V58.10.4", readme.includes("V58.10.4")],
+  ["readme mentions V58.10.5", readme.includes("V58.10.5")],
   ["release exports include APP_RELEASE_STAGE", versionTs.includes("APP_RELEASE_STAGE")],
 ];
 
