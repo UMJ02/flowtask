@@ -1,4 +1,6 @@
+import { cookies } from "next/headers";
 import { getAuthenticatedServerContext } from "@/lib/performance/server-cache";
+import { ACTIVE_WORKSPACE_COOKIE, PERSONAL_WORKSPACE_VALUE, normalizeWorkspacePreference } from "@/lib/workspace/active-workspace";
 
 export const MANAGE_ORG_ROLES = ["admin_global", "manager"] as const;
 export const ADMIN_ONLY_ROLES = ["admin_global"] as const;
@@ -37,23 +39,30 @@ export async function getActiveMembership() {
     return { supabase, user: null, membership: null };
   }
 
-  const { data: membership } = await supabase
+  const cookieStore = await cookies();
+  const preference = normalizeWorkspacePreference(cookieStore.get(ACTIVE_WORKSPACE_COOKIE)?.value ?? null);
+
+  const { data: memberships } = await supabase
     .from("organization_members")
     .select("organization_id, role, is_default")
     .eq("user_id", user.id)
     .order("is_default", { ascending: false })
-    .limit(1)
-    .maybeSingle();
+    .limit(20);
+
+  const normalizedMemberships = (memberships ?? []).map((membership: any) => ({
+    organizationId: membership.organization_id as string,
+    role: membership.role as OrganizationRole,
+    isDefault: !!membership.is_default,
+  }));
+
+  const fallbackMembership = normalizedMemberships[0] ?? null;
+  const matchingMembership = preference && preference !== PERSONAL_WORKSPACE_VALUE
+    ? normalizedMemberships.find((membership: ActiveMembershipSummary) => membership.organizationId === preference) ?? null
+    : null;
 
   return {
     supabase,
     user,
-    membership: membership
-      ? {
-          organizationId: membership.organization_id as string,
-          role: membership.role as OrganizationRole,
-          isDefault: !!membership.is_default,
-        }
-      : null,
+    membership: preference === PERSONAL_WORKSPACE_VALUE ? null : (matchingMembership ?? fallbackMembership),
   };
 }

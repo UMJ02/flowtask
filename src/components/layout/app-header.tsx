@@ -3,6 +3,8 @@ import { NotificationBell } from '@/components/notifications/notification-bell';
 import { CommandPalette } from '@/components/layout/command-palette';
 import { MobileNav } from '@/components/layout/mobile-nav';
 import { UserMenu } from '@/components/layout/user-menu';
+import { OrganizationSwitcher } from '@/components/layout/organization-switcher';
+import type { OrganizationSummary } from '@/types/organization';
 import { InstallAppButton } from '@/components/pwa/install-app-button';
 
 function getFirstName(name?: string | null) {
@@ -15,10 +17,14 @@ export function AppHeader({
   userEmail,
   userName,
   avatarUrl,
+  organizations = [],
+  activeOrganization = null,
 }: {
   userEmail: string;
   userName?: string | null;
   avatarUrl?: string | null;
+  organizations?: OrganizationSummary[];
+  activeOrganization?: OrganizationSummary | null;
 }) {
   const firstName = getFirstName(userName);
 
@@ -40,6 +46,9 @@ export function AppHeader({
         <div className="flex items-center justify-end gap-3">
           <div className="hidden sm:block">
             <InstallAppButton compact />
+          </div>
+          <div className="min-w-[220px] md:hidden">
+            <OrganizationSwitcher organizations={organizations} activeOrganization={activeOrganization} compact />
           </div>
           <CommandPalette />
           <NotificationBell />

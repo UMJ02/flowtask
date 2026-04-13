@@ -42,7 +42,7 @@ export function OrganizationPendingInvitesCard({ invites }: { invites: PendingOr
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-sky-700">Invitaciones pendientes</p>
           <h2 className="mt-2 text-xl font-bold text-slate-900">Únete a un workspace existente sin perder tu sesión actual</h2>
           <p className="mt-2 text-sm text-slate-600">
-            Si ya te invitaron a una organización, acepta desde aquí y FlowTask dejará ese workspace como activo por defecto.
+            Si ya te invitaron a una organización, acepta desde aquí y FlowTask activará ese workspace sin ocultar tu espacio personal.
           </p>
         </div>
         <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-sky-700 ring-1 ring-sky-200">

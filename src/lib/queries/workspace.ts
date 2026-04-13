@@ -18,10 +18,10 @@ export const getWorkspaceContext = cache(async (): Promise<WorkspaceContext> => 
   };
 });
 
-export function applyWorkspaceScope<T extends { eq: (column: string, value: unknown) => T }>(query: T, _userId: string, organizationId?: string | null) {
+export function applyWorkspaceScope<T extends { eq: (column: string, value: unknown) => T; is: (column: string, value: null) => T }>(query: T, _userId: string, organizationId?: string | null) {
   if (organizationId) {
     return query.eq("organization_id", organizationId);
   }
 
-  return query;
+  return query.is("organization_id", null);
 }

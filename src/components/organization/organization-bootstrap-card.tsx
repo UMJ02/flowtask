@@ -48,7 +48,7 @@ export function OrganizationBootstrapCard() {
         return;
       }
 
-      setMessage("Equipo creado. Ahora eres Owner · Admin del workspace.");
+      setMessage("Equipo creado. Ahora eres Owner · Admin del workspace. Puedes volver al modo personal desde el selector.");
       router.refresh();
       router.push(payload?.redirectTo ?? "/app/organization");
     });
@@ -65,7 +65,7 @@ export function OrganizationBootstrapCard() {
                 Crea un equipo cuando necesites colaborar con más personas
               </h2>
               <p className="mt-3 max-w-2xl text-[15px] leading-7 text-slate-600 md:text-base">
-                Puedes seguir usando FlowTask de forma individual sin crear equipo. Si decides crear uno, quedas con rol <strong>{formatOrganizationRole("admin_global")}</strong> y se activa la configuración inicial del workspace compartido.
+                Puedes seguir usando FlowTask de forma individual sin crear equipo. Si decides crear uno, quedas con rol <strong>{formatOrganizationRole("admin_global")}</strong>, se activa la configuración inicial del workspace compartido y puedes alternar entre tu espacio personal y el equipo desde el selector de workspace.
               </p>
             </div>
             <span className="inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-white/90 text-emerald-700 shadow-[0_10px_22px_rgba(16,185,129,0.10)] ring-1 ring-emerald-200/80 xl:hidden">

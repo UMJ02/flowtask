@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/client";
 import { filterRowsByClientAccess, getClientAccessSummary, hasClientAccess } from "@/lib/security/client-access";
 import { DEPARTMENTS } from "@/lib/constants/departments";
 import { COUNTRIES } from "@/lib/constants/countries";
+import { PERSONAL_WORKSPACE_VALUE, parseWorkspaceCookieValue } from "@/lib/workspace/active-workspace";
 
 export interface ClientWorkspaceContext {
   supabase: ReturnType<typeof createClient>;
@@ -41,14 +42,17 @@ export async function getClientWorkspaceContext(): Promise<ClientWorkspaceContex
     };
   }
 
-  const [membershipRes, boardRes] = await Promise.all([
+  const cookiePreference = typeof document !== 'undefined'
+    ? parseWorkspaceCookieValue(document.cookie)
+    : null;
+
+  const [membershipsRes, boardRes] = await Promise.all([
     supabase
       .from("organization_members")
       .select("organization_id, is_default")
       .eq("user_id", user.id)
       .order("is_default", { ascending: false })
-      .limit(1)
-      .maybeSingle(),
+      .limit(20),
     supabase
       .from("boards")
       .select("id, layout_config")
@@ -56,21 +60,32 @@ export async function getClientWorkspaceContext(): Promise<ClientWorkspaceContex
       .maybeSingle(),
   ]);
 
+  const memberships = (membershipsRes.data ?? []).map((item: any) => ({
+    organizationId: item.organization_id as string,
+    isDefault: !!item.is_default,
+  }));
+  const defaultMembership = memberships[0] ?? null;
+  const matchingMembership = cookiePreference && cookiePreference !== PERSONAL_WORKSPACE_VALUE
+    ? memberships.find((item: { organizationId: string; isDefault: boolean }) => item.organizationId === cookiePreference) ?? null
+    : null;
+
   return {
     supabase,
     user,
-    activeOrganizationId: (membershipRes.data?.organization_id as string | null | undefined) ?? null,
+    activeOrganizationId: cookiePreference === PERSONAL_WORKSPACE_VALUE
+      ? null
+      : (matchingMembership?.organizationId ?? defaultMembership?.organizationId ?? null),
     boardId: (boardRes.data?.id as string | null | undefined) ?? null,
     layoutConfig: (boardRes.data?.layout_config as Record<string, any> | null | undefined) ?? {},
   };
 }
 
-export function applyClientWorkspaceScope<T extends { eq: (...args: any[]) => T; or: (...args: any[]) => T }>(query: T, userId: string, organizationId?: string | null): T {
+export function applyClientWorkspaceScope<T extends { eq: (...args: any[]) => T; is: (...args: any[]) => T }>(query: T, userId: string, organizationId?: string | null): T {
   if (organizationId) {
-    return query.or(`organization_id.eq.${organizationId},owner_id.eq.${userId}`);
+    return query.eq("organization_id", organizationId);
   }
 
-  return query.eq("owner_id", userId);
+  return query.eq("owner_id", userId).is("organization_id", null);
 }
 
 export async function findWorkspaceClientId(

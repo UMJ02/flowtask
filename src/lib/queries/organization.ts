@@ -1,6 +1,8 @@
+import { cookies } from "next/headers";
 import { format } from "date-fns";
 import { getAuthenticatedServerContext, getServerClientCached } from "@/lib/performance/server-cache";
 import { deriveOrganizationAccess } from "@/lib/security/organization-access";
+import { ACTIVE_WORKSPACE_COOKIE, PERSONAL_WORKSPACE_VALUE, normalizeWorkspacePreference } from "@/lib/workspace/active-workspace";
 
 export async function getOrganizationContext() {
   const { supabase, user } = await getAuthenticatedServerContext();
@@ -26,7 +28,12 @@ export async function getOrganizationContext() {
     };
   }).filter((item: any) => item.id && item.name);
 
-  const activeOrganization = normalized[0] ?? null;
+  const cookieStore = await cookies();
+  const preference = normalizeWorkspacePreference(cookieStore.get(ACTIVE_WORKSPACE_COOKIE)?.value ?? null);
+  const defaultOrganization = normalized[0] ?? null;
+  const activeOrganization = preference === PERSONAL_WORKSPACE_VALUE
+    ? null
+    : (normalized.find((item: { id: string }) => item.id === preference) ?? defaultOrganization);
   const access = deriveOrganizationAccess(activeOrganization?.role ?? null);
 
   const { data: clientPermissions } = activeOrganization
