@@ -86,7 +86,7 @@ export function DashboardHero({
     {
       label: 'Pendientes en espera',
       value: waitingTasks,
-      helper: 'requieren seguimiento',
+      helper: 'requieren atención',
       icon: CircleDashed,
       tone: metricTone(waitingTasks, 'warning'),
       href: taskListRoute('status=en_espera&view=list'),
@@ -95,7 +95,7 @@ export function DashboardHero({
     {
       label: 'Vencidas',
       value: overdueTasks,
-      helper: 'prioridad máxima',
+      helper: 'atiéndelas primero',
       icon: AlertTriangle,
       tone: metricTone(overdueTasks, 'danger'),
       href: taskListRoute('due=overdue&view=list'),
@@ -104,7 +104,7 @@ export function DashboardHero({
     {
       label: 'Próximas por vencer',
       value: dueSoonTasks,
-      helper: 'siguiente ventana',
+      helper: 'próximo frente',
       icon: CalendarClock,
       tone: metricTone(dueSoonTasks, 'warning'),
       href: taskListRoute('due=soon&view=list'),
@@ -113,7 +113,7 @@ export function DashboardHero({
     {
       label: 'Proyectos activos',
       value: activeProjects,
-      helper: 'frentes abiertos',
+      helper: 'en curso',
       icon: BriefcaseBusiness,
       tone: metricTone(activeProjects),
       href: projectListRoute('status=activo'),
@@ -127,13 +127,13 @@ export function DashboardHero({
         <div>
           <div className="inline-flex items-center gap-2 rounded-full bg-white/[0.85] px-3 py-1 text-xs font-semibold tracking-[0.16em] text-emerald-700 ring-1 ring-emerald-100">
             <Sparkles className="h-3.5 w-3.5" />
-            Workspace overview
+            Vista rápida
           </div>
           <h1 className="mt-2 text-[1.68rem] font-bold tracking-tight text-slate-900 md:text-[2.18rem]">
-            Tu jornada arranca con {activeTasks} tareas activas y {activeProjects} proyectos en movimiento.
+            Todo lo importante del día, sin sobrecargar la vista.
           </h1>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600 md:text-[14px]">
-            {focusLabel} Revisa la pizarra, prioriza lo que bloquea al equipo y entra directo a ejecución sin perder contexto.
+            Resumen breve para entrar directo a foco, revisar bloqueos y seguir.
           </p>
 
           <div className="mt-3 flex flex-wrap items-center gap-2 lg:flex-nowrap">

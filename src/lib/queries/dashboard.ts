@@ -32,6 +32,8 @@ export async function getDashboardData() {
     dueTodayTaskRowsRes,
     dueSoonTaskRowsRes,
     waitingReviewTaskRowsRes,
+    staleTaskRowsRes,
+    noDueDateTaskRowsRes,
     assignmentRowsRes,
     collaboratorRowsRes,
   ] = await Promise.all([
@@ -134,6 +136,28 @@ export async function getDashboardData() {
       user.id,
       activeOrganizationId,
     ),
+    applyWorkspaceScope(
+      supabase
+        .from("tasks")
+        .select("id,title,status,due_date,client_name,project_id")
+        .neq("status", "concluido")
+        .lt("updated_at", addDays(today, -5).toISOString())
+        .order("updated_at", { ascending: true })
+        .limit(4),
+      user.id,
+      activeOrganizationId,
+    ),
+    applyWorkspaceScope(
+      supabase
+        .from("tasks")
+        .select("id,title,status,due_date,client_name,project_id")
+        .neq("status", "concluido")
+        .is("due_date", null)
+        .order("updated_at", { ascending: true })
+        .limit(4),
+      user.id,
+      activeOrganizationId,
+    ),
     supabase
       .from("task_assignees")
       .select("profiles!task_assignees_user_id_fkey ( full_name ), tasks!inner ( owner_id, status )")
@@ -215,6 +239,8 @@ export async function getDashboardData() {
       dueToday: dueTodayTaskRowsRes.data ?? [],
       dueSoon: dueSoonTaskRowsRes.data ?? [],
       waitingReview: waitingReviewTaskRowsRes.data ?? [],
+      stale: staleTaskRowsRes.data ?? [],
+      noDueDate: noDueDateTaskRowsRes.data ?? [],
     },
   };
 }
