@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { getOrganizationBillingSummary } from '@/lib/queries/billing';
-import { sendOrganizationInviteEmail } from '@/lib/email/resend';
+import { getInviteEmailConfigStatus, sendOrganizationInviteEmail } from '@/lib/email/resend';
 
 export const dynamic = 'force-dynamic';
 
@@ -61,9 +61,10 @@ export async function POST(request: Request) {
       return NextResponse.json({
         ok: true,
         delivered: false,
+        emailReady: getInviteEmailConfigStatus(),
         message: emailResult.configured
-          ? 'La invitación sigue activa, pero el correo no pudo enviarse. Revisa la configuración del proveedor.'
-          : 'La invitación sigue activa, pero falta configurar el proveedor de correo para entregarla.'
+          ? 'La invitación sigue activa, pero el correo no pudo enviarse. Revisa el remitente, el dominio y el proveedor.'
+          : 'La invitación sigue activa, pero falta completar la configuración de correo para entregarla.'
       });
     }
 
@@ -122,7 +123,7 @@ export async function POST(request: Request) {
     .maybeSingle();
 
   if (existingInvite?.id) {
-    return NextResponse.json({ ok: true, existing: true, message: 'Ese correo ya tenía una invitación pendiente. La dejamos activa para que pueda aceptarla.' });
+    return NextResponse.json({ ok: true, existing: true, emailReady: getInviteEmailConfigStatus(), message: 'Ese correo ya tenía una invitación pendiente. La dejamos activa para que pueda aceptarla o reenviarla.' });
   }
 
   const billing = await getOrganizationBillingSummary(organizationId);
@@ -161,13 +162,14 @@ export async function POST(request: Request) {
     return NextResponse.json({
       ok: true,
       delivered: false,
+      emailReady: getInviteEmailConfigStatus(),
       message: emailResult.configured
         ? 'Invitación creada. El correo no pudo salir; puedes reenviarlo desde la bandeja de invitaciones.'
-        : 'Invitación creada. Falta configurar el proveedor de correo para entregar el email.'
+        : 'Invitación creada. Falta completar la configuración del proveedor de correo para entregar el email.'
     });
   }
 
-  return NextResponse.json({ ok: true, delivered: true, message: 'Invitación creada y correo enviado correctamente.' });
+  return NextResponse.json({ ok: true, delivered: true, emailReady: getInviteEmailConfigStatus(), message: 'Invitación creada y correo enviado correctamente.' });
 }
 
 export async function PATCH(request: Request) {

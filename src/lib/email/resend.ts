@@ -1,7 +1,20 @@
-const RESEND_API_URL = "https://api.resend.com/emails";
+const RESEND_API_URL = 'https://api.resend.com/emails';
 
 function resolveBaseUrl() {
   return process.env.NEXT_PUBLIC_APP_URL || process.env.FLOWTASK_BASE_URL || 'http://localhost:3000';
+}
+
+export function getInviteEmailConfigStatus() {
+  const apiKey = process.env.RESEND_API_KEY?.trim();
+  const from = (process.env.INVITE_EMAIL_FROM || process.env.RESEND_FROM_EMAIL || '').trim();
+  const appUrl = (process.env.NEXT_PUBLIC_APP_URL || process.env.FLOWTASK_BASE_URL || '').trim();
+
+  return {
+    configured: Boolean(apiKey && from && appUrl),
+    hasApiKey: Boolean(apiKey),
+    hasFrom: Boolean(from),
+    hasAppUrl: Boolean(appUrl),
+  } as const;
 }
 
 export async function sendOrganizationInviteEmail({
@@ -15,11 +28,18 @@ export async function sendOrganizationInviteEmail({
   role: string;
   invitedByName?: string | null;
 }) {
-  const apiKey = process.env.RESEND_API_KEY;
-  const from = process.env.INVITE_EMAIL_FROM || process.env.RESEND_FROM_EMAIL;
+  const config = getInviteEmailConfigStatus();
+  const apiKey = process.env.RESEND_API_KEY?.trim();
+  const from = (process.env.INVITE_EMAIL_FROM || process.env.RESEND_FROM_EMAIL || '').trim();
+  const replyTo = process.env.INVITE_EMAIL_REPLY_TO?.trim();
 
-  if (!apiKey || !from) {
-    return { sent: false, configured: false, error: 'Proveedor de correo no configurado.' } as const;
+  if (!config.configured || !apiKey || !from) {
+    return {
+      sent: false,
+      configured: false,
+      error: 'Proveedor de correo no configurado completamente.',
+      details: config,
+    } as const;
   }
 
   const appUrl = resolveBaseUrl().replace(/\/$/, '');
@@ -41,7 +61,7 @@ export async function sendOrganizationInviteEmail({
   const response = await fetch(RESEND_API_URL, {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${apiKey}`,
+      Authorization: `Bearer ${apiKey}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
@@ -49,13 +69,19 @@ export async function sendOrganizationInviteEmail({
       to: [email],
       subject,
       html,
+      ...(replyTo ? { reply_to: replyTo } : {}),
     }),
   });
 
   if (!response.ok) {
     const payload = await response.text().catch(() => '');
-    return { sent: false, configured: true, error: payload || 'No fue posible enviar el correo.' } as const;
+    return {
+      sent: false,
+      configured: true,
+      error: payload || 'No fue posible enviar el correo.',
+      details: config,
+    } as const;
   }
 
-  return { sent: true, configured: true, error: null } as const;
+  return { sent: true, configured: true, error: null, details: config } as const;
 }
