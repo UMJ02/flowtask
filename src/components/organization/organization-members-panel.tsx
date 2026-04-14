@@ -25,10 +25,10 @@ const ROLE_OPTIONS = [
 ] as const;
 
 const metricTones = {
-  admins: 'from-slate-950 via-slate-900 to-slate-800 text-white',
-  managers: 'from-teal-600 via-emerald-600 to-emerald-500 text-white',
-  pending: 'from-amber-500 via-orange-500 to-amber-400 text-slate-950',
-  capacity: 'from-violet-600 via-indigo-600 to-sky-500 text-white',
+  admins: 'from-slate-950 to-slate-900 text-white',
+  managers: 'from-emerald-600 to-emerald-500 text-white',
+  pending: 'from-slate-100 to-slate-50 text-slate-950 ring-1 ring-slate-200',
+  capacity: 'from-emerald-50 to-teal-50 text-emerald-900 ring-1 ring-emerald-100',
 } as const;
 
 function roleHelper(role: OrganizationMemberItem['role']) {
@@ -37,7 +37,7 @@ function roleHelper(role: OrganizationMemberItem['role']) {
 
 function StatCard({ title, value, helper, tone }: { title: string; value: number | string; helper: string; tone: string }) {
   return (
-    <div className={`rounded-[22px] bg-gradient-to-br px-4 py-4 shadow-[0_14px_30px_rgba(15,23,42,0.12)] ${tone}`}>
+    <div className={`rounded-[22px] bg-gradient-to-br px-4 py-4 shadow-[0_12px_24px_rgba(15,23,42,0.08)] ${tone}`}>
       <p className="text-[11px] font-semibold uppercase tracking-[0.22em] opacity-80">{title}</p>
       <p className="mt-2 text-3xl font-bold leading-none">{value}</p>
       <p className="mt-2 text-sm opacity-85">{helper}</p>
@@ -119,9 +119,9 @@ export function OrganizationMembersPanel({
     <Card className="rounded-[26px] p-4 md:p-5">
       <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">Vista operativa</p>
-          <h2 className="mt-1 text-xl font-semibold text-slate-950">Dashboard y equipo en un mismo workspace</h2>
-          <p className="mt-1 text-sm text-slate-600">Resumen ejecutivo a la izquierda y control del equipo a la derecha. Puedes contraer el panel del equipo cuando quieras.</p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">Resumen del workspace</p>
+          <h2 className="mt-1 text-xl font-semibold text-slate-950">Panorama del equipo y capacidad del espacio</h2>
+          <p className="mt-1 text-sm text-slate-600">Una lectura rápida para entender cómo va el equipo y administrar accesos sin salir de esta vista.</p>
         </div>
         <Button type="button" variant="secondary" className="h-10 rounded-2xl px-4" onClick={() => setTeamExpanded((value) => !value)}>
           {teamExpanded ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
@@ -133,12 +133,12 @@ export function OrganizationMembersPanel({
         <div className={`grid transition-[grid-template-columns] duration-300 ease-out xl:min-h-[540px] ${teamExpanded ? 'xl:grid-cols-[1.02fr_1.15fr]' : 'xl:grid-cols-[1fr_0fr]'}`}>
           <div className="min-w-0 border-b border-slate-200/80 p-4 xl:border-b-0 xl:border-r">
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">Dashboard por organización</p>
-            <h3 className="mt-1 text-lg font-semibold text-slate-950">Salud operativa consolidada</h3>
+            <h3 className="mt-1 text-lg font-semibold text-slate-950">Cómo va tu organización hoy</h3>
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
-              <StatCard title="Miembros" value={String(metrics?.members ?? items.length ?? 0)} helper="Equipo con acceso vigente" tone={metricTones.admins} />
-              <StatCard title="Clientes" value={String(metrics?.clients ?? 0)} helper="Cartera bajo esta organización" tone={metricTones.managers} />
-              <StatCard title="Proyectos activos" value={String(metrics?.activeProjects ?? 0)} helper="Operación abierta del equipo" tone={metricTones.capacity} />
-              <StatCard title="Tareas abiertas" value={String(metrics?.openTasks ?? 0)} helper="Pendientes dentro del canal organización" tone={metricTones.pending} />
+              <StatCard title="Miembros" value={String(metrics?.members ?? items.length ?? 0)} helper="Personas activas dentro del espacio" tone={metricTones.admins} />
+              <StatCard title="Clientes" value={String(metrics?.clients ?? 0)} helper="Clientes vinculados al equipo" tone={metricTones.managers} />
+              <StatCard title="Proyectos activos" value={String(metrics?.activeProjects ?? 0)} helper="Proyectos que siguen en marcha" tone={metricTones.capacity} />
+              <StatCard title="Tareas abiertas" value={String(metrics?.openTasks ?? 0)} helper="Tareas activas por atender" tone={metricTones.pending} />
             </div>
             <div className="mt-4 grid gap-3 lg:grid-cols-2">
               <div className="rounded-[22px] border border-slate-200/80 bg-white/85 p-3.5">
@@ -151,7 +151,7 @@ export function OrganizationMembersPanel({
                 </div>
               </div>
               <div className="rounded-[22px] border border-slate-200/80 bg-white/85 p-3.5">
-                <p className="text-sm font-semibold text-slate-950">Capacidad y acceso</p>
+                <p className="text-sm font-semibold text-slate-950">Acceso y cobertura</p>
                 <div className="mt-3 space-y-2">
                   <Row label="Clientes editables" value={metrics?.editableClients ?? 0} />
                   <Row label="Con gestión de miembros" value={metrics?.memberManagedClients ?? 0} />
@@ -167,7 +167,7 @@ export function OrganizationMembersPanel({
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">Equipo de organización</p>
-                  <h3 className="mt-1 text-lg font-semibold text-slate-950">Miembros, capacidad y roles editables</h3>
+                  <h3 className="mt-1 text-lg font-semibold text-slate-950">Personas, cupos y roles</h3>
                 </div>
                 {nearCapacity ? (
                   <span className="inline-flex items-center gap-2 rounded-full bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-700 ring-1 ring-amber-100">
@@ -178,10 +178,10 @@ export function OrganizationMembersPanel({
               </div>
 
               <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-                <StatCard title="Admins" value={counters.admin_global} helper="Control total del workspace" tone={metricTones.admins} />
-                <StatCard title="Managers" value={counters.manager} helper="Coordinan operación" tone={metricTones.managers} />
-                <StatCard title="Pendientes" value={pendingInvites} helper="Reservan cupo antes de aceptar" tone={metricTones.pending} />
-                <StatCard title="Capacidad" value={seatsIncluded !== null && seatsUsed !== null ? `${Math.max(seatsUsed, items.length)}/${seatsIncluded}` : items.length} helper={seatsIncluded !== null && seatsUsed !== null ? `${seatsFree ?? 0} cupos disponibles` : 'Sin plan cargado'} tone={metricTones.capacity} />
+                <StatCard title="Admins" value={counters.admin_global} helper="Administran configuración y acceso" tone={metricTones.admins} />
+                <StatCard title="Managers" value={counters.manager} helper="Acompañan seguimiento y ejecución" tone={metricTones.managers} />
+                <StatCard title="Pendientes" value={pendingInvites} helper="Invitaciones pendientes de ingreso" tone={metricTones.pending} />
+                <StatCard title="Capacidad" value={seatsIncluded !== null && seatsUsed !== null ? `${Math.max(seatsUsed, items.length)}/${seatsIncluded}` : items.length} helper={seatsIncluded !== null && seatsUsed !== null ? `${seatsFree ?? 0} cupos disponibles` : 'Sin capacidad registrada'} tone={metricTones.capacity} />
               </div>
 
               {status ? <div className="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">{status}</div> : null}
@@ -215,7 +215,7 @@ export function OrganizationMembersPanel({
                           </div>
                           <div className="mt-2 flex flex-wrap items-center gap-2">
                             <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">{roleLabel}</span>
-                            <span className="text-xs text-slate-500">{isOwner ? 'Conserva el control crítico del workspace.' : roleHelper(member.role)}</span>
+                            <span className="text-xs text-slate-500">{isOwner ? 'Mantiene el control principal del espacio.' : roleHelper(member.role)}</span>
                           </div>
                         </div>
                         <div className="flex flex-wrap items-center gap-3 lg:justify-end">
@@ -238,7 +238,7 @@ export function OrganizationMembersPanel({
                 }) : (
                   <div className="rounded-[22px] border border-dashed border-slate-200 bg-slate-50 px-4 py-10 text-center text-sm text-slate-500">
                     <Users className="mx-auto mb-3 h-5 w-5 text-slate-400" />
-                    Todavía no hay más miembros visibles en esta organización.
+                    Aún no hay más personas visibles dentro de esta organización.
                   </div>
                 )}
               </div>

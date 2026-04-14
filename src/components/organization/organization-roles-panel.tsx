@@ -36,9 +36,9 @@ export function OrganizationRolesPanel({
     <Card className="rounded-[24px] p-4 md:p-5">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">Roles editables</p>
-          <h2 className="mt-1 text-lg font-semibold text-slate-950">Permisos por rol con lectura más ejecutiva</h2>
-          <p className="mt-1 text-sm text-slate-600">Compactamos la matriz para que roles, miembros y capacidades se entiendan más rápido.</p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">Roles del equipo</p>
+          <h2 className="mt-1 text-lg font-semibold text-slate-950">Qué puede hacer cada rol</h2>
+          <p className="mt-1 text-sm text-slate-600">Consulta de forma simple qué margen tiene cada persona dentro del equipo.</p>
         </div>
         {canManageRoles ? (
           <a href="/app/organization/roles" className="inline-flex h-10 items-center justify-center rounded-2xl bg-slate-950 px-4 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(15,23,42,0.14)]">

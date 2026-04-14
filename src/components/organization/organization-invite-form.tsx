@@ -48,7 +48,7 @@ export function OrganizationInviteForm({ organizationId, canInviteManagers = fal
   return (
     <form onSubmit={onSubmit} className={`grid gap-3 rounded-[24px] border border-slate-200 bg-slate-50/85 p-4 md:grid-cols-[1.2fr_0.7fr_auto] md:items-end ${compact ? 'shadow-[0_10px_24px_rgba(15,23,42,0.04)]' : ''}`}>
       <div>
-        <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">Invitar miembro</p>
+        <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">Invitar a una persona</p>
         <Input type="email" placeholder="correo@empresa.com" value={email} onChange={(event) => setEmail(event.target.value)} disabled={!organizationId || !canManageInvites || loading} />
       </div>
       <div>
@@ -59,7 +59,7 @@ export function OrganizationInviteForm({ organizationId, canInviteManagers = fal
       </div>
       <Button type="submit" loading={loading} className="h-11" disabled={!organizationId || !canManageInvites}>
         <MailPlus className="h-4 w-4" />
-        {loading ? 'Enviando...' : 'Invitar'}
+        {loading ? 'Enviando invitación...' : 'Invitar'}
       </Button>
       {!canManageInvites ? <p className="md:col-span-3 text-sm text-slate-500">Tu rol actual no permite enviar nuevas invitaciones en esta organización.</p> : null}
       {status ? <p className="md:col-span-3 text-sm text-emerald-700">{status}</p> : null}

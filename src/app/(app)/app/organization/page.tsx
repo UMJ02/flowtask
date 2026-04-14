@@ -7,6 +7,7 @@ import { OrganizationBootstrapCard } from '@/components/organization/organizatio
 import { OrganizationPendingInvitesCard } from '@/components/organization/organization-pending-invites-card';
 import { OrganizationIdentityCard } from '@/components/organization/organization-identity-card';
 import { OrganizationAccessTabsPanel } from '@/components/organization/organization-access-tabs-panel';
+import { OrganizationAdminSettingsCard } from '@/components/organization/organization-admin-settings-card';
 import { ActivityTimeline } from '@/components/activity/activity-timeline';
 import { safeServerCall } from '@/lib/runtime/safe-server';
 import { getOrganizationContext, getOrganizationInvites, getOrganizationMetrics, getOrganizationRolesAndPermissions, getPendingOrganizationInvitesForCurrentUser } from '@/lib/queries/organization';
@@ -53,6 +54,7 @@ export default async function OrganizationPage() {
         <>
           <OrganizationIdentityCard organization={activeOrganization} member={featuredMember} />
           {activeId ? <OrganizationInviteForm organizationId={activeId} canInviteManagers={canManageRoles} canManageInvites={canManage} compact /> : null}
+          {activeId ? <OrganizationAdminSettingsCard organizationId={activeId} organizationName={activeOrganization.name} isOwner={featuredMember?.userId === activeOrganization.ownerId} canManage={activeOrganization.role === 'admin_global'} /> : null}
           <OrganizationMembersPanel
             activeOrganization={activeOrganization}
             members={members}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { ChevronDown } from 'lucide-react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { formatDate } from "@/lib/utils/dates";
@@ -113,6 +114,7 @@ export function ActivityTimeline({
   collapseLabel?: string;
 }) {
   const [expanded, setExpanded] = useState(false);
+  const [open, setOpen] = useState(false);
   const shouldClamp = typeof defaultVisibleCount === "number" && defaultVisibleCount > 0;
   const visibleItems = useMemo(() => {
     if (!shouldClamp) return items;
@@ -121,46 +123,53 @@ export function ActivityTimeline({
 
   return (
     <Card className={compact ? "rounded-[24px] border border-slate-200 bg-white/[0.94] p-4 shadow-[0_10px_30px_rgba(15,23,42,0.04)]" : undefined}>
-      <div>
-        <h3 className="text-lg font-semibold text-slate-900">{title}</h3>
-        <p className="text-sm text-slate-500">{description}</p>
-      </div>
-      <div className={compact ? "mt-4 space-y-2" : "mt-4 space-y-3"}>
-        {visibleItems.length ? (
-          visibleItems.map((item) => {
-            const detail = extractDetail(item);
-            return (
-              <div key={item.id} className={compact ? "rounded-xl border border-slate-200 bg-slate-50/80 px-3 py-2.5" : "rounded-2xl border border-slate-200 bg-white px-4 py-3"}>
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className={`inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold ring-1 ${resolveEntityStyle(item)}`}>
-                      {resolveEntityLabel(item)}
-                    </span>
-                    <p className="text-sm font-medium text-slate-900">{labels[item.action] ?? item.action}</p>
-                  </div>
-                  <p className="text-[11px] text-slate-500">{formatDate(item.created_at)}</p>
-                </div>
-                {detail.title ? <p className={compact ? "mt-1.5 text-sm text-slate-700" : "mt-2 text-sm text-slate-700"}>{detail.title}</p> : null}
-                {detail.role ? (
-                  <p className={compact ? "mt-1.5 text-[11px] text-slate-500" : "mt-2 text-xs text-slate-500"}>
-                    Rol{detail.previousRole ? `: ${detail.previousRole} → ${detail.role}` : `: ${detail.role}`}
-                  </p>
-                ) : null}
-                {!compact && detail.description ? <p className="mt-2 text-sm text-slate-500">{detail.description}</p> : null}
-                {detail.status ? <p className={compact ? "mt-1.5 text-[11px] text-slate-500" : "mt-2 text-xs text-slate-500"}>Estado: {detail.status}</p> : null}
-              </div>
-            );
-          })
-        ) : (
-          <p className="text-sm text-slate-500">Todavía no hay movimientos registrados.</p>
-        )}
-      </div>
-      {shouldClamp && items.length > defaultVisibleCount ? (
-        <div className="mt-4 flex justify-center">
-          <Button type="button" variant="secondary" className="h-10 rounded-xl px-4" onClick={() => setExpanded((value) => !value)}>
-            {expanded ? collapseLabel : expandLabel}
-          </Button>
+      <button type="button" onClick={() => setOpen((value) => !value)} className="flex w-full items-center justify-between gap-3 text-left">
+        <div>
+          <h3 className="text-lg font-semibold text-slate-900">{title}</h3>
+          <p className="text-sm text-slate-500">{description}</p>
         </div>
+        <ChevronDown className={`h-4 w-4 text-slate-500 transition ${open ? 'rotate-180' : ''}`} />
+      </button>
+      {open ? (
+        <>
+          <div className={compact ? "mt-4 space-y-2" : "mt-4 space-y-3"}>
+            {visibleItems.length ? (
+              visibleItems.map((item) => {
+                const detail = extractDetail(item);
+                return (
+                  <div key={item.id} className={compact ? "rounded-xl border border-slate-200 bg-slate-50/80 px-3 py-2.5" : "rounded-2xl border border-slate-200 bg-white px-4 py-3"}>
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className={`inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold ring-1 ${resolveEntityStyle(item)}`}>
+                          {resolveEntityLabel(item)}
+                        </span>
+                        <p className="text-sm font-medium text-slate-900">{labels[item.action] ?? item.action}</p>
+                      </div>
+                      <p className="text-[11px] text-slate-500">{formatDate(item.created_at)}</p>
+                    </div>
+                    {detail.title ? <p className={compact ? "mt-1.5 text-sm text-slate-700" : "mt-2 text-sm text-slate-700"}>{detail.title}</p> : null}
+                    {detail.role ? (
+                      <p className={compact ? "mt-1.5 text-[11px] text-slate-500" : "mt-2 text-xs text-slate-500"}>
+                        Rol{detail.previousRole ? `: ${detail.previousRole} → ${detail.role}` : `: ${detail.role}`}
+                      </p>
+                    ) : null}
+                    {!compact && detail.description ? <p className="mt-2 text-sm text-slate-500">{detail.description}</p> : null}
+                    {detail.status ? <p className={compact ? "mt-1.5 text-[11px] text-slate-500" : "mt-2 text-xs text-slate-500"}>Estado: {detail.status}</p> : null}
+                  </div>
+                );
+              })
+            ) : (
+              <p className="text-sm text-slate-500">Todavía no hay movimientos registrados.</p>
+            )}
+          </div>
+          {shouldClamp && items.length > defaultVisibleCount ? (
+            <div className="mt-4 flex justify-center">
+              <Button type="button" variant="secondary" className="h-10 rounded-xl px-4" onClick={() => setExpanded((value) => !value)}>
+                {expanded ? collapseLabel : expandLabel}
+              </Button>
+            </div>
+          ) : null}
+        </>
       ) : null}
     </Card>
   );
