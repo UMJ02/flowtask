@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useMemo, useState, useTransition } from 'react';
-import { Building2, ChevronDown, Check, Loader2, UserRound } from 'lucide-react';
+import { Building2, ChevronDown, Check, Loader2, RotateCcw, UserRound } from 'lucide-react';
 import type { OrganizationSummary } from '@/types/organization';
 import { formatOrganizationRole } from '@/lib/organization/labels';
 
@@ -22,6 +22,19 @@ async function updateActiveWorkspace(workspace: string) {
   if (!response.ok) {
     const payload = await response.json().catch(() => ({}));
     throw new Error(payload?.error || 'No fue posible cambiar el workspace activo.');
+  }
+}
+
+async function reactivateWorkspace(organizationId: string) {
+  const response = await fetch('/api/organization/manage', {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ organizationId, action: 'reactivate' }),
+  });
+
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(payload?.error || 'No fue posible reactivar el workspace.');
   }
 }
 
@@ -45,9 +58,11 @@ export function OrganizationSwitcher({
   const [optimisticWorkspace, setOptimisticWorkspace] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
+  const activeItems = useMemo(() => organizations.filter((item) => !item.deletedAt), [organizations]);
+  const deletedItems = useMemo(() => organizations.filter((item) => !!item.deletedAt), [organizations]);
   const activeWorkspaceId = useMemo(() => optimisticWorkspace ?? activeOrganization?.id ?? 'personal', [optimisticWorkspace, activeOrganization?.id]);
-  const activeWorkspaceRole = activeWorkspaceId === 'personal' ? null : (organizations.find((item) => item.id === activeWorkspaceId)?.role ?? activeOrganization?.role ?? null);
-  const label = activeWorkspaceId === 'personal' ? 'Workspace personal' : (organizations.find((item) => item.id === activeWorkspaceId)?.name ?? activeOrganization?.name ?? 'Workspace');
+  const activeWorkspaceRole = activeWorkspaceId === 'personal' ? null : (activeItems.find((item) => item.id === activeWorkspaceId)?.role ?? activeOrganization?.role ?? null);
+  const label = activeWorkspaceId === 'personal' ? 'Workspace personal' : (activeItems.find((item) => item.id === activeWorkspaceId)?.name ?? activeOrganization?.name ?? 'Workspace');
 
   function handleSwitch(workspace: string) {
     if (workspace === activeWorkspaceId) {
@@ -73,6 +88,22 @@ export function OrganizationSwitcher({
     });
   }
 
+  function handleReactivate(workspace: string) {
+    setError(null);
+    setPendingWorkspace(`reactivate:${workspace}`);
+    startTransition(async () => {
+      try {
+        await reactivateWorkspace(workspace);
+        setOpen(false);
+        window.location.assign('/app/organization?reactivated=1');
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'No fue posible reactivar el workspace.');
+      } finally {
+        setPendingWorkspace(null);
+      }
+    });
+  }
+
   const options = [
     {
       id: 'personal',
@@ -80,33 +111,44 @@ export function OrganizationSwitcher({
       helper: 'Tus tareas, proyectos y tableros individuales',
       role: null,
       icon: UserRound,
+      isDeleted: false,
     },
-    ...organizations.map((organization) => ({
+    ...activeItems.map((organization) => ({
       id: organization.id,
       name: organization.name,
       helper: formatOrganizationRole(organization.role),
       role: organization.role,
       icon: Building2,
+      isDeleted: false,
+    })),
+    ...deletedItems.map((organization) => ({
+      id: organization.id,
+      name: `Reactivar · ${organization.name}`,
+      helper: organization.purgeScheduledAt ? `Se borrará el ${new Date(organization.purgeScheduledAt).toLocaleDateString()}` : 'Pendiente de eliminación',
+      role: organization.role,
+      icon: RotateCcw,
+      isDeleted: true,
     })),
   ];
 
   const menu = (
-    <div className={`absolute ${dark ? 'bottom-[calc(100%+10px)]' : 'top-[calc(100%+10px)]'} right-0 z-30 w-full min-w-[260px] rounded-[24px] border p-3 shadow-[0_24px_50px_rgba(15,23,42,0.16)] ${dark ? 'border-white/10 bg-slate-950 text-white' : 'border-slate-200 bg-white'}`}>
+    <div className={`absolute ${dark ? 'bottom-[calc(100%+10px)]' : 'top-[calc(100%+10px)]'} right-0 z-30 w-full min-w-[280px] rounded-[24px] border p-3 shadow-[0_24px_50px_rgba(15,23,42,0.16)] ${dark ? 'border-white/10 bg-slate-950 text-white' : 'border-slate-200 bg-white'}`}>
       <div className="space-y-2">
         {options.map((option) => {
-          const isActive = option.id === activeWorkspaceId;
+          const isActive = !option.isDeleted && option.id === activeWorkspaceId;
           const loading = pendingWorkspace === option.id && isPending;
+          const reactivating = pendingWorkspace === `reactivate:${option.id}` && isPending;
           const Icon = option.icon;
           return (
             <button
               key={option.id}
               type="button"
-              onClick={() => handleSwitch(option.id)}
-              disabled={loading}
-              className={`flex w-full items-center justify-between rounded-2xl px-3 py-2 text-left transition ${isActive ? dark ? 'bg-emerald-500/15 text-emerald-200' : 'bg-emerald-50 text-emerald-700' : dark ? 'bg-white/5 text-slate-200 hover:bg-white/10' : 'bg-slate-50 text-slate-700 hover:bg-slate-100'} ${loading ? 'opacity-70' : ''}`}
+              onClick={() => option.isDeleted ? handleReactivate(option.id) : handleSwitch(option.id)}
+              disabled={loading || reactivating}
+              className={`flex w-full items-center justify-between rounded-2xl px-3 py-2 text-left transition ${isActive ? dark ? 'bg-emerald-500/15 text-emerald-200' : 'bg-emerald-50 text-emerald-700' : option.isDeleted ? dark ? 'bg-amber-500/12 text-amber-100 hover:bg-amber-500/16' : 'bg-amber-50 text-amber-800 hover:bg-amber-100' : dark ? 'bg-white/5 text-slate-200 hover:bg-white/10' : 'bg-slate-50 text-slate-700 hover:bg-slate-100'} ${(loading || reactivating) ? 'opacity-70' : ''}`}
             >
               <div className="min-w-0 flex items-center gap-3">
-                <span className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl ${isActive ? dark ? 'bg-emerald-500/20 text-emerald-200' : 'bg-white text-emerald-700 ring-1 ring-emerald-100' : dark ? 'bg-white/10 text-slate-200' : 'bg-white text-slate-600 ring-1 ring-slate-200'}`}>
+                <span className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl ${isActive ? dark ? 'bg-emerald-500/20 text-emerald-200' : 'bg-white text-emerald-700 ring-1 ring-emerald-100' : option.isDeleted ? dark ? 'bg-amber-500/15 text-amber-100' : 'bg-white text-amber-700 ring-1 ring-amber-100' : dark ? 'bg-white/10 text-slate-200' : 'bg-white text-slate-600 ring-1 ring-slate-200'}`}>
                   <Icon className="h-4 w-4" />
                 </span>
                 <div className="min-w-0">
@@ -114,7 +156,7 @@ export function OrganizationSwitcher({
                   <p className="truncate text-xs opacity-80">{option.role ? option.helper : 'Se mantiene separado del espacio de equipo'}</p>
                 </div>
               </div>
-              {loading ? <Loader2 className="h-4 w-4 shrink-0 animate-spin" /> : isActive ? <Check className="h-4 w-4 shrink-0" /> : null}
+              {loading || reactivating ? <Loader2 className="h-4 w-4 shrink-0 animate-spin" /> : isActive ? <Check className="h-4 w-4 shrink-0" /> : null}
             </button>
           );
         })}

@@ -5,6 +5,8 @@ export interface OrganizationSummary {
   role: "admin_global" | "manager" | "member" | "viewer";
   isDefault?: boolean;
   ownerId?: string | null;
+  deletedAt?: string | null;
+  purgeScheduledAt?: string | null;
 }
 
 export interface ClientPermissionSummary {
@@ -73,3 +75,5 @@ export interface PendingOrganizationInviteSummary {
   organizationSlug: string;
   createdAtLabel: string;
 }
+
+export interface DeletedOrganizationSummary extends OrganizationSummary {}

@@ -31,7 +31,7 @@ export function OrganizationAdminSettingsCard({
       const response = await fetch('/api/organization/manage', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ organizationId, name: name.trim() }),
+        body: JSON.stringify({ organizationId, name: name.trim(), action: 'rename' }),
       });
       const payload = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(payload?.error || 'No fue posible actualizar la organización.');
@@ -45,7 +45,7 @@ export function OrganizationAdminSettingsCard({
   }
 
   async function leaveOrganization() {
-    const confirmation = window.confirm('Vas a salir de esta organización. Tus datos personales no se eliminarán.');
+    const confirmation = window.confirm('Vas a salir de esta organización. Tu trabajo personal seguirá intacto.');
     if (!confirmation) return;
     setLoading('leave');
     setStatus(null);
@@ -67,7 +67,7 @@ export function OrganizationAdminSettingsCard({
   }
 
   async function deleteOrganization() {
-    const confirmation = window.confirm('Esta acción eliminará la organización y sus registros asociados. Esta acción no se puede deshacer.');
+    const confirmation = window.confirm('La organización entrará en una ventana de eliminación de 10 días. Durante ese tiempo podrás reactivarla o borrarla definitivamente desde la bandeja de workspaces.');
     if (!confirmation) return;
     setLoading('delete');
     setStatus(null);
@@ -79,10 +79,10 @@ export function OrganizationAdminSettingsCard({
         body: JSON.stringify({ organizationId }),
       });
       const payload = await response.json().catch(() => ({}));
-      if (!response.ok) throw new Error(payload?.error || 'No fue posible eliminar la organización.');
+      if (!response.ok) throw new Error(payload?.error || 'No fue posible programar la eliminación de la organización.');
       window.location.href = '/app/organization';
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'No fue posible eliminar la organización.');
+      setError(err instanceof Error ? err.message : 'No fue posible programar la eliminación de la organización.');
     } finally {
       setLoading(null);
     }
@@ -92,9 +92,9 @@ export function OrganizationAdminSettingsCard({
     <Card className="rounded-[24px] p-4 md:p-5">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">Ajustes de organización</p>
-          <h3 className="mt-1 text-lg font-semibold text-slate-950">Administra el nombre y las acciones clave del espacio</h3>
-          <p className="mt-1 text-sm text-slate-600">Haz cambios puntuales sin salir del panel de organización.</p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">Ajustes del workspace</p>
+          <h3 className="mt-1 text-lg font-semibold text-slate-950">Mantén el nombre y las acciones sensibles bajo control</h3>
+          <p className="mt-1 text-sm text-slate-600">Aquí puedes actualizar el nombre del equipo, salir del espacio o iniciar una eliminación programada.</p>
         </div>
       </div>
       <div className="mt-4 grid gap-3 lg:grid-cols-[1fr_auto] lg:items-end">
@@ -117,7 +117,7 @@ export function OrganizationAdminSettingsCard({
         {isOwner ? (
           <Button type="button" variant="secondary" className="h-11 border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100" onClick={deleteOrganization} disabled={loading !== null}>
             <Trash2 className="h-4 w-4" />
-            {loading === 'delete' ? 'Eliminando...' : 'Eliminar organización'}
+            {loading === 'delete' ? 'Programando...' : 'Eliminar organización'}
           </Button>
         ) : null}
       </div>

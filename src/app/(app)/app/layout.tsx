@@ -22,7 +22,7 @@ export default async function PrivateAppLayout({ children }: { children: React.R
       userAvatarUrl={profile?.avatarUrl || null}
       userId={user.id}
       unreadCount={unreadCount}
-      organizations={organizationContext?.organizations ?? []}
+      organizations={[...(organizationContext?.organizations ?? []), ...(organizationContext?.deletedOrganizations ?? [])]}
       activeOrganization={organizationContext?.activeOrganization ?? null}
     >
       {children}

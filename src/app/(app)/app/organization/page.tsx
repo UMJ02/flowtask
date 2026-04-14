@@ -8,6 +8,8 @@ import { OrganizationPendingInvitesCard } from '@/components/organization/organi
 import { OrganizationIdentityCard } from '@/components/organization/organization-identity-card';
 import { OrganizationAccessTabsPanel } from '@/components/organization/organization-access-tabs-panel';
 import { OrganizationAdminSettingsCard } from '@/components/organization/organization-admin-settings-card';
+import { DeletedOrganizationsPanel } from '@/components/organization/deleted-organizations-panel';
+import { OrganizationReactivationModal } from '@/components/organization/organization-reactivation-modal';
 import { ActivityTimeline } from '@/components/activity/activity-timeline';
 import { safeServerCall } from '@/lib/runtime/safe-server';
 import { getOrganizationContext, getOrganizationInvites, getOrganizationMetrics, getOrganizationRolesAndPermissions, getPendingOrganizationInvitesForCurrentUser } from '@/lib/queries/organization';
@@ -16,13 +18,16 @@ import { getOrganizationMembers } from '@/lib/queries/organization-members';
 import { getOrganizationBillingSummary } from '@/lib/queries/billing';
 import type { OrganizationInviteSummary } from '@/types/organization';
 
-export default async function OrganizationPage() {
+export default async function OrganizationPage({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
   const context = await safeServerCall('getOrganizationContext', () => getOrganizationContext(), null);
   const activeOrganization = context?.activeOrganization ?? null;
   const organizations = context?.organizations ?? [];
+  const deletedOrganizations = context?.deletedOrganizations ?? [];
   const activeId = activeOrganization?.id ?? null;
   const canManage = Boolean(context?.access?.canManageInvites);
   const canManageRoles = Boolean(context?.access?.canManageRoles);
+  const resolvedSearchParams = (await searchParams) ?? {};
+  const showReactivated = resolvedSearchParams?.reactivated === '1';
 
   const [metrics, invites, roles, members, activity, pendingInvitesForCurrentUser, billingSummary] = await Promise.all([
     safeServerCall('getOrganizationMetrics', () => getOrganizationMetrics(activeId), null),
@@ -38,20 +43,26 @@ export default async function OrganizationPage() {
 
   return (
     <div className="space-y-4">
+      <OrganizationReactivationModal openInitially={showReactivated} />
       {pendingInvitesForCurrentUser.length ? <OrganizationPendingInvitesCard invites={pendingInvitesForCurrentUser} /> : null}
       {!activeOrganization ? (
-        organizations.length ? (
-          <div className="rounded-[28px] border border-slate-200 bg-white px-6 py-6 shadow-[0_18px_40px_rgba(15,23,42,0.06)]">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-600">Workspace personal activo</p>
-            <h2 className="mt-2 text-2xl font-bold text-slate-900">Tu organización sigue disponible, pero no reemplaza tu modo individual</h2>
-            <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-600">Ahora FlowTask mantiene separados tu trabajo personal y los workspaces de equipo. Usa el selector del sidebar para cambiar entre <strong>Workspace personal</strong> y cualquiera de tus organizaciones sin perder acceso a tus tareas, proyectos y catálogos anteriores.</p>
-            <div className="mt-4 inline-flex rounded-full bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-700 ring-1 ring-emerald-200">Organizaciones disponibles: {organizations.length}</div>
+        organizations.length || deletedOrganizations.length ? (
+          <div className="space-y-4">
+            {organizations.length ? (
+              <div className="rounded-[28px] border border-slate-200 bg-white px-6 py-6 shadow-[0_18px_40px_rgba(15,23,42,0.06)]">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-600">Workspace personal activo</p>
+                <h2 className="mt-2 text-2xl font-bold text-slate-900">Tu organización sigue disponible, pero no reemplaza tu modo individual</h2>
+                <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-600">Ahora FlowTask mantiene separados tu trabajo personal y los workspaces de equipo. Usa el selector del sidebar para cambiar entre <strong>Workspace personal</strong> y cualquiera de tus organizaciones sin perder acceso a tus tareas, proyectos y catálogos anteriores.</p>
+                <div className="mt-4 inline-flex rounded-full bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-700 ring-1 ring-emerald-200">Organizaciones disponibles: {organizations.length}</div>
+              </div>
+            ) : null}
+            {deletedOrganizations.length ? <DeletedOrganizationsPanel organizations={deletedOrganizations} /> : null}
           </div>
         ) : (
           <OrganizationBootstrapCard />
         )
       ) : (
-        <>
+        <div className="space-y-3">
           <OrganizationIdentityCard organization={activeOrganization} member={featuredMember} />
           {activeId ? <OrganizationInviteForm organizationId={activeId} canInviteManagers={canManageRoles} canManageInvites={canManage} compact /> : null}
           {activeId ? <OrganizationAdminSettingsCard organizationId={activeId} organizationName={activeOrganization.name} isOwner={featuredMember?.userId === activeOrganization.ownerId} canManage={activeOrganization.role === 'admin_global'} /> : null}
@@ -74,14 +85,14 @@ export default async function OrganizationPage() {
           />
           <ActivityTimeline
             items={activity}
-            title="Bitácora de seguridad y administración"
-            description="Cambios recientes de miembros, invitaciones, permisos y clientes dentro del equipo activo."
+            title="Bitácora del equipo"
+            description="Movimientos recientes del workspace en miembros, permisos, clientes e invitaciones."
             defaultVisibleCount={1}
             compact
-            expandLabel="Abrir bitácora"
-            collapseLabel="Cerrar bitácora"
+            expandLabel="Ver más movimientos"
+            collapseLabel="Ver menos movimientos"
           />
-        </>
+        </div>
       )}
     </div>
   );

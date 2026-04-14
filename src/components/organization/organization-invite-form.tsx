@@ -62,7 +62,7 @@ export function OrganizationInviteForm({ organizationId, canInviteManagers = fal
       </div>
       <Button type="submit" loading={loading} className="h-11" disabled={!organizationId || !canManageInvites}>
         <MailPlus className="h-4 w-4" />
-        {loading ? 'Enviando invitación...' : 'Invitar'}
+        {loading ? 'Procesando...' : 'Invitar'}
       </Button>
       {!canManageInvites ? <p className="md:col-span-3 text-sm text-slate-500">Tu rol actual no permite enviar nuevas invitaciones en esta organización.</p> : null}
       {status ? <p className="md:col-span-3 text-sm text-emerald-700">{status}</p> : null}

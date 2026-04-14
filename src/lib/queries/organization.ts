@@ -11,7 +11,7 @@ export async function getOrganizationContext() {
 
   const { data: memberships } = await supabase
     .from("organization_members")
-    .select("id, role, is_default, organizations!inner ( id, name, slug, owner_id )")
+    .select("id, role, is_default, organizations!inner ( id, name, slug, owner_id, deleted_at, purge_scheduled_at )")
     .eq("user_id", user.id)
     .order("is_default", { ascending: false })
     .limit(20);
@@ -25,15 +25,20 @@ export async function getOrganizationContext() {
       role: row.role as "admin_global" | "manager" | "member" | "viewer",
       isDefault: row.is_default ?? false,
       ownerId: (organization?.owner_id as string | null | undefined) ?? null,
+      deletedAt: (organization?.deleted_at as string | null | undefined) ?? null,
+      purgeScheduledAt: (organization?.purge_scheduled_at as string | null | undefined) ?? null,
     };
   }).filter((item: any) => item.id && item.name);
 
+  const organizations = normalized.filter((item: any) => !item.deletedAt);
+  const deletedOrganizations = normalized.filter((item: any) => !!item.deletedAt);
+
   const cookieStore = await cookies();
   const preference = normalizeWorkspacePreference(cookieStore.get(ACTIVE_WORKSPACE_COOKIE)?.value ?? null);
-  const defaultOrganization = normalized[0] ?? null;
+  const defaultOrganization = organizations[0] ?? null;
   const activeOrganization = preference === PERSONAL_WORKSPACE_VALUE
     ? null
-    : (normalized.find((item: { id: string }) => item.id === preference) ?? defaultOrganization);
+    : (organizations.find((item: { id: string }) => item.id === preference) ?? defaultOrganization);
   const access = deriveOrganizationAccess(activeOrganization?.role ?? null);
 
   const { data: clientPermissions } = activeOrganization
@@ -58,7 +63,8 @@ export async function getOrganizationContext() {
 
   return {
     activeOrganization,
-    organizations: normalized,
+    organizations,
+    deletedOrganizations,
     clientPermissions: permissionRows,
     access,
   };

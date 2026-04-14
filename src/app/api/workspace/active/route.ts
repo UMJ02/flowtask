@@ -24,13 +24,17 @@ export async function POST(request: Request) {
   if (preference !== PERSONAL_WORKSPACE_VALUE) {
     const { data: membership } = await supabase
       .from('organization_members')
-      .select('organization_id')
+      .select('organization_id, organizations!inner(deleted_at)')
       .eq('user_id', user.id)
       .eq('organization_id', preference)
       .maybeSingle();
 
     if (!membership) {
       return NextResponse.json({ error: 'No tienes acceso a ese workspace.' }, { status: 403 });
+    }
+    const organization = Array.isArray((membership as any).organizations) ? (membership as any).organizations[0] : (membership as any).organizations;
+    if (organization?.deleted_at) {
+      return NextResponse.json({ error: 'Ese workspace está pendiente de eliminación. Reactívalo antes de entrar.' }, { status: 409 });
     }
   }
 

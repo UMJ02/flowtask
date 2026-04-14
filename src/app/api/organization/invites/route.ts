@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { getOrganizationBillingSummary } from '@/lib/queries/billing';
+import { sendOrganizationInviteEmail } from '@/lib/email/resend';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,6 +19,56 @@ export async function POST(request: Request) {
   const organizationId = typeof body?.organizationId === 'string' ? body.organizationId : '';
   const email = typeof body?.email === 'string' ? body.email.trim().toLowerCase() : '';
   const role = typeof body?.role === 'string' ? body.role : 'member';
+  const inviteIdToResend = typeof body?.inviteId === 'string' ? body.inviteId : '';
+
+  if (inviteIdToResend) {
+    const { data: actorMembership } = await supabase
+      .from('organization_members')
+      .select('role')
+      .eq('organization_id', organizationId)
+      .eq('user_id', user.id)
+      .maybeSingle();
+
+    const actorRole = (actorMembership?.role as string | undefined) ?? null;
+    if (!actorRole || !['admin_global', 'manager'].includes(actorRole)) {
+      return NextResponse.json({ error: 'Tu rol actual no permite reenviar invitaciones.' }, { status: 403 });
+    }
+
+    const { data: organization } = await supabase
+      .from('organizations')
+      .select('name')
+      .eq('id', organizationId)
+      .maybeSingle();
+
+    const { data: invite } = await supabase
+      .from('organization_invites')
+      .select('id,email,role,status')
+      .eq('id', inviteIdToResend)
+      .eq('organization_id', organizationId)
+      .maybeSingle();
+
+    if (!invite?.id) return NextResponse.json({ error: 'No encontramos la invitación indicada.' }, { status: 404 });
+    if (invite.status !== 'pending') return NextResponse.json({ error: 'Solo puedes reenviar invitaciones pendientes.' }, { status: 409 });
+
+    const emailResult = await sendOrganizationInviteEmail({
+      email: invite.email,
+      organizationName: organization?.name ?? 'tu organización',
+      role: invite.role,
+      invitedByName: user.email ?? null,
+    });
+
+    if (!emailResult.sent) {
+      return NextResponse.json({
+        ok: true,
+        delivered: false,
+        message: emailResult.configured
+          ? 'La invitación sigue activa, pero el correo no pudo enviarse. Revisa la configuración del proveedor.'
+          : 'La invitación sigue activa, pero falta configurar el proveedor de correo para entregarla.'
+      });
+    }
+
+    return NextResponse.json({ ok: true, delivered: true, message: 'Correo reenviado correctamente.' });
+  }
 
   if (!organizationId || !email) {
     return NextResponse.json({ error: 'Faltan datos para enviar la invitación.' }, { status: 400 });
@@ -87,6 +138,8 @@ export async function POST(request: Request) {
     }
   }
 
+  const { data: organization } = await supabase.from('organizations').select('name').eq('id', organizationId).maybeSingle();
+
   const { error } = await supabase.from('organization_invites').insert({
     organization_id: organizationId,
     email,
@@ -97,7 +150,24 @@ export async function POST(request: Request) {
 
   if (error) return NextResponse.json({ error: error.message }, { status: 400 });
 
-  return NextResponse.json({ ok: true, message: 'Invitación creada correctamente.' });
+  const emailResult = await sendOrganizationInviteEmail({
+    email,
+    organizationName: organization?.name ?? 'tu organización',
+    role,
+    invitedByName: user.email ?? null,
+  });
+
+  if (!emailResult.sent) {
+    return NextResponse.json({
+      ok: true,
+      delivered: false,
+      message: emailResult.configured
+        ? 'Invitación creada. El correo no pudo salir; puedes reenviarlo desde la bandeja de invitaciones.'
+        : 'Invitación creada. Falta configurar el proveedor de correo para entregar el email.'
+    });
+  }
+
+  return NextResponse.json({ ok: true, delivered: true, message: 'Invitación creada y correo enviado correctamente.' });
 }
 
 export async function PATCH(request: Request) {
