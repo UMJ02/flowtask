@@ -10,7 +10,6 @@ import { getOrganizationWorkspaceAccessSummary } from '@/lib/queries/access-summ
 import { getOrganizationBillingSummary } from '@/lib/queries/billing';
 import { safeServerCall } from '@/lib/runtime/safe-server';
 import { AccessControlSettingsCard } from '@/components/settings/access-control-settings-card';
-import { IntelligentAttentionSettingsCard } from '@/components/settings/intelligent-attention-settings-card';
 
 export default async function SettingsPage() {
   const [profile, preferences, organizationContext, accessSummary] = await Promise.all([
@@ -47,7 +46,6 @@ export default async function SettingsPage() {
       </Card>
 
       {preferences ? <NotificationPreferencesForm initialPreferences={preferences} /> : null}
-      <IntelligentAttentionSettingsCard />
     </div>
   );
 }
