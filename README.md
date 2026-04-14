@@ -1,7 +1,7 @@
-# FlowTask — V58.11.4 Intelligent Attention Assistant
+# FlowTask — V58.11.3 Intelligent Attention Assistant
 
-## Qué cambia en la V58.11.4
-- versión y metadata alineadas a `V58.11.4`
+## Qué cambia en la V58.11.3
+- versión y metadata alineadas a `V58.11.3`
 - nuevo `scripts/verify-v58.11.3.mjs`
 - nuevo release doc `docs/release/V58_11_3_INTELLIGENT_ATTENTION_ASSISTANT.md`
 - asistente inteligente de atención con pull-up cards
@@ -14,4 +14,4 @@
 - `npm run deploy:production:ready`
 
 ## Base de continuidad
-Usa esta **V58.11.4** como base oficial para seguir evolucionando la ayuda inteligente y el pulido final de experiencia para usuario final.
+Usa esta **V58.11.3** como base oficial para seguir evolucionando la ayuda inteligente y el pulido final de experiencia para usuario final.
