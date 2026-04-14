@@ -3,8 +3,8 @@ import path from "node:path";
 
 const root = process.cwd();
 const failures = [];
-const expectedVersion = "58.11.5-assistant-premium-card-refine";
-const expectedReleaseLabel = "V58.11.5";
+const expectedVersion = "58.11.4-intelligent-assistant-advanced-engine";
+const expectedReleaseLabel = "V58.11.4";
 
 function requireFile(rel) {
   if (!fs.existsSync(path.join(root, rel))) {
@@ -29,8 +29,8 @@ requireFile(".nvmrc");
 requireFile(".env.example");
 requireFile("scripts/runtime-check.mjs");
 requireFile("scripts/validate-env.mjs");
-requireFile("scripts/verify-v58.11.5.mjs");
-requireFile("docs/release/V58_11_5_ASSISTANT_PREMIUM_CARD_REFINE.md");
+requireFile("scripts/verify-v58.11.4.mjs");
+requireFile("docs/release/V58_11_4_INTELLIGENT_ASSISTANT_ADVANCED_ENGINE.md");
 requireFile("docs/release/DB_CONTINUITY_SOURCE_OF_TRUTH.md");
 
 const pkg = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
@@ -39,8 +39,8 @@ for (const scriptName of ["build", "vercel:build", "deploy:readiness", "build:pr
   if (!scripts[scriptName]) failures.push(`Missing package script: ${scriptName}`);
 }
 if (pkg.version !== expectedVersion) failures.push(`Unexpected package version: ${pkg.version}`);
-if (scripts["verify:current"] !== "npm run verify:v58.11.5") failures.push("verify:current must target verify:v58.11.5");
-if (scripts["verify:v58.11.5"] !== "node scripts/verify-v58.11.5.mjs") failures.push("verify:v58.11.5 must target scripts/verify-v58.11.5.mjs");
+if (scripts["verify:current"] !== "npm run verify:v58.11.4") failures.push("verify:current must target verify:v58.11.4");
+if (scripts["verify:v58.11.4"] !== "node scripts/verify-v58.11.4.mjs") failures.push("verify:v58.11.4 must target scripts/verify-v58.11.4.mjs");
 
 const vercel = JSON.parse(fs.readFileSync(path.join(root, "vercel.json"), "utf8"));
 if (vercel.framework !== "nextjs") failures.push("vercel.json framework must be nextjs");
