@@ -11,8 +11,10 @@ import { OrganizationAdminSettingsCard } from '@/components/organization/organiz
 import { DeletedOrganizationsPanel } from '@/components/organization/deleted-organizations-panel';
 import { OrganizationReactivationModal } from '@/components/organization/organization-reactivation-modal';
 import { ActivityTimeline } from '@/components/activity/activity-timeline';
+import { IntelligentAttentionAssistant } from '@/components/dashboard/intelligent-attention-assistant';
 import { safeServerCall } from '@/lib/runtime/safe-server';
 import { getOrganizationContext, getOrganizationInvites, getOrganizationMetrics, getOrganizationRolesAndPermissions, getPendingOrganizationInvitesForCurrentUser } from '@/lib/queries/organization';
+import { getDashboardData } from '@/lib/queries/dashboard';
 import { getOrganizationActivity } from '@/lib/queries/activity';
 import { getOrganizationMembers } from '@/lib/queries/organization-members';
 import { getOrganizationBillingSummary } from '@/lib/queries/billing';
@@ -29,7 +31,7 @@ export default async function OrganizationPage({ searchParams }: { searchParams?
   const resolvedSearchParams = (await searchParams) ?? {};
   const showReactivated = resolvedSearchParams?.reactivated === '1';
 
-  const [metrics, invites, roles, members, activity, pendingInvitesForCurrentUser, billingSummary] = await Promise.all([
+  const [metrics, invites, roles, members, activity, pendingInvitesForCurrentUser, billingSummary, assistantSummary] = await Promise.all([
     safeServerCall('getOrganizationMetrics', () => getOrganizationMetrics(activeId), null),
     safeServerCall('getOrganizationInvites', () => getOrganizationInvites(activeId, canManage), []),
     safeServerCall('getOrganizationRolesAndPermissions', () => getOrganizationRolesAndPermissions(activeId, canManageRoles), { roleTemplates: [], permissionDefinitions: [], membersByRole: [] }),
@@ -37,6 +39,7 @@ export default async function OrganizationPage({ searchParams }: { searchParams?
     activeId ? safeServerCall('getOrganizationActivity', () => getOrganizationActivity(activeId), []) : Promise.resolve([]),
     safeServerCall('getPendingOrganizationInvitesForCurrentUser', () => getPendingOrganizationInvitesForCurrentUser(), []),
     safeServerCall('getOrganizationBillingSummary', () => getOrganizationBillingSummary(activeId), null),
+    activeId ? safeServerCall('getDashboardData', () => getDashboardData(), null) : Promise.resolve(null),
   ]);
 
   const featuredMember = members.find((member: (typeof members)[number]) => member.userId === activeOrganization?.ownerId) ?? members[0] ?? null;
@@ -63,6 +66,14 @@ export default async function OrganizationPage({ searchParams }: { searchParams?
         )
       ) : (
         <div className="space-y-3">
+          {assistantSummary ? (
+            <IntelligentAttentionAssistant
+              workspaceKey={assistantSummary.workspaceKey}
+              workspaceLabel="workspace de organización"
+              signals={assistantSummary.intelligentSignals}
+              location="organization"
+            />
+          ) : null}
           <OrganizationIdentityCard organization={activeOrganization} member={featuredMember} />
           {activeId ? <OrganizationInviteForm organizationId={activeId} canInviteManagers={canManageRoles} canManageInvites={canManage} compact /> : null}
           {activeId ? <OrganizationAdminSettingsCard organizationId={activeId} organizationName={activeOrganization.name} isOwner={featuredMember?.userId === activeOrganization.ownerId} canManage={activeOrganization.role === 'admin_global'} /> : null}

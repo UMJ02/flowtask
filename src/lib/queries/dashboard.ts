@@ -28,6 +28,10 @@ export async function getDashboardData() {
     clientRowsRes,
     projectClientRowsRes,
     urgentProjectsRes,
+    overdueTaskRowsRes,
+    dueTodayTaskRowsRes,
+    dueSoonTaskRowsRes,
+    waitingReviewTaskRowsRes,
     assignmentRowsRes,
     collaboratorRowsRes,
   ] = await Promise.all([
@@ -83,6 +87,50 @@ export async function getDashboardData() {
         .lte("due_date", in7Days.toISOString().slice(0, 10))
         .order("due_date", { ascending: true })
         .limit(5),
+      user.id,
+      activeOrganizationId,
+    ),
+    applyWorkspaceScope(
+      supabase
+        .from("tasks")
+        .select("id,title,status,due_date,client_name,project_id")
+        .neq("status", "concluido")
+        .lt("due_date", today.toISOString().slice(0, 10))
+        .order("due_date", { ascending: true })
+        .limit(4),
+      user.id,
+      activeOrganizationId,
+    ),
+    applyWorkspaceScope(
+      supabase
+        .from("tasks")
+        .select("id,title,status,due_date,client_name,project_id")
+        .neq("status", "concluido")
+        .eq("due_date", today.toISOString().slice(0, 10))
+        .order("due_date", { ascending: true })
+        .limit(4),
+      user.id,
+      activeOrganizationId,
+    ),
+    applyWorkspaceScope(
+      supabase
+        .from("tasks")
+        .select("id,title,status,due_date,client_name,project_id")
+        .neq("status", "concluido")
+        .gt("due_date", today.toISOString().slice(0, 10))
+        .lte("due_date", in3Days.toISOString().slice(0, 10))
+        .order("due_date", { ascending: true })
+        .limit(4),
+      user.id,
+      activeOrganizationId,
+    ),
+    applyWorkspaceScope(
+      supabase
+        .from("tasks")
+        .select("id,title,status,due_date,client_name,project_id")
+        .eq("status", "en_espera")
+        .order("updated_at", { ascending: true })
+        .limit(4),
       user.id,
       activeOrganizationId,
     ),
@@ -161,5 +209,12 @@ export async function getDashboardData() {
     recentTasks: recentTasksRes.data ?? [],
     recentProjects: recentProjectsRes.data ?? [],
     reminders: notesRes.data ?? [],
+    workspaceKey: activeOrganizationId ? `organization:${activeOrganizationId}` : `personal:${user.id}`,
+    intelligentSignals: {
+      overdue: overdueTaskRowsRes.data ?? [],
+      dueToday: dueTodayTaskRowsRes.data ?? [],
+      dueSoon: dueSoonTaskRowsRes.data ?? [],
+      waitingReview: waitingReviewTaskRowsRes.data ?? [],
+    },
   };
 }
