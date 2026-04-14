@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useState, useTransition } from 'react';
+import { usePathname } from 'next/navigation';
+import { useMemo, useState, useTransition } from 'react';
 import { Building2, ChevronDown, Check, Loader2, UserRound } from 'lucide-react';
 import type { OrganizationSummary } from '@/types/organization';
 import { formatOrganizationRole } from '@/lib/organization/labels';
@@ -38,14 +38,16 @@ export function OrganizationSwitcher({
   dark?: boolean;
   collapsed?: boolean;
 }) {
-  const router = useRouter();
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pendingWorkspace, setPendingWorkspace] = useState<string | null>(null);
+  const [optimisticWorkspace, setOptimisticWorkspace] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
-  const activeWorkspaceId = activeOrganization?.id ?? 'personal';
-  const label = activeOrganization?.name ?? 'Workspace personal';
+  const activeWorkspaceId = useMemo(() => optimisticWorkspace ?? activeOrganization?.id ?? 'personal', [optimisticWorkspace, activeOrganization?.id]);
+  const activeWorkspaceRole = activeWorkspaceId === 'personal' ? null : (organizations.find((item) => item.id === activeWorkspaceId)?.role ?? activeOrganization?.role ?? null);
+  const label = activeWorkspaceId === 'personal' ? 'Workspace personal' : (organizations.find((item) => item.id === activeWorkspaceId)?.name ?? activeOrganization?.name ?? 'Workspace');
 
   function handleSwitch(workspace: string) {
     if (workspace === activeWorkspaceId) {
@@ -57,11 +59,13 @@ export function OrganizationSwitcher({
     setPendingWorkspace(workspace);
     startTransition(async () => {
       try {
+        setOptimisticWorkspace(workspace);
         await updateActiveWorkspace(workspace);
         setOpen(false);
-        router.refresh();
-        router.push(workspace === 'personal' ? '/app/dashboard' : '/app/organization');
+        const target = workspace === 'personal' ? '/app/dashboard' : (pathname?.startsWith('/app/organization') ? '/app/organization' : pathname || '/app/dashboard');
+        window.location.assign(target);
       } catch (err) {
+        setOptimisticWorkspace(null);
         setError(err instanceof Error ? err.message : 'No fue posible cambiar el workspace activo.');
       } finally {
         setPendingWorkspace(null);
@@ -156,7 +160,7 @@ export function OrganizationSwitcher({
           <div className="min-w-0">
             <p className={`text-[11px] font-semibold uppercase tracking-[0.16em] ${dark ? 'text-slate-400' : 'text-slate-500'}`}>Workspace</p>
             <p className={`truncate text-sm font-semibold ${dark ? 'text-white' : 'text-slate-900'}`}>{label}</p>
-            <p className={`truncate text-xs ${dark ? 'text-slate-400' : 'text-slate-500'}`}>Rol: {formatRole(activeOrganization?.role)}</p>
+            <p className={`truncate text-xs ${dark ? 'text-slate-400' : 'text-slate-500'}`}>Rol: {formatRole(activeWorkspaceRole)}</p>
           </div>
         </div>
         <ChevronDown className={`h-4 w-4 shrink-0 transition ${open ? 'rotate-180' : ''} ${dark ? 'text-slate-400' : 'text-slate-500'}`} />

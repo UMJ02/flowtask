@@ -164,7 +164,7 @@ export async function fetchWorkspaceDepartments(
     if (error) throw error;
     const rows = (data ?? []).filter((item: any) => {
       if (!organizationId) return !item.organization_id ? !item.account_owner_id || item.account_owner_id === userId : false;
-      return !item.organization_id || item.organization_id === organizationId;
+      return item.organization_id === organizationId;
     });
     return rows.map((item: any) => ({ id: String(item.id), code: String(item.code), name: String(item.name), phone: (item.phone as string | null | undefined) ?? null })) as WorkspaceDepartmentOption[];
   } catch {
@@ -185,7 +185,7 @@ export async function fetchWorkspaceCountries(
     if (error) throw error;
     const rows = (data ?? []).filter((item: any) => {
       if (!organizationId) return !item.organization_id ? !item.account_owner_id || item.account_owner_id === userId : false;
-      return !item.organization_id || item.organization_id === organizationId;
+      return item.organization_id === organizationId;
     });
     return rows.map((item: any) => ({ id: String(item.id), code: String(item.code), name: String(item.name) })) as WorkspaceCountryOption[];
   } catch {

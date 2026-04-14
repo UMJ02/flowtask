@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { Building2 } from 'lucide-react';
 import { NotificationBell } from '@/components/notifications/notification-bell';
 import { CommandPalette } from '@/components/layout/command-palette';
 import { MobileNav } from '@/components/layout/mobile-nav';
@@ -27,6 +28,7 @@ export function AppHeader({
   activeOrganization?: OrganizationSummary | null;
 }) {
   const firstName = getFirstName(userName);
+  const workspaceLabel = activeOrganization ? `Estás trabajando en ${activeOrganization.name}.` : 'Tu tablero, tus tareas y lo importante del día en un solo lugar.';
 
   return (
     <header className="sticky top-3 z-20 rounded-[34px] border border-emerald-100/90 bg-[radial-gradient(circle_at_top_left,rgba(16,185,129,0.12),transparent_26%),linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,250,252,0.98))] px-4 py-4 shadow-[0_14px_34px_rgba(15,23,42,0.06)] backdrop-blur md:px-6">
@@ -34,12 +36,12 @@ export function AppHeader({
         <div className="flex min-w-0 items-start gap-3">
           <MobileNav />
           <div className="hidden h-12 w-12 items-center justify-center rounded-full bg-slate-950 shadow-[0_12px_28px_rgba(15,23,42,0.18)] ring-1 ring-slate-900 md:inline-flex">
-            <Image src="/icons/icon.png" alt="FlowTask" width={28} height={28} className="h-7 w-7 object-contain" priority />
+            {activeOrganization ? <Building2 className="h-6 w-6 text-emerald-300" /> : <Image src="/icons/icon.png" alt="FlowTask" width={28} height={28} className="h-7 w-7 object-contain" priority />}
           </div>
           <div className="min-w-0">
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-emerald-600">FlowTask</p>
             <h1 className="mt-1 text-lg font-bold text-slate-900 md:text-2xl">Hola, {firstName}</h1>
-            <p className="mt-1 max-w-2xl text-sm text-slate-500">Tu tablero, tus tareas y lo importante del día en un solo lugar.</p>
+            <p className="mt-1 max-w-2xl text-sm text-slate-500">{workspaceLabel}</p>
           </div>
         </div>
 

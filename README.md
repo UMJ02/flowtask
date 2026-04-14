@@ -1,4 +1,4 @@
-# FlowTask — V58.10.6 Workspace Switch Personal + Organization
+# FlowTask — V58.10.7 Workspace Switch Personal + Organization
 
 Esta versión toma como base **V58.10.5** y deja el proyecto listo para trabajar con un comportamiento moderno de workspace: el usuario puede conservar su **modo personal** y, al mismo tiempo, crear o participar en una **organización** sin perder acceso a lo que ya tenía.
 
@@ -9,10 +9,10 @@ Esta versión toma como base **V58.10.5** y deja el proyecto listo para trabajar
 - alinear el scoping de datos a `organization_id = null` en modo personal
 - conservar la continuidad técnica ya saneada en V58.10.5
 
-## Qué cambia en la V58.10.6
-- versión y metadata alineadas a `V58.10.6`
-- nuevo `scripts/verify-v58.10.6.mjs`
-- nuevo release doc `docs/release/V58_10_6_WORKSPACE_SWITCH_PERSONAL_ORGANIZATION.md`
+## Qué cambia en la V58.10.7
+- versión y metadata alineadas a `V58.10.7`
+- nuevo `scripts/verify-v58.10.7.mjs`
+- nuevo release doc `docs/release/V58_10_7_WORKSPACE_ISOLATION_LIVE_SWITCH_FIX.md`
 - nuevo endpoint `POST /api/workspace/active` para persistir el workspace activo
 - selector de workspace actualizado con opción **Workspace personal** + organizaciones
 - `getWorkspaceContext` y `getClientWorkspaceContext` respetan la preferencia activa
@@ -20,12 +20,12 @@ Esta versión toma como base **V58.10.5** y deja el proyecto listo para trabajar
 - crear o aceptar una organización activa el workspace de equipo, pero permite volver al personal desde el selector
 
 ## Scripts principales
-- `npm run verify:v58.10.6`
+- `npm run verify:v58.10.7`
 - `npm run verify:current`
 - `npm run release:repo:current`
 
 ## Base de continuidad
-Usa esta **V58.10.6** como base oficial para depurar el cambio entre modo individual y organización. La app continúa sobre el proyecto actual y la base de datos sigue regida por la cadena real de migraciones dentro de `supabase/migrations`.
+Usa esta **V58.10.7** como base oficial para depurar el cambio entre modo individual y organización. La app continúa sobre el proyecto actual y la base de datos sigue regida por la cadena real de migraciones dentro de `supabase/migrations`.
 
 ## Continuidad técnica incorporada
 - se preserva todo lo saneado en `V58.10.5`

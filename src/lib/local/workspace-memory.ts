@@ -1,4 +1,5 @@
 import type { AppRoute } from '@/lib/navigation/routes';
+import { parseWorkspaceCookieValue, PERSONAL_WORKSPACE_VALUE } from '@/lib/workspace/active-workspace';
 
 export type MemoryEntityType = 'task' | 'project';
 
@@ -30,11 +31,18 @@ function isBrowser() {
   return typeof window !== 'undefined';
 }
 
+function getWorkspaceStorageKey() {
+  if (!isBrowser()) return `${STORAGE_KEY}:personal`;
+  const preference = parseWorkspaceCookieValue(document.cookie);
+  const suffix = preference && preference !== PERSONAL_WORKSPACE_VALUE ? preference : PERSONAL_WORKSPACE_VALUE;
+  return `${STORAGE_KEY}:${suffix}`;
+}
+
 export function readWorkspaceMemory(): WorkspaceMemory {
   if (!isBrowser()) return getDefaultMemory();
 
   try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
+    const raw = window.localStorage.getItem(getWorkspaceStorageKey());
     if (!raw) return getDefaultMemory();
     const parsed = JSON.parse(raw) as Partial<WorkspaceMemory>;
     return {
@@ -49,7 +57,7 @@ export function readWorkspaceMemory(): WorkspaceMemory {
 
 function writeWorkspaceMemory(memory: WorkspaceMemory) {
   if (!isBrowser()) return;
-  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(memory));
+  window.localStorage.setItem(getWorkspaceStorageKey(), JSON.stringify(memory));
   window.dispatchEvent(new CustomEvent('flowtask-memory-updated'));
 }
 

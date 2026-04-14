@@ -76,6 +76,14 @@ type ProjectRow = {
 
 const STORAGE_KEY = 'flowtask.board.v586';
 const BOARD_LAYOUT_KEY = 'interactiveDashboardBoard';
+
+function getWorkspaceBoardStorageKey(activeOrganizationId?: string | null) {
+  return `${STORAGE_KEY}:${activeOrganizationId ?? 'personal'}`;
+}
+
+function getWorkspaceBoardLayoutKey(activeOrganizationId?: string | null) {
+  return `${BOARD_LAYOUT_KEY}:${activeOrganizationId ?? 'personal'}`;
+}
 const BOARD_STABILITY_MARKER = 'Tareas destacadas';
 
 const PANEL_META: Record<PanelKey, { label: string; icon: ComponentType<{ className?: string }>; description: string }> = {
@@ -486,8 +494,11 @@ function InteractiveDashboardBoardComponent() {
   const [statusUpdatingTaskId, setStatusUpdatingTaskId] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!hydrated && activeOrganizationId === null) {
+      // initial hydrate continues below
+    }
     try {
-      const raw = window.localStorage.getItem(STORAGE_KEY);
+      const raw = window.localStorage.getItem(getWorkspaceBoardStorageKey(activeOrganizationId));
       if (raw) {
         applyBoardSnapshot(JSON.parse(raw), {
           setAsideOpen,
@@ -520,7 +531,7 @@ function InteractiveDashboardBoardComponent() {
     } catch {
       setHydrated(true);
     }
-  }, []);
+  }, [activeOrganizationId]);
 
   useEffect(() => {
     if (!hydrated) return;
@@ -545,7 +556,7 @@ function InteractiveDashboardBoardComponent() {
     } catch {
       // ignore persist errors
     }
-  }, [hydrated, asideOpen, activePanels, expanded, calendarMode, anchorDate, selectedDate, noteDraft, savedNotes, editingNoteId, reminders]);
+  }, [hydrated, activeOrganizationId, asideOpen, activePanels, expanded, calendarMode, anchorDate, selectedDate, noteDraft, savedNotes, editingNoteId, reminders]);
 
   useEffect(() => {
     if (!hydrated || !boardId) return;
@@ -567,7 +578,7 @@ function InteractiveDashboardBoardComponent() {
       const supabase = createClient();
       const nextLayoutConfig = {
         ...boardLayoutBase,
-        [BOARD_LAYOUT_KEY]: snapshot,
+        [getWorkspaceBoardLayoutKey(activeOrganizationId)]: snapshot,
       };
 
       void supabase
@@ -582,7 +593,7 @@ function InteractiveDashboardBoardComponent() {
     }, 800);
 
     return () => window.clearTimeout(timeout);
-  }, [hydrated, boardId, boardLayoutBase, asideOpen, activePanels, expanded, calendarMode, anchorDate, selectedDate, noteDraft, savedNotes, editingNoteId, reminders]);
+  }, [hydrated, boardId, boardLayoutBase, activeOrganizationId, asideOpen, activePanels, expanded, calendarMode, anchorDate, selectedDate, noteDraft, savedNotes, editingNoteId, reminders]);
 
   useEffect(() => {
     if (!hydrated || !noteDraft.trim()) return;
@@ -629,7 +640,7 @@ function InteractiveDashboardBoardComponent() {
         setBoardLayoutBase(workspace.layoutConfig ?? {});
       }
 
-      const dbBoardState = workspace.layoutConfig?.[BOARD_LAYOUT_KEY];
+      const dbBoardState = workspace.layoutConfig?.[getWorkspaceBoardLayoutKey(workspace.activeOrganizationId)];
       if (!cancelled && dbBoardState) {
         applyBoardSnapshot(dbBoardState, {
           setAsideOpen,
@@ -912,7 +923,7 @@ function InteractiveDashboardBoardComponent() {
     ]);
     setCreatedTaskId(null);
     try {
-      window.localStorage.removeItem(STORAGE_KEY);
+      window.localStorage.removeItem(getWorkspaceBoardStorageKey(activeOrganizationId));
     } catch {
       // ignore reset persistence errors
     }
@@ -1045,6 +1056,7 @@ function InteractiveDashboardBoardComponent() {
                 </div>
                 {expanded.kanban ? (
                   <TaskKanbanBoard
+                    workspaceKey={activeOrganizationId ?? 'personal'}
                     tasks={boardTasks.map((task) => ({
                       id: task.id,
                       title: task.title,

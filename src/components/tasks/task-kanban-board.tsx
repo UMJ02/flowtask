@@ -21,7 +21,19 @@ export type TaskItem = {
 type LayoutConfigShape = {
   kanbanStatusOverrides?: Record<string, string>;
   kanbanOrderOverrides?: Record<string, string[]>;
+  [key: string]: unknown;
 };
+
+type TaskKanbanBoardProps = {
+  tasks: TaskItem[];
+  showHeader?: boolean;
+  currentQuery?: string;
+  workspaceKey?: string;
+};
+
+function getScopedLayoutKey(base: keyof LayoutConfigShape, workspaceKey: string) {
+  return `${String(base)}:${workspaceKey}`;
+}
 
 const columns = [
   { value: "en_proceso", label: "En progreso", icon: Clock3 },
@@ -31,12 +43,16 @@ const columns = [
 
 const STATUS_OVERRIDES_KEY = "flowtask.board.kanban.status-overrides.v1";
 const ORDER_OVERRIDES_KEY = "flowtask.board.kanban.order-overrides.v1";
+
+function getScopedKey(base: string, workspaceKey: string) {
+  return `${base}:${workspaceKey}`;
+}
 const DEFAULT_VISIBLE_COUNT = 5;
 
-function readStatusOverrides() {
+function readStatusOverrides(workspaceKey: string) {
   if (typeof window === "undefined") return {} as Record<string, string>;
   try {
-    const raw = window.localStorage.getItem(STATUS_OVERRIDES_KEY);
+    const raw = window.localStorage.getItem(getScopedKey(STATUS_OVERRIDES_KEY, workspaceKey));
     if (!raw) return {} as Record<string, string>;
     const parsed = JSON.parse(raw);
     if (!parsed || typeof parsed !== "object") return {} as Record<string, string>;
@@ -46,17 +62,17 @@ function readStatusOverrides() {
   }
 }
 
-function writeStatusOverrides(value: Record<string, string>) {
+function writeStatusOverrides(workspaceKey: string, value: Record<string, string>) {
   if (typeof window === "undefined") return;
   try {
-    window.localStorage.setItem(STATUS_OVERRIDES_KEY, JSON.stringify(value));
+    window.localStorage.setItem(getScopedKey(STATUS_OVERRIDES_KEY, workspaceKey), JSON.stringify(value));
   } catch {}
 }
 
-function readOrderOverrides() {
+function readOrderOverrides(workspaceKey: string) {
   if (typeof window === "undefined") return {} as Record<string, string[]>;
   try {
-    const raw = window.localStorage.getItem(ORDER_OVERRIDES_KEY);
+    const raw = window.localStorage.getItem(getScopedKey(ORDER_OVERRIDES_KEY, workspaceKey));
     if (!raw) return {} as Record<string, string[]>;
     const parsed = JSON.parse(raw);
     if (!parsed || typeof parsed !== "object") return {} as Record<string, string[]>;
@@ -66,10 +82,10 @@ function readOrderOverrides() {
   }
 }
 
-function writeOrderOverrides(value: Record<string, string[]>) {
+function writeOrderOverrides(workspaceKey: string, value: Record<string, string[]>) {
   if (typeof window === "undefined") return;
   try {
-    window.localStorage.setItem(ORDER_OVERRIDES_KEY, JSON.stringify(value));
+    window.localStorage.setItem(getScopedKey(ORDER_OVERRIDES_KEY, workspaceKey), JSON.stringify(value));
   } catch {}
 }
 
@@ -182,6 +198,7 @@ async function readBoardLayoutConfig(supabase: ReturnType<typeof createClient>) 
 
 async function persistBoardLayoutConfig(
   supabase: ReturnType<typeof createClient>,
+  workspaceKey: string,
   statusOverrides: Record<string, string>,
   orderOverrides: Record<string, string[]>,
 ) {
@@ -190,14 +207,14 @@ async function persistBoardLayoutConfig(
 
   const nextLayoutConfig: LayoutConfigShape = {
     ...board.layoutConfig,
-    kanbanStatusOverrides: statusOverrides,
-    kanbanOrderOverrides: orderOverrides,
+    [getScopedLayoutKey("kanbanStatusOverrides", workspaceKey)]: statusOverrides,
+    [getScopedLayoutKey("kanbanOrderOverrides", workspaceKey)]: orderOverrides,
   };
 
   await supabase.from("boards").update({ layout_config: nextLayoutConfig }).eq("id", board.id);
 }
 
-function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery }: { tasks: TaskItem[]; showHeader?: boolean; currentQuery?: string }) {
+function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery, workspaceKey = "personal" }: TaskKanbanBoardProps) {
   const supabase = useMemo(() => createClient(), []);
   const serverSignature = useMemo(() => tasks.map((task) => `${task.id}:${task.status}:${task.priority ?? ''}:${task.due_date ?? ''}:${task.title}`).join('|'), [tasks]);
   const [hydrated, setHydrated] = useState(false);
@@ -215,7 +232,7 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery }: { 
 
   useEffect(() => {
     setHydrated(true);
-  }, []);
+  }, [workspaceKey]);
 
   useEffect(() => {
     if (!hydrated) return;
@@ -225,10 +242,10 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery }: { 
       const board = await readBoardLayoutConfig(supabase);
       if (!active || !board) return;
 
-      const dbStatusOverrides = normalizeStatusValue(board.layoutConfig.kanbanStatusOverrides);
-      const dbOrderOverrides = normalizeOrderValue(board.layoutConfig.kanbanOrderOverrides);
-      const localStatusOverrides = readStatusOverrides();
-      const localOrderOverrides = readOrderOverrides();
+      const dbStatusOverrides = normalizeStatusValue(board.layoutConfig[getScopedLayoutKey("kanbanStatusOverrides", workspaceKey)] ?? board.layoutConfig.kanbanStatusOverrides);
+      const dbOrderOverrides = normalizeOrderValue(board.layoutConfig[getScopedLayoutKey("kanbanOrderOverrides", workspaceKey)] ?? board.layoutConfig.kanbanOrderOverrides);
+      const localStatusOverrides = readStatusOverrides(workspaceKey);
+      const localOrderOverrides = readOrderOverrides(workspaceKey);
 
       const mergedStatusOverrides = { ...dbStatusOverrides, ...localStatusOverrides };
       const mergedOrderOverrides = mergeOrderOverrides(dbOrderOverrides, localOrderOverrides);
@@ -236,8 +253,8 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery }: { 
       setStatusOverrides(mergedStatusOverrides);
       setOrderOverrides(mergedOrderOverrides);
       setBoardTasks(applyStatusOverrides(tasks, mergedStatusOverrides));
-      writeStatusOverrides(mergedStatusOverrides);
-      writeOrderOverrides(mergedOrderOverrides);
+      writeStatusOverrides(workspaceKey, mergedStatusOverrides);
+      writeOrderOverrides(workspaceKey, mergedOrderOverrides);
     };
 
     void syncBoardConfig();
@@ -245,7 +262,7 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery }: { 
     return () => {
       active = false;
     };
-  }, [hydrated, serverSignature, supabase, tasks]);
+  }, [hydrated, serverSignature, supabase, tasks, workspaceKey]);
 
   useEffect(() => {
     if (!hydrated || !recentDropColumn) return;
@@ -304,9 +321,9 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery }: { 
   }
 
   const persistLayout = async (nextStatusOverrides: Record<string, string>, nextOrderOverrides: Record<string, string[]>) => {
-    writeStatusOverrides(nextStatusOverrides);
-    writeOrderOverrides(nextOrderOverrides);
-    await persistBoardLayoutConfig(supabase, nextStatusOverrides, nextOrderOverrides);
+    writeStatusOverrides(workspaceKey, nextStatusOverrides);
+    writeOrderOverrides(workspaceKey, nextOrderOverrides);
+    await persistBoardLayoutConfig(supabase, workspaceKey, nextStatusOverrides, nextOrderOverrides);
   };
 
   const moveTask = async (taskId: string, nextStatus: string, beforeTaskId?: string | null) => {
@@ -344,8 +361,8 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery }: { 
       setBoardTasks(previousTasks);
       setStatusOverrides(previousStatusOverrides);
       setOrderOverrides(previousOrderOverrides);
-      writeStatusOverrides(previousStatusOverrides);
-      writeOrderOverrides(previousOrderOverrides);
+      writeStatusOverrides(workspaceKey, previousStatusOverrides);
+      writeOrderOverrides(workspaceKey, previousOrderOverrides);
       setError("No pudimos guardar el movimiento u orden de la tarea. Revisa permisos o intenta de nuevo.");
     }
 
