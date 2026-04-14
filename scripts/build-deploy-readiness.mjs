@@ -3,8 +3,8 @@ import path from "node:path";
 
 const root = process.cwd();
 const failures = [];
-const expectedVersion = "58.10.7-workspace-isolation-live-switch-fix";
-const expectedReleaseLabel = "V58.10.7";
+const expectedVersion = "58.10.8-organization-ui-ux-polish";
+const expectedReleaseLabel = "V58.10.8";
 
 function requireFile(rel) {
   if (!fs.existsSync(path.join(root, rel))) {
@@ -29,8 +29,8 @@ requireFile(".nvmrc");
 requireFile(".env.example");
 requireFile("scripts/runtime-check.mjs");
 requireFile("scripts/validate-env.mjs");
-requireFile("scripts/verify-v58.10.7.mjs");
-requireFile("docs/release/V58_10_7_WORKSPACE_ISOLATION_LIVE_SWITCH_FIX.md");
+requireFile("scripts/verify-v58.10.8.mjs");
+requireFile("docs/release/V58_10_8_ORGANIZATION_UI_UX_POLISH.md");
 requireFile("docs/release/DB_CONTINUITY_SOURCE_OF_TRUTH.md");
 
 const pkg = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
@@ -39,8 +39,8 @@ for (const scriptName of ["build", "vercel:build", "deploy:readiness", "build:pr
   if (!scripts[scriptName]) failures.push(`Missing package script: ${scriptName}`);
 }
 if (pkg.version !== expectedVersion) failures.push(`Unexpected package version: ${pkg.version}`);
-if (scripts["verify:current"] !== "npm run verify:v58.10.7") failures.push("verify:current must target verify:v58.10.7");
-if (scripts["verify:v58.10.7"] !== "node scripts/verify-v58.10.7.mjs") failures.push("verify:v58.10.7 must target scripts/verify-v58.10.7.mjs");
+if (scripts["verify:current"] !== "npm run verify:v58.10.8") failures.push("verify:current must target verify:v58.10.8");
+if (scripts["verify:v58.10.8"] !== "node scripts/verify-v58.10.8.mjs") failures.push("verify:v58.10.8 must target scripts/verify-v58.10.8.mjs");
 
 const vercel = JSON.parse(fs.readFileSync(path.join(root, "vercel.json"), "utf8"));
 if (vercel.framework !== "nextjs") failures.push("vercel.json framework must be nextjs");

@@ -1,13 +1,12 @@
 export const dynamic = 'force-dynamic';
 
-import { OrganizationMetricsPanel } from '@/components/organization/organization-metrics-panel';
 import { OrganizationMembersPanel } from '@/components/organization/organization-members-panel';
 import { OrganizationRolesPanel } from '@/components/organization/organization-roles-panel';
-import { ClientPermissionsPanel } from '@/components/organization/client-permissions-panel';
 import { OrganizationInviteForm } from '@/components/organization/organization-invite-form';
-import { OrganizationInvitesPanel } from '@/components/organization/organization-invites-panel';
 import { OrganizationBootstrapCard } from '@/components/organization/organization-bootstrap-card';
 import { OrganizationPendingInvitesCard } from '@/components/organization/organization-pending-invites-card';
+import { OrganizationIdentityCard } from '@/components/organization/organization-identity-card';
+import { OrganizationAccessTabsPanel } from '@/components/organization/organization-access-tabs-panel';
 import { ActivityTimeline } from '@/components/activity/activity-timeline';
 import { safeServerCall } from '@/lib/runtime/safe-server';
 import { getOrganizationContext, getOrganizationInvites, getOrganizationMetrics, getOrganizationRolesAndPermissions, getPendingOrganizationInvitesForCurrentUser } from '@/lib/queries/organization';
@@ -34,8 +33,10 @@ export default async function OrganizationPage() {
     safeServerCall('getOrganizationBillingSummary', () => getOrganizationBillingSummary(activeId), null),
   ]);
 
+  const featuredMember = members.find((member: (typeof members)[number]) => member.userId === activeOrganization?.ownerId) ?? members[0] ?? null;
+
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       {pendingInvitesForCurrentUser.length ? <OrganizationPendingInvitesCard invites={pendingInvitesForCurrentUser} /> : null}
       {!activeOrganization ? (
         organizations.length ? (
@@ -50,23 +51,33 @@ export default async function OrganizationPage() {
         )
       ) : (
         <>
-          <OrganizationMetricsPanel metrics={metrics} />
+          <OrganizationIdentityCard organization={activeOrganization} member={featuredMember} />
+          {activeId ? <OrganizationInviteForm organizationId={activeId} canInviteManagers={canManageRoles} canManageInvites={canManage} compact /> : null}
           <OrganizationMembersPanel
             activeOrganization={activeOrganization}
             members={members}
+            metrics={metrics}
             canManageRoles={canManageRoles}
             seatsIncluded={billingSummary?.seatsIncluded ?? null}
             seatsUsed={billingSummary?.seatsUsed ?? null}
             pendingInvites={invites.filter((item: OrganizationInviteSummary) => item.status === 'pending').length}
           />
           <OrganizationRolesPanel roles={roles.roleTemplates} permissions={roles.permissionDefinitions} canManageRoles={canManageRoles} />
-          <ClientPermissionsPanel items={context?.clientPermissions ?? []} canManage={Boolean(context?.access?.canManageClientPermissions)} />
-          {activeId ? <OrganizationInviteForm organizationId={activeId} canInviteManagers={canManageRoles} canManageInvites={canManage} /> : null}
-          <OrganizationInvitesPanel organizationId={activeId} invites={invites} canManageInvites={canManage} />
+          <OrganizationAccessTabsPanel
+            organizationId={activeId}
+            clientPermissions={context?.clientPermissions ?? []}
+            invites={invites}
+            canManageClientPermissions={Boolean(context?.access?.canManageClientPermissions)}
+            canManageInvites={canManage}
+          />
           <ActivityTimeline
             items={activity}
             title="Bitácora de seguridad y administración"
             description="Cambios recientes de miembros, invitaciones, permisos y clientes dentro del equipo activo."
+            defaultVisibleCount={1}
+            compact
+            expandLabel="Abrir bitácora"
+            collapseLabel="Cerrar bitácora"
           />
         </>
       )}

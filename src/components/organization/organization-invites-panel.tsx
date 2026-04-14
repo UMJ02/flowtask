@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import type { OrganizationInviteSummary } from '@/types/organization';
 import { formatOrganizationRole } from '@/lib/organization/labels';
 
-export function OrganizationInvitesPanel({ organizationId, invites, canManageInvites = false }: { organizationId?: string | null; invites: OrganizationInviteSummary[]; canManageInvites?: boolean; canInviteManagers?: boolean; }) {
+export function OrganizationInvitesPanel({ organizationId, invites, canManageInvites = false, embedded = false }: { organizationId?: string | null; invites: OrganizationInviteSummary[]; canManageInvites?: boolean; canInviteManagers?: boolean; embedded?: boolean; }) {
   const [items, setItems] = useState(invites);
   const [revokingId, setRevokingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -34,8 +34,8 @@ export function OrganizationInvitesPanel({ organizationId, invites, canManageInv
     }
   }
 
-  return (
-    <Card>
+  const content = (
+    <>
       <div className="flex items-center justify-between gap-3">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Invitaciones</p>
@@ -63,6 +63,8 @@ export function OrganizationInvitesPanel({ organizationId, invites, canManageInv
           </tbody>
         </table>
       </div>
-    </Card>
+    </>
   );
+
+  return embedded ? content : <Card>{content}</Card>;
 }

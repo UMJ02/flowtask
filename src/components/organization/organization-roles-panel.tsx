@@ -1,10 +1,23 @@
-import { Card } from "@/components/ui/card";
-import type { OrganizationRoleTemplateSummary, PermissionDefinitionSummary } from "@/types/organization";
+'use client';
 
-function chunkPermissions(keys: string[], defs: PermissionDefinitionSummary[]) {
+import { useMemo, useState } from 'react';
+import { ChevronRight, Shield, Users2 } from 'lucide-react';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import type { OrganizationRoleTemplateSummary, PermissionDefinitionSummary } from '@/types/organization';
+
+function resolvePermissions(keys: string[], defs: PermissionDefinitionSummary[]) {
   const map = new Map(defs.map((item) => [item.key, item]));
-  return keys.map((key) => map.get(key)?.label ?? key);
+  return keys.map((key) => map.get(key)).filter(Boolean) as PermissionDefinitionSummary[];
 }
+
+const categoryTone: Record<string, string> = {
+  tasks: 'bg-sky-50 text-sky-700 ring-sky-100',
+  projects: 'bg-violet-50 text-violet-700 ring-violet-100',
+  clients: 'bg-amber-50 text-amber-700 ring-amber-100',
+  team: 'bg-emerald-50 text-emerald-700 ring-emerald-100',
+  reports: 'bg-slate-100 text-slate-700 ring-slate-200',
+};
 
 export function OrganizationRolesPanel({
   roles,
@@ -15,41 +28,88 @@ export function OrganizationRolesPanel({
   permissions: PermissionDefinitionSummary[];
   canManageRoles?: boolean;
 }) {
+  const [activeRoleId, setActiveRoleId] = useState<string>(roles[0]?.id ?? '');
+  const activeRole = useMemo(() => roles.find((role) => role.id === activeRoleId) ?? roles[0], [activeRoleId, roles]);
+  const activePermissions = useMemo(() => (activeRole ? resolvePermissions(activeRole.permissions, permissions) : []), [activeRole, permissions]);
+
   return (
-    <Card>
-      <div className="flex items-center justify-between gap-3">
+    <Card className="rounded-[24px] p-4 md:p-5">
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Roles editables</p>
-          <h2 className="mt-1 text-lg font-semibold text-slate-900">Permisos granulares por organización</h2>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">Roles editables</p>
+          <h2 className="mt-1 text-lg font-semibold text-slate-950">Permisos por rol con lectura más ejecutiva</h2>
+          <p className="mt-1 text-sm text-slate-600">Compactamos la matriz para que roles, miembros y capacidades se entiendan más rápido.</p>
         </div>
         {canManageRoles ? (
-          <a href="/app/organization/roles" className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white">
+          <a href="/app/organization/roles" className="inline-flex h-10 items-center justify-center rounded-2xl bg-slate-950 px-4 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(15,23,42,0.14)]">
             Gestionar roles
           </a>
         ) : null}
       </div>
-      {!canManageRoles ? (
-        <p className="mt-4 text-sm text-slate-600">Tu rol actual puede ver el resumen general de la organización, pero no administrar la matriz completa de permisos.</p>
-      ) : null}
-      <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-        {roles.map((role) => (
-          <div key={role.id} className="rounded-2xl border border-slate-200 p-4">
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <p className="font-semibold text-slate-900">{role.name}</p>
-                <p className="text-sm text-slate-500">{role.description || "Sin descripción"}</p>
+
+      <div className="mt-4 grid gap-4 xl:grid-cols-[0.92fr_1.08fr]">
+        <div className="space-y-2">
+          {roles.map((role) => {
+            const isActive = role.id === activeRole?.id;
+            return (
+              <button
+                key={role.id}
+                type="button"
+                onClick={() => setActiveRoleId(role.id)}
+                className={`flex w-full items-center justify-between rounded-[22px] border px-4 py-3 text-left transition-all ${isActive ? 'border-slate-900 bg-slate-950 text-white shadow-[0_14px_28px_rgba(15,23,42,0.16)]' : 'border-slate-200 bg-white hover:border-emerald-200 hover:bg-emerald-50/50'}`}
+              >
+                <div className="min-w-0">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <p className="text-base font-semibold">{role.name}</p>
+                    <span className={`rounded-full px-2.5 py-1 text-[11px] font-semibold ring-1 ${isActive ? 'bg-white/10 text-white ring-white/15' : 'bg-slate-100 text-slate-700 ring-slate-200'}`}>
+                      {role.memberCount} miembros
+                    </span>
+                  </div>
+                  <p className={`mt-1 text-sm ${isActive ? 'text-slate-200' : 'text-slate-500'}`}>{role.description || 'Sin descripción'}</p>
+                </div>
+                <ChevronRight className={`h-4 w-4 shrink-0 ${isActive ? 'text-white' : 'text-slate-400'}`} />
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="rounded-[24px] border border-slate-200/80 bg-slate-50/75 p-4">
+          {activeRole ? (
+            <>
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-700 ring-1 ring-slate-200">
+                      <Users2 className="h-3.5 w-3.5" />
+                      {activeRole.memberCount} miembros
+                    </span>
+                    <span className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-700 ring-1 ring-slate-200">
+                      <Shield className="h-3.5 w-3.5" />
+                      {activeRole.isSystem ? 'Rol del sistema' : 'Rol personalizado'}
+                    </span>
+                  </div>
+                  <h3 className="mt-2 text-xl font-semibold text-slate-950">{activeRole.name}</h3>
+                  <p className="mt-1 text-sm text-slate-600">{activeRole.description || 'Sin descripción adicional.'}</p>
+                </div>
               </div>
-              <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">{role.memberCount} miembros</span>
-            </div>
-            <div className="mt-4 flex flex-wrap gap-2">
-              {chunkPermissions(role.permissions, permissions).slice(0, 5).map((label) => (
-                <span key={label} className="rounded-full bg-sky-50 px-2.5 py-1 text-xs font-medium text-sky-700">{label}</span>
-              ))}
-              {role.permissions.length > 5 ? <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600">+{role.permissions.length - 5} más</span> : null}
-            </div>
-            <p className="mt-4 text-xs text-slate-500">{role.isSystem ? "Rol del sistema" : "Rol personalizado"}</p>
-          </div>
-        ))}
+              <div className="mt-4 grid gap-2 sm:grid-cols-2">
+                {activePermissions.length ? activePermissions.map((permission) => (
+                  <div key={permission.key} className="rounded-2xl border border-white/70 bg-white px-3 py-3 shadow-[0_6px_18px_rgba(15,23,42,0.04)]">
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="text-sm font-semibold text-slate-900">{permission.label}</p>
+                      <span className={`rounded-full px-2.5 py-1 text-[11px] font-semibold ring-1 ${categoryTone[permission.category] ?? categoryTone.reports}`}>
+                        {permission.category}
+                      </span>
+                    </div>
+                    <p className="mt-1 text-sm text-slate-500">{permission.description}</p>
+                  </div>
+                )) : <p className="text-sm text-slate-500">Este rol todavía no tiene permisos configurados.</p>}
+              </div>
+            </>
+          ) : (
+            <p className="text-sm text-slate-500">No hay roles configurados todavía.</p>
+          )}
+        </div>
       </div>
     </Card>
   );

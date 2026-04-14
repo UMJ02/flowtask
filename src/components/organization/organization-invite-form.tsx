@@ -12,7 +12,7 @@ const ROLE_OPTIONS = [
   { value: 'viewer', label: 'Viewer' },
 ] as const;
 
-export function OrganizationInviteForm({ organizationId, canInviteManagers = false, canManageInvites = true }: { organizationId?: string | null; canInviteManagers?: boolean; canManageInvites?: boolean; }) {
+export function OrganizationInviteForm({ organizationId, canInviteManagers = false, canManageInvites = true, compact = false }: { organizationId?: string | null; canInviteManagers?: boolean; canManageInvites?: boolean; compact?: boolean; }) {
   const availableRoles = useMemo(() => ROLE_OPTIONS.filter((option) => canInviteManagers || option.value !== 'manager'), [canInviteManagers]);
   const [email, setEmail] = useState('');
   const [role, setRole] = useState<string>(availableRoles[0]?.value ?? 'member');
@@ -46,13 +46,13 @@ export function OrganizationInviteForm({ organizationId, canInviteManagers = fal
   }
 
   return (
-    <form onSubmit={onSubmit} className="grid gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 md:grid-cols-[1.2fr_0.7fr_auto] md:items-end">
+    <form onSubmit={onSubmit} className={`grid gap-3 rounded-[24px] border border-slate-200 bg-slate-50/85 p-4 md:grid-cols-[1.2fr_0.7fr_auto] md:items-end ${compact ? 'shadow-[0_10px_24px_rgba(15,23,42,0.04)]' : ''}`}>
       <div>
-        <p className="mb-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Invitar miembro</p>
+        <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">Invitar miembro</p>
         <Input type="email" placeholder="correo@empresa.com" value={email} onChange={(event) => setEmail(event.target.value)} disabled={!organizationId || !canManageInvites || loading} />
       </div>
       <div>
-        <p className="mb-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Rol</p>
+        <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">Rol</p>
         <Select value={role} onChange={(event) => setRole(event.target.value)} disabled={!organizationId || !canManageInvites || loading}>
           {availableRoles.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
         </Select>
