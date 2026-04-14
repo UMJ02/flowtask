@@ -25,10 +25,10 @@ const ROLE_OPTIONS = [
 ] as const;
 
 const metricTones = {
-  admins: 'from-slate-950 to-slate-900 text-white',
-  managers: 'from-emerald-600 to-emerald-500 text-white',
-  pending: 'from-slate-100 to-slate-50 text-slate-950 ring-1 ring-slate-200',
-  capacity: 'from-emerald-50 to-teal-50 text-emerald-900 ring-1 ring-emerald-100',
+  admins: 'border border-slate-200 bg-slate-950 text-white',
+  managers: 'border border-emerald-100 bg-emerald-50 text-emerald-950',
+  pending: 'border border-amber-100 bg-amber-50 text-amber-950',
+  capacity: 'border border-sky-100 bg-sky-50 text-sky-950',
 } as const;
 
 function roleHelper(role: OrganizationMemberItem['role']) {
@@ -37,7 +37,7 @@ function roleHelper(role: OrganizationMemberItem['role']) {
 
 function StatCard({ title, value, helper, tone }: { title: string; value: number | string; helper: string; tone: string }) {
   return (
-    <div className={`rounded-[22px] bg-gradient-to-br px-4 py-4 shadow-[0_12px_24px_rgba(15,23,42,0.08)] ${tone}`}>
+    <div className={`rounded-[20px] px-4 py-4 shadow-[0_8px_20px_rgba(15,23,42,0.04)] ${tone}`}>
       <p className="text-[11px] font-semibold uppercase tracking-[0.22em] opacity-80">{title}</p>
       <p className="mt-2 text-3xl font-bold leading-none">{value}</p>
       <p className="mt-2 text-sm opacity-85">{helper}</p>
@@ -47,7 +47,7 @@ function StatCard({ title, value, helper, tone }: { title: string; value: number
 
 function Row({ label, value }: { label: string; value: number }) {
   return (
-    <div className="flex items-center justify-between gap-3 rounded-2xl border border-slate-200/80 bg-white/80 px-3 py-2.5 text-sm text-slate-600">
+    <div className="flex items-center justify-between gap-3 rounded-2xl border border-slate-200/80 bg-white px-3 py-2.5 text-sm text-slate-600">
       <span>{label}</span>
       <strong className="text-slate-950">{value}</strong>
     </div>
@@ -119,30 +119,30 @@ export function OrganizationMembersPanel({
     <Card className="rounded-[26px] p-4 md:p-5">
       <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">Resumen del workspace</p>
-          <h2 className="mt-1 text-xl font-semibold text-slate-950">Panorama del equipo y capacidad del espacio</h2>
-          <p className="mt-1 text-sm text-slate-600">Una lectura rápida para entender cómo va el equipo y administrar accesos sin salir de esta vista.</p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">Equipo y capacidad</p>
+          <h2 className="mt-1 text-xl font-semibold text-slate-950">Tu organización en una sola vista</h2>
+          <p className="mt-1 text-sm text-slate-600">Consulta cómo va el equipo, revisa cupos y ajusta roles sin moverte de aquí.</p>
         </div>
         <Button type="button" variant="secondary" className="h-10 rounded-2xl px-4" onClick={() => setTeamExpanded((value) => !value)}>
           {teamExpanded ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
-          {teamExpanded ? 'Cerrar equipo' : 'Abrir equipo'}
+          {teamExpanded ? 'Ocultar detalle del equipo' : 'Mostrar detalle del equipo'}
         </Button>
       </div>
 
-      <div className="mt-4 overflow-hidden rounded-[24px] border border-slate-200/80 bg-slate-50/70">
+      <div className="mt-4 overflow-hidden rounded-[24px] border border-slate-200/80 bg-slate-50/65">
         <div className={`grid transition-[grid-template-columns] duration-300 ease-out xl:min-h-[540px] ${teamExpanded ? 'xl:grid-cols-[1.02fr_1.15fr]' : 'xl:grid-cols-[1fr_0fr]'}`}>
           <div className="min-w-0 border-b border-slate-200/80 p-4 xl:border-b-0 xl:border-r">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">Dashboard por organización</p>
-            <h3 className="mt-1 text-lg font-semibold text-slate-950">Cómo va tu organización hoy</h3>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">Panel del workspace</p>
+            <h3 className="mt-1 text-lg font-semibold text-slate-950">Lo importante del espacio hoy</h3>
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
-              <StatCard title="Miembros" value={String(metrics?.members ?? items.length ?? 0)} helper="Personas activas dentro del espacio" tone={metricTones.admins} />
-              <StatCard title="Clientes" value={String(metrics?.clients ?? 0)} helper="Clientes vinculados al equipo" tone={metricTones.managers} />
+              <StatCard title="Miembros" value={String(metrics?.members ?? items.length ?? 0)} helper="Personas activas en este equipo" tone={metricTones.admins} />
+              <StatCard title="Clientes" value={String(metrics?.clients ?? 0)} helper="Clientes gestionados por la organización" tone={metricTones.managers} />
               <StatCard title="Proyectos activos" value={String(metrics?.activeProjects ?? 0)} helper="Proyectos que siguen en marcha" tone={metricTones.capacity} />
-              <StatCard title="Tareas abiertas" value={String(metrics?.openTasks ?? 0)} helper="Tareas activas por atender" tone={metricTones.pending} />
+              <StatCard title="Tareas abiertas" value={String(metrics?.openTasks ?? 0)} helper="Trabajo pendiente dentro del espacio" tone={metricTones.pending} />
             </div>
             <div className="mt-4 grid gap-3 lg:grid-cols-2">
-              <div className="rounded-[22px] border border-slate-200/80 bg-white/85 p-3.5">
-                <p className="text-sm font-semibold text-slate-950">Roles del equipo</p>
+              <div className="rounded-[22px] border border-slate-200/80 bg-white/90 p-3.5">
+                <p className="text-sm font-semibold text-slate-950">Distribución de roles</p>
                 <div className="mt-3 space-y-2">
                   <Row label="Admins globales" value={metrics?.roleBreakdown.admin_global ?? counters.admin_global} />
                   <Row label="Managers" value={metrics?.roleBreakdown.manager ?? counters.manager} />
@@ -150,8 +150,8 @@ export function OrganizationMembersPanel({
                   <Row label="Viewers" value={metrics?.roleBreakdown.viewer ?? counters.viewer} />
                 </div>
               </div>
-              <div className="rounded-[22px] border border-slate-200/80 bg-white/85 p-3.5">
-                <p className="text-sm font-semibold text-slate-950">Acceso y cobertura</p>
+              <div className="rounded-[22px] border border-slate-200/80 bg-white/90 p-3.5">
+                <p className="text-sm font-semibold text-slate-950">Cobertura operativa</p>
                 <div className="mt-3 space-y-2">
                   <Row label="Clientes editables" value={metrics?.editableClients ?? 0} />
                   <Row label="Con gestión de miembros" value={metrics?.memberManagedClients ?? 0} />
@@ -166,31 +166,31 @@ export function OrganizationMembersPanel({
             <div className="p-4">
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">Equipo de organización</p>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">Detalle del equipo</p>
                   <h3 className="mt-1 text-lg font-semibold text-slate-950">Personas, cupos y roles</h3>
                 </div>
                 {nearCapacity ? (
                   <span className="inline-flex items-center gap-2 rounded-full bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-700 ring-1 ring-amber-100">
                     <AlertTriangle className="h-3.5 w-3.5" />
-                    Límite cercano del plan
+                    Te estás acercando al límite del plan
                   </span>
                 ) : null}
               </div>
 
               <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-                <StatCard title="Admins" value={counters.admin_global} helper="Administran configuración y acceso" tone={metricTones.admins} />
-                <StatCard title="Managers" value={counters.manager} helper="Acompañan seguimiento y ejecución" tone={metricTones.managers} />
-                <StatCard title="Pendientes" value={pendingInvites} helper="Invitaciones pendientes de ingreso" tone={metricTones.pending} />
+                <StatCard title="Admins" value={counters.admin_global} helper="Controlan el espacio y sus accesos" tone={metricTones.admins} />
+                <StatCard title="Managers" value={counters.manager} helper="Coordinan el trabajo del equipo" tone={metricTones.managers} />
+                <StatCard title="Pendientes" value={pendingInvites} helper="Aún no aceptan la invitación" tone={metricTones.pending} />
                 <StatCard title="Capacidad" value={seatsIncluded !== null && seatsUsed !== null ? `${Math.max(seatsUsed, items.length)}/${seatsIncluded}` : items.length} helper={seatsIncluded !== null && seatsUsed !== null ? `${seatsFree ?? 0} cupos disponibles` : 'Sin capacidad registrada'} tone={metricTones.capacity} />
               </div>
 
-              {status ? <div className="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">{status}</div> : null}
-              {error ? <div className="mt-4 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">{error}</div> : null}
+              {status ? <p className="mt-3 text-sm text-emerald-700">{status}</p> : null}
+              {error ? <p className="mt-3 text-sm text-rose-700">{error}</p> : null}
 
-              <div className="mt-4 space-y-2.5">
+              <div className="mt-4 space-y-3">
                 {items.length ? items.map((member) => {
                   const isOwner = ownerId === member.userId;
-                  const roleLabel = isOwner ? 'Owner' : formatOrganizationRole(member.role);
+                  const roleLabel = formatOrganizationRole(member.role);
                   const canEditThisMember = canManageRoles && !isOwner;
 
                   return (

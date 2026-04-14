@@ -1,23 +1,22 @@
-# FlowTask — V58.10.9 Organization Management UI Refine
+# FlowTask — V58.11 Workspace Polish and Invite Flow Fix
 
-Base completa y actualizada para continuidad sobre **V58.10.8**, enfocada en pulido visual del módulo organización y gestión administrativa del workspace.
+Base completa y actualizada para continuidad sobre **V58.10.9**, enfocada en pulido del dashboard/organización, disclosure más limpio y corrección del flujo de invitaciones.
 
-## Qué cambia en la V58.10.9
-- versión y metadata alineadas a `V58.10.9`
-- nuevo `scripts/verify-v58.10.9.mjs`
-- nuevo release doc `docs/release/V58_10_9_ORGANIZATION_MANAGEMENT_UI_REFINE.md`
-- header de organización más limpio y alineado al resto de la app
-- textos más humanos y orientados a experiencia de uso
-- paleta corregida a tonos coherentes con FlowTask
-- permisos e invitaciones con lectura desplegable
-- bitácora desplegable con flecha
-- nuevo bloque administrativo para editar nombre, salir o eliminar organización
+## Qué cambia en la V58.11
+- versión y metadata alineadas a `V58.11`
+- nuevo `scripts/verify-v58.11.mjs`
+- nuevo release doc `docs/release/V58_11_WORKSPACE_POLISH_AND_INVITE_FLOW_FIX.md`
+- se retira el card de inicio rápido del dashboard
+- permisos del cliente e invitaciones quedan contraídos por defecto y se abren bajo acción del usuario
+- bitácora mantiene apertura manual con estética más limpia
+- paleta y copy del módulo organización más sobrios y alineados con FlowTask
+- envío de invitaciones con manejo idempotente cuando ya existe una invitación pendiente
 
-## Validación esperada
-- `npm run verify:v58.10.9`
+## Validación sugerida
+- `npm run verify:v58.11`
 - `npm run typecheck`
 - `npm run deploy:readiness`
 - `npm run build:preflight`
 
 ## Continuidad
-Usa esta **V58.10.9** como base oficial para seguir puliendo la experiencia de organización. La app continúa sobre el proyecto actual y la base de datos sigue regida por la cadena real de migraciones dentro de `supabase/migrations`.
+Usa esta **V58.11** como base oficial para seguir puliendo la experiencia de organización. La app continúa sobre el proyecto actual y la base de datos sigue regida por la cadena real de migraciones dentro de `supabase/migrations`.

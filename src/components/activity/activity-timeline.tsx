@@ -24,10 +24,10 @@ const labels: Record<string, string> = {
   client_created: "Cliente creado",
   client_updated: "Cliente actualizado",
   client_deleted: "Cliente eliminado",
-  organization_member_created: "Miembro agregado a la organización",
-  organization_member_updated: "Rol de organización actualizado",
-  organization_member_deleted: "Miembro removido de la organización",
-  organization_invite_created: "Invitación creada",
+  organization_member_created: "Nueva persona en el workspace",
+  organization_member_updated: "Rol de equipo actualizado",
+  organization_member_deleted: "Persona removida del workspace",
+  organization_invite_created: "Invitación enviada",
   organization_invite_revoked: "Invitación revocada",
   client_permission_created: "Permiso de cliente creado",
   client_permission_updated: "Permiso de cliente actualizado",
@@ -39,14 +39,14 @@ const labels: Record<string, string> = {
 };
 
 const entityStyles: Record<string, string> = {
-  task: "bg-blue-50 text-blue-700 ring-blue-100",
-  task_assignee: "bg-blue-50 text-blue-700 ring-blue-100",
-  project: "bg-violet-50 text-violet-700 ring-violet-100",
-  project_member: "bg-violet-50 text-violet-700 ring-violet-100",
-  client: "bg-amber-50 text-amber-700 ring-amber-100",
-  client_permission: "bg-amber-50 text-amber-700 ring-amber-100",
-  organization_member: "bg-emerald-50 text-emerald-700 ring-emerald-100",
-  organization_invite: "bg-emerald-50 text-emerald-700 ring-emerald-100",
+  task: "bg-slate-100 text-slate-700 ring-slate-200",
+  task_assignee: "bg-slate-100 text-slate-700 ring-slate-200",
+  project: "bg-slate-100 text-slate-700 ring-slate-200",
+  project_member: "bg-slate-100 text-slate-700 ring-slate-200",
+  client: "bg-emerald-50 text-emerald-700 ring-emerald-100",
+  client_permission: "bg-emerald-50 text-emerald-700 ring-emerald-100",
+  organization_member: "bg-sky-50 text-sky-700 ring-sky-100",
+  organization_invite: "bg-sky-50 text-sky-700 ring-sky-100",
   attachment: "bg-slate-100 text-slate-700 ring-slate-200",
   comment: "bg-amber-50 text-amber-700 ring-amber-100",
   reminder: "bg-emerald-50 text-emerald-700 ring-emerald-100",
@@ -122,10 +122,10 @@ export function ActivityTimeline({
   }, [defaultVisibleCount, expanded, items, shouldClamp]);
 
   return (
-    <Card className={compact ? "rounded-[24px] border border-slate-200 bg-white/[0.94] p-4 shadow-[0_10px_30px_rgba(15,23,42,0.04)]" : undefined}>
-      <button type="button" onClick={() => setOpen((value) => !value)} className="flex w-full items-center justify-between gap-3 text-left">
+    <Card className={compact ? "rounded-[24px] border border-slate-200 bg-white/[0.96] p-4 shadow-[0_10px_26px_rgba(15,23,42,0.04)]" : undefined}>
+      <button type="button" onClick={() => setOpen((value) => !value)} className="flex w-full items-center justify-between gap-3 rounded-2xl bg-slate-50/80 px-3 py-3 text-left transition hover:bg-slate-100">
         <div>
-          <h3 className="text-lg font-semibold text-slate-900">{title}</h3>
+          <h3 className="text-base font-semibold text-slate-900">{title}</h3>
           <p className="text-sm text-slate-500">{description}</p>
         </div>
         <ChevronDown className={`h-4 w-4 text-slate-500 transition ${open ? 'rotate-180' : ''}`} />
@@ -137,7 +137,7 @@ export function ActivityTimeline({
               visibleItems.map((item) => {
                 const detail = extractDetail(item);
                 return (
-                  <div key={item.id} className={compact ? "rounded-xl border border-slate-200 bg-slate-50/80 px-3 py-2.5" : "rounded-2xl border border-slate-200 bg-white px-4 py-3"}>
+                  <div key={item.id} className={compact ? "rounded-xl border border-slate-200 bg-slate-50/65 px-3 py-2.5" : "rounded-2xl border border-slate-200 bg-white px-4 py-3"}>
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <div className="flex flex-wrap items-center gap-2">
                         <span className={`inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold ring-1 ${resolveEntityStyle(item)}`}>

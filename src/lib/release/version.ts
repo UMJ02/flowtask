@@ -1,3 +1,3 @@
-export const APP_VERSION = "58.10.9-organization-management-ui-refine";
-export const APP_RELEASE_NAME = "v58.10.9 Organization Management UI Refine";
-export const APP_RELEASE_STAGE = "organization-management-ui-refine";
+export const APP_VERSION = "58.11-workspace-polish-and-invite-flow-fix";
+export const APP_RELEASE_NAME = "v58.11 Workspace Polish and Invite Flow Fix";
+export const APP_RELEASE_STAGE = "workspace-polish-and-invite-flow-fix";

@@ -18,14 +18,14 @@ export function formatOrganizationRole(role?: OrganizationRole | string | null) 
 export function describeOrganizationRole(role?: OrganizationRole | string | null) {
   switch (role) {
     case "admin_global":
-      return "Control total del workspace, sus miembros y la configuración crítica.";
+      return "Cuida la configuración sensible y define el rumbo del equipo.";
     case "manager":
-      return "Coordina clientes, proyectos, tareas e invitaciones operativas.";
+      return "Coordina el trabajo diario, los accesos operativos y el seguimiento.";
     case "member":
-      return "Trabaja dentro del workspace y ejecuta la operación diaria.";
+      return "Participa en la operación y avanza el trabajo del día a día.";
     case "viewer":
-      return "Acceso de lectura para seguimiento y validación.";
+      return "Sigue lo que ocurre sin intervenir en la operación.";
     default:
-      return "Aún no tienes una organización activa asignada.";
+      return "Todavía no tienes una organización activa seleccionada.";
   }
 }

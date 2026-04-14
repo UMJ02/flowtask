@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { MailPlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,6 +14,7 @@ const ROLE_OPTIONS = [
 ] as const;
 
 export function OrganizationInviteForm({ organizationId, canInviteManagers = false, canManageInvites = true, compact = false }: { organizationId?: string | null; canInviteManagers?: boolean; canManageInvites?: boolean; compact?: boolean; }) {
+  const router = useRouter();
   const availableRoles = useMemo(() => ROLE_OPTIONS.filter((option) => canInviteManagers || option.value !== 'manager'), [canInviteManagers]);
   const [email, setEmail] = useState('');
   const [role, setRole] = useState<string>(availableRoles[0]?.value ?? 'member');
@@ -38,6 +40,7 @@ export function OrganizationInviteForm({ organizationId, canInviteManagers = fal
       setStatus(payload?.message || 'Invitación creada correctamente.');
       setEmail('');
       setRole(availableRoles[0]?.value ?? 'member');
+      router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'No fue posible crear la invitación.');
     } finally {

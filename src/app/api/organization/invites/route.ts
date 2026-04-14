@@ -58,7 +58,7 @@ export async function POST(request: Request) {
       .maybeSingle();
 
     if (existingMembership?.id) {
-      return NextResponse.json({ error: 'Ese usuario ya forma parte del workspace.' }, { status: 409 });
+      return NextResponse.json({ error: 'Ese correo ya forma parte de esta organización.' }, { status: 409 });
     }
   }
 
@@ -71,7 +71,7 @@ export async function POST(request: Request) {
     .maybeSingle();
 
   if (existingInvite?.id) {
-    return NextResponse.json({ error: 'Ya existe una invitación pendiente para ese correo.' }, { status: 409 });
+    return NextResponse.json({ ok: true, existing: true, message: 'Ese correo ya tenía una invitación pendiente. La dejamos activa para que pueda aceptarla.' });
   }
 
   const billing = await getOrganizationBillingSummary(organizationId);

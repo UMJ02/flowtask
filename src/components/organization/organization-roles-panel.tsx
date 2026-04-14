@@ -3,7 +3,6 @@
 import { useMemo, useState } from 'react';
 import { ChevronRight, Shield, Users2 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import type { OrganizationRoleTemplateSummary, PermissionDefinitionSummary } from '@/types/organization';
 
 function resolvePermissions(keys: string[], defs: PermissionDefinitionSummary[]) {
@@ -12,11 +11,11 @@ function resolvePermissions(keys: string[], defs: PermissionDefinitionSummary[])
 }
 
 const categoryTone: Record<string, string> = {
-  tasks: 'bg-sky-50 text-sky-700 ring-sky-100',
-  projects: 'bg-violet-50 text-violet-700 ring-violet-100',
-  clients: 'bg-amber-50 text-amber-700 ring-amber-100',
-  team: 'bg-emerald-50 text-emerald-700 ring-emerald-100',
-  reports: 'bg-slate-100 text-slate-700 ring-slate-200',
+  tasks: 'bg-slate-100 text-slate-700 ring-slate-200',
+  projects: 'bg-slate-100 text-slate-700 ring-slate-200',
+  clients: 'bg-emerald-50 text-emerald-700 ring-emerald-100',
+  team: 'bg-sky-50 text-sky-700 ring-sky-100',
+  reports: 'bg-amber-50 text-amber-700 ring-amber-100',
 };
 
 export function OrganizationRolesPanel({
@@ -37,8 +36,8 @@ export function OrganizationRolesPanel({
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">Roles del equipo</p>
-          <h2 className="mt-1 text-lg font-semibold text-slate-950">Qué puede hacer cada rol</h2>
-          <p className="mt-1 text-sm text-slate-600">Consulta de forma simple qué margen tiene cada persona dentro del equipo.</p>
+          <h2 className="mt-1 text-lg font-semibold text-slate-950">Qué puede hacer cada perfil</h2>
+          <p className="mt-1 text-sm text-slate-600">Una lectura simple para entender permisos sin navegar entre varias pantallas.</p>
         </div>
         {canManageRoles ? (
           <a href="/app/organization/roles" className="inline-flex h-10 items-center justify-center rounded-2xl bg-slate-950 px-4 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(15,23,42,0.14)]">
@@ -56,7 +55,7 @@ export function OrganizationRolesPanel({
                 key={role.id}
                 type="button"
                 onClick={() => setActiveRoleId(role.id)}
-                className={`flex w-full items-center justify-between rounded-[22px] border px-4 py-3 text-left transition-all ${isActive ? 'border-slate-900 bg-slate-950 text-white shadow-[0_14px_28px_rgba(15,23,42,0.16)]' : 'border-slate-200 bg-white hover:border-emerald-200 hover:bg-emerald-50/50'}`}
+                className={`flex w-full items-center justify-between rounded-[20px] border px-4 py-3 text-left transition-all ${isActive ? 'border-slate-300 bg-slate-950 text-white shadow-[0_12px_24px_rgba(15,23,42,0.12)]' : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50'}`}
               >
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
@@ -73,7 +72,7 @@ export function OrganizationRolesPanel({
           })}
         </div>
 
-        <div className="rounded-[24px] border border-slate-200/80 bg-slate-50/75 p-4">
+        <div className="rounded-[22px] border border-slate-200 bg-slate-50/75 p-4">
           {activeRole ? (
             <>
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -85,7 +84,7 @@ export function OrganizationRolesPanel({
                     </span>
                     <span className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-700 ring-1 ring-slate-200">
                       <Shield className="h-3.5 w-3.5" />
-                      {activeRole.isSystem ? 'Rol del sistema' : 'Rol personalizado'}
+                      {activeRole.isSystem ? 'Rol base del sistema' : 'Rol personalizado'}
                     </span>
                   </div>
                   <h3 className="mt-2 text-xl font-semibold text-slate-950">{activeRole.name}</h3>
