@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { AlertTriangle, ArrowRight, BriefcaseBusiness, CalendarClock, CircleDashed, Sparkles } from 'lucide-react';
 import { Card } from '@/components/ui/card';
+import { WorkspaceFloatingActions } from '@/components/workspace/floating-actions';
 import { asRoute, projectListRoute, taskListRoute } from '@/lib/navigation/routes';
 import type { AppRoute } from '@/lib/navigation/routes';
 
@@ -143,11 +144,12 @@ export function DashboardHero({
               Abrir pizarra
               <ArrowRight className="h-4 w-4" />
             </Link>
+            <WorkspaceFloatingActions />
             <Link
-              href={taskListRoute('view=list')}
+              href={asRoute('/app/planning')}
               className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:-translate-y-0.5 hover:border-emerald-200 hover:text-emerald-700"
             >
-              Ver tareas
+              Revisar planificación
             </Link>
           </div>
         </div>

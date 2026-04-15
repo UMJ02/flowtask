@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -11,7 +11,6 @@ import { PROJECT_STATUSES } from "@/lib/constants/project-status";
 import { projectDetailRoute, projectListRoute, type AppRoute } from "@/lib/navigation/routes";
 import { generateShareToken } from "@/lib/utils/tokens";
 import { projectSchema } from "@/lib/validations/project";
-import { getDepartmentIdByCode } from "@/lib/queries/departments";
 import { logActivity } from "@/lib/activity/log-client";
 import { trackEvent } from "@/lib/telemetry/track-event";
 import { Button } from "@/components/ui/button";
@@ -50,6 +49,8 @@ export function ProjectForm({
     handleSubmit,
     formState: { isSubmitting, errors },
     reset,
+    setValue,
+    watch,
   } = useForm<ProjectValues>({
     resolver: zodResolver(projectSchema),
     defaultValues: {
@@ -64,6 +65,42 @@ export function ProjectForm({
     },
   });
 
+
+
+
+  const resetValues = useMemo(() => ({
+    title: initialData?.title ?? "",
+    description: initialData?.description ?? "",
+    status: initialData?.status ?? "activo",
+    department: initialData?.department ?? "",
+    clientName: initialData?.clientName ?? "",
+    dueDate: initialData?.dueDate ?? "",
+    isCollaborative: initialData?.isCollaborative ?? false,
+    country: initialData?.country ?? "",
+  }), [initialData]);
+
+  const watchedDepartment = watch("department");
+  const watchedCountry = watch("country");
+
+  useEffect(() => {
+    reset(resetValues);
+  }, [reset, resetValues]);
+
+  useEffect(() => {
+    if (!departmentOptions.length || !watchedDepartment) return;
+    const match = departmentOptions.find((item) => item.code === watchedDepartment || item.name === watchedDepartment);
+    if (match && match.code !== watchedDepartment) {
+      setValue("department", match.code, { shouldDirty: false, shouldTouch: false, shouldValidate: false });
+    }
+  }, [departmentOptions, setValue, watchedDepartment]);
+
+  useEffect(() => {
+    if (!countryOptions.length || !watchedCountry) return;
+    const match = countryOptions.find((item) => item.code === watchedCountry || item.name === watchedCountry);
+    if (match && match.code !== watchedCountry) {
+      setValue("country", match.code, { shouldDirty: false, shouldTouch: false, shouldValidate: false });
+    }
+  }, [countryOptions, setValue, watchedCountry]);
 
   useEffect(() => {
     let active = true;
@@ -97,15 +134,15 @@ export function ProjectForm({
       return;
     }
 
-    let departmentId: number | null = null;
-    try {
-      departmentId = await getDepartmentIdByCode(values.department);
-    } catch (error) {
-      setServerError(error instanceof Error ? error.message : "No fue posible cargar el departamento.");
+    const selectedDepartment = departmentOptions.find((item) => item.code === values.department || item.name === values.department) ?? null;
+    const departmentId = selectedDepartment ? Number(selectedDepartment.id) : null;
+    if (selectedDepartment && Number.isNaN(departmentId)) {
+      setServerError("No fue posible resolver el departamento seleccionado dentro de este workspace.");
       setMessage(null);
       return;
     }
 
+    const selectedCountry = countryOptions.find((item) => item.code === values.country || item.name === values.country) ?? null;
     const clientName = values.clientName?.trim() || null;
     const clientId = await findWorkspaceClientId(supabase, user.id, workspace.activeOrganizationId, clientName);
     const access = await getClientAccessSummary(supabase as any, user.id, workspace.activeOrganizationId);
@@ -128,7 +165,7 @@ export function ProjectForm({
       due_date: values.dueDate || null,
       is_collaborative: values.isCollaborative,
       share_enabled: values.isCollaborative,
-      country: values.country || null,
+      country: (selectedCountry?.name ?? values.country) || null,
     };
 
     let createdProjectId: string | null = null;
@@ -273,7 +310,7 @@ export function ProjectForm({
           <Select {...register("country")}>
             <option value="">Seleccionar país</option>
             {countryOptions.map((item) => (
-              <option key={item.id} value={item.name}>
+              <option key={item.id} value={item.code}>
                 {item.name}
               </option>
             ))}
@@ -298,18 +335,7 @@ export function ProjectForm({
           type="button"
           variant="secondary"
           disabled={isBusy}
-          onClick={() =>
-            reset({
-              title: initialData?.title ?? "",
-              description: initialData?.description ?? "",
-              status: initialData?.status ?? "activo",
-              department: initialData?.department ?? "",
-              clientName: initialData?.clientName ?? "",
-              dueDate: initialData?.dueDate ?? "",
-              isCollaborative: initialData?.isCollaborative ?? false,
-              country: initialData?.country ?? "",
-            })
-          }
+onClick={() => reset(resetValues)}
         >
           Restablecer
         </Button>

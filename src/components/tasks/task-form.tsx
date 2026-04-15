@@ -12,7 +12,6 @@ import { TASK_STATUSES } from "@/lib/constants/task-status";
 import { TASK_PRIORITIES } from "@/lib/constants/task-priority";
 import { taskDetailRoute, taskListRoute, type AppRoute } from "@/lib/navigation/routes";
 import { taskSchema } from "@/lib/validations/task";
-import { getDepartmentIdByCode } from "@/lib/queries/departments";
 import { logActivity } from "@/lib/activity/log-client";
 import { trackEvent } from "@/lib/telemetry/track-event";
 import { Button } from "@/components/ui/button";
@@ -54,6 +53,8 @@ export function TaskForm({
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
+    setValue,
+    watch,
   } = useForm<TaskValues>({
     resolver: zodResolver(taskSchema),
     defaultValues: {
@@ -83,6 +84,33 @@ export function TaskForm({
     }),
     [initialData],
   );
+
+
+
+  const watchedDepartment = watch("department");
+  const watchedCountry = watch("country");
+
+  useEffect(() => {
+    reset(resetValues);
+  }, [reset, resetValues]);
+
+  useEffect(() => {
+    if (!departmentOptions.length) return;
+    if (!watchedDepartment) return;
+    const match = departmentOptions.find((item) => item.code === watchedDepartment || item.name === watchedDepartment);
+    if (match && match.code !== watchedDepartment) {
+      setValue("department", match.code, { shouldDirty: false, shouldTouch: false, shouldValidate: false });
+    }
+  }, [departmentOptions, setValue, watchedDepartment]);
+
+  useEffect(() => {
+    if (!countryOptions.length) return;
+    if (!watchedCountry) return;
+    const match = countryOptions.find((item) => item.code === watchedCountry || item.name === watchedCountry);
+    if (match && match.code !== watchedCountry) {
+      setValue("country", match.code, { shouldDirty: false, shouldTouch: false, shouldValidate: false });
+    }
+  }, [countryOptions, setValue, watchedCountry]);
 
   useEffect(() => {
     let active = true;
@@ -132,15 +160,15 @@ export function TaskForm({
       return;
     }
 
-    let departmentId: number | null = null;
-    try {
-      departmentId = await getDepartmentIdByCode(values.department);
-    } catch (error) {
-      setServerError(error instanceof Error ? error.message : "No fue posible cargar el departamento.");
+    const selectedDepartment = departmentOptions.find((item) => item.code === values.department || item.name === values.department) ?? null;
+    const departmentId = selectedDepartment ? Number(selectedDepartment.id) : null;
+    if (selectedDepartment && Number.isNaN(departmentId)) {
+      setServerError("No fue posible resolver el departamento seleccionado dentro de este workspace.");
       setMessage(null);
       return;
     }
 
+    const selectedCountry = countryOptions.find((item) => item.code === values.country || item.name === values.country) ?? null;
     const clientName = values.clientName?.trim() || null;
     const clientId = await findWorkspaceClientId(supabase, user.id, workspace.activeOrganizationId, clientName);
     const access = await getClientAccessSummary(supabase as any, user.id, workspace.activeOrganizationId);
@@ -188,7 +216,7 @@ export function TaskForm({
       client_id: integrity.resolvedClientId,
       due_date: values.dueDate || null,
       project_id: values.projectId || null,
-      country: values.country || null,
+      country: (selectedCountry?.name ?? values.country) || null,
     };
 
     const result = isEdit
@@ -332,7 +360,7 @@ export function TaskForm({
           <Select {...register("country")}>
             <option value="">Seleccionar país</option>
             {countryOptions.map((item) => (
-              <option key={item.id} value={item.name}>
+              <option key={item.id} value={item.code}>
                 {item.name}
               </option>
             ))}
