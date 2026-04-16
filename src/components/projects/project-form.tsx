@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { getClientWorkspaceContext, findWorkspaceClientId, fetchWorkspaceClientsDirectory, fetchWorkspaceCountries, fetchWorkspaceDepartments } from "@/lib/supabase/workspace-client";
 import { getClientAccessSummary, hasClientAccess } from "@/lib/security/client-access";
@@ -48,8 +48,10 @@ export function ProjectForm({
   const {
     register,
     handleSubmit,
+    control,
     formState: { isSubmitting, errors },
     reset,
+    setValue,
   } = useForm<ProjectValues>({
     resolver: zodResolver(projectSchema),
     defaultValues: {
@@ -63,6 +65,30 @@ export function ProjectForm({
       country: initialData?.country ?? "",
     },
   });
+
+
+  const watchedDepartment = useWatch({ control, name: "department" });
+  const watchedCountry = useWatch({ control, name: "country" });
+
+  function normalizeDepartmentValue(value?: string | null, options: Array<{ id: string; code: string; name: string }> = []) {
+    const normalized = value?.trim();
+    if (!normalized) return "";
+    const direct = options.find((item) => item.code === normalized);
+    if (direct) return direct.code;
+    const byName = options.find((item) => item.name.toLowerCase() === normalized.toLowerCase());
+    return byName?.code ?? normalized;
+  }
+
+  function normalizeCountryValue(value?: string | null, options: Array<{ id: string; code: string; name: string }> = []) {
+    const normalized = value?.trim();
+    if (!normalized) return "";
+    const directName = options.find((item) => item.name === normalized);
+    if (directName) return directName.name;
+    const directCode = options.find((item) => item.code === normalized);
+    if (directCode) return directCode.name;
+    const byName = options.find((item) => item.name.toLowerCase() === normalized.toLowerCase());
+    return byName?.name ?? normalized;
+  }
 
 
   useEffect(() => {
@@ -83,6 +109,21 @@ export function ProjectForm({
     void loadRegistryOptions();
     return () => { active = false; };
   }, []);
+
+
+  useEffect(() => {
+    if (!departmentOptions.length && !countryOptions.length) return;
+    const normalizedDepartment = normalizeDepartmentValue(initialData?.department, departmentOptions);
+    const normalizedCountry = normalizeCountryValue(initialData?.country, countryOptions);
+
+    if (normalizedDepartment && watchedDepartment !== normalizedDepartment) {
+      setValue("department", normalizedDepartment, { shouldDirty: false, shouldTouch: false });
+    }
+
+    if (normalizedCountry && watchedCountry !== normalizedCountry) {
+      setValue("country", normalizedCountry, { shouldDirty: false, shouldTouch: false });
+    }
+  }, [initialData?.department, initialData?.country, departmentOptions, countryOptions, setValue, watchedDepartment, watchedCountry]);
 
   const onSubmit = async (values: ProjectValues) => {
     setMessage(isEdit ? "Guardando cambios…" : "Creando proyecto…");

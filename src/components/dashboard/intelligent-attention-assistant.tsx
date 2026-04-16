@@ -165,14 +165,14 @@ export function IntelligentAttentionAssistant({
           </button>
         </div>
 
-        <div className="mt-3 grid gap-3 lg:grid-cols-[180px_minmax(0,1fr)_220px] lg:items-center">
+        <div className="mt-3 grid gap-3 lg:grid-cols-[220px_minmax(0,1fr)_220px] lg:items-center">
           {settings.showMascot ? (
-            <div className="relative hidden h-[170px] lg:block">
+            <div className="relative hidden h-[210px] lg:block">
               <Image
                 src={mascotSrc}
                 alt="Asistente de FlowTask"
                 fill
-                sizes="180px"
+                sizes="220px"
                 className="object-contain object-bottom"
                 priority
               />
@@ -244,7 +244,7 @@ export function IntelligentAttentionAssistant({
             <Link href={activeCard.href} className="inline-flex items-center justify-center rounded-full bg-slate-950 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-900">
               {activeCard.ctaLabel}
             </Link>
-            <Link href="/settings" className="inline-flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-white/95 px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:text-slate-900">
+            <Link href="/app/settings" className="inline-flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-white/95 px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:text-slate-900">
               <Settings2 className="h-4 w-4" />
               Ver ajustes
             </Link>

@@ -1,4 +1,4 @@
-# FlowTask — V58.11.6 Assistant Compact Links Fix
+# FlowTask — V58.11.7 Form Persistence and Radar Link Fix
 
 - card del asistente más compacto
 - personaje mejor integrado

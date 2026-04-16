@@ -10,20 +10,20 @@ const required = [
   'src/lib/assistant/advanced-engine.ts',
   'public/assistant/guide-male.png',
   'public/assistant/guide-female.png',
-  'docs/release/V58_11_6_ASSISTANT_COMPACT_LINKS_FIX.md',
+  'docs/release/V58_11_7_FORM_PERSISTENCE_AND_RADAR_LINK_FIX.md',
 ];
 
 const missing = required.filter((item) => !fs.existsSync(path.join(root, item)));
 if (missing.length) {
-  console.error('[verify-v58.11.6] FAILED');
+  console.error('[verify-v58.11.7] FAILED');
   for (const file of missing) console.error(` - Missing ${file}`);
   process.exit(1);
 }
 
 const version = fs.readFileSync(path.join(root, 'src/lib/release/version.ts'), 'utf8');
-if (!version.includes('58.11.6-assistant-compact-links-fix')) {
-  console.error('[verify-v58.11.6] FAILED - release version mismatch');
+if (!version.includes('58.11.7-form-persistence-and-radar-link-fix')) {
+  console.error('[verify-v58.11.7] FAILED - release version mismatch');
   process.exit(1);
 }
 
-console.log('[verify-v58.11.6] OK — asistente compactado, detalle inline y vínculos corregidos sobre la base v58.11.5.');
+console.log('[verify-v58.11.7] OK — persistencia de formularios, radar más expresivo y CTA de ajustes corregido sobre la base v58.11.6.');
