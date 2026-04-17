@@ -41,6 +41,7 @@ export default async function TaskEditPage({
           department: department?.code ?? '',
           clientName: task.client_name ?? '',
           dueDate: task.due_date ?? '',
+          projectId: task.project_id ?? '',
           country: (task as any).country ?? '',
         }}
       />

@@ -4,10 +4,10 @@
 
 :root {
   color-scheme: light;
-  --radius-card: 14px;
-  --radius-panel: 12px;
-  --shadow-soft: 0 10px 24px rgba(15, 23, 42, 0.05);
-  --shadow-float: 0 16px 34px rgba(15, 23, 42, 0.075);
+  --radius-card: 16px;
+  --radius-panel: 14px;
+  --shadow-soft: 0 10px 26px rgba(15, 23, 42, 0.048);
+  --shadow-float: 0 18px 38px rgba(15, 23, 42, 0.07);
   --border-soft: rgba(148, 163, 184, 0.16);
   --ring-brand: rgba(16, 185, 129, 0.22);
 }
@@ -33,7 +33,7 @@ body {
     radial-gradient(circle at top right, rgba(59, 130, 246, 0.045), transparent 16%),
     linear-gradient(180deg, #fbfcfc 0%, #f5f8f7 46%, #eef3f1 100%);
   color: #0f172a;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: Inter, Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -72,7 +72,7 @@ textarea::placeholder {
 .container-page {
   margin: 0 auto;
   width: 100%;
-  max-width: 1224px;
+  max-width: 1240px;
   padding: 0 1rem;
 }
 
@@ -89,7 +89,7 @@ textarea::placeholder {
 }
 
 .surface-panel {
-  @apply rounded-[18px] border border-white/80 bg-white/[0.92] shadow-[0_12px_26px_rgba(15,23,42,0.05)] backdrop-blur;
+  @apply rounded-[18px] border border-white/80 bg-white/[0.94] shadow-[0_14px_28px_rgba(15,23,42,0.05)] backdrop-blur;
 }
 
 .glass-strip {
@@ -97,7 +97,7 @@ textarea::placeholder {
 }
 
 .page-section {
-  @apply rounded-[18px] border border-white/75 bg-white/[0.9] shadow-[0_12px_24px_rgba(15,23,42,0.05)] backdrop-blur;
+  @apply rounded-[18px] border border-white/75 bg-white/[0.92] shadow-[0_14px_26px_rgba(15,23,42,0.05)] backdrop-blur;
 }
 
 .kicker-chip {

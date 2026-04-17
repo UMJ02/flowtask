@@ -11,7 +11,7 @@ import { PROJECT_STATUSES } from "@/lib/constants/project-status";
 import { projectDetailRoute, projectListRoute, type AppRoute } from "@/lib/navigation/routes";
 import { generateShareToken } from "@/lib/utils/tokens";
 import { projectSchema } from "@/lib/validations/project";
-import { getDepartmentIdByCode } from "@/lib/queries/departments";
+import { getWorkspaceDepartmentIdByCode } from "@/lib/queries/departments";
 import { logActivity } from "@/lib/activity/log-client";
 import { trackEvent } from "@/lib/telemetry/track-event";
 import { Button } from "@/components/ui/button";
@@ -140,7 +140,7 @@ export function ProjectForm({
 
     let departmentId: number | null = null;
     try {
-      departmentId = await getDepartmentIdByCode(values.department);
+      departmentId = await getWorkspaceDepartmentIdByCode({ code: values.department, userId: user.id, organizationId: workspace.activeOrganizationId });
     } catch (error) {
       setServerError(error instanceof Error ? error.message : "No fue posible cargar el departamento.");
       setMessage(null);
@@ -169,7 +169,7 @@ export function ProjectForm({
       due_date: values.dueDate || null,
       is_collaborative: values.isCollaborative,
       share_enabled: values.isCollaborative,
-      country: values.country || null,
+      country: (countryOptions.find((item) => item.name === values.country || item.code === values.country)?.name ?? values.country) || null,
     };
 
     let createdProjectId: string | null = null;

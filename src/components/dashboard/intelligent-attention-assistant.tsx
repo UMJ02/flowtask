@@ -143,36 +143,36 @@ export function IntelligentAttentionAssistant({
   return (
     <Card
       className={[
-        "relative overflow-hidden rounded-[24px] border p-0 shadow-[0_16px_34px_rgba(15,23,42,0.07)]",
+        "relative overflow-hidden rounded-[22px] border p-0 shadow-[0_14px_28px_rgba(15,23,42,0.07)]",
         moodStyles[activeCard.mood],
         motionStyles[settings.animationLevel],
         visible && settings.animationLevel !== "off" ? "translate-y-0 opacity-100" : "opacity-100",
       ].join(" ")}
     >
-      <div className="relative mx-auto max-w-[1280px] px-3 py-3 sm:px-4 sm:py-4 lg:px-5 lg:py-4">
+      <div className="relative mx-auto max-w-[1220px] px-3 py-2.5 sm:px-4 sm:py-3 lg:px-5 lg:py-3">
         <div className="flex items-start justify-between gap-3">
-          <div className="inline-flex items-center gap-2 rounded-full border border-white/80 bg-white/85 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-700">
+          <div className="inline-flex items-center gap-2 rounded-full border border-white/80 bg-white/88 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-700">
             <Sparkles className="h-3.5 w-3.5 text-emerald-600" />
             Radar inteligente · {workspaceLabel}
           </div>
           <button
             type="button"
             onClick={dismissForNow}
-            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200/80 bg-white/85 text-slate-500 transition hover:border-slate-300 hover:text-slate-700"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200/80 bg-white/88 text-slate-500 transition hover:border-slate-300 hover:text-slate-700"
             aria-label="Ocultar recordatorio"
           >
             <X className="h-4.5 w-4.5" />
           </button>
         </div>
 
-        <div className="mt-3 grid gap-3 lg:grid-cols-[220px_minmax(0,1fr)_220px] lg:items-center">
+        <div className="mt-3 grid gap-3 lg:grid-cols-[190px_minmax(0,1fr)_210px] lg:items-center">
           {settings.showMascot ? (
-            <div className="relative hidden h-[210px] lg:block">
+            <div className="relative hidden h-[176px] lg:block">
               <Image
                 src={mascotSrc}
                 alt="Asistente de FlowTask"
                 fill
-                sizes="220px"
+                sizes="190px"
                 className="object-contain object-bottom"
                 priority
               />
@@ -184,13 +184,13 @@ export function IntelligentAttentionAssistant({
               <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl border border-emerald-200/70 bg-emerald-50/90 text-emerald-700 shadow-sm">
                 <Icon className="h-4.5 w-4.5" />
               </span>
-              <div className="min-w-0 lg:pr-2">
+              <div className="min-w-0 lg:pr-1">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className={["rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em]", scoreToneStyles[activeCard.mood]].join(" ")}>{activeCard.toneLabel}</span>
                   <span className="rounded-full border border-emerald-100 bg-emerald-50/80 px-2.5 py-1 text-[11px] font-semibold text-emerald-700">Score {activeCard.score}</span>
                 </div>
-                <h2 className="mt-2 max-w-3xl text-[1.08rem] font-semibold leading-tight tracking-tight text-slate-950 sm:text-[1.22rem]">{activeCard.title}</h2>
-                <p className="mt-1.5 max-w-2xl text-[13px] leading-5 text-slate-600">{settings.verbosity === "minimal" ? activeCard.compactHint : activeCard.body}</p>
+                <h2 className="mt-2 max-w-3xl text-[1rem] font-semibold leading-tight tracking-tight text-slate-950 sm:text-[1.14rem]">{activeCard.title}</h2>
+                <p className="mt-1.5 max-w-2xl text-[12px] leading-5 text-slate-600">{settings.verbosity === "minimal" ? activeCard.compactHint : activeCard.body}</p>
               </div>
             </div>
 
@@ -202,7 +202,7 @@ export function IntelligentAttentionAssistant({
 
             <div
               className={[
-                "mt-3 overflow-hidden rounded-[18px] border transition-all duration-300",
+                "mt-2.5 overflow-hidden rounded-[16px] border transition-all duration-300",
                 expanded ? "border-emerald-200/80 bg-emerald-50/45 p-3 opacity-100" : "border-transparent bg-transparent p-0 opacity-100",
               ].join(" ")}
             >

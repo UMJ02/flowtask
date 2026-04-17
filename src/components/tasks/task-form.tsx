@@ -12,7 +12,7 @@ import { TASK_STATUSES } from "@/lib/constants/task-status";
 import { TASK_PRIORITIES } from "@/lib/constants/task-priority";
 import { taskDetailRoute, taskListRoute, type AppRoute } from "@/lib/navigation/routes";
 import { taskSchema } from "@/lib/validations/task";
-import { getDepartmentIdByCode } from "@/lib/queries/departments";
+import { getWorkspaceDepartmentIdByCode } from "@/lib/queries/departments";
 import { logActivity } from "@/lib/activity/log-client";
 import { trackEvent } from "@/lib/telemetry/track-event";
 import { Button } from "@/components/ui/button";
@@ -175,7 +175,7 @@ export function TaskForm({
 
     let departmentId: number | null = null;
     try {
-      departmentId = await getDepartmentIdByCode(values.department);
+      departmentId = await getWorkspaceDepartmentIdByCode({ code: values.department, userId: user.id, organizationId: workspace.activeOrganizationId });
     } catch (error) {
       setServerError(error instanceof Error ? error.message : "No fue posible cargar el departamento.");
       setMessage(null);
@@ -229,7 +229,7 @@ export function TaskForm({
       client_id: integrity.resolvedClientId,
       due_date: values.dueDate || null,
       project_id: values.projectId || null,
-      country: values.country || null,
+      country: (countryOptions.find((item) => item.name === values.country || item.code === values.country)?.name ?? values.country) || null,
     };
 
     const result = isEdit
