@@ -44,20 +44,24 @@ export async function getActiveMembership() {
 
   const { data: memberships } = await supabase
     .from("organization_members")
-    .select("organization_id, role, is_default")
+    .select("organization_id, role, is_default, organizations!inner(deleted_at)")
     .eq("user_id", user.id)
     .order("is_default", { ascending: false })
     .limit(20);
 
-  const normalizedMemberships = (memberships ?? []).map((membership: any) => ({
-    organizationId: membership.organization_id as string,
-    role: membership.role as OrganizationRole,
-    isDefault: !!membership.is_default,
-  }));
+  const normalizedMemberships = (memberships ?? []).map((membership: any) => {
+    const organization = Array.isArray(membership.organizations) ? membership.organizations[0] : membership.organizations;
+    return {
+      organizationId: membership.organization_id as string,
+      role: membership.role as OrganizationRole,
+      isDefault: !!membership.is_default,
+      deletedAt: (organization?.deleted_at as string | null | undefined) ?? null,
+    };
+  }).filter((membership: any) => !membership.deletedAt);
 
   const fallbackMembership = normalizedMemberships[0] ?? null;
   const matchingMembership = preference && preference !== PERSONAL_WORKSPACE_VALUE
-    ? normalizedMemberships.find((membership: ActiveMembershipSummary) => membership.organizationId === preference) ?? null
+    ? normalizedMemberships.find((membership: ActiveMembershipSummary & { deletedAt?: string | null }) => membership.organizationId === preference) ?? null
     : null;
 
   return {

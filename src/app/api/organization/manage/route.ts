@@ -44,6 +44,9 @@ export async function PATCH(request: Request) {
 
     if (error) return NextResponse.json({ error: error.message }, { status: 400 });
 
+    await supabase.from('organization_members').update({ is_default: false }).eq('user_id', user.id);
+    await supabase.from('organization_members').update({ is_default: true }).eq('organization_id', organizationId).eq('user_id', user.id);
+
     const response = NextResponse.json({ ok: true, message: 'Tu organización volvió a estar activa.', reactivate: true });
     response.cookies.set(ACTIVE_WORKSPACE_COOKIE, organizationId, { path: '/', sameSite: 'lax' });
     return response;
@@ -77,6 +80,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'El owner principal debe programar la eliminación o transferir el control antes de salir.' }, { status: 409 });
   }
 
+  await supabase.from('organization_members').update({ is_default: false }).eq('organization_id', organizationId).eq('user_id', user.id);
   const { error } = await supabase.from('organization_members').delete().eq('organization_id', organizationId).eq('user_id', user.id);
   if (error) return NextResponse.json({ error: error.message }, { status: 400 });
 
@@ -111,6 +115,7 @@ export async function DELETE(request: Request) {
 
   const now = new Date();
   const purgeAt = new Date(now.getTime() + TEN_DAYS_MS).toISOString();
+  await supabase.from('organization_members').update({ is_default: false }).eq('organization_id', organizationId);
   const { error } = await supabase
     .from('organizations')
     .update({ deleted_at: now.toISOString(), purge_scheduled_at: purgeAt })

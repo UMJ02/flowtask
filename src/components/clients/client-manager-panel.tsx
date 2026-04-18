@@ -142,8 +142,8 @@ export function ClientManagerPanel({ items, initialQuery = '' }: { items: Client
         workspace.supabase.from('countries').select('id,code,name,organization_id,account_owner_id').order('name', { ascending: true }),
       ]);
       if (!active) return;
-      const scopedDepartments = (departmentData ?? []).filter((row: any) => workspace.activeOrganizationId ? (!row.organization_id || row.organization_id === workspace.activeOrganizationId) : (!row.organization_id ? !row.account_owner_id || row.account_owner_id === userId : false));
-      const scopedCountries = (countryData ?? []).filter((row: any) => workspace.activeOrganizationId ? (!row.organization_id || row.organization_id === workspace.activeOrganizationId) : (!row.organization_id ? !row.account_owner_id || row.account_owner_id === userId : false));
+      const scopedDepartments = (departmentData ?? []).filter((row: any) => workspace.activeOrganizationId ? (row.organization_id === workspace.activeOrganizationId || (!row.organization_id && !row.account_owner_id)) : (!row.organization_id ? !row.account_owner_id || row.account_owner_id === userId : false));
+      const scopedCountries = (countryData ?? []).filter((row: any) => workspace.activeOrganizationId ? (row.organization_id === workspace.activeOrganizationId || (!row.organization_id && !row.account_owner_id)) : (!row.organization_id ? !row.account_owner_id || row.account_owner_id === userId : false));
       setDepartments(scopedDepartments.map((row: any) => ({ id: String(row.id), code: String(row.code), name: String(row.name), phone: (row.phone as string | null | undefined) ?? null })));
       setCountries(scopedCountries.map((row: any) => ({ id: String(row.id), code: String(row.code), name: String(row.name) })));
     };

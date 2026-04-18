@@ -38,6 +38,12 @@ export async function POST(request: Request) {
     }
   }
 
+  await supabase.from('organization_members').update({ is_default: preference !== PERSONAL_WORKSPACE_VALUE }).eq('user_id', user.id).neq('organization_id', preference === PERSONAL_WORKSPACE_VALUE ? '00000000-0000-0000-0000-000000000000' : preference);
+
+  if (preference !== PERSONAL_WORKSPACE_VALUE) {
+    await supabase.from('organization_members').update({ is_default: true }).eq('user_id', user.id).eq('organization_id', preference);
+  }
+
   const response = NextResponse.json({ ok: true, workspace: preference });
   response.cookies.set(ACTIVE_WORKSPACE_COOKIE, preference, {
     path: '/',

@@ -1,17 +1,16 @@
-# FlowTask — V58.11.9 Premium Finish and Radar Refine
+# FlowTask — V58.12 Workspace Isolation Hardening Pro Level
 
-## Qué cambia en la V58.11.9
-- versión y metadata alineadas a `V58.11.9`
-- nuevo `scripts/verify-v58.11.9.mjs`
-- nuevo release doc `docs/release/V58_11_9_PREMIUM_FINISH_AND_RADAR_REFINE.md`
-- pulido visual global sobre componentes compartidos
-- radar inteligente más compacto y con detalle inline
-- refinamiento de cards, botones, inputs, selects y textareas
+## Qué cambia en la V58.12
+- versión y metadata alineadas a `V58.12`
+- endurecimiento de aislamiento entre workspace personal y organizaciones
+- fallback automático a personal cuando una organización queda eliminada
+- selección activa más estricta para no mezclar catálogos personales y organizacionales
+- nuevo `scripts/verify-v58.12.mjs`
+- nuevo release doc `docs/release/V58_12_WORKSPACE_ISOLATION_HARDENING_PRO_LEVEL.md`
 
-## Verificaciones clave
-- `npm run verify:v58.11.9`
-- `npm run deploy:readiness`
-- `npm run deploy:production:ready`
+## Verificación rápida
+- `npm run verify:v58.12`
+- `npm run typecheck`
+- `npm run build:preflight`
 
-## Base de continuidad
-Usa esta **V58.11.9** como base oficial para seguir evolucionando la ayuda inteligente y el pulido final de experiencia para usuario final.
+Usa esta **V58.12** como base oficial para seguir operando FlowTask con workspaces realmente aislados entre personal y organizaciones múltiples.

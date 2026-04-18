@@ -49,7 +49,7 @@ export async function getClientWorkspaceContext(): Promise<ClientWorkspaceContex
   const [membershipsRes, boardRes] = await Promise.all([
     supabase
       .from("organization_members")
-      .select("organization_id, is_default")
+      .select("organization_id, is_default, organizations!inner(deleted_at)")
       .eq("user_id", user.id)
       .order("is_default", { ascending: false })
       .limit(20),
@@ -60,13 +60,17 @@ export async function getClientWorkspaceContext(): Promise<ClientWorkspaceContex
       .maybeSingle(),
   ]);
 
-  const memberships = (membershipsRes.data ?? []).map((item: any) => ({
-    organizationId: item.organization_id as string,
-    isDefault: !!item.is_default,
-  }));
+  const memberships = (membershipsRes.data ?? []).map((item: any) => {
+    const organization = Array.isArray(item.organizations) ? item.organizations[0] : item.organizations;
+    return {
+      organizationId: item.organization_id as string,
+      isDefault: !!item.is_default,
+      deletedAt: (organization?.deleted_at as string | null | undefined) ?? null,
+    };
+  }).filter((item: { deletedAt: string | null }) => !item.deletedAt);
   const defaultMembership = memberships[0] ?? null;
   const matchingMembership = cookiePreference && cookiePreference !== PERSONAL_WORKSPACE_VALUE
-    ? memberships.find((item: { organizationId: string; isDefault: boolean }) => item.organizationId === cookiePreference) ?? null
+    ? memberships.find((item: { organizationId: string; isDefault: boolean; deletedAt: string | null }) => item.organizationId === cookiePreference) ?? null
     : null;
 
   return {
@@ -164,7 +168,7 @@ export async function fetchWorkspaceDepartments(
     if (error) throw error;
     const rows = (data ?? []).filter((item: any) => {
       if (!organizationId) return !item.organization_id ? !item.account_owner_id || item.account_owner_id === userId : false;
-      return item.organization_id === organizationId;
+      return item.organization_id === organizationId || (!item.organization_id && !item.account_owner_id);
     });
     return rows.map((item: any) => ({ id: String(item.id), code: String(item.code), name: String(item.name), phone: (item.phone as string | null | undefined) ?? null })) as WorkspaceDepartmentOption[];
   } catch {
@@ -185,7 +189,7 @@ export async function fetchWorkspaceCountries(
     if (error) throw error;
     const rows = (data ?? []).filter((item: any) => {
       if (!organizationId) return !item.organization_id ? !item.account_owner_id || item.account_owner_id === userId : false;
-      return item.organization_id === organizationId;
+      return item.organization_id === organizationId || (!item.organization_id && !item.account_owner_id);
     });
     return rows.map((item: any) => ({ id: String(item.id), code: String(item.code), name: String(item.name) })) as WorkspaceCountryOption[];
   } catch {

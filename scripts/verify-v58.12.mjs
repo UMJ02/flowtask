@@ -1,0 +1,10 @@
+import fs from "node:fs";
+const packageJson = JSON.parse(fs.readFileSync(new URL("../package.json", import.meta.url), "utf8"));
+const versionFile = fs.readFileSync(new URL("../src/lib/release/version.ts", import.meta.url), "utf8");
+const readme = fs.readFileSync(new URL("../README.md", import.meta.url), "utf8");
+const expectedVersion = "58.12-workspace-isolation-hardening-pro-level";
+const expectedRelease = "v58.12 Workspace Isolation Hardening Pro Level";
+if (packageJson.version !== expectedVersion) throw new Error(`[verify-v58.12] package.json version mismatch: ${packageJson.version}`);
+if (!versionFile.includes(expectedVersion) || !versionFile.includes(expectedRelease)) throw new Error('[verify-v58.12] src/lib/release/version.ts is not aligned.');
+if (!readme.includes('V58.12')) throw new Error('[verify-v58.12] README does not mention V58.12.');
+console.log('[verify-v58.12] OK — workspace isolation hardening, stricter active workspace resolution and scoped catalog separation on top of V58.11.9.');
