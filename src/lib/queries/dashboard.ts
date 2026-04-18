@@ -134,15 +134,28 @@ export async function getDashboardData() {
       user.id,
       activeOrganizationId,
     ),
-    supabase
-      .from("task_assignees")
-      .select("profiles!task_assignees_user_id_fkey ( full_name ), tasks!inner ( owner_id, status )")
-      .eq("tasks.owner_id", user.id)
-      .neq("tasks.status", "concluido"),
-    supabase
-      .from("project_members")
-      .select("profiles!project_members_user_id_fkey ( full_name ), projects!inner ( owner_id )")
-      .eq("projects.owner_id", user.id),
+    activeOrganizationId
+      ? supabase
+          .from("task_assignees")
+          .select("profiles!task_assignees_user_id_fkey ( full_name ), tasks!inner ( organization_id, status )")
+          .eq("tasks.organization_id", activeOrganizationId)
+          .neq("tasks.status", "concluido")
+      : supabase
+          .from("task_assignees")
+          .select("profiles!task_assignees_user_id_fkey ( full_name ), tasks!inner ( owner_id, status, organization_id )")
+          .eq("tasks.owner_id", user.id)
+          .is("tasks.organization_id", null)
+          .neq("tasks.status", "concluido"),
+    activeOrganizationId
+      ? supabase
+          .from("project_members")
+          .select("profiles!project_members_user_id_fkey ( full_name ), projects!inner ( organization_id )")
+          .eq("projects.organization_id", activeOrganizationId)
+      : supabase
+          .from("project_members")
+          .select("profiles!project_members_user_id_fkey ( full_name ), projects!inner ( owner_id, organization_id )")
+          .eq("projects.owner_id", user.id)
+          .is("projects.organization_id", null),
   ]);
 
   const departmentTotals = new Map<string, { code: string; name: string; total: number }>();

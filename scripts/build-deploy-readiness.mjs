@@ -3,21 +3,15 @@ import path from "node:path";
 
 const root = process.cwd();
 const failures = [];
-const expectedVersion = "58.12-workspace-isolation-hardening-pro-level";
-const expectedReleaseLabel = "V58.12";
+const expectedVersion = "58.12.1-workspace-isolation-final";
+const expectedReleaseLabel = "V58.12.1";
 
 function requireFile(rel) {
-  if (!fs.existsSync(path.join(root, rel))) {
-    failures.push(`Missing required file: ${rel}`);
-  }
+  if (!fs.existsSync(path.join(root, rel))) failures.push(`Missing required file: ${rel}`);
 }
-
 function requireIncludes(rel, text) {
   const full = path.join(root, rel);
-  if (!fs.existsSync(full)) {
-    failures.push(`Missing required file: ${rel}`);
-    return;
-  }
+  if (!fs.existsSync(full)) { failures.push(`Missing required file: ${rel}`); return; }
   const content = fs.readFileSync(full, "utf8");
   if (!content.includes(text)) failures.push(`Expected '${text}' in ${rel}`);
 }
@@ -29,8 +23,8 @@ requireFile(".nvmrc");
 requireFile(".env.example");
 requireFile("scripts/runtime-check.mjs");
 requireFile("scripts/validate-env.mjs");
-requireFile("scripts/verify-v58.12.mjs");
-requireFile("docs/release/V58_12_WORKSPACE_ISOLATION_HARDENING_PRO_LEVEL.md");
+requireFile("scripts/verify-v58.12.1.mjs");
+requireFile("docs/release/V58_12_1_WORKSPACE_ISOLATION_FINAL.md");
 requireFile("docs/release/DB_CONTINUITY_SOURCE_OF_TRUTH.md");
 
 const pkg = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
@@ -39,8 +33,8 @@ for (const scriptName of ["build", "vercel:build", "deploy:readiness", "build:pr
   if (!scripts[scriptName]) failures.push(`Missing package script: ${scriptName}`);
 }
 if (pkg.version !== expectedVersion) failures.push(`Unexpected package version: ${pkg.version}`);
-if (scripts["verify:current"] !== "npm run verify:v58.12") failures.push("verify:current must target verify:v58.12");
-if (scripts["verify:v58.12"] !== "node scripts/verify-v58.12.mjs") failures.push("verify:v58.12 must target scripts/verify-v58.12.mjs");
+if (scripts["verify:current"] !== "npm run verify:v58.12.1") failures.push("verify:current must target verify:v58.12.1");
+if (scripts["verify:v58.12.1"] !== "node scripts/verify-v58.12.1.mjs") failures.push("verify:v58.12.1 must target scripts/verify-v58.12.1.mjs");
 
 const vercel = JSON.parse(fs.readFileSync(path.join(root, "vercel.json"), "utf8"));
 if (vercel.framework !== "nextjs") failures.push("vercel.json framework must be nextjs");

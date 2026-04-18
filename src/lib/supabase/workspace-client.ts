@@ -10,11 +10,16 @@ export interface ClientWorkspaceContext {
   activeOrganizationId: string | null;
   boardId: string | null;
   layoutConfig: Record<string, any>;
+  workspaceKey: string;
 }
 
 export type WorkspaceClientOption = { id: string; name: string };
 export type WorkspaceDepartmentOption = { id: string; code: string; name: string; phone?: string | null };
 export type WorkspaceCountryOption = { id: string; code: string; name: string };
+
+export function getWorkspaceScopeKey(userId?: string | null, organizationId?: string | null) {
+  return organizationId ? `organization:${organizationId}` : `personal:${userId ?? 'guest'}`;
+}
 
 export function slugifyWorkspaceValue(value: string) {
   return value
@@ -39,6 +44,7 @@ export async function getClientWorkspaceContext(): Promise<ClientWorkspaceContex
       activeOrganizationId: null,
       boardId: null,
       layoutConfig: {},
+      workspaceKey: getWorkspaceScopeKey(null, null),
     };
   }
 
@@ -81,6 +87,9 @@ export async function getClientWorkspaceContext(): Promise<ClientWorkspaceContex
       : (matchingMembership?.organizationId ?? defaultMembership?.organizationId ?? null),
     boardId: (boardRes.data?.id as string | null | undefined) ?? null,
     layoutConfig: (boardRes.data?.layout_config as Record<string, any> | null | undefined) ?? {},
+    workspaceKey: getWorkspaceScopeKey(user.id, cookiePreference === PERSONAL_WORKSPACE_VALUE
+      ? null
+      : (matchingMembership?.organizationId ?? defaultMembership?.organizationId ?? null)),
   };
 }
 
@@ -167,8 +176,8 @@ export async function fetchWorkspaceDepartments(
       .order('name', { ascending: true });
     if (error) throw error;
     const rows = (data ?? []).filter((item: any) => {
-      if (!organizationId) return !item.organization_id ? !item.account_owner_id || item.account_owner_id === userId : false;
-      return item.organization_id === organizationId || (!item.organization_id && !item.account_owner_id);
+      if (!organizationId) return !item.organization_id && (!!item.account_owner_id ? item.account_owner_id === userId : true);
+      return item.organization_id === organizationId;
     });
     return rows.map((item: any) => ({ id: String(item.id), code: String(item.code), name: String(item.name), phone: (item.phone as string | null | undefined) ?? null })) as WorkspaceDepartmentOption[];
   } catch {
@@ -188,8 +197,8 @@ export async function fetchWorkspaceCountries(
       .order('name', { ascending: true });
     if (error) throw error;
     const rows = (data ?? []).filter((item: any) => {
-      if (!organizationId) return !item.organization_id ? !item.account_owner_id || item.account_owner_id === userId : false;
-      return item.organization_id === organizationId || (!item.organization_id && !item.account_owner_id);
+      if (!organizationId) return !item.organization_id && (!!item.account_owner_id ? item.account_owner_id === userId : true);
+      return item.organization_id === organizationId;
     });
     return rows.map((item: any) => ({ id: String(item.id), code: String(item.code), name: String(item.name) })) as WorkspaceCountryOption[];
   } catch {

@@ -77,12 +77,12 @@ type ProjectRow = {
 const STORAGE_KEY = 'flowtask.board.v586';
 const BOARD_LAYOUT_KEY = 'interactiveDashboardBoard';
 
-function getWorkspaceBoardStorageKey(activeOrganizationId?: string | null) {
-  return `${STORAGE_KEY}:${activeOrganizationId ?? 'personal'}`;
+function getWorkspaceBoardStorageKey(userId?: string | null, activeOrganizationId?: string | null) {
+  return `${STORAGE_KEY}:${activeOrganizationId ? `organization:${activeOrganizationId}` : `personal:${userId ?? 'anonymous'}`}`;
 }
 
-function getWorkspaceBoardLayoutKey(activeOrganizationId?: string | null) {
-  return `${BOARD_LAYOUT_KEY}:${activeOrganizationId ?? 'personal'}`;
+function getWorkspaceBoardLayoutKey(userId?: string | null, activeOrganizationId?: string | null) {
+  return `${BOARD_LAYOUT_KEY}:${activeOrganizationId ? `organization:${activeOrganizationId}` : `personal:${userId ?? 'anonymous'}`}`;
 }
 const BOARD_STABILITY_MARKER = 'Tareas destacadas';
 
@@ -487,6 +487,7 @@ function InteractiveDashboardBoardComponent() {
   const [activeOrganizationId, setActiveOrganizationId] = useState<string | null>(null);
   const [createdTaskId, setCreatedTaskId] = useState<string | null>(null);
   const [favoriteTaskIds, setFavoriteTaskIds] = useState<Set<string>>(new Set());
+  const [workspaceUserId, setWorkspaceUserId] = useState<string | null>(null);
   const [boardId, setBoardId] = useState<string | null>(null);
   const [boardLayoutBase, setBoardLayoutBase] = useState<Record<string, any>>({});
   const [lastSyncedAt, setLastSyncedAt] = useState<string | null>(null);
@@ -498,7 +499,7 @@ function InteractiveDashboardBoardComponent() {
       // initial hydrate continues below
     }
     try {
-      const raw = window.localStorage.getItem(getWorkspaceBoardStorageKey(activeOrganizationId));
+      const raw = window.localStorage.getItem(getWorkspaceBoardStorageKey(workspaceUserId, activeOrganizationId));
       if (raw) {
         applyBoardSnapshot(JSON.parse(raw), {
           setAsideOpen,
@@ -531,13 +532,13 @@ function InteractiveDashboardBoardComponent() {
     } catch {
       setHydrated(true);
     }
-  }, [activeOrganizationId]);
+  }, [workspaceUserId, activeOrganizationId]);
 
   useEffect(() => {
     if (!hydrated) return;
     try {
       window.localStorage.setItem(
-        STORAGE_KEY,
+        getWorkspaceBoardStorageKey(workspaceUserId, activeOrganizationId),
         JSON.stringify(
           buildBoardSnapshot({
             asideOpen,
@@ -556,7 +557,7 @@ function InteractiveDashboardBoardComponent() {
     } catch {
       // ignore persist errors
     }
-  }, [hydrated, activeOrganizationId, asideOpen, activePanels, expanded, calendarMode, anchorDate, selectedDate, noteDraft, savedNotes, editingNoteId, reminders]);
+  }, [hydrated, workspaceUserId, activeOrganizationId, asideOpen, activePanels, expanded, calendarMode, anchorDate, selectedDate, noteDraft, savedNotes, editingNoteId, reminders]);
 
   useEffect(() => {
     if (!hydrated || !boardId) return;
@@ -578,7 +579,7 @@ function InteractiveDashboardBoardComponent() {
       const supabase = createClient();
       const nextLayoutConfig = {
         ...boardLayoutBase,
-        [getWorkspaceBoardLayoutKey(activeOrganizationId)]: snapshot,
+        [getWorkspaceBoardLayoutKey(workspaceUserId, activeOrganizationId)]: snapshot,
       };
 
       void supabase
@@ -593,7 +594,7 @@ function InteractiveDashboardBoardComponent() {
     }, 800);
 
     return () => window.clearTimeout(timeout);
-  }, [hydrated, boardId, boardLayoutBase, activeOrganizationId, asideOpen, activePanels, expanded, calendarMode, anchorDate, selectedDate, noteDraft, savedNotes, editingNoteId, reminders]);
+  }, [hydrated, boardId, boardLayoutBase, workspaceUserId, activeOrganizationId, asideOpen, activePanels, expanded, calendarMode, anchorDate, selectedDate, noteDraft, savedNotes, editingNoteId, reminders]);
 
   useEffect(() => {
     if (!hydrated || !noteDraft.trim()) return;
@@ -635,12 +636,13 @@ function InteractiveDashboardBoardComponent() {
       }
 
       if (!cancelled) {
+        setWorkspaceUserId(user.id);
         setActiveOrganizationId(workspace.activeOrganizationId);
         setBoardId(workspace.boardId);
         setBoardLayoutBase(workspace.layoutConfig ?? {});
       }
 
-      const dbBoardState = workspace.layoutConfig?.[getWorkspaceBoardLayoutKey(workspace.activeOrganizationId)];
+      const dbBoardState = workspace.layoutConfig?.[getWorkspaceBoardLayoutKey(user.id, workspace.activeOrganizationId)];
       if (!cancelled && dbBoardState) {
         applyBoardSnapshot(dbBoardState, {
           setAsideOpen,
@@ -923,7 +925,7 @@ function InteractiveDashboardBoardComponent() {
     ]);
     setCreatedTaskId(null);
     try {
-      window.localStorage.removeItem(getWorkspaceBoardStorageKey(activeOrganizationId));
+      window.localStorage.removeItem(getWorkspaceBoardStorageKey(workspaceUserId, activeOrganizationId));
     } catch {
       // ignore reset persistence errors
     }

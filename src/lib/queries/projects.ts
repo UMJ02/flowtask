@@ -15,9 +15,14 @@ export interface ProjectFiltersInput {
 const getDepartmentIdByCodeCached = cache(async (departmentCode: string) => {
   const normalized = departmentCode.trim();
   if (!normalized) return null;
-  const { supabase } = await getWorkspaceContext();
-  const { data } = await supabase.from("departments").select("id").eq("code", normalized).maybeSingle();
-  return (data?.id as number | null | undefined) ?? null;
+  const { supabase, user, activeOrganizationId } = await getWorkspaceContext();
+  if (!user) return null;
+  const { data } = await supabase.from("departments").select("id,organization_id,account_owner_id").eq("code", normalized).limit(20);
+  const scoped = (data ?? []).find((row: any) => {
+    if (activeOrganizationId) return row.organization_id === activeOrganizationId;
+    return !row.organization_id && (row.account_owner_id ? row.account_owner_id === user.id : true);
+  });
+  return (scoped?.id as number | null | undefined) ?? null;
 });
 
 const getClientAccessSummaryCached = cache(async (userId: string, organizationId?: string | null) => {
