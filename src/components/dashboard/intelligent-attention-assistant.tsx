@@ -41,9 +41,9 @@ function formatDueLabel(date: string | null) {
 }
 
 const moodStyles = {
-  critical: "border-rose-200/90 bg-[linear-gradient(135deg,rgba(255,255,255,0.99),rgba(255,242,246,0.99),rgba(255,250,251,0.97))]",
-  attention: "border-amber-200/90 bg-[linear-gradient(135deg,rgba(255,255,255,0.99),rgba(255,248,238,0.99),rgba(255,252,247,0.97))]",
-  calm: "border-emerald-200/90 bg-[linear-gradient(135deg,rgba(255,255,255,0.99),rgba(241,252,247,0.99),rgba(248,253,250,0.97))]",
+  critical: "border-rose-200/90 bg-[linear-gradient(135deg,rgba(255,255,255,0.99),rgba(255,239,244,0.98),rgba(255,248,250,0.96))]",
+  attention: "border-amber-200/90 bg-[linear-gradient(135deg,rgba(255,255,255,0.99),rgba(255,247,234,0.98),rgba(255,252,245,0.96))]",
+  calm: "border-emerald-200/90 bg-[linear-gradient(135deg,rgba(255,255,255,0.99),rgba(239,252,245,0.98),rgba(246,252,248,0.96))]",
 } as const;
 
 const motionStyles = {
@@ -143,13 +143,14 @@ export function IntelligentAttentionAssistant({
   return (
     <Card
       className={[
-        "relative overflow-hidden rounded-[22px] border p-0 shadow-[0_14px_28px_rgba(15,23,42,0.07)]",
+        "relative overflow-hidden rounded-[22px] border p-0 shadow-[0_16px_32px_rgba(15,23,42,0.08)]",
         moodStyles[activeCard.mood],
         motionStyles[settings.animationLevel],
         visible && settings.animationLevel !== "off" ? "translate-y-0 opacity-100" : "opacity-100",
       ].join(" ")}
     >
-      <div className="relative mx-auto max-w-[1220px] px-3 py-2.5 sm:px-4 sm:py-3 lg:px-5 lg:py-3">
+      <div className="pointer-events-none absolute inset-y-0 right-0 w-[28%] bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.75),transparent_58%)]" />
+      <div className="relative px-3 py-2.5 sm:px-4 sm:py-3 lg:px-4 lg:py-3">
         <div className="flex items-start justify-between gap-3">
           <div className="inline-flex items-center gap-2 rounded-full border border-white/80 bg-white/88 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-700">
             <Sparkles className="h-3.5 w-3.5 text-emerald-600" />
@@ -158,21 +159,21 @@ export function IntelligentAttentionAssistant({
           <button
             type="button"
             onClick={dismissForNow}
-            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200/80 bg-white/88 text-slate-500 transition hover:border-slate-300 hover:text-slate-700"
+            className="inline-flex h-8.5 w-8.5 items-center justify-center rounded-full border border-slate-200/80 bg-white/88 text-slate-500 transition hover:border-slate-300 hover:text-slate-700"
             aria-label="Ocultar recordatorio"
           >
-            <X className="h-4.5 w-4.5" />
+            <X className="h-4 w-4" />
           </button>
         </div>
 
-        <div className="mt-3 grid gap-3 lg:grid-cols-[190px_minmax(0,1fr)_210px] lg:items-center">
+        <div className="mt-2.5 grid gap-3 lg:grid-cols-[160px_minmax(0,1fr)_200px] lg:items-center">
           {settings.showMascot ? (
-            <div className="relative hidden h-[176px] lg:block">
+            <div className="relative hidden h-[138px] lg:block">
               <Image
                 src={mascotSrc}
                 alt="Asistente de FlowTask"
                 fill
-                sizes="190px"
+                sizes="160px"
                 className="object-contain object-bottom"
                 priority
               />
@@ -189,68 +190,60 @@ export function IntelligentAttentionAssistant({
                   <span className={["rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em]", scoreToneStyles[activeCard.mood]].join(" ")}>{activeCard.toneLabel}</span>
                   <span className="rounded-full border border-emerald-100 bg-emerald-50/80 px-2.5 py-1 text-[11px] font-semibold text-emerald-700">Score {activeCard.score}</span>
                 </div>
-                <h2 className="mt-2 max-w-3xl text-[1rem] font-semibold leading-tight tracking-tight text-slate-950 sm:text-[1.14rem]">{activeCard.title}</h2>
-                <p className="mt-1.5 max-w-2xl text-[12px] leading-5 text-slate-600">{settings.verbosity === "minimal" ? activeCard.compactHint : activeCard.body}</p>
+                <h2 className="mt-2 max-w-3xl text-[0.98rem] font-semibold leading-tight tracking-tight text-slate-950 sm:text-[1.08rem]">{activeCard.title}</h2>
+                <p className="mt-1 max-w-2xl text-[12px] leading-[1.45] text-slate-600">{settings.verbosity === "minimal" ? activeCard.compactHint : activeCard.body}</p>
               </div>
             </div>
 
-            <div className="mt-3 flex flex-wrap items-center gap-2">
-              <Button type="button" variant="secondary" className="rounded-full px-4 py-2 text-sm" onClick={() => snooze()}>
-                Ver luego
-              </Button>
-            </div>
-
-            <div
-              className={[
-                "mt-2.5 overflow-hidden rounded-[16px] border transition-all duration-300",
-                expanded ? "border-emerald-200/80 bg-emerald-50/45 p-3 opacity-100" : "border-transparent bg-transparent p-0 opacity-100",
-              ].join(" ")}
-            >
-              {expanded ? (
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between gap-3">
-                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Qué revisar</p>
-                    <span className="text-[11px] font-medium text-slate-500">{activeCard.items.length} elemento(s)</span>
-                  </div>
-                  <div className="grid gap-2">
-                    {previewItems.length ? previewItems.map((item) => (
-                      <Link
-                        key={item.id}
-                        href={taskDetailRoute(item.id)}
-                        className="flex items-center justify-between gap-3 rounded-[14px] border border-white/90 bg-white/90 px-3 py-2.5 transition hover:border-emerald-200 hover:bg-white"
-                      >
-                        <div className="min-w-0">
-                          <p className="line-clamp-1 text-sm font-semibold text-slate-900">{item.title}</p>
-                          <div className="mt-1 flex flex-wrap gap-2 text-[11px] text-slate-500">
-                            <span>{item.client_name || "Sin cliente"}</span>
-                            <span>•</span>
-                            <span>{formatDueLabel(item.due_date)}</span>
-                          </div>
-                        </div>
-                        <span className="rounded-full bg-emerald-50 px-2 py-1 text-[11px] font-semibold text-emerald-700">Abrir</span>
-                      </Link>
-                    )) : (
-                      <div className="rounded-[14px] border border-white/90 bg-white/90 px-3 py-3 text-sm text-slate-600">
-                        No hay elementos críticos abiertos en este workspace por ahora.
-                      </div>
-                    )}
-                  </div>
+            {expanded ? (
+              <div className="mt-2.5 rounded-[16px] border border-white/90 bg-white/80 p-2.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.55)]">
+                <div className="mb-2 flex items-center justify-between gap-3">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">Qué revisar</p>
+                  <span className="text-[11px] font-medium text-slate-500">{activeCard.items.length} item(s)</span>
                 </div>
-              ) : null}
-            </div>
+                <div className="grid gap-2">
+                  {previewItems.length ? previewItems.map((item) => (
+                    <Link
+                      key={item.id}
+                      href={taskDetailRoute(item.id)}
+                      className="flex items-center justify-between gap-3 rounded-[14px] border border-slate-200/85 bg-white px-3 py-2 transition hover:border-emerald-200 hover:bg-emerald-50/35"
+                    >
+                      <div className="min-w-0">
+                        <p className="line-clamp-1 text-[13px] font-semibold text-slate-900">{item.title}</p>
+                        <div className="mt-0.5 flex flex-wrap gap-2 text-[11px] text-slate-500">
+                          <span>{item.client_name || "Sin cliente"}</span>
+                          <span>•</span>
+                          <span>{formatDueLabel(item.due_date)}</span>
+                        </div>
+                      </div>
+                      <span className="rounded-full bg-emerald-50 px-2 py-1 text-[11px] font-semibold text-emerald-700">Abrir</span>
+                    </Link>
+                  )) : (
+                    <div className="rounded-[14px] border border-slate-200/80 bg-white px-3 py-2.5 text-sm text-slate-600">
+                      No hay elementos críticos abiertos en este workspace por ahora.
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : null}
           </div>
 
-          <div className="flex min-w-0 flex-col gap-2.5 lg:items-stretch lg:self-center">
+          <div className="flex min-w-0 flex-col gap-2 lg:self-center">
             <Link href={activeCard.href} className="inline-flex items-center justify-center rounded-full bg-slate-950 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-900">
               {activeCard.ctaLabel}
             </Link>
-            <Link href="/app/settings" className="inline-flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-white/95 px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:text-slate-900">
-              <Settings2 className="h-4 w-4" />
-              Ver ajustes
-            </Link>
-            <Button type="button" variant="secondary" className="justify-center rounded-full px-4 py-2.5 text-sm" onClick={() => setExpanded((value) => !value)}>
-              <ChevronDown className={["h-4 w-4 transition-transform", expanded ? "rotate-180" : ""].join(" ")} />
-              {expanded ? "Ocultar detalle" : "Ver detalle"}
+            <div className="grid grid-cols-2 gap-2">
+              <Link href="/app/settings" className="inline-flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-white/95 px-3 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:text-slate-900">
+                <Settings2 className="h-4 w-4" />
+                Ajustes
+              </Link>
+              <Button type="button" variant="secondary" className="justify-center rounded-full px-3 py-2.5 text-sm" onClick={() => setExpanded((value) => !value)}>
+                <ChevronDown className={["h-4 w-4 transition-transform", expanded ? "rotate-180" : ""].join(" ")} />
+                {expanded ? "Menos" : "Detalle"}
+              </Button>
+            </div>
+            <Button type="button" variant="secondary" className="rounded-full px-4 py-2.5 text-sm" onClick={() => snooze()}>
+              Ver luego
             </Button>
           </div>
         </div>

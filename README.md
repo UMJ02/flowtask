@@ -1,17 +1,17 @@
-# FlowTask — V58.11.8 Assistant Compact Links Fix
+# FlowTask — V58.11.9 Premium Finish and Radar Refine
 
-## Qué cambia en la V58.11.8
-- versión y metadata alineadas a `V58.11.8`
-- nuevo `scripts/verify-v58.11.8.mjs`
-- nuevo release doc `docs/release/V58_11_7_FORM_PERSISTENCE_AND_RADAR_LINK_FIX.md`
-- motor avanzado del asistente inteligente con scoring adaptativo
-- preferencias finas de ruido, detalle y memoria por workspace
+## Qué cambia en la V58.11.9
+- versión y metadata alineadas a `V58.11.9`
+- nuevo `scripts/verify-v58.11.9.mjs`
+- nuevo release doc `docs/release/V58_11_9_PREMIUM_FINISH_AND_RADAR_REFINE.md`
 - pulido visual global sobre componentes compartidos
+- radar inteligente más compacto y con detalle inline
+- refinamiento de cards, botones, inputs, selects y textareas
 
 ## Verificaciones clave
-- `npm run verify:v58.11.8`
+- `npm run verify:v58.11.9`
 - `npm run deploy:readiness`
 - `npm run deploy:production:ready`
 
 ## Base de continuidad
-Usa esta **V58.11.8** como base oficial para seguir evolucionando la ayuda inteligente y el pulido final de experiencia para usuario final.
+Usa esta **V58.11.9** como base oficial para seguir evolucionando la ayuda inteligente y el pulido final de experiencia para usuario final.
