@@ -1,14 +1,31 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { Building2, RotateCcw, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import type { DeletedOrganizationSummary } from '@/types/organization';
 
+function getPurgeSummary(purgeScheduledAt?: string | null) {
+  if (!purgeScheduledAt) {
+    return {
+      dateLabel: 'próximamente',
+      daysLabel: 'Fecha pendiente de confirmar',
+    };
+  }
+
+  const purgeDate = new Date(purgeScheduledAt);
+  const msLeft = purgeDate.getTime() - Date.now();
+  const daysLeft = Math.max(0, Math.ceil(msLeft / (1000 * 60 * 60 * 24)));
+  const daysLabel = daysLeft === 1 ? '1 día restante para reactivar' : `${daysLeft} días restantes para reactivar`;
+
+  return {
+    dateLabel: purgeDate.toLocaleDateString(),
+    daysLabel,
+  };
+}
+
 export function DeletedOrganizationsPanel({ organizations }: { organizations: DeletedOrganizationSummary[] }) {
-  const router = useRouter();
   const [loading, setLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -44,7 +61,7 @@ export function DeletedOrganizationsPanel({ organizations }: { organizations: De
       });
       const payload = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(payload?.error || 'No fue posible borrar la organización.');
-      router.refresh();
+      window.location.assign(payload?.redirectTo || '/app/organization?deleted=1');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'No fue posible borrar la organización.');
     } finally {
@@ -67,26 +84,30 @@ export function DeletedOrganizationsPanel({ organizations }: { organizations: De
         </div>
       </div>
       <div className="mt-4 grid gap-3">
-        {organizations.map((organization) => (
-          <div key={organization.id} className="rounded-[20px] border border-amber-200/80 bg-white px-4 py-4">
-            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-              <div>
-                <p className="font-semibold text-slate-900">{organization.name}</p>
-                <p className="mt-1 text-sm text-slate-500">Se eliminará automáticamente el {organization.purgeScheduledAt ? new Date(organization.purgeScheduledAt).toLocaleDateString() : 'próximamente'}.</p>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                <Button type="button" variant="secondary" className="h-10 rounded-xl" onClick={() => reactivate(organization.id)} disabled={loading !== null}>
-                  <RotateCcw className="h-4 w-4" />
-                  {loading === `reactivate:${organization.id}` ? 'Reactivando...' : 'Reactivar'}
-                </Button>
-                <Button type="button" variant="secondary" className="h-10 rounded-xl border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100" onClick={() => destroyNow(organization.id)} disabled={loading !== null}>
-                  <Trash2 className="h-4 w-4" />
-                  {loading === `delete:${organization.id}` ? 'Eliminando...' : 'Eliminar ahora'}
-                </Button>
+        {organizations.map((organization) => {
+          const purgeSummary = getPurgeSummary(organization.purgeScheduledAt);
+          return (
+            <div key={organization.id} className="rounded-[20px] border border-amber-200/80 bg-white px-4 py-4">
+              <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                <div>
+                  <p className="font-semibold text-slate-900">{organization.name}</p>
+                  <p className="mt-1 text-sm text-slate-500">Se eliminará automáticamente el {purgeSummary.dateLabel}.</p>
+                  <p className="mt-1 text-xs font-medium text-amber-700">{purgeSummary.daysLabel}</p>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <Button type="button" variant="secondary" className="h-10 rounded-xl" onClick={() => reactivate(organization.id)} disabled={loading !== null}>
+                    <RotateCcw className="h-4 w-4" />
+                    {loading === `reactivate:${organization.id}` ? 'Reactivando...' : 'Reactivar'}
+                  </Button>
+                  <Button type="button" variant="secondary" className="h-10 rounded-xl border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100" onClick={() => destroyNow(organization.id)} disabled={loading !== null}>
+                    <Trash2 className="h-4 w-4" />
+                    {loading === `delete:${organization.id}` ? 'Eliminando...' : 'Eliminar ahora'}
+                  </Button>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
       {error ? <p className="mt-3 text-sm text-rose-700">{error}</p> : null}
     </Card>
