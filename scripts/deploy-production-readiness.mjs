@@ -13,9 +13,9 @@ const checks = [
   ["vercel security headers", Array.isArray(vercel.headers) && vercel.headers.length > 0],
   ["env has NEXT_PUBLIC_APP_URL", envExample.includes("NEXT_PUBLIC_APP_URL=")],
   ["env has FLOWTASK_BASE_URL helper", envExample.includes("FLOWTASK_BASE_URL=")],
-  ["readme mentions V58.12.3", readme.includes("V58.12.3")],
+  ["readme mentions V58.12.1", readme.includes("V58.12.1")],
   ["release exports include APP_RELEASE_STAGE", releaseVersion.includes("APP_RELEASE_STAGE")],
-  ["package version aligned", pkg.version === "58.12.3-organization-delete-now-hardfix"],
+  ["package version aligned", pkg.version === "58.12.1-workspace-isolation-final"],
 ];
 
 const failed = checks.filter(([, ok]) => !ok);

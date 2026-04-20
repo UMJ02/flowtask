@@ -12,15 +12,6 @@ function formatRole(role?: string | null) {
   return role.replaceAll('_', ' ').replace(/^./, (match) => match.toUpperCase());
 }
 
-
-function formatPurgeHelper(purgeScheduledAt?: string | null) {
-  if (!purgeScheduledAt) return 'Pendiente de eliminación';
-  const purgeDate = new Date(purgeScheduledAt);
-  const daysLeft = Math.max(0, Math.ceil((purgeDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)));
-  const daysLabel = daysLeft === 1 ? '1 día restante' : `${daysLeft} días restantes`;
-  return `Se borra el ${purgeDate.toLocaleDateString()} · ${daysLabel}`;
-}
-
 async function updateActiveWorkspace(workspace: string) {
   const response = await fetch('/api/workspace/active', {
     method: 'POST',
@@ -133,7 +124,7 @@ export function OrganizationSwitcher({
     ...deletedItems.map((organization) => ({
       id: organization.id,
       name: `Reactivar · ${organization.name}`,
-      helper: formatPurgeHelper(organization.purgeScheduledAt),
+      helper: organization.purgeScheduledAt ? `Se borrará el ${new Date(organization.purgeScheduledAt).toLocaleDateString()}` : 'Pendiente de eliminación',
       role: organization.role,
       icon: RotateCcw,
       isDeleted: true,
