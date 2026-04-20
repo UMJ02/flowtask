@@ -1,0 +1,10 @@
+import fs from "node:fs";
+const packageJson = JSON.parse(fs.readFileSync(new URL("../package.json", import.meta.url), "utf8"));
+const versionFile = fs.readFileSync(new URL("../src/lib/release/version.ts", import.meta.url), "utf8");
+const readme = fs.readFileSync(new URL("../README.md", import.meta.url), "utf8");
+const expectedVersion = "58.12.3-organization-delete-now-hardfix";
+const expectedRelease = "v58.12.3 Organization Delete Now Hardfix";
+if (packageJson.version !== expectedVersion) throw new Error(`[verify-v58.12.3] package.json version mismatch: ${packageJson.version}`);
+if (!versionFile.includes(expectedVersion) || !versionFile.includes(expectedRelease)) throw new Error('[verify-v58.12.3] src/lib/release/version.ts is not aligned.');
+if (!readme.includes('V58.12.3')) throw new Error('[verify-v58.12.3] README does not mention V58.12.3.');
+console.log('[verify-v58.12.3] OK — delete-now endpoint hardfix for active/default workspaces, explicit personal fallback and permanent deletion on top of V58.12.2.');
