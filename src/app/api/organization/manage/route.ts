@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 import { ACTIVE_WORKSPACE_COOKIE, PERSONAL_WORKSPACE_VALUE } from '@/lib/workspace/active-workspace';
 
 export const dynamic = 'force-dynamic';
@@ -108,9 +109,28 @@ export async function DELETE(request: Request) {
   }
 
   if (force) {
-    const { error } = await supabase.from('organizations').delete().eq('id', organizationId);
+    const admin = createAdminClient();
+
+    const { error: resetDefaultError } = await admin
+      .from('organization_members')
+      .update({ is_default: false })
+      .eq('organization_id', organizationId);
+
+    if (resetDefaultError) {
+      return NextResponse.json({ error: resetDefaultError.message }, { status: 400 });
+    }
+
+    const { error } = await admin.from('organizations').delete().eq('id', organizationId);
     if (error) return NextResponse.json({ error: error.message }, { status: 400 });
-    return withPersonalWorkspaceCookie(NextResponse.json({ ok: true, message: 'La organización se eliminó de forma permanente.' }));
+
+    return withPersonalWorkspaceCookie(
+      NextResponse.json({
+        ok: true,
+        deleted: true,
+        message: 'La organización se eliminó de forma permanente.',
+        redirectTo: '/app/organization?deleted=1',
+      }),
+    );
   }
 
   const now = new Date();
@@ -127,6 +147,7 @@ export async function DELETE(request: Request) {
     ok: true,
     scheduled: true,
     purgeScheduledAt: purgeAt,
-    message: 'La organización quedó programada para eliminarse en 10 días. Puedes reactivarla desde el switch de workspaces o borrarla definitivamente desde la bandeja de reactivación.'
+    daysRemaining: 10,
+    message: 'La organización quedó programada para eliminarse en 10 días. Puedes reactivarla desde el switch de workspaces o borrarla definitivamente desde la bandeja de reactivación.',
   }));
 }

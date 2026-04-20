@@ -1,7 +1,7 @@
-# FlowTask — V58.12.1 Workspace Isolation Final
+# FlowTask — V58.12.2 Workspace Isolation Final
 
-## Qué cambia en la V58.12.1
-- versión y metadata alineadas a `V58.12.1`
+## Qué cambia en la V58.12.2
+- versión y metadata alineadas a `V58.12.2`
 - aislamiento total de catálogos por workspace
 - persistencia de board/notas por workspace y por usuario
 - agregados del dashboard/radar ajustados al workspace activo
@@ -13,4 +13,4 @@
 - `npm run typecheck`
 - `npm run build:preflight`
 
-Usa esta **V58.12.1** como base oficial para cerrar FlowTask con workspaces realmente aislados entre personal y organizaciones múltiples.
+Usa esta **V58.12.2** como base oficial para cerrar FlowTask con workspaces realmente aislados entre personal y organizaciones múltiples.
