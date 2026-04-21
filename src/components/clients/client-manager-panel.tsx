@@ -151,6 +151,11 @@ export function ClientManagerPanel({ items, initialQuery = '' }: { items: Client
     return () => { active = false; };
   }, []);
 
+  useEffect(() => {
+    setError(null);
+    setMessage(null);
+  }, [activeTab]);
+
   const stats = useMemo(() => ({
     total: list.length,
     active: list.filter((item) => item.status === 'activo').length,
@@ -530,7 +535,7 @@ export function ClientManagerPanel({ items, initialQuery = '' }: { items: Client
               <div><h2 className="text-lg font-semibold text-slate-900">Países disponibles</h2><p className="text-sm text-slate-500">Se mostrarán como lista desplegable en proyectos y tareas.</p></div>
               {countries.length ? countries.map((item) => (
                 <div key={item.id} className="rounded-[22px] border border-slate-200 bg-white px-4 py-4 transition hover:border-slate-300 hover:bg-slate-50/60">
-                  <div className="flex items-start justify-between gap-3"><div><p className="text-base font-semibold text-slate-900">{item.name}</p><p className="mt-1 text-xs font-medium uppercase tracking-[0.16em] text-slate-400">{item.code}</p></div><span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-700"><Globe2 className="h-4 w-4" /></span></div>
+                  <div className="flex items-start justify-between gap-3"><div><p className="text-base font-semibold text-slate-900">{item.name}</p></div><span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-700"><Globe2 className="h-4 w-4" /></span></div>
                   <div className="mt-4 flex flex-wrap gap-2"><button type="button" onClick={() => startCountryEdit(item)} className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"><Pencil className="h-4 w-4" />Editar</button><button type="button" onClick={() => deleteCountry(item.id)} disabled={deletingCountryId === item.id} className="inline-flex items-center gap-2 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-700 transition hover:bg-rose-100 disabled:opacity-60"><Trash2 className="h-4 w-4" />{deletingCountryId === item.id ? 'Borrando...' : 'Borrar'}</button></div>
                 </div>
               )) : <EmptyState icon={<Globe2 className="h-6 w-6" />} title="No hay países todavía" description="Crea el primero para personalizar el formulario del workspace." />}
