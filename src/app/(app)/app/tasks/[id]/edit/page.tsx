@@ -38,7 +38,7 @@ export default async function TaskEditPage({
           description: task.description ?? '',
           status: task.status ?? 'en_proceso',
           priority: task.priority ?? 'media',
-          department: department?.code ?? '',
+          department: department?.code ?? department?.name ?? '',
           clientName: task.client_name ?? '',
           dueDate: task.due_date ?? '',
           projectId: task.project_id ?? '',

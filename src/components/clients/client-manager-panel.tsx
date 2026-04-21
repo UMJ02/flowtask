@@ -270,7 +270,12 @@ export function ClientManagerPanel({ items, initialQuery = '' }: { items: Client
       setMessage('Departamento creado correctamente.');
       resetDepartmentDraft(false);
     } catch (err: any) {
-      setError(err?.message ?? 'No pudimos guardar el departamento.');
+      const rawMessage = err?.message ?? 'No pudimos guardar el departamento.';
+      if (/departments_name_key|departments_scope_name_unique|duplicate key/i.test(rawMessage)) {
+        setError('Ya existe un departamento con ese nombre dentro de este workspace.');
+      } else {
+        setError(rawMessage);
+      }
     } finally { setSavingDepartment(false); }
   };
 
@@ -302,7 +307,12 @@ export function ClientManagerPanel({ items, initialQuery = '' }: { items: Client
       setMessage('País creado correctamente.');
       resetCountryDraft(false);
     } catch (err: any) {
-      setError(err?.message ?? 'No pudimos guardar el país.');
+      const rawMessage = err?.message ?? 'No pudimos guardar el país.';
+      if (/countries_name_key|countries_scope_name_unique|duplicate key/i.test(rawMessage)) {
+        setError('Ya existe un país con ese nombre dentro de este workspace.');
+      } else {
+        setError(rawMessage);
+      }
     } finally { setSavingCountry(false); }
   };
 
@@ -321,28 +331,44 @@ export function ClientManagerPanel({ items, initialQuery = '' }: { items: Client
 
   const deleteDepartment = async (departmentId: string) => {
     if (!window.confirm('¿Deseas eliminar este departamento?')) return;
-    setDeletingDepartmentId(departmentId); setError(null);
+    setDeletingDepartmentId(departmentId); setError(null); setMessage(null);
     try {
       const workspace = await getClientWorkspaceContext();
+      const scopedDepartmentId = Number(departmentId);
+      const [taskCleanup, projectCleanup] = await Promise.all([
+        workspace.supabase.from('tasks').update({ department_id: null }).eq('department_id', scopedDepartmentId),
+        workspace.supabase.from('projects').update({ department_id: null }).eq('department_id', scopedDepartmentId),
+      ]);
+      if (taskCleanup.error) throw taskCleanup.error;
+      if (projectCleanup.error) throw projectCleanup.error;
       const { error: deleteError } = await workspace.supabase.from('departments').delete().eq('id', departmentId);
       if (deleteError) throw deleteError;
       setDepartments((current) => current.filter((item) => item.id !== departmentId));
-      if (departmentDraft.id === departmentId) resetDepartmentDraft();
-    } catch (err: any) { setError(err?.message ?? 'No pudimos eliminar el departamento.'); }
-    finally { setDeletingDepartmentId(null); }
+      if (departmentDraft.id === departmentId) resetDepartmentDraft(false);
+      setMessage('Departamento eliminado correctamente.');
+    } catch (err: any) {
+      setError(err?.message ?? 'No pudimos eliminar el departamento.');
+    } finally {
+      setDeletingDepartmentId(null);
+    }
   };
 
   const deleteCountry = async (countryId: string) => {
     if (!window.confirm('¿Deseas eliminar este país?')) return;
-    setDeletingCountryId(countryId); setError(null);
+    setDeletingCountryId(countryId); setError(null); setMessage(null);
     try {
       const workspace = await getClientWorkspaceContext();
+      const target = countries.find((item) => item.id === countryId) ?? null;
       const { error: deleteError } = await workspace.supabase.from('countries').delete().eq('id', countryId);
       if (deleteError) throw deleteError;
       setCountries((current) => current.filter((item) => item.id !== countryId));
-      if (countryDraft.id === countryId) resetCountryDraft();
-    } catch (err: any) { setError(err?.message ?? 'No pudimos eliminar el país.'); }
-    finally { setDeletingCountryId(null); }
+      if (countryDraft.id === countryId) resetCountryDraft(false);
+      setMessage(target ? `País ${target.name} eliminado correctamente.` : 'País eliminado correctamente.');
+    } catch (err: any) {
+      setError(err?.message ?? 'No pudimos eliminar el país.');
+    } finally {
+      setDeletingCountryId(null);
+    }
   };
 
   const processImportRows = async (rows: ImportRow[]) => {

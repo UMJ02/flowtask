@@ -37,7 +37,7 @@ export default async function ProjectEditPage({
           title: project.title ?? '',
           description: project.description ?? '',
           status: project.status ?? 'activo',
-          department: department?.code ?? '',
+          department: department?.code ?? department?.name ?? '',
           clientName: project.client_name ?? '',
           dueDate: project.due_date ?? '',
           country: (project as any).country ?? '',

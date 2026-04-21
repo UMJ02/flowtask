@@ -73,7 +73,7 @@ export function ProjectForm({
   function normalizeDepartmentValue(value?: string | null, options: Array<{ id: string; code: string; name: string }> = []) {
     const normalized = value?.trim();
     if (!normalized) return "";
-    const direct = options.find((item) => item.code === normalized);
+    const direct = options.find((item) => item.code === normalized || item.id === normalized);
     if (direct) return direct.code;
     const byName = options.find((item) => item.name.toLowerCase() === normalized.toLowerCase());
     return byName?.code ?? normalized;
@@ -116,11 +116,8 @@ export function ProjectForm({
     const normalizedDepartment = normalizeDepartmentValue(initialData?.department, departmentOptions);
     const normalizedCountry = normalizeCountryValue(initialData?.country, countryOptions);
 
-    if (normalizedDepartment && watchedDepartment !== normalizedDepartment) {
+    if (normalizedDepartment !== (watchedDepartment ?? '') || normalizedCountry !== (watchedCountry ?? '')) {
       setValue("department", normalizedDepartment, { shouldDirty: false, shouldTouch: false });
-    }
-
-    if (normalizedCountry && watchedCountry !== normalizedCountry) {
       setValue("country", normalizedCountry, { shouldDirty: false, shouldTouch: false });
     }
   }, [initialData?.department, initialData?.country, departmentOptions, countryOptions, setValue, watchedDepartment, watchedCountry]);

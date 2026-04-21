@@ -62,7 +62,6 @@ export async function PATCH(request: Request) {
   }
 
   const { error } = await supabase.from('organizations').update({ name }).eq('id', organizationId);
-  if (error) return NextResponse.json({ error: error.message }, { status: 400 });
 
   return NextResponse.json({ ok: true, message: 'Nombre de la organización actualizado.' });
 }
@@ -83,7 +82,6 @@ export async function POST(request: Request) {
 
   await supabase.from('organization_members').update({ is_default: false }).eq('organization_id', organizationId).eq('user_id', user.id);
   const { error } = await supabase.from('organization_members').delete().eq('organization_id', organizationId).eq('user_id', user.id);
-  if (error) return NextResponse.json({ error: error.message }, { status: 400 });
 
   return withPersonalWorkspaceCookie(NextResponse.json({ ok: true, message: 'Saliste de la organización.' }));
 }
@@ -98,26 +96,29 @@ export async function DELETE(request: Request) {
   const force = body?.force === true;
   if (!organizationId) return NextResponse.json({ error: 'No encontramos la organización indicada.' }, { status: 400 });
 
-  const { data: organization } = await supabase
+  const admin = createAdminClient();
+
+  const { data: organization, error: organizationError } = await admin
     .from('organizations')
     .select('owner_id, deleted_at')
     .eq('id', organizationId)
     .maybeSingle();
 
-  if ((organization?.owner_id as string | undefined) !== user.id) {
+  if (organizationError) return NextResponse.json({ error: organizationError.message }, { status: 400 });
+  if (!organization) return NextResponse.json({ error: 'No encontramos la organización indicada.' }, { status: 404 });
+  if ((organization.owner_id as string | undefined) !== user.id) {
     return NextResponse.json({ error: 'Solo el owner principal puede eliminar la organización.' }, { status: 403 });
   }
 
   if (force) {
-    const admin = createAdminClient();
-
-    const { error: resetDefaultError } = await admin
-      .from('organization_members')
-      .update({ is_default: false })
-      .eq('organization_id', organizationId);
-
-    if (resetDefaultError) {
-      return NextResponse.json({ error: resetDefaultError.message }, { status: 400 });
+    const updates = [
+      admin.from('organization_members').update({ is_default: false }).eq('organization_id', organizationId),
+      admin.from('user_account_modes').update({ default_organization_id: null }).eq('default_organization_id', organizationId),
+    ];
+    const [resetDefaultResult, resetModesResult] = await Promise.all(updates);
+    if (resetDefaultResult.error) return NextResponse.json({ error: resetDefaultResult.error.message }, { status: 400 });
+    if (resetModesResult.error && !/relation .* does not exist/i.test(resetModesResult.error.message)) {
+      return NextResponse.json({ error: resetModesResult.error.message }, { status: 400 });
     }
 
     const { error } = await admin.from('organizations').delete().eq('id', organizationId);
@@ -135,13 +136,17 @@ export async function DELETE(request: Request) {
 
   const now = new Date();
   const purgeAt = new Date(now.getTime() + TEN_DAYS_MS).toISOString();
-  await supabase.from('organization_members').update({ is_default: false }).eq('organization_id', organizationId);
-  const { error } = await supabase
-    .from('organizations')
-    .update({ deleted_at: now.toISOString(), purge_scheduled_at: purgeAt })
-    .eq('id', organizationId);
+  const [resetDefaultResult, scheduleResult, resetModesResult] = await Promise.all([
+    admin.from('organization_members').update({ is_default: false }).eq('organization_id', organizationId),
+    admin.from('organizations').update({ deleted_at: now.toISOString(), purge_scheduled_at: purgeAt }).eq('id', organizationId),
+    admin.from('user_account_modes').update({ default_organization_id: null }).eq('default_organization_id', organizationId),
+  ]);
+  if (resetDefaultResult.error) return NextResponse.json({ error: resetDefaultResult.error.message }, { status: 400 });
+  if (scheduleResult.error) return NextResponse.json({ error: scheduleResult.error.message }, { status: 400 });
+  if (resetModesResult.error && !/relation .* does not exist/i.test(resetModesResult.error.message)) {
+    return NextResponse.json({ error: resetModesResult.error.message }, { status: 400 });
+  }
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 400 });
 
   return withPersonalWorkspaceCookie(NextResponse.json({
     ok: true,

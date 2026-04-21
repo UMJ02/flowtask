@@ -23,7 +23,7 @@ export async function getWorkspaceDepartmentIdByCode(params: {
 
   const scoped = (data ?? []).find((row: any) => {
     if (params.organizationId) return row.organization_id === params.organizationId;
-    return !row.organization_id && (row.account_owner_id ? row.account_owner_id === params.userId : true);
+    return !row.organization_id && row.account_owner_id === params.userId;
   });
 
   return (scoped?.id as number | null | undefined) ?? null;

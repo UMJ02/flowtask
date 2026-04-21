@@ -13,9 +13,9 @@ const checks = [
   ["vercel security headers", Array.isArray(vercel.headers) && vercel.headers.length > 0],
   ["env has NEXT_PUBLIC_APP_URL", envExample.includes("NEXT_PUBLIC_APP_URL=")],
   ["env has FLOWTASK_BASE_URL helper", envExample.includes("FLOWTASK_BASE_URL=")],
-  ["readme mentions V58.12.2", readme.includes("V58.12.2")],
+  ["readme mentions V58.12.4", readme.includes("V58.12.4")],
   ["release exports include APP_RELEASE_STAGE", releaseVersion.includes("APP_RELEASE_STAGE")],
-  ["package version aligned", pkg.version === "58.12.2-organization-delete-now-fix"],
+  ["package version aligned", pkg.version === "58.12.4-registry-integrity-form-persistence-delete-hardfix"],
 ];
 
 const failed = checks.filter(([, ok]) => !ok);
