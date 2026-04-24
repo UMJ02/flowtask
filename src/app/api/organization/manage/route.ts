@@ -40,7 +40,7 @@ export async function PATCH(request: Request) {
 
     const { error } = await supabase
       .from('organizations')
-      .update({ deleted_at: null, purge_scheduled_at: null })
+      .update({ deleted_at: null, purge_scheduled_at: null, purge_after: null, reactivated_at: new Date().toISOString() })
       .eq('id', organizationId);
 
     if (error) return NextResponse.json({ error: error.message }, { status: 400 });
@@ -138,7 +138,7 @@ export async function DELETE(request: Request) {
   const purgeAt = new Date(now.getTime() + TEN_DAYS_MS).toISOString();
   const [resetDefaultResult, scheduleResult, resetModesResult] = await Promise.all([
     admin.from('organization_members').update({ is_default: false }).eq('organization_id', organizationId),
-    admin.from('organizations').update({ deleted_at: now.toISOString(), purge_scheduled_at: purgeAt }).eq('id', organizationId),
+    admin.from('organizations').update({ deleted_at: now.toISOString(), purge_scheduled_at: purgeAt, purge_after: purgeAt, reactivated_at: null }).eq('id', organizationId),
     admin.from('user_account_modes').update({ default_organization_id: null }).eq('default_organization_id', organizationId),
   ]);
   if (resetDefaultResult.error) return NextResponse.json({ error: resetDefaultResult.error.message }, { status: 400 });
