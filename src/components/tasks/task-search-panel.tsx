@@ -1,14 +1,13 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import Link from 'next/link';
-import { Filter, Search, SlidersHorizontal } from 'lucide-react';
+import { Filter, Search, SlidersHorizontal, X } from 'lucide-react';
 import { DEPARTMENTS } from '@/lib/constants/departments';
 import { TASK_STATUSES } from '@/lib/constants/task-status';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
-import { cn } from '@/lib/utils/classnames';
 
 interface TaskSearchPanelProps {
   filters: {
@@ -21,119 +20,104 @@ interface TaskSearchPanelProps {
   };
 }
 
+const priorityLabels: Record<string, string> = {
+  alta: 'Alta',
+  media: 'Media',
+  baja: 'Baja',
+};
+
+const dueLabels: Record<string, string> = {
+  overdue: 'Vencidas',
+  today: 'Vencen hoy',
+  soon: 'Próximas',
+  none: 'Sin fecha',
+};
+
+function getStatusLabel(value?: string) {
+  return TASK_STATUSES.find((item) => item.value === value)?.label ?? value;
+}
+
+function getDepartmentLabel(value?: string) {
+  return DEPARTMENTS.find((item) => item.code === value)?.label ?? value;
+}
+
 export function TaskSearchPanel({ filters }: TaskSearchPanelProps) {
-  const activeFilterCount = useMemo(
-    () => Object.entries(filters).filter(([key, value]) => key !== 'q' && key !== 'view' && Boolean(value)).length,
-    [filters]
-  );
-  const [advancedOpen, setAdvancedOpen] = useState(activeFilterCount > 0);
+  const activeChips = useMemo(() => {
+    const chips: Array<{ key: string; label: string }> = [];
+    if (filters.status) chips.push({ key: 'status', label: `Estado: ${getStatusLabel(filters.status)}` });
+    if (filters.priority) chips.push({ key: 'priority', label: `Prioridad: ${priorityLabels[filters.priority] ?? filters.priority}` });
+    if (filters.department) chips.push({ key: 'department', label: `Área: ${getDepartmentLabel(filters.department)}` });
+    if (filters.due) chips.push({ key: 'due', label: `Fecha: ${dueLabels[filters.due] ?? filters.due}` });
+    return chips;
+  }, [filters.department, filters.due, filters.priority, filters.status]);
 
   return (
-    <form method="get" className="rounded-[24px] border border-slate-200/90 bg-white/[0.92] p-5 shadow-[0_10px_30px_rgba(15,23,42,0.04)]">
+    <form method="get" className="space-y-4 rounded-[24px] border border-[#E5EAF1] bg-white p-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
       {!!filters.view && <input type="hidden" name="view" value={filters.view} />}
 
-      <div className="flex flex-col gap-4 xl:flex-row xl:items-center">
-        <div className="min-w-0 flex-1">
-          <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Búsqueda inteligente</p>
-              <h2 className="mt-1 text-lg font-semibold text-slate-900">Busca una tarea y abre filtros solo cuando los necesites</h2>
-            </div>
-            <div className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
-              <Filter className="h-3.5 w-3.5" />
-              {activeFilterCount > 0 ? `${activeFilterCount} filtro(s) activos` : 'Sin filtros activos'}
-            </div>
-          </div>
+      <div className="grid gap-3 xl:grid-cols-[minmax(260px,1.4fr)_auto_auto_auto_auto_auto] xl:items-center">
+        <label className="relative block">
+          <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+          <Input
+            className="h-12 rounded-[16px] border-[#E5EAF1] bg-white pl-11 text-sm shadow-none placeholder:text-slate-400"
+            defaultValue={filters.q ?? ''}
+            name="q"
+            placeholder="Buscar tarea, cliente o palabra clave..."
+          />
+        </label>
 
-          <div className="flex flex-col gap-3 lg:flex-row">
-            <label className="relative block min-w-0 flex-1">
-              <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-              <Input
-                className="h-14 rounded-[20px] pl-11 text-base"
-                defaultValue={filters.q ?? ''}
-                name="q"
-                placeholder="Buscar tarea, cliente o palabra clave"
-              />
-            </label>
+        <Button className="h-12 rounded-[16px] border-[#E5EAF1] bg-white px-4 text-[#0F172A]" type="submit" variant="secondary">
+          <Filter className="h-4 w-4" />
+          Filtros
+          {activeChips.length ? <span className="ml-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[#050B18] px-1.5 text-xs text-white">{activeChips.length}</span> : null}
+        </Button>
 
-            <div className="flex flex-wrap gap-3">
-              <button
-                type="button"
-                onClick={() => setAdvancedOpen((value) => !value)}
-                className={cn(
-                  'inline-flex h-14 items-center gap-2 rounded-[20px] border px-4 text-sm font-semibold transition',
-                  advancedOpen
-                    ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
-                    : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
-                )}
-              >
-                <SlidersHorizontal className="h-4 w-4" />
-                {advancedOpen ? 'Ocultar filtros' : 'Búsqueda avanzada'}
-              </button>
+        <Select className="h-12 min-w-[130px] rounded-[16px] border-[#E5EAF1] text-sm font-semibold text-slate-700" defaultValue={filters.status ?? ''} name="status" aria-label="Estado">
+          <option value="">Estado</option>
+          {TASK_STATUSES.map((item) => (
+            <option key={item.value} value={item.value}>{item.label}</option>
+          ))}
+        </Select>
 
-              <Button className="h-14 rounded-[20px] px-6" type="submit">Buscar</Button>
+        <Select className="h-12 min-w-[130px] rounded-[16px] border-[#E5EAF1] text-sm font-semibold text-slate-700" defaultValue={filters.priority ?? ''} name="priority" aria-label="Prioridad">
+          <option value="">Prioridad</option>
+          <option value="alta">Alta</option>
+          <option value="media">Media</option>
+          <option value="baja">Baja</option>
+        </Select>
 
-              <Link href="/app/tasks" className="inline-flex">
-                <Button className="h-14 rounded-[20px] px-6" type="button" variant="secondary">Limpiar</Button>
-              </Link>
-            </div>
-          </div>
-        </div>
+        <Select className="h-12 min-w-[130px] rounded-[16px] border-[#E5EAF1] text-sm font-semibold text-slate-700" defaultValue={filters.department ?? ''} name="department" aria-label="Área">
+          <option value="">Proyecto</option>
+          {DEPARTMENTS.map((item) => (
+            <option key={item.code} value={item.code}>{item.label}</option>
+          ))}
+        </Select>
+
+        <Select className="h-12 min-w-[130px] rounded-[16px] border-[#E5EAF1] text-sm font-semibold text-slate-700" defaultValue={filters.due ?? ''} name="due" aria-label="Fecha">
+          <option value="">Más filtros</option>
+          <option value="overdue">Vencidas</option>
+          <option value="today">Vencen hoy</option>
+          <option value="soon">Próximas</option>
+          <option value="none">Sin fecha</option>
+        </Select>
       </div>
 
-      <div
-        className={cn(
-          'grid overflow-hidden transition-all duration-300',
-          advancedOpen ? 'mt-5 grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
-        )}
-      >
-        <div className="min-h-0">
-          <div className="rounded-[22px] border border-slate-200 bg-[linear-gradient(180deg,rgba(248,250,252,0.95),rgba(255,255,255,0.98))] p-4">
-            <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-              <label className="block">
-                <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Estado</span>
-                <Select className="h-12 rounded-[16px]" defaultValue={filters.status ?? ''} name="status">
-                  <option value="">Todos</option>
-                  {TASK_STATUSES.map((item) => (
-                    <option key={item.value} value={item.value}>{item.label}</option>
-                  ))}
-                </Select>
-              </label>
-
-              <label className="block">
-                <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Prioridad</span>
-                <Select className="h-12 rounded-[16px]" defaultValue={filters.priority ?? ''} name="priority">
-                  <option value="">Todas</option>
-                  <option value="alta">Alta</option>
-                  <option value="media">Media</option>
-                  <option value="baja">Baja</option>
-                </Select>
-              </label>
-
-              <label className="block">
-                <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Área</span>
-                <Select className="h-12 rounded-[16px]" defaultValue={filters.department ?? ''} name="department">
-                  <option value="">Todas</option>
-                  {DEPARTMENTS.map((item) => (
-                    <option key={item.code} value={item.code}>{item.label}</option>
-                  ))}
-                </Select>
-              </label>
-
-              <label className="block">
-                <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Fecha</span>
-                <Select className="h-12 rounded-[16px]" defaultValue={filters.due ?? ''} name="due">
-                  <option value="">Todas</option>
-                  <option value="overdue">Vencidas</option>
-                  <option value="today">Vencen hoy</option>
-                  <option value="soon">Próximas</option>
-                  <option value="none">Sin fecha</option>
-                </Select>
-              </label>
-            </div>
+      {activeChips.length ? (
+        <div className="flex flex-col gap-3 border-t border-[#E5EAF1] pt-4 md:flex-row md:items-center md:justify-between">
+          <div className="flex flex-wrap gap-2">
+            {activeChips.map((chip) => (
+              <span key={chip.key} className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-800">
+                {chip.label}
+                <X className="h-3 w-3" />
+              </span>
+            ))}
           </div>
+          <Link href="/app/tasks" className="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 transition hover:text-slate-900">
+            <SlidersHorizontal className="h-4 w-4" />
+            Limpiar filtros
+          </Link>
         </div>
-      </div>
+      ) : null}
     </form>
   );
 }
