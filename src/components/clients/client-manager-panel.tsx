@@ -3,7 +3,7 @@
 import { ChangeEvent, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { Building2, FileSpreadsheet, Globe2, Mail, Pencil, Plus, Save, Tags, Trash2, UploadCloud, Users, X } from 'lucide-react';
-import { fetchWorkspaceCountries, fetchWorkspaceDepartments, getClientWorkspaceContext, slugifyWorkspaceValue } from '@/lib/supabase/workspace-client';
+import { getClientWorkspaceContext, slugifyWorkspaceValue } from '@/lib/supabase/workspace-client';
 import type { ClientListItem, ClientStatus } from '@/types/client';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -137,13 +137,15 @@ export function ClientManagerPanel({ items, initialQuery = '' }: { items: Client
       const workspace = await getClientWorkspaceContext();
       if (!workspace.user) return;
       const userId = workspace.user.id;
-      const [departmentRows, countryRows] = await Promise.all([
-        fetchWorkspaceDepartments(workspace.supabase, userId, workspace.activeOrganizationId),
-        fetchWorkspaceCountries(workspace.supabase, userId, workspace.activeOrganizationId),
+      const [{ data: departmentData }, { data: countryData }] = await Promise.all([
+        workspace.supabase.from('departments').select('id,code,name,phone,organization_id,account_owner_id').order('name', { ascending: true }),
+        workspace.supabase.from('countries').select('id,code,name,organization_id,account_owner_id').order('name', { ascending: true }),
       ]);
       if (!active) return;
-      setDepartments(departmentRows);
-      setCountries(countryRows);
+      const scopedDepartments = (departmentData ?? []).filter((row: any) => workspace.activeOrganizationId ? (row.organization_id === workspace.activeOrganizationId) : (!row.organization_id && (row.account_owner_id ? row.account_owner_id === userId : true)));
+      const scopedCountries = (countryData ?? []).filter((row: any) => workspace.activeOrganizationId ? (row.organization_id === workspace.activeOrganizationId) : (!row.organization_id && (row.account_owner_id ? row.account_owner_id === userId : true)));
+      setDepartments(scopedDepartments.map((row: any) => ({ id: String(row.id), code: String(row.code), name: String(row.name), phone: (row.phone as string | null | undefined) ?? null })));
+      setCountries(scopedCountries.map((row: any) => ({ id: String(row.id), code: String(row.code), name: String(row.name) })));
     };
     void loadCatalogs();
     return () => { active = false; };
@@ -257,7 +259,7 @@ export function ClientManagerPanel({ items, initialQuery = '' }: { items: Client
         phone: departmentDraft.phone.trim() || null,
         organization_id: workspace.activeOrganizationId,
         account_owner_id: workspace.activeOrganizationId ? null : workspace.user.id,
-        code: slugifyWorkspaceValue(normalizedName),
+        code: `${slugifyWorkspaceValue(normalizedName)}-${Math.random().toString(36).slice(2, 8)}`,
       };
       if (departmentMode === 'edit' && departmentDraft.id) {
         const { error: updateError } = await workspace.supabase.from('departments').update({ name: normalizedName, phone: payload.phone }).eq('id', departmentDraft.id);
@@ -294,7 +296,7 @@ export function ClientManagerPanel({ items, initialQuery = '' }: { items: Client
         name: normalizedName,
         organization_id: workspace.activeOrganizationId,
         account_owner_id: workspace.activeOrganizationId ? null : workspace.user.id,
-        code: slugifyWorkspaceValue(normalizedName),
+        code: `${slugifyWorkspaceValue(normalizedName)}-${Math.random().toString(36).slice(2, 8)}`,
       };
       if (countryMode === 'edit' && countryDraft.id) {
         const { error: updateError } = await workspace.supabase.from('countries').update({ name: normalizedName }).eq('id', countryDraft.id);
@@ -324,11 +326,8 @@ export function ClientManagerPanel({ items, initialQuery = '' }: { items: Client
     setDeletingId(clientId); setError(null);
     try {
       const workspace = await getClientWorkspaceContext();
-      const { data: deleteResult, error: deleteError } = await workspace.supabase.rpc('delete_workspace_client', { p_client_id: clientId });
+      const { error: deleteError } = await workspace.supabase.from('clients').delete().eq('id', clientId);
       if (deleteError) throw deleteError;
-      if (deleteResult && typeof deleteResult === 'object' && 'ok' in deleteResult && !(deleteResult as any).ok) {
-        throw new Error(String((deleteResult as any).error ?? 'No pudimos eliminar el registro.'));
-      }
       setList((current) => current.filter((item) => item.id !== clientId));
       if (draft.id === clientId) resetDraft();
     } catch (err: any) { setError(err?.message ?? 'No pudimos eliminar el registro.'); }
