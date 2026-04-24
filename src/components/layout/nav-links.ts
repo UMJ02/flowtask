@@ -4,7 +4,6 @@ import {
   ClipboardList,
   FolderKanban,
   LayoutGrid,
-  LayoutPanelTop,
   Settings,
   Users,
   Bell,
@@ -24,7 +23,6 @@ export type AppNavLink = {
 
 export const appNavLinks: AppNavLink[] = [
   { href: '/app/dashboard', label: 'Workspace', hint: 'Tu tablero', icon: LayoutGrid },
-  { href: '/app/board', label: 'Pizarra', hint: 'Tablero interactivo', icon: LayoutPanelTop },
   { href: '/app/projects', label: 'Proyectos', hint: 'Fechas y avance', icon: FolderKanban },
   { href: '/app/tasks', label: 'Tareas', hint: 'Pendientes al día', icon: ClipboardList },
   { href: '/app/analytics', label: 'Analytics', hint: 'Salud y escala', icon: BarChart3 },
