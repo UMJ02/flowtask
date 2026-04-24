@@ -3,7 +3,7 @@
 import { ChangeEvent, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { Building2, FileSpreadsheet, Globe2, Mail, Pencil, Plus, Save, Tags, Trash2, UploadCloud, Users, X } from 'lucide-react';
-import { getClientWorkspaceContext, slugifyWorkspaceValue } from '@/lib/supabase/workspace-client';
+import { getClientWorkspaceContext, slugifyWorkspaceValue, fetchWorkspaceCountries, fetchWorkspaceDepartments } from '@/lib/supabase/workspace-client';
 import type { ClientListItem, ClientStatus } from '@/types/client';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -27,12 +27,14 @@ type DepartmentItem = {
   code: string;
   name: string;
   phone?: string | null;
+  isSystem?: boolean;
 };
 
 type CountryItem = {
   id: string;
   code: string;
   name: string;
+  isSystem?: boolean;
 };
 
 type DepartmentDraft = { id?: string; name: string; phone: string };
@@ -56,6 +58,10 @@ function isValidEmail(value: string) {
 
 function normalizeHeader(value: string) {
   return value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+}
+
+function normalizeCatalogName(value: string) {
+  return value.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 }
 
 function normalizeStatus(value?: string | null): ClientStatus {
@@ -137,15 +143,13 @@ export function ClientManagerPanel({ items, initialQuery = '' }: { items: Client
       const workspace = await getClientWorkspaceContext();
       if (!workspace.user) return;
       const userId = workspace.user.id;
-      const [{ data: departmentData }, { data: countryData }] = await Promise.all([
-        workspace.supabase.from('departments').select('id,code,name,phone,organization_id,account_owner_id').order('name', { ascending: true }),
-        workspace.supabase.from('countries').select('id,code,name,organization_id,account_owner_id').order('name', { ascending: true }),
+      const [departmentRows, countryRows] = await Promise.all([
+        fetchWorkspaceDepartments(workspace.supabase, userId, workspace.activeOrganizationId),
+        fetchWorkspaceCountries(workspace.supabase, userId, workspace.activeOrganizationId),
       ]);
       if (!active) return;
-      const scopedDepartments = (departmentData ?? []).filter((row: any) => workspace.activeOrganizationId ? (row.organization_id === workspace.activeOrganizationId) : (!row.organization_id && (row.account_owner_id ? row.account_owner_id === userId : true)));
-      const scopedCountries = (countryData ?? []).filter((row: any) => workspace.activeOrganizationId ? (row.organization_id === workspace.activeOrganizationId) : (!row.organization_id && (row.account_owner_id ? row.account_owner_id === userId : true)));
-      setDepartments(scopedDepartments.map((row: any) => ({ id: String(row.id), code: String(row.code), name: String(row.name), phone: (row.phone as string | null | undefined) ?? null })));
-      setCountries(scopedCountries.map((row: any) => ({ id: String(row.id), code: String(row.code), name: String(row.name) })));
+      setDepartments(departmentRows);
+      setCountries(countryRows);
     };
     void loadCatalogs();
     return () => { active = false; };
@@ -218,10 +222,13 @@ export function ClientManagerPanel({ items, initialQuery = '' }: { items: Client
     try {
       const workspace = await getClientWorkspaceContext();
       if (!workspace.user) throw new Error('No encontramos una sesión activa para guardar este registro.');
+      const normalizedClientName = draft.name.trim();
+      const duplicate = list.find((item) => item.id !== draft.id && normalizeCatalogName(item.name) === normalizeCatalogName(normalizedClientName));
+      if (duplicate) throw new Error('Ya existe un registro con ese nombre dentro de este workspace.');
       const payload = {
         organization_id: workspace.activeOrganizationId,
         account_owner_id: workspace.activeOrganizationId ? null : workspace.user.id,
-        name: draft.name.trim(),
+        name: normalizedClientName,
         contact_email: draft.contactEmail.trim() || null,
         status: draft.status,
         notes: draft.notes.trim() || null,
@@ -254,6 +261,8 @@ export function ClientManagerPanel({ items, initialQuery = '' }: { items: Client
       const workspace = await getClientWorkspaceContext();
       if (!workspace.user) throw new Error('No encontramos una sesión activa para guardar el departamento.');
       const normalizedName = departmentDraft.name.trim();
+      const duplicateDepartment = departments.find((item) => item.id !== departmentDraft.id && normalizeCatalogName(item.name) === normalizeCatalogName(normalizedName));
+      if (duplicateDepartment) throw new Error('Ya existe un departamento con ese nombre dentro de este workspace.');
       const payload = {
         name: normalizedName,
         phone: departmentDraft.phone.trim() || null,
@@ -271,7 +280,7 @@ export function ClientManagerPanel({ items, initialQuery = '' }: { items: Client
       }
       const { data, error: insertError } = await workspace.supabase.from('departments').insert(payload).select('id,code,name,phone').single();
       if (insertError) throw insertError;
-      setDepartments((current) => [{ id: String(data.id), code: String(data.code), name: String(data.name), phone: (data.phone as string | null | undefined) ?? null }, ...current]);
+      setDepartments((current) => [{ id: String(data.id), code: String(data.code), name: String(data.name), phone: (data.phone as string | null | undefined) ?? null, isSystem: false }, ...current]);
       setMessage('Departamento creado correctamente.');
       resetDepartmentDraft(false);
     } catch (err: any) {
@@ -292,6 +301,8 @@ export function ClientManagerPanel({ items, initialQuery = '' }: { items: Client
       const workspace = await getClientWorkspaceContext();
       if (!workspace.user) throw new Error('No encontramos una sesión activa para guardar el país.');
       const normalizedName = countryDraft.name.trim();
+      const duplicateCountry = countries.find((item) => item.id !== countryDraft.id && normalizeCatalogName(item.name) === normalizeCatalogName(normalizedName));
+      if (duplicateCountry) throw new Error('Ya existe un país con ese nombre dentro de este workspace.');
       const payload = {
         name: normalizedName,
         organization_id: workspace.activeOrganizationId,
@@ -308,7 +319,7 @@ export function ClientManagerPanel({ items, initialQuery = '' }: { items: Client
       }
       const { data, error: insertError } = await workspace.supabase.from('countries').insert(payload).select('id,code,name').single();
       if (insertError) throw insertError;
-      setCountries((current) => [{ id: String(data.id), code: String(data.code), name: String(data.name) }, ...current]);
+      setCountries((current) => [{ id: String(data.id), code: String(data.code), name: String(data.name), isSystem: false }, ...current]);
       setMessage('País creado correctamente.');
       resetCountryDraft(false);
     } catch (err: any) {
@@ -326,8 +337,13 @@ export function ClientManagerPanel({ items, initialQuery = '' }: { items: Client
     setDeletingId(clientId); setError(null);
     try {
       const workspace = await getClientWorkspaceContext();
-      const { error: deleteError } = await workspace.supabase.from('clients').delete().eq('id', clientId);
-      if (deleteError) throw deleteError;
+      const { data: rpcData, error: rpcError } = await workspace.supabase.rpc('delete_workspace_client', { p_client_id: clientId });
+      if (rpcError) {
+        const { error: deleteError } = await workspace.supabase.from('clients').delete().eq('id', clientId);
+        if (deleteError) throw deleteError;
+      } else if (rpcData && typeof rpcData === 'object' && 'ok' in rpcData && !(rpcData as any).ok) {
+        throw new Error(String((rpcData as any).error ?? 'No pudimos eliminar el registro.'));
+      }
       setList((current) => current.filter((item) => item.id !== clientId));
       if (draft.id === clientId) resetDraft();
     } catch (err: any) { setError(err?.message ?? 'No pudimos eliminar el registro.'); }
@@ -335,6 +351,8 @@ export function ClientManagerPanel({ items, initialQuery = '' }: { items: Client
   };
 
   const deleteDepartment = async (departmentId: string) => {
+    const target = departments.find((item) => item.id === departmentId) ?? null;
+    if (target?.isSystem) { setError('Este departamento pertenece al catálogo base. Crea uno propio para editarlo o eliminarlo.'); return; }
     if (!window.confirm('¿Deseas eliminar este departamento?')) return;
     setDeletingDepartmentId(departmentId); setError(null); setMessage(null);
     try {
@@ -359,11 +377,12 @@ export function ClientManagerPanel({ items, initialQuery = '' }: { items: Client
   };
 
   const deleteCountry = async (countryId: string) => {
+    const target = countries.find((item) => item.id === countryId) ?? null;
+    if (target?.isSystem) { setError('Este país pertenece al catálogo base. Crea uno propio para editarlo o eliminarlo.'); return; }
     if (!window.confirm('¿Deseas eliminar este país?')) return;
     setDeletingCountryId(countryId); setError(null); setMessage(null);
     try {
       const workspace = await getClientWorkspaceContext();
-      const target = countries.find((item) => item.id === countryId) ?? null;
       const { error: deleteError } = await workspace.supabase.from('countries').delete().eq('id', countryId);
       if (deleteError) throw deleteError;
       setCountries((current) => current.filter((item) => item.id !== countryId));

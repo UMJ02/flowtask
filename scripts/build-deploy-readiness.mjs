@@ -3,8 +3,8 @@ import path from "node:path";
 
 const root = process.cwd();
 const failures = [];
-const expectedVersion = "58.12.5-client-activity-log-fix-registry-tab-alert-reset-country-card-cleanup";
-const expectedReleaseLabel = "V58.12.5";
+const expectedVersion = "58.12.6-workspace-catalog-delete-flow-task-project-form-fix";
+const expectedReleaseLabel = "V58.12.6";
 
 function requireFile(rel) {
   if (!fs.existsSync(path.join(root, rel))) failures.push(`Missing required file: ${rel}`);
@@ -23,8 +23,9 @@ requireFile(".nvmrc");
 requireFile(".env.example");
 requireFile("scripts/runtime-check.mjs");
 requireFile("scripts/validate-env.mjs");
-requireFile("scripts/verify-v58.12.5.mjs");
-requireFile("docs/release/V58_12_5_CLIENT_ACTIVITY_LOG_FIX_REGISTRY_TAB_ALERT_RESET_COUNTRY_CARD_CLEANUP.md");
+requireFile("scripts/verify-v58.12.6.mjs");
+requireFile("supabase/migrations/0038_v58_12_6_database_sanitization_foundation.sql");
+requireFile("docs/release/V58.12.6_WORKSPACE_CATALOG_DELETE_FLOW_FIX.md");
 requireFile("docs/release/DB_CONTINUITY_SOURCE_OF_TRUTH.md");
 
 const pkg = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
@@ -33,8 +34,8 @@ for (const scriptName of ["build", "vercel:build", "deploy:readiness", "build:pr
   if (!scripts[scriptName]) failures.push(`Missing package script: ${scriptName}`);
 }
 if (pkg.version !== expectedVersion) failures.push(`Unexpected package version: ${pkg.version}`);
-if (scripts["verify:current"] !== "npm run verify:v58.12.5") failures.push("verify:current must target verify:v58.12.5");
-if (scripts["verify:v58.12.5"] !== "node scripts/verify-v58.12.5.mjs") failures.push("verify:v58.12.5 must target scripts/verify-v58.12.5.mjs");
+if (scripts["verify:current"] !== "npm run verify:v58.12.6") failures.push("verify:current must target verify:v58.12.6");
+if (scripts["verify:v58.12.6"] !== "node scripts/verify-v58.12.6.mjs") failures.push("verify:v58.12.6 must target scripts/verify-v58.12.6.mjs");
 
 const vercel = JSON.parse(fs.readFileSync(path.join(root, "vercel.json"), "utf8"));
 if (vercel.framework !== "nextjs") failures.push("vercel.json framework must be nextjs");
@@ -56,4 +57,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log("[build-deploy-readiness] OK — package, env, release exports y continuidad maestra alineados.");
+console.log("[build-deploy-readiness] OK — V58.12.6 package, env, release exports y continuidad maestra alineados.");

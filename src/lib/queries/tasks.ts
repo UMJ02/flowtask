@@ -18,11 +18,23 @@ const getDepartmentIdByCodeCached = cache(async (departmentCode: string) => {
   if (!normalized) return null;
   const { supabase, user, activeOrganizationId } = await getWorkspaceContext();
   if (!user) return null;
-  const { data } = await supabase.from("departments").select("id,organization_id,account_owner_id").eq("code", normalized).limit(20);
-  const scoped = (data ?? []).find((row: any) => {
-    if (activeOrganizationId) return row.organization_id === activeOrganizationId;
-    return !row.organization_id && (row.account_owner_id ? row.account_owner_id === user.id : true);
-  });
+  const { data } = await supabase.from("departments").select("id,code,name,organization_id,account_owner_id").limit(300);
+  const target = normalized.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  const scoped = (data ?? [])
+    .filter((row: any) => {
+      const code = String(row.code ?? '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      const name = String(row.name ?? '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      return code === target || name === target;
+    })
+    .map((row: any) => {
+      let rank = 9;
+      if (activeOrganizationId && row.organization_id === activeOrganizationId) rank = 0;
+      else if (!activeOrganizationId && !row.organization_id && row.account_owner_id === user.id) rank = 0;
+      else if (!row.organization_id && !row.account_owner_id) rank = 1;
+      return { row, rank };
+    })
+    .filter((item: any) => item.rank < 2)
+    .sort((a: any, b: any) => a.rank - b.rank)[0]?.row;
   return (scoped?.id as number | null | undefined) ?? null;
 });
 

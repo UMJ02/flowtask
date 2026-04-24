@@ -1,16 +1,21 @@
-# FlowTask — V58.12.5 Workspace Isolation Final
+# FlowTask — V58.12.6 Workspace Catalog + Delete Flow + Task/Project Form Fix
 
-## Qué cambia en la V58.12.5
-- versión y metadata alineadas a `V58.12.5`
-- aislamiento total de catálogos por workspace
-- persistencia de board/notas por workspace y por usuario
-- agregados del dashboard/radar ajustados al workspace activo
-- nuevo `scripts/verify-v58.12.1.mjs`
-- nuevo release doc `docs/release/V58_12_1_WORKSPACE_ISOLATION_FINAL.md`
+## Qué cambia en la V58.12.6
+- Alinea la app con la migración `0038_v58_12_6_database_sanitization_foundation.sql`.
+- Corrige el flujo de eliminación de registros/clientes usando RPC segura `delete_workspace_client`.
+- Sanea catálogos de países y departamentos con unicidad por scope: global, personal y organización.
+- Evita duplicados dentro del mismo workspace sin bloquear catálogos base compartidos.
+- Ajusta formularios de tareas y proyectos para recargar y seleccionar correctamente país/departamento al editar.
+- Mantiene el deploy de Vercel con `npm run vercel:build`, Node 20.x y `npm ci`.
 
-## Verificación rápida
-- `npm run verify:v58.12.1`
-- `npm run typecheck`
-- `npm run build:preflight`
+## Deploy recomendado
+1. Ejecutar la migración `0038` en Supabase si no se ha aplicado.
+2. Validar localmente:
 
-Usa esta **V58.12.5** como base oficial para cerrar FlowTask con workspaces realmente aislados entre personal y organizaciones múltiples.
+```bash
+npm ci
+npm run typecheck
+npm run vercel:build
+```
+
+3. Subir a GitHub y desplegar en Vercel.
