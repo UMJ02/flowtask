@@ -2,7 +2,6 @@
 export const dynamic = 'force-dynamic';
 
 import { notFound } from 'next/navigation';
-import { Card } from '@/components/ui/card';
 import { TaskForm } from '@/components/tasks/task-form';
 import { getTaskById } from '@/lib/queries/tasks';
 import { safeServerCall } from '@/lib/runtime/safe-server';
@@ -24,12 +23,7 @@ export default async function TaskEditPage({
 
   const department = Array.isArray(task.departments) ? task.departments[0] : task.departments;
   return (
-    <div className="space-y-4">
-      <Card className="rounded-[28px] border border-slate-200/90 bg-white/[0.92] p-5 shadow-[0_10px_30px_rgba(15,23,42,0.04)]">
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Editar tarea</p>
-        <h1 className="mt-2 text-2xl font-bold text-slate-900">{task.title}</h1>
-        <p className="mt-2 text-sm text-slate-500">Actualiza estado, deadline, relación con cliente o detalles operativos.</p>
-      </Card>
+    <div>
       <TaskForm
         taskId={task.id}
         redirectTo={queryString ? `/app/tasks/${task.id}?${queryString}` as any : `/app/tasks/${task.id}` as any}
