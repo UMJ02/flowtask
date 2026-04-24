@@ -7,7 +7,6 @@ import {
   AlertTriangle,
   CalendarDays,
   FolderKanban,
-  LayoutPanelTop,
   Sparkles,
   UserRoundPlus,
   X,
@@ -18,7 +17,6 @@ import { cn } from '@/lib/utils/classnames';
 const ACTIONS = [
   { href: asRoute('/app/tasks/new'), title: 'Nueva tarea', description: 'Crea algo rápido y sigue.', icon: UserRoundPlus },
   { href: asRoute('/app/projects/new'), title: 'Nuevo proyecto', description: 'Abre un frente con contexto.', icon: FolderKanban },
-  { href: asRoute('/app/board'), title: 'Pizarra', description: 'Mueve foco y trabajo.', icon: LayoutPanelTop },
   { href: asRoute('/app/planning'), title: 'Planificación', description: 'Revisa semana y prioridades.', icon: CalendarDays },
   { href: asRoute('/app/tasks?priority=alta'), title: 'Prioridad alta', description: 'Filtra lo crítico primero.', icon: AlertTriangle },
 ] as const;

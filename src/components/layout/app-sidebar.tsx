@@ -1,6 +1,6 @@
-
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { PanelLeftClose, PanelLeftOpen } from 'lucide-react';
@@ -26,7 +26,26 @@ export function AppSidebar({
   const { collapsed, toggle } = useSidebarState();
 
   return (
-    <aside className={`hidden sticky top-6 rounded-[32px] border border-emerald-900/20 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-900 px-3 py-4 text-white shadow-[0_20px_50px_rgba(15,23,42,0.24)] md:flex md:min-h-[calc(100vh-3rem)] md:flex-col transition-all duration-300 ${collapsed ? 'md:w-[104px]' : 'md:w-full'}`}>
+    <aside className={`hidden bg-[#071120] px-3 py-5 text-white shadow-[18px_0_50px_rgba(7,17,32,0.18)] md:sticky md:top-0 md:flex md:h-screen md:flex-col transition-all duration-300 ${collapsed ? 'md:w-[96px]' : 'md:w-[260px]'}`}>
+      <div className={`mb-8 flex items-center ${collapsed ? 'justify-center' : 'justify-between px-2'}`}>
+        <Link href="/app/dashboard" className="flex min-w-0 items-center gap-3">
+          <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-emerald-400/10 ring-1 ring-emerald-400/20">
+            <Image src="/icons/icon.png" alt="FlowTask" width={28} height={28} className="h-7 w-7 object-contain" priority />
+          </span>
+          {!collapsed ? <span className="truncate text-[15px] font-black uppercase tracking-[0.22em] text-white">FlowTask</span> : null}
+        </Link>
+        {!collapsed ? (
+          <button
+            type="button"
+            onClick={toggle}
+            aria-label="Colapsar menú"
+            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl text-slate-400 transition hover:bg-white/8 hover:text-white"
+          >
+            <PanelLeftClose className="h-4 w-4" />
+          </button>
+        ) : null}
+      </div>
+
       {collapsed ? (
         <div className="mb-4 flex justify-center">
           <button
@@ -38,54 +57,27 @@ export function AppSidebar({
             <PanelLeftOpen className="h-4 w-4" />
           </button>
         </div>
-      ) : (
-        <div className="mb-4 rounded-[26px] bg-white/5 p-3 ring-1 ring-white/10 transition-all duration-300">
-          <div className="flex items-center justify-between gap-2">
-            <div className="min-w-0">
-              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-emerald-300">FlowTask</p>
-              <p className="mt-1 text-xl font-bold">Tu espacio</p>
-            </div>
-            <button
-              type="button"
-              onClick={toggle}
-              aria-label="Colapsar menú"
-              className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-white/8 text-slate-200 transition hover:bg-white/12 hover:text-white"
-            >
-              <PanelLeftClose className="h-4 w-4" />
-            </button>
-          </div>
-          <p className="mt-1 text-xs leading-5 text-slate-300">Todo lo importante, en menos pasos.</p>
-        </div>
-      )}
+      ) : null}
 
-      <nav className="space-y-1.5 border-t border-white/10 pt-3">
+      <nav className="space-y-2">
         {mainNavLinks.map((link) => {
           const Icon = link.icon;
-          const active = pathname === link.href || pathname?.startsWith(`${link.href}/`);
+          const active = pathname === link.href || pathname?.startsWith(`${link.href}/`) || (link.href === '/app/dashboard' && pathname === '/app/board');
           return (
             <Link
               key={link.href}
-              className={`group flex items-center ${collapsed ? 'justify-center' : 'justify-between'} rounded-[26px] px-2.5 py-2.5 transition-all duration-200 ${active ? 'bg-white/10 ring-1 ring-emerald-400/30 shadow-[0_0_0_1px_rgba(16,185,129,0.12)]' : 'hover:bg-white/8'}`}
+              className={`group flex h-12 items-center rounded-[12px] px-3 transition-all duration-200 ${collapsed ? 'justify-center' : 'gap-3'} ${active ? 'border border-emerald-400/25 bg-emerald-400/14 text-white shadow-[0_12px_28px_rgba(22,199,132,0.10)]' : 'text-slate-300 hover:bg-white/7 hover:text-white'}`}
               href={link.href}
               title={collapsed ? link.label : undefined}
             >
-              <div className={`flex min-w-0 items-center ${collapsed ? '' : 'gap-3'}`}>
-                <span className={`inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl transition-all duration-200 ${active ? 'bg-emerald-500 text-white shadow-[0_10px_24px_rgba(16,185,129,0.28)]' : 'bg-white/10 text-emerald-300 group-hover:bg-emerald-500 group-hover:text-white'}`}>
-                  <Icon className="h-4 w-4" />
-                </span>
-                {!collapsed ? (
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-white">{link.label}</p>
-                    <p className={`truncate text-[11px] ${active ? 'text-slate-200' : 'text-slate-400'}`}>{link.hint}</p>
-                  </div>
-                ) : null}
-              </div>
+              <Icon className={`h-5 w-5 shrink-0 ${active ? 'text-[#16C784]' : 'text-slate-300 group-hover:text-white'}`} />
+              {!collapsed ? <span className="truncate text-[15px] font-semibold">{link.label}</span> : null}
             </Link>
           );
         })}
       </nav>
 
-      <div className="mt-auto pt-3">
+      <div className="mt-auto pt-4">
         <SidebarFooter
           organizations={organizations}
           activeOrganization={activeOrganization}

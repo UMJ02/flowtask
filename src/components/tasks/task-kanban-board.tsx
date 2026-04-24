@@ -301,7 +301,7 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery, work
 
   if (!hydrated) {
     return (
-      <div className="grid gap-4 xl:grid-cols-3">
+      <div className="grid gap-3 xl:grid-cols-3">
         {columns.map((column) => {
           const Icon = column.icon;
           return (
@@ -400,16 +400,15 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery, work
         <div className="rounded-2xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div>
       ) : null}
 
-      <div className="grid gap-4 xl:grid-cols-3">
+      <div className="grid gap-3 xl:grid-cols-3">
         {grouped.map((column) => {
-          const Icon = column.icon;
           const isActiveDropzone = hoverColumn === column.value;
           const isRecentDrop = recentDropColumn === column.value;
           return (
             <section
               key={column.value}
-              className={`rounded-[18px] border p-3.5 transition ${
-                isActiveDropzone || isRecentDrop ? "border-emerald-300 bg-emerald-50/60 shadow-[0_12px_28px_rgba(16,185,129,0.08)]" : column.value === "en_proceso" ? "border-sky-200 bg-sky-50/45" : column.value === "en_espera" ? "border-amber-200 bg-amber-50/45" : "border-emerald-200 bg-emerald-50/45"
+              className={`rounded-[18px] border p-3 transition ${
+                isActiveDropzone || isRecentDrop ? "border-emerald-300 bg-emerald-50/60 shadow-[0_12px_28px_rgba(16,185,129,0.08)]" : column.value === "en_proceso" ? "border-[#BFDBFE] bg-[linear-gradient(180deg,#F8FBFF,#FFFFFF)]" : column.value === "en_espera" ? "border-[#FDE68A] bg-[linear-gradient(180deg,#FFFDF5,#FFFFFF)]" : "border-[#BBF7D0] bg-[linear-gradient(180deg,#F7FFFB,#FFFFFF)]"
               }`}
               onDragOver={(event) => {
                 event.preventDefault();
@@ -423,12 +422,10 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery, work
                 if (taskId) void moveTask(taskId, column.value);
               }}
             >
-              <div className="mb-3 flex items-center justify-between gap-3 border-b border-slate-200/80 pb-2.5">
+              <div className="mb-3 flex items-center justify-between gap-3 pb-1.5">
                 <div className="flex min-w-0 items-center gap-3">
-                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-white text-slate-600 ring-1 ring-slate-200">
-                    <Icon className="h-4 w-4" />
-                  </span>
-                  <p className="text-[1.2rem] font-bold tracking-tight text-slate-900 md:text-[1.35rem]">{column.label}</p>
+                  <span className={`inline-flex h-2.5 w-2.5 rounded-full ${column.value === "en_proceso" ? "bg-[#2F80ED]" : column.value === "en_espera" ? "bg-[#F59E0B]" : "bg-[#16C784]"}`} />
+                  <p className="text-base font-bold tracking-tight text-slate-900">{column.label}</p>
                 </div>
                 <span className="inline-flex h-9 min-w-9 items-center justify-center rounded-xl bg-white px-3 text-sm font-semibold text-slate-700 ring-1 ring-slate-200 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]">
                   {column.allItems.length}
@@ -474,7 +471,7 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery, work
                         }}
                         className={draggingId === task.id ? "opacity-60" : "opacity-100"}
                       >
-                        <Card className={`rounded-[16px] border bg-white/95 p-2.5 shadow-[0_8px_18px_rgba(15,23,42,0.04)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_24px_rgba(15,23,42,0.08)] ${
+                        <Card className={`rounded-[14px] border bg-white p-3 shadow-[0_8px_20px_rgba(15,23,42,0.04)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_24px_rgba(15,23,42,0.08)] ${
                           isHoverCard ? "border-emerald-300 ring-2 ring-emerald-100" : "border-white/70 hover:border-slate-200"
                         }`}>
                           <div className="space-y-3">
@@ -482,19 +479,19 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery, work
                               <span
                                 title="Arrastrar"
                                 aria-label="Arrastrar tarea"
-                                className="inline-flex h-9 w-9 shrink-0 cursor-grab items-center justify-center rounded-2xl bg-slate-50 text-slate-400 ring-1 ring-slate-200 active:cursor-grabbing"
+                                className="inline-flex h-8 w-8 shrink-0 cursor-grab items-center justify-center rounded-xl bg-slate-50 text-slate-400 ring-1 ring-slate-100 active:cursor-grabbing"
                               >
                                 <GripVertical className="h-4 w-4" />
                               </span>
                               <div className="min-w-0 flex-1">
-                                <Link href={taskDetailRoute(task.id, currentQuery)} className="block line-clamp-2 text-[0.98rem] font-bold leading-tight tracking-tight text-slate-900 transition hover:text-emerald-700">
+                                <Link href={taskDetailRoute(task.id, currentQuery)} className="block line-clamp-2 text-sm font-bold leading-snug tracking-[-0.01em] text-slate-900 transition hover:text-emerald-700">
                                   {task.title}
                                 </Link>
                               </div>
                             </div>
 
                             <div className="flex items-center justify-between gap-2 border-t border-slate-100 pt-1.5">
-                              <span className="inline-flex shrink-0 items-center rounded-full bg-white px-2.5 py-1 text-[12px] font-semibold text-slate-700 ring-1 ring-slate-200">
+                              <span className="inline-flex shrink-0 items-center rounded-full bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-500 ring-1 ring-slate-200">
                                 {formatDate(task.due_date)}
                               </span>
                               <div className="flex items-center gap-1.5">
@@ -508,7 +505,7 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery, work
                                       disabled={Boolean(saving)}
                                       title={option.label}
                                       aria-label={`Mover a ${option.label}`}
-                                      className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white text-slate-700 ring-1 ring-slate-200 transition hover:bg-slate-100 disabled:opacity-60"
+                                      className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-white text-slate-600 ring-1 ring-slate-200 transition hover:bg-slate-100 disabled:opacity-60"
                                     >
                                       {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <option.icon className="h-3.5 w-3.5" />}
                                     </button>
@@ -517,7 +514,7 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery, work
                                   href={taskDetailRoute(task.id, currentQuery)}
                                   title="Abrir"
                                   aria-label="Abrir tarea"
-                                  className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100 transition hover:bg-emerald-100"
+                                  className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100 transition hover:bg-emerald-100"
                                 >
                                   <FolderOpen className="h-3.5 w-3.5" />
                                 </Link>
@@ -538,7 +535,7 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery, work
                   <button
                     type="button"
                     onClick={() => setExpandedColumns((current) => ({ ...current, [column.value]: !column.expanded }))}
-                    className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                    className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white/80 px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-white"
                   >
                     {column.expanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                     {column.expanded ? "Ver menos" : `Ver más (${column.hiddenCount})`}

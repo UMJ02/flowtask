@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "58.12.6-workspace-catalog-delete-flow-task-project-form-fix",
+  "version": "58.13.1-workspace-v2-pro",
   "private": true,
   "scripts": {
     "dev": "node node_modules/next/dist/bin/next dev",

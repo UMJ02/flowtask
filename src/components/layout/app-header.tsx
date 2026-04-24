@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import { Building2 } from 'lucide-react';
 import { NotificationBell } from '@/components/notifications/notification-bell';
 import { CommandPalette } from '@/components/layout/command-palette';
@@ -28,34 +27,35 @@ export function AppHeader({
   activeOrganization?: OrganizationSummary | null;
 }) {
   const firstName = getFirstName(userName);
-  const workspaceLabel = activeOrganization ? `Estás trabajando en ${activeOrganization.name}.` : 'Tu tablero, tus tareas y lo importante del día en un solo lugar.';
+  const workspaceLabel = activeOrganization ? `Estás trabajando en ${activeOrganization.name}.` : 'Enfócate en lo importante. Tú decides el impacto de hoy.';
 
   return (
-    <header className="sticky top-3 z-20 rounded-[34px] border border-emerald-100/90 bg-[radial-gradient(circle_at_top_left,rgba(16,185,129,0.12),transparent_26%),linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,250,252,0.98))] px-4 py-4 shadow-[0_14px_34px_rgba(15,23,42,0.06)] backdrop-blur md:px-6">
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        <div className="flex min-w-0 items-start gap-3">
-          <MobileNav />
-          <div className="hidden h-12 w-12 items-center justify-center rounded-full bg-slate-950 shadow-[0_12px_28px_rgba(15,23,42,0.18)] ring-1 ring-slate-900 md:inline-flex">
-            {activeOrganization ? <Building2 className="h-6 w-6 text-emerald-300" /> : <Image src="/icons/icon.png" alt="FlowTask" width={28} height={28} className="h-7 w-7 object-contain" priority />}
+    <header className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+      <div className="flex min-w-0 items-start gap-3">
+        <MobileNav />
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-2">
+            <h1 className="text-[1.7rem] font-black leading-tight tracking-[-0.045em] text-[#0F172A] md:text-[2rem]">Hola, {firstName} 👋</h1>
+            {activeOrganization ? (
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-100 bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700">
+                <Building2 className="h-3.5 w-3.5" /> Organización
+              </span>
+            ) : null}
           </div>
-          <div className="min-w-0">
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-emerald-600">FlowTask</p>
-            <h1 className="mt-1 text-lg font-bold text-slate-900 md:text-2xl">Hola, {firstName}</h1>
-            <p className="mt-1 max-w-2xl text-sm text-slate-500">{workspaceLabel}</p>
-          </div>
+          <p className="mt-1 text-sm font-medium text-slate-500">{workspaceLabel}</p>
         </div>
+      </div>
 
-        <div className="flex items-center justify-end gap-3">
-          <div className="hidden sm:block">
-            <InstallAppButton compact />
-          </div>
-          <div className="min-w-[220px] md:hidden">
-            <OrganizationSwitcher organizations={organizations} activeOrganization={activeOrganization} compact />
-          </div>
-          <CommandPalette />
-          <NotificationBell />
-          <UserMenu fullName={userName} email={userEmail} avatarUrl={avatarUrl} />
+      <div className="flex items-center justify-end gap-3">
+        <div className="hidden sm:block">
+          <InstallAppButton compact />
         </div>
+        <div className="min-w-[220px] md:hidden">
+          <OrganizationSwitcher organizations={organizations} activeOrganization={activeOrganization} compact />
+        </div>
+        <CommandPalette />
+        <NotificationBell />
+        <UserMenu fullName={userName} email={userEmail} avatarUrl={avatarUrl} />
       </div>
     </header>
   );

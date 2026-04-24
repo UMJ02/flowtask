@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { AlertTriangle, CalendarDays, FolderKanban, LayoutPanelTop, Plus, Sparkles, UserRoundPlus } from 'lucide-react';
+import { AlertTriangle, CalendarDays, FolderKanban, Plus, Sparkles, UserRoundPlus } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { asRoute, projectNewRoute, taskNewRoute, type AppRoute } from '@/lib/navigation/routes';
 
@@ -27,14 +27,6 @@ const ACTIONS: Array<{ href: AppRoute; title: string; description: string; helpe
     helper: 'Vista rápida',
     icon: UserRoundPlus,
     accent: 'from-rose-50 to-white',
-  },
-  {
-    href: asRoute('/app/board'),
-    title: 'Pizarra',
-    description: 'Abre el tablero interactivo para mover trabajo y foco.',
-    helper: 'Vista operativa',
-    icon: LayoutPanelTop,
-    accent: 'from-violet-50 to-white',
   },
   {
     href: asRoute('/app/planning'),
