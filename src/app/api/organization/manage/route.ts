@@ -40,7 +40,7 @@ export async function PATCH(request: Request) {
 
     const { error } = await supabase
       .from('organizations')
-      .update({ deleted_at: null, purge_scheduled_at: null })
+      .update({ deleted_at: null, purge_scheduled_at: null, purge_after: null, reactivated_at: new Date().toISOString() })
       .eq('id', organizationId);
 
     if (error) return NextResponse.json({ error: error.message }, { status: 400 });
@@ -121,6 +121,14 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: resetModesResult.error.message }, { status: 400 });
     }
 
+    const cleanupResults = await Promise.all([
+      admin.from('tasks').delete().eq('organization_id', organizationId),
+      admin.from('projects').delete().eq('organization_id', organizationId),
+      admin.from('activity_logs').delete().eq('organization_id', organizationId),
+    ]);
+    const cleanupError = cleanupResults.find((result) => result.error)?.error;
+    if (cleanupError) return NextResponse.json({ error: cleanupError.message }, { status: 400 });
+
     const { error } = await admin.from('organizations').delete().eq('id', organizationId);
     if (error) return NextResponse.json({ error: error.message }, { status: 400 });
 
@@ -138,7 +146,7 @@ export async function DELETE(request: Request) {
   const purgeAt = new Date(now.getTime() + TEN_DAYS_MS).toISOString();
   const [resetDefaultResult, scheduleResult, resetModesResult] = await Promise.all([
     admin.from('organization_members').update({ is_default: false }).eq('organization_id', organizationId),
-    admin.from('organizations').update({ deleted_at: now.toISOString(), purge_scheduled_at: purgeAt }).eq('id', organizationId),
+    admin.from('organizations').update({ deleted_at: now.toISOString(), purge_scheduled_at: purgeAt, purge_after: purgeAt, reactivated_at: null }).eq('id', organizationId),
     admin.from('user_account_modes').update({ default_organization_id: null }).eq('default_organization_id', organizationId),
   ]);
   if (resetDefaultResult.error) return NextResponse.json({ error: resetDefaultResult.error.message }, { status: 400 });
