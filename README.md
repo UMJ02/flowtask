@@ -1,3 +1,7 @@
+# FlowTask — V58.13.1 Workspace v2 PRO
+
+Workspace unificado: Radar inteligente, KPIs, Kanban central y widgets rápidos sobre la base estable V58.12.6.
+
 # FlowTask — V58.12.6 Workspace Catalog + Delete Flow + Task/Project Form Fix
 
 ## Qué cambia en la V58.12.6

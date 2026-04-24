@@ -58,7 +58,7 @@
     "release:repo:current": "npm run verify:v58.11.2 && npm run release:check && npm run security:check",
     "qa:current": "npm run validate:node && npm run validate:env && npm run verify:current && npm run runtime:check && npm run typecheck && npm run security:check && npm run performance:check && npm run hardening:final:check && npm run ops:check && npm run deploy:production:ready",
     "release:current": "npm run clean && npm run release:repo:current && npm run qa:current && npm run qa:functional && npm run qa:report && npm run ux:review && npm run preprod:validate && npm run production:gate",
-    "verify:current": "npm run verify:v58.12.6",
+    "verify:current": "npm run verify:v58.13.1",
     "release:repo:v54.3.3": "npm run verify:current && npm run runtime:check && npm run typecheck",
     "verify:v54.3.4": "node scripts/verify-v54.3.4.mjs",
     "release:repo:v54.3.4": "npm run verify:current && npm run runtime:check && npm run typecheck",
@@ -101,7 +101,8 @@
     "verify:v58.12.1": "node scripts/verify-v58.12.1.mjs",
     "verify:v58.12.4": "node scripts/verify-v58.12.4.mjs",
     "verify:v58.12.5": "node scripts/verify-v58.12.5.mjs",
-    "verify:v58.12.6": "node scripts/verify-v58.12.6.mjs"
+    "verify:v58.12.6": "node scripts/verify-v58.12.6.mjs",
+    "verify:v58.13.1": "node scripts/verify-v58.13.1.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
