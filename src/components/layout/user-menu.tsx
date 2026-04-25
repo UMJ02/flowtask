@@ -107,10 +107,9 @@ export function UserMenu({
       <Link
         href="/app/profile"
         aria-label="Abrir perfil"
-        className="relative inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#E5EAF1] bg-white text-left shadow-[0_8px_18px_rgba(15,23,42,.035)] transition hover:scale-[1.04] hover:border-emerald-100 hover:bg-emerald-50 md:hidden"
+        className="relative inline-flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 bg-white text-left shadow-sm transition hover:border-emerald-200 hover:bg-emerald-50 md:hidden"
       >
         <AvatarBadge avatarUrl={liveAvatarUrl} initials={initials} />
-        <span className="absolute bottom-1 right-1 h-2.5 w-2.5 rounded-full border-2 border-white bg-[#16C784]" />
       </Link>
 
       <div className="relative hidden md:block">
@@ -118,10 +117,9 @@ export function UserMenu({
           type="button"
           aria-label="Abrir menú de usuario"
           onClick={() => setOpen((value) => !value)}
-          className="group relative inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#E5EAF1] bg-white text-left shadow-[0_8px_18px_rgba(15,23,42,.035)] transition hover:scale-[1.04] hover:border-emerald-100 hover:bg-emerald-50"
+          className="group relative inline-flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 bg-white text-left shadow-sm transition hover:border-emerald-200 hover:bg-emerald-50"
         >
           <AvatarBadge avatarUrl={liveAvatarUrl} initials={initials} />
-          <span className="absolute bottom-1 right-1 h-2.5 w-2.5 rounded-full border-2 border-white bg-[#16C784]" />
           <span className="pointer-events-none absolute -bottom-10 left-1/2 hidden -translate-x-1/2 whitespace-nowrap rounded-xl bg-slate-950 px-3 py-1.5 text-xs font-medium text-white shadow-lg group-hover:block">
             {liveEmail}
           </span>
