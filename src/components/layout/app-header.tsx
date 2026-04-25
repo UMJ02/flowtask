@@ -29,7 +29,7 @@ export function AppHeader({
   const workspaceLabel = activeOrganization ? `Estás trabajando en ${activeOrganization.name}.` : 'Enfócate en lo importante. Tú decides el impacto de hoy.';
 
   return (
-    <header className="sticky top-4 z-30 animate-[flowtaskFadeUp_250ms_ease-out] min-h-[74px] rounded-[20px] border border-[#E5EAF1] bg-white/85 px-5 py-4 shadow-[0_8px_30px_rgba(2,6,23,0.06)] backdrop-blur-[16px] md:h-[82px] md:px-6 md:py-0">
+    <header className="sticky top-4 z-30 animate-[flowtaskFadeUp_250ms_ease-out] rounded-[20px] border border-[#E5EAF1] bg-white/85 px-5 py-4 shadow-[0_8px_30px_rgba(2,6,23,0.06)] backdrop-blur-[16px] md:h-[72px] md:px-6 md:py-0">
       <div className="flex h-full min-w-0 flex-col gap-4 md:flex-row md:items-center md:justify-between md:gap-6">
         <div className="flex min-w-0 items-center gap-3 md:w-[36%]">
           <MobileNav />
