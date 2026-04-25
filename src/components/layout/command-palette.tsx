@@ -320,23 +320,23 @@ export function CommandPalette() {
       </button>
 
       {open ? (
-        <div className="fixed inset-0 z-50 flex items-start justify-center bg-slate-950/45 p-4 pt-16">
-          <div className="w-full max-w-3xl overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-2xl">
-            <div className="flex items-center gap-3 border-b border-slate-200 px-4 py-4">
-              <Search className="h-5 w-5 text-slate-400" />
+        <div className="fixed inset-x-0 top-[104px] z-50 flex items-start justify-center px-4 pointer-events-none md:top-[116px]">
+          <div className="pointer-events-auto w-full max-w-3xl overflow-hidden rounded-[28px] border border-[#E5EAF1] bg-white shadow-[0_24px_80px_rgba(15,23,42,0.16)] animate-[flowtaskFadeUp_180ms_ease-out]">
+            <div className="flex items-center gap-3 border-b border-[#E5EAF1] px-4 py-4">
+              <Search className="h-5 w-5 text-[#64748B]" />
               <input
                 autoFocus
-                className="w-full bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400"
+                className="w-full bg-transparent text-sm font-medium text-[#0F172A] outline-none placeholder:text-[#94A3B8] focus:ring-0"
                 onChange={(event) => setQuery(event.target.value)}
                 placeholder="Busca tareas, proyectos, clientes o pantallas"
                 value={query}
               />
-              <button type="button" className="inline-flex h-10 w-10 items-center justify-center rounded-full text-slate-500 hover:bg-slate-100" onClick={() => setOpen(false)}>
+              <button type="button" className="inline-flex h-10 w-10 items-center justify-center rounded-full text-[#64748B] transition hover:bg-[#F7F9FC] hover:text-[#0F172A]" onClick={() => setOpen(false)}>
                 <X className="h-5 w-5" />
               </button>
             </div>
 
-            <div className="max-h-[70vh] overflow-y-auto p-3">
+            <div className="max-h-[62vh] overflow-y-auto p-3">
               {grouped.length ? (
                 grouped.map(([section, items]) => (
                   <div key={section} className="mb-4 last:mb-0">

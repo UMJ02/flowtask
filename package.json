@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "58.13.6-projects-list-pro",
+  "version": "58.13.8-header-search-refine-pro",
   "private": true,
   "scripts": {
     "dev": "node node_modules/next/dist/bin/next dev",
