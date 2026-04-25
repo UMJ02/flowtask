@@ -1,7 +1,7 @@
 'use client';
 
 import { BarChart3, CalendarDays, CheckCircle2, ChevronDown, Clock3, Filter, FolderKanban, ListChecks, ShieldCheck, TrendingUp, Users, Zap } from 'lucide-react';
-import type { ComponentType } from 'react';
+import { useState, type ComponentType } from 'react';
 import { Card } from '@/components/ui/card';
 import type { WorkspaceAnalyticsSummary } from '@/lib/queries/analytics';
 
@@ -41,18 +41,31 @@ function clamp(value: number, min = 0, max = 100) {
   return Math.max(min, Math.min(max, value));
 }
 
+function smoothSvgPath(coords: Array<{ x: number; y: number }>) {
+  if (!coords.length) return '';
+  if (coords.length === 1) return `M ${coords[0].x.toFixed(1)} ${coords[0].y.toFixed(1)}`;
+
+  const path = [`M ${coords[0].x.toFixed(1)} ${coords[0].y.toFixed(1)}`];
+  for (let index = 0; index < coords.length - 1; index += 1) {
+    const p0 = coords[index - 1] ?? coords[index];
+    const p1 = coords[index];
+    const p2 = coords[index + 1];
+    const p3 = coords[index + 2] ?? p2;
+    path.push(`C ${(p1.x + (p2.x - p0.x) / 6).toFixed(1)} ${(p1.y + (p2.y - p0.y) / 6).toFixed(1)}, ${(p2.x - (p3.x - p1.x) / 6).toFixed(1)} ${(p2.y - (p3.y - p1.y) / 6).toFixed(1)}, ${p2.x.toFixed(1)} ${p2.y.toFixed(1)}`);
+  }
+  return path.join(' ');
+}
+
 function buildPath(points: number[], width = 176, height = 58) {
   if (!points.length) return '';
   const max = Math.max(...points);
   const min = Math.min(...points);
   const spread = max - min || 1;
-  return points
-    .map((point, index) => {
-      const x = (index / Math.max(points.length - 1, 1)) * width;
-      const y = height - ((point - min) / spread) * (height - 10) - 5;
-      return `${index === 0 ? 'M' : 'L'} ${x.toFixed(1)} ${y.toFixed(1)}`;
-    })
-    .join(' ');
+  const coords = points.map((point, index) => ({
+    x: (index / Math.max(points.length - 1, 1)) * width,
+    y: height - ((point - min) / spread) * (height - 10) - 5,
+  }));
+  return smoothSvgPath(coords);
 }
 
 function MiniSparkline({ points, color }: { points: number[]; color: string }) {
@@ -101,6 +114,7 @@ function KpiCard({ item }: { item: KpiItem }) {
 }
 
 function TeamActivityChart() {
+  const [hovered, setHovered] = useState<{ day: string; label: string; value: number; color: string; x: number; y: number } | null>(null);
   const width = 720;
   const height = 248;
   const chartTop = 20;
@@ -110,8 +124,10 @@ function TeamActivityChart() {
   const maxValue = 105;
   const x = (index: number) => chartLeft + (index / (activityData.length - 1)) * (chartRight - chartLeft);
   const y = (value: number) => chartBottom - (value / maxValue) * (chartBottom - chartTop);
-  const completedPath = activityData.map((item, index) => `${index === 0 ? 'M' : 'L'} ${x(index)} ${y(item.completadas)}`).join(' ');
-  const createdPath = activityData.map((item, index) => `${index === 0 ? 'M' : 'L'} ${x(index)} ${y(item.creadas)}`).join(' ');
+  const completedCoords = activityData.map((item, index) => ({ x: x(index), y: y(item.completadas) }));
+  const createdCoords = activityData.map((item, index) => ({ x: x(index), y: y(item.creadas) }));
+  const completedPath = smoothSvgPath(completedCoords);
+  const createdPath = smoothSvgPath(createdCoords);
   const completedArea = `${completedPath} L ${x(activityData.length - 1)} ${chartBottom} L ${chartLeft} ${chartBottom} Z`;
   const grid = [0, 25, 50, 75, 100];
 
@@ -129,8 +145,17 @@ function TeamActivityChart() {
           Diario <ChevronDown className="h-4 w-4" />
         </button>
       </div>
-      <div className="mt-4 overflow-hidden">
-        <svg viewBox={`0 0 ${width} ${height}`} className="h-[260px] w-full" role="img" aria-label="Gráfica de actividad del equipo">
+      <div className="relative mt-4 overflow-hidden">
+        {hovered ? (
+          <div
+            className="pointer-events-none absolute z-10 -translate-x-1/2 -translate-y-full rounded-2xl border border-[#E5EAF1] bg-white px-3 py-2 text-xs shadow-[0_16px_34px_rgba(15,23,42,0.13)]"
+            style={{ left: `${(hovered.x / width) * 100}%`, top: `${(hovered.y / height) * 100}%` }}
+          >
+            <p className="font-bold text-[#0F172A]">{hovered.day}</p>
+            <p className="mt-1 inline-flex items-center gap-2 font-semibold text-[#64748B]"><span className="h-2 w-2 rounded-full" style={{ backgroundColor: hovered.color }} /> {hovered.label}: {hovered.value}</p>
+          </div>
+        ) : null}
+        <svg viewBox={`0 0 ${width} ${height}`} className="h-[260px] w-full" role="img" aria-label="Gráfica de actividad del equipo" onMouseLeave={() => setHovered(null)}>
           <defs>
             <linearGradient id="completedArea" x1="0" x2="0" y1="0" y2="1">
               <stop offset="0%" stopColor="#16C784" stopOpacity="0.18" />
@@ -148,8 +173,8 @@ function TeamActivityChart() {
           <path d={createdPath} fill="none" stroke="#64748B" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.4" />
           {activityData.map((item, index) => (
             <g key={item.day}>
-              <circle cx={x(index)} cy={y(item.completadas)} r="4" fill="#16C784" stroke="white" strokeWidth="2" />
-              <circle cx={x(index)} cy={y(item.creadas)} r="4" fill="#94A3B8" stroke="white" strokeWidth="2" />
+              <circle cx={x(index)} cy={y(item.completadas)} r="5" className="cursor-pointer transition-transform duration-150 hover:scale-125" fill="#16C784" stroke="white" strokeWidth="2" onMouseEnter={() => setHovered({ day: item.day, label: 'Completadas', value: item.completadas, color: '#16C784', x: x(index), y: y(item.completadas) })} />
+              <circle cx={x(index)} cy={y(item.creadas)} r="5" className="cursor-pointer transition-transform duration-150 hover:scale-125" fill="#94A3B8" stroke="white" strokeWidth="2" onMouseEnter={() => setHovered({ day: item.day, label: 'Creadas', value: item.creadas, color: '#94A3B8', x: x(index), y: y(item.creadas) })} />
               <text x={x(index)} y="232" textAnchor="middle" fill="#64748B" fontSize="12">{item.day}</text>
             </g>
           ))}
@@ -160,6 +185,7 @@ function TeamActivityChart() {
 }
 
 function DonutChart({ completed, progress, waiting, pending }: { completed: number; progress: number; waiting: number; pending: number }) {
+  const [activeLabel, setActiveLabel] = useState<string | null>(null);
   const values = [
     { label: 'Completadas', value: completed, color: statusColors.completed },
     { label: 'En progreso', value: progress, color: statusColors.progress },
@@ -167,6 +193,7 @@ function DonutChart({ completed, progress, waiting, pending }: { completed: numb
     { label: 'Pendientes', value: pending, color: statusColors.pending },
   ];
   const total = values.reduce((sum, item) => sum + item.value, 0) || 1;
+  const activeItem = values.find((item) => item.label === activeLabel) ?? null;
   let offset = 25;
   const radius = 58;
   const circumference = 2 * Math.PI * radius;
@@ -174,11 +201,30 @@ function DonutChart({ completed, progress, waiting, pending }: { completed: numb
   return (
     <div className="grid gap-5 md:grid-cols-[190px_1fr] md:items-center">
       <div className="relative mx-auto h-[210px] w-[210px]">
-        <svg viewBox="0 0 160 160" className="h-full w-full -rotate-90">
+        <svg viewBox="0 0 160 160" className="h-full w-full -rotate-90" onMouseLeave={() => setActiveLabel(null)}>
           <circle cx="80" cy="80" r={radius} fill="none" stroke="#EEF2F7" strokeWidth="24" />
           {values.map((item) => {
             const dash = (item.value / total) * circumference;
-            const circle = <circle key={item.label} cx="80" cy="80" r={radius} fill="none" stroke={item.color} strokeDasharray={`${dash} ${circumference - dash}`} strokeDashoffset={-offset} strokeLinecap="butt" strokeWidth="24" />;
+            const isActive = activeLabel === item.label;
+            const circle = (
+              <circle
+                key={item.label}
+                cx="80"
+                cy="80"
+                r={radius}
+                fill="none"
+                stroke={item.color}
+                strokeDasharray={`${dash} ${circumference - dash}`}
+                strokeDashoffset={-offset}
+                strokeLinecap="butt"
+                strokeWidth={isActive ? 27 : 24}
+                className="cursor-pointer transition-all duration-200"
+                style={{ filter: isActive ? 'drop-shadow(0 8px 14px rgba(15,23,42,.14))' : undefined }}
+                onMouseEnter={() => setActiveLabel(item.label)}
+              >
+                <title>{`${item.label}: ${item.value} (${Math.round((item.value / total) * 100)}%)`}</title>
+              </circle>
+            );
             offset += dash;
             return circle;
           })}
@@ -187,14 +233,23 @@ function DonutChart({ completed, progress, waiting, pending }: { completed: numb
           <span className="text-[28px] font-bold tracking-[-0.04em] text-[#0F172A]">{total}</span>
           <span className="text-sm font-semibold text-[#64748B]">Total</span>
         </div>
-      </div>
-      <div className="space-y-4">
-        {values.map((item) => (
-          <div key={item.label} className="grid grid-cols-[1fr_auto] items-center gap-4 text-sm">
-            <span className="inline-flex items-center gap-3 font-semibold text-[#334155]"><span className="h-3 w-3 rounded-full" style={{ backgroundColor: item.color }} /> {item.label}</span>
-            <span className="font-semibold text-[#64748B]">{item.value} ({Math.round((item.value / total) * 100)}%)</span>
+        {activeItem ? (
+          <div className="absolute left-1/2 top-3 -translate-x-1/2 rounded-2xl border border-[#E5EAF1] bg-white px-3 py-2 text-center text-xs shadow-[0_16px_34px_rgba(15,23,42,0.13)]">
+            <p className="inline-flex items-center justify-center gap-2 whitespace-nowrap font-bold text-[#0F172A]"><span className="h-2 w-2 rounded-full" style={{ backgroundColor: activeItem.color }} /> {activeItem.label}</p>
+            <p className="mt-1 font-semibold" style={{ color: activeItem.color }}>{activeItem.value} · {Math.round((activeItem.value / total) * 100)}%</p>
           </div>
-        ))}
+        ) : null}
+      </div>
+      <div className="space-y-3">
+        {values.map((item) => {
+          const isActive = activeLabel === item.label;
+          return (
+            <button key={item.label} type="button" className="grid w-full grid-cols-[1fr_auto] items-center gap-4 rounded-2xl px-3 py-2 text-left text-sm transition hover:bg-slate-50" onMouseEnter={() => setActiveLabel(item.label)} onMouseLeave={() => setActiveLabel(null)}>
+              <span className="inline-flex items-center gap-3 font-semibold text-[#334155]"><span className="h-3 w-3 rounded-full" style={{ backgroundColor: item.color }} /> {item.label}</span>
+              <span className="rounded-full px-2 py-1 text-xs font-bold" style={{ color: item.color, backgroundColor: isActive ? `${item.color}18` : 'transparent' }}>{item.value}</span>
+            </button>
+          );
+        })}
       </div>
     </div>
   );
