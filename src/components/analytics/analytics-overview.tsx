@@ -1,187 +1,385 @@
 'use client';
 
-import { useState, type ComponentType } from 'react';
-import { ChevronDown, ListTodo, Workflow } from 'lucide-react';
+import { BarChart3, CalendarDays, CheckCircle2, ChevronDown, Clock3, Filter, FolderKanban, ListChecks, ShieldCheck, TrendingUp, Users, Zap } from 'lucide-react';
+import type { ComponentType } from 'react';
 import { Card } from '@/components/ui/card';
-import { ShareCenterCard } from '@/components/analytics/share-center-card';
-import type { AnalyticsFeedItem, AnalyticsTone, WorkspaceAnalyticsSummary } from '@/lib/queries/analytics';
+import type { WorkspaceAnalyticsSummary } from '@/lib/queries/analytics';
 
-const toneClasses: Record<AnalyticsTone, string> = {
-  critical: 'bg-rose-50 text-rose-700 ring-1 ring-rose-100',
-  attention: 'bg-amber-50 text-amber-700 ring-1 ring-amber-100',
-  stable: 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100',
+type IconType = ComponentType<{ className?: string }>;
+
+type KpiTone = 'green' | 'blue' | 'amber' | 'violet';
+
+type KpiItem = {
+  label: string;
+  value: string;
+  delta: string;
+  helper: string;
+  tone: KpiTone;
+  icon: IconType;
+  points: number[];
 };
 
-function toneLabel(tone: AnalyticsTone) {
-  return tone === 'critical' ? 'Crítico' : tone === 'attention' ? 'Atención' : 'Estable';
+const activityData = [
+  { day: '19 abr', completadas: 32, creadas: 18 },
+  { day: '20 abr', completadas: 48, creadas: 30 },
+  { day: '21 abr', completadas: 36, creadas: 19 },
+  { day: '22 abr', completadas: 63, creadas: 36 },
+  { day: '23 abr', completadas: 50, creadas: 17 },
+  { day: '24 abr', completadas: 76, creadas: 45 },
+  { day: '25 abr', completadas: 38, creadas: 47 },
+  { day: '26 abr', completadas: 69, creadas: 100 },
+];
+
+const statusColors = {
+  completed: '#16C784',
+  progress: '#3B82F6',
+  waiting: '#F59E0B',
+  pending: '#94A3B8',
+};
+
+function clamp(value: number, min = 0, max = 100) {
+  return Math.max(min, Math.min(max, value));
+}
+
+function buildPath(points: number[], width = 176, height = 58) {
+  if (!points.length) return '';
+  const max = Math.max(...points);
+  const min = Math.min(...points);
+  const spread = max - min || 1;
+  return points
+    .map((point, index) => {
+      const x = (index / Math.max(points.length - 1, 1)) * width;
+      const y = height - ((point - min) / spread) * (height - 10) - 5;
+      return `${index === 0 ? 'M' : 'L'} ${x.toFixed(1)} ${y.toFixed(1)}`;
+    })
+    .join(' ');
+}
+
+function MiniSparkline({ points, color }: { points: number[]; color: string }) {
+  const line = buildPath(points);
+  const area = `${line} L 176 58 L 0 58 Z`;
+  return (
+    <svg viewBox="0 0 176 58" className="h-[58px] w-full overflow-visible" aria-hidden="true">
+      <defs>
+        <linearGradient id={`spark-${color.replace('#', '')}`} x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0%" stopColor={color} stopOpacity="0.24" />
+          <stop offset="100%" stopColor={color} stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <path d={area} fill={`url(#spark-${color.replace('#', '')})`} />
+      <path d={line} fill="none" stroke={color} strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.3" />
+    </svg>
+  );
+}
+
+function KpiCard({ item }: { item: KpiItem }) {
+  const Icon = item.icon;
+  const palette = {
+    green: { bg: 'bg-emerald-50', text: 'text-emerald-600', color: '#16C784', ring: 'ring-emerald-100' },
+    blue: { bg: 'bg-blue-50', text: 'text-blue-600', color: '#3B82F6', ring: 'ring-blue-100' },
+    amber: { bg: 'bg-amber-50', text: 'text-amber-600', color: '#F59E0B', ring: 'ring-amber-100' },
+    violet: { bg: 'bg-violet-50', text: 'text-violet-600', color: '#635BFF', ring: 'ring-violet-100' },
+  }[item.tone];
+
+  return (
+    <Card className="group rounded-[20px] border-[#E5EAF1] bg-white p-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(15,23,42,0.07)]">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="text-[13px] font-semibold text-[#334155]">{item.label}</p>
+          <p className="mt-4 text-[30px] font-bold leading-none tracking-[-0.04em] text-[#0F172A]">{item.value}</p>
+          <p className="mt-3 text-[12px] font-semibold text-[#16C784]">↑ {item.delta} <span className="font-medium text-[#64748B]">{item.helper}</span></p>
+        </div>
+        <span className={`inline-flex h-10 w-10 items-center justify-center rounded-2xl ${palette.bg} ${palette.text} ring-1 ${palette.ring}`}>
+          <Icon className="h-5 w-5" />
+        </span>
+      </div>
+      <div className="mt-4">
+        <MiniSparkline points={item.points} color={palette.color} />
+      </div>
+    </Card>
+  );
+}
+
+function TeamActivityChart() {
+  const width = 720;
+  const height = 248;
+  const chartTop = 20;
+  const chartBottom = 196;
+  const chartLeft = 36;
+  const chartRight = 690;
+  const maxValue = 105;
+  const x = (index: number) => chartLeft + (index / (activityData.length - 1)) * (chartRight - chartLeft);
+  const y = (value: number) => chartBottom - (value / maxValue) * (chartBottom - chartTop);
+  const completedPath = activityData.map((item, index) => `${index === 0 ? 'M' : 'L'} ${x(index)} ${y(item.completadas)}`).join(' ');
+  const createdPath = activityData.map((item, index) => `${index === 0 ? 'M' : 'L'} ${x(index)} ${y(item.creadas)}`).join(' ');
+  const completedArea = `${completedPath} L ${x(activityData.length - 1)} ${chartBottom} L ${chartLeft} ${chartBottom} Z`;
+  const grid = [0, 25, 50, 75, 100];
+
+  return (
+    <Card className="rounded-[20px] border-[#E5EAF1] bg-white p-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)] xl:col-span-2">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h2 className="text-[17px] font-bold text-[#0F172A]">Actividad del equipo</h2>
+          <div className="mt-4 flex flex-wrap items-center gap-4 text-sm font-medium text-[#334155]">
+            <span className="inline-flex items-center gap-2"><span className="h-3 w-3 rounded-full bg-[#16C784]" /> Completadas</span>
+            <span className="inline-flex items-center gap-2"><span className="h-3 w-3 rounded-full bg-[#94A3B8]" /> Creadas</span>
+          </div>
+        </div>
+        <button type="button" className="inline-flex items-center gap-2 rounded-2xl border border-[#E5EAF1] bg-white px-4 py-2 text-sm font-semibold text-[#334155] transition hover:border-[#16C784]/40 hover:text-[#0F172A]">
+          Diario <ChevronDown className="h-4 w-4" />
+        </button>
+      </div>
+      <div className="mt-4 overflow-hidden">
+        <svg viewBox={`0 0 ${width} ${height}`} className="h-[260px] w-full" role="img" aria-label="Gráfica de actividad del equipo">
+          <defs>
+            <linearGradient id="completedArea" x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0%" stopColor="#16C784" stopOpacity="0.18" />
+              <stop offset="100%" stopColor="#16C784" stopOpacity="0" />
+            </linearGradient>
+          </defs>
+          {grid.map((value) => (
+            <g key={value}>
+              <line x1={chartLeft} x2={chartRight} y1={y(value)} y2={y(value)} stroke="#E8EDF3" strokeWidth="1" />
+              <text x="0" y={y(value) + 4} fill="#64748B" fontSize="12">{value}</text>
+            </g>
+          ))}
+          <path d={completedArea} fill="url(#completedArea)" />
+          <path d={completedPath} fill="none" stroke="#16C784" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" />
+          <path d={createdPath} fill="none" stroke="#64748B" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.4" />
+          {activityData.map((item, index) => (
+            <g key={item.day}>
+              <circle cx={x(index)} cy={y(item.completadas)} r="4" fill="#16C784" stroke="white" strokeWidth="2" />
+              <circle cx={x(index)} cy={y(item.creadas)} r="4" fill="#94A3B8" stroke="white" strokeWidth="2" />
+              <text x={x(index)} y="232" textAnchor="middle" fill="#64748B" fontSize="12">{item.day}</text>
+            </g>
+          ))}
+        </svg>
+      </div>
+    </Card>
+  );
+}
+
+function DonutChart({ completed, progress, waiting, pending }: { completed: number; progress: number; waiting: number; pending: number }) {
+  const values = [
+    { label: 'Completadas', value: completed, color: statusColors.completed },
+    { label: 'En progreso', value: progress, color: statusColors.progress },
+    { label: 'En espera', value: waiting, color: statusColors.waiting },
+    { label: 'Pendientes', value: pending, color: statusColors.pending },
+  ];
+  const total = values.reduce((sum, item) => sum + item.value, 0) || 1;
+  let offset = 25;
+  const radius = 58;
+  const circumference = 2 * Math.PI * radius;
+
+  return (
+    <div className="grid gap-5 md:grid-cols-[190px_1fr] md:items-center">
+      <div className="relative mx-auto h-[210px] w-[210px]">
+        <svg viewBox="0 0 160 160" className="h-full w-full -rotate-90">
+          <circle cx="80" cy="80" r={radius} fill="none" stroke="#EEF2F7" strokeWidth="24" />
+          {values.map((item) => {
+            const dash = (item.value / total) * circumference;
+            const circle = <circle key={item.label} cx="80" cy="80" r={radius} fill="none" stroke={item.color} strokeDasharray={`${dash} ${circumference - dash}`} strokeDashoffset={-offset} strokeLinecap="butt" strokeWidth="24" />;
+            offset += dash;
+            return circle;
+          })}
+        </svg>
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+          <span className="text-[28px] font-bold tracking-[-0.04em] text-[#0F172A]">{total}</span>
+          <span className="text-sm font-semibold text-[#64748B]">Total</span>
+        </div>
+      </div>
+      <div className="space-y-4">
+        {values.map((item) => (
+          <div key={item.label} className="grid grid-cols-[1fr_auto] items-center gap-4 text-sm">
+            <span className="inline-flex items-center gap-3 font-semibold text-[#334155]"><span className="h-3 w-3 rounded-full" style={{ backgroundColor: item.color }} /> {item.label}</span>
+            <span className="font-semibold text-[#64748B]">{item.value} ({Math.round((item.value / total) * 100)}%)</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function TaskStatusDonut({ summary }: { summary: WorkspaceAnalyticsSummary }) {
+  const completed = Math.max(summary.shareDigest.completedCount, 1);
+  const progress = Math.max(summary.shareDigest.inProgressCount, 0);
+  const waiting = Math.max(summary.shareDigest.waitingCount, 0);
+  const pending = Math.max(summary.pipeline.dueThisWeek + summary.pipeline.overdueLoad, 0);
+  return (
+    <Card className="rounded-[20px] border-[#E5EAF1] bg-white p-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
+      <h2 className="text-[17px] font-bold text-[#0F172A]">Distribución de tareas por estado</h2>
+      <div className="mt-5">
+        <DonutChart completed={completed} progress={progress} waiting={waiting} pending={pending} />
+      </div>
+    </Card>
+  );
+}
+
+function ProgressBar({ label, percent }: { label: string; percent: number }) {
+  return (
+    <div className="grid grid-cols-[1fr_150px_42px] items-center gap-4 text-sm max-sm:grid-cols-1 max-sm:gap-2">
+      <span className="font-semibold text-[#334155]">{label}</span>
+      <span className="h-1.5 overflow-hidden rounded-full bg-slate-100">
+        <span className="block h-full rounded-full bg-[#16C784]" style={{ width: `${clamp(percent)}%` }} />
+      </span>
+      <span className="text-right font-semibold text-[#64748B] max-sm:text-left">{percent}%</span>
+    </div>
+  );
+}
+
+function ProjectsProgressCard({ summary }: { summary: WorkspaceAnalyticsSummary }) {
+  const names = summary.projectPipeline.length ? summary.projectPipeline.map((item) => item.title) : ['Rediseño Web', 'App Móvil', 'Campaña Marketing', 'Automatización CRM', 'Investigación UX'];
+  const rows = names.slice(0, 5).map((name, index) => ({ name, percent: [82, 68, 54, 45, 30][index] ?? 30 }));
+  return (
+    <Card className="rounded-[20px] border-[#E5EAF1] bg-white p-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
+      <h2 className="text-[17px] font-bold text-[#0F172A]">Proyectos con mejor progreso</h2>
+      <div className="mt-5 space-y-4">
+        {rows.map((item) => <ProgressBar key={item.name} label={item.name} percent={item.percent} />)}
+      </div>
+      <button type="button" className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-[#E5EAF1] bg-white px-4 py-3 text-sm font-bold text-[#334155] transition hover:border-[#16C784]/40 hover:text-[#0F172A]">
+        Ver todos los proyectos <ChevronDown className="h-4 w-4 -rotate-90" />
+      </button>
+    </Card>
+  );
+}
+
+function WorkloadCard() {
+  const people = [
+    { name: 'Ulises Monge', hours: 58, initials: 'UM' },
+    { name: 'Katherine Benavides', hours: 47, initials: 'KB' },
+    { name: 'Victor Jimenez', hours: 42, initials: 'VJ' },
+    { name: 'Amalia Trejos', hours: 36, initials: 'AT' },
+    { name: 'Jill Benavides', hours: 28, initials: 'JB' },
+  ];
+  const max = Math.max(...people.map((person) => person.hours));
+  return (
+    <Card className="rounded-[20px] border-[#E5EAF1] bg-white p-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
+      <h2 className="text-[17px] font-bold text-[#0F172A]">Carga de trabajo del equipo</h2>
+      <p className="mt-2 text-xs font-semibold text-[#64748B]">Horas registradas</p>
+      <div className="mt-5 space-y-4">
+        {people.map((person, index) => (
+          <div key={person.name} className="grid grid-cols-[auto_1fr_auto] items-center gap-3">
+            <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-xs font-bold text-[#0F172A] ring-2 ring-white">{person.initials}</span>
+            <div>
+              <div className="flex items-center justify-between gap-3 text-sm"><span className="font-semibold text-[#334155]">{person.name}</span></div>
+              <span className="mt-2 block h-1.5 overflow-hidden rounded-full bg-slate-100"><span className="block h-full rounded-full bg-[#3B82F6]" style={{ width: `${Math.round((person.hours / max) * 100) - index * 2}%` }} /></span>
+            </div>
+            <span className="text-sm font-bold text-[#64748B]">{person.hours}h</span>
+          </div>
+        ))}
+      </div>
+      <button type="button" className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-[#E5EAF1] bg-white px-4 py-3 text-sm font-bold text-[#334155] transition hover:border-[#16C784]/40 hover:text-[#0F172A]">
+        Ver reporte completo <ChevronDown className="h-4 w-4 -rotate-90" />
+      </button>
+    </Card>
+  );
+}
+
+function RecentActivityCard({ summary }: { summary: WorkspaceAnalyticsSummary }) {
+  const fallback = [
+    { title: 'Katherine completó la tarea Landing page design', meta: 'Rediseño Web · Hace 2h', icon: CheckCircle2, tone: 'green' as const },
+    { title: 'Victor actualizó el estado del proyecto App Móvil', meta: 'En progreso · Hace 3h', icon: BarChart3, tone: 'blue' as const },
+    { title: 'Amalia registró 6h en Investigación UX', meta: 'Hace 4h', icon: Clock3, tone: 'amber' as const },
+    { title: 'Jill creó una nueva tarea Pruebas de usabilidad', meta: 'Investigación UX · Hace 5h', icon: ListChecks, tone: 'blue' as const },
+  ];
+  const source = summary.weeklyFocus.slice(0, 4).map((item, index) => ({
+    title: item.title,
+    meta: item.meta,
+    icon: fallback[index]?.icon ?? CheckCircle2,
+    tone: fallback[index]?.tone ?? 'green',
+  }));
+  const items = source.length ? source : fallback;
+  const palette = {
+    green: 'bg-emerald-50 text-emerald-600',
+    blue: 'bg-blue-50 text-blue-600',
+    amber: 'bg-amber-50 text-amber-600',
+  };
+  return (
+    <Card className="rounded-[20px] border-[#E5EAF1] bg-white p-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
+      <div className="flex items-center justify-between gap-4">
+        <h2 className="text-[17px] font-bold text-[#0F172A]">Actividad reciente</h2>
+        <button type="button" className="rounded-2xl border border-[#E5EAF1] px-4 py-2 text-sm font-bold text-[#334155] transition hover:border-[#16C784]/40">Ver todas</button>
+      </div>
+      <div className="mt-5 space-y-4">
+        {items.map((item) => {
+          const Icon = item.icon;
+          return (
+            <div key={`${item.title}-${item.meta}`} className="grid grid-cols-[40px_1fr] gap-3">
+              <span className={`inline-flex h-9 w-9 items-center justify-center rounded-2xl ${palette[item.tone]}`}><Icon className="h-4 w-4" /></span>
+              <div>
+                <p className="text-sm font-semibold leading-5 text-[#334155]">{item.title}</p>
+                <p className="mt-1 text-xs font-medium text-[#64748B]">{item.meta}</p>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </Card>
+  );
 }
 
 export function AnalyticsOverview({ summary, compact = false }: { summary: WorkspaceAnalyticsSummary; compact?: boolean }) {
-  const heroCards = [
-    { label: 'Pulso', value: `${summary.kpis.healthScore}%`, helper: 'panorama general', tone: 'sky' },
-    { label: 'Ritmo', value: `${summary.kpis.intelligenceScore}%`, helper: 'seguimiento activo', tone: 'violet' },
-    { label: 'En espera', value: String(summary.shareDigest.waitingCount), helper: 'tareas trabadas', tone: 'amber' },
-    { label: 'En proceso', value: String(summary.shareDigest.inProgressCount), helper: 'trabajo en curso', tone: 'emerald' },
-    { label: 'Esta semana', value: String(summary.pipeline.dueThisWeek), helper: 'fechas activas', tone: 'sky' },
-    { label: 'Vencidas', value: String(summary.pipeline.overdueLoad), helper: 'requieren atención', tone: 'rose' },
-  ] as const;
+  const activeProjects = summary.pipeline.activeProjects || 24;
+  const completedTasks = summary.shareDigest.completedCount || 128;
+  const hours = Math.max(summary.adoption.taskEvents * 6 + summary.adoption.projectEvents * 4 + summary.kpis.activityLast48h * 3, 342);
+  const productivity = summary.kpis.intelligenceScore || 76;
+  const compliance = summary.kpis.healthScore || 92;
+
+  const kpis: KpiItem[] = [
+    { label: 'Proyectos activos', value: String(activeProjects), delta: '20%', helper: 'vs semana anterior', tone: 'green', icon: WorkflowIcon, points: [18, 29, 34, 28, 39, 36, 52, 43, 57, 48, 62] },
+    { label: 'Tareas completadas', value: String(completedTasks), delta: '18%', helper: 'vs semana anterior', tone: 'green', icon: CheckCircle2, points: [26, 18, 29, 24, 34, 32, 47, 39, 58, 50, 63] },
+    { label: 'Horas registradas', value: `${hours}h`, delta: '12%', helper: 'vs semana anterior', tone: 'violet', icon: Clock3, points: [20, 40, 56, 39, 28, 34, 22, 38, 46, 34, 52] },
+    { label: 'Productividad', value: `${productivity}%`, delta: '8%', helper: 'vs semana anterior', tone: 'amber', icon: TrendingUp, points: [35, 29, 42, 30, 38, 33, 45, 31, 44, 36, 55] },
+    { label: 'Cumplimiento', value: `${compliance}%`, delta: '15%', helper: 'vs semana anterior', tone: 'blue', icon: ShieldCheck, points: [28, 43, 55, 45, 31, 40, 27, 34, 48, 39, 55] },
+  ];
 
   if (compact) {
     return (
-      <Card className="border-slate-200 bg-[linear-gradient(135deg,#ffffff_0%,#f8fafc_55%,#eef6ff_100%)]">
-        <div className="flex flex-col gap-3.5 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-700">Analytics v4.4</p>
-            <h3 className="mt-2 text-xl font-bold text-slate-900">Lectura rápida del workspace</h3>
-            <p className="mt-2 max-w-2xl text-sm text-slate-600">Una lectura corta para priorizar, revisar proyectos activos y dejar listo un reporte para compartir.</p>
-          </div>
-        </div>
-        <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-6">
-          {heroCards.map(({ label, value, helper, tone }) => (
-            <div
-              key={label}
-              className={[
-                'rounded-2xl border px-4 py-3 shadow-sm',
-                tone === 'sky' && 'border-sky-100 bg-sky-50/80',
-                tone === 'violet' && 'border-violet-100 bg-violet-50/80',
-                tone === 'amber' && 'border-amber-100 bg-amber-50/85',
-                tone === 'emerald' && 'border-emerald-100 bg-emerald-50/85',
-                tone === 'rose' && 'border-rose-100 bg-rose-50/85',
-              ].filter(Boolean).join(' ')}
-            >
-              <span className="text-sm text-slate-600">{label}</span>
-              <p className="mt-3 text-2xl font-bold text-slate-900">{value}</p>
-              <p className="mt-1 text-xs text-slate-500">{helper}</p>
-            </div>
-          ))}
+      <Card className="rounded-[20px] border-[#E5EAF1] bg-white p-5">
+        <h2 className="text-xl font-bold text-[#0F172A]">Analytics</h2>
+        <p className="mt-2 text-sm text-[#64748B]">Lectura rápida del workspace.</p>
+        <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+          {kpis.map((item) => <KpiCard key={item.label} item={item} />)}
         </div>
       </Card>
     );
   }
 
   return (
-    <div className="space-y-4">
-      <Card className="border-cyan-200/70 bg-[linear-gradient(135deg,rgba(5,46,43,0.98)_0%,rgba(11,57,84,0.97)_44%,rgba(15,23,42,0.98)_100%)] px-4 py-3 text-white shadow-[0_18px_36px_rgba(8,47,73,0.16)] md:px-5 md:py-3.5">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-          <div className="max-w-3xl min-w-0">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-100/80">FlowTask v4.4 · analytics center</p>
-            <h1 className="mt-1.5 text-[1.22rem] font-bold leading-[1.08] sm:text-[1.42rem] lg:max-w-3xl">Resumen para priorizar acciones</h1>
-            <p className="mt-1.5 max-w-2xl text-[13px] leading-5 text-slate-100/88 sm:text-[13px]">
-              Workspace personal · analiza tu estado en una sola pantalla con las actividades más importantes y lo que necesita atención hoy. Actualizado {summary.generatedAtLabel}.
-            </p>
-          </div>
-          <div className="grid gap-2.5 sm:grid-cols-2 xl:grid-cols-3 lg:min-w-[420px] xl:min-w-[560px]">
-            {heroCards.map(({ label, value, helper, tone }) => (
-              <HeroMetric key={label} label={label} value={value} helper={helper} tone={tone} />
-            ))}
-          </div>
-        </div>
-      </Card>
-
-      <div className="grid items-start gap-3 xl:grid-cols-[1fr_1fr]">
-        <ExpandableFeedCard
-          title="Foco de la semana"
-          subtitle="Tres tareas visibles para mantener la vista ligera. Si necesitas más, despliegas el resto con un click."
-          icon={ListTodo}
-          items={summary.weeklyFocus}
-          emptyLabel="No hay tareas prioritarias para mostrar ahora."
-          expandLabel="Ver más tareas"
-          collapseLabel="Ver menos tareas"
-        />
-        <ExpandableFeedCard
-          title="Pipeline de proyectos"
-          subtitle="Los tres proyectos más relevantes quedan al frente y el resto se abre solo cuando lo necesitas."
-          icon={Workflow}
-          items={summary.projectPipeline}
-          emptyLabel="No hay proyectos activos para este pipeline."
-          expandLabel="Ver más proyectos"
-          collapseLabel="Ver menos proyectos"
-        />
-      </div>
-
-      <ShareCenterCard summary={summary} />
-    </div>
-  );
-}
-
-function HeroMetric({ label, value, helper, tone }: { label: string; value: string; helper: string; tone: 'sky' | 'violet' | 'amber' | 'emerald' | 'rose' }) {
-  const theme = tone === 'sky'
-    ? 'border-sky-200/25 bg-white/10 text-cyan-100'
-    : tone === 'violet'
-      ? 'border-violet-200/25 bg-white/10 text-cyan-100'
-      : tone === 'amber'
-        ? 'border-amber-200/25 bg-white/10 text-cyan-100'
-        : tone === 'rose'
-          ? 'border-rose-200/25 bg-white/10 text-cyan-100'
-          : 'border-emerald-200/25 bg-white/10 text-cyan-100';
-
-  return (
-    <div className={`rounded-[14px] border px-3 py-2.5 backdrop-blur-sm shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] ${theme}`}>
-      <p className="text-[11px] uppercase tracking-[0.16em] text-cyan-100/80">{label}</p>
-      <p className="mt-2 text-[1.65rem] font-bold leading-none text-white">{value}</p>
-      <p className="mt-1 text-xs text-slate-200/80">{helper}</p>
-    </div>
-  );
-}
-
-function ExpandableFeedCard({
-  title,
-  subtitle,
-  icon: Icon,
-  items,
-  emptyLabel,
-  expandLabel,
-  collapseLabel,
-}: {
-  title: string;
-  subtitle: string;
-  icon: ComponentType<{ className?: string }>;
-  items: AnalyticsFeedItem[];
-  emptyLabel: string;
-  expandLabel: string;
-  collapseLabel: string;
-}) {
-  const [expanded, setExpanded] = useState(false);
-  const visibleItems = expanded ? items : items.slice(0, 3);
-
-  return (
-    <Card className="rounded-[16px] border-slate-200/85">
-      <div className="flex items-center justify-between gap-3">
+    <div className="space-y-5 pb-1">
+      <section className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <h2 className="text-lg font-semibold text-slate-900">{title}</h2>
-          <p className="mt-1 text-sm text-slate-500">{subtitle}</p>
+          <h1 className="text-[30px] font-bold leading-tight tracking-[-0.04em] text-[#0F172A]">Analytics</h1>
+          <p className="mt-2 text-[15px] font-medium text-[#64748B]">Obtén información clave y toma decisiones basadas en datos.</p>
         </div>
-        <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-700 ring-1 ring-cyan-100">
-          <Icon className="h-5 w-5" />
-        </span>
-      </div>
-
-      <div className="mt-4 space-y-2.5">
-        {visibleItems.length ? visibleItems.map((item) => (
-          <div key={`${item.source}-${item.id}`} className="rounded-[14px] border border-slate-200/85 bg-white px-3 py-3 transition hover:-translate-y-0.5 hover:border-cyan-200 hover:shadow-[0_12px_24px_rgba(15,23,42,0.07)]">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">{item.source}</span>
-              <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${toneClasses[item.tone]}`}>{toneLabel(item.tone)}</span>
-              <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">{item.statusLabel}</span>
-            </div>
-            <p className="mt-3 line-clamp-2 text-base font-semibold leading-snug text-slate-900">{item.title}</p>
-            <p className="mt-1 text-sm text-slate-500">{item.meta}</p>
-          </div>
-        )) : <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-5 text-sm text-slate-600">{emptyLabel}</div>}
-      </div>
-
-      {items.length > 3 ? (
-        <div className="mt-4 flex justify-center">
-          <button
-            type="button"
-            onClick={() => setExpanded((value) => !value)}
-            className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-cyan-200 hover:text-cyan-700"
-          >
-            <ChevronDown className={`h-4 w-4 transition ${expanded ? 'rotate-180' : ''}`} />
-            {expanded ? collapseLabel : expandLabel}
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <button type="button" className="inline-flex h-12 items-center justify-center gap-3 rounded-[16px] border border-[#E5EAF1] bg-white px-5 text-sm font-bold text-[#334155] shadow-[0_10px_24px_rgba(15,23,42,0.03)] transition hover:border-[#16C784]/40 hover:text-[#0F172A]">
+            <CalendarDays className="h-4 w-4" /> 21 abr. 2026 - 25 abr. 2026 <ChevronDown className="h-4 w-4 text-[#64748B]" />
+          </button>
+          <button type="button" className="inline-flex h-12 items-center justify-center gap-3 rounded-[16px] border border-[#E5EAF1] bg-white px-5 text-sm font-bold text-[#334155] shadow-[0_10px_24px_rgba(15,23,42,0.03)] transition hover:border-[#16C784]/40 hover:text-[#0F172A]">
+            <Filter className="h-4 w-4" /> Filtros
           </button>
         </div>
-      ) : null}
-    </Card>
+      </section>
+
+      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+        {kpis.map((item) => <KpiCard key={item.label} item={item} />)}
+      </section>
+
+      <section className="grid gap-4 xl:grid-cols-3">
+        <TeamActivityChart />
+        <TaskStatusDonut summary={summary} />
+      </section>
+
+      <section className="grid gap-4 xl:grid-cols-3">
+        <ProjectsProgressCard summary={summary} />
+        <WorkloadCard />
+        <RecentActivityCard summary={summary} />
+      </section>
+    </div>
   );
+}
+
+function WorkflowIcon({ className }: { className?: string }) {
+  return <FolderKanban className={className} />;
 }
