@@ -62,9 +62,9 @@ function ShellFrame({
 
   return (
     <div className="min-h-screen bg-[#F7F9FC] text-[#0F172A]">
-      <div className={`grid min-h-screen transition-[grid-template-columns] duration-300 ${collapsed ? 'md:grid-cols-[96px_minmax(0,1fr)]' : 'md:grid-cols-[260px_minmax(0,1fr)]'}`}>
+      <div className={`grid min-h-screen transition-[grid-template-columns] duration-300 ${collapsed ? 'md:grid-cols-[88px_minmax(0,1fr)]' : 'md:grid-cols-[280px_minmax(0,1fr)]'}`}>
         <AppSidebar organizations={organizations} activeOrganization={activeOrganization} userEmail={userEmail} userName={userName} />
-        <div className="min-w-0 px-5 py-5 md:px-8 md:py-7">
+        <div className="min-w-0 px-4 py-4 md:px-8 md:py-6">
           <AppHeader userEmail={userEmail} userName={userName} avatarUrl={userAvatarUrl} organizations={organizations} activeOrganization={activeOrganization} />
           <main className="mt-6 min-w-0">{children}</main>
           <div className="mt-6 px-1 py-2">
