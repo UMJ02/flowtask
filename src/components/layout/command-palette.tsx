@@ -312,9 +312,15 @@ export function CommandPalette() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="hidden items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-emerald-200 hover:bg-emerald-50 lg:inline-flex"
+        className="hidden h-12 min-w-[320px] items-center justify-between gap-4 rounded-[18px] border border-[#E5EAF1] bg-white px-4 text-sm font-medium text-[#64748B] shadow-[0_8px_24px_rgba(15,23,42,0.04)] transition duration-200 hover:border-emerald-200 hover:bg-white focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-emerald-400/15 lg:inline-flex xl:min-w-[420px]"
       >
-        <Command className="h-4 w-4" /> Buscar o ir a
+        <span className="inline-flex min-w-0 items-center gap-3">
+          <Search className="h-5 w-5 shrink-0 text-slate-400" />
+          <span className="truncate">Buscar proyectos, tareas, clientes...</span>
+        </span>
+        <span className="inline-flex items-center gap-1 rounded-xl border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-bold text-slate-500">
+          <Command className="h-3.5 w-3.5" /> K
+        </span>
       </button>
 
       {open ? (

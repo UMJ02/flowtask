@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
-import { LogOut, Settings, UserCircle2 } from 'lucide-react';
+import { ChevronDown, LogOut, Settings, UserCircle2 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 
 const PROFILE_STORAGE_KEY = 'flowtask.profile-shell';
@@ -35,11 +35,11 @@ function readShellProfile(): ProfileShellPayload | null {
 
 function AvatarBadge({ avatarUrl, initials }: { avatarUrl?: string | null; initials: string }) {
   return avatarUrl ? (
-    <span className="relative inline-flex h-9 w-9 overflow-hidden rounded-full ring-1 ring-slate-200/80">
-      <Image src={avatarUrl} alt="Avatar del usuario" fill className="object-cover" sizes="36px" unoptimized />
+    <span className="relative inline-flex h-10 w-10 overflow-hidden rounded-full ring-2 ring-white">
+      <Image src={avatarUrl} alt="Avatar del usuario" fill className="object-cover" sizes="40px" unoptimized />
     </span>
   ) : (
-    <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-slate-950 text-sm font-bold text-white">
+    <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-slate-950 text-sm font-bold text-white ring-2 ring-white">
       {initials}
     </span>
   );
@@ -107,7 +107,7 @@ export function UserMenu({
       <Link
         href="/app/profile"
         aria-label="Abrir perfil"
-        className="relative inline-flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 bg-white text-left shadow-sm transition hover:border-emerald-200 hover:bg-emerald-50 md:hidden"
+        className="relative inline-flex h-12 w-12 items-center justify-center rounded-full border border-[#E5EAF1] bg-white text-left shadow-[0_8px_24px_rgba(15,23,42,0.04)] transition hover:scale-[1.04] hover:border-emerald-200 hover:bg-emerald-50 md:hidden"
       >
         <AvatarBadge avatarUrl={liveAvatarUrl} initials={initials} />
       </Link>
@@ -117,9 +117,9 @@ export function UserMenu({
           type="button"
           aria-label="Abrir menú de usuario"
           onClick={() => setOpen((value) => !value)}
-          className="group relative inline-flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 bg-white text-left shadow-sm transition hover:border-emerald-200 hover:bg-emerald-50"
+          className="group relative inline-flex h-12 items-center gap-2 rounded-full border border-[#E5EAF1] bg-white px-1.5 pr-3 text-left shadow-[0_8px_24px_rgba(15,23,42,0.04)] transition duration-200 hover:scale-[1.03] hover:border-emerald-200 hover:bg-emerald-50"
         >
-          <AvatarBadge avatarUrl={liveAvatarUrl} initials={initials} />
+          <span className="relative"><AvatarBadge avatarUrl={liveAvatarUrl} initials={initials} /><span className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white bg-[#16C784]" /></span><ChevronDown className="h-4 w-4 text-slate-500 transition group-hover:text-slate-800" />
           <span className="pointer-events-none absolute -bottom-10 left-1/2 hidden -translate-x-1/2 whitespace-nowrap rounded-xl bg-slate-950 px-3 py-1.5 text-xs font-medium text-white shadow-lg group-hover:block">
             {liveEmail}
           </span>
