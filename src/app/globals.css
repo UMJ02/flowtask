@@ -262,8 +262,3 @@ textarea::placeholder {
 .card-accent-amber { border-color: rgba(245,158,11,0.2); box-shadow: 0 10px 24px rgba(245,158,11,0.08), 0 1px 0 rgba(255,255,255,0.85) inset; }
 .card-accent-rose { border-color: rgba(244,63,94,0.2); box-shadow: 0 10px 24px rgba(244,63,94,0.08), 0 1px 0 rgba(255,255,255,0.85) inset; }
 .card-accent-sky { border-color: rgba(56,189,248,0.2); box-shadow: 0 10px 24px rgba(56,189,248,0.08), 0 1px 0 rgba(255,255,255,0.85) inset; }
-
-@keyframes flowtask-fade-up {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
-}
