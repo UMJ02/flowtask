@@ -308,7 +308,7 @@ export function CommandPalette() {
   }, [commands]);
 
   return (
-    <>
+    <div className="relative">
       <button
         type="button"
         onClick={() => setOpen(true)}
@@ -320,27 +320,33 @@ export function CommandPalette() {
       </button>
 
       {open ? (
-        <div className="fixed inset-0 z-50 flex items-start justify-center bg-slate-950/45 p-4 pt-16">
-          <div className="w-full max-w-3xl overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-2xl">
-            <div className="flex items-center gap-3 border-b border-slate-200 px-4 py-4">
-              <Search className="h-5 w-5 text-slate-400" />
+        <>
+          <button
+            aria-label="Cerrar búsqueda"
+            className="fixed inset-0 z-40 cursor-default bg-transparent"
+            onClick={() => setOpen(false)}
+            type="button"
+          />
+          <div className="absolute left-1/2 top-[calc(100%+14px)] z-50 w-[min(760px,calc(100vw-32px))] -translate-x-1/2 overflow-hidden rounded-[24px] border border-[#E5EAF1] bg-white shadow-[0_24px_60px_rgba(15,23,42,0.14)]">
+            <div className="flex items-center gap-3 border-b border-[#E5EAF1] bg-white px-4 py-4">
+              <Search className="h-5 w-5 text-[#64748B]" />
               <input
                 autoFocus
-                className="w-full bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400"
+                className="w-full bg-transparent text-sm text-[#0F172A] outline-none placeholder:text-[#94A3B8]"
                 onChange={(event) => setQuery(event.target.value)}
                 placeholder="Busca tareas, proyectos, clientes o pantallas"
                 value={query}
               />
-              <button type="button" className="inline-flex h-10 w-10 items-center justify-center rounded-full text-slate-500 hover:bg-slate-100" onClick={() => setOpen(false)}>
+              <button type="button" className="inline-flex h-10 w-10 items-center justify-center rounded-full text-[#64748B] transition hover:bg-[#F7F9FC] hover:text-[#0F172A]" onClick={() => setOpen(false)}>
                 <X className="h-5 w-5" />
               </button>
             </div>
 
-            <div className="max-h-[70vh] overflow-y-auto p-3">
+            <div className="max-h-[min(520px,calc(100vh-180px))] overflow-y-auto bg-white p-3">
               {grouped.length ? (
                 grouped.map(([section, items]) => (
                   <div key={section} className="mb-4 last:mb-0">
-                    <p className="mb-2 px-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">{section}</p>
+                    <p className="mb-2 px-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#94A3B8]">{section}</p>
                     <div className="space-y-2">
                       {items.map((item) => {
                         const Icon = item.icon;
@@ -375,8 +381,8 @@ export function CommandPalette() {
               )}
             </div>
           </div>
-        </div>
+        </>
       ) : null}
-    </>
+    </div>
   );
 }
