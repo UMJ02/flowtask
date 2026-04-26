@@ -11,7 +11,6 @@ import {
   Flag,
   MoreVertical,
   Plus,
-  Share2,
   Sparkles,
   Star,
   TimerReset,
@@ -20,6 +19,7 @@ import {
 import { ActivityItem } from "@/lib/queries/activity";
 import { projectEditRoute, taskDetailRoute } from "@/lib/navigation/routes";
 import { formatDate } from "@/lib/utils/dates";
+import { CopyCurrentUrlButton } from "@/components/ui/copy-current-url-button";
 
 const cardClass = "rounded-[24px] border border-[#E5EAF1] bg-white shadow-[0_12px_30px_rgba(15,23,42,0.04)]";
 
@@ -173,13 +173,10 @@ function ProjectHeroCard({ project, tasks, currentQuery }: { project: any; tasks
 
         <div className="space-y-5">
           <div className="flex flex-wrap justify-start gap-2 lg:justify-end">
-            <button type="button" className="inline-flex h-11 items-center justify-center gap-2 rounded-[14px] border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-[#334155] shadow-[0_8px_20px_rgba(15,23,42,0.035)] transition hover:bg-slate-50">
-              <Share2 className="h-4 w-4" />
-              Compartir
-            </button>
+            <CopyCurrentUrlButton label="Compartir" className="inline-flex h-11 items-center justify-center gap-2 rounded-[14px] border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-[#334155] shadow-[0_8px_20px_rgba(15,23,42,0.035)] transition hover:bg-slate-50" />
             <Link href={projectEditRoute(project.id, currentQuery)} className="inline-flex h-11 items-center justify-center gap-2 rounded-[14px] bg-[#050B18] px-4 text-sm font-bold text-white shadow-[0_10px_24px_rgba(5,11,24,0.18)] transition hover:-translate-y-0.5">
               <MoreVertical className="h-4 w-4" />
-              Más opciones
+              Editar proyecto
             </Link>
           </div>
 

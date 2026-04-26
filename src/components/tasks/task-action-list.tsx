@@ -12,6 +12,7 @@ import {
   List,
   MoreVertical,
   Pencil,
+  Trash2,
   Workflow,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -116,6 +117,7 @@ function TaskActionListComponent({
   const supabase = useMemo(() => createClient(), []);
   const [items, setItems] = useState(tasks);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [pageSize, setPageSize] = useState<10 | 20>(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageAnimation, setPageAnimation] = useState<PageAnimationState>("idle");
@@ -124,6 +126,7 @@ function TaskActionListComponent({
 
   useEffect(() => {
     setItems(tasks);
+    setSelectedIds((ids) => ids.filter((id) => tasks.some((task) => task.id === id)));
   }, [tasks]);
 
   useEffect(() => {
@@ -149,6 +152,20 @@ function TaskActionListComponent({
     const start = (currentPage - 1) * pageSize;
     return items.slice(start, start + pageSize);
   }, [currentPage, items, pageSize]);
+
+  const allCurrentSelected = currentItems.length > 0 && currentItems.every((item) => selectedIds.includes(item.id));
+
+  const toggleSelected = (taskId: string) => {
+    setSelectedIds((ids) => (ids.includes(taskId) ? ids.filter((id) => id !== taskId) : [...ids, taskId]));
+  };
+
+  const toggleCurrentPage = () => {
+    setSelectedIds((ids) => {
+      const currentIds = currentItems.map((item) => item.id);
+      if (currentIds.every((id) => ids.includes(id))) return ids.filter((id) => !currentIds.includes(id));
+      return Array.from(new Set([...ids, ...currentIds]));
+    });
+  };
 
   const animatePage = (direction: "next" | "prev", targetPage: number) => {
     setPageAnimation(direction === "next" ? "out-next" : "out-prev");
@@ -197,6 +214,41 @@ function TaskActionListComponent({
     startRefresh(() => router.refresh());
   };
 
+  const bulkCompleteSelected = async () => {
+    if (!selectedIds.length) return;
+    setBusyId("bulk");
+    const previousItems = items;
+    const payload = getTaskStatusUpdatePayload("concluido");
+    setItems((list) => list.map((item) => (selectedIds.includes(item.id) ? { ...item, status: "concluido", due_date: todayIsoDate() } : item)));
+    const { error } = await supabase.from("tasks").update(payload).in("id", selectedIds);
+    setBusyId(null);
+    if (error) {
+      setItems(previousItems);
+      window.alert("No se pudieron finalizar las tareas seleccionadas.");
+      return;
+    }
+    setSelectedIds([]);
+    startRefresh(() => router.refresh());
+  };
+
+  const bulkDeleteSelected = async () => {
+    if (!selectedIds.length) return;
+    const ok = window.confirm(`¿Deseas eliminar ${selectedIds.length} tarea(s)? Esta acción no se puede deshacer.`);
+    if (!ok) return;
+    const previousItems = items;
+    setItems((list) => list.filter((item) => !selectedIds.includes(item.id)));
+    setBusyId("bulk");
+    const { error } = await supabase.from("tasks").delete().in("id", selectedIds);
+    setBusyId(null);
+    if (error) {
+      setItems(previousItems);
+      window.alert("No se pudieron eliminar las tareas seleccionadas.");
+      return;
+    }
+    setSelectedIds([]);
+    startRefresh(() => router.refresh());
+  };
+
   const viewButtons: Array<{ value: ViewMode; label: string; icon: typeof List }> = [
     { value: "list", label: "Lista", icon: List },
     { value: "board", label: "Tablero", icon: LayoutGrid },
@@ -207,7 +259,7 @@ function TaskActionListComponent({
   const renderTable = () => (
     <div className="overflow-hidden rounded-[24px] border border-[#E5EAF1] bg-white shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
       <div className="hidden grid-cols-[42px_minmax(260px,1.5fr)_minmax(120px,0.7fr)_minmax(130px,0.7fr)_minmax(130px,0.7fr)_minmax(120px,0.65fr)_minmax(130px,0.7fr)_120px] border-b border-[#E5EAF1] bg-slate-50/70 px-5 py-4 text-[11px] font-bold uppercase tracking-[0.12em] text-slate-500 xl:grid">
-        <div><input aria-label="Seleccionar tareas" type="checkbox" className="h-4 w-4 rounded border-slate-300" /></div>
+        <div><input aria-label="Seleccionar tareas de esta página" type="checkbox" checked={allCurrentSelected} onChange={toggleCurrentPage} className="h-4 w-4 rounded border-slate-300" /></div>
         <div>Tarea</div>
         <div>Proyecto</div>
         <div>Responsable</div>
@@ -238,7 +290,7 @@ function TaskActionListComponent({
               )}
             >
               <div className="hidden xl:block">
-                <input aria-label={`Seleccionar ${task.title}`} type="checkbox" className="h-4 w-4 rounded border-slate-300" />
+                <input aria-label={`Seleccionar ${task.title}`} type="checkbox" checked={selectedIds.includes(task.id)} onChange={() => toggleSelected(task.id)} className="h-4 w-4 rounded border-slate-300" />
               </div>
 
               <div className="min-w-0">
@@ -293,7 +345,7 @@ function TaskActionListComponent({
                   </button>
                 ) : null}
                 <button type="button" onClick={() => deleteTask(task.id)} className="inline-flex h-9 w-9 items-center justify-center rounded-[12px] border border-[#E5EAF1] bg-white text-slate-500 transition hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600" aria-label="Eliminar tarea">
-                  <MoreVertical className="h-4 w-4" />
+                  <Trash2 className="h-4 w-4" />
                 </button>
               </div>
             </div>
@@ -305,12 +357,66 @@ function TaskActionListComponent({
     </div>
   );
 
-  const renderPlaceholder = (label: string) => (
-    <Card className="rounded-[24px] border border-[#E5EAF1] bg-white p-8 text-center shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
-      <p className="text-lg font-bold text-[#0F172A]">Vista {label}</p>
-      <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-[#64748B]">Esta vista queda preparada visualmente para una iteración posterior. La vista lista mantiene el flujo operativo principal sin tocar la lógica de datos.</p>
-    </Card>
-  );
+  const renderCalendar = () => {
+    const grouped = items.reduce<Record<string, TaskRow[]>>((acc, task) => {
+      const key = task.due_date || "Sin fecha";
+      acc[key] = [...(acc[key] ?? []), task];
+      return acc;
+    }, {});
+    const groups = Object.entries(grouped).sort(([a], [b]) => (a === "Sin fecha" ? 1 : b === "Sin fecha" ? -1 : a.localeCompare(b)));
+    return (
+      <Card className="rounded-[24px] border border-[#E5EAF1] bg-white p-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
+        <div className="mb-5 flex items-center justify-between gap-3">
+          <div>
+            <h3 className="text-lg font-black text-[#0F172A]">Calendario operativo</h3>
+            <p className="mt-1 text-sm font-medium text-[#64748B]">Agrupa las tareas reales por fecha límite.</p>
+          </div>
+          <CalendarDays className="h-5 w-5 text-slate-400" />
+        </div>
+        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+          {groups.length ? groups.map(([date, list]) => (
+            <div key={date} className="rounded-[20px] border border-[#E5EAF1] bg-slate-50/70 p-4">
+              <p className="text-sm font-black text-[#0F172A]">{date === "Sin fecha" ? date : formatDeadline(date).label}</p>
+              <div className="mt-3 space-y-2">
+                {list.map((task) => (
+                  <Link key={task.id} href={taskDetailRoute(task.id, currentQuery)} className="block rounded-2xl bg-white p-3 text-sm font-bold text-slate-800 ring-1 ring-slate-200 transition hover:text-emerald-700">{task.title}</Link>
+                ))}
+              </div>
+            </div>
+          )) : <p className="text-sm font-medium text-slate-500">No hay tareas para mostrar.</p>}
+        </div>
+      </Card>
+    );
+  };
+
+  const renderGantt = () => {
+    const visible = items.slice(0, 12);
+    return (
+      <Card className="rounded-[24px] border border-[#E5EAF1] bg-white p-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
+        <div className="mb-5 flex items-center justify-between gap-3">
+          <div>
+            <h3 className="text-lg font-black text-[#0F172A]">Gantt simple</h3>
+            <p className="mt-1 text-sm font-medium text-[#64748B]">Línea visual conectada a las tareas actuales y su prioridad.</p>
+          </div>
+          <Workflow className="h-5 w-5 text-slate-400" />
+        </div>
+        <div className="space-y-3">
+          {visible.length ? visible.map((task, index) => {
+            const width = task.status === "concluido" ? 100 : task.priority === "alta" ? 72 : task.priority === "baja" ? 42 : 58;
+            const offset = (index % 4) * 6;
+            return (
+              <div key={task.id} className="grid gap-3 md:grid-cols-[260px_minmax(0,1fr)] md:items-center">
+                <Link href={taskDetailRoute(task.id, currentQuery)} className="truncate text-sm font-bold text-[#0F172A] hover:text-emerald-700">{task.title}</Link>
+                <div className="h-9 rounded-2xl bg-slate-100 p-1">
+                  <div className="h-7 rounded-xl bg-[#16C784]" style={{ marginLeft: `${offset}%`, width: `${Math.max(20, width - offset)}%` }} />
+                </div>
+              </div>
+            );
+          }) : <p className="text-sm font-medium text-slate-500">No hay tareas para mostrar.</p>}
+        </div>
+      </Card>
+    );
+  };
 
   return (
     <div className="space-y-4">
@@ -345,10 +451,29 @@ function TaskActionListComponent({
 
       {searchPanel ? <div>{searchPanel}</div> : null}
 
+      {selectedIds.length ? (
+        <Card className="rounded-[20px] border border-emerald-100 bg-emerald-50/80 px-4 py-3 shadow-none">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <p className="text-sm font-bold text-emerald-900">{selectedIds.length} tarea(s) seleccionada(s)</p>
+            <div className="flex flex-wrap gap-2">
+              <Button type="button" onClick={bulkCompleteSelected} loading={busyId === "bulk"} className="h-10 rounded-[12px] bg-[#16C784] px-4 text-white hover:bg-[#12b777]">
+                <CheckCircle2 className="h-4 w-4" />
+                Finalizar
+              </Button>
+              <Button type="button" variant="secondary" onClick={bulkDeleteSelected} disabled={busyId === "bulk"} className="h-10 rounded-[12px] px-4">
+                <Trash2 className="h-4 w-4" />
+                Eliminar
+              </Button>
+              <Button type="button" variant="ghost" onClick={() => setSelectedIds([])} className="h-10 rounded-[12px] px-4">Limpiar selección</Button>
+            </div>
+          </div>
+        </Card>
+      ) : null}
+
       {viewMode === "list" ? renderTable() : null}
       {viewMode === "board" ? <TaskKanbanBoard tasks={items} showHeader={false} currentQuery={currentQuery} workspaceKey="tasks-page" /> : null}
-      {viewMode === "calendar" ? renderPlaceholder("Calendario") : null}
-      {viewMode === "gantt" ? renderPlaceholder("Gantt") : null}
+      {viewMode === "calendar" ? renderCalendar() : null}
+      {viewMode === "gantt" ? renderGantt() : null}
 
       {viewMode === "list" ? (
         <Card className="rounded-[24px] border border-[#E5EAF1] bg-white px-4 py-4 shadow-[0_12px_30px_rgba(15,23,42,0.04)]">

@@ -8,11 +8,13 @@ import {
   CheckCircle2,
   ChevronDown,
   Clock3,
+  Eye,
   Filter,
   Flag,
   FolderKanban,
   MoreVertical,
   PauseCircle,
+  Pencil,
   Plus,
   Search,
   ShieldCheck,
@@ -20,7 +22,7 @@ import {
 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { EmptyState } from '@/components/ui/empty-state';
-import { projectDetailRoute, projectNewRoute } from '@/lib/navigation/routes';
+import { projectDetailRoute, projectEditRoute, projectNewRoute } from '@/lib/navigation/routes';
 import { getProjects } from '@/lib/queries/projects';
 import { safeServerCall } from '@/lib/runtime/safe-server';
 import { formatDate } from '@/lib/utils/dates';
@@ -179,20 +181,10 @@ function ProjectsStatCard({ icon, label, value, helper, tone }: { icon: ReactNod
 function ProjectsPagination({ total }: { total: number }) {
   return (
     <div className="flex flex-col gap-3 border-t border-[#E5EAF1] px-5 py-4 text-sm text-[#64748B] md:flex-row md:items-center md:justify-between">
-      <p>Mostrando 1 a {Math.min(total, 5)} de {total} proyectos</p>
+      <p>Mostrando {total ? 1 : 0} a {Math.min(total, 10)} de {total} proyectos</p>
       <div className="flex flex-wrap items-center gap-2">
-        <button className="inline-flex h-9 items-center rounded-xl border border-[#E5EAF1] bg-white px-4 font-semibold text-slate-400" disabled>
-          Anterior
-        </button>
-        <button className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-[#050B18] text-sm font-bold text-white">1</button>
-        <button className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-[#E5EAF1] bg-white text-sm font-bold text-[#0F172A]">2</button>
-        <button className="inline-flex h-9 items-center gap-2 rounded-xl border border-[#E5EAF1] bg-white px-4 font-semibold text-[#0F172A]">
-          Siguiente <ArrowRight className="h-4 w-4" />
-        </button>
-        <span className="ml-2 hidden md:inline">Mostrar</span>
-        <button className="inline-flex h-9 items-center gap-2 rounded-xl border border-[#E5EAF1] bg-white px-3 font-bold text-[#0F172A]">
-          10 <ChevronDown className="h-4 w-4" />
-        </button>
+        <span className="inline-flex h-9 items-center rounded-xl border border-[#E5EAF1] bg-slate-50 px-4 font-semibold text-slate-500">Página 1</span>
+        <span className="inline-flex h-9 items-center rounded-xl border border-emerald-100 bg-emerald-50 px-4 font-semibold text-emerald-700">10 por página</span>
       </div>
     </div>
   );
@@ -226,9 +218,14 @@ function ProjectRow({ project, index, queryString }: { project: ProjectSummary; 
       </td>
       <td className="px-5 py-4 align-middle"><PriorityBadge priority={priority} /></td>
       <td className="px-5 py-4 align-middle">
-        <Link href={detailHref} aria-label={`Abrir proyecto ${project.title}`} className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-[#E5EAF1] bg-white text-slate-600 transition hover:-translate-y-0.5 hover:border-slate-300 hover:text-[#0F172A] hover:shadow-[0_10px_24px_rgba(15,23,42,0.07)]">
-          <MoreVertical className="h-5 w-5" />
-        </Link>
+        <div className="flex items-center justify-center gap-2">
+          <Link href={detailHref} aria-label={`Abrir proyecto ${project.title}`} className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-[#E5EAF1] bg-white text-slate-600 transition hover:-translate-y-0.5 hover:border-slate-300 hover:text-[#0F172A] hover:shadow-[0_10px_24px_rgba(15,23,42,0.07)]">
+            <Eye className="h-4 w-4" />
+          </Link>
+          <Link href={projectEditRoute(project.id, queryString)} aria-label={`Editar proyecto ${project.title}`} className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-[#E5EAF1] bg-white text-slate-600 transition hover:-translate-y-0.5 hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700">
+            <Pencil className="h-4 w-4" />
+          </Link>
+        </div>
       </td>
     </tr>
   );
@@ -262,10 +259,10 @@ export default async function ProjectsPage({ searchParams }: { searchParams?: Pr
             <p className="mt-2 text-base text-[#64748B]">Todos los proyectos creados en tu workspace.</p>
           </div>
           <div className="flex flex-wrap gap-3">
-            <Link href="/app/projects" className="inline-flex h-12 items-center justify-center gap-2 rounded-[16px] border border-[#E5EAF1] bg-white px-5 text-sm font-bold text-[#334155] transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-[0_12px_26px_rgba(15,23,42,0.06)]">
+            <a href="#project-filters" className="inline-flex h-12 items-center justify-center gap-2 rounded-[16px] border border-[#E5EAF1] bg-white px-5 text-sm font-bold text-[#334155] transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-[0_12px_26px_rgba(15,23,42,0.06)]">
               <Filter className="h-4 w-4" />
               Filtros
-            </Link>
+            </a>
             <Link href={projectNewRoute(queryString)} className="inline-flex h-12 items-center justify-center gap-2 rounded-[16px] bg-[#050B18] px-5 text-sm font-bold text-white shadow-[0_14px_30px_rgba(5,11,24,0.18)] transition hover:-translate-y-0.5 hover:bg-slate-900">
               <Plus className="h-4 w-4" />
               Nuevo proyecto
@@ -282,31 +279,30 @@ export default async function ProjectsPage({ searchParams }: { searchParams?: Pr
       </Card>
 
       <Card className="rounded-[24px] border-[#E5EAF1] bg-white p-0 shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
-        <div className="flex flex-col gap-3 border-b border-[#E5EAF1] p-5 lg:flex-row lg:items-center lg:justify-between">
-          <div className="relative w-full max-w-xl">
-            <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-            <form>
-              <input
-                name="q"
-                defaultValue={filters.q}
-                placeholder="Buscar proyecto, cliente o departamento..."
-                className="h-12 w-full rounded-[16px] border border-[#E5EAF1] bg-white pl-11 pr-4 text-sm font-medium text-[#0F172A] outline-none transition placeholder:text-slate-400 focus:border-[#16C784] focus:ring-4 focus:ring-emerald-500/10"
-              />
-            </form>
+        <form id="project-filters" className="border-b border-[#E5EAF1] p-5">
+          <div className="grid gap-3 lg:grid-cols-[minmax(280px,1fr)_180px_190px_190px_190px_auto_auto]">
+            <div className="relative">
+              <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <input name="q" defaultValue={filters.q} placeholder="Buscar proyecto, cliente o departamento..." className="h-12 w-full rounded-[16px] border border-[#E5EAF1] bg-white pl-11 pr-4 text-sm font-medium text-[#0F172A] outline-none transition placeholder:text-slate-400 focus:border-[#16C784] focus:ring-4 focus:ring-emerald-500/10" />
+            </div>
+            <select name="status" defaultValue={filters.status} className="h-12 rounded-[16px] border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-[#334155] outline-none focus:border-[#16C784] focus:ring-4 focus:ring-emerald-500/10">
+              <option value="">Estado</option>
+              <option value="activo">En progreso</option>
+              <option value="en_pausa">En pausa</option>
+              <option value="completado">Completado</option>
+              <option value="vencido">Atrasado</option>
+            </select>
+            <select name="mode" defaultValue={filters.mode} className="h-12 rounded-[16px] border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-[#334155] outline-none focus:border-[#16C784] focus:ring-4 focus:ring-emerald-500/10">
+              <option value="">Modo</option>
+              <option value="solo">Individual</option>
+              <option value="collaborative">Colaborativo</option>
+            </select>
+            <input name="department" defaultValue={filters.department} placeholder="Departamento" className="h-12 rounded-[16px] border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-[#334155] outline-none placeholder:text-slate-400 focus:border-[#16C784] focus:ring-4 focus:ring-emerald-500/10" />
+            <input name="client" defaultValue={filters.client} placeholder="Cliente" className="h-12 rounded-[16px] border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-[#334155] outline-none placeholder:text-slate-400 focus:border-[#16C784] focus:ring-4 focus:ring-emerald-500/10" />
+            <button type="submit" className="inline-flex h-12 items-center justify-center gap-2 rounded-[16px] bg-[#050B18] px-5 text-sm font-black text-white shadow-[0_12px_26px_rgba(5,11,24,0.14)] transition hover:-translate-y-0.5"><Filter className="h-4 w-4" /> Aplicar</button>
+            <Link href="/app/projects" className="inline-flex h-12 items-center justify-center rounded-[16px] border border-[#E5EAF1] bg-white px-5 text-sm font-bold text-[#334155] transition hover:bg-slate-50">Limpiar</Link>
           </div>
-          <div className="flex flex-wrap gap-2">
-            {[
-              ['status', 'Estado'],
-              ['mode', 'Modo'],
-              ['department', 'Departamento'],
-              ['client', 'Cliente'],
-            ].map(([key, label]) => (
-              <Link key={key} href="/app/projects" className="inline-flex h-11 items-center gap-2 rounded-[14px] border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-[#334155] transition hover:bg-slate-50">
-                {label} <ChevronDown className="h-4 w-4 text-slate-400" />
-              </Link>
-            ))}
-          </div>
-        </div>
+        </form>
 
         {projects.length ? (
           <div className="overflow-x-auto">

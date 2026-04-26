@@ -350,11 +350,8 @@ export function TaskForm({
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2 lg:justify-end">
-            <button type="button" className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-[#E5EAF1] bg-white text-slate-600 shadow-[0_10px_24px_rgba(15,23,42,0.04)] transition hover:bg-slate-50" aria-label="Ayuda">
-              <CircleHelp className="h-4 w-4" />
-            </button>
-            <button type="button" className="inline-flex h-11 items-center gap-2 rounded-2xl border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-slate-800 shadow-[0_10px_24px_rgba(15,23,42,0.04)] transition hover:bg-slate-50">
-              Acciones <ChevronDown className="h-4 w-4" />
+            <button type="button" onClick={() => reset(resetValues)} className="inline-flex h-11 items-center gap-2 rounded-2xl border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-slate-800 shadow-[0_10px_24px_rgba(15,23,42,0.04)] transition hover:bg-slate-50">
+              Restablecer <ChevronDown className="h-4 w-4 rotate-90" />
             </button>
             <Link href={cancelHref} className="inline-flex h-11 items-center justify-center rounded-2xl border border-[#E5EAF1] bg-white px-5 text-sm font-bold text-slate-800 shadow-[0_10px_24px_rgba(15,23,42,0.04)] transition hover:bg-slate-50">
               Cancelar
@@ -383,15 +380,8 @@ export function TaskForm({
                 <label className="text-xs font-black uppercase tracking-[0.18em] text-slate-500">Descripción</label>
                 <span className="text-xs font-bold text-slate-400">{watchedDescription.length} / 2000</span>
               </div>
-              <div className="flex flex-wrap items-center gap-1 border-b border-[#E5EAF1] bg-white px-4 py-3 text-sm text-slate-600">
-                <button type="button" className="rounded-xl px-3 py-2 font-semibold transition hover:bg-slate-50">Normal</button>
-                <span className="mx-1 h-6 w-px bg-slate-200" />
-                <button type="button" className="rounded-xl px-3 py-2 font-bold transition hover:bg-slate-50">B</button>
-                <button type="button" className="rounded-xl px-3 py-2 italic transition hover:bg-slate-50">I</button>
-                <button type="button" className="rounded-xl px-3 py-2 underline transition hover:bg-slate-50">U</button>
-                <span className="mx-1 h-6 w-px bg-slate-200" />
-                <button type="button" className="rounded-xl p-2 transition hover:bg-slate-50" aria-label="Lista"><List className="h-4 w-4" /></button>
-                <button type="button" className="rounded-xl p-2 transition hover:bg-slate-50" aria-label="Link"><Link2 className="h-4 w-4" /></button>
+              <div className="flex flex-wrap items-center gap-2 border-b border-[#E5EAF1] bg-slate-50/60 px-4 py-3 text-xs font-semibold text-slate-500">
+                Campo de texto simple conectado al guardado real de la tarea.
               </div>
               <Textarea {...register("description")} placeholder="Describe el contexto, entregables o notas importantes…" className="min-h-[130px] rounded-none border-0 bg-white px-5 py-4 text-base leading-7 shadow-none focus:border-0 focus:ring-0" />
             </div>
@@ -440,24 +430,13 @@ export function TaskForm({
             </FieldCard>
           </section>
 
-          <details className="group overflow-hidden rounded-[24px] border border-[#E5EAF1] bg-white shadow-[0_12px_30px_rgba(15,23,42,0.04)]" open>
+          <details className="group overflow-hidden rounded-[24px] border border-[#E5EAF1] bg-white shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
             <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-5 py-4">
               <span className="text-xs font-black uppercase tracking-[0.18em] text-slate-500">Detalles adicionales</span>
               <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-50 text-slate-500 transition group-open:rotate-180"><ChevronDown className="h-4 w-4" /></span>
             </summary>
-            <div className="grid gap-4 border-t border-[#E5EAF1] p-5 md:grid-cols-2">
-              <FieldMini label="Tipo de tarea">
-                <Select className="h-12 rounded-2xl border-[#E5EAF1] bg-white font-semibold" defaultValue="operativa"><option value="operativa">Operativa</option><option value="estrategica">Estratégica</option><option value="seguimiento">Seguimiento</option></Select>
-              </FieldMini>
-              <FieldMini label="Cliente">
-                <Input placeholder="Cliente vinculado" className="h-12 rounded-2xl border-[#E5EAF1] bg-white" />
-              </FieldMini>
-              <FieldMini label="Referencia">
-                <Input placeholder="Ej. Cotización, OC, contrato…" className="h-12 rounded-2xl border-[#E5EAF1] bg-white" />
-              </FieldMini>
-              <FieldMini label="Etiquetas">
-                <div className="flex h-12 items-center gap-2 rounded-2xl border border-[#E5EAF1] bg-white px-3 text-sm font-semibold text-emerald-700"><span className="rounded-full bg-emerald-50 px-3 py-1">Producción</span><X className="h-4 w-4 text-slate-400" /></div>
-              </FieldMini>
+            <div className="border-t border-[#E5EAF1] p-5">
+              <p className="text-sm font-medium leading-6 text-[#64748B]">Los campos conectados actualmente son estado, prioridad, proyecto, responsable, departamento, país, fecha límite y registro. No se muestran campos decorativos sin respaldo en base de datos.</p>
             </div>
           </details>
 
@@ -499,34 +478,16 @@ export function TaskForm({
           </SideCard>
 
           <SideCard>
-            <div className="mb-4 flex items-center justify-between">
-              <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-600">Comentarios</p>
-              <MessageCircle className="h-4 w-4 text-slate-400" />
-            </div>
-            <div className="space-y-3">
-              <CommentBubble name="Ulises Monge" meta="Hoy · 09:15" text="Se envía la cotización y quedan indicaciones para seguimiento." />
-              <CommentBubble name="Equipo" meta="Hoy · 11:30" text="Se validó con el cliente. Iniciamos producción." />
-            </div>
-            <div className="mt-4 flex items-center gap-2">
-              <input className="h-11 min-w-0 flex-1 rounded-2xl border border-[#E5EAF1] bg-white px-4 text-sm outline-none transition placeholder:text-slate-400 focus:border-emerald-300 focus:ring-4 focus:ring-emerald-50" placeholder="Escribe un comentario…" />
-              <button type="button" className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-[#050B18] text-white shadow-[0_14px_28px_rgba(5,11,24,0.18)]"><Send className="h-4 w-4" /></button>
-            </div>
+            <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-600">Comentarios y adjuntos</p>
+            <p className="mt-3 text-sm font-medium leading-6 text-[#64748B]">Los comentarios, adjuntos y bitácora real se gestionan desde el detalle de la tarea para mantener una sola fuente de verdad.</p>
+            {isEdit && taskId ? (
+              <Link href={taskDetailRoute(taskId)} className="mt-5 inline-flex h-11 w-full items-center justify-center rounded-2xl bg-[#050B18] px-4 text-sm font-bold text-white shadow-[0_14px_28px_rgba(5,11,24,0.18)] transition hover:-translate-y-0.5">
+                Abrir detalle operativo
+              </Link>
+            ) : null}
           </SideCard>
 
-          <SideCard>
-            <div className="mb-4 flex items-center justify-between">
-              <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-600">Adjuntos</p>
-              <span className="inline-flex items-center gap-1 rounded-full bg-slate-50 px-2.5 py-1 text-xs font-bold text-slate-500"><Paperclip className="h-3.5 w-3.5" /> 1</span>
-            </div>
-            <div className="flex items-center gap-3 rounded-2xl border border-[#E5EAF1] bg-slate-50/80 p-3">
-              <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-red-50 text-red-500"><FileText className="h-5 w-5" /></span>
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-black text-slate-800">Cotización_FlowTask.pdf</p>
-                <p className="mt-1 text-xs font-medium text-slate-500">549 KB · Hoy</p>
-              </div>
-              <button type="button" className="rounded-xl p-2 text-slate-400 transition hover:bg-white hover:text-slate-700">•••</button>
-            </div>
-          </SideCard>
+
         </aside>
       </div>
     </form>
