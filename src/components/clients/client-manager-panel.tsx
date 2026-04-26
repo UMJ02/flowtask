@@ -1,8 +1,7 @@
 'use client';
 
-import { ChangeEvent, useEffect, useMemo, useState } from 'react';
-import Link from 'next/link';
-import { Building2, FileSpreadsheet, Globe2, Mail, Pencil, Plus, Save, Tags, Trash2, UploadCloud, Users, X } from 'lucide-react';
+import { ChangeEvent, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { ChevronDown, FileSpreadsheet, Filter, Globe2, MoreVertical, Pencil, Plus, Save, Search, ShieldCheck, Tags, Trash2, UploadCloud, Users, X } from 'lucide-react';
 import { getClientWorkspaceContext, slugifyWorkspaceValue, fetchWorkspaceCountries, fetchWorkspaceDepartments } from '@/lib/supabase/workspace-client';
 import type { ClientListItem, ClientStatus } from '@/types/client';
 import { Button } from '@/components/ui/button';
@@ -136,6 +135,9 @@ export function ClientManagerPanel({ items, initialQuery = '' }: { items: Client
   const [deletingDepartmentId, setDeletingDepartmentId] = useState<string | null>(null);
   const [deletingCountryId, setDeletingCountryId] = useState<string | null>(null);
   const [importText, setImportText] = useState('');
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [query, setQuery] = useState(initialQuery);
+  const [statusFilter, setStatusFilter] = useState<ClientStatus | 'all'>('all');
 
   useEffect(() => {
     let active = true;
@@ -166,6 +168,25 @@ export function ClientManagerPanel({ items, initialQuery = '' }: { items: Client
     paused: list.filter((item) => item.status === 'en_pausa').length,
   }), [list]);
 
+  const filteredClients = useMemo(() => {
+    const needle = normalizeCatalogName(query);
+    return list.filter((item) => {
+      const matchesQuery = !needle || [item.name, item.contactEmail ?? '', item.notes ?? ''].some((value) => normalizeCatalogName(value).includes(needle));
+      const matchesStatus = statusFilter === 'all' || item.status === statusFilter;
+      return matchesQuery && matchesStatus;
+    });
+  }, [list, query, statusFilter]);
+
+  const filteredDepartments = useMemo(() => {
+    const needle = normalizeCatalogName(query);
+    return departments.filter((item) => !needle || [item.name, item.phone ?? ''].some((value) => normalizeCatalogName(value).includes(needle)));
+  }, [departments, query]);
+
+  const filteredCountries = useMemo(() => {
+    const needle = normalizeCatalogName(query);
+    return countries.filter((item) => !needle || normalizeCatalogName(item.name).includes(needle));
+  }, [countries, query]);
+
   const resetDraft = (clearFeedback = true) => {
     setDraft(EMPTY_DRAFT);
     setMode('create');
@@ -195,6 +216,7 @@ export function ClientManagerPanel({ items, initialQuery = '' }: { items: Client
     setDraft({ id: item.id, name: item.name, contactEmail: item.contactEmail ?? '', status: item.status, notes: item.notes ?? '' });
     setMode('edit');
     setActiveTab('clients');
+    setDrawerOpen(true);
     setError(null);
     setMessage(null);
   };
@@ -202,6 +224,7 @@ export function ClientManagerPanel({ items, initialQuery = '' }: { items: Client
     setDepartmentDraft({ id: item.id, name: item.name, phone: item.phone ?? '' });
     setDepartmentMode('edit');
     setActiveTab('departments');
+    setDrawerOpen(true);
     setError(null);
     setMessage(null);
   };
@@ -209,6 +232,7 @@ export function ClientManagerPanel({ items, initialQuery = '' }: { items: Client
     setCountryDraft({ id: item.id, name: item.name });
     setCountryMode('edit');
     setActiveTab('countries');
+    setDrawerOpen(true);
     setError(null);
     setMessage(null);
   };
@@ -239,6 +263,7 @@ export function ClientManagerPanel({ items, initialQuery = '' }: { items: Client
         setList((current) => current.map((item) => item.id === draft.id ? { ...item, ...payload, contactEmail: payload.contact_email } : item));
         setMessage('Registro actualizado correctamente.');
         resetDraft(false);
+        setDrawerOpen(false);
         return;
       }
       const { data, error: insertError } = await workspace.supabase.from('clients').insert(payload).select('id,name,status,notes,contact_email').single();
@@ -246,6 +271,7 @@ export function ClientManagerPanel({ items, initialQuery = '' }: { items: Client
       setList((current) => [{ id: data.id, name: data.name, status: data.status, notes: data.notes ?? null, contactEmail: data.contact_email ?? null, createdAtLabel: 'Hoy', projectsCount: 0, openTasksCount: 0, completedTasksCount: 0, overdueTasksCount: 0 }, ...current]);
       setMessage('Registro creado correctamente.');
       resetDraft(false);
+      setDrawerOpen(false);
     } catch (err: any) {
       setError(err?.message ?? 'No pudimos guardar el registro.');
     } finally {
@@ -276,6 +302,7 @@ export function ClientManagerPanel({ items, initialQuery = '' }: { items: Client
         setDepartments((current) => current.map((item) => item.id === departmentDraft.id ? { ...item, name: normalizedName, phone: payload.phone } : item));
         setMessage('Departamento actualizado correctamente.');
         resetDepartmentDraft(false);
+        setDrawerOpen(false);
         return;
       }
       const { data, error: insertError } = await workspace.supabase.from('departments').insert(payload).select('id,code,name,phone').single();
@@ -283,6 +310,7 @@ export function ClientManagerPanel({ items, initialQuery = '' }: { items: Client
       setDepartments((current) => [{ id: String(data.id), code: String(data.code), name: String(data.name), phone: (data.phone as string | null | undefined) ?? null, isSystem: false }, ...current]);
       setMessage('Departamento creado correctamente.');
       resetDepartmentDraft(false);
+      setDrawerOpen(false);
     } catch (err: any) {
       const rawMessage = err?.message ?? 'No pudimos guardar el departamento.';
       if (/departments_name_key|departments_scope_name_unique|duplicate key/i.test(rawMessage)) {
@@ -315,6 +343,7 @@ export function ClientManagerPanel({ items, initialQuery = '' }: { items: Client
         setCountries((current) => current.map((item) => item.id === countryDraft.id ? { ...item, name: normalizedName } : item));
         setMessage('País actualizado correctamente.');
         resetCountryDraft(false);
+        setDrawerOpen(false);
         return;
       }
       const { data, error: insertError } = await workspace.supabase.from('countries').insert(payload).select('id,code,name').single();
@@ -322,6 +351,7 @@ export function ClientManagerPanel({ items, initialQuery = '' }: { items: Client
       setCountries((current) => [{ id: String(data.id), code: String(data.code), name: String(data.name), isSystem: false }, ...current]);
       setMessage('País creado correctamente.');
       resetCountryDraft(false);
+      setDrawerOpen(false);
     } catch (err: any) {
       const rawMessage = err?.message ?? 'No pudimos guardar el país.';
       if (/countries_name_key|countries_scope_name_unique|duplicate key/i.test(rawMessage)) {
@@ -425,147 +455,123 @@ export function ClientManagerPanel({ items, initialQuery = '' }: { items: Client
     }
   };
 
-  const tabs: Array<{ key: TabKey; label: string; helper: string; icon: React.ReactNode }> = [
-    { key: 'clients', label: 'Clientes', helper: 'Registro de cuentas y contactos', icon: <Users className="h-4 w-4" /> },
-    { key: 'departments', label: 'Departamentos', helper: 'Catálogo para tareas y proyectos', icon: <Tags className="h-4 w-4" /> },
-    { key: 'countries', label: 'Países', helper: 'Lista desplegable personalizable', icon: <Globe2 className="h-4 w-4" /> },
+  const openCreate = (tab: TabKey = activeTab) => {
+    setActiveTab(tab);
+    if (tab === 'clients') resetDraft(false);
+    if (tab === 'departments') resetDepartmentDraft(false);
+    if (tab === 'countries') resetCountryDraft(false);
+    setError(null);
+    setMessage(null);
+    setDrawerOpen(true);
+  };
+
+  const closeDrawer = () => {
+    setDrawerOpen(false);
+    if (activeTab === 'clients') resetDraft(false);
+    if (activeTab === 'departments') resetDepartmentDraft(false);
+    if (activeTab === 'countries') resetCountryDraft(false);
+  };
+
+  const tabs: Array<{ key: TabKey; label: string; helper: string; icon: ReactNode; count: number }> = [
+    { key: 'clients', label: 'Clientes', helper: 'Registro de cuentas y contactos', icon: <Users className="h-4 w-4" />, count: list.length },
+    { key: 'departments', label: 'Departamentos', helper: 'Catálogo para tareas y proyectos', icon: <ShieldCheck className="h-4 w-4" />, count: departments.length },
+    { key: 'countries', label: 'Países', helper: 'Lista desplegable personalizable', icon: <Globe2 className="h-4 w-4" />, count: countries.length },
   ];
 
-  return (
-    <div className="space-y-4">
-      <Card className="rounded-[28px] border border-slate-200/90 bg-white/[0.92] p-5 shadow-[0_10px_30px_rgba(15,23,42,0.04)]">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Registros</p>
-            <h1 className="mt-2 text-2xl font-bold text-slate-900">Catálogos del workspace para proyectos y tareas</h1>
-            <p className="mt-2 max-w-3xl text-sm text-slate-500">Centraliza registros de clientes, departamentos y países para que después aparezcan en las listas desplegables de tareas y proyectos.</p>
-          </div>
-          <div className="flex flex-wrap gap-3 text-sm">
-            <span className="rounded-2xl border border-slate-200 bg-white px-4 py-2 font-semibold text-slate-700">Registros: {stats.total}</span>
-            <span className="rounded-2xl border border-slate-200 bg-white px-4 py-2 font-semibold text-slate-700">Departamentos: {departments.length}</span>
-            <span className="rounded-2xl border border-slate-200 bg-white px-4 py-2 font-semibold text-slate-700">Países: {countries.length}</span>
-          </div>
-        </div>
-      </Card>
+  const currentTab = tabs.find((tab) => tab.key === activeTab) ?? tabs[0];
+  const activeCount = activeTab === 'clients' ? filteredClients.length : activeTab === 'departments' ? filteredDepartments.length : filteredCountries.length;
+  const drawerTitle = activeTab === 'clients'
+    ? (mode === 'edit' ? 'Editar cliente' : 'Nuevo cliente')
+    : activeTab === 'departments'
+      ? (departmentMode === 'edit' ? 'Editar departamento' : 'Nuevo departamento')
+      : (countryMode === 'edit' ? 'Editar país' : 'Nuevo país');
 
-      <Card className="rounded-[28px] border border-slate-200/90 bg-white/[0.92] p-5 shadow-[0_10px_30px_rgba(15,23,42,0.04)]">
-        <div className="flex flex-wrap gap-2 border-b border-slate-200 pb-4">
+  return (
+    <div className="space-y-6">
+      <section className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_560px]">
+        <div>
+          <p className="text-xs font-extrabold uppercase tracking-[0.28em] text-emerald-600">Registros</p>
+          <h1 className="mt-3 text-3xl font-black tracking-[-0.04em] text-slate-950 md:text-4xl">Catálogos del workspace para proyectos y tareas</h1>
+          <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-500">Centraliza registros de clientes, departamentos y países para que después aparezcan en las listas desplegables de tareas y proyectos.</p>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-3">
+          <MetricCard icon={<Users className="h-5 w-5" />} label="Registros" value={stats.total} tone="emerald" />
+          <MetricCard icon={<ShieldCheck className="h-5 w-5" />} label="Departamentos" value={departments.length} tone="slate" />
+          <MetricCard icon={<Globe2 className="h-5 w-5" />} label="Países" value={countries.length} tone="blue" />
+        </div>
+      </section>
+
+      <Card className="overflow-hidden rounded-[28px] border border-slate-200/90 bg-white shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
+        <div className="flex flex-wrap items-center gap-3 border-b border-slate-200 px-5 py-4">
           {tabs.map((tab) => {
             const isActive = tab.key === activeTab;
             return (
-              <button key={tab.key} type="button" onClick={() => setActiveTab(tab.key)} className={`inline-flex items-center gap-2 rounded-2xl px-4 py-2 text-sm font-semibold transition ${isActive ? 'bg-slate-950 text-white shadow-[0_10px_24px_rgba(15,23,42,0.18)]' : 'border border-slate-200 bg-white text-slate-700 hover:bg-slate-50'}`}>
-                {tab.icon}
-                {tab.label}
+              <button key={tab.key} type="button" onClick={() => setActiveTab(tab.key)} className={`inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-bold transition ${isActive ? 'bg-slate-950 text-white shadow-[0_14px_28px_rgba(15,23,42,.22)]' : 'border border-slate-200 bg-white text-slate-700 hover:bg-slate-50'}`}>
+                {tab.icon}{tab.label}<span className={`rounded-full px-2 py-0.5 text-xs ${isActive ? 'bg-white/15 text-white' : 'bg-slate-100 text-slate-500'}`}>{tab.count}</span>
               </button>
             );
           })}
         </div>
-        <p className="mt-3 text-sm text-slate-500">{tabs.find((tab) => tab.key === activeTab)?.helper}</p>
 
-        {error ? <div className="mt-4 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">{error}</div> : null}
-        {message ? <div className="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">{message}</div> : null}
+        <div className="px-5 py-6">
+          {error ? <div className="mb-4 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700">{error}</div> : null}
+          {message ? <div className="mb-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">{message}</div> : null}
 
-        {activeTab === 'clients' ? (
-          <div className="mt-5 grid gap-4 xl:grid-cols-[minmax(0,1fr)_380px]">
-            <div className="space-y-4">
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <h2 className="text-lg font-semibold text-slate-900">Listado de registros</h2>
-                  <p className="text-sm text-slate-500">Resultado actual {initialQuery ? `para “${initialQuery}”` : 'de la organización activa'}.</p>
-                </div>
-                <button type="button" onClick={() => resetDraft()} className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"><Plus className="h-4 w-4" />Nuevo</button>
-              </div>
-              <div className="grid gap-3">
-                {list.length ? list.map((item) => (
-                  <div key={item.id} className="rounded-[24px] border border-slate-200 bg-white p-4 transition hover:border-slate-300 hover:bg-slate-50/60">
-                    <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-                      <div className="min-w-0 flex-1">
-                        <div className="flex flex-wrap items-center gap-2"><StatusBadge value={item.status} /><span className="text-xs text-slate-500">Creado: {item.createdAtLabel}</span></div>
-                        <h3 className="mt-3 text-lg font-semibold text-slate-900">{item.name}</h3>
-                        {item.contactEmail ? <p className="mt-2 inline-flex items-center gap-2 text-sm text-slate-600"><Mail className="h-4 w-4 text-slate-400" />{item.contactEmail}</p> : null}
-                        <p className="mt-1 text-sm text-slate-500">{item.notes || 'Registro listo para relacionar proyectos y tareas del workspace.'}</p>
-                      </div>
-                      <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-100 text-slate-600"><Building2 className="h-5 w-5" /></span>
-                    </div>
-                    <div className="mt-4 grid gap-3 sm:grid-cols-3">
-                      <div className="rounded-lg border border-slate-200 bg-slate-50 p-3"><p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">Proyectos</p><p className="mt-2 text-xl font-bold text-slate-900">{item.projectsCount}</p></div>
-                      <div className="rounded-lg border border-slate-200 bg-slate-50 p-3"><p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">Tareas abiertas</p><p className="mt-2 text-xl font-bold text-slate-900">{item.openTasksCount}</p></div>
-                      <div className="rounded-lg border border-slate-200 bg-slate-50 p-3"><p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">Completadas</p><p className="mt-2 text-xl font-bold text-slate-900">{item.completedTasksCount}</p></div>
-                    </div>
-                    <div className="mt-4 flex flex-wrap gap-2">
-                      <Link href={`/app/clients/${item.id}`} className="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">Ver detalle</Link>
-                      <button type="button" onClick={() => startEdit(item)} className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"><Pencil className="h-4 w-4" />Editar</button>
-                      <button type="button" onClick={() => deleteClient(item.id)} disabled={deletingId === item.id} className="inline-flex items-center gap-2 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-700 transition hover:bg-rose-100 disabled:opacity-60"><Trash2 className="h-4 w-4" />{deletingId === item.id ? 'Borrando...' : 'Borrar'}</button>
-                    </div>
-                  </div>
-                )) : <EmptyState icon={<Building2 className="h-6 w-6" />} title="No hay registros para mostrar" description="Crea el primer cliente para empezar a relacionar proyectos y tareas." />}
-              </div>
+          <div className="mb-5 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <h2 className="text-xl font-black tracking-[-0.03em] text-slate-950">
+                {activeTab === 'clients' ? 'Clientes registrados' : activeTab === 'departments' ? 'Departamentos disponibles' : 'Países disponibles'}
+              </h2>
+              <p className="mt-1 text-sm text-slate-500">{activeTab === 'clients' ? 'Listado de todos los clientes de la organización.' : activeTab === 'departments' ? 'Se usan luego en formularios de tareas y proyectos.' : 'Se mostrarán como lista desplegable en proyectos y tareas.'}</p>
             </div>
-            <div className="space-y-4">
-              <Card className="rounded-[28px] border border-slate-200/90 bg-white/[0.92] p-5 shadow-none">
-                <div className="flex items-center justify-between gap-3">
-                  <div><p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{mode === 'edit' ? 'Editar registro' : 'Nuevo registro'}</p><h2 className="mt-2 text-lg font-semibold text-slate-900">{mode === 'edit' ? draft.name || 'Editar registro' : 'Crear cliente'}</h2></div>
-                  {mode === 'edit' ? <button type="button" onClick={() => resetDraft()} className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50"><X className="h-4 w-4" /></button> : null}
-                </div>
-                <div className="mt-5 space-y-4">
-                  <div className="space-y-2"><label className="text-sm font-medium text-slate-700">Nombre</label><Input value={draft.name} onChange={(e) => setDraft((cur) => ({ ...cur, name: e.target.value }))} placeholder="Nombre del cliente" /></div>
-                  <div className="space-y-2"><label className="text-sm font-medium text-slate-700">Correo de contacto</label><Input type="email" value={draft.contactEmail} onChange={(e) => setDraft((cur) => ({ ...cur, contactEmail: e.target.value }))} placeholder="cliente@empresa.com" /></div>
-                  <div className="space-y-2"><label className="text-sm font-medium text-slate-700">Estado</label><select value={draft.status} onChange={(e) => setDraft((cur) => ({ ...cur, status: e.target.value as ClientStatus }))} className="flex h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm text-slate-900 shadow-sm outline-none transition focus:border-emerald-300 focus:ring-4 focus:ring-emerald-100"><option value="activo">Activo</option><option value="en_pausa">En pausa</option><option value="cerrado">Cerrado</option></select></div>
-                  <div className="space-y-2"><label className="text-sm font-medium text-slate-700">Notas</label><Textarea value={draft.notes} onChange={(e) => setDraft((cur) => ({ ...cur, notes: e.target.value }))} placeholder="Contexto del cliente, acuerdos o notas clave." /></div>
-                  <div className="flex flex-wrap gap-3"><Button type="button" loading={saving} onClick={saveClient}><Save className="h-4 w-4" />{mode === 'edit' ? 'Guardar cambios' : 'Crear cliente'}</Button><Button type="button" variant="secondary" onClick={() => resetDraft()}>Restablecer</Button></div>
-                </div>
-              </Card>
-              <Card className="rounded-[28px] border border-slate-200/90 bg-white/[0.92] p-5 shadow-none">
-                <div className="flex items-start gap-3"><span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700"><FileSpreadsheet className="h-5 w-5" /></span><div><p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Carga masiva</p><h2 className="mt-2 text-lg font-semibold text-slate-900">Importar registros desde documento</h2><p className="mt-2 text-sm text-slate-500">Acepta archivos CSV o TSV. Columnas sugeridas: nombre, correo, estado y notas.</p></div></div>
-                <div className="mt-5 space-y-4">
-                  <label className="flex cursor-pointer items-center justify-center gap-2 rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 py-4 text-sm font-semibold text-slate-700 transition hover:border-emerald-300 hover:bg-emerald-50/60"><UploadCloud className="h-4 w-4" />Subir archivo exportado<input type="file" accept=".csv,.tsv,.txt,text/csv,text/tab-separated-values" className="hidden" onChange={handleImportFile} /></label>
-                  <div className="space-y-2"><label className="text-sm font-medium text-slate-700">O pega los datos aquí</label><Textarea value={importText} onChange={(e) => setImportText(e.target.value)} placeholder={"nombre,correo,estado,notas\nAcme,contacto@acme.com,activo,Cuenta principal"} className="min-h-[140px]" /></div>
-                  <div className="flex flex-wrap gap-3"><Button type="button" variant="secondary" loading={importing} onClick={() => processImportRows(parseDelimited(importText))}>Importar registros</Button><span className="text-xs text-slate-500">Tip: exporta desde Google Sheets en CSV.</span></div>
-                </div>
-              </Card>
+            <button type="button" onClick={() => openCreate(activeTab)} className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-bold text-white shadow-[0_16px_30px_rgba(15,23,42,.18)] transition hover:-translate-y-0.5 hover:bg-slate-900">
+              <Plus className="h-4 w-4" />{activeTab === 'clients' ? 'Nuevo cliente' : activeTab === 'departments' ? 'Nuevo departamento' : 'Nuevo país'}
+            </button>
+          </div>
+
+          <div className="mb-5 flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
+            <div className="relative w-full max-w-[440px]"><Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" /><Input value={query} onChange={(event) => setQuery(event.target.value)} placeholder={activeTab === 'clients' ? 'Buscar cliente...' : activeTab === 'departments' ? 'Buscar departamento...' : 'Buscar país...'} className="h-12 rounded-2xl border-slate-200 bg-white pl-12 shadow-none" /></div>
+            <div className="flex flex-wrap gap-3">
+              <button type="button" className="inline-flex h-12 items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-700 transition hover:bg-slate-50"><Filter className="h-4 w-4" /> Filtros</button>
+              {activeTab === 'clients' ? (
+                <label className="relative inline-flex h-12 items-center rounded-2xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-700">
+                  <select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value as ClientStatus | 'all')} className="appearance-none bg-transparent pr-8 outline-none"><option value="all">Todos</option><option value="activo">Activo</option><option value="en_pausa">En pausa</option><option value="cerrado">Cerrado</option></select>
+                  <ChevronDown className="pointer-events-none absolute right-3 h-4 w-4 text-slate-400" />
+                </label>
+              ) : null}
             </div>
           </div>
-        ) : null}
 
-        {activeTab === 'departments' ? (
-          <div className="mt-5 grid gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
-            <div className="space-y-3">
-              <div><h2 className="text-lg font-semibold text-slate-900">Departamentos disponibles</h2><p className="text-sm text-slate-500">Se usarán luego en los formularios de tareas y proyectos.</p></div>
-              {departments.length ? departments.map((item) => (
-                <div key={item.id} className="rounded-[22px] border border-slate-200 bg-white px-4 py-4 transition hover:border-slate-300 hover:bg-slate-50/60">
-                  <div className="flex items-start justify-between gap-3">
-                    <div><p className="text-base font-semibold text-slate-900">{item.name}</p><p className="mt-1 text-sm text-slate-500">{item.phone ? `Tel. ${item.phone}` : 'Sin teléfono registrado'}</p></div>
-                    <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700"><Tags className="h-4 w-4" /></span>
-                  </div>
-                  <div className="mt-4 flex flex-wrap gap-2"><button type="button" onClick={() => startDepartmentEdit(item)} className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"><Pencil className="h-4 w-4" />Editar</button><button type="button" onClick={() => deleteDepartment(item.id)} disabled={deletingDepartmentId === item.id} className="inline-flex items-center gap-2 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-700 transition hover:bg-rose-100 disabled:opacity-60"><Trash2 className="h-4 w-4" />{deletingDepartmentId === item.id ? 'Borrando...' : 'Borrar'}</button></div>
-                </div>
-              )) : <EmptyState icon={<Tags className="h-6 w-6" />} title="No hay departamentos todavía" description="Crea el primero para que aparezca en proyectos y tareas." />}
-            </div>
-            <Card className="rounded-[28px] border border-slate-200/90 bg-white/[0.92] p-5 shadow-none">
-              <div className="flex items-center justify-between gap-3"><div><p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{departmentMode === 'edit' ? 'Editar departamento' : 'Nuevo departamento'}</p><h2 className="mt-2 text-lg font-semibold text-slate-900">{departmentMode === 'edit' ? departmentDraft.name || 'Editar departamento' : 'Crear departamento'}</h2></div>{departmentMode === 'edit' ? <button type="button" onClick={() => resetDepartmentDraft()} className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50"><X className="h-4 w-4" /></button> : null}</div>
-              <div className="mt-5 space-y-4"><div className="space-y-2"><label className="text-sm font-medium text-slate-700">Nombre</label><Input value={departmentDraft.name} onChange={(e) => setDepartmentDraft((cur) => ({ ...cur, name: e.target.value }))} placeholder="Ej. Mercadeo" /></div><div className="space-y-2"><label className="text-sm font-medium text-slate-700">Teléfono</label><Input value={departmentDraft.phone} onChange={(e) => setDepartmentDraft((cur) => ({ ...cur, phone: e.target.value }))} placeholder="Ej. +506 6000-0000" /></div><div className="flex flex-wrap gap-3"><Button type="button" loading={savingDepartment} onClick={saveDepartment}><Save className="h-4 w-4" />{departmentMode === 'edit' ? 'Guardar cambios' : 'Crear departamento'}</Button><Button type="button" variant="secondary" onClick={() => resetDepartmentDraft()}>Restablecer</Button></div></div>
-            </Card>
-          </div>
-        ) : null}
+          {activeTab === 'clients' ? <ClientsTable rows={filteredClients} deletingId={deletingId} onEdit={startEdit} onDelete={deleteClient} /> : null}
+          {activeTab === 'departments' ? <DepartmentsTable rows={filteredDepartments} deletingId={deletingDepartmentId} onEdit={startDepartmentEdit} onDelete={deleteDepartment} /> : null}
+          {activeTab === 'countries' ? <CountriesTable rows={filteredCountries} deletingId={deletingCountryId} onEdit={startCountryEdit} onDelete={deleteCountry} /> : null}
 
-        {activeTab === 'countries' ? (
-          <div className="mt-5 grid gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
-            <div className="space-y-3">
-              <div><h2 className="text-lg font-semibold text-slate-900">Países disponibles</h2><p className="text-sm text-slate-500">Se mostrarán como lista desplegable en proyectos y tareas.</p></div>
-              {countries.length ? countries.map((item) => (
-                <div key={item.id} className="rounded-[22px] border border-slate-200 bg-white px-4 py-4 transition hover:border-slate-300 hover:bg-slate-50/60">
-                  <div className="flex items-start justify-between gap-3"><div><p className="text-base font-semibold text-slate-900">{item.name}</p></div><span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-700"><Globe2 className="h-4 w-4" /></span></div>
-                  <div className="mt-4 flex flex-wrap gap-2"><button type="button" onClick={() => startCountryEdit(item)} className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"><Pencil className="h-4 w-4" />Editar</button><button type="button" onClick={() => deleteCountry(item.id)} disabled={deletingCountryId === item.id} className="inline-flex items-center gap-2 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-700 transition hover:bg-rose-100 disabled:opacity-60"><Trash2 className="h-4 w-4" />{deletingCountryId === item.id ? 'Borrando...' : 'Borrar'}</button></div>
-                </div>
-              )) : <EmptyState icon={<Globe2 className="h-6 w-6" />} title="No hay países todavía" description="Crea el primero para personalizar el formulario del workspace." />}
-            </div>
-            <Card className="rounded-[28px] border border-slate-200/90 bg-white/[0.92] p-5 shadow-none">
-              <div className="flex items-center justify-between gap-3"><div><p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{countryMode === 'edit' ? 'Editar país' : 'Nuevo país'}</p><h2 className="mt-2 text-lg font-semibold text-slate-900">{countryMode === 'edit' ? countryDraft.name || 'Editar país' : 'Crear país'}</h2></div>{countryMode === 'edit' ? <button type="button" onClick={() => resetCountryDraft()} className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50"><X className="h-4 w-4" /></button> : null}</div>
-              <div className="mt-5 space-y-4"><div className="space-y-2"><label className="text-sm font-medium text-slate-700">Nombre</label><Input value={countryDraft.name} onChange={(e) => setCountryDraft((cur) => ({ ...cur, name: e.target.value }))} placeholder="Ej. Costa Rica" /></div><div className="flex flex-wrap gap-3"><Button type="button" loading={savingCountry} onClick={saveCountry}><Save className="h-4 w-4" />{countryMode === 'edit' ? 'Guardar cambios' : 'Crear país'}</Button><Button type="button" variant="secondary" onClick={() => resetCountryDraft()}>Restablecer</Button></div></div>
-            </Card>
-          </div>
-        ) : null}
+          <div className="mt-5 flex flex-col gap-3 text-sm text-slate-500 sm:flex-row sm:items-center sm:justify-between"><span>Mostrando {activeCount} de {currentTab.count} resultados</span><div className="flex items-center gap-2"><button type="button" className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-400" disabled>‹</button><span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-950 text-sm font-bold text-white">1</span><button type="button" className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-400" disabled>›</button><span className="ml-2 inline-flex h-10 items-center rounded-2xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-600">10 / página</span></div></div>
+        </div>
       </Card>
+
+      {activeTab === 'clients' ? (
+        <Card className="rounded-[28px] border border-slate-200/90 bg-white p-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
+          <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(320px,420px)] lg:items-center">
+            <div className="flex items-start gap-4"><span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700"><FileSpreadsheet className="h-5 w-5" /></span><div><p className="text-xs font-bold uppercase tracking-[0.22em] text-slate-500">Carga masiva</p><h2 className="mt-2 text-lg font-bold text-slate-950">Importar registros desde documento</h2><p className="mt-1 text-sm leading-6 text-slate-500">Acepta CSV o TSV con columnas sugeridas: nombre, correo, estado y notas.</p></div></div>
+            <div className="space-y-3"><label className="flex cursor-pointer items-center justify-center gap-2 rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 py-4 text-sm font-bold text-slate-700 transition hover:border-emerald-300 hover:bg-emerald-50/60"><UploadCloud className="h-4 w-4" />Subir archivo exportado<input type="file" accept=".csv,.tsv,.txt,text/csv,text/tab-separated-values" className="hidden" onChange={handleImportFile} /></label><Textarea value={importText} onChange={(event) => setImportText(event.target.value)} placeholder={"nombre,correo,estado,notas\nAcme,contacto@acme.com,activo,Cuenta principal"} className="min-h-[92px] rounded-2xl" /><Button type="button" variant="secondary" loading={importing} onClick={() => processImportRows(parseDelimited(importText))}>Importar registros</Button></div>
+          </div>
+        </Card>
+      ) : null}
+
+      <Drawer open={drawerOpen} title={drawerTitle} description="Formulario limpio para crear o editar registros sin saturar la pantalla." onClose={closeDrawer} footer={<div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end"><Button type="button" variant="secondary" onClick={closeDrawer}>Cancelar</Button>{activeTab === 'clients' ? <Button type="button" loading={saving} onClick={saveClient}><Save className="h-4 w-4" />{mode === 'edit' ? 'Guardar cambios' : 'Crear cliente'}</Button> : null}{activeTab === 'departments' ? <Button type="button" loading={savingDepartment} onClick={saveDepartment}><Save className="h-4 w-4" />{departmentMode === 'edit' ? 'Guardar cambios' : 'Crear departamento'}</Button> : null}{activeTab === 'countries' ? <Button type="button" loading={savingCountry} onClick={saveCountry}><Save className="h-4 w-4" />{countryMode === 'edit' ? 'Guardar cambios' : 'Crear país'}</Button> : null}</div>}>
+        {activeTab === 'clients' ? <div className="space-y-4"><Field label="Nombre del cliente"><Input value={draft.name} onChange={(event) => setDraft((cur) => ({ ...cur, name: event.target.value }))} placeholder="Ej. Constructora Bello" /></Field><Field label="Correo"><Input type="email" value={draft.contactEmail} onChange={(event) => setDraft((cur) => ({ ...cur, contactEmail: event.target.value }))} placeholder="contacto@empresa.com" /></Field><Field label="Estado"><select value={draft.status} onChange={(event) => setDraft((cur) => ({ ...cur, status: event.target.value as ClientStatus }))} className="flex h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm text-slate-900 shadow-sm outline-none transition focus:border-emerald-300 focus:ring-4 focus:ring-emerald-100"><option value="activo">Activo</option><option value="en_pausa">En pausa</option><option value="cerrado">Cerrado</option></select></Field><Field label="Notas"><Textarea value={draft.notes} onChange={(event) => setDraft((cur) => ({ ...cur, notes: event.target.value }))} placeholder="Contexto del cliente, acuerdos o notas clave." /></Field></div> : null}
+        {activeTab === 'departments' ? <div className="space-y-4"><Field label="Nombre"><Input value={departmentDraft.name} onChange={(event) => setDepartmentDraft((cur) => ({ ...cur, name: event.target.value }))} placeholder="Ej. Mercadeo" /></Field><Field label="Teléfono"><Input value={departmentDraft.phone} onChange={(event) => setDepartmentDraft((cur) => ({ ...cur, phone: event.target.value }))} placeholder="Ej. +506 6000-0000" /></Field></div> : null}
+        {activeTab === 'countries' ? <div className="space-y-4"><Field label="Nombre"><Input value={countryDraft.name} onChange={(event) => setCountryDraft((cur) => ({ ...cur, name: event.target.value }))} placeholder="Ej. Costa Rica" /></Field></div> : null}
+      </Drawer>
     </div>
   );
 }
+
+function initials(value: string) { return value.split(' ').filter(Boolean).slice(0, 2).map((part) => part[0]?.toUpperCase()).join('') || 'FT'; }
+function Field({ label, children }: { label: string; children: ReactNode }) { return <div className="space-y-2"><label className="text-sm font-semibold text-slate-700">{label}</label>{children}</div>; }
+function MetricCard({ icon, label, value, tone }: { icon: ReactNode; label: string; value: number; tone: 'emerald' | 'slate' | 'blue' }) { const toneClass = tone === 'emerald' ? 'bg-emerald-50 text-emerald-700' : tone === 'blue' ? 'bg-blue-50 text-blue-700' : 'bg-slate-100 text-slate-700'; return <div className="rounded-[22px] border border-slate-200 bg-white p-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)]"><div className="flex items-center gap-4"><span className={`inline-flex h-12 w-12 items-center justify-center rounded-2xl ${toneClass}`}>{icon}</span><div><p className="text-sm font-semibold text-slate-500">{label}</p><p className="mt-1 text-2xl font-black text-slate-950">{value}</p></div></div></div>; }
+function Drawer({ open, title, description, children, footer, onClose }: { open: boolean; title: string; description: string; children: ReactNode; footer: ReactNode; onClose: () => void }) { if (!open) return null; return <div className="fixed inset-0 z-50 flex justify-end bg-slate-950/25 backdrop-blur-[2px]" role="dialog" aria-modal="true"><button type="button" aria-label="Cerrar panel" className="absolute inset-0 cursor-default" onClick={onClose} /><aside className="relative flex h-full w-full max-w-[420px] flex-col border-l border-slate-200 bg-white shadow-[0_24px_80px_rgba(15,23,42,.18)]"><div className="flex items-start justify-between gap-4 border-b border-slate-100 px-6 py-5"><div><p className="text-xs font-bold uppercase tracking-[0.22em] text-emerald-600">Registros</p><h2 className="mt-2 text-xl font-bold text-slate-950">{title}</h2><p className="mt-1 text-sm leading-6 text-slate-500">{description}</p></div><button type="button" onClick={onClose} className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50"><X className="h-4 w-4" /></button></div><div className="flex-1 overflow-y-auto px-6 py-5">{children}</div><div className="border-t border-slate-100 bg-slate-50/80 px-6 py-4">{footer}</div></aside></div>; }
+function ClientsTable({ rows, deletingId, onEdit, onDelete }: { rows: ClientListItem[]; deletingId: string | null; onEdit: (item: ClientListItem) => void; onDelete: (id: string) => void }) { if (!rows.length) return <EmptyState icon={<Users className="h-6 w-6" />} title="No hay clientes con esos criterios" description="Ajusta la búsqueda o crea un nuevo cliente para este workspace." />; return <div className="overflow-hidden rounded-[22px] border border-slate-200 bg-white"><div className="hidden grid-cols-[1.3fr_1fr_1.2fr_.8fr_140px] border-b border-slate-200 bg-slate-50/70 px-4 py-3 text-[11px] font-black uppercase tracking-[0.22em] text-slate-500 lg:grid"><span>Cliente</span><span>Contacto</span><span>Correo</span><span>Estado</span><span>Acciones</span></div>{rows.map((item) => <div key={item.id} className="grid gap-3 border-b border-slate-100 px-4 py-4 transition last:border-b-0 hover:bg-slate-50/70 lg:grid-cols-[1.3fr_1fr_1.2fr_.8fr_140px] lg:items-center"><div className="flex min-w-0 items-center gap-3"><span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-sm font-black text-emerald-700">{initials(item.name)}</span><div className="min-w-0"><p className="truncate font-bold text-slate-950">{item.name}</p><p className="text-xs text-slate-500">{item.projectsCount} proyectos · {item.openTasksCount} tareas abiertas</p></div></div><p className="truncate text-sm text-slate-500">{item.notes || 'Sin contacto adicional'}</p><p className="truncate text-sm text-slate-600">{item.contactEmail || 'Sin correo'}</p><StatusBadge value={item.status} /><div className="flex items-center gap-2 lg:justify-end"><button type="button" onClick={() => onEdit(item)} className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50"><Pencil className="h-4 w-4" /></button><button type="button" onClick={() => onDelete(item.id)} disabled={deletingId === item.id} className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-rose-50 text-rose-600 transition hover:bg-rose-100 disabled:opacity-60"><Trash2 className="h-4 w-4" /></button><span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl text-slate-400"><MoreVertical className="h-4 w-4" /></span></div></div>)}</div>; }
+function DepartmentsTable({ rows, deletingId, onEdit, onDelete }: { rows: DepartmentItem[]; deletingId: string | null; onEdit: (item: DepartmentItem) => void; onDelete: (id: string) => void }) { if (!rows.length) return <EmptyState icon={<Tags className="h-6 w-6" />} title="No hay departamentos con esos criterios" description="Crea el primero para que aparezca en proyectos y tareas." />; return <div className="overflow-hidden rounded-[22px] border border-slate-200 bg-white"><div className="hidden grid-cols-[1.4fr_1fr_.8fr_140px] border-b border-slate-200 bg-slate-50/70 px-4 py-3 text-[11px] font-black uppercase tracking-[0.22em] text-slate-500 lg:grid"><span>Nombre</span><span>Teléfono</span><span>Estado</span><span>Acciones</span></div>{rows.map((item) => <div key={item.id} className="grid gap-3 border-b border-slate-100 px-4 py-4 transition last:border-b-0 hover:bg-slate-50/70 lg:grid-cols-[1.4fr_1fr_.8fr_140px] lg:items-center"><div className="flex items-center gap-3"><span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-100 text-slate-700"><Tags className="h-4 w-4" /></span><p className="font-bold text-slate-950">{item.name}</p></div><p className="text-sm text-slate-500">{item.phone || 'Sin teléfono'}</p><span className="w-fit rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700">Activo</span><div className="flex items-center gap-2 lg:justify-end"><button type="button" onClick={() => onEdit(item)} className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50"><Pencil className="h-4 w-4" /></button><button type="button" onClick={() => onDelete(item.id)} disabled={deletingId === item.id || item.isSystem} className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-rose-50 text-rose-600 transition hover:bg-rose-100 disabled:opacity-40"><Trash2 className="h-4 w-4" /></button><span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl text-slate-400"><MoreVertical className="h-4 w-4" /></span></div></div>)}</div>; }
+function CountriesTable({ rows, deletingId, onEdit, onDelete }: { rows: CountryItem[]; deletingId: string | null; onEdit: (item: CountryItem) => void; onDelete: (id: string) => void }) { if (!rows.length) return <EmptyState icon={<Globe2 className="h-6 w-6" />} title="No hay países con esos criterios" description="Crea el primero para personalizar el formulario del workspace." />; return <div className="overflow-hidden rounded-[22px] border border-slate-200 bg-white"><div className="hidden grid-cols-[1.4fr_.8fr_140px] border-b border-slate-200 bg-slate-50/70 px-4 py-3 text-[11px] font-black uppercase tracking-[0.22em] text-slate-500 lg:grid"><span>País</span><span>Estado</span><span>Acciones</span></div>{rows.map((item) => <div key={item.id} className="grid gap-3 border-b border-slate-100 px-4 py-4 transition last:border-b-0 hover:bg-slate-50/70 lg:grid-cols-[1.4fr_.8fr_140px] lg:items-center"><div className="flex items-center gap-3"><span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-blue-50 text-blue-700"><Globe2 className="h-4 w-4" /></span><p className="font-bold text-slate-950">{item.name}</p></div><span className="w-fit rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700">Activo</span><div className="flex items-center gap-2 lg:justify-end"><button type="button" onClick={() => onEdit(item)} className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50"><Pencil className="h-4 w-4" /></button><button type="button" onClick={() => onDelete(item.id)} disabled={deletingId === item.id || item.isSystem} className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-rose-50 text-rose-600 transition hover:bg-rose-100 disabled:opacity-40"><Trash2 className="h-4 w-4" /></button><span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl text-slate-400"><MoreVertical className="h-4 w-4" /></span></div></div>)}</div>; }
