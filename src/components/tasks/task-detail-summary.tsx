@@ -1,8 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { MoreVertical, Pin, Star } from "lucide-react";
-import { TaskDeleteButton } from "@/components/tasks/task-delete-button";
+import { ChevronDown, MoreVertical, PencilLine, Pin, Star } from "lucide-react";
 import { EntityMemoryActions } from "@/components/entities/entity-memory-actions";
 import { taskDetailRoute, taskEditRoute, taskListRoute } from "@/lib/navigation/routes";
 
@@ -34,17 +33,14 @@ export function TaskDetailSummary({ task, currentQuery = "" }: { task: any; curr
         <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-3">
-              <h1 className="max-w-[980px] text-[28px] font-black leading-[1.08] tracking-[-0.04em] text-[#0F172A] sm:text-[36px] lg:text-[40px]">
+              <h1 className="max-w-[980px] text-[28px] font-black leading-[1.08] tracking-[-0.04em] text-[#0F172A] sm:text-[34px] lg:text-[38px]">
                 {task.title}
               </h1>
-              <span className={`inline-flex h-8 shrink-0 items-center rounded-full border px-3 text-xs font-black ${statusTone(task.status)}`}>
+              <Star className="h-4 w-4 fill-amber-300 text-amber-300" aria-hidden />
+              <span className={`inline-flex h-7 shrink-0 items-center rounded-full border px-3 text-xs font-black ${statusTone(task.status)}`}>
                 {statusLabel(task.status)}
               </span>
             </div>
-
-            <p className="mt-4 max-w-4xl text-base leading-7 text-[#64748B]">
-              {task.description || "Sin descripción todavía."}
-            </p>
 
             <div className="mt-4 flex flex-wrap items-center gap-2">
               <span className="rounded-full border border-[#E5EAF1] bg-[#F8FAFC] px-3 py-1.5 text-xs font-bold text-[#64748B]">{project?.title || "Tarea independiente"}</span>
@@ -65,9 +61,8 @@ export function TaskDetailSummary({ task, currentQuery = "" }: { task: any; curr
             <button type="button" className="inline-flex h-11 w-11 items-center justify-center rounded-[14px] border border-[#E5EAF1] bg-white text-[#64748B] transition hover:bg-[#F8FAFC]" aria-label="Más opciones">
               <MoreVertical className="h-4 w-4" />
             </button>
-            <TaskDeleteButton taskId={task.id} />
-            <Link href={taskEditRoute(task.id, currentQuery)} className="inline-flex h-11 items-center justify-center rounded-[14px] bg-[#050B18] px-5 text-sm font-bold text-white shadow-[0_14px_28px_rgba(5,11,24,0.18)] transition hover:-translate-y-0.5 hover:bg-[#111827]">
-              Editar tarea
+            <Link href={taskEditRoute(task.id, currentQuery)} className="inline-flex h-11 items-center justify-center gap-2 rounded-[14px] bg-[#050B18] px-5 text-sm font-bold text-white shadow-[0_14px_28px_rgba(5,11,24,0.18)] transition hover:-translate-y-0.5 hover:bg-[#111827]">
+              <PencilLine className="h-4 w-4" /> Editar tarea <ChevronDown className="h-4 w-4 opacity-80" />
             </Link>
           </div>
         </div>
