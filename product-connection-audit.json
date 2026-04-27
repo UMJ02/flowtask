@@ -1,0 +1,267 @@
+[
+  {
+    "file": "src/app/(app)/app/projects/page.tsx",
+    "issue": "decorative_action_text",
+    "count": 1
+  },
+  {
+    "file": "src/app/(app)/app/projects/page.tsx",
+    "issue": "coming_soon_or_placeholder",
+    "count": 6
+  },
+  {
+    "file": "src/app/(app)/app/tasks/[id]/page.tsx",
+    "issue": "button_without_action",
+    "count": 2
+  },
+  {
+    "file": "src/components/analytics/analytics-overview.tsx",
+    "issue": "button_without_action",
+    "count": 2
+  },
+  {
+    "file": "src/components/analytics/analytics-overview.tsx",
+    "issue": "decorative_action_text",
+    "count": 3
+  },
+  {
+    "file": "src/components/auth/forgot-password-form.tsx",
+    "issue": "coming_soon_or_placeholder",
+    "count": 1
+  },
+  {
+    "file": "src/components/auth/login-form.tsx",
+    "issue": "coming_soon_or_placeholder",
+    "count": 2
+  },
+  {
+    "file": "src/components/auth/register-form.tsx",
+    "issue": "coming_soon_or_placeholder",
+    "count": 4
+  },
+  {
+    "file": "src/components/auth/reset-password-form.tsx",
+    "issue": "coming_soon_or_placeholder",
+    "count": 2
+  },
+  {
+    "file": "src/components/clients/client-manager-panel.tsx",
+    "issue": "coming_soon_or_placeholder",
+    "count": 8
+  },
+  {
+    "file": "src/components/collaboration/project-invite-form.tsx",
+    "issue": "coming_soon_or_placeholder",
+    "count": 1
+  },
+  {
+    "file": "src/components/comments/comment-composer.tsx",
+    "issue": "coming_soon_or_placeholder",
+    "count": 1
+  },
+  {
+    "file": "src/components/dashboard/intelligent-attention-assistant.tsx",
+    "issue": "local_only_state",
+    "count": 3
+  },
+  {
+    "file": "src/components/dashboard/interactive-dashboard-board.tsx",
+    "issue": "button_without_action",
+    "count": 1
+  },
+  {
+    "file": "src/components/dashboard/interactive-dashboard-board.tsx",
+    "issue": "coming_soon_or_placeholder",
+    "count": 6
+  },
+  {
+    "file": "src/components/dashboard/interactive-dashboard-board.tsx",
+    "issue": "local_only_state",
+    "count": 3
+  },
+  {
+    "file": "src/components/layout/app-header.tsx",
+    "issue": "button_without_action",
+    "count": 1
+  },
+  {
+    "file": "src/components/layout/command-palette.tsx",
+    "issue": "coming_soon_or_placeholder",
+    "count": 2
+  },
+  {
+    "file": "src/components/layout/command-palette.tsx",
+    "issue": "local_only_state",
+    "count": 1
+  },
+  {
+    "file": "src/components/layout/sidebar-state.tsx",
+    "issue": "local_only_state",
+    "count": 2
+  },
+  {
+    "file": "src/components/layout/user-menu.tsx",
+    "issue": "local_only_state",
+    "count": 1
+  },
+  {
+    "file": "src/components/notifications/notifications-live-panel.tsx",
+    "issue": "decorative_action_text",
+    "count": 2
+  },
+  {
+    "file": "src/components/notifications/notifications-live-panel.tsx",
+    "issue": "coming_soon_or_placeholder",
+    "count": 1
+  },
+  {
+    "file": "src/components/organization/organization-bootstrap-card.tsx",
+    "issue": "coming_soon_or_placeholder",
+    "count": 4
+  },
+  {
+    "file": "src/components/organization/organization-invite-form.tsx",
+    "issue": "coming_soon_or_placeholder",
+    "count": 1
+  },
+  {
+    "file": "src/components/projects/project-detail-pro.tsx",
+    "issue": "decorative_action_text",
+    "count": 1
+  },
+  {
+    "file": "src/components/projects/project-filters.tsx",
+    "issue": "coming_soon_or_placeholder",
+    "count": 2
+  },
+  {
+    "file": "src/components/projects/project-form.tsx",
+    "issue": "coming_soon_or_placeholder",
+    "count": 3
+  },
+  {
+    "file": "src/components/projects/project-search-panel.tsx",
+    "issue": "coming_soon_or_placeholder",
+    "count": 2
+  },
+  {
+    "file": "src/components/settings/intelligent-attention-settings-card.tsx",
+    "issue": "local_only_state",
+    "count": 2
+  },
+  {
+    "file": "src/components/settings/profile-settings-form.tsx",
+    "issue": "coming_soon_or_placeholder",
+    "count": 5
+  },
+  {
+    "file": "src/components/settings/profile-settings-form.tsx",
+    "issue": "local_only_state",
+    "count": 1
+  },
+  {
+    "file": "src/components/support/support-center.tsx",
+    "issue": "coming_soon_or_placeholder",
+    "count": 2
+  },
+  {
+    "file": "src/components/tasks/task-action-list.tsx",
+    "issue": "decorative_action_text",
+    "count": 10
+  },
+  {
+    "file": "src/components/tasks/task-action-list.tsx",
+    "issue": "local_only_state",
+    "count": 3
+  },
+  {
+    "file": "src/components/tasks/task-checklist-card.tsx",
+    "issue": "coming_soon_or_placeholder",
+    "count": 2
+  },
+  {
+    "file": "src/components/tasks/task-filters.tsx",
+    "issue": "coming_soon_or_placeholder",
+    "count": 1
+  },
+  {
+    "file": "src/components/tasks/task-form.tsx",
+    "issue": "coming_soon_or_placeholder",
+    "count": 3
+  },
+  {
+    "file": "src/components/tasks/task-kanban-board.tsx",
+    "issue": "local_only_state",
+    "count": 4
+  },
+  {
+    "file": "src/components/tasks/task-quick-comment-composer.tsx",
+    "issue": "button_without_action",
+    "count": 1
+  },
+  {
+    "file": "src/components/tasks/task-quick-comment-composer.tsx",
+    "issue": "decorative_action_text",
+    "count": 1
+  },
+  {
+    "file": "src/components/tasks/task-quick-comment-composer.tsx",
+    "issue": "coming_soon_or_placeholder",
+    "count": 2
+  },
+  {
+    "file": "src/components/tasks/task-search-panel.tsx",
+    "issue": "decorative_action_text",
+    "count": 1
+  },
+  {
+    "file": "src/components/tasks/task-search-panel.tsx",
+    "issue": "coming_soon_or_placeholder",
+    "count": 2
+  },
+  {
+    "file": "src/components/ui/filter-presets.tsx",
+    "issue": "decorative_action_text",
+    "count": 1
+  },
+  {
+    "file": "src/components/ui/filter-presets.tsx",
+    "issue": "local_only_state",
+    "count": 2
+  },
+  {
+    "file": "src/components/ui/input.tsx",
+    "issue": "coming_soon_or_placeholder",
+    "count": 1
+  },
+  {
+    "file": "src/components/ui/textarea.tsx",
+    "issue": "coming_soon_or_placeholder",
+    "count": 1
+  },
+  {
+    "file": "src/components/workspace/focus-drawer.tsx",
+    "issue": "local_only_state",
+    "count": 5
+  },
+  {
+    "file": "src/components/workspace/workspace-home.tsx",
+    "issue": "button_without_action",
+    "count": 2
+  },
+  {
+    "file": "src/components/workspace/workspace-home.tsx",
+    "issue": "decorative_action_text",
+    "count": 1
+  },
+  {
+    "file": "src/components/workspace/workspace-home.tsx",
+    "issue": "coming_soon_or_placeholder",
+    "count": 2
+  },
+  {
+    "file": "src/components/workspace/workspace-home.tsx",
+    "issue": "local_only_state",
+    "count": 3
+  }
+]

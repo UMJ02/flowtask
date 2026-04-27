@@ -211,14 +211,22 @@ function ProjectHeroCard({ project, tasks, currentQuery }: { project: any; tasks
 }
 
 function ProjectTabs() {
-  const tabs = ["Resumen", "Tareas", "Cronograma", "Equipo", "Archivos", "Actividad", "Configuración"];
+  const tabs = [
+    { label: "Resumen", href: "#resumen" },
+    { label: "Tareas", href: "#tareas" },
+    { label: "Cronograma", href: "#resumen" },
+    { label: "Equipo", href: "#equipo" },
+    { label: "Archivos", href: "#archivos" },
+    { label: "Actividad", href: "#actividad" },
+    { label: "Configuración", href: "#configuracion" },
+  ];
   return (
     <div className="flex gap-7 overflow-x-auto border-b border-[#E5EAF1] px-1">
       {tabs.map((tab, index) => (
-        <button key={tab} type="button" className={`relative whitespace-nowrap pb-3 text-sm font-bold ${index === 0 ? "text-[#16A66F]" : "text-[#64748B] hover:text-[#0F172A]"}`}>
-          {tab}
+        <a key={tab.label} href={tab.href} className={`relative whitespace-nowrap pb-3 text-sm font-bold ${index === 0 ? "text-[#16A66F]" : "text-[#64748B] hover:text-[#0F172A]"}`}>
+          {tab.label}
           {index === 0 ? <span className="absolute inset-x-0 -bottom-px h-0.5 rounded-full bg-[#16C784]" /> : null}
-        </button>
+        </a>
       ))}
     </div>
   );
@@ -227,7 +235,7 @@ function ProjectTabs() {
 function RecentTasksCard({ tasks }: { tasks: any[] }) {
   const visibleTasks = tasks.slice(0, 5);
   return (
-    <section className={`${cardClass} p-5`}>
+    <section id="tareas" className={`${cardClass} p-5 scroll-mt-28`}>
       <div className="mb-4 flex items-center justify-between gap-3">
         <h2 className="text-lg font-black text-[#0F172A]">Tareas recientes</h2>
       </div>
@@ -264,10 +272,10 @@ function RecentTasksCard({ tasks }: { tasks: any[] }) {
 
 function ProjectMembersCard({ members }: { members: any[] }) {
   return (
-    <section className={`${cardClass} p-5`}>
+    <section id="equipo" className={`${cardClass} p-5 scroll-mt-28`}>
       <div className="mb-4 flex items-center justify-between gap-3">
         <h2 className="text-lg font-black text-[#0F172A]">Miembros del proyecto</h2>
-        <button type="button" className="inline-flex h-9 items-center gap-1 rounded-[12px] border border-[#E5EAF1] bg-white px-3 text-xs font-bold text-[#475569] hover:bg-slate-50"><Plus className="h-4 w-4" />Invitar</button>
+        <Link href="/app/organization/roles" className="inline-flex h-9 items-center gap-1 rounded-[12px] border border-[#E5EAF1] bg-white px-3 text-xs font-bold text-[#475569] hover:bg-slate-50"><Plus className="h-4 w-4" />Invitar</Link>
       </div>
       <div className="space-y-4">
         {members.length ? members.slice(0, 6).map((member) => {
@@ -296,14 +304,14 @@ function ProjectMembersCard({ members }: { members: any[] }) {
 
 function RecentFilesCard({ attachments }: { attachments: any[] }) {
   return (
-    <section className={`${cardClass} p-5`}>
+    <section id="archivos" className={`${cardClass} p-5 scroll-mt-28`}>
       <div className="mb-4 flex items-center justify-between gap-3">
         <h2 className="text-lg font-black text-[#0F172A]">Archivos recientes</h2>
-        <button type="button" className="inline-flex h-9 items-center rounded-[12px] border border-[#E5EAF1] bg-white px-3 text-xs font-bold text-[#475569] hover:bg-slate-50">Ver todo</button>
+        <a href="#archivos" className="inline-flex h-9 items-center rounded-[12px] border border-[#E5EAF1] bg-white px-3 text-xs font-bold text-[#475569] hover:bg-slate-50">Ver todo</a>
       </div>
       <div className="space-y-3">
         {attachments.length ? attachments.slice(0, 4).map((file) => (
-          <a key={file.id} href={file.public_url || "#"} className="flex items-center justify-between gap-3 rounded-[16px] p-2 transition hover:bg-slate-50">
+          <a key={file.id} href={file.public_url || "/app/projects"} className="flex items-center justify-between gap-3 rounded-[16px] p-2 transition hover:bg-slate-50">
             <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-[14px] bg-rose-50 text-rose-600">{attachmentIcon(file.file_name)}</span>
             <span className="min-w-0 flex-1">
               <span className="block truncate text-sm font-black text-[#334155]">{file.file_name || "Archivo"}</span>
@@ -319,10 +327,10 @@ function RecentFilesCard({ attachments }: { attachments: any[] }) {
 
 function ProjectActivityCard({ activity }: { activity: ActivityItem[] }) {
   return (
-    <section className={`${cardClass} p-5`}>
+    <section id="actividad" className={`${cardClass} p-5 scroll-mt-28`}>
       <div className="mb-4 flex items-center justify-between gap-3">
         <h2 className="text-lg font-black text-[#0F172A]">Actividad reciente</h2>
-        <button type="button" className="inline-flex h-9 items-center rounded-[12px] border border-[#E5EAF1] bg-white px-3 text-xs font-bold text-[#475569] hover:bg-slate-50">Ver toda la actividad</button>
+        <a href="#actividad" className="inline-flex h-9 items-center rounded-[12px] border border-[#E5EAF1] bg-white px-3 text-xs font-bold text-[#475569] hover:bg-slate-50">Ver toda la actividad</a>
       </div>
       <div className="space-y-4">
         {activity.length ? activity.slice(0, 3).map((item) => (

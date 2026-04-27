@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { MoreHorizontal } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { logActivity } from "@/lib/activity/log-client";
 import { createClientNotification } from "@/lib/notifications/create-client-notification";
@@ -110,9 +109,6 @@ export function TaskQuickCommentsCard({ taskId, comments, canComment = true }: {
                 </div>
                 <p className="mt-1 text-sm font-semibold leading-6 text-[#334155]">{comment.content}</p>
               </div>
-              <button type="button" className="grid h-9 w-9 place-items-center rounded-full text-[#94A3B8] transition hover:bg-[#F8FAFC] hover:text-[#0F172A]" aria-label="Más opciones del comentario">
-                <MoreHorizontal className="h-4 w-4" />
-              </button>
             </article>
           );
         }) : (

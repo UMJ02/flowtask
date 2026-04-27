@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ChevronDown, MoreVertical, PencilLine, Pin, Star } from "lucide-react";
+import { PencilLine, Star } from "lucide-react";
 import { EntityMemoryActions } from "@/components/entities/entity-memory-actions";
 import { taskDetailRoute, taskEditRoute, taskListRoute } from "@/lib/navigation/routes";
 
@@ -46,23 +46,13 @@ export function TaskDetailSummary({ task, currentQuery = "" }: { task: any; curr
               <span className="rounded-full border border-[#E5EAF1] bg-[#F8FAFC] px-3 py-1.5 text-xs font-bold text-[#64748B]">{project?.title || "Tarea independiente"}</span>
               <span className="rounded-full border border-[#E5EAF1] bg-[#F8FAFC] px-3 py-1.5 text-xs font-bold text-[#64748B]">{department?.name || "Sin departamento"}</span>
               {task.client_name ? <span className="rounded-full border border-[#E5EAF1] bg-[#F8FAFC] px-3 py-1.5 text-xs font-bold text-[#64748B]">{task.client_name}</span> : null}
-              <button type="button" className="rounded-full px-3 py-1.5 text-xs font-bold text-[#64748B] transition hover:bg-[#F8FAFC]">+ Etiqueta</button>
             </div>
           </div>
 
           <div className="flex shrink-0 flex-wrap items-center gap-2 xl:justify-end">
             <EntityMemoryActions entity={{ id: task.id, type: 'task', title: task.title, subtitle: task.client_name || "Tarea", href: taskDetailRoute(task.id, currentQuery), updatedAt: task.updated_at ?? task.created_at ?? task.due_date ?? '1970-01-01T00:00:00.000Z' }} />
-            <button type="button" className="inline-flex h-11 items-center gap-2 rounded-[14px] border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-[#0F172A] transition hover:-translate-y-0.5 hover:bg-[#F8FAFC]">
-              <Star className="h-4 w-4" /> Favorito
-            </button>
-            <button type="button" className="inline-flex h-11 items-center gap-2 rounded-[14px] border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-[#0F172A] transition hover:-translate-y-0.5 hover:bg-[#F8FAFC]">
-              <Pin className="h-4 w-4" /> Fijar
-            </button>
-            <button type="button" className="inline-flex h-11 w-11 items-center justify-center rounded-[14px] border border-[#E5EAF1] bg-white text-[#64748B] transition hover:bg-[#F8FAFC]" aria-label="Más opciones">
-              <MoreVertical className="h-4 w-4" />
-            </button>
             <Link href={taskEditRoute(task.id, currentQuery)} className="inline-flex h-11 items-center justify-center gap-2 rounded-[14px] bg-[#050B18] px-5 text-sm font-bold text-white shadow-[0_14px_28px_rgba(5,11,24,0.18)] transition hover:-translate-y-0.5 hover:bg-[#111827]">
-              <PencilLine className="h-4 w-4" /> Editar tarea <ChevronDown className="h-4 w-4 opacity-80" />
+              <PencilLine className="h-4 w-4" /> Editar tarea
             </Link>
           </div>
         </div>

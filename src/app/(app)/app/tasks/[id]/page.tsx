@@ -13,7 +13,7 @@ import { getTaskAccessSummary } from '@/lib/queries/access-summary';
 import { getTaskChecklistItems } from '@/lib/queries/task-checklist';
 import { safeServerCall } from '@/lib/runtime/safe-server';
 import { formatDate } from '@/lib/utils/dates';
-import { CalendarDays, CheckCircle2, Clock3, FileArchive, FileText, Flag, Folder, ListChecks, MessageCircle, MoreVertical, Paperclip, Plus, Upload, UserRound } from 'lucide-react';
+import { CalendarDays, CheckCircle2, Clock3, FileArchive, FileText, Flag, Folder, ListChecks, MessageCircle, Paperclip, Plus, Upload, UserRound } from 'lucide-react';
 
 function statusLabel(status?: string | null) {
   if (status === 'concluido') return 'Concluido';
@@ -207,7 +207,7 @@ export default async function TaskDetailPage({
               <div className="flex items-center justify-between gap-4"><span className="font-bold text-[#64748B]">Fecha límite</span><span className="font-black text-rose-500">{dueDate}</span></div>
               <div className="flex items-center justify-between gap-4"><span className="font-bold text-[#64748B]">Recordatorio</span><span className="font-black text-[#0F172A]">2 días antes</span></div>
             </div>
-            <button type="button" className="mt-5 inline-flex h-10 items-center gap-2 rounded-[14px] border border-[#E5EAF1] bg-white px-4 text-sm font-black text-[#0F172A] transition hover:bg-[#F8FAFC]"><Plus className="h-4 w-4" /> Agregar recordatorio</button>
+            <a href={`/app/tasks/${task.id}/edit${queryString ? `?${queryString}` : ''}`} className="mt-5 inline-flex h-10 items-center gap-2 rounded-[14px] border border-[#E5EAF1] bg-white px-4 text-sm font-black text-[#0F172A] transition hover:bg-[#F8FAFC]"><Plus className="h-4 w-4" /> Agregar recordatorio</a>
           </SideCard>
 
           <SideCard title="Adjuntos" action={<a href="#attachments" className="inline-flex h-9 items-center gap-2 rounded-[13px] border border-[#E5EAF1] bg-white px-3 text-xs font-black text-[#0F172A] transition hover:bg-[#F8FAFC]"><Upload className="h-3.5 w-3.5" /> Subir archivo</a>}>
@@ -235,7 +235,7 @@ export default async function TaskDetailPage({
               <span className="rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-black text-emerald-700">{project?.title || 'FlowTask'}</span>
               <span className="rounded-full bg-violet-50 px-3 py-1.5 text-xs font-black text-violet-700">{department?.name || 'General'}</span>
               {task.client_name ? <span className="rounded-full bg-sky-50 px-3 py-1.5 text-xs font-black text-sky-700">{task.client_name}</span> : null}
-              <button type="button" className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-[#E5EAF1] text-[#64748B]">+</button>
+              <a href={`/app/tasks/${task.id}/edit${queryString ? `?${queryString}` : ''}`} className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-[#E5EAF1] text-[#64748B]">+</a>
             </div>
           </SideCard>
 

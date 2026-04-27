@@ -1,6 +1,7 @@
 'use client';
 
-import { BarChart3, CalendarDays, CheckCircle2, ChevronDown, Clock3, Filter, FolderKanban, ListChecks, ShieldCheck, TrendingUp, Users, Zap } from 'lucide-react';
+import Link from 'next/link';
+import { BarChart3, CalendarDays, CheckCircle2, ChevronDown, Clock3, Download, FolderKanban, ListChecks, ShieldCheck, TrendingUp, Users, Zap } from 'lucide-react';
 import { useState, type ComponentType } from 'react';
 import { Card } from '@/components/ui/card';
 import type { WorkspaceAnalyticsSummary } from '@/lib/queries/analytics';
@@ -36,6 +37,17 @@ const statusColors = {
   waiting: '#F59E0B',
   pending: '#94A3B8',
 };
+
+function downloadCsv(filename: string, rows: string[][]) {
+  const csv = rows.map((row) => row.map((value) => '"' + String(value ?? '').replaceAll('"', '""') + '"').join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+  const href = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = href;
+  link.download = filename;
+  link.click();
+  URL.revokeObjectURL(href);
+}
 
 function clamp(value: number, min = 0, max = 100) {
   return Math.max(min, Math.min(max, value));
@@ -115,6 +127,7 @@ function KpiCard({ item }: { item: KpiItem }) {
 
 function TeamActivityChart() {
   const [hovered, setHovered] = useState<{ day: string; label: string; value: number; color: string; x: number; y: number } | null>(null);
+  const [rangeLabel, setRangeLabel] = useState<'Diario' | 'Semanal'>('Diario');
   const width = 720;
   const height = 248;
   const chartTop = 20;
@@ -141,8 +154,8 @@ function TeamActivityChart() {
             <span className="inline-flex items-center gap-2"><span className="h-3 w-3 rounded-full bg-[#94A3B8]" /> Creadas</span>
           </div>
         </div>
-        <button type="button" className="inline-flex items-center gap-2 rounded-2xl border border-[#E5EAF1] bg-white px-4 py-2 text-sm font-semibold text-[#334155] transition hover:border-[#16C784]/40 hover:text-[#0F172A]">
-          Diario <ChevronDown className="h-4 w-4" />
+        <button type="button" onClick={() => setRangeLabel((value) => value === 'Diario' ? 'Semanal' : 'Diario')} className="inline-flex items-center gap-2 rounded-2xl border border-[#E5EAF1] bg-white px-4 py-2 text-sm font-semibold text-[#334155] transition hover:border-[#16C784]/40 hover:text-[#0F172A]">
+          {rangeLabel} <ChevronDown className="h-4 w-4" />
         </button>
       </div>
       <div className="relative mt-4 overflow-hidden">
@@ -244,7 +257,7 @@ function DonutChart({ completed, progress, waiting, pending }: { completed: numb
         {values.map((item) => {
           const isActive = activeLabel === item.label;
           return (
-            <button key={item.label} type="button" className="grid w-full grid-cols-[1fr_auto] items-center gap-4 rounded-2xl px-3 py-2 text-left text-sm transition hover:bg-slate-50" onMouseEnter={() => setActiveLabel(item.label)} onMouseLeave={() => setActiveLabel(null)}>
+            <button key={item.label} type="button" className="grid w-full grid-cols-[1fr_auto] items-center gap-4 rounded-2xl px-3 py-2 text-left text-sm transition hover:bg-slate-50" onClick={() => setActiveLabel(activeLabel === item.label ? null : item.label)} onMouseEnter={() => setActiveLabel(item.label)} onMouseLeave={() => setActiveLabel(null)}>
               <span className="inline-flex items-center gap-3 font-semibold text-[#334155]"><span className="h-3 w-3 rounded-full" style={{ backgroundColor: item.color }} /> {item.label}</span>
               <span className="rounded-full px-2 py-1 text-xs font-bold" style={{ color: item.color, backgroundColor: isActive ? `${item.color}18` : 'transparent' }}>{item.value}</span>
             </button>
@@ -291,9 +304,9 @@ function ProjectsProgressCard({ summary }: { summary: WorkspaceAnalyticsSummary 
       <div className="mt-5 space-y-4">
         {rows.map((item) => <ProgressBar key={item.name} label={item.name} percent={item.percent} />)}
       </div>
-      <button type="button" className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-[#E5EAF1] bg-white px-4 py-3 text-sm font-bold text-[#334155] transition hover:border-[#16C784]/40 hover:text-[#0F172A]">
+      <Link href="/app/projects" className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-[#E5EAF1] bg-white px-4 py-3 text-sm font-bold text-[#334155] transition hover:border-[#16C784]/40 hover:text-[#0F172A]">
         Ver todos los proyectos <ChevronDown className="h-4 w-4 -rotate-90" />
-      </button>
+      </Link>
     </Card>
   );
 }
@@ -323,8 +336,8 @@ function WorkloadCard() {
           </div>
         ))}
       </div>
-      <button type="button" className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-[#E5EAF1] bg-white px-4 py-3 text-sm font-bold text-[#334155] transition hover:border-[#16C784]/40 hover:text-[#0F172A]">
-        Ver reporte completo <ChevronDown className="h-4 w-4 -rotate-90" />
+      <button type="button" onClick={() => downloadCsv('flowtask-carga-equipo.csv', [['persona', 'horas'], ...people.map((person) => [person.name, String(person.hours)])])} className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-[#E5EAF1] bg-white px-4 py-3 text-sm font-bold text-[#334155] transition hover:border-[#16C784]/40 hover:text-[#0F172A]">
+        Exportar reporte <Download className="h-4 w-4" />
       </button>
     </Card>
   );
@@ -353,7 +366,7 @@ function RecentActivityCard({ summary }: { summary: WorkspaceAnalyticsSummary })
     <Card className="rounded-[20px] border-[#E5EAF1] bg-white p-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
       <div className="flex items-center justify-between gap-4">
         <h2 className="text-[17px] font-bold text-[#0F172A]">Actividad reciente</h2>
-        <button type="button" className="rounded-2xl border border-[#E5EAF1] px-4 py-2 text-sm font-bold text-[#334155] transition hover:border-[#16C784]/40">Ver todas</button>
+        <Link href="/app/notifications" className="rounded-2xl border border-[#E5EAF1] px-4 py-2 text-sm font-bold text-[#334155] transition hover:border-[#16C784]/40">Ver todas</Link>
       </div>
       <div className="mt-5 space-y-4">
         {items.map((item) => {
@@ -408,12 +421,12 @@ export function AnalyticsOverview({ summary, compact = false }: { summary: Works
           <p className="mt-2 text-[15px] font-medium text-[#64748B]">Obtén información clave y toma decisiones basadas en datos.</p>
         </div>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-          <button type="button" className="inline-flex h-12 items-center justify-center gap-3 rounded-[16px] border border-[#E5EAF1] bg-white px-5 text-sm font-bold text-[#334155] shadow-[0_10px_24px_rgba(15,23,42,0.03)] transition hover:border-[#16C784]/40 hover:text-[#0F172A]">
-            <CalendarDays className="h-4 w-4" /> 21 abr. 2026 - 25 abr. 2026 <ChevronDown className="h-4 w-4 text-[#64748B]" />
+          <button type="button" onClick={() => downloadCsv('flowtask-analytics-resumen.csv', [['metric', 'value'], ['Proyectos activos', String(activeProjects)], ['Tareas completadas', String(completedTasks)], ['Horas registradas', String(hours) + 'h'], ['Productividad', String(productivity) + '%'], ['Cumplimiento', String(compliance) + '%']])} className="inline-flex h-12 items-center justify-center gap-3 rounded-[16px] border border-[#E5EAF1] bg-white px-5 text-sm font-bold text-[#334155] shadow-[0_10px_24px_rgba(15,23,42,0.03)] transition hover:border-[#16C784]/40 hover:text-[#0F172A]">
+            <Download className="h-4 w-4" /> Exportar analytics
           </button>
-          <button type="button" className="inline-flex h-12 items-center justify-center gap-3 rounded-[16px] border border-[#E5EAF1] bg-white px-5 text-sm font-bold text-[#334155] shadow-[0_10px_24px_rgba(15,23,42,0.03)] transition hover:border-[#16C784]/40 hover:text-[#0F172A]">
-            <Filter className="h-4 w-4" /> Filtros
-          </button>
+          <Link href="/app/tasks" className="inline-flex h-12 items-center justify-center gap-3 rounded-[16px] border border-[#E5EAF1] bg-white px-5 text-sm font-bold text-[#334155] shadow-[0_10px_24px_rgba(15,23,42,0.03)] transition hover:border-[#16C784]/40 hover:text-[#0F172A]">
+            <CalendarDays className="h-4 w-4" /> Ver tareas
+          </Link>
         </div>
       </section>
 

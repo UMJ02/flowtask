@@ -240,6 +240,10 @@ function TaskActionListComponent({
   const [pageAnimation, setPageAnimation] = useState<PageAnimationState>("idle");
   const [viewMode, setViewMode] = useState<ViewMode>(viewFromInitial(initialView));
   const [timelineOpen, setTimelineOpen] = useState(false);
+  const [timelineScale, setTimelineScale] = useState<"Día" | "Semana" | "Mes" | "Mis tareas" | "Equipo">("Semana");
+  const [timelineOffsetDays, setTimelineOffsetDays] = useState(0);
+  const [calendarScale, setCalendarScale] = useState<"Hoy" | "Día" | "Semana" | "Mes">("Mes");
+  const [showCalendarSummary, setShowCalendarSummary] = useState(true);
   const [showGanttSettings, setShowGanttSettings] = useState(true);
   const [showProgress, setShowProgress] = useState(true);
   const [showDates, setShowDates] = useState(true);
@@ -278,7 +282,8 @@ function TaskActionListComponent({
   }, [currentPage, items, pageSize]);
 
   const timelineItems = useMemo(() => items.slice(0, 18), [items]);
-  const timelineBounds = useMemo(() => getTimelineBounds(timelineItems), [timelineItems]);
+  const baseTimelineBounds = useMemo(() => getTimelineBounds(timelineItems), [timelineItems]);
+  const timelineBounds = useMemo(() => ({ start: addDays(baseTimelineBounds.start, timelineOffsetDays), end: addDays(baseTimelineBounds.end, timelineOffsetDays) }), [baseTimelineBounds.end, baseTimelineBounds.start, timelineOffsetDays]);
   const timelineDays = useMemo(() => {
     const days = Math.min(21, Math.max(7, diffDays(timelineBounds.end, timelineBounds.start) + 1));
     return Array.from({ length: days }, (_, index) => addDays(timelineBounds.start, index));
@@ -533,18 +538,18 @@ function TaskActionListComponent({
           <p className="mt-1 text-sm font-medium text-[#64748B]">Planifica campañas, producción y duración visual usando las tareas actuales.</p>
         </div>
         <div className="flex flex-wrap gap-2">
-          {["Día", "Semana", "Mes", "Mis tareas", "Equipo"].map((label, index) => (
-            <button key={label} type="button" className={cn("h-10 rounded-[14px] border px-4 text-sm font-bold transition", index === 1 ? "border-[#050B18] bg-[#050B18] text-white" : "border-[#E5EAF1] bg-white text-slate-700 hover:bg-slate-50")}>{label}</button>
+          {(["Día", "Semana", "Mes", "Mis tareas", "Equipo"] as const).map((label) => (
+            <button key={label} type="button" onClick={() => setTimelineScale(label)} className={cn("h-10 rounded-[14px] border px-4 text-sm font-bold transition", timelineScale === label ? "border-[#050B18] bg-[#050B18] text-white" : "border-[#E5EAF1] bg-white text-slate-700 hover:bg-slate-50")}>{label}</button>
           ))}
-          <button type="button" className="inline-flex h-10 items-center gap-2 rounded-[14px] border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-slate-700 hover:bg-slate-50"><SlidersHorizontal className="h-4 w-4" />Filtros</button>
+          <button type="button" onClick={() => changeView("list")} className="inline-flex h-10 items-center gap-2 rounded-[14px] border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-slate-700 hover:bg-slate-50"><SlidersHorizontal className="h-4 w-4" />Filtros</button>
         </div>
       </div>
 
       <div className="mb-4 flex flex-col gap-3 rounded-[18px] border border-[#E5EAF1] bg-slate-50/70 p-3 md:flex-row md:items-center md:justify-between">
         <div className="flex items-center gap-2">
-          <button type="button" className="inline-flex h-9 w-9 items-center justify-center rounded-[12px] border border-[#E5EAF1] bg-white"><ArrowLeft className="h-4 w-4" /></button>
+          <button type="button" onClick={() => setTimelineOffsetDays((value) => value - 7)} className="inline-flex h-9 w-9 items-center justify-center rounded-[12px] border border-[#E5EAF1] bg-white"><ArrowLeft className="h-4 w-4" /></button>
           <span className="rounded-full bg-white px-4 py-2 text-sm font-black text-[#0F172A] ring-1 ring-[#E5EAF1]">{formatHumanDate(toIsoDate(timelineBounds.start))} — {formatHumanDate(toIsoDate(timelineBounds.end))}</span>
-          <button type="button" className="inline-flex h-9 w-9 items-center justify-center rounded-[12px] border border-[#E5EAF1] bg-white"><ArrowRight className="h-4 w-4" /></button>
+          <button type="button" onClick={() => setTimelineOffsetDays((value) => value + 7)} className="inline-flex h-9 w-9 items-center justify-center rounded-[12px] border border-[#E5EAF1] bg-white"><ArrowRight className="h-4 w-4" /></button>
         </div>
         <p className="text-xs font-bold text-[#64748B]">Click en una barra abre el detalle. Usa guardar vista para sincronizar configuración y exportar CSV.</p>
       </div>
@@ -611,15 +616,15 @@ function TaskActionListComponent({
             <p className="mt-1 text-sm font-medium text-[#64748B]">Deadlines, agenda operativa y carga de trabajo por día.</p>
           </div>
           <div className="flex flex-wrap gap-2">
-            {["Hoy", "Día", "Semana", "Mes"].map((label, index) => (
-              <button key={label} type="button" className={cn("h-10 rounded-[14px] border px-4 text-sm font-bold transition", index === 3 ? "border-[#16C784] bg-[#16C784] text-white" : "border-[#E5EAF1] bg-white text-slate-700 hover:bg-slate-50")}>{label}</button>
+            {(["Hoy", "Día", "Semana", "Mes"] as const).map((label) => (
+              <button key={label} type="button" onClick={() => setCalendarScale(label)} className={cn("h-10 rounded-[14px] border px-4 text-sm font-bold transition", calendarScale === label ? "border-[#16C784] bg-[#16C784] text-white" : "border-[#E5EAF1] bg-white text-slate-700 hover:bg-slate-50")}>{label}</button>
             ))}
             <button type="button" onClick={() => changeView("timeline")} className="h-10 rounded-[14px] border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-slate-700 hover:bg-slate-50">Timeline</button>
-            <button type="button" className="inline-flex h-10 items-center gap-2 rounded-[14px] border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-slate-700 hover:bg-slate-50"><Settings2 className="h-4 w-4" />Config</button>
+            <button type="button" onClick={() => setShowCalendarSummary((value) => !value)} className="inline-flex h-10 items-center gap-2 rounded-[14px] border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-slate-700 hover:bg-slate-50"><Settings2 className="h-4 w-4" />Config</button>
           </div>
         </div>
 
-        <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_280px]">
+        <div className={cn("grid gap-5", showCalendarSummary ? "xl:grid-cols-[minmax(0,1fr)_280px]" : "xl:grid-cols-1")}>
           <div className="overflow-hidden rounded-[20px] border border-[#E5EAF1]">
             <div className="grid grid-cols-7 border-b border-[#E5EAF1] bg-[#F8FAFC] text-center text-[11px] font-black uppercase tracking-[0.12em] text-[#64748B]">
               {["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"].map((day) => <div key={day} className="px-2 py-3">{day}</div>)}
@@ -632,7 +637,7 @@ function TaskActionListComponent({
                     {day.tasks.slice(0, 4).map((task) => (
                       <Link key={task.id} href={taskDetailRoute(task.id, currentQuery)} className={cn("block w-full truncate rounded-full border px-3 py-2 text-left text-xs font-bold shadow-[0_4px_12px_rgba(15,23,42,0.03)] transition hover:-translate-y-0.5 hover:border-[#16C784]/40", priorityTone(task.priority))}>{task.title}</Link>
                     ))}
-                    {day.tasks.length > 4 ? <button type="button" className="text-xs font-bold text-[#64748B]">+{day.tasks.length - 4} más</button> : null}
+                    {day.tasks.length > 4 ? <button type="button" onClick={() => changeView("list")} className="text-xs font-bold text-[#64748B]">+{day.tasks.length - 4} más</button> : null}
                   </div>
                 </div>
               ))}
