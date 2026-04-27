@@ -50,6 +50,31 @@ function fileTone(fileName?: string | null) {
   return { icon: FileText, className: 'bg-blue-50 text-blue-500', type: 'FILE' };
 }
 
+function humanActivityLabel(action?: string | null) {
+  const labels: Record<string, string> = {
+    task_updated: 'Tarea actualizada',
+    task_status_changed: 'Estado cambiado',
+    checklist_item_added: 'Punto agregado al checklist',
+    checklist_item_completed: 'Punto completado',
+    checklist_item_reopened: 'Punto reabierto',
+    checklist_item_deleted: 'Punto eliminado del checklist',
+    comment_added: 'Nuevo comentario',
+    file_uploaded: 'Archivo subido',
+    attachment_uploaded: 'Archivo subido',
+    assignee_changed: 'Responsable actualizado',
+    task_assignee_added: 'Responsable agregado',
+    task_assignee_removed: 'Responsable removido',
+  };
+  if (!action) return 'Movimiento registrado';
+  return labels[action] ?? action.replaceAll('_', ' ').replace(/^./, (value) => value.toUpperCase());
+}
+
+function humanActorName(item: any) {
+  const raw = item?.actor_name || item?.actor?.full_name || item?.actor?.email || '';
+  if (!raw || raw === 'FlowTask') return 'Sistema FlowTask';
+  return raw;
+}
+
 function formatBytes(bytes?: number | null) {
   if (!bytes || bytes <= 0) return '0 KB';
   const units = ['B', 'KB', 'MB', 'GB'];
@@ -62,9 +87,18 @@ function formatBytes(bytes?: number | null) {
   return `${value.toFixed(index === 0 ? 0 : 1)} ${units[index]}`;
 }
 
-function SideCard({ title, action, children }: { title: string; action?: React.ReactNode; children: React.ReactNode }) {
+function SideCard({ title, action, children, tone = 'white' }: { title: string; action?: React.ReactNode; children: React.ReactNode; tone?: 'white' | 'green' | 'blue' | 'purple' | 'mint' }) {
+  const toneClass = tone === 'green'
+    ? 'border-emerald-100 bg-gradient-to-br from-white via-white to-emerald-50/90'
+    : tone === 'blue'
+      ? 'border-blue-100 bg-gradient-to-br from-white via-white to-blue-50/90'
+      : tone === 'purple'
+        ? 'border-violet-100 bg-gradient-to-br from-white via-white to-violet-50/90'
+        : tone === 'mint'
+          ? 'border-teal-100 bg-gradient-to-br from-white via-white to-teal-50/90'
+          : 'border-[#E5EAF1] bg-white';
   return (
-    <section className="rounded-[24px] border border-[#E5EAF1] bg-white p-6 shadow-[0_10px_30px_rgba(15,23,42,0.04)]">
+    <section className={`rounded-[24px] border p-6 shadow-[0_10px_30px_rgba(15,23,42,0.04)] ${toneClass}`}>
       <div className="flex items-center justify-between gap-3">
         <h3 className="text-base font-black text-[#0F172A]">{title}</h3>
         {action}
@@ -124,7 +158,7 @@ export default async function TaskDetailPage({
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-12">
         <main className="min-w-0 space-y-6 xl:col-span-8">
-          <section id="details" className="overflow-hidden rounded-[24px] border border-[#E5EAF1] bg-white shadow-[0_10px_30px_rgba(15,23,42,0.04)]">
+          <section id="details" className="overflow-hidden rounded-[24px] border border-emerald-100 bg-gradient-to-br from-white via-white to-emerald-50/60 shadow-[0_10px_30px_rgba(15,23,42,0.04)]">
             <div className="flex gap-7 overflow-x-auto border-b border-[#E5EAF1] px-7">
               {[
                 { id: 'details', label: 'Detalles', Icon: CheckCircle2, count: null },
@@ -162,7 +196,6 @@ export default async function TaskDetailPage({
                   <DetailRow label="Departamento" value={department?.name || 'No indicado'} />
                   <DetailRow label="Progreso" value={<span className="inline-flex w-full max-w-[220px] items-center gap-3"><span className="h-2 flex-1 rounded-full bg-[#EEF2F7]"><span className="block h-2 rounded-full bg-[#16C784]" style={{ width: `${progress}%` }} /></span><span>{progress}%</span></span>} />
                   {isTaskWaiting(task.status) ? <DetailRow label="Tiempo en espera" value={`${standbyDays} día${standbyDays === 1 ? '' : 's'} en standby`} /> : null}
-                  <DetailRow label="ID de tarea" value={`#T-${task.id.slice(0, 8).toUpperCase()}`} />
                 </dl>
               </div>
             </div>
@@ -183,19 +216,19 @@ export default async function TaskDetailPage({
 
           <TaskQuickCommentsCard taskId={task.id} comments={comments as any[]} canComment={access.canComment} />
 
-          <section id="attachments" className="rounded-[24px] border border-[#E5EAF1] bg-white p-6 shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
+          <section id="attachments" className="rounded-[24px] border border-blue-100 bg-gradient-to-br from-white via-white to-blue-50/70 p-7 shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
             <EntityAttachments entityType="task" entityId={task.id} attachments={attachments} canManage={access.canUploadAttachments} />
           </section>
 
           {access.canViewActivity ? (
-            <section id="activity" className="rounded-[24px] border border-[#E5EAF1] bg-white p-6 shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
+            <section id="activity" className="rounded-[24px] border border-rose-100 bg-gradient-to-br from-white via-white to-rose-50/70 p-7 shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
               <ActivityTimeline items={activity} title="Bitácora completa" description="Historial cronológico de cambios, responsables, comentarios y adjuntos." compact defaultVisibleCount={8} expandLabel="Ver más movimientos" collapseLabel="Ver menos movimientos" />
             </section>
           ) : null}
         </main>
 
         <aside className="space-y-5 xl:sticky xl:top-28 xl:col-span-4 xl:self-start">
-          <SideCard title="Responsables">
+          <SideCard title="Responsables" tone="green">
             <p className="text-sm font-semibold text-[#64748B]">Asignar responsable</p>
             <div className="mt-3 flex items-center justify-between rounded-[16px] border border-[#E5EAF1] bg-white px-4 py-3 text-sm font-bold text-[#0F172A]">
               <span className="inline-flex min-w-0 items-center gap-2"><span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[#ECFDF5] text-[10px] text-[#16A36C]">{initials(mainAssignee)}</span><span className="truncate">{mainAssignee}</span></span>
@@ -211,7 +244,7 @@ export default async function TaskDetailPage({
             </div>
           </SideCard>
 
-          <SideCard title="Fechas importantes">
+          <SideCard title="Fechas importantes" tone="mint">
             <div className="space-y-4 text-sm">
               <div className="flex items-center justify-between gap-4"><span className="font-bold text-[#64748B]">Fecha de inicio</span><span className="font-black text-[#0F172A]">{startDate}</span></div>
               <div className="flex items-center justify-between gap-4"><span className="font-bold text-[#64748B]">Fecha límite</span><span className={`font-black ${taskIsOverdue ? 'text-rose-500' : 'text-[#0F172A]'}`}>{dueDate}</span></div>
@@ -220,7 +253,7 @@ export default async function TaskDetailPage({
             <a href={`/app/tasks/${task.id}/edit${queryString ? `?${queryString}` : ''}`} className="mt-5 inline-flex h-10 items-center gap-2 rounded-[14px] border border-[#E5EAF1] bg-white px-4 text-sm font-black text-[#0F172A] transition hover:bg-[#F8FAFC]"><Plus className="h-4 w-4" /> Agregar recordatorio</a>
           </SideCard>
 
-          <SideCard title="Adjuntos" action={<a href="#attachments" className="inline-flex h-9 items-center gap-2 rounded-[13px] border border-[#E5EAF1] bg-white px-3 text-xs font-black text-[#0F172A] transition hover:bg-[#F8FAFC]"><Upload className="h-3.5 w-3.5" /> Subir archivo</a>}>
+          <SideCard title="Adjuntos" tone="blue" action={<a href="#attachments" className="inline-flex h-9 items-center gap-2 rounded-[13px] border border-[#E5EAF1] bg-white px-3 text-xs font-black text-[#0F172A] transition hover:bg-[#F8FAFC]"><Upload className="h-3.5 w-3.5" /> Subir archivo</a>}>
             <div className="space-y-3">
               {attachments.slice(0, 4).map((file: any) => {
                 const tone = fileTone(file.file_name);
@@ -240,7 +273,7 @@ export default async function TaskDetailPage({
             </div>
           </SideCard>
 
-          <SideCard title="Etiquetas">
+          <SideCard title="Etiquetas" tone="purple">
             <div className="flex flex-wrap gap-2">
               <span className="rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-black text-emerald-700">{project?.title || 'FlowTask'}</span>
               <span className="rounded-full bg-violet-50 px-3 py-1.5 text-xs font-black text-violet-700">{department?.name || 'General'}</span>
@@ -249,13 +282,13 @@ export default async function TaskDetailPage({
             </div>
           </SideCard>
 
-          <SideCard title="Bitácora de la tarea" action={<a href="#activity" className="text-xs font-black text-[#16A36C]">Ver todo</a>}>
+          <SideCard title="Bitácora de la tarea" tone="green" action={<a href="#activity" className="text-xs font-black text-[#16A36C]">Ver todo</a>}>
             <div className="space-y-4">
               {(activity.length ? activity : []).slice(0, 4).map((item: any, index: number) => (
                 <div key={item.id ?? index} className="flex gap-3">
                   <div className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#ECFDF5] text-[#16C784]"><Clock3 className="h-4 w-4" /></div>
                   <div className="min-w-0">
-                    <p className="text-sm font-black text-[#0F172A]">{item.actor_name || item.actor?.full_name || 'FlowTask'} {item.action || 'registró un movimiento'}</p>
+                    <p className="text-sm font-black text-[#0F172A]">{humanActorName(item)} · {humanActivityLabel(item.action)}</p>
                     <p className="text-xs font-semibold text-[#64748B]">{item.created_at ? formatDate(item.created_at) : 'Sin fecha'}</p>
                   </div>
                 </div>

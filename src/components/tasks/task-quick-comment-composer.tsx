@@ -72,7 +72,7 @@ export function TaskQuickCommentsCard({ taskId, comments, canComment = true }: {
   };
 
   return (
-    <section id="comments" className="rounded-[24px] border border-[#E5EAF1] bg-white p-7 shadow-[0_10px_30px_rgba(15,23,42,0.04)]">
+    <section id="comments" className="rounded-[24px] border border-violet-100 bg-gradient-to-br from-white via-white to-violet-50/70 p-7 shadow-[0_10px_30px_rgba(15,23,42,0.04)]">
       <div className="mb-4">
         <h2 className="text-lg font-black text-[#0F172A]">Comentarios</h2>
         <p className="text-sm font-semibold text-[#64748B]">Siguiendo cronológicamente</p>

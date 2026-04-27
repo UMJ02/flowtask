@@ -76,7 +76,7 @@ export function TaskChecklistCard({ taskId, initialItems = [], canManage = true 
   };
 
   return (
-    <section id="checklist" className="rounded-[24px] border border-[#E5EAF1] bg-white p-7 shadow-[0_10px_30px_rgba(15,23,42,0.04)]">
+    <section id="checklist" className="rounded-[24px] border border-violet-100 bg-gradient-to-br from-white via-white to-violet-50/70 p-7 shadow-[0_10px_30px_rgba(15,23,42,0.04)]">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-wrap items-center gap-3">
           <h2 className="text-lg font-black text-[#0F172A]">Checklist</h2>
