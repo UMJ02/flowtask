@@ -10,6 +10,7 @@ import { getAssignableUsers, getTaskAssignees, getTaskById, getTaskComments } fr
 import { getTaskAttachments } from '@/lib/queries/attachments';
 import { getTaskActivity } from '@/lib/queries/activity';
 import { getTaskAccessSummary } from '@/lib/queries/access-summary';
+import { getTaskChecklistItems } from '@/lib/queries/task-checklist';
 import { safeServerCall } from '@/lib/runtime/safe-server';
 import { formatDate } from '@/lib/utils/dates';
 import { CalendarDays, CheckCircle2, Clock3, FileArchive, FileText, Flag, Folder, ListChecks, MessageCircle, MoreVertical, Paperclip, Plus, Upload, UserRound } from 'lucide-react';
@@ -97,7 +98,7 @@ export default async function TaskDetailPage({
     Object.entries(search).flatMap(([key, value]) => typeof value === 'string' && value ? [[key, value]] : [])
   ).toString();
 
-  const [task, comments, assignableUsers, assignees, attachments, activity, access] = await Promise.all([
+  const [task, comments, assignableUsers, assignees, attachments, activity, access, checklistItems] = await Promise.all([
     safeServerCall('getTaskById', () => getTaskById(id), null),
     safeServerCall('getTaskComments', () => getTaskComments(id), []),
     safeServerCall('getAssignableUsers', () => getAssignableUsers(id), []),
@@ -105,6 +106,7 @@ export default async function TaskDetailPage({
     safeServerCall('getTaskAttachments', () => getTaskAttachments(id), []),
     safeServerCall('getTaskActivity', () => getTaskActivity(id), []),
     safeServerCall('getTaskAccessSummary', () => getTaskAccessSummary(id), { role: null, projectMemberRole: null, isAssignee: false, canEdit: false, canManageAssignees: false, canComment: false, canUploadAttachments: false, canShare: false, canViewActivity: false }),
+    safeServerCall('getTaskChecklistItems', () => getTaskChecklistItems(id), []),
   ]);
 
   if (!task) notFound();
@@ -167,7 +169,7 @@ export default async function TaskDetailPage({
             </div>
           </section>
 
-          <TaskChecklistCard />
+          <TaskChecklistCard taskId={task.id} initialItems={checklistItems} canManage={access.canEdit || access.isAssignee} />
 
           <TaskQuickCommentsCard taskId={task.id} comments={comments as any[]} canComment={access.canComment} />
 

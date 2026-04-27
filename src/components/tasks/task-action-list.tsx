@@ -197,14 +197,26 @@ function buildViewQuery(currentQuery: string, view: ViewMode) {
   return params.toString();
 }
 
-function startDownload(filename: string, content: string) {
-  const blob = new Blob([content], { type: "application/json;charset=utf-8" });
+function startDownload(filename: string, content: string, type = "text/csv;charset=utf-8") {
+  const blob = new Blob([content], { type });
   const href = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = href;
   link.download = filename;
   link.click();
   URL.revokeObjectURL(href);
+}
+
+
+function csvEscape(value: unknown) {
+  const text = String(value ?? "");
+  return `"${text.replaceAll('"', '""')}"`;
+}
+
+function tasksToCsv(tasks: TaskRow[]) {
+  const header = ["id", "title", "status", "priority", "client", "project_id", "due_date", "updated_at"];
+  const rows = tasks.map((task) => [task.id, task.title, task.status, task.priority ?? "", task.client_name ?? "", task.project_id ?? "", task.due_date ?? "", task.updated_at ?? ""].map(csvEscape).join(","));
+  return [header.join(","), ...rows].join("\n");
 }
 
 function TaskActionListComponent({
@@ -377,19 +389,38 @@ function TaskActionListComponent({
     startRefresh(() => router.refresh());
   };
 
-  const saveGanttView = () => {
-    window.localStorage.setItem(
-      GANTT_CONFIG_KEY,
-      JSON.stringify({ showProgress, showDates, showPriority, compactGantt, ganttColorMode, savedAt: new Date().toISOString() }),
+  const saveGanttView = async () => {
+    const config = { showProgress, showDates, showPriority, compactGantt, ganttColorMode, savedAt: new Date().toISOString() };
+    window.localStorage.setItem(GANTT_CONFIG_KEY, JSON.stringify(config));
+    const { data: authData } = await supabase.auth.getUser();
+    const user = authData.user;
+    if (!user) {
+      window.alert("Vista guardada localmente. Iniciá sesión para sincronizarla.");
+      return;
+    }
+    const { error } = await supabase.from("task_view_preferences").upsert(
+      { user_id: user.id, organization_id: null, scope: "tasks", name: "Vista personal", view_mode: viewMode, config },
+      { onConflict: "user_id,organization_id,scope,name" },
     );
-    window.alert("Vista guardada en este navegador.");
+    window.alert(error ? `Vista guardada localmente, pero no se pudo sincronizar: ${error.message}` : "Vista guardada y sincronizada con tu cuenta.");
+  };
+
+  const createNewSavedView = async () => {
+    const name = window.prompt("Nombre de la nueva vista", viewMode === "gantt" ? "Gantt ejecutivo" : "Timeline operativo");
+    if (!name?.trim()) return;
+    const { data: authData } = await supabase.auth.getUser();
+    const user = authData.user;
+    if (!user) { window.alert("Iniciá sesión para crear vistas sincronizadas."); return; }
+    const config = { showProgress, showDates, showPriority, compactGantt, ganttColorMode, savedAt: new Date().toISOString() };
+    const { error } = await supabase.from("task_view_preferences").upsert(
+      { user_id: user.id, organization_id: null, scope: "tasks", name: name.trim(), view_mode: viewMode, config },
+      { onConflict: "user_id,organization_id,scope,name" },
+    );
+    window.alert(error ? `No se pudo guardar la vista: ${error.message}` : "Nueva vista guardada.");
   };
 
   const exportTasks = () => {
-    startDownload(
-      `flowtask-tareas-${viewMode}.json`,
-      JSON.stringify({ view: viewMode, exportedAt: new Date().toISOString(), tasks: items }, null, 2),
-    );
+    startDownload(`flowtask-tareas-${viewMode}.csv`, tasksToCsv(items));
   };
 
   const renderTable = () => (
@@ -515,7 +546,7 @@ function TaskActionListComponent({
           <span className="rounded-full bg-white px-4 py-2 text-sm font-black text-[#0F172A] ring-1 ring-[#E5EAF1]">{formatHumanDate(toIsoDate(timelineBounds.start))} — {formatHumanDate(toIsoDate(timelineBounds.end))}</span>
           <button type="button" className="inline-flex h-9 w-9 items-center justify-center rounded-[12px] border border-[#E5EAF1] bg-white"><ArrowRight className="h-4 w-4" /></button>
         </div>
-        <p className="text-xs font-bold text-[#64748B]">Click en una barra abre el detalle. El drag queda preparado para conectar fechas luego.</p>
+        <p className="text-xs font-bold text-[#64748B]">Click en una barra abre el detalle. Usa guardar vista para sincronizar configuración y exportar CSV.</p>
       </div>
 
       <div className="overflow-x-auto rounded-[18px] border border-[#E5EAF1]">
@@ -641,7 +672,7 @@ function TaskActionListComponent({
         </div>
         <div className="flex flex-wrap gap-2">
           <button type="button" onClick={saveGanttView} className="inline-flex h-10 items-center gap-2 rounded-[14px] border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-slate-700 hover:bg-slate-50"><Save className="h-4 w-4" />Guardar vista</button>
-          <button type="button" className="h-10 rounded-[14px] border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-slate-700 hover:bg-slate-50">Nueva vista</button>
+          <button type="button" onClick={createNewSavedView} className="h-10 rounded-[14px] border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-slate-700 hover:bg-slate-50">Nueva vista</button>
           <button type="button" onClick={exportTasks} className="inline-flex h-10 items-center gap-2 rounded-[14px] border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-slate-700 hover:bg-slate-50"><Download className="h-4 w-4" />Exportar</button>
           <button type="button" onClick={() => setShowGanttSettings((value) => !value)} className="inline-flex h-10 items-center gap-2 rounded-[14px] bg-[#050B18] px-4 text-sm font-bold text-white"><Settings2 className="h-4 w-4" />Personalizar</button>
         </div>
