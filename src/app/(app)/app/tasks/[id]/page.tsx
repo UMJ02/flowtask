@@ -14,7 +14,7 @@ import { getTaskChecklistItems } from '@/lib/queries/task-checklist';
 import { getTaskStandbyDays, getTaskStatusLabel, isTaskOverdue, isTaskWaiting } from '@/lib/tasks/status';
 import { safeServerCall } from '@/lib/runtime/safe-server';
 import { formatDate } from '@/lib/utils/dates';
-import { CalendarDays, CheckCircle2, Clock3, FileArchive, FileText, Flag, Folder, ListChecks, MessageCircle, Paperclip, Plus, Upload, UserRound } from 'lucide-react';
+import { ArrowRight, CalendarDays, CheckCircle2, Clock3, FileArchive, FileText, Flag, Folder, ListChecks, MessageCircle, Paperclip, Plus, Upload, UserRound } from 'lucide-react';
 
 function statusLabel(status?: string | null) {
   return getTaskStatusLabel(status);
@@ -169,6 +169,17 @@ export default async function TaskDetailPage({
           </section>
 
           <TaskChecklistCard taskId={task.id} initialItems={checklistItems} canManage={access.canEdit || access.isAssignee} />
+
+          <section className="rounded-[24px] border border-emerald-100 bg-emerald-50/70 p-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
+            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+              <div>
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-emerald-700">Escalar trabajo</p>
+                <h2 className="mt-1 text-lg font-black text-[#0F172A]">¿Esta tarea ya parece un proyecto?</h2>
+                <p className="mt-1 text-sm font-semibold text-[#64748B]">Si tiene checklist largo, varios responsables, dependencias o muchas fechas, conviértela en proyecto para planificarla con Timeline y Builder.</p>
+              </div>
+              <a href={`/app/projects/new?sourceTaskId=${task.id}`} className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-[14px] bg-[#050B18] px-5 text-sm font-black text-white hover:bg-slate-900">Convertir en proyecto <ArrowRight className="h-4 w-4" /></a>
+            </div>
+          </section>
 
           <TaskQuickCommentsCard taskId={task.id} comments={comments as any[]} canComment={access.canComment} />
 

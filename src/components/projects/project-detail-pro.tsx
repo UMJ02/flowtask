@@ -20,6 +20,7 @@ import { ActivityItem } from "@/lib/queries/activity";
 import { projectEditRoute, taskDetailRoute } from "@/lib/navigation/routes";
 import { formatDate } from "@/lib/utils/dates";
 import { CopyCurrentUrlButton } from "@/components/ui/copy-current-url-button";
+import { ProjectPlanningTimeline } from "@/components/projects/project-planning-timeline";
 
 const cardClass = "rounded-[24px] border border-[#E5EAF1] bg-white shadow-[0_12px_30px_rgba(15,23,42,0.04)]";
 
@@ -214,7 +215,8 @@ function ProjectTabs() {
   const tabs = [
     { label: "Resumen", href: "#resumen" },
     { label: "Tareas", href: "#tareas" },
-    { label: "Cronograma", href: "#resumen" },
+    { label: "Timeline", href: "#timeline" },
+    { label: "Builder", href: "#timeline" },
     { label: "Equipo", href: "#equipo" },
     { label: "Archivos", href: "#archivos" },
     { label: "Actividad", href: "#actividad" },
@@ -359,6 +361,7 @@ export function ProjectDetailPro({ project, tasks, members, attachments, activit
       <ProjectHeroCard project={project} tasks={tasks} currentQuery={currentQuery} />
       <ProjectStatsRow tasks={tasks} />
       <ProjectTabs />
+      <ProjectPlanningTimeline project={project} tasks={tasks} currentQuery={currentQuery} />
 
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_380px]">
         <div className="space-y-5">

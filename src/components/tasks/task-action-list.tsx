@@ -46,10 +46,10 @@ type TaskRow = {
 };
 
 type PageAnimationState = "idle" | "out-next" | "out-prev" | "in-next" | "in-prev";
-type ViewMode = "list" | "board" | "calendar" | "timeline" | "gantt";
+type ViewMode = "list" | "calendar";
 type GanttColorMode = "priority" | "status" | "client";
 
-const TASK_VIEW_KEY = "flowtask.tasks.view-mode.v58143";
+const TASK_VIEW_KEY = "flowtask.tasks.view-mode.v58150";
 const GANTT_CONFIG_KEY = "flowtask.tasks.gantt-config.v58143";
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
@@ -188,11 +188,11 @@ function getBarStyle(task: TaskRow, rangeStart: Date, rangeEnd: Date) {
 function readStoredViewMode(fallback: ViewMode) {
   if (typeof window === "undefined") return fallback;
   const raw = window.localStorage.getItem(TASK_VIEW_KEY);
-  return raw === "list" || raw === "board" || raw === "calendar" || raw === "timeline" || raw === "gantt" ? raw : fallback;
+  return raw === "list" || raw === "calendar" ? raw : fallback;
 }
 
 function viewFromInitial(initialView?: string): ViewMode {
-  if (initialView === "board" || initialView === "calendar" || initialView === "timeline" || initialView === "gantt") return initialView;
+  if (initialView === "calendar") return "calendar";
   return "list";
 }
 
@@ -296,7 +296,7 @@ function TaskActionListComponent({
   const calendarDays = useMemo(() => buildCalendarDays(items), [items]);
 
   const allCurrentSelected = currentItems.length > 0 && currentItems.every((item) => selectedIds.includes(item.id));
-  const timelineActive = viewMode === "timeline" || viewMode === "gantt";
+  const timelineActive = false;
 
   const changeView = (nextView: ViewMode) => {
     setViewMode(nextView);
@@ -416,7 +416,7 @@ function TaskActionListComponent({
   };
 
   const createNewSavedView = async () => {
-    const name = window.prompt("Nombre de la nueva vista", viewMode === "gantt" ? "Gantt ejecutivo" : "Timeline operativo");
+    const name = window.prompt("Nombre de la nueva vista", "Vista de tareas");
     if (!name?.trim()) return;
     const { data: authData } = await supabase.auth.getUser();
     const user = authData.user;
@@ -625,7 +625,6 @@ function TaskActionListComponent({
             {(["Hoy", "Día", "Semana", "Mes"] as const).map((label) => (
               <button key={label} type="button" onClick={() => setCalendarScale(label)} className={cn("h-10 rounded-[14px] border px-4 text-sm font-bold transition", calendarScale === label ? "border-[#16C784] bg-[#16C784] text-white" : "border-[#E5EAF1] bg-white text-slate-700 hover:bg-slate-50")}>{label}</button>
             ))}
-            <button type="button" onClick={() => changeView("timeline")} className="h-10 rounded-[14px] border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-slate-700 hover:bg-slate-50">Timeline</button>
             <button type="button" onClick={() => setShowCalendarSummary((value) => !value)} className="inline-flex h-10 items-center gap-2 rounded-[14px] border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-slate-700 hover:bg-slate-50"><Settings2 className="h-4 w-4" />Config</button>
           </div>
         </div>
@@ -749,52 +748,18 @@ function TaskActionListComponent({
 
   return (
     <div className="space-y-4">
-      <Card className="relative z-40 overflow-visible rounded-[24px] border border-[#E5EAF1] bg-white p-4 shadow-[0_12px_30px_rgba(15,23,42,0.04)] md:p-5">
-        <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+      <Card className="relative z-20 rounded-[24px] border border-[#E5EAF1] bg-white p-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <h2 className="text-lg font-bold text-[#0F172A]">Vistas rápidas</h2>
-            <p className="mt-1 text-sm font-medium text-[#64748B]">Alterna entre Lista, Tablero, Calendario y Timeline avanzado.</p>
+            <h2 className="text-lg font-bold text-[#0F172A]">Vistas de tareas</h2>
+            <p className="mt-1 text-sm font-medium text-[#64748B]">Tareas queda simple: lista para ejecución diaria y calendario para fechas. La planificación avanzada vive en Proyectos.</p>
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-3">
             <ViewButton active={viewMode === "list"} icon={<List className="h-4 w-4" />} label="Lista" onClick={() => changeView("list")} />
-            <ViewButton active={viewMode === "board"} icon={<LayoutGrid className="h-4 w-4" />} label="Tablero" onClick={() => changeView("board")} />
             <ViewButton active={viewMode === "calendar"} icon={<CalendarDays className="h-4 w-4" />} label="Calendario" onClick={() => changeView("calendar")} />
-            <div className="relative z-50">
-              <button
-                type="button"
-                onClick={() => setTimelineOpen((value) => !value)}
-                className={cn(
-                  "inline-flex h-11 items-center gap-2 rounded-[14px] border px-4 text-sm font-semibold transition",
-                  timelineActive ? "border-[#050B18] bg-[#050B18] text-white shadow-[0_12px_26px_rgba(5,11,24,0.16)]" : "border-[#E5EAF1] bg-white text-slate-700 hover:bg-slate-50",
-                )}
-              >
-                <Workflow className="h-4 w-4" />
-                Timeline
-                <ChevronDown className={cn("h-4 w-4 transition", timelineOpen && "rotate-180")} />
-              </button>
-              {timelineOpen ? (
-                <div className="absolute right-0 z-[120] mt-2 w-56 rounded-[18px] border border-[#E5EAF1] bg-white p-2 shadow-[0_20px_50px_rgba(15,23,42,0.14)]">
-                  <button type="button" onClick={() => changeView("timeline")} className="flex w-full items-center gap-3 rounded-[14px] px-3 py-3 text-left text-sm font-bold text-[#0F172A] hover:bg-[#F8FAFC]"><Layers3 className="h-4 w-4 text-[#16C784]" />Smart Timeline</button>
-                  <button type="button" onClick={() => changeView("gantt")} className="flex w-full items-center gap-3 rounded-[14px] px-3 py-3 text-left text-sm font-bold text-[#0F172A] hover:bg-[#F8FAFC]"><Workflow className="h-4 w-4 text-[#16C784]" />Gantt Builder</button>
-                  <button type="button" onClick={saveGanttView} className="flex w-full items-center gap-3 rounded-[14px] px-3 py-3 text-left text-sm font-bold text-[#0F172A] hover:bg-[#F8FAFC]"><Save className="h-4 w-4 text-slate-500" />Guardar vista</button>
-                  <button type="button" onClick={exportTasks} className="flex w-full items-center gap-3 rounded-[14px] px-3 py-3 text-left text-sm font-bold text-[#0F172A] hover:bg-[#F8FAFC]"><Download className="h-4 w-4 text-slate-500" />Exportar</button>
-                </div>
-              ) : null}
-            </div>
           </div>
         </div>
-
-        {timelineActive ? (
-          <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-[#E5EAF1] pt-4">
-            <span className="text-xs font-black uppercase tracking-[0.14em] text-[#64748B]">Timeline activo</span>
-            <button type="button" onClick={() => changeView("timeline")} className={cn("h-10 rounded-[14px] px-4 text-sm font-bold", viewMode === "timeline" ? "bg-[#16C784] text-white" : "border border-[#E5EAF1] bg-white text-slate-700")}>Smart Timeline</button>
-            <button type="button" onClick={() => changeView("gantt")} className={cn("h-10 rounded-[14px] px-4 text-sm font-bold", viewMode === "gantt" ? "bg-[#16C784] text-white" : "border border-[#E5EAF1] bg-white text-slate-700")}>Gantt Builder</button>
-            <button type="button" onClick={saveGanttView} className="inline-flex h-10 items-center gap-2 rounded-[14px] border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-slate-700"><Save className="h-4 w-4" />Guardar vista</button>
-            <button type="button" onClick={exportTasks} className="inline-flex h-10 items-center gap-2 rounded-[14px] border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-slate-700"><Download className="h-4 w-4" />Exportar</button>
-          </div>
-        ) : null}
       </Card>
-
       {searchPanel ? <div className="relative z-10">{searchPanel}</div> : null}
 
       {selectedIds.length ? (
@@ -818,10 +783,7 @@ function TaskActionListComponent({
 
       <div className="animate-[viewFadeIn_180ms_ease-out]">
         {viewMode === "list" ? renderTable() : null}
-        {viewMode === "board" ? <TaskKanbanBoard tasks={items} showHeader={false} currentQuery={currentQuery} workspaceKey="tasks-page" /> : null}
         {viewMode === "calendar" ? renderCalendarPro() : null}
-        {viewMode === "timeline" ? renderSmartTimeline() : null}
-        {viewMode === "gantt" ? renderGanttBuilder() : null}
       </div>
 
       {viewMode === "list" ? (

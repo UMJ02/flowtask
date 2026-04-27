@@ -2,6 +2,8 @@ export const dynamic = 'force-dynamic';
 
 import { Card } from '@/components/ui/card';
 import { ProjectForm } from '@/components/projects/project-form';
+import { getTaskById } from '@/lib/queries/tasks';
+import { safeServerCall } from '@/lib/runtime/safe-server';
 
 export default async function ProjectNewPage({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
   const search = (await searchParams) ?? {};
@@ -10,17 +12,22 @@ export default async function ProjectNewPage({ searchParams }: { searchParams?: 
   ).toString();
 
   const clientName = typeof search.clientName === 'string' ? search.clientName : '';
+  const sourceTaskId = typeof search.sourceTaskId === 'string' ? search.sourceTaskId : '';
+  const sourceTask = sourceTaskId ? await safeServerCall('getTaskByIdForProjectConversion', () => getTaskById(sourceTaskId), null) : null;
 
   return (
     <div className="space-y-4">
       <Card className="rounded-[28px] border border-slate-200/90 bg-white/[0.92] p-5 shadow-[0_10px_30px_rgba(15,23,42,0.04)]">
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Nuevo proyecto</p>
-        <h1 className="mt-2 text-2xl font-bold text-slate-900">Crear proyecto</h1>
-        <p className="mt-2 text-sm text-slate-500">Prepara un frente nuevo con su cliente, deadline, área y modo colaborativo.</p>
+        <h1 className="mt-2 text-2xl font-bold text-slate-900">{sourceTask ? 'Convertir tarea en proyecto' : 'Crear proyecto'}</h1>
+        <p className="mt-2 text-sm text-slate-500">{sourceTask ? 'Convierte una tarea compleja en proyecto colaborativo con planificación avanzada.' : 'Prepara un frente nuevo con su cliente, deadline, área y modo colaborativo.'}</p>
       </Card>
       <ProjectForm
         initialData={{
-          clientName,
+          clientName: sourceTask?.client_name ?? clientName,
+          title: sourceTask?.title ?? '',
+          description: sourceTask?.description ? `${sourceTask.description}\n\nOrigen: tarea ${sourceTask.id}` : '',
+          dueDate: sourceTask?.due_date ?? '',
         }}
         redirectTo={queryString ? `/app/projects?${queryString}` as any : '/app/projects'}
       />
