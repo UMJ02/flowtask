@@ -24,7 +24,7 @@ export function TaskDetailSummary({ task, currentQuery = "" }: { task: any; curr
   const project = Array.isArray(task.projects) ? task.projects[0] : task.projects;
 
   return (
-    <section className="rounded-[28px] border border-[#E5EAF1] bg-white p-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)] sm:p-6 lg:p-7">
+    <section className="rounded-[24px] border border-[#E5EAF1] bg-white p-7 shadow-[0_10px_30px_rgba(15,23,42,0.04)]">
       <div className="flex flex-col gap-5">
         <Link href={taskListRoute(currentQuery)} className="inline-flex w-fit items-center gap-2 text-sm font-bold text-[#64748B] transition hover:text-[#0F172A]" aria-label="Volver al listado">
           <span aria-hidden>←</span> Volver al listado
@@ -33,7 +33,7 @@ export function TaskDetailSummary({ task, currentQuery = "" }: { task: any; curr
         <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-3">
-              <h1 className="max-w-[980px] text-[28px] font-black leading-[1.08] tracking-[-0.04em] text-[#0F172A] sm:text-[34px] lg:text-[38px]">
+              <h1 className="max-w-[980px] text-[30px] font-black leading-[1.08] tracking-[-0.04em] text-[#0F172A] sm:text-[36px] lg:text-[40px]">
                 {task.title}
               </h1>
               <Star className="h-4 w-4 fill-amber-300 text-amber-300" aria-hidden />
@@ -42,7 +42,7 @@ export function TaskDetailSummary({ task, currentQuery = "" }: { task: any; curr
               </span>
             </div>
 
-            <div className="mt-4 flex flex-wrap items-center gap-2">
+            <div className="mt-5 flex flex-wrap items-center gap-2">
               <span className="rounded-full border border-[#E5EAF1] bg-[#F8FAFC] px-3 py-1.5 text-xs font-bold text-[#64748B]">{project?.title || "Tarea independiente"}</span>
               <span className="rounded-full border border-[#E5EAF1] bg-[#F8FAFC] px-3 py-1.5 text-xs font-bold text-[#64748B]">{department?.name || "Sin departamento"}</span>
               {task.client_name ? <span className="rounded-full border border-[#E5EAF1] bg-[#F8FAFC] px-3 py-1.5 text-xs font-bold text-[#64748B]">{task.client_name}</span> : null}
@@ -51,7 +51,7 @@ export function TaskDetailSummary({ task, currentQuery = "" }: { task: any; curr
 
           <div className="flex shrink-0 flex-wrap items-center gap-2 xl:justify-end">
             <EntityMemoryActions entity={{ id: task.id, type: 'task', title: task.title, subtitle: task.client_name || "Tarea", href: taskDetailRoute(task.id, currentQuery), updatedAt: task.updated_at ?? task.created_at ?? task.due_date ?? '1970-01-01T00:00:00.000Z' }} />
-            <Link href={taskEditRoute(task.id, currentQuery)} className="inline-flex h-11 items-center justify-center gap-2 rounded-[14px] bg-[#050B18] px-5 text-sm font-bold text-white shadow-[0_14px_28px_rgba(5,11,24,0.18)] transition hover:-translate-y-0.5 hover:bg-[#111827]">
+            <Link href={taskEditRoute(task.id, currentQuery)} className="inline-flex h-12 items-center justify-center gap-2 rounded-[16px] bg-[#050B18] px-6 text-sm font-black text-white shadow-[0_14px_28px_rgba(5,11,24,0.18)] transition hover:-translate-y-0.5 hover:bg-[#111827]">
               <PencilLine className="h-4 w-4" /> Editar tarea
             </Link>
           </div>

@@ -72,7 +72,7 @@ export function TaskQuickCommentsCard({ taskId, comments, canComment = true }: {
   };
 
   return (
-    <section id="comments" className="rounded-[24px] border border-[#E5EAF1] bg-white p-6 shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
+    <section id="comments" className="rounded-[24px] border border-[#E5EAF1] bg-white p-7 shadow-[0_10px_30px_rgba(15,23,42,0.04)]">
       <div className="mb-4">
         <h2 className="text-lg font-black text-[#0F172A]">Comentarios</h2>
         <p className="text-sm font-semibold text-[#64748B]">Siguiendo cronológicamente</p>
@@ -86,7 +86,7 @@ export function TaskQuickCommentsCard({ taskId, comments, canComment = true }: {
           placeholder="Escribe un comentario o menciona a alguien con @"
           className="h-12 flex-1 rounded-[16px] border border-[#E5EAF1] bg-white px-4 text-sm font-semibold outline-none transition placeholder:text-[#94A3B8] focus:border-[#16C784] focus:ring-4 focus:ring-[#16C784]/10"
         />
-        <button type="submit" disabled={!canComment || isSaving || !content.trim()} className="h-12 rounded-[16px] bg-[#050B18] px-6 text-sm font-black text-white transition hover:bg-[#111827] disabled:cursor-not-allowed disabled:opacity-50">
+        <button type="submit" disabled={!canComment || isSaving || !content.trim()} className="h-12 rounded-[16px] bg-[#7C3AED] px-6 text-sm font-black text-white shadow-[0_14px_28px_rgba(124,58,237,0.18)] transition hover:bg-[#6D28D9] disabled:cursor-not-allowed disabled:opacity-50">
           {isSaving ? "Comentando..." : "Comentar"}
         </button>
       </form>
