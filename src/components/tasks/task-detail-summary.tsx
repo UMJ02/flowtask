@@ -1,86 +1,77 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { ChevronDown, ChevronUp, Layers3 } from "lucide-react";
+import { MoreVertical, Pin, Star } from "lucide-react";
 import { TaskDeleteButton } from "@/components/tasks/task-delete-button";
-import { Card } from "@/components/ui/card";
 import { EntityMemoryActions } from "@/components/entities/entity-memory-actions";
-import { formatDate } from "@/lib/utils/dates";
 import { taskDetailRoute, taskEditRoute, taskListRoute } from "@/lib/navigation/routes";
 
-function priorityLabel(priority?: string | null) {
-  if (priority === "alta") return "Prioridad alta";
-  if (priority === "baja") return "Prioridad baja";
-  return "Prioridad media";
+function statusLabel(status?: string | null) {
+  if (status === "concluido") return "Concluido";
+  if (status === "en_espera") return "En espera";
+  if (status === "pendiente") return "Pendiente";
+  return "En progreso";
+}
+
+function statusTone(status?: string | null) {
+  if (status === "concluido") return "border-emerald-100 bg-emerald-50 text-emerald-700";
+  if (status === "en_espera") return "border-amber-100 bg-amber-50 text-amber-700";
+  if (status === "pendiente") return "border-violet-100 bg-violet-50 text-violet-700";
+  return "border-emerald-100 bg-emerald-50 text-emerald-700";
 }
 
 export function TaskDetailSummary({ task, currentQuery = "" }: { task: any; currentQuery?: string }) {
-  const [detailsOpen, setDetailsOpen] = useState(false);
   const department = Array.isArray(task.departments) ? task.departments[0] : task.departments;
   const project = Array.isArray(task.projects) ? task.projects[0] : task.projects;
 
   return (
-    <Card className="rounded-[34px] border border-slate-200/85 bg-white p-5 shadow-[0_18px_40px_rgba(15,23,42,0.06)] md:p-6">
+    <section className="rounded-[28px] border border-[#E5EAF1] bg-white p-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)] sm:p-6 lg:p-7">
       <div className="flex flex-col gap-5">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+        <Link href={taskListRoute(currentQuery)} className="inline-flex w-fit items-center gap-2 text-sm font-bold text-[#64748B] transition hover:text-[#0F172A]" aria-label="Volver al listado">
+          <span aria-hidden>←</span> Volver al listado
+        </Link>
+
+        <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
           <div className="min-w-0 flex-1">
-            <Link href={taskListRoute(currentQuery)} className="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 transition hover:text-slate-900" aria-label="Volver al listado">
-              <span aria-hidden>←</span> Volver al listado
-            </Link>
-            <h1 className="mt-5 text-3xl font-bold tracking-tight text-slate-900 md:text-4xl">{task.title}</h1>
-            <p className="mt-4 max-w-3xl text-base leading-7 text-slate-600">{task.description || "Sin descripción todavía."}</p>
+            <div className="flex flex-wrap items-center gap-3">
+              <h1 className="max-w-[980px] text-[28px] font-black leading-[1.08] tracking-[-0.04em] text-[#0F172A] sm:text-[36px] lg:text-[40px]">
+                {task.title}
+              </h1>
+              <span className={`inline-flex h-8 shrink-0 items-center rounded-full border px-3 text-xs font-black ${statusTone(task.status)}`}>
+                {statusLabel(task.status)}
+              </span>
+            </div>
+
+            <p className="mt-4 max-w-4xl text-base leading-7 text-[#64748B]">
+              {task.description || "Sin descripción todavía."}
+            </p>
+
+            <div className="mt-4 flex flex-wrap items-center gap-2">
+              <span className="rounded-full border border-[#E5EAF1] bg-[#F8FAFC] px-3 py-1.5 text-xs font-bold text-[#64748B]">{project?.title || "Tarea independiente"}</span>
+              <span className="rounded-full border border-[#E5EAF1] bg-[#F8FAFC] px-3 py-1.5 text-xs font-bold text-[#64748B]">{department?.name || "Sin departamento"}</span>
+              {task.client_name ? <span className="rounded-full border border-[#E5EAF1] bg-[#F8FAFC] px-3 py-1.5 text-xs font-bold text-[#64748B]">{task.client_name}</span> : null}
+              <button type="button" className="rounded-full px-3 py-1.5 text-xs font-bold text-[#64748B] transition hover:bg-[#F8FAFC]">+ Etiqueta</button>
+            </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2 lg:max-w-[520px] lg:justify-end">
+          <div className="flex shrink-0 flex-wrap items-center gap-2 xl:justify-end">
             <EntityMemoryActions entity={{ id: task.id, type: 'task', title: task.title, subtitle: task.client_name || "Tarea", href: taskDetailRoute(task.id, currentQuery), updatedAt: task.updated_at ?? task.created_at ?? task.due_date ?? '1970-01-01T00:00:00.000Z' }} />
+            <button type="button" className="inline-flex h-11 items-center gap-2 rounded-[14px] border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-[#0F172A] transition hover:-translate-y-0.5 hover:bg-[#F8FAFC]">
+              <Star className="h-4 w-4" /> Favorito
+            </button>
+            <button type="button" className="inline-flex h-11 items-center gap-2 rounded-[14px] border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-[#0F172A] transition hover:-translate-y-0.5 hover:bg-[#F8FAFC]">
+              <Pin className="h-4 w-4" /> Fijar
+            </button>
+            <button type="button" className="inline-flex h-11 w-11 items-center justify-center rounded-[14px] border border-[#E5EAF1] bg-white text-[#64748B] transition hover:bg-[#F8FAFC]" aria-label="Más opciones">
+              <MoreVertical className="h-4 w-4" />
+            </button>
             <TaskDeleteButton taskId={task.id} />
-            <Link href={taskEditRoute(task.id, currentQuery)} className="inline-flex h-14 items-center justify-center rounded-[24px] border border-slate-200 bg-white px-7 text-sm font-semibold text-slate-900 transition hover:-translate-y-0.5 hover:bg-slate-50">
+            <Link href={taskEditRoute(task.id, currentQuery)} className="inline-flex h-11 items-center justify-center rounded-[14px] bg-[#050B18] px-5 text-sm font-bold text-white shadow-[0_14px_28px_rgba(5,11,24,0.18)] transition hover:-translate-y-0.5 hover:bg-[#111827]">
               Editar tarea
             </Link>
-            <button
-              type="button"
-              onClick={() => setDetailsOpen((value) => !value)}
-              className="inline-flex h-14 items-center gap-2 rounded-[24px] border border-slate-200 bg-white px-6 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
-            >
-              {detailsOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-              {detailsOpen ? "Ocultar detalles" : "Ver detalles"}
-            </button>
           </div>
         </div>
-
-        {detailsOpen ? (
-          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-            <div className="rounded-[22px] bg-slate-50 px-4 py-4 text-sm text-slate-700">
-              <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Estado</p>
-              <p className="mt-2 font-medium text-slate-900">{task.status?.replaceAll('_', ' ') || 'Sin estado'}</p>
-            </div>
-            <div className="rounded-[22px] bg-slate-50 px-4 py-4 text-sm text-slate-700">
-              <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Prioridad</p>
-              <p className="mt-2 font-medium text-slate-900">{priorityLabel(task.priority)}</p>
-            </div>
-            <div className="rounded-[22px] bg-slate-50 px-4 py-4 text-sm text-slate-700">
-              <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Proyecto</p>
-              <p className="mt-2 font-medium text-slate-900">{project?.title || "Tarea independiente"}</p>
-            </div>
-            <div className="rounded-[22px] bg-slate-50 px-4 py-4 text-sm text-slate-700">
-              <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Cliente</p>
-              <p className="mt-2 font-medium text-slate-900">{task.client_name || "No indicado"}</p>
-            </div>
-            <div className="rounded-[22px] bg-slate-50 px-4 py-4 text-sm text-slate-700">
-              <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Departamento</p>
-              <p className="mt-2 font-medium text-slate-900">{department?.name || "No indicado"}</p>
-            </div>
-            <div className="rounded-[22px] bg-slate-50 px-4 py-4 text-sm text-slate-700">
-              <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Deadline</p>
-              <p className="mt-2 inline-flex items-center gap-2 font-medium text-slate-900">
-                <Layers3 className="h-4 w-4 text-slate-400" />
-                {task.due_date ? formatDate(task.due_date) : "Sin deadline"}
-              </p>
-            </div>
-          </div>
-        ) : null}
       </div>
-    </Card>
+    </section>
   );
 }

@@ -35,7 +35,6 @@ import {
   Paperclip,
   Send,
   ShieldCheck,
-  Sparkles,
   Tag,
   UserRound,
   X,
@@ -328,25 +327,18 @@ export function TaskForm({
   const selectedPriority = useWatch({ control, name: "priority" });
   const selectedStatus = useWatch({ control, name: "status" });
   const editorTitle = isEdit ? "Editar tarea" : "Nueva tarea";
-  const taskReference = isEdit && taskId ? `#FT-${taskId.slice(0, 4).toUpperCase()}` : "#FT-NUEVA";
 
   return (
     <form className="-m-4 bg-[#F7F9FC] px-4 pb-8 pt-2 sm:-m-6 sm:px-6 lg:-m-8 lg:px-8" onSubmit={handleSubmit(onSubmit)}>
-      <div className="sticky top-0 z-20 -mx-4 mb-6 border-b border-slate-200/80 bg-[#F7F9FC]/92 px-4 py-4 backdrop-blur-xl sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
-        <div className="mx-auto flex max-w-[1480px] flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+      <div className="sticky top-0 z-20 -mx-4 mb-5 border-b border-slate-200/80 bg-[#F7F9FC]/94 px-4 py-3 backdrop-blur-xl sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+        <div className="mx-auto flex max-w-[1480px] flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex min-w-0 items-center gap-3">
-            <Link href={cancelHref} className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#050B18] text-white shadow-[0_14px_28px_rgba(5,11,24,0.18)] transition hover:-translate-y-0.5" aria-label="Volver">
+            <Link href={cancelHref} className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#050B18] text-white shadow-[0_14px_28px_rgba(5,11,24,0.18)] transition hover:-translate-y-0.5" aria-label="Volver">
               <ArrowLeft className="h-5 w-5" />
             </Link>
             <div className="min-w-0">
-              <div className="flex flex-wrap items-center gap-2">
-                <h1 className="text-2xl font-bold tracking-[-0.03em] text-[#0F172A] sm:text-3xl">{editorTitle}</h1>
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-100 bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700">
-                  <Sparkles className="h-3.5 w-3.5" />
-                  {taskReference}
-                </span>
-              </div>
-              <p className="mt-1 text-sm font-medium text-[#64748B]">Gestiona la información clave sin perder contexto operativo.</p>
+              <h1 className="truncate text-2xl font-black tracking-[-0.035em] text-[#0F172A] sm:text-3xl">{editorTitle}</h1>
+              <p className="mt-1 line-clamp-1 text-sm font-medium text-[#64748B]">Gestiona la información clave sin perder contexto operativo.</p>
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2 lg:justify-end">

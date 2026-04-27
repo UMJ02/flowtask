@@ -707,7 +707,7 @@ function TaskActionListComponent({
 
   return (
     <div className="space-y-4">
-      <Card className="rounded-[24px] border border-[#E5EAF1] bg-white p-4 shadow-[0_12px_30px_rgba(15,23,42,0.04)] md:p-5">
+      <Card className="relative z-40 overflow-visible rounded-[24px] border border-[#E5EAF1] bg-white p-4 shadow-[0_12px_30px_rgba(15,23,42,0.04)] md:p-5">
         <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
           <div>
             <h2 className="text-lg font-bold text-[#0F172A]">Vistas rápidas</h2>
@@ -717,7 +717,7 @@ function TaskActionListComponent({
             <ViewButton active={viewMode === "list"} icon={<List className="h-4 w-4" />} label="Lista" onClick={() => changeView("list")} />
             <ViewButton active={viewMode === "board"} icon={<LayoutGrid className="h-4 w-4" />} label="Tablero" onClick={() => changeView("board")} />
             <ViewButton active={viewMode === "calendar"} icon={<CalendarDays className="h-4 w-4" />} label="Calendario" onClick={() => changeView("calendar")} />
-            <div className="relative">
+            <div className="relative z-50">
               <button
                 type="button"
                 onClick={() => setTimelineOpen((value) => !value)}
@@ -731,7 +731,7 @@ function TaskActionListComponent({
                 <ChevronDown className={cn("h-4 w-4 transition", timelineOpen && "rotate-180")} />
               </button>
               {timelineOpen ? (
-                <div className="absolute right-0 z-20 mt-2 w-56 rounded-[18px] border border-[#E5EAF1] bg-white p-2 shadow-[0_20px_50px_rgba(15,23,42,0.14)]">
+                <div className="absolute right-0 z-[120] mt-2 w-56 rounded-[18px] border border-[#E5EAF1] bg-white p-2 shadow-[0_20px_50px_rgba(15,23,42,0.14)]">
                   <button type="button" onClick={() => changeView("timeline")} className="flex w-full items-center gap-3 rounded-[14px] px-3 py-3 text-left text-sm font-bold text-[#0F172A] hover:bg-[#F8FAFC]"><Layers3 className="h-4 w-4 text-[#16C784]" />Smart Timeline</button>
                   <button type="button" onClick={() => changeView("gantt")} className="flex w-full items-center gap-3 rounded-[14px] px-3 py-3 text-left text-sm font-bold text-[#0F172A] hover:bg-[#F8FAFC]"><Workflow className="h-4 w-4 text-[#16C784]" />Gantt Builder</button>
                   <button type="button" onClick={saveGanttView} className="flex w-full items-center gap-3 rounded-[14px] px-3 py-3 text-left text-sm font-bold text-[#0F172A] hover:bg-[#F8FAFC]"><Save className="h-4 w-4 text-slate-500" />Guardar vista</button>
@@ -753,7 +753,7 @@ function TaskActionListComponent({
         ) : null}
       </Card>
 
-      {searchPanel ? <div>{searchPanel}</div> : null}
+      {searchPanel ? <div className="relative z-10">{searchPanel}</div> : null}
 
       {selectedIds.length ? (
         <Card className="rounded-[20px] border border-emerald-100 bg-emerald-50/80 px-4 py-3 shadow-none">
