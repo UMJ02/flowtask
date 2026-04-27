@@ -125,9 +125,16 @@ function KpiCard({ item }: { item: KpiItem }) {
   );
 }
 
-function TeamActivityChart() {
+function TeamActivityChart({ summary }: { summary: WorkspaceAnalyticsSummary }) {
   const [hovered, setHovered] = useState<{ day: string; label: string; value: number; color: string; x: number; y: number } | null>(null);
   const [rangeLabel, setRangeLabel] = useState<'Diario' | 'Semanal'>('Diario');
+  const operationalBase = Math.max(summary.pipeline.activeTasks + summary.pipeline.waitingTasks + summary.pipeline.dueThisWeek, 1);
+  const completedBase = Math.max(summary.shareDigest.completedCount, 0);
+  const activityData = Array.from({ length: 8 }, (_, index) => ({
+    day: index === 7 ? 'Hoy' : `D-${7 - index}`,
+    completadas: Math.max(0, Math.round((completedBase / 8) * (0.65 + index * 0.08))),
+    creadas: Math.max(0, Math.round((operationalBase / 8) * (0.7 + index * 0.06))),
+  }));
   const width = 720;
   const height = 248;
   const chartTop = 20;
@@ -269,7 +276,7 @@ function DonutChart({ completed, progress, waiting, pending }: { completed: numb
 }
 
 function TaskStatusDonut({ summary }: { summary: WorkspaceAnalyticsSummary }) {
-  const completed = Math.max(summary.shareDigest.completedCount, 1);
+  const completed = Math.max(summary.shareDigest.completedCount, 0);
   const progress = Math.max(summary.shareDigest.inProgressCount, 0);
   const waiting = Math.max(summary.shareDigest.waitingCount, 0);
   const pending = Math.max(summary.pipeline.dueThisWeek + summary.pipeline.overdueLoad, 0);
@@ -387,11 +394,11 @@ function RecentActivityCard({ summary }: { summary: WorkspaceAnalyticsSummary })
 }
 
 export function AnalyticsOverview({ summary, compact = false }: { summary: WorkspaceAnalyticsSummary; compact?: boolean }) {
-  const activeProjects = summary.pipeline.activeProjects || 24;
-  const completedTasks = summary.shareDigest.completedCount || 128;
-  const hours = Math.max(summary.adoption.taskEvents * 6 + summary.adoption.projectEvents * 4 + summary.kpis.activityLast48h * 3, 342);
-  const productivity = summary.kpis.intelligenceScore || 76;
-  const compliance = summary.kpis.healthScore || 92;
+  const activeProjects = summary.pipeline.activeProjects;
+  const completedTasks = summary.shareDigest.completedCount;
+  const hours = Math.max(summary.adoption.taskEvents * 6 + summary.adoption.projectEvents * 4 + summary.kpis.activityLast48h * 3, 0);
+  const productivity = summary.kpis.intelligenceScore;
+  const compliance = summary.kpis.healthScore;
 
   const kpis: KpiItem[] = [
     { label: 'Proyectos activos', value: String(activeProjects), delta: '20%', helper: 'vs semana anterior', tone: 'green', icon: WorkflowIcon, points: [18, 29, 34, 28, 39, 36, 52, 43, 57, 48, 62] },
@@ -435,7 +442,7 @@ export function AnalyticsOverview({ summary, compact = false }: { summary: Works
       </section>
 
       <section className="grid gap-4 xl:grid-cols-3">
-        <TeamActivityChart />
+        <TeamActivityChart summary={summary} />
         <TaskStatusDonut summary={summary} />
       </section>
 

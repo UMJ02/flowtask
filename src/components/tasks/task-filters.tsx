@@ -14,6 +14,7 @@ interface TaskFiltersProps {
     department?: string;
     due?: string;
     view?: string;
+    includeCompleted?: string;
   };
 }
 
@@ -25,6 +26,10 @@ export function TaskFilters({ filters }: TaskFiltersProps) {
         <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Buscar</span>
         <Search className="pointer-events-none absolute left-3 top-[42px] h-4 w-4 text-slate-400" />
         <Input className="pl-9" defaultValue={filters.q ?? ''} name="q" placeholder="Escribe una tarea, cliente o palabra clave" />
+      </label>
+      <label className="flex items-end gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700">
+        <input type="checkbox" name="includeCompleted" value="true" defaultChecked={filters.includeCompleted === 'true'} className="h-4 w-4 rounded border-slate-300 text-[#16C784]" />
+        Incluir concluidas
       </label>
       <label className="block">
         <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Estado</span>

@@ -56,8 +56,10 @@ export default async function TasksPage({ searchParams }: { searchParams?: Promi
     department: typeof params.department === 'string' ? params.department : '',
     due: typeof params.due === 'string' ? params.due : '',
     view: typeof params.view === 'string' ? params.view : 'list',
+    includeCompleted: typeof params.includeCompleted === 'string' ? params.includeCompleted : '',
   };
   const tasks = await safeServerCall('getTasks', () => getTasks(filters), []);
+  const concludedTasks = await safeServerCall('getConcludedTasks', () => getTasks({ status: 'concluido' }), []);
   const queryString = new URLSearchParams(
     Object.entries(filters).flatMap(([key, value]) => (value ? [[key, value]] : [])),
   ).toString();
@@ -66,6 +68,7 @@ export default async function TasksPage({ searchParams }: { searchParams?: Promi
     total: tasks.length,
     inProgress: tasks.filter((task) => task.status === 'en_proceso').length,
     waiting: tasks.filter((task) => task.status === 'en_espera').length,
+    hiddenDone: concludedTasks.length,
     done: tasks.filter((task) => task.status === 'concluido').length,
     highPriority: tasks.filter((task) => task.priority === 'alta').length,
   };
@@ -90,11 +93,16 @@ export default async function TasksPage({ searchParams }: { searchParams?: Promi
         <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
           <StatCard label="Total visibles" value={stats.total} helper="Resultado actual" tone="violet" icon={ClipboardList} />
           <StatCard label="En progreso" value={stats.inProgress} helper="Trabajo activo" tone="sky" icon={PlayCircle} />
-          <StatCard label="En espera" value={stats.waiting} helper="Requieren seguimiento" tone="amber" icon={Hourglass} />
-          <StatCard label="Concluidas" value={stats.done} helper="Historial reciente" tone="emerald" icon={CheckCircle2} />
+          <StatCard label="En espera" value={stats.waiting} helper="Standby sin vencimiento" tone="amber" icon={Hourglass} />
+          <StatCard label="Concluidas ocultas" value={stats.hiddenDone} helper="No impactan atraso" tone="emerald" icon={CheckCircle2} />
           <StatCard label="Prioridad alta" value={stats.highPriority} helper="Foco inmediato" tone="rose" icon={Flag} />
         </div>
       </Card>
+
+      <div className="flex flex-wrap gap-2">
+        <Link href="/app/tasks?status=concluido" className="inline-flex h-10 items-center justify-center rounded-[14px] border border-emerald-200 bg-emerald-50 px-4 text-sm font-bold text-emerald-800 transition hover:bg-emerald-100">Ver concluidas / reactivar</Link>
+        {filters.status === 'concluido' ? <Link href="/app/tasks" className="inline-flex h-10 items-center justify-center rounded-[14px] border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-[#334155] transition hover:bg-slate-50">Volver a operativas</Link> : null}
+      </div>
 
       <TaskWorkspace searchPanel={<TaskSearchPanel filters={filters} />} tasks={tasks.map((task) => ({
         id: task.id,

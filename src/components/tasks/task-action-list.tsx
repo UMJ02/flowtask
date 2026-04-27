@@ -30,7 +30,7 @@ import { Card } from "@/components/ui/card";
 import { Select } from "@/components/ui/select";
 import { TaskKanbanBoard } from "@/components/tasks/task-kanban-board";
 import { taskDetailRoute, taskEditRoute } from "@/lib/navigation/routes";
-import { getTaskStatusUpdatePayload, todayIsoDate } from "@/lib/tasks/status";
+import { getTaskStandbyDays, getTaskStatusLabel, getTaskStatusUpdatePayload, isTaskOverdue, isTaskWaiting, todayIsoDate } from "@/lib/tasks/status";
 import { cn } from "@/lib/utils/classnames";
 
 type TaskRow = {
@@ -79,14 +79,20 @@ function formatHumanDate(value?: string | null) {
   return match ? `${match[3]}/${match[2]}/${match[1]}` : value;
 }
 
-function formatDeadline(value?: string | null) {
+function formatDeadline(task: TaskRow) {
+  const value = task.due_date;
   if (!value) return { label: "Sin fecha", helper: "No definida", overdue: false, today: false };
   const normalized = value.slice(0, 10);
   const today = todayIsoDate();
+  if (task.status === "concluido") return { label: formatHumanDate(normalized), helper: "Concluida", overdue: false, today: false };
+  if (isTaskWaiting(task.status)) {
+    const days = getTaskStandbyDays(task);
+    return { label: formatHumanDate(normalized), helper: days > 0 ? `En espera hace ${days} día${days === 1 ? "" : "s"}` : "En espera", overdue: false, today: false };
+  }
   return {
     label: formatHumanDate(normalized),
-    helper: normalized < today ? "Vencido" : normalized === today ? "Vence hoy" : "Programada",
-    overdue: normalized < today,
+    helper: isTaskOverdue(normalized, task.status) ? "Vencido" : normalized === today ? "Vence hoy" : "Programada",
+    overdue: isTaskOverdue(normalized, task.status),
     today: normalized === today,
   };
 }
@@ -122,15 +128,13 @@ function statusDot(status?: string | null) {
 }
 
 function statusLabel(status?: string | null) {
-  if (status === "concluido") return "Concluida";
-  if (status === "en_espera") return "En espera";
-  return "En progreso";
+  return getTaskStatusLabel(status);
 }
 
 function barColor(task: TaskRow, mode: GanttColorMode = "priority") {
   if (mode === "status") {
     if (task.status === "concluido") return "bg-emerald-500";
-    if (task.status === "en_espera") return "bg-violet-400";
+    if (task.status === "en_espera") return "bg-amber-400";
     return "bg-blue-500";
   }
   if (mode === "client") {
@@ -138,6 +142,7 @@ function barColor(task: TaskRow, mode: GanttColorMode = "priority") {
     return ["bg-emerald-500", "bg-blue-500", "bg-violet-400", "bg-amber-400"][bucket] ?? "bg-emerald-500";
   }
   if (task.status === "concluido") return "bg-emerald-500";
+  if (task.status === "en_espera") return "bg-amber-400";
   if (task.priority === "alta") return "bg-rose-400";
   if (task.priority === "baja") return "bg-emerald-400";
   return "bg-amber-400";
@@ -451,7 +456,7 @@ function TaskActionListComponent({
         )}
       >
         {currentItems.length ? currentItems.map((task) => {
-          const deadline = formatDeadline(task.due_date);
+          const deadline = formatDeadline(task);
           const isBusy = busyId === task.id;
           return (
             <div
@@ -600,12 +605,13 @@ function TaskActionListComponent({
   );
 
   const renderCalendarPro = () => {
-    const total = items.length;
+    const operationalItems = items.filter((task) => task.status !== "concluido");
+    const total = operationalItems.length;
     const done = items.filter((task) => task.status === "concluido").length;
-    const urgent = items.filter((task) => task.priority === "alta").length;
+    const urgent = operationalItems.filter((task) => task.priority === "alta").length;
     const today = todayIsoDate();
-    const dueToday = items.filter((task) => task.due_date?.slice(0, 10) === today).length;
-    const percent = total ? Math.round((done / total) * 100) : 0;
+    const dueToday = operationalItems.filter((task) => task.status === "en_proceso" && task.due_date?.slice(0, 10) === today).length;
+    const percent = items.length ? Math.round((done / items.length) * 100) : 0;
 
     return (
       <Card className="rounded-[24px] border border-[#E5EAF1] bg-white p-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)]">

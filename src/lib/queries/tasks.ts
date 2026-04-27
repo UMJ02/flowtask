@@ -10,6 +10,7 @@ export interface TaskFiltersInput {
   priority?: string;
   department?: string;
   due?: string;
+  includeCompleted?: string | boolean;
 }
 
 
@@ -96,7 +97,9 @@ export async function getTasks(filters: TaskFiltersInput = {}): Promise<TaskSumm
   );
 
   if (filters.q) query = query.or(`title.ilike.%${filters.q}%,client_name.ilike.%${filters.q}%`);
+  const includeCompleted = filters.includeCompleted === true || filters.includeCompleted === "true" || filters.status === "concluido";
   if (filters.status) query = query.eq("status", filters.status);
+  else if (!includeCompleted) query = query.neq("status", "concluido");
   if (filters.priority) query = query.eq("priority", filters.priority);
   if (filters.department) {
     const departmentId = await getDepartmentIdByCodeCached(filters.department);
@@ -105,8 +108,8 @@ export async function getTasks(filters: TaskFiltersInput = {}): Promise<TaskSumm
 
   const today = new Date().toISOString().slice(0, 10);
   if (filters.due === "overdue") query = query.lt("due_date", today).not("status", "in", '(concluido,en_espera)');
-  if (filters.due === "today") query = query.eq("due_date", today).neq("status", "concluido");
-  if (filters.due === "soon") query = query.gte("due_date", today).neq("status", "concluido");
+  if (filters.due === "today") query = query.eq("due_date", today).not("status", "in", '(concluido,en_espera)');
+  if (filters.due === "soon") query = query.gte("due_date", today).not("status", "in", '(concluido,en_espera)');
   if (filters.due === "none") query = query.is("due_date", null);
 
   const { data, error } = await query;

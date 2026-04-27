@@ -11,15 +11,13 @@ import { getTaskAttachments } from '@/lib/queries/attachments';
 import { getTaskActivity } from '@/lib/queries/activity';
 import { getTaskAccessSummary } from '@/lib/queries/access-summary';
 import { getTaskChecklistItems } from '@/lib/queries/task-checklist';
+import { getTaskStandbyDays, getTaskStatusLabel, isTaskOverdue, isTaskWaiting } from '@/lib/tasks/status';
 import { safeServerCall } from '@/lib/runtime/safe-server';
 import { formatDate } from '@/lib/utils/dates';
 import { CalendarDays, CheckCircle2, Clock3, FileArchive, FileText, Flag, Folder, ListChecks, MessageCircle, Paperclip, Plus, Upload, UserRound } from 'lucide-react';
 
 function statusLabel(status?: string | null) {
-  if (status === 'concluido') return 'Concluido';
-  if (status === 'en_espera') return 'En espera';
-  if (status === 'pendiente') return 'Pendiente';
-  return 'En progreso';
+  return getTaskStatusLabel(status);
 }
 
 function priorityLabel(priority?: string | null) {
@@ -114,6 +112,8 @@ export default async function TaskDetailPage({
   const department = first(task.departments as any);
   const project = first(task.projects as any);
   const dueDate = task.due_date ? formatDate(task.due_date) : 'Sin fecha límite';
+  const taskIsOverdue = isTaskOverdue(task.due_date, task.status);
+  const standbyDays = isTaskWaiting(task.status) ? getTaskStandbyDays(task) : 0;
   const startDate = task.created_at ? formatDate(task.created_at) : 'No indicada';
   const progress = task.status === 'concluido' ? 100 : task.status === 'en_proceso' ? 65 : 25;
   const mainAssignee = assignees[0]?.profiles?.full_name || assignees[0]?.profiles?.email || assignableUsers[0]?.full_name || assignableUsers[0]?.email || 'Sin responsable asignado';
@@ -158,12 +158,11 @@ export default async function TaskDetailPage({
                   <DetailRow label="Responsable" value={<span className="inline-flex items-center gap-2"><span className="grid h-6 w-6 place-items-center rounded-full bg-[#ECFDF5] text-[10px] font-black text-[#16A36C]">{initials(mainAssignee)}</span>{mainAssignee}</span>} />
                   <DetailRow label="Fecha de inicio" value={<span className="inline-flex items-center gap-2"><CalendarDays className="h-4 w-4 text-[#64748B]" />{startDate}</span>} />
                   <DetailRow label="Cliente" value={<span className="inline-flex items-center gap-2"><UserRound className="h-4 w-4 text-[#64748B]" />{task.client_name || 'No indicado'}</span>} />
-                  <DetailRow label="Fecha límite" value={<span className="inline-flex items-center gap-2 text-rose-500"><CalendarDays className="h-4 w-4" />{dueDate}</span>} />
+                  <DetailRow label="Fecha límite" value={<span className={`inline-flex items-center gap-2 ${taskIsOverdue ? 'text-rose-500' : 'text-[#0F172A]'}`}><CalendarDays className="h-4 w-4" />{dueDate}{taskIsOverdue ? ' · Vencido' : ''}</span>} />
                   <DetailRow label="Departamento" value={department?.name || 'No indicado'} />
                   <DetailRow label="Progreso" value={<span className="inline-flex w-full max-w-[220px] items-center gap-3"><span className="h-2 flex-1 rounded-full bg-[#EEF2F7]"><span className="block h-2 rounded-full bg-[#16C784]" style={{ width: `${progress}%` }} /></span><span>{progress}%</span></span>} />
-                  <DetailRow label="Tiempo estimado" value="40h" />
+                  {isTaskWaiting(task.status) ? <DetailRow label="Tiempo en espera" value={`${standbyDays} día${standbyDays === 1 ? '' : 's'} en standby`} /> : null}
                   <DetailRow label="ID de tarea" value={`#T-${task.id.slice(0, 8).toUpperCase()}`} />
-                  <DetailRow label="Tiempo invertido" value="26h 30m" />
                 </dl>
               </div>
             </div>
@@ -204,8 +203,8 @@ export default async function TaskDetailPage({
           <SideCard title="Fechas importantes">
             <div className="space-y-4 text-sm">
               <div className="flex items-center justify-between gap-4"><span className="font-bold text-[#64748B]">Fecha de inicio</span><span className="font-black text-[#0F172A]">{startDate}</span></div>
-              <div className="flex items-center justify-between gap-4"><span className="font-bold text-[#64748B]">Fecha límite</span><span className="font-black text-rose-500">{dueDate}</span></div>
-              <div className="flex items-center justify-between gap-4"><span className="font-bold text-[#64748B]">Recordatorio</span><span className="font-black text-[#0F172A]">2 días antes</span></div>
+              <div className="flex items-center justify-between gap-4"><span className="font-bold text-[#64748B]">Fecha límite</span><span className={`font-black ${taskIsOverdue ? 'text-rose-500' : 'text-[#0F172A]'}`}>{dueDate}</span></div>
+              <div className="flex items-center justify-between gap-4"><span className="font-bold text-[#64748B]">Estado operativo</span><span className="font-black text-[#0F172A]">{isTaskWaiting(task.status) ? `En espera ${standbyDays}d` : taskIsOverdue ? 'Vencida' : 'Activa'}</span></div>
             </div>
             <a href={`/app/tasks/${task.id}/edit${queryString ? `?${queryString}` : ''}`} className="mt-5 inline-flex h-10 items-center gap-2 rounded-[14px] border border-[#E5EAF1] bg-white px-4 text-sm font-black text-[#0F172A] transition hover:bg-[#F8FAFC]"><Plus className="h-4 w-4" /> Agregar recordatorio</a>
           </SideCard>

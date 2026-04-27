@@ -17,6 +17,7 @@ interface TaskSearchPanelProps {
     department?: string;
     due?: string;
     view?: string;
+    includeCompleted?: string;
   };
 }
 
@@ -48,14 +49,15 @@ export function TaskSearchPanel({ filters }: TaskSearchPanelProps) {
     if (filters.priority) chips.push({ key: 'priority', label: `Prioridad: ${priorityLabels[filters.priority] ?? filters.priority}` });
     if (filters.department) chips.push({ key: 'department', label: `Área: ${getDepartmentLabel(filters.department)}` });
     if (filters.due) chips.push({ key: 'due', label: `Fecha: ${dueLabels[filters.due] ?? filters.due}` });
+    if (filters.includeCompleted === 'true') chips.push({ key: 'includeCompleted', label: 'Incluye concluidas' });
     return chips;
-  }, [filters.department, filters.due, filters.priority, filters.status]);
+  }, [filters.department, filters.due, filters.includeCompleted, filters.priority, filters.status]);
 
   return (
     <form method="get" className="space-y-4 rounded-[24px] border border-[#E5EAF1] bg-white p-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
       {!!filters.view && <input type="hidden" name="view" value={filters.view} />}
 
-      <div className="grid gap-3 xl:grid-cols-[minmax(260px,1.4fr)_auto_auto_auto_auto_auto] xl:items-center">
+      <div className="grid gap-3 xl:grid-cols-[minmax(260px,1.4fr)_auto_auto_auto_auto_auto_auto] xl:items-center">
         <label className="relative block">
           <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
           <Input
@@ -64,6 +66,11 @@ export function TaskSearchPanel({ filters }: TaskSearchPanelProps) {
             name="q"
             placeholder="Buscar tarea, cliente o palabra clave..."
           />
+        </label>
+
+        <label className="inline-flex h-12 items-center gap-2 rounded-[16px] border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-slate-700">
+          <input type="checkbox" name="includeCompleted" value="true" defaultChecked={filters.includeCompleted === 'true'} className="h-4 w-4 rounded border-slate-300 text-[#16C784]" />
+          Incluir concluidas
         </label>
 
         <Button className="h-12 rounded-[16px] border-[#E5EAF1] bg-white px-4 text-[#0F172A]" type="submit" variant="secondary">

@@ -7,7 +7,7 @@ import { AlertCircle, CheckCircle2, ChevronDown, ChevronUp, Clock3, FolderOpen, 
 import { createClient } from "@/lib/supabase/client";
 import { Card } from "@/components/ui/card";
 import { taskDetailRoute } from "@/lib/navigation/routes";
-import { getTaskStatusUpdatePayload, todayIsoDate } from "@/lib/tasks/status";
+import { getTaskStatusUpdatePayload } from "@/lib/tasks/status";
 
 export type TaskItem = {
   id: string;
@@ -338,7 +338,7 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery, work
     const previousTasks = boardTasks;
     const previousStatusOverrides = statusOverrides;
     const previousOrderOverrides = orderOverrides;
-    const nextTasks = normalizedTasks.map((item) => (item.id === taskId ? { ...item, status: nextStatus, due_date: nextStatus === "en_proceso" || nextStatus === "concluido" ? todayIsoDate() : item.due_date } : item));
+    const nextTasks = normalizedTasks.map((item) => (item.id === taskId ? { ...item, status: nextStatus } : item));
     const nextStatusOverrides = { ...statusOverrides, [taskId]: nextStatus };
     const nextOrderOverrides = buildNextOrderOverrides(orderOverrides, taskId, nextStatus, beforeTaskId);
 

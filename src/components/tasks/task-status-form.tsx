@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { generateShareToken } from "@/lib/utils/tokens";
-import { getTaskStatusUpdatePayload, todayIsoDate } from "@/lib/tasks/status";
+import { getTaskStatusUpdatePayload } from "@/lib/tasks/status";
 
 interface TaskStatusFormProps {
   taskId: string;
@@ -55,7 +55,7 @@ export function TaskStatusForm({ taskId, status, dueDate, shareEnabled, shareTok
     const { data: authData } = await supabase.auth.getUser();
     const user = authData.user;
 
-    const nextDueDate = currentStatus === "en_proceso" || currentStatus === "concluido" ? todayIsoDate() : (currentDate || null);
+    const nextDueDate = currentDate || null;
     const nextShareToken = currentShare ? shareToken ?? generateShareToken() : null;
 
     const { error: updateError } = await supabase
@@ -93,7 +93,7 @@ export function TaskStatusForm({ taskId, status, dueDate, shareEnabled, shareTok
 
     setCurrentDate(nextDueDate ?? "");
     onSaved?.({ status: currentStatus, dueDate: nextDueDate, shareEnabled: currentShare, shareToken: nextShareToken });
-    setMessage(currentStatus === "en_proceso" || currentStatus === "concluido" ? "Cambios aplicados. La fecha se actualizó al día del cambio." : "Cambios aplicados.");
+    setMessage("Cambios aplicados. La fecha límite se conserva salvo que la cambies manualmente.");
     setIsSaving(false);
     startRefresh(() => router.refresh());
   };
@@ -104,7 +104,7 @@ export function TaskStatusForm({ taskId, status, dueDate, shareEnabled, shareTok
     <form className="h-full space-y-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 transition-all duration-200" onSubmit={handleSave}>
       <div>
         <p className="text-sm font-medium text-slate-800">Actualizar seguimiento</p>
-        <p className="text-xs text-slate-500">Una tarea en espera conserva su tiempo. Si pasa a proceso o concluida, la fecha se ajusta al día del cambio.</p>
+        <p className="text-xs text-slate-500">Una tarea en espera queda en standby y no cuenta como vencida. La fecha solo cambia si la editas manualmente.</p>
       </div>
       <div className="grid gap-3 md:grid-cols-2">
         <Select value={currentStatus} onChange={(event) => setCurrentStatus(event.target.value)} disabled={!canEdit || isBusy}>

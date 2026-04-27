@@ -109,7 +109,7 @@ function formatDueLabel(rawValue?: string | null) {
 
 export async function getReportsOverview(): Promise<ReportsOverview> {
   const [tasks, projects, clients, activity] = await Promise.all([
-    getTasks({}),
+    getTasks({ includeCompleted: true }),
     getProjects({}),
     getClients(),
     getRecentActivitySummary(24),
@@ -122,15 +122,9 @@ export async function getReportsOverview(): Promise<ReportsOverview> {
   const today = startOfToday();
   const weekEnd = endOfWeek(today, { weekStartsOn: 1 });
   const activeTasks = typedTasks.filter((task) => task.status !== "concluido");
-  const overdueTasks = activeTasks.filter((task) => {
-    if (!task.due_date) return false;
-    try {
-      return parseISO(task.due_date) < today;
-    } catch {
-      return false;
-    }
-  });
-  const dueToday = activeTasks.filter((task) => {
+  const operationalTasks = activeTasks.filter((task) => task.status !== "en_espera");
+  const overdueTasks = activeTasks.filter((task) => isTaskOverdue(task.due_date, task.status));
+  const dueToday = operationalTasks.filter((task) => {
     if (!task.due_date) return false;
     try {
       return isToday(parseISO(task.due_date));
@@ -138,7 +132,7 @@ export async function getReportsOverview(): Promise<ReportsOverview> {
       return false;
     }
   });
-  const dueThisWeek = activeTasks.filter((task) => {
+  const dueThisWeek = operationalTasks.filter((task) => {
     if (!task.due_date) return false;
     try {
       return isWithinInterval(parseISO(task.due_date), { start: today, end: weekEnd });
@@ -160,7 +154,7 @@ export async function getReportsOverview(): Promise<ReportsOverview> {
     ? Math.round((typedTasks.filter((task) => task.status === "concluido").length / typedTasks.length) * 100)
     : 0;
 
-  const focusTasks = [...activeTasks]
+  const focusTasks = [...operationalTasks]
     .sort((a, b) => {
       if (!a.due_date && !b.due_date) return 0;
       if (!a.due_date) return 1;

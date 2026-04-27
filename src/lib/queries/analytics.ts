@@ -132,7 +132,7 @@ export const getWorkspaceAnalyticsSummary = cache(async (): Promise<WorkspaceAna
     getWorkspaceOnboardingSummary(),
     getUsageEventMetrics(activeOrganizationId),
     getRecentActivitySummary(10),
-    getTasks({}),
+    getTasks({ includeCompleted: true }),
   ]);
 
   const readinessScore = onboarding?.score ?? 0;

@@ -40,7 +40,7 @@ export async function getDashboardData() {
     applyWorkspaceScope(supabase.from("tasks").select("id", { count: "exact", head: true }).eq("status", "concluido"), user.id, activeOrganizationId),
     applyWorkspaceScope(supabase.from("tasks").select("id", { count: "exact", head: true }).eq("status", "en_espera"), user.id, activeOrganizationId),
     applyWorkspaceScope(
-      supabase.from("tasks").select("id", { count: "exact", head: true }).neq("status", "concluido").lt("due_date", today.toISOString().slice(0, 10)),
+      supabase.from("tasks").select("id", { count: "exact", head: true }).not("status", "in", '(concluido,en_espera)').lt("due_date", today.toISOString().slice(0, 10)),
       user.id,
       activeOrganizationId,
     ),
@@ -48,7 +48,7 @@ export async function getDashboardData() {
       supabase
         .from("tasks")
         .select("id", { count: "exact", head: true })
-        .neq("status", "concluido")
+        .not("status", "in", '(concluido,en_espera)')
         .gte("due_date", today.toISOString().slice(0, 10))
         .lte("due_date", in3Days.toISOString().slice(0, 10)),
       user.id,
@@ -94,7 +94,7 @@ export async function getDashboardData() {
       supabase
         .from("tasks")
         .select("id,title,status,due_date,client_name,project_id")
-        .neq("status", "concluido")
+        .not("status", "in", '(concluido,en_espera)')
         .lt("due_date", today.toISOString().slice(0, 10))
         .order("due_date", { ascending: true })
         .limit(4),
@@ -105,7 +105,7 @@ export async function getDashboardData() {
       supabase
         .from("tasks")
         .select("id,title,status,due_date,client_name,project_id")
-        .neq("status", "concluido")
+        .not("status", "in", '(concluido,en_espera)')
         .eq("due_date", today.toISOString().slice(0, 10))
         .order("due_date", { ascending: true })
         .limit(4),
@@ -116,7 +116,7 @@ export async function getDashboardData() {
       supabase
         .from("tasks")
         .select("id,title,status,due_date,client_name,project_id")
-        .neq("status", "concluido")
+        .not("status", "in", '(concluido,en_espera)')
         .gt("due_date", today.toISOString().slice(0, 10))
         .lte("due_date", in3Days.toISOString().slice(0, 10))
         .order("due_date", { ascending: true })
