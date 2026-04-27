@@ -329,9 +329,9 @@ export function TaskForm({
   const editorTitle = isEdit ? "Editar tarea" : "Nueva tarea";
 
   return (
-    <form className="-m-4 bg-[#F7F9FC] px-4 pb-8 pt-2 sm:-m-6 sm:px-6 lg:-m-8 lg:px-8" onSubmit={handleSubmit(onSubmit)}>
-      <div className="sticky top-0 z-20 -mx-4 mb-5 border-b border-slate-200/80 bg-[#F7F9FC]/94 px-4 py-3 backdrop-blur-xl sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
-        <div className="mx-auto flex max-w-[1480px] flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+    <form className="bg-[#F7F9FC] pb-8" onSubmit={handleSubmit(onSubmit)}>
+      <div className="relative z-10 mb-6 rounded-[28px] border border-[#E5EAF1] bg-white/95 px-5 py-5 shadow-[0_14px_32px_rgba(15,23,42,0.045)] backdrop-blur-xl sm:px-6 lg:px-7">
+        <div className="mx-auto flex max-w-[1480px] flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex min-w-0 items-center gap-3">
             <Link href={cancelHref} className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#050B18] text-white shadow-[0_14px_28px_rgba(5,11,24,0.18)] transition hover:-translate-y-0.5" aria-label="Volver">
               <ArrowLeft className="h-5 w-5" />
