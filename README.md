@@ -1,4 +1,6 @@
-# FlowTask — V58.15.3.9 Task Editor Project Client Media
+# FlowTask — V58.15.4 Media System Final
+
+Media final para proyectos y clientes: imagen de proyecto en listado/detalle/form, avatar de cliente en registros y avatares, con migración `projects.image_url` y `clients.avatar_url` ya aplicada.
 
 Workspace unificado: Radar inteligente, KPIs, Kanban central y widgets rápidos sobre la base estable V58.12.6.
 

@@ -170,9 +170,14 @@ export function ProjectForm({
 
     const normalizedClientName = clientName;
 
-    let imageUrl = projectImagePreview ? (initialData?.imageUrl ?? null) : null;
+    let imageUrl: string | null = projectImagePreview ? (initialData?.imageUrl ?? null) : null;
 
     if (projectImageFile) {
+      if (projectImageFile.size > 5 * 1024 * 1024) {
+        setServerError("La imagen del proyecto debe pesar menos de 5 MB.");
+        setMessage(null);
+        return;
+      }
       const extension = projectImageFile.name.split(".").pop()?.toLowerCase() || "jpg";
       const safeProjectId = projectId ?? `new-${Date.now()}`;
       const path = `projects/${formOrganizationId ?? user.id}/${safeProjectId}/${Date.now()}.${extension}`;
@@ -183,6 +188,7 @@ export function ProjectForm({
         return;
       }
       imageUrl = supabase.storage.from("attachments").getPublicUrl(path).data.publicUrl;
+      setValue("imageUrl", imageUrl ?? "", { shouldDirty: true });
     }
 
     const payload = {
@@ -196,7 +202,7 @@ export function ProjectForm({
       is_collaborative: values.isCollaborative,
       share_enabled: values.isCollaborative,
       country: (countryOptions.find((item) => item.name === values.country || item.code === values.country)?.name ?? values.country) || null,
-      ...(imageUrl ? { image_url: imageUrl } : {}),
+      image_url: imageUrl,
     };
 
     let createdProjectId: string | null = null;
@@ -331,7 +337,7 @@ export function ProjectForm({
                   <X className="h-4 w-4" /> Quitar imagen
                 </button>
               ) : null}
-              <p className="text-xs text-slate-500">Se muestra en la vista de proyecto y en el listado de proyectos.</p>
+              <p className="text-xs text-slate-500">Se muestra en la vista de proyecto y en el listado de proyectos. Máximo recomendado: 5 MB.</p>
             </div>
           </div>
         </div>
@@ -396,7 +402,7 @@ export function ProjectForm({
           type="button"
           variant="secondary"
           disabled={isBusy}
-          onClick={() =>
+          onClick={() => {
             reset({
               title: initialData?.title ?? "",
               description: initialData?.description ?? "",
@@ -407,8 +413,10 @@ export function ProjectForm({
               isCollaborative: initialData?.isCollaborative ?? false,
               country: normalizeCountryValue(initialData?.country, countryOptions),
               imageUrl: initialData?.imageUrl ?? "",
-            })
-          }
+            });
+            setProjectImageFile(null);
+            setProjectImagePreview(initialData?.imageUrl ?? "");
+          }}
         >
           Restablecer
         </Button>

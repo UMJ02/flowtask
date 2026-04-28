@@ -255,6 +255,7 @@ export function ClientManagerPanel({ items, initialQuery = '' }: { items: Client
       if (duplicate) throw new Error('Ya existe un registro con ese nombre dentro de este workspace.');
       let avatarUrl = draft.avatarUrl || null;
       if (clientAvatarFile) {
+        if (clientAvatarFile.size > 5 * 1024 * 1024) throw new Error('La foto del cliente debe pesar menos de 5 MB.');
         const extension = clientAvatarFile.name.split('.').pop()?.toLowerCase() || 'jpg';
         const path = `clients/${workspace.activeOrganizationId ?? workspace.user.id}/${draft.id ?? `new-${Date.now()}`}/${Date.now()}.${extension}`;
         const upload = await workspace.supabase.storage.from('attachments').upload(path, clientAvatarFile, { upsert: true, contentType: clientAvatarFile.type || 'image/jpeg' });
