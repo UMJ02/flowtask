@@ -14,8 +14,8 @@ const labels: Record<string, string> = {
   task_status_changed: "Estado cambiado",
   task_assignee_added: "Responsable agregado",
   task_assignee_removed: "Responsable removido",
-  checklist_item_added: "Punto agregado al checklist",
-  checklist_item_completed: "Punto completado",
+  checklist_item_added: "Nuevo punto agregado al checklist",
+  checklist_item_completed: "Punto del checklist completado",
   checklist_item_reopened: "Punto reabierto",
   checklist_item_deleted: "Punto eliminado del checklist",
   file_uploaded: "Archivo subido",
@@ -39,8 +39,8 @@ const labels: Record<string, string> = {
   client_permission_updated: "Permiso de cliente actualizado",
   client_permission_deleted: "Permiso de cliente eliminado",
   attachment_uploaded: "Archivo subido",
-  attachment_deleted: "Adjunto eliminado",
-  comment_added: "Nuevo comentario",
+  attachment_deleted: "Archivo eliminado",
+  comment_added: "Nuevo comentario agregado",
   reminder_sent: "Recordatorio disparado",
 };
 
@@ -128,8 +128,8 @@ export function ActivityTimeline({
   }, [defaultVisibleCount, expanded, items, shouldClamp]);
 
   return (
-    <Card className={compact ? "rounded-[24px] border border-slate-200 bg-white/[0.96] p-4 shadow-[0_10px_26px_rgba(15,23,42,0.04)]" : undefined}>
-      <button type="button" onClick={() => setOpen((value) => !value)} className="flex w-full items-center justify-between gap-3 rounded-2xl bg-slate-50/80 px-3 py-3 text-left transition hover:bg-slate-100">
+    <Card className={compact ? "rounded-[22px] border border-[#FEE2E2] bg-white p-4 shadow-[0_10px_24px_rgba(15,23,42,0.035)]" : undefined}>
+      <button type="button" onClick={() => setOpen((value) => !value)} className="flex w-full items-center justify-between gap-3 rounded-[18px] bg-[#FFF7F7] px-3 py-3 text-left transition hover:bg-slate-100">
         <div>
           <h3 className="text-base font-semibold text-slate-900">{title}</h3>
           <p className="text-sm text-slate-500">{description}</p>
@@ -149,7 +149,7 @@ export function ActivityTimeline({
                         <span className={`inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold ring-1 ${resolveEntityStyle(item)}`}>
                           {resolveEntityLabel(item)}
                         </span>
-                        <p className="text-sm font-medium text-slate-900">{labels[item.action] ?? item.action}</p>
+                        <p className="text-sm font-medium text-slate-900">{labels[item.action] ?? "Actividad registrada"}</p>
                       </div>
                       <p className="text-[11px] text-slate-500">{formatDate(item.created_at)}</p>
                     </div>
@@ -160,7 +160,7 @@ export function ActivityTimeline({
                       </p>
                     ) : null}
                     {!compact && detail.description ? <p className="mt-2 text-sm text-slate-500">{detail.description}</p> : null}
-                    {detail.status ? <p className={compact ? "mt-1.5 text-[11px] text-slate-500" : "mt-2 text-xs text-slate-500"}>Estado: {detail.status}</p> : null}
+                    {detail.status ? <p className={compact ? "mt-1.5 text-[11px] text-slate-500" : "mt-2 text-xs text-slate-500"}>Estado: {detail.status?.replaceAll("_", " ")}</p> : null}
                   </div>
                 );
               })

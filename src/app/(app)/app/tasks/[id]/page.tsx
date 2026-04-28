@@ -51,23 +51,43 @@ function fileTone(fileName?: string | null) {
   return { icon: FileText, className: 'bg-blue-50 text-blue-500', type: 'FILE' };
 }
 
-function humanActivityLabel(action?: string | null) {
+function humanStatus(status?: string | null) {
   const labels: Record<string, string> = {
+    en_espera: 'En espera',
+    en_proceso: 'En progreso',
+    concluido: 'Concluido',
+    completado: 'Completado',
+    vencida: 'Vencida',
+    pendiente: 'Pendiente',
+  };
+  return status ? labels[status] ?? status.replaceAll('_', ' ') : 'Sin estado';
+}
+
+function humanActivityLabel(action?: string | null, metadata?: Record<string, unknown> | null) {
+  if (action === 'task_status_changed' && typeof metadata?.status === 'string') {
+    return `Estado cambiado a ${humanStatus(metadata.status)}`;
+  }
+
+  const labels: Record<string, string> = {
+    task_created: 'Tarea creada',
     task_updated: 'Tarea actualizada',
     task_status_changed: 'Estado cambiado',
-    checklist_item_added: 'Punto agregado al checklist',
-    checklist_item_completed: 'Punto completado',
-    checklist_item_reopened: 'Punto reabierto',
+    checklist_item_added: 'Nuevo punto agregado al checklist',
+    checklist_item_completed: 'Punto del checklist completado',
+    checklist_item_reopened: 'Punto del checklist reabierto',
     checklist_item_deleted: 'Punto eliminado del checklist',
-    comment_added: 'Nuevo comentario',
+    comment_added: 'Nuevo comentario agregado',
     file_uploaded: 'Archivo subido',
+    file_deleted: 'Archivo eliminado',
     attachment_uploaded: 'Archivo subido',
+    attachment_deleted: 'Archivo eliminado',
     assignee_changed: 'Responsable actualizado',
     task_assignee_added: 'Responsable agregado',
     task_assignee_removed: 'Responsable removido',
+    deadline_changed: 'Fecha límite actualizada',
   };
-  if (!action) return 'Movimiento registrado';
-  return labels[action] ?? action.replaceAll('_', ' ').replace(/^./, (value) => value.toUpperCase());
+  if (!action) return 'Actividad registrada';
+  return labels[action] ?? 'Actividad registrada';
 }
 
 function humanActorName(item: any) {
@@ -90,16 +110,16 @@ function formatBytes(bytes?: number | null) {
 
 function SideCard({ title, action, children, tone = 'white' }: { title: string; action?: React.ReactNode; children: React.ReactNode; tone?: 'white' | 'green' | 'blue' | 'purple' | 'mint' }) {
   const toneClass = tone === 'green'
-    ? 'border-emerald-100 bg-gradient-to-br from-white via-white to-emerald-50/90'
+    ? 'border-[#D7F5E7] bg-[#F2FBF7]'
     : tone === 'blue'
-      ? 'border-blue-100 bg-gradient-to-br from-white via-white to-blue-50/90'
+      ? 'border-[#DBEAFE] bg-[#EFF6FF]'
       : tone === 'purple'
-        ? 'border-violet-100 bg-gradient-to-br from-white via-white to-violet-50/90'
+        ? 'border-[#E9D5FF] bg-[#FAF7FF]'
         : tone === 'mint'
-          ? 'border-teal-100 bg-gradient-to-br from-white via-white to-teal-50/90'
+          ? 'border-[#BBF7D0] bg-[#ECFDF5]'
           : 'border-[#E5EAF1] bg-white';
   return (
-    <section className={`rounded-[24px] border p-6 shadow-[0_10px_30px_rgba(15,23,42,0.04)] ${toneClass}`}>
+    <section className={`rounded-[22px] border p-5 shadow-[0_10px_24px_rgba(15,23,42,0.035)] ${toneClass}`}>
       <div className="flex items-center justify-between gap-3">
         <h3 className="text-base font-black text-[#0F172A]">{title}</h3>
         {action}
@@ -150,22 +170,24 @@ export default async function TaskDetailPage({
   const taskIsOverdue = isTaskOverdue(task.due_date, task.status);
   const standbyDays = isTaskWaiting(task.status) ? getTaskStandbyDays(task) : 0;
   const startDate = task.created_at ? formatDate(task.created_at) : 'No indicada';
-  const progress = task.status === 'concluido' ? 100 : task.status === 'en_proceso' ? 65 : 25;
+  const checklistTotal = checklistItems.length;
+  const checklistDone = checklistItems.filter((item) => item.done).length;
+  const progress = checklistTotal ? Math.round((checklistDone / checklistTotal) * 100) : task.status === 'concluido' ? 100 : task.status === 'en_proceso' ? 65 : 25;
   const mainAssignee = assignees[0]?.profiles?.full_name || assignees[0]?.profiles?.email || assignableUsers[0]?.full_name || assignableUsers[0]?.email || 'Sin responsable asignado';
 
   return (
-    <div className="min-h-screen space-y-6 rounded-[30px] bg-[#F6F8FC] p-0 sm:p-1">
+    <div className="min-h-screen space-y-6 bg-[#F6F8FC] px-3 py-3 sm:px-4 sm:py-4 xl:px-6 xl:py-6">
       <TaskDetailSummary task={task} currentQuery={queryString} />
 
-      <div className="grid grid-cols-1 gap-6 xl:grid-cols-12">
-        <main className="min-w-0 space-y-6 xl:col-span-8">
-          <section id="details" className="overflow-hidden rounded-[24px] border border-emerald-100 bg-gradient-to-br from-white via-white to-emerald-50/60 shadow-[0_10px_30px_rgba(15,23,42,0.04)]">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,70fr)_minmax(320px,30fr)]">
+        <main className="min-w-0 space-y-6">
+          <section id="details" className="overflow-hidden rounded-[24px] border border-[#E5EAF1] bg-white shadow-[0_10px_30px_rgba(15,23,42,0.04)]">
             <div className="flex gap-7 overflow-x-auto border-b border-[#E5EAF1] px-7">
               {[
                 { id: 'details', label: 'Detalles', Icon: CheckCircle2, count: null },
-                { id: 'checklist', label: 'Checklist', Icon: ListChecks, count: '5/8' },
-                { id: 'comments', label: 'Comentarios', Icon: MessageCircle, count: comments.length || 3 },
-                { id: 'attachments', label: 'Adjuntos', Icon: Paperclip, count: attachments.length || 4 },
+                { id: 'checklist', label: 'Checklist', Icon: ListChecks, count: checklistTotal ? `${checklistDone}/${checklistTotal}` : null },
+                { id: 'comments', label: 'Comentarios', Icon: MessageCircle, count: comments.length || null },
+                { id: 'attachments', label: 'Adjuntos', Icon: Paperclip, count: attachments.length || null },
                 { id: 'activity', label: 'Bitácora', Icon: Clock3, count: null },
               ].map(({ id: tabId, label, Icon, count }, index) => (
                 <a key={tabId} href={`#${tabId}`} className={`relative flex h-16 shrink-0 items-center gap-2 text-sm font-black transition ${index === 0 ? 'text-[#16A36C]' : 'text-[#64748B] hover:text-[#0F172A]'}`}>
@@ -204,10 +226,10 @@ export default async function TaskDetailPage({
 
           <TaskChecklistCard taskId={task.id} initialItems={checklistItems} canManage={access.canEdit || access.isAssignee} />
 
-          <section className="rounded-[24px] border border-emerald-100 bg-emerald-50/70 p-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
+          <section className="rounded-[24px] border border-[#FDECC8] bg-[#FFF8E8] p-6 shadow-[0_10px_30px_rgba(15,23,42,0.04)]">
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
               <div>
-                <p className="text-xs font-black uppercase tracking-[0.18em] text-emerald-700">Escalar trabajo</p>
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-[#B45309]">Escalar trabajo</p>
                 <h2 className="mt-1 text-lg font-black text-[#0F172A]">¿Esta tarea ya parece un proyecto?</h2>
                 <p className="mt-1 text-sm font-semibold text-[#64748B]">Si tiene checklist largo, varios responsables, dependencias o muchas fechas, conviértela en proyecto para planificarla con Timeline y Builder.</p>
               </div>
@@ -217,18 +239,18 @@ export default async function TaskDetailPage({
 
           <TaskQuickCommentsCard taskId={task.id} comments={comments as any[]} canComment={access.canComment} />
 
-          <section id="attachments" className="rounded-[24px] border border-blue-100 bg-gradient-to-br from-white via-white to-blue-50/70 p-7 shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
+          <section id="attachments" className="rounded-[24px] border border-[#DBEAFE] bg-[#EFF6FF] p-6 shadow-[0_10px_30px_rgba(15,23,42,0.04)]">
             <EntityAttachments entityType="task" entityId={task.id} attachments={attachments} canManage={access.canUploadAttachments} />
           </section>
 
           {access.canViewActivity ? (
-            <section id="activity" className="rounded-[24px] border border-rose-100 bg-gradient-to-br from-white via-white to-rose-50/70 p-7 shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
+            <section id="activity" className="rounded-[24px] border border-[#FEE2E2] bg-[#FFF7F7] p-6 shadow-[0_10px_30px_rgba(15,23,42,0.04)]">
               <ActivityTimeline items={activity} title="Bitácora completa" description="Historial cronológico de cambios, responsables, comentarios y adjuntos." compact defaultVisibleCount={8} expandLabel="Ver más movimientos" collapseLabel="Ver menos movimientos" />
             </section>
           ) : null}
         </main>
 
-        <aside className="space-y-5 xl:sticky xl:top-28 xl:col-span-4 xl:self-start">
+        <aside className="space-y-5 xl:sticky xl:top-24 xl:self-start">
           <TaskAssigneesPanel
             taskId={task.id}
             options={assignableUsers as any[]}
@@ -280,7 +302,7 @@ export default async function TaskDetailPage({
                 <div key={item.id ?? index} className="flex gap-3">
                   <div className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#ECFDF5] text-[#16C784]"><Clock3 className="h-4 w-4" /></div>
                   <div className="min-w-0">
-                    <p className="text-sm font-black text-[#0F172A]">{humanActorName(item)} · {humanActivityLabel(item.action)}</p>
+                    <p className="text-sm font-black text-[#0F172A]">{humanActorName(item)} · {humanActivityLabel(item.action, item.metadata)}</p>
                     <p className="text-xs font-semibold text-[#64748B]">{item.created_at ? formatDate(item.created_at) : 'Sin fecha'}</p>
                   </div>
                 </div>

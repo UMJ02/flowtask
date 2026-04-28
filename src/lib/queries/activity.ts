@@ -40,7 +40,15 @@ async function getActivityByEntity(entityType: string, entityId: string) {
 }
 
 export async function getTaskActivity(taskId: string) {
-  return getActivityByEntity("task", taskId);
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("activity_logs")
+    .select(BASE_SELECT)
+    .or(`and(entity_type.eq.task,entity_id.eq.${taskId}),task_id.eq.${taskId}`)
+    .order("created_at", { ascending: false })
+    .limit(24);
+
+  return (data ?? []) as ActivityItem[];
 }
 
 export async function getProjectActivity(projectId: string) {
