@@ -6,7 +6,7 @@ import type { ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { getClientWorkspaceContext, findWorkspaceClientId, fetchWorkspaceClientsDirectory, fetchWorkspaceCountries, fetchWorkspaceDepartments, fetchWorkspaceProjects } from "@/lib/supabase/workspace-client";
+import { getClientWorkspaceContext, findWorkspaceClientId, fetchWorkspaceClientsDirectory, fetchWorkspaceCountries, fetchWorkspaceDepartments } from "@/lib/supabase/workspace-client";
 import { resolveProjectEntityContext, validateTaskProjectClientIntegrity } from "@/lib/security/entity-integrity";
 import { getClientAccessSummary, hasClientAccess } from "@/lib/security/client-access";
 import { TASK_STATUSES } from "@/lib/constants/task-status";
@@ -61,15 +61,15 @@ export function TaskForm({
   const [message, setMessage] = useState<string | null>(null);
   const [serverError, setServerError] = useState<string | null>(null);
   const [isRefreshing, startRefresh] = useTransition();
-  const [projects, setProjects] = useState<Array<{ id: string; title: string; status: string }>>([]);
   const [departmentOptions, setDepartmentOptions] = useState<Array<{ id: string; code: string; name: string }>>([]);
   const [countryOptions, setCountryOptions] = useState<Array<{ id: string; code: string; name: string }>>([]);
   const [clientOptions, setClientOptions] = useState<Array<{ id: string; name: string }>>([]);
-  const [loadingProjects, setLoadingProjects] = useState(true);
   const [workspaceOwnerLabel, setWorkspaceOwnerLabel] = useState("Cargando usuario…");
   const [quickTipIndex, setQuickTipIndex] = useState(0);
   const router = useRouter();
   const isEdit = Boolean(taskId);
+  const fixedProjectId = initialData?.projectId ?? "";
+  const isProjectTask = Boolean(fixedProjectId);
 
   const {
     register,
@@ -158,33 +158,27 @@ export function TaskForm({
   useEffect(() => {
     let active = true;
     const loadRegistryOptions = async () => {
-      setLoadingProjects(true);
       const workspace = await getClientWorkspaceContext();
       if (!workspace.user) {
         if (active) {
-          setProjects([]);
           setDepartmentOptions([]);
           setCountryOptions([]);
           setClientOptions([]);
           setWorkspaceOwnerLabel("Sin sesión");
-          setLoadingProjects(false);
         }
         return;
       }
-      const [projectRows, departmentRows, countryRows, clientRows, profileRes] = await Promise.all([
-        fetchWorkspaceProjects(workspace.supabase, workspace.user.id, isEdit ? (initialData?.organizationId ?? null) : workspace.activeOrganizationId, "edit"),
+      const [departmentRows, countryRows, clientRows, profileRes] = await Promise.all([
         fetchWorkspaceDepartments(workspace.supabase, workspace.user.id, isEdit ? (initialData?.organizationId ?? null) : workspace.activeOrganizationId),
         fetchWorkspaceCountries(workspace.supabase, workspace.user.id, isEdit ? (initialData?.organizationId ?? null) : workspace.activeOrganizationId),
         fetchWorkspaceClientsDirectory(workspace.supabase, workspace.user.id, isEdit ? (initialData?.organizationId ?? null) : workspace.activeOrganizationId),
         workspace.supabase.from("profiles").select("full_name,email").eq("id", workspace.user.id).maybeSingle(),
       ]);
       if (active) {
-        setProjects(projectRows);
         setDepartmentOptions(appendMissingDepartmentOption(departmentRows, initialData?.department));
         setCountryOptions(appendMissingCountryOption(countryRows, initialData?.country));
         setClientOptions(clientRows);
         setWorkspaceOwnerLabel(getProfileLabel(profileRes.data ?? { email: workspace.user.email ?? null }));
-        setLoadingProjects(false);
       }
     };
     void loadRegistryOptions();
@@ -228,7 +222,7 @@ export function TaskForm({
     const clientName = values.clientName?.trim() || null;
     const clientId = await findWorkspaceClientId(supabase, user.id, formOrganizationId, clientName);
     const access = await getClientAccessSummary(supabase as any, user.id, formOrganizationId);
-    const selectedProject = await resolveProjectEntityContext(supabase as any, values.projectId || null);
+    const selectedProject = await resolveProjectEntityContext(supabase as any, fixedProjectId || null);
 
     if (formOrganizationId && clientId && !hasClientAccess(access, clientId, "edit")) {
       setServerError("No tienes permisos para crear o editar tareas sobre ese cliente.");
@@ -236,7 +230,7 @@ export function TaskForm({
       return;
     }
 
-    if (values.projectId) {
+    if (fixedProjectId) {
       if (!selectedProject) {
         setServerError("El proyecto seleccionado no existe o no está disponible en tu workspace.");
         setMessage(null);
@@ -267,12 +261,12 @@ export function TaskForm({
       description: values.description || null,
       status: values.status,
       priority: values.priority,
-      department_id: departmentId,
       client_name: integrity.resolvedClientName,
       client_id: integrity.resolvedClientId,
       due_date: values.dueDate || null,
-      project_id: values.projectId || null,
-      country: (countryOptions.find((item) => item.name === values.country || item.code === values.country)?.name ?? values.country) || null,
+      project_id: fixedProjectId || null,
+      department_id: selectedProject?.departmentId ?? departmentId,
+      country: selectedProject?.country ?? ((countryOptions.find((item) => item.name === values.country || item.code === values.country)?.name ?? values.country) || null),
     };
 
     const result = isEdit
@@ -303,7 +297,7 @@ export function TaskForm({
           status: payload.status,
           client_id: payload.client_id ?? undefined,
           client_name: payload.client_name ?? undefined,
-          project_id: values.projectId || undefined,
+          project_id: fixedProjectId || undefined,
           organization_id: formOrganizationId,
           country: payload.country ?? undefined,
         },
@@ -419,36 +413,42 @@ export function TaskForm({
                 {TASK_PRIORITIES.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
               </Select>
             </FieldCard>
-            <FieldCard label="Proyecto" icon={<FolderKanban className="h-4 w-4" />} helper={loadingProjects ? "Cargando proyectos del workspace…" : "Opcional: asigna esta tarea a un proyecto activo."}>
-              <Select {...register("projectId")} className="h-12 rounded-2xl border-[#E5EAF1] bg-white font-semibold">
-                <option value="">Sin proyecto</option>
-                {projects.map((item) => <option key={item.id} value={item.id}>{item.title}</option>)}
-              </Select>
-            </FieldCard>
+            {isProjectTask ? (
+              <div className="rounded-[20px] border border-emerald-200 bg-emerald-50/80 p-4 shadow-[0_12px_30px_rgba(15,23,42,0.035)] md:col-span-2">
+                <p className="text-xs font-black uppercase tracking-[0.16em] text-emerald-700">Tarea de proyecto</p>
+                <p className="mt-2 text-sm font-semibold text-slate-700">Esta tarea queda anidada al proyecto y hereda su cliente, país, departamento y contexto operativo.</p>
+              </div>
+            ) : null}
             <FieldCard label="Responsable" icon={<UserRound className="h-4 w-4" />}>
               <Input value={workspaceOwnerLabel} readOnly className="h-12 rounded-2xl border-[#E5EAF1] bg-slate-50 font-semibold text-slate-500" />
             </FieldCard>
-            <FieldCard label="Departamento" icon={<FileText className="h-4 w-4" />}>
-              <Select {...register("department")} className="h-12 rounded-2xl border-[#E5EAF1] bg-white font-semibold">
-                <option value="">Seleccionar</option>
-                {departmentOptions.map((item) => <option key={item.id} value={item.code}>{item.name}</option>)}
-              </Select>
-            </FieldCard>
-            <FieldCard label="País" icon={<Flag className="h-4 w-4" />}>
-              <Select {...register("country")} className="h-12 rounded-2xl border-[#E5EAF1] bg-white font-semibold">
-                <option value="">Seleccionar país</option>
-                {countryOptions.map((item) => <option key={item.id} value={item.name}>{item.name}</option>)}
-              </Select>
-            </FieldCard>
+{!isProjectTask ? (
+              <>
+                <FieldCard label="Departamento" icon={<FileText className="h-4 w-4" />}>
+                  <Select {...register("department")} className="h-12 rounded-2xl border-[#E5EAF1] bg-white font-semibold">
+                    <option value="">Seleccionar</option>
+                    {departmentOptions.map((item) => <option key={item.id} value={item.code}>{item.name}</option>)}
+                  </Select>
+                </FieldCard>
+                <FieldCard label="País" icon={<Flag className="h-4 w-4" />}>
+                  <Select {...register("country")} className="h-12 rounded-2xl border-[#E5EAF1] bg-white font-semibold">
+                    <option value="">Seleccionar país</option>
+                    {countryOptions.map((item) => <option key={item.id} value={item.name}>{item.name}</option>)}
+                  </Select>
+                </FieldCard>
+              </>
+            ) : null}
             <FieldCard label="Deadline" icon={<CalendarDays className="h-4 w-4" />}>
               <Input {...register("dueDate")} type="date" className="h-12 rounded-2xl border-[#E5EAF1] bg-white font-semibold" />
             </FieldCard>
-            <FieldCard label="Registro" icon={<Tag className="h-4 w-4" />}>
-              <Input {...register("clientName")} placeholder="Nombre del registro" list="registry-client-options" className="h-12 rounded-2xl border-[#E5EAF1] bg-white font-semibold" />
-              <datalist id="registry-client-options">
-                {clientOptions.map((item) => <option key={item.id} value={item.name} />)}
-              </datalist>
-            </FieldCard>
+{!isProjectTask ? (
+              <FieldCard label="Registro" icon={<Tag className="h-4 w-4" />}>
+                <Input {...register("clientName")} placeholder="Nombre del registro" list="registry-client-options" className="h-12 rounded-2xl border-[#E5EAF1] bg-white font-semibold" />
+                <datalist id="registry-client-options">
+                  {clientOptions.map((item) => <option key={item.id} value={item.name} />)}
+                </datalist>
+              </FieldCard>
+            ) : null}
           </section>
 
           <details className="group overflow-hidden rounded-[24px] border border-[#E5EAF1] bg-white shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
@@ -457,7 +457,7 @@ export function TaskForm({
               <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-50 text-slate-500 transition group-open:rotate-180"><ChevronDown className="h-4 w-4" /></span>
             </summary>
             <div className="border-t border-[#E5EAF1] p-5">
-              <p className="text-sm font-medium leading-6 text-[#64748B]">Los campos conectados actualmente son estado, prioridad, proyecto, responsable, departamento, país, fecha límite y registro. No se muestran campos decorativos sin respaldo en base de datos.</p>
+              <p className="text-sm font-medium leading-6 text-[#64748B]">Los campos conectados actualmente son estado, prioridad, responsable, departamento, país, fecha límite y registro. No se muestran campos decorativos sin respaldo en base de datos.</p>
             </div>
           </details>
 

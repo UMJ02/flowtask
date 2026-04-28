@@ -13,7 +13,7 @@ export async function resolveProjectEntityContext(
 
   const { data, error } = await supabase
     .from("projects")
-    .select("id,title,organization_id,client_id,client_name")
+    .select("id,title,organization_id,client_id,client_name,department_id,country")
     .eq("id", projectId)
     .maybeSingle();
 
@@ -28,6 +28,8 @@ export async function resolveProjectEntityContext(
         organizationId: (data.organization_id as string | null | undefined) ?? null,
         clientId: (data.client_id as string | null | undefined) ?? null,
         clientName: normalizeNullableText(data.client_name as string | null | undefined),
+        departmentId: (data.department_id as number | null | undefined) ?? null,
+        country: normalizeNullableText(data.country as string | null | undefined),
       }
     : null;
 }

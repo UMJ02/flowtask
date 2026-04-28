@@ -239,7 +239,7 @@ function RecentTasksCard({ tasks }: { tasks: any[] }) {
   return (
     <section id="tareas" className={`${cardClass} p-5 scroll-mt-28`}>
       <div className="mb-4 flex items-center justify-between gap-3">
-        <h2 className="text-lg font-black text-[#0F172A]">Tareas recientes</h2>
+        <h2 className="text-lg font-black text-[#0F172A]">Tareas del proyecto</h2>
       </div>
       <div className="divide-y divide-[#EEF2F7]">
         {visibleTasks.length ? visibleTasks.map((task) => (
@@ -259,14 +259,14 @@ function RecentTasksCard({ tasks }: { tasks: any[] }) {
             <Link href={taskDetailRoute(task.id)} className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-[#E5EAF1] text-[#64748B] hover:bg-slate-50"><MoreVertical className="h-4 w-4" /></Link>
           </div>
         )) : (
-          <p className="py-6 text-sm font-medium text-[#64748B]">Todavía no hay tareas asociadas a este proyecto.</p>
+          <p className="py-6 text-sm font-medium text-[#64748B]">Todavía no hay tareas hijas en este proyecto. Usa el botón Nueva tarea dentro del proyecto para crearlas sin ensuciar la vista principal de tareas.</p>
         )}
       </div>
       <div className="mt-4 flex justify-center">
-        <Link href="/app/tasks" className="inline-flex h-11 items-center justify-center gap-2 rounded-[14px] border border-[#E5EAF1] bg-white px-5 text-sm font-bold text-[#334155] transition hover:bg-slate-50">
-          Ver todas las tareas
+        <span className="inline-flex h-11 items-center justify-center gap-2 rounded-[14px] border border-[#E5EAF1] bg-white px-5 text-sm font-bold text-[#334155]">
+          Vista aislada del proyecto
           <ArrowRight className="h-4 w-4" />
-        </Link>
+        </span>
       </div>
     </section>
   );

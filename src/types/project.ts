@@ -22,4 +22,7 @@ export interface ProjectSummary extends ProjectBase {
   country?: string | null;
   imageUrl?: string | null;
   image_url?: string | null;
+  projectTaskTotal?: number;
+  projectTaskDone?: number;
+  projectTaskProgress?: number;
 }

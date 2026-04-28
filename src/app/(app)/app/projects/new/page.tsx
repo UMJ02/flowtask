@@ -15,6 +15,8 @@ export default async function ProjectNewPage({ searchParams }: { searchParams?: 
   const sourceTaskId = typeof search.sourceTaskId === 'string' ? search.sourceTaskId : '';
   const sourceTask = sourceTaskId ? await safeServerCall('getTaskByIdForProjectConversion', () => getTaskById(sourceTaskId), null) : null;
 
+  const sourceDepartment = Array.isArray((sourceTask as any)?.departments) ? (sourceTask as any).departments[0] : (sourceTask as any)?.departments;
+
   return (
     <div className="space-y-4">
       <Card className="rounded-[28px] border border-slate-200/90 bg-white/[0.92] p-5 shadow-[0_10px_30px_rgba(15,23,42,0.04)]">
@@ -28,7 +30,13 @@ export default async function ProjectNewPage({ searchParams }: { searchParams?: 
           title: sourceTask?.title ?? '',
           description: sourceTask?.description ? `${sourceTask.description}\n\nOrigen: tarea ${sourceTask.id}` : '',
           dueDate: sourceTask?.due_date ?? '',
+          department: sourceDepartment?.code ?? sourceDepartment?.name ?? '',
+          country: (sourceTask as any)?.country ?? '',
+          organizationId: (sourceTask as any)?.organization_id ?? null,
+          ownerId: (sourceTask as any)?.owner_id ?? null,
         }}
+        sourceTaskId={sourceTask?.id ?? undefined}
+        submitLabel={sourceTask ? 'Crear proyecto y subtareas' : undefined}
         redirectTo={queryString ? `/app/projects?${queryString}` as any : '/app/projects'}
       />
     </div>

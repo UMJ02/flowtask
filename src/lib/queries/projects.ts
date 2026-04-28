@@ -60,6 +60,9 @@ function normalizeProjectRow(row: any): ProjectSummary {
     country: (row.country as string | null | undefined) ?? null,
     imageUrl: (row.image_url as string | null | undefined) ?? null,
     image_url: (row.image_url as string | null | undefined) ?? null,
+    projectTaskTotal: Number(row.projectTaskTotal ?? 0),
+    projectTaskDone: Number(row.projectTaskDone ?? 0),
+    projectTaskProgress: Number(row.projectTaskProgress ?? 0),
   };
 }
 
@@ -110,7 +113,40 @@ export async function getProjects(filters: ProjectFiltersInput = {}): Promise<Pr
   }
 
   const access = await getClientAccessSummaryCached(user.id, activeOrganizationId);
-  return filterRowsByClientAccess((data ?? []) as any[], access, "view").map(normalizeProjectRow);
+  const visibleProjects = filterRowsByClientAccess((data ?? []) as any[], access, "view");
+  const projectIds = visibleProjects.map((project: any) => project.id).filter(Boolean);
+
+  const taskProgressByProject = new Map<string, { total: number; done: number; progress: number }>();
+  if (projectIds.length) {
+    const { data: taskRows, error: taskError } = await supabase
+      .from("tasks")
+      .select("project_id,status,client_id")
+      .in("project_id", projectIds);
+
+    if (taskError) {
+      console.error("[getProjects.tasksProgress]", taskError.message);
+    } else {
+      for (const row of filterRowsByClientAccess((taskRows ?? []) as any[], access, "view")) {
+        const projectId = row.project_id as string | null | undefined;
+        if (!projectId) continue;
+        const current = taskProgressByProject.get(projectId) ?? { total: 0, done: 0, progress: 0 };
+        current.total += 1;
+        if (row.status === "concluido") current.done += 1;
+        current.progress = current.total ? Math.round((current.done / current.total) * 100) : 0;
+        taskProgressByProject.set(projectId, current);
+      }
+    }
+  }
+
+  return visibleProjects.map((project: any) => {
+    const progress = taskProgressByProject.get(project.id) ?? { total: 0, done: 0, progress: project.status === "completado" ? 100 : 0 };
+    return normalizeProjectRow({
+      ...project,
+      projectTaskTotal: progress.total,
+      projectTaskDone: progress.done,
+      projectTaskProgress: progress.progress,
+    });
+  });
 }
 
 export async function getProjectClientMetrics(projectId: string) {

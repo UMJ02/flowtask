@@ -29,6 +29,7 @@ interface ProjectFormProps {
   submitLabel?: string;
   successMessage?: string;
   redirectTo?: AppRoute;
+  sourceTaskId?: string;
 }
 
 export function ProjectForm({
@@ -37,6 +38,7 @@ export function ProjectForm({
   submitLabel,
   successMessage,
   redirectTo,
+  sourceTaskId,
 }: ProjectFormProps) {
   const [message, setMessage] = useState<string | null>(null);
   const [serverError, setServerError] = useState<string | null>(null);
@@ -257,6 +259,53 @@ export function ProjectForm({
           user_id: user.id,
           role: "owner",
         });
+
+        if (sourceTaskId) {
+          const [{ data: sourceTask }, { data: checklistRows }] = await Promise.all([
+            supabase
+              .from("tasks")
+              .select("id,title,description,priority,due_date")
+              .eq("id", sourceTaskId)
+              .maybeSingle(),
+            supabase
+              .from("task_checklist_items")
+              .select("title,due_date,position")
+              .eq("task_id", sourceTaskId)
+              .order("position", { ascending: true }),
+          ]);
+
+          const checklistTasks = (checklistRows ?? [])
+            .map((item: any) => ({ title: String(item.title ?? "").trim(), due_date: item.due_date ?? null }))
+            .filter((item: any) => item.title.length > 0);
+
+          const childTasks = checklistTasks.length
+            ? checklistTasks
+            : sourceTask?.title
+              ? [{ title: String(sourceTask.title), due_date: sourceTask.due_date ?? null }]
+              : [];
+
+          if (childTasks.length) {
+            await supabase.from("tasks").insert(childTasks.map((item: any) => ({
+              owner_id: user.id,
+              organization_id: formOrganizationId,
+              project_id: createdProjectId,
+              title: item.title,
+              description: null,
+              status: "en_proceso",
+              priority: (sourceTask as any)?.priority ?? "media",
+              department_id: departmentId,
+              client_name: normalizedClientName,
+              client_id: clientId,
+              country: payload.country,
+              due_date: item.due_date ?? payload.due_date,
+            })));
+          }
+
+          await supabase
+            .from("tasks")
+            .update({ status: "concluido", completed_at: new Date().toISOString() })
+            .eq("id", sourceTaskId);
+        }
 
         await logActivity(supabase as any, {
           entityType: "project",

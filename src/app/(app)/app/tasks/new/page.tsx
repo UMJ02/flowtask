@@ -11,6 +11,8 @@ export default async function TaskNewPage({ searchParams }: { searchParams?: Pro
   const projectId = typeof search.projectId === 'string' ? search.projectId : '';
   const clientName = typeof search.clientName === 'string' ? search.clientName : '';
 
+  const redirectTo = projectId ? (`/app/projects/${projectId}` as any) : (queryString ? `/app/tasks?${queryString}` as any : '/app/tasks');
+
   return (
     <div>
       <TaskForm
@@ -18,7 +20,8 @@ export default async function TaskNewPage({ searchParams }: { searchParams?: Pro
           projectId,
           clientName,
         }}
-        redirectTo={queryString ? `/app/tasks?${queryString}` as any : '/app/tasks'}
+        submitLabel={projectId ? 'Crear tarea del proyecto' : undefined}
+        redirectTo={redirectTo}
       />
     </div>
   );

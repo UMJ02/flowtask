@@ -71,11 +71,11 @@ const COVER_GRADIENTS = [
 ];
 
 function getProjectProgress(project: ProjectSummary, index: number) {
+  if (typeof project.projectTaskProgress === 'number' && project.projectTaskTotal) return project.projectTaskProgress;
   if (project.status === 'completado') return 100;
   if (project.status === 'vencido') return 22;
   if (project.status === 'en_pausa') return 35;
-  const seed = project.title.split('').reduce((sum, char) => sum + char.charCodeAt(0), index * 13);
-  return 38 + (seed % 41);
+  return 0;
 }
 
 function getProjectPriority(project: ProjectSummary, index: number) {
@@ -217,7 +217,12 @@ function ProjectRow({ project, index, queryString }: { project: ProjectSummary; 
         </Link>
       </td>
       <td className="px-5 py-4 align-middle"><StatusBadge status={project.status} /></td>
-      <td className="px-5 py-4 align-middle"><ProjectProgressBar value={progress} /></td>
+      <td className="px-5 py-4 align-middle">
+        <ProjectProgressBar value={progress} />
+        <p className="mt-1 text-xs font-semibold text-slate-500">
+          {project.projectTaskTotal ? `${project.projectTaskDone ?? 0}/${project.projectTaskTotal} tareas` : 'Sin tareas hijas'}
+        </p>
+      </td>
       <td className="px-5 py-4 align-middle"><ProjectMembersAvatars countSeed={project.title.length + index} /></td>
       <td className="whitespace-nowrap px-5 py-4 align-middle text-sm font-semibold text-slate-600">
         {project.dueDate || project.due_date ? formatDate((project.dueDate || project.due_date) as string) : 'Sin fecha'}
