@@ -27,8 +27,8 @@ export function ClientListPanel({ items }: { items: ClientListItem[] }) {
                   <h3 className="mt-3 text-lg font-semibold text-slate-900">{item.name}</h3>
                   <p className="mt-1 text-sm text-slate-500">Abre el detalle para revisar proyectos, tareas y actividad reciente de este cliente.</p>
                 </div>
-                <span className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-slate-100 text-slate-600">
-                  <Building2 className="h-5 w-5" />
+                <span className="inline-flex h-10 w-10 overflow-hidden items-center justify-center rounded-md bg-slate-100 text-slate-600">
+                  {item.avatarUrl ? <img src={item.avatarUrl} alt={item.name} className="h-full w-full rounded-md object-cover" /> : <Building2 className="h-5 w-5" />}
                 </span>
               </div>
               <div className="mt-4 grid gap-3 sm:grid-cols-3">

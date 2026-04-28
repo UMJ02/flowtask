@@ -6,6 +6,7 @@ export interface ClientBase {
   status: ClientStatus;
   notes?: string | null;
   contactEmail?: string | null;
+  avatarUrl?: string | null;
 }
 
 export interface ClientListItem extends ClientBase {

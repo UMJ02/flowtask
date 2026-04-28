@@ -152,7 +152,7 @@ function ProjectHeroCard({ project, tasks, currentQuery }: { project: any; tasks
     <section className={`${cardClass} p-4 md:p-5`}>
       <div className="grid gap-5 lg:grid-cols-[220px_minmax(0,1fr)_360px] lg:items-center">
         <div className="relative h-44 overflow-hidden rounded-[20px] bg-slate-100 lg:h-48">
-          <Image src="/imagenes/organization-team-hero.png" alt="Proyecto FlowTask" fill className="object-cover" sizes="220px" priority={false} />
+          <Image src={project.image_url || "/imagenes/organization-team-hero.png"} alt={project.title || "Proyecto FlowTask"} fill className="object-cover" sizes="220px" priority={false} unoptimized={Boolean(project.image_url)} />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950/20 to-transparent" />
         </div>
 

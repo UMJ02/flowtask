@@ -58,6 +58,8 @@ function normalizeProjectRow(row: any): ProjectSummary {
     departmentName: (department?.name as string | null | undefined) ?? null,
     departments: row.departments ?? null,
     country: (row.country as string | null | undefined) ?? null,
+    imageUrl: (row.image_url as string | null | undefined) ?? null,
+    image_url: (row.image_url as string | null | undefined) ?? null,
   };
 }
 
@@ -79,6 +81,7 @@ export async function getProjects(filters: ProjectFiltersInput = {}): Promise<Pr
           country,
           is_collaborative,
           client_id,
+          image_url,
           country,
           created_at,
           updated_at,
@@ -159,6 +162,7 @@ export async function getProjectById(projectId: string) {
           client_id,
           share_enabled,
           share_token,
+          image_url,
           created_at,
           updated_at,
           completed_at,

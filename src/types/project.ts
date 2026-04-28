@@ -20,4 +20,6 @@ export interface ProjectSummary extends ProjectBase {
   is_collaborative?: boolean;
   departments?: { code?: string | null; name?: string | null }[] | { code?: string | null; name?: string | null } | null;
   country?: string | null;
+  imageUrl?: string | null;
+  image_url?: string | null;
 }

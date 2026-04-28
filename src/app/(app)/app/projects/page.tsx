@@ -201,8 +201,14 @@ function ProjectRow({ project, index, queryString }: { project: ProjectSummary; 
       <td className="px-5 py-4 align-middle">
         <Link href={detailHref} className="flex min-w-[290px] items-center gap-4">
           <span className={`relative inline-flex h-16 w-16 shrink-0 overflow-hidden rounded-2xl bg-gradient-to-br ${coverTone} ring-1 ring-slate-200`}>
-            <span className="absolute bottom-2 left-2 h-6 w-10 rounded-lg bg-white/45 backdrop-blur" />
-            <span className="absolute right-2 top-2 h-5 w-5 rounded-full bg-[#16C784]/80" />
+            {project.imageUrl || project.image_url ? (
+              <img src={(project.imageUrl || project.image_url) as string} alt={project.title} className="h-full w-full object-cover" />
+            ) : (
+              <>
+                <span className="absolute bottom-2 left-2 h-6 w-10 rounded-lg bg-white/45 backdrop-blur" />
+                <span className="absolute right-2 top-2 h-5 w-5 rounded-full bg-[#16C784]/80" />
+              </>
+            )}
           </span>
           <span>
             <span className="block text-base font-black text-[#0F172A] transition group-hover:text-[#16C784]">{project.title}</span>

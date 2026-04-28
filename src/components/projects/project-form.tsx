@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useState, useTransition, type ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,13 +18,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { ImagePlus, X } from "lucide-react";
 import type { z } from "zod";
 
 type ProjectValues = z.infer<typeof projectSchema>;
 
 interface ProjectFormProps {
   projectId?: string;
-  initialData?: Partial<ProjectValues> & { shareToken?: string | null; organizationId?: string | null; ownerId?: string | null };
+  initialData?: Partial<ProjectValues> & { shareToken?: string | null; organizationId?: string | null; ownerId?: string | null; imageUrl?: string | null };
   submitLabel?: string;
   successMessage?: string;
   redirectTo?: AppRoute;
@@ -42,6 +43,8 @@ export function ProjectForm({
   const [departmentOptions, setDepartmentOptions] = useState<Array<{ id: string; code: string; name: string }>>([]);
   const [countryOptions, setCountryOptions] = useState<Array<{ id: string; code: string; name: string }>>([]);
   const [clientOptions, setClientOptions] = useState<Array<{ id: string; name: string }>>([]);
+  const [projectImageFile, setProjectImageFile] = useState<File | null>(null);
+  const [projectImagePreview, setProjectImagePreview] = useState<string>(initialData?.imageUrl ?? "");
   const [isRefreshing, startRefresh] = useTransition();
   const router = useRouter();
   const isEdit = Boolean(projectId);
@@ -63,6 +66,7 @@ export function ProjectForm({
       dueDate: initialData?.dueDate ?? "",
       isCollaborative: initialData?.isCollaborative ?? false,
       country: initialData?.country ?? "",
+      imageUrl: initialData?.imageUrl ?? "",
     },
   });
 
@@ -166,6 +170,21 @@ export function ProjectForm({
 
     const normalizedClientName = clientName;
 
+    let imageUrl = projectImagePreview ? (initialData?.imageUrl ?? null) : null;
+
+    if (projectImageFile) {
+      const extension = projectImageFile.name.split(".").pop()?.toLowerCase() || "jpg";
+      const safeProjectId = projectId ?? `new-${Date.now()}`;
+      const path = `projects/${formOrganizationId ?? user.id}/${safeProjectId}/${Date.now()}.${extension}`;
+      const upload = await supabase.storage.from("attachments").upload(path, projectImageFile, { upsert: true, contentType: projectImageFile.type || "image/jpeg" });
+      if (upload.error) {
+        setServerError(upload.error.message);
+        setMessage(null);
+        return;
+      }
+      imageUrl = supabase.storage.from("attachments").getPublicUrl(path).data.publicUrl;
+    }
+
     const payload = {
       title: values.title,
       description: values.description || null,
@@ -177,6 +196,7 @@ export function ProjectForm({
       is_collaborative: values.isCollaborative,
       share_enabled: values.isCollaborative,
       country: (countryOptions.find((item) => item.name === values.country || item.code === values.country)?.name ?? values.country) || null,
+      image_url: imageUrl,
     };
 
     let createdProjectId: string | null = null;
@@ -285,6 +305,36 @@ export function ProjectForm({
           <label className="text-sm font-medium text-slate-700">Descripción</label>
           <Textarea {...register("description")} placeholder="Detalle del proyecto" />
         </div>
+        <div className="space-y-3 md:col-span-2">
+          <label className="text-sm font-medium text-slate-700">Imagen del proyecto</label>
+          <div className="grid gap-4 rounded-[22px] border border-slate-200 bg-slate-50/70 p-4 md:grid-cols-[180px_minmax(0,1fr)] md:items-center">
+            <div className="relative flex h-32 items-center justify-center overflow-hidden rounded-[20px] bg-white ring-1 ring-slate-200">
+              {projectImagePreview ? <img src={projectImagePreview} alt="Imagen del proyecto" className="h-full w-full object-cover" /> : <ImagePlus className="h-10 w-10 text-slate-400" />}
+            </div>
+            <div className="space-y-3">
+              <input type="hidden" {...register("imageUrl")} />
+              <Input
+                type="file"
+                accept="image/*"
+                onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                  const file = event.target.files?.[0] ?? null;
+                  setProjectImageFile(file);
+                  if (file) {
+                    const preview = URL.createObjectURL(file);
+                    setProjectImagePreview(preview);
+                    setValue("imageUrl", preview, { shouldDirty: true });
+                  }
+                }}
+              />
+              {projectImagePreview ? (
+                <button type="button" onClick={() => { setProjectImageFile(null); setProjectImagePreview(""); setValue("imageUrl", "", { shouldDirty: true }); }} className="inline-flex items-center gap-2 text-sm font-semibold text-slate-600 hover:text-rose-600">
+                  <X className="h-4 w-4" /> Quitar imagen
+                </button>
+              ) : null}
+              <p className="text-xs text-slate-500">Se muestra en la vista de proyecto y en el listado de proyectos.</p>
+            </div>
+          </div>
+        </div>
         <div className="space-y-2">
           <label className="text-sm font-medium text-slate-700">Estado</label>
           <Select {...register("status")}>
@@ -356,6 +406,7 @@ export function ProjectForm({
               dueDate: initialData?.dueDate ?? "",
               isCollaborative: initialData?.isCollaborative ?? false,
               country: normalizeCountryValue(initialData?.country, countryOptions),
+              imageUrl: initialData?.imageUrl ?? "",
             })
           }
         >

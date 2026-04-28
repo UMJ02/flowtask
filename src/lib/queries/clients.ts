@@ -29,7 +29,7 @@ export async function getClients(search?: string): Promise<ClientListItem[]> {
 
   let query = supabase
     .from("clients")
-    .select("id,name,status,notes,contact_email,created_at")
+    .select("id,name,status,notes,contact_email,avatar_url,created_at")
     .order("name", { ascending: true })
     .limit(50);
 
@@ -59,6 +59,7 @@ export async function getClients(search?: string): Promise<ClientListItem[]> {
     status: (row.status as ClientListItem["status"]) ?? "activo",
     notes: (row.notes as string | null | undefined) ?? null,
     contactEmail: (row.contact_email as string | null | undefined) ?? null,
+    avatarUrl: (row.avatar_url as string | null | undefined) ?? null,
     createdAtLabel: formatDate(row.created_at as string | null | undefined),
     projectsCount: (projectsRes.data ?? []).filter((item: any) => item.client_id === row.id && item.status !== "completado").length,
     openTasksCount: (openTasksRes.data ?? []).filter((item: any) => item.client_id === row.id).length,
@@ -95,7 +96,7 @@ export async function getClientById(clientId: string): Promise<ClientDetailSumma
 
   const { data: clientRow, error: clientError } = await supabase
     .from("clients")
-    .select("id,name,status,notes,contact_email,created_at,organization_id,account_owner_id")
+    .select("id,name,status,notes,contact_email,avatar_url,created_at,organization_id,account_owner_id")
     .eq("id", clientId)
     .maybeSingle();
 
@@ -124,6 +125,7 @@ export async function getClientById(clientId: string): Promise<ClientDetailSumma
     status: (clientRow.status as ClientListItem["status"]) ?? "activo",
     notes: (clientRow.notes as string | null | undefined) ?? null,
     contactEmail: (clientRow.contact_email as string | null | undefined) ?? null,
+    avatarUrl: (clientRow.avatar_url as string | null | undefined) ?? null,
     createdAtLabel: formatDate(clientRow.created_at as string | null | undefined),
     projectsCount: (projects ?? []).filter((item: any) => item.status !== "completado").length,
     openTasksCount,

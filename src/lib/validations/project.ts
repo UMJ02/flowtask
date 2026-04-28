@@ -9,4 +9,5 @@ export const projectSchema = z.object({
   dueDate: z.string().optional(),
   isCollaborative: z.boolean().default(false),
   country: z.string().optional(),
+  imageUrl: z.string().optional(),
 });

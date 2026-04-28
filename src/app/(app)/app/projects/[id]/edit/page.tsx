@@ -45,6 +45,7 @@ export default async function ProjectEditPage({
           ownerId: (project as any).owner_id ?? null,
           isCollaborative: project.is_collaborative ?? false,
           shareToken: project.share_token ?? null,
+          imageUrl: (project as any).image_url ?? null,
         }}
       />
     </div>

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Plus } from "lucide-react";
+import { Building2, Plus } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import type { ClientDetailSummary } from "@/types/client";
@@ -13,10 +13,10 @@ export function ClientDetailPanels({ client }: { client: ClientDetailSummary }) 
       <Card>
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Cliente</p>
         <div className="mt-2 flex flex-wrap items-start justify-between gap-3">
-          <div>
+          <div className="flex items-start gap-4"><span className="inline-flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-emerald-50 text-emerald-700">{client.avatarUrl ? <img src={client.avatarUrl} alt={client.name} className="h-full w-full object-cover" /> : <Building2 className="h-6 w-6" />}</span><div>
             <h1 className="text-2xl font-bold text-slate-900">{client.name}</h1>
             <p className="mt-2 text-sm text-slate-600">{client.notes || 'Este cliente ya cuenta con tablero de seguimiento por organización.'}</p>
-          </div>
+          </div></div>
           <div className="rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-600">
             <p><strong>Estado:</strong> {client.status.replace('_', ' ')}</p>
             <p><strong>Creado:</strong> {client.createdAtLabel}</p>

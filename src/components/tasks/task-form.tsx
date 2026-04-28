@@ -67,6 +67,7 @@ export function TaskForm({
   const [clientOptions, setClientOptions] = useState<Array<{ id: string; name: string }>>([]);
   const [loadingProjects, setLoadingProjects] = useState(true);
   const [workspaceOwnerLabel, setWorkspaceOwnerLabel] = useState("Cargando usuario…");
+  const [quickTipIndex, setQuickTipIndex] = useState(0);
   const router = useRouter();
   const isEdit = Boolean(taskId);
 
@@ -148,6 +149,11 @@ export function TaskForm({
     }),
     [initialData, departmentOptions, countryOptions],
   );
+
+  useEffect(() => {
+    const timer = window.setInterval(() => setQuickTipIndex((value) => (value + 1) % QUICK_TIPS.length), 6000);
+    return () => window.clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     let active = true;
@@ -350,9 +356,9 @@ export function TaskForm({
   const statusProgress = selectedStatus === "concluido" ? 100 : selectedStatus === "en_espera" ? 25 : 65;
 
   return (
-    <form className="bg-[#F7F9FC] pb-8" onSubmit={handleSubmit(onSubmit)}>
-      <div className="relative z-10 mb-6 rounded-[28px] border border-[#E5EAF1] bg-white/95 px-5 py-5 shadow-[0_14px_32px_rgba(15,23,42,0.045)] backdrop-blur-xl sm:px-6 lg:px-7">
-        <div className="mx-auto flex max-w-[1480px] flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+    <form className="min-h-screen bg-[#F6F8FC] pb-8" onSubmit={handleSubmit(onSubmit)}>
+      <div className="sticky top-0 z-40 mb-6 border-b border-[#E5EAF1] bg-white/95 px-5 py-5 shadow-[0_10px_30px_rgba(15,23,42,0.035)] backdrop-blur-xl sm:px-6 lg:px-8">
+        <div className="mx-auto flex h-[64px] max-w-[1440px] flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex min-w-0 items-center gap-3">
             <Link href={cancelHref} className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#050B18] text-white shadow-[0_14px_28px_rgba(5,11,24,0.18)] transition hover:-translate-y-0.5" aria-label="Volver">
               <ArrowLeft className="h-5 w-5" />
@@ -376,7 +382,7 @@ export function TaskForm({
         </div>
       </div>
 
-      <div className="mx-auto grid max-w-[1480px] gap-6 xl:grid-cols-[minmax(0,1fr)_430px]">
+      <div className="mx-auto grid max-w-[1440px] gap-6 px-4 sm:px-6 lg:px-8 xl:grid-cols-[minmax(0,1fr)_380px]">
         <div className="space-y-5">
           <section className="rounded-[24px] border border-[#E5EAF1] bg-white p-4 shadow-[0_12px_30px_rgba(15,23,42,0.04)] sm:p-5">
             <div className="rounded-[20px] border border-[#E5EAF1] bg-white p-5 transition focus-within:border-emerald-200 focus-within:ring-4 focus-within:ring-emerald-50">
@@ -458,7 +464,7 @@ export function TaskForm({
         </div>
 
         <aside className="space-y-5 xl:sticky xl:top-[104px] xl:self-start">
-          <SideCard>
+          <SideCard tone="green">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.18em] text-slate-600"><ShieldCheck className="h-4 w-4" /> Acceso operativo</p>
@@ -468,7 +474,7 @@ export function TaskForm({
             </div>
           </SideCard>
 
-          <SideCard>
+          <SideCard tone="amber">
             <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-600">Seguimiento</p>
             <p className="mt-2 text-sm font-medium text-[#64748B]">Gestiona el avance y mantén a todos alineados.</p>
             <div className="mt-5 space-y-4">
@@ -491,8 +497,8 @@ export function TaskForm({
             </div>
           </SideCard>
 
-          <SideCard>
-            <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-600">Comentarios y adjuntos</p>
+          <SideCard tone="purple">
+            <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-600">Comentarios, adjuntos y bitácora</p>
             <p className="mt-3 text-sm font-medium leading-6 text-[#64748B]">Los comentarios, adjuntos y bitácora real se gestionan desde el detalle de la tarea para mantener una sola fuente de verdad.</p>
             {isEdit && taskId ? (
               <Link href={taskDetailRoute(taskId)} className="mt-5 inline-flex h-11 w-full items-center justify-center rounded-2xl bg-[#050B18] px-4 text-sm font-bold text-white shadow-[0_14px_28px_rgba(5,11,24,0.18)] transition hover:-translate-y-0.5">
@@ -501,6 +507,18 @@ export function TaskForm({
             ) : null}
           </SideCard>
 
+          <SideCard tone="blue">
+            <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-600">Consejos rápidos</p>
+            <div className="mt-4 rounded-[18px] bg-white/70 p-4">
+              <p className="text-sm font-black text-[#0F172A]">{QUICK_TIPS[quickTipIndex].title}</p>
+              <p className="mt-2 text-sm leading-6 text-[#64748B]">{QUICK_TIPS[quickTipIndex].text}</p>
+            </div>
+            <div className="mt-4 flex gap-2">
+              {QUICK_TIPS.map((tip, index) => (
+                <button key={tip.title} type="button" onClick={() => setQuickTipIndex(index)} className={`h-2 flex-1 rounded-full transition ${index === quickTipIndex ? "bg-[#16C784]" : "bg-white/80"}`} aria-label={`Ver consejo ${index + 1}`} />
+              ))}
+            </div>
+          </SideCard>
 
         </aside>
       </div>
@@ -530,8 +548,9 @@ function FieldMini({ label, children }: { label: string; children: ReactNode }) 
   );
 }
 
-function SideCard({ children }: { children: ReactNode }) {
-  return <section className="rounded-[24px] border border-[#E5EAF1] bg-white p-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)]">{children}</section>;
+function SideCard({ children, tone = "white" }: { children: ReactNode; tone?: "white" | "green" | "amber" | "purple" | "blue" }) {
+  const toneClass = tone === "green" ? "border-[#BBF7D0] bg-[#ECFDF5]" : tone === "amber" ? "border-[#FDECC8] bg-[#FFF8E8]" : tone === "purple" ? "border-[#E9D5FF] bg-[#FAF5FF]" : tone === "blue" ? "border-[#BFDBFE] bg-[#EFF6FF]" : "border-[#E5EAF1] bg-white";
+  return <section className={`rounded-[24px] border p-6 shadow-[0_10px_30px_rgba(15,23,42,0.04)] ${toneClass}`}>{children}</section>;
 }
 
 function CommentBubble({ name, meta, text }: { name: string; meta: string; text: string }) {
@@ -551,3 +570,10 @@ function priorityLabel(value?: string) {
   if (value === "baja") return "Baja";
   return "Media";
 }
+
+const QUICK_TIPS = [
+  { title: "Define un título claro", text: "Usa una frase corta que explique el resultado esperado de la tarea." },
+  { title: "Agrega contexto útil", text: "Incluye entregables, referencias o instrucciones para evitar retrabajo." },
+  { title: "Asigna prioridad y fecha", text: "Prioridad y deadline ayudan a ordenar el trabajo diario sin perder foco." },
+  { title: "Usa checklist para medir progreso", text: "Divide tareas complejas en pasos pequeños y accionables." },
+];
