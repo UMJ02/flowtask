@@ -327,6 +327,7 @@ export function TaskForm({
   const selectedPriority = useWatch({ control, name: "priority" });
   const selectedStatus = useWatch({ control, name: "status" });
   const editorTitle = isEdit ? "Editar tarea" : "Nueva tarea";
+  const statusProgress = selectedStatus === "concluido" ? 100 : selectedStatus === "en_espera" ? 25 : 65;
 
   return (
     <form className="bg-[#F7F9FC] pb-8" onSubmit={handleSubmit(onSubmit)}>
@@ -457,8 +458,9 @@ export function TaskForm({
                 </Select>
               </FieldMini>
               <div>
-                <div className="mb-2 flex items-center justify-between text-xs font-black uppercase tracking-[0.16em] text-slate-500"><span>Progreso</span><span className="text-base tracking-normal text-slate-800">65%</span></div>
-                <input type="range" min="0" max="100" defaultValue="65" className="h-2 w-full accent-[#16C784]" />
+                <div className="mb-2 flex items-center justify-between text-xs font-black uppercase tracking-[0.16em] text-slate-500"><span>Progreso operativo</span><span className="text-base tracking-normal text-slate-800">{statusProgress}%</span></div>
+                <div className="h-2 rounded-full bg-slate-200"><div className="h-2 rounded-full bg-[#16C784] transition-all" style={{ width: `${statusProgress}%` }} /></div>
+                <p className="mt-2 text-xs font-semibold text-[#64748B]">Se calcula según estado real; el avance detallado vive en el checklist.</p>
               </div>
               <FieldMini label="Prioridad actual">
                 <div className="flex h-12 items-center rounded-2xl border border-[#E5EAF1] bg-white px-4 text-sm font-black text-slate-800">{priorityLabel(selectedPriority)}</div>

@@ -6,6 +6,7 @@ import { EntityAttachments } from '@/components/attachments/entity-attachments';
 import { TaskChecklistCard } from '@/components/tasks/task-checklist-card';
 import { TaskDetailSummary } from '@/components/tasks/task-detail-summary';
 import { TaskQuickCommentsCard } from '@/components/tasks/task-quick-comment-composer';
+import { TaskAssigneesPanel } from '@/components/tasks/task-assignees-panel';
 import { getAssignableUsers, getTaskAssignees, getTaskById, getTaskComments } from '@/lib/queries/tasks';
 import { getTaskAttachments } from '@/lib/queries/attachments';
 import { getTaskActivity } from '@/lib/queries/activity';
@@ -228,21 +229,12 @@ export default async function TaskDetailPage({
         </main>
 
         <aside className="space-y-5 xl:sticky xl:top-28 xl:col-span-4 xl:self-start">
-          <SideCard title="Responsables" tone="green">
-            <p className="text-sm font-semibold text-[#64748B]">Asignar responsable</p>
-            <div className="mt-3 flex items-center justify-between rounded-[16px] border border-[#E5EAF1] bg-white px-4 py-3 text-sm font-bold text-[#0F172A]">
-              <span className="inline-flex min-w-0 items-center gap-2"><span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[#ECFDF5] text-[10px] text-[#16A36C]">{initials(mainAssignee)}</span><span className="truncate">{mainAssignee}</span></span>
-              <span className="text-[#94A3B8]">×⌄</span>
-            </div>
-            <p className="mt-4 text-sm font-semibold text-[#64748B]">Colaboradores</p>
-            <div className="mt-3 flex -space-x-2">
-              {(assignees.length ? assignees : assignableUsers.slice(0, 4)).slice(0, 4).map((item: any, index: number) => {
-                const name = item?.profiles?.full_name || item?.profiles?.email || item?.full_name || item?.email || `U${index + 1}`;
-                return <span key={item.id ?? index} className="inline-flex h-9 w-9 items-center justify-center rounded-full border-2 border-white bg-emerald-50 text-xs font-black text-emerald-700">{initials(name)}</span>;
-              })}
-              <span className="inline-flex h-9 w-9 items-center justify-center rounded-full border-2 border-white bg-slate-100 text-xs font-black text-slate-600">+2</span>
-            </div>
-          </SideCard>
+          <TaskAssigneesPanel
+            taskId={task.id}
+            options={assignableUsers as any[]}
+            assignees={assignees as any[]}
+            canManage={access.canManageAssignees || access.canEdit}
+          />
 
           <SideCard title="Fechas importantes" tone="mint">
             <div className="space-y-4 text-sm">

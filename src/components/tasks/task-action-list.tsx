@@ -293,7 +293,7 @@ function TaskActionListComponent({
     const days = Math.min(21, Math.max(7, diffDays(timelineBounds.end, timelineBounds.start) + 1));
     return Array.from({ length: days }, (_, index) => addDays(timelineBounds.start, index));
   }, [timelineBounds.end, timelineBounds.start]);
-  const calendarDays = useMemo(() => buildCalendarDays(items), [items]);
+  const calendarDays = useMemo(() => buildCalendarDays(items, calendarScale), [items, calendarScale]);
 
   const allCurrentSelected = currentItems.length > 0 && currentItems.every((item) => selectedIds.includes(item.id));
   const timelineActive = false;
@@ -605,6 +605,8 @@ function TaskActionListComponent({
   );
 
   const renderCalendarPro = () => {
+    const calendarColumnsClass = calendarScale === "Día" ? "grid-cols-1" : "grid-cols-7";
+    const calendarLabels = calendarScale === "Día" ? ["Hoy"] : ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
     const operationalItems = items.filter((task) => task.status !== "concluido");
     const total = operationalItems.length;
     const done = items.filter((task) => task.status === "concluido").length;
@@ -631,10 +633,10 @@ function TaskActionListComponent({
 
         <div className={cn("grid gap-5", showCalendarSummary ? "xl:grid-cols-[minmax(0,1fr)_280px]" : "xl:grid-cols-1")}>
           <div className="overflow-hidden rounded-[20px] border border-[#E5EAF1]">
-            <div className="grid grid-cols-7 border-b border-[#E5EAF1] bg-[#F8FAFC] text-center text-[11px] font-black uppercase tracking-[0.12em] text-[#64748B]">
-              {["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"].map((day) => <div key={day} className="px-2 py-3">{day}</div>)}
+            <div className={cn("grid border-b border-[#E5EAF1] bg-[#F8FAFC] text-center text-[11px] font-black uppercase tracking-[0.12em] text-[#64748B]", calendarColumnsClass)}>
+              {calendarLabels.map((day) => <div key={day} className="px-2 py-3">{day}</div>)}
             </div>
-            <div className="grid grid-cols-7">
+            <div className={cn("grid", calendarColumnsClass)}>
               {calendarDays.map((day) => (
                 <div key={day.iso} className={cn("min-h-[145px] border-r border-b border-[#E5EAF1] bg-white p-3 last:border-r-0", day.isToday && "bg-emerald-50/40")}>
                   <div className={cn("mb-3 inline-flex h-7 min-w-7 items-center justify-center rounded-full px-2 text-xs font-black", day.isToday ? "bg-[#16C784] text-white" : "text-[#0F172A]")}>{day.label}</div>
@@ -864,18 +866,28 @@ function CalendarMetric({ icon, label, value, tone }: { icon: ReactNode; label: 
   );
 }
 
-function buildCalendarDays(tasks: TaskRow[]) {
+function buildCalendarDays(tasks: TaskRow[], scale: "Hoy" | "Día" | "Semana" | "Mes") {
   const today = safeDate(todayIsoDate()) ?? new Date();
-  const first = new Date(today.getFullYear(), today.getMonth(), 1, 12);
-  const weekday = first.getDay() === 0 ? 6 : first.getDay() - 1;
-  const start = addDays(first, -weekday);
-  return Array.from({ length: 35 }, (_, index) => {
+  const todayIso = todayIsoDate();
+  if (scale === "Hoy" || scale === "Día") {
+    return [{
+      iso: todayIso,
+      label: String(today.getDate()),
+      isToday: true,
+      tasks: tasks.filter((task) => task.due_date?.slice(0, 10) === todayIso),
+    }];
+  }
+  const anchor = scale === "Semana" ? today : new Date(today.getFullYear(), today.getMonth(), 1, 12);
+  const weekday = anchor.getDay() === 0 ? 6 : anchor.getDay() - 1;
+  const start = addDays(anchor, -weekday);
+  const length = scale === "Semana" ? 7 : 35;
+  return Array.from({ length }, (_, index) => {
     const date = addDays(start, index);
     const iso = toIsoDate(date);
     return {
       iso,
       label: String(date.getDate()),
-      isToday: iso === todayIsoDate(),
+      isToday: iso === todayIso,
       tasks: tasks.filter((task) => task.due_date?.slice(0, 10) === iso),
     };
   });

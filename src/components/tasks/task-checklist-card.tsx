@@ -8,10 +8,10 @@ import { logActivity } from "@/lib/activity/log-client";
 import { formatDate } from "@/lib/utils/dates";
 import type { TaskChecklistItem } from "@/lib/queries/task-checklist";
 
-type ChecklistItem = { id: string; title: string; done: boolean; dueDate?: string | null; position: number; persisted: boolean };
+type ChecklistItem = { id: string; title: string; done: boolean; dueDate?: string | null; updatedAt?: string | null; position: number; persisted: boolean };
 
 function normalizeItems(items: TaskChecklistItem[] = []): ChecklistItem[] {
-  return items.map((item, index) => ({ id: item.id, title: item.title, done: Boolean(item.done), dueDate: item.due_date ?? null, position: item.position ?? index, persisted: true }));
+  return items.map((item, index) => ({ id: item.id, title: item.title, done: Boolean(item.done), dueDate: item.due_date ?? null, updatedAt: item.updated_at ?? null, position: item.position ?? index, persisted: true }));
 }
 
 export function TaskChecklistCard({ taskId, initialItems = [], canManage = true }: { taskId: string; initialItems?: TaskChecklistItem[]; canManage?: boolean }) {
@@ -51,12 +51,12 @@ export function TaskChecklistCard({ taskId, initialItems = [], canManage = true 
     if (!user) { setBusyId(null); setError("Sesión no válida."); return; }
     const position = items.length ? Math.max(...items.map((item) => item.position)) + 1 : 0;
     const optimisticId = `temp-${Date.now()}`;
-    setItems((current) => [...current, { id: optimisticId, title, done: false, dueDate: null, position, persisted: false }]);
+    setItems((current) => [...current, { id: optimisticId, title, done: false, dueDate: null, updatedAt: null, position, persisted: false }]);
     setDraft("");
     const { data, error: insertError } = await supabase.from("task_checklist_items").insert({ task_id: taskId, owner_id: user.id, title, done: false, position }).select("id, due_date").single();
     setBusyId(null);
     if (insertError) { setItems((current) => current.filter((item) => item.id !== optimisticId)); setError(insertError.message); return; }
-    setItems((current) => current.map((item) => item.id === optimisticId ? { ...item, id: data.id, dueDate: data.due_date ?? null, persisted: true } : item));
+    setItems((current) => current.map((item) => item.id === optimisticId ? { ...item, id: data.id, dueDate: data.due_date ?? null, updatedAt: null, persisted: true } : item));
     await logActivity(supabase, { entityType: "task", entityId: taskId, action: "checklist_item_added", metadata: { title, checklist_item_id: data.id } });
     startRefresh(() => router.refresh());
   };
@@ -94,7 +94,7 @@ export function TaskChecklistCard({ taskId, initialItems = [], canManage = true 
           <div key={item.id} className="grid grid-cols-[auto_1fr_auto_auto_auto] items-center gap-3 py-3 text-sm transition hover:bg-[#F8FAFC] sm:px-2">
             <button type="button" onClick={() => toggle(item.id)} disabled={!canManage || busyId === item.id || !item.persisted} className={`grid h-5 w-5 place-items-center rounded-[6px] border text-xs font-black disabled:opacity-60 ${item.done ? "border-[#16C784] bg-[#16C784] text-white" : "border-[#CBD5E1] bg-white text-transparent"}`} aria-label={item.done ? "Marcar pendiente" : "Marcar completada"}>✓</button>
             <span className={`min-w-0 font-semibold ${item.done ? "text-[#64748B] line-through" : "text-[#334155]"}`}>{item.title}</span>
-            <span className="hidden text-xs font-bold text-[#64748B] sm:inline">{item.dueDate ? formatDate(item.dueDate) : "Sin fecha"}</span>
+            <span className="hidden text-xs font-bold text-[#64748B] sm:inline">{item.done ? (item.updatedAt ? `Completada ${formatDate(item.updatedAt)}` : "Completada") : "Pendiente"}</span>
             <button type="button" onClick={() => deleteItem(item.id)} disabled={!canManage || busyId === item.id || !item.persisted} className="grid h-8 w-8 place-items-center rounded-[10px] text-[#94A3B8] transition hover:bg-rose-50 hover:text-rose-600 disabled:opacity-50" aria-label="Eliminar punto del checklist"><Trash2 className="h-4 w-4" /></button>
             <GripVertical className="h-4 w-4 text-[#94A3B8]" aria-hidden />
           </div>
