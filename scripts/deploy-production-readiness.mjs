@@ -14,9 +14,9 @@ const checks = [
   ["vercel security headers", Array.isArray(vercel.headers) && vercel.headers.length > 0],
   ["env has NEXT_PUBLIC_APP_URL", envExample.includes("NEXT_PUBLIC_APP_URL=")],
   ["env has FLOWTASK_BASE_URL helper", envExample.includes("FLOWTASK_BASE_URL=")],
-  ["readme mentions V58.15.3.7", readme.includes("V58.15.3.7")],
+  ["readme mentions V58.15.3.8", readme.includes("V58.15.3.8")],
   ["release exports include APP_RELEASE_STAGE", releaseVersion.includes("APP_RELEASE_STAGE")],
-  ["package version aligned", pkg.version === "58.15.3.7-task-editor-edge-alignment"],
+  ["package version aligned", pkg.version === "58.15.3.8-task-editor-full-bleed-rounded-hero"],
   ["migration includes client delete RPC", migration.includes("delete_workspace_client")],
   ["migration includes scoped catalog indexes", migration.includes("countries_scope_name_unique") && migration.includes("departments_scope_name_unique")],
 ];

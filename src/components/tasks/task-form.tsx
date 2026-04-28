@@ -356,9 +356,10 @@ export function TaskForm({
   const statusProgress = selectedStatus === "concluido" ? 100 : selectedStatus === "en_espera" ? 25 : 65;
 
   return (
-    <form className="min-h-screen bg-[#F6F8FC] pb-8" onSubmit={handleSubmit(onSubmit)}>
-      <div className="sticky top-0 z-40 mb-6 border-b border-[#E5EAF1] bg-white/95 px-4 py-5 shadow-[0_10px_30px_rgba(15,23,42,0.035)] backdrop-blur-xl sm:px-5 lg:px-6">
-        <div className="flex h-[64px] w-full flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+    <form className="-mx-4 min-h-screen bg-[#F6F8FC] pb-8 md:-mx-6" onSubmit={handleSubmit(onSubmit)}>
+      <div className="sticky top-0 z-40 mb-6 px-3 py-2 sm:px-4 lg:px-6">
+        <div className="rounded-[28px] border border-[#E5EAF1] bg-white/95 px-4 py-4 shadow-[0_10px_30px_rgba(15,23,42,0.035)] backdrop-blur-xl sm:px-5 lg:px-6">
+          <div className="flex min-h-[72px] w-full flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex min-w-0 items-center gap-3">
             <Link href={cancelHref} className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#050B18] text-white shadow-[0_14px_28px_rgba(5,11,24,0.18)] transition hover:-translate-y-0.5" aria-label="Volver">
               <ArrowLeft className="h-5 w-5" />
@@ -382,7 +383,8 @@ export function TaskForm({
         </div>
       </div>
 
-      <div className="grid w-full gap-5 px-4 sm:px-5 lg:px-6 xl:grid-cols-[minmax(0,1fr)_380px] 2xl:gap-6">
+      </div>
+      <div className="grid w-full gap-4 px-3 sm:px-4 lg:px-6 xl:grid-cols-[minmax(0,1fr)_380px] 2xl:gap-5">
         <div className="space-y-5">
           <section className="rounded-[24px] border border-[#E5EAF1] bg-white p-4 shadow-[0_12px_30px_rgba(15,23,42,0.04)] sm:p-5">
             <div className="rounded-[20px] border border-[#E5EAF1] bg-white p-5 transition focus-within:border-emerald-200 focus-within:ring-4 focus-within:ring-emerald-50">
