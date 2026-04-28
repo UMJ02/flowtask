@@ -37,14 +37,16 @@ function normalizeCatalogName(value: string) {
 }
 
 function scopeRank(row: CatalogRow, userId: string, organizationId?: string | null) {
-  if (organizationId && row.organization_id === organizationId) return 0;
-  if (!organizationId && !row.organization_id && row.account_owner_id === userId) return 0;
-  if (!row.organization_id && !row.account_owner_id) return 1;
-  return 9;
+  // Strict workspace isolation:
+  // - Organization workspace only sees catalog rows owned by that organization.
+  // - Personal workspace only sees catalog rows owned by the current user and organization_id IS NULL.
+  // Global/system rows are intentionally excluded so the two worlds never mix.
+  if (organizationId) return row.organization_id === organizationId ? 0 : 9;
+  return !row.organization_id && row.account_owner_id === userId ? 0 : 9;
 }
 
-function isSystemCatalogRow(row: CatalogRow) {
-  return !row.organization_id && !row.account_owner_id;
+function isSystemCatalogRow(_row: CatalogRow) {
+  return false;
 }
 
 function dedupeWorkspaceCatalog<T extends RankedCatalogRow>(rows: T[]) {
@@ -177,7 +179,7 @@ export async function fetchWorkspaceDepartments(supabase: ReturnType<typeof crea
     if (error) throw error;
     const rows = ((data ?? []) as CatalogRow[])
       .map<RankedCatalogRow>((item) => ({ ...item, __rank: scopeRank(item, userId, organizationId), __isSystem: isSystemCatalogRow(item) }))
-      .filter((item) => item.__rank < 2);
+      .filter((item) => item.__rank === 0);
     return dedupeWorkspaceCatalog(rows).map((item) => ({
       id: String(item.id),
       code: String(item.code ?? item.id),
@@ -199,7 +201,7 @@ export async function fetchWorkspaceCountries(supabase: ReturnType<typeof create
     if (error) throw error;
     const rows = ((data ?? []) as CatalogRow[])
       .map<RankedCatalogRow>((item) => ({ ...item, __rank: scopeRank(item, userId, organizationId), __isSystem: isSystemCatalogRow(item) }))
-      .filter((item) => item.__rank < 2);
+      .filter((item) => item.__rank === 0);
     return dedupeWorkspaceCatalog(rows).map((item) => ({
       id: String(item.id),
       code: String(item.code ?? item.id),

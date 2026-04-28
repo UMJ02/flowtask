@@ -18,10 +18,9 @@ function normalizeCatalogValue(value: string) {
 }
 
 function rankDepartment(row: DepartmentCatalogRow, userId: string, organizationId?: string | null) {
-  if (organizationId && row.organization_id === organizationId) return 0;
-  if (!organizationId && !row.organization_id && row.account_owner_id === userId) return 0;
-  if (!row.organization_id && !row.account_owner_id) return 1;
-  return 9;
+  // Strict workspace isolation. Do not fall back to global/system departments here.
+  if (organizationId) return row.organization_id === organizationId ? 0 : 9;
+  return !row.organization_id && row.account_owner_id === userId ? 0 : 9;
 }
 
 export async function getDepartmentIdByCode(code?: string | null) {
@@ -57,7 +56,7 @@ export async function getWorkspaceDepartmentIdByCode(params: {
   const match = ((data ?? []) as DepartmentCatalogRow[])
     .filter((row) => normalizeCatalogValue(String(row.code ?? "")) === target || normalizeCatalogValue(String(row.name ?? "")) === target || String(row.id) === normalized)
     .map<RankedDepartment>((row) => ({ row, rank: rankDepartment(row, params.userId, params.organizationId) }))
-    .filter((item) => item.rank < 2)
+    .filter((item) => item.rank === 0)
     .sort((a, b) => a.rank - b.rank)[0]?.row;
 
   return typeof match?.id === "number" ? match.id : match?.id ? Number(match.id) : null;

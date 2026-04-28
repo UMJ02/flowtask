@@ -37,6 +37,8 @@ export default async function TaskEditPage({
           dueDate: task.due_date ?? '',
           projectId: task.project_id ?? '',
           country: (task as any).country ?? '',
+          organizationId: (task as any).organization_id ?? null,
+          ownerId: (task as any).owner_id ?? null,
         }}
       />
     </div>

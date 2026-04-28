@@ -31,10 +31,9 @@ const getDepartmentIdByCodeCached = cache(async (departmentCode: string) => {
       let rank = 9;
       if (activeOrganizationId && row.organization_id === activeOrganizationId) rank = 0;
       else if (!activeOrganizationId && !row.organization_id && row.account_owner_id === user.id) rank = 0;
-      else if (!row.organization_id && !row.account_owner_id) rank = 1;
-      return { row, rank };
+            return { row, rank };
     })
-    .filter((item: any) => item.rank < 2)
+    .filter((item: any) => item.rank === 0)
     .sort((a: any, b: any) => a.rank - b.rank)[0]?.row;
   return (scoped?.id as number | null | undefined) ?? null;
 });
@@ -133,6 +132,7 @@ export async function getTaskById(taskId: string) {
         `
           id,
           owner_id,
+          organization_id,
           project_id,
           title,
           description,

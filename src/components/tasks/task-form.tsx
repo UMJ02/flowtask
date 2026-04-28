@@ -45,7 +45,7 @@ type TaskValues = z.infer<typeof taskSchema>;
 
 interface TaskFormProps {
   taskId?: string;
-  initialData?: Partial<TaskValues>;
+  initialData?: Partial<TaskValues> & { organizationId?: string | null; ownerId?: string | null };
   submitLabel?: string;
   successMessage?: string;
   redirectTo?: AppRoute;
@@ -66,6 +66,7 @@ export function TaskForm({
   const [countryOptions, setCountryOptions] = useState<Array<{ id: string; code: string; name: string }>>([]);
   const [clientOptions, setClientOptions] = useState<Array<{ id: string; name: string }>>([]);
   const [loadingProjects, setLoadingProjects] = useState(true);
+  const [workspaceOwnerLabel, setWorkspaceOwnerLabel] = useState("Cargando usuario…");
   const router = useRouter();
   const isEdit = Boolean(taskId);
 
@@ -115,19 +116,39 @@ export function TaskForm({
     const byName = options.find((item) => item.name.toLowerCase() === normalized.toLowerCase());
     return byName?.name ?? normalized;
   }
+
+  function appendMissingDepartmentOption(rows: Array<{ id: string; code: string; name: string }>, value?: string | null) {
+    const normalized = value?.trim();
+    if (!normalized) return rows;
+    const exists = rows.some((item) => item.id === normalized || item.code === normalized || item.name.toLowerCase() === normalized.toLowerCase());
+    return exists ? rows : [{ id: `current-${normalized}`, code: normalized, name: normalized }, ...rows];
+  }
+
+  function appendMissingCountryOption(rows: Array<{ id: string; code: string; name: string }>, value?: string | null) {
+    const normalized = value?.trim();
+    if (!normalized) return rows;
+    const exists = rows.some((item) => item.id === normalized || item.code === normalized || item.name.toLowerCase() === normalized.toLowerCase());
+    return exists ? rows : [{ id: `current-${normalized}`, code: normalized, name: normalized }, ...rows];
+  }
+
+  function getProfileLabel(profile?: { full_name?: string | null; email?: string | null } | null) {
+    const fullName = profile?.full_name?.trim() ?? "";
+    const isPlaceholder = !fullName || fullName.toLowerCase() === "workspace owner" || fullName.toLowerCase() === "owner";
+    return isPlaceholder ? profile?.email?.trim() || "Usuario del workspace" : fullName;
+  }
   const resetValues = useMemo(
     () => ({
       title: initialData?.title ?? "",
       description: initialData?.description ?? "",
       status: initialData?.status ?? "en_proceso",
       priority: initialData?.priority ?? "media",
-      department: initialData?.department ?? "",
+      department: normalizeDepartmentValue(initialData?.department, departmentOptions),
       clientName: initialData?.clientName ?? "",
       dueDate: initialData?.dueDate ?? "",
       projectId: initialData?.projectId ?? "",
-      country: initialData?.country ?? "",
+      country: normalizeCountryValue(initialData?.country, countryOptions),
     }),
-    [initialData],
+    [initialData, departmentOptions, countryOptions],
   );
 
   useEffect(() => {
@@ -141,21 +162,24 @@ export function TaskForm({
           setDepartmentOptions([]);
           setCountryOptions([]);
           setClientOptions([]);
+          setWorkspaceOwnerLabel("Sin sesión");
           setLoadingProjects(false);
         }
         return;
       }
-      const [projectRows, departmentRows, countryRows, clientRows] = await Promise.all([
-        fetchWorkspaceProjects(workspace.supabase, workspace.user.id, workspace.activeOrganizationId, "edit"),
-        fetchWorkspaceDepartments(workspace.supabase, workspace.user.id, workspace.activeOrganizationId),
-        fetchWorkspaceCountries(workspace.supabase, workspace.user.id, workspace.activeOrganizationId),
-        fetchWorkspaceClientsDirectory(workspace.supabase, workspace.user.id, workspace.activeOrganizationId),
+      const [projectRows, departmentRows, countryRows, clientRows, profileRes] = await Promise.all([
+        fetchWorkspaceProjects(workspace.supabase, workspace.user.id, isEdit ? (initialData?.organizationId ?? null) : workspace.activeOrganizationId, "edit"),
+        fetchWorkspaceDepartments(workspace.supabase, workspace.user.id, isEdit ? (initialData?.organizationId ?? null) : workspace.activeOrganizationId),
+        fetchWorkspaceCountries(workspace.supabase, workspace.user.id, isEdit ? (initialData?.organizationId ?? null) : workspace.activeOrganizationId),
+        fetchWorkspaceClientsDirectory(workspace.supabase, workspace.user.id, isEdit ? (initialData?.organizationId ?? null) : workspace.activeOrganizationId),
+        workspace.supabase.from("profiles").select("full_name,email").eq("id", workspace.user.id).maybeSingle(),
       ]);
       if (active) {
         setProjects(projectRows);
-        setDepartmentOptions(departmentRows);
-        setCountryOptions(countryRows);
+        setDepartmentOptions(appendMissingDepartmentOption(departmentRows, initialData?.department));
+        setCountryOptions(appendMissingCountryOption(countryRows, initialData?.country));
         setClientOptions(clientRows);
+        setWorkspaceOwnerLabel(getProfileLabel(profileRes.data ?? { email: workspace.user.email ?? null }));
         setLoadingProjects(false);
       }
     };
@@ -163,7 +187,7 @@ export function TaskForm({
     return () => {
       active = false;
     };
-  }, []);
+  }, [initialData?.department, initialData?.country, initialData?.organizationId, isEdit]);
 
 
   useEffect(() => {
@@ -183,6 +207,7 @@ export function TaskForm({
     const workspace = await getClientWorkspaceContext();
     const supabase = workspace.supabase;
     const user = workspace.user;
+    const formOrganizationId = isEdit ? (initialData?.organizationId ?? null) : workspace.activeOrganizationId;
 
     if (!user) {
       setServerError("Sesión no válida.");
@@ -192,7 +217,7 @@ export function TaskForm({
 
     let departmentId: number | null = null;
     try {
-      departmentId = await getWorkspaceDepartmentIdByCode({ code: values.department, userId: user.id, organizationId: workspace.activeOrganizationId });
+      departmentId = await getWorkspaceDepartmentIdByCode({ code: values.department, userId: user.id, organizationId: formOrganizationId });
     } catch (error) {
       setServerError(error instanceof Error ? error.message : "No fue posible cargar el departamento.");
       setMessage(null);
@@ -200,11 +225,11 @@ export function TaskForm({
     }
 
     const clientName = values.clientName?.trim() || null;
-    const clientId = await findWorkspaceClientId(supabase, user.id, workspace.activeOrganizationId, clientName);
-    const access = await getClientAccessSummary(supabase as any, user.id, workspace.activeOrganizationId);
+    const clientId = await findWorkspaceClientId(supabase, user.id, formOrganizationId, clientName);
+    const access = await getClientAccessSummary(supabase as any, user.id, formOrganizationId);
     const selectedProject = await resolveProjectEntityContext(supabase as any, values.projectId || null);
 
-    if (workspace.activeOrganizationId && clientId && !hasClientAccess(access, clientId, "edit")) {
+    if (formOrganizationId && clientId && !hasClientAccess(access, clientId, "edit")) {
       setServerError("No tienes permisos para crear o editar tareas sobre ese cliente.");
       setMessage(null);
       return;
@@ -216,7 +241,7 @@ export function TaskForm({
         setMessage(null);
         return;
       }
-      if (workspace.activeOrganizationId && !hasClientAccess(access, selectedProject.clientId ?? null, "edit")) {
+      if (formOrganizationId && !hasClientAccess(access, selectedProject.clientId ?? null, "edit")) {
         setServerError("No tienes permisos para crear o editar tareas en el proyecto seleccionado.");
         setMessage(null);
         return;
@@ -227,7 +252,7 @@ export function TaskForm({
       selectedProject,
       selectedClientId: clientId,
       selectedClientName: clientName,
-      activeOrganizationId: workspace.activeOrganizationId,
+      activeOrganizationId: formOrganizationId,
     });
 
     if (!integrity.ok) {
@@ -253,7 +278,7 @@ export function TaskForm({
       ? await supabase.from("tasks").update(payload).eq("id", taskId!)
       : await supabase
           .from("tasks")
-          .insert({ owner_id: user.id, organization_id: workspace.activeOrganizationId, ...payload })
+          .insert({ owner_id: user.id, organization_id: formOrganizationId, ...payload })
           .select("id")
           .single();
 
@@ -278,14 +303,14 @@ export function TaskForm({
           client_id: payload.client_id ?? undefined,
           client_name: payload.client_name ?? undefined,
           project_id: values.projectId || undefined,
-          organization_id: workspace.activeOrganizationId,
+          organization_id: formOrganizationId,
           country: payload.country ?? undefined,
         },
       });
     }
     void trackEvent({
       eventName: isEdit ? "update_task" : "create_task",
-      organizationId: workspace.activeOrganizationId,
+      organizationId: formOrganizationId,
       metadata: {
         task_id: activityEntityId,
         client_id: payload.client_id,
@@ -398,7 +423,7 @@ export function TaskForm({
               </Select>
             </FieldCard>
             <FieldCard label="Responsable" icon={<UserRound className="h-4 w-4" />}>
-              <Input value="Workspace owner" readOnly className="h-12 rounded-2xl border-[#E5EAF1] bg-slate-50 font-semibold text-slate-500" />
+              <Input value={workspaceOwnerLabel} readOnly className="h-12 rounded-2xl border-[#E5EAF1] bg-slate-50 font-semibold text-slate-500" />
             </FieldCard>
             <FieldCard label="Departamento" icon={<FileText className="h-4 w-4" />}>
               <Select {...register("department")} className="h-12 rounded-2xl border-[#E5EAF1] bg-white font-semibold">

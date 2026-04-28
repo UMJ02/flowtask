@@ -24,7 +24,7 @@ type ProjectValues = z.infer<typeof projectSchema>;
 
 interface ProjectFormProps {
   projectId?: string;
-  initialData?: Partial<ProjectValues> & { shareToken?: string | null };
+  initialData?: Partial<ProjectValues> & { shareToken?: string | null; organizationId?: string | null; ownerId?: string | null };
   submitLabel?: string;
   successMessage?: string;
   redirectTo?: AppRoute;
@@ -90,6 +90,20 @@ export function ProjectForm({
     return byName?.name ?? normalized;
   }
 
+  function appendMissingDepartmentOption(rows: Array<{ id: string; code: string; name: string }>, value?: string | null) {
+    const normalized = value?.trim();
+    if (!normalized) return rows;
+    const exists = rows.some((item) => item.id === normalized || item.code === normalized || item.name.toLowerCase() === normalized.toLowerCase());
+    return exists ? rows : [{ id: `current-${normalized}`, code: normalized, name: normalized }, ...rows];
+  }
+
+  function appendMissingCountryOption(rows: Array<{ id: string; code: string; name: string }>, value?: string | null) {
+    const normalized = value?.trim();
+    if (!normalized) return rows;
+    const exists = rows.some((item) => item.id === normalized || item.code === normalized || item.name.toLowerCase() === normalized.toLowerCase());
+    return exists ? rows : [{ id: `current-${normalized}`, code: normalized, name: normalized }, ...rows];
+  }
+
 
   useEffect(() => {
     let active = true;
@@ -97,18 +111,18 @@ export function ProjectForm({
       const workspace = await getClientWorkspaceContext();
       if (!workspace.user) return;
       const [departmentRows, countryRows, clientRows] = await Promise.all([
-        fetchWorkspaceDepartments(workspace.supabase, workspace.user.id, workspace.activeOrganizationId),
-        fetchWorkspaceCountries(workspace.supabase, workspace.user.id, workspace.activeOrganizationId),
-        fetchWorkspaceClientsDirectory(workspace.supabase, workspace.user.id, workspace.activeOrganizationId),
+        fetchWorkspaceDepartments(workspace.supabase, workspace.user.id, isEdit ? (initialData?.organizationId ?? null) : workspace.activeOrganizationId),
+        fetchWorkspaceCountries(workspace.supabase, workspace.user.id, isEdit ? (initialData?.organizationId ?? null) : workspace.activeOrganizationId),
+        fetchWorkspaceClientsDirectory(workspace.supabase, workspace.user.id, isEdit ? (initialData?.organizationId ?? null) : workspace.activeOrganizationId),
       ]);
       if (!active) return;
-      setDepartmentOptions(departmentRows);
-      setCountryOptions(countryRows);
+      setDepartmentOptions(appendMissingDepartmentOption(departmentRows, initialData?.department));
+      setCountryOptions(appendMissingCountryOption(countryRows, initialData?.country));
       setClientOptions(clientRows);
     };
     void loadRegistryOptions();
     return () => { active = false; };
-  }, []);
+  }, [initialData?.department, initialData?.country, initialData?.organizationId, isEdit]);
 
 
   useEffect(() => {
@@ -128,6 +142,7 @@ export function ProjectForm({
     const workspace = await getClientWorkspaceContext();
     const supabase = workspace.supabase;
     const user = workspace.user;
+    const formOrganizationId = isEdit ? (initialData?.organizationId ?? null) : workspace.activeOrganizationId;
 
     if (!user) {
       setServerError("Sesión no válida.");
@@ -137,7 +152,7 @@ export function ProjectForm({
 
     let departmentId: number | null = null;
     try {
-      departmentId = await getWorkspaceDepartmentIdByCode({ code: values.department, userId: user.id, organizationId: workspace.activeOrganizationId });
+      departmentId = await getWorkspaceDepartmentIdByCode({ code: values.department, userId: user.id, organizationId: formOrganizationId });
     } catch (error) {
       setServerError(error instanceof Error ? error.message : "No fue posible cargar el departamento.");
       setMessage(null);
@@ -145,10 +160,10 @@ export function ProjectForm({
     }
 
     const clientName = values.clientName?.trim() || null;
-    const clientId = await findWorkspaceClientId(supabase, user.id, workspace.activeOrganizationId, clientName);
-    const access = await getClientAccessSummary(supabase as any, user.id, workspace.activeOrganizationId);
+    const clientId = await findWorkspaceClientId(supabase, user.id, formOrganizationId, clientName);
+    const access = await getClientAccessSummary(supabase as any, user.id, formOrganizationId);
 
-    if (workspace.activeOrganizationId && clientId && !hasClientAccess(access, clientId, "edit")) {
+    if (formOrganizationId && clientId && !hasClientAccess(access, clientId, "edit")) {
       setServerError("No tienes permisos para crear o editar proyectos sobre ese cliente.");
       setMessage(null);
       return;
@@ -190,7 +205,7 @@ export function ProjectForm({
           status: payload.status,
           client_id: clientId ?? undefined,
           client_name: normalizedClientName ?? undefined,
-          organization_id: workspace.activeOrganizationId,
+          organization_id: formOrganizationId,
           country: payload.country ?? undefined,
         },
       });
@@ -200,7 +215,7 @@ export function ProjectForm({
         .from("projects")
         .insert({
           owner_id: user.id,
-          organization_id: workspace.activeOrganizationId,
+          organization_id: formOrganizationId,
           ...payload,
           share_token: shareToken,
         })
@@ -231,7 +246,7 @@ export function ProjectForm({
             status: payload.status,
             client_id: clientId ?? undefined,
             client_name: normalizedClientName ?? undefined,
-            organization_id: workspace.activeOrganizationId,
+            organization_id: formOrganizationId,
             country: payload.country ?? undefined,
           },
         });
@@ -240,7 +255,7 @@ export function ProjectForm({
 
     void trackEvent({
       eventName: isEdit ? "update_project" : "create_project",
-      organizationId: workspace.activeOrganizationId,
+      organizationId: formOrganizationId,
       metadata: {
         project_id: isEdit ? projectId ?? null : createdProjectId,
         client_id: clientId,
@@ -341,11 +356,11 @@ export function ProjectForm({
               title: initialData?.title ?? "",
               description: initialData?.description ?? "",
               status: initialData?.status ?? "activo",
-              department: initialData?.department ?? "",
+              department: normalizeDepartmentValue(initialData?.department, departmentOptions),
               clientName: initialData?.clientName ?? "",
               dueDate: initialData?.dueDate ?? "",
               isCollaborative: initialData?.isCollaborative ?? false,
-              country: initialData?.country ?? "",
+              country: normalizeCountryValue(initialData?.country, countryOptions),
             })
           }
         >

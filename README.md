@@ -1,4 +1,4 @@
-# FlowTask — V58.15.3.1 Task Detail Premium 2026
+# FlowTask — V58.15.3.3 Workspace Scope Catalog Fix
 
 Workspace unificado: Radar inteligente, KPIs, Kanban central y widgets rápidos sobre la base estable V58.12.6.
 
