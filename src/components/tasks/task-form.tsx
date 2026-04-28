@@ -392,7 +392,7 @@ export function TaskForm({
                 <label className="text-xs font-black uppercase tracking-[0.18em] text-slate-500">Título</label>
                 <span className="text-xs font-bold text-slate-400">{watchedTitle.length} / 120</span>
               </div>
-              <Input {...register("title")} placeholder="Ej. Diseñar propuesta cliente" className="h-auto border-0 bg-transparent px-0 py-0 text-2xl font-black tracking-[-0.04em] shadow-none focus:border-0 focus:ring-0 sm:text-3xl" />
+              <Input {...register("title")} placeholder="Ej. Diseñar propuesta cliente" className="min-h-[64px] w-full rounded-[18px] border border-[#E5EAF1] bg-white px-5 py-3 text-[28px] font-black leading-[1.15] tracking-[-0.035em] text-[#0F172A] shadow-none outline-none transition placeholder:text-slate-400 focus:border-[#16C784] focus:ring-4 focus:ring-emerald-500/10 sm:text-[34px]" />
               {errors.title ? <p className="mt-3 text-sm font-semibold text-red-600">{errors.title.message}</p> : null}
             </div>
 

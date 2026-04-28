@@ -1,4 +1,4 @@
-# FlowTask — V58.15.3.8 Task Editor Project Client Media
+# FlowTask — V58.15.3.9 Task Editor Project Client Media
 
 Workspace unificado: Radar inteligente, KPIs, Kanban central y widgets rápidos sobre la base estable V58.12.6.
 

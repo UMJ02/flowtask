@@ -64,6 +64,9 @@ export function hasClientAccess(
   clientId?: string | null,
   mode: "view" | "edit" | "manage_members" = "view",
 ) {
+  // Personal workspace has no organization role/permission matrix.
+  // In that world, client_id is only a registry relation and must not hide rows.
+  if (summary.role === null) return true;
   if (!clientId) return true;
   if (summary.privileged) return true;
   const current = summary.byClientId.get(clientId);

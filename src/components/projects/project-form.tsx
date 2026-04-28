@@ -196,7 +196,7 @@ export function ProjectForm({
       is_collaborative: values.isCollaborative,
       share_enabled: values.isCollaborative,
       country: (countryOptions.find((item) => item.name === values.country || item.code === values.country)?.name ?? values.country) || null,
-      image_url: imageUrl,
+      ...(imageUrl ? { image_url: imageUrl } : {}),
     };
 
     let createdProjectId: string | null = null;
