@@ -67,8 +67,6 @@ export function ProjectForm({
   });
 
 
-  const watchedDepartment = useWatch({ control, name: "department" });
-  const watchedCountry = useWatch({ control, name: "country" });
 
   function normalizeDepartmentValue(value?: string | null, options: Array<{ id: string; code: string; name: string }> = []) {
     const normalized = value?.trim();
@@ -127,14 +125,11 @@ export function ProjectForm({
 
   useEffect(() => {
     if (!departmentOptions.length && !countryOptions.length) return;
-    const normalizedDepartment = normalizeDepartmentValue(initialData?.department, departmentOptions);
-    const normalizedCountry = normalizeCountryValue(initialData?.country, countryOptions);
-
-    if (normalizedDepartment !== (watchedDepartment ?? '') || normalizedCountry !== (watchedCountry ?? '')) {
-      setValue("department", normalizedDepartment, { shouldDirty: false, shouldTouch: false });
-      setValue("country", normalizedCountry, { shouldDirty: false, shouldTouch: false });
-    }
-  }, [initialData?.department, initialData?.country, departmentOptions, countryOptions, setValue, watchedDepartment, watchedCountry]);
+    setValue("department", normalizeDepartmentValue(initialData?.department, departmentOptions), { shouldDirty: false, shouldTouch: false });
+    setValue("country", normalizeCountryValue(initialData?.country, countryOptions), { shouldDirty: false, shouldTouch: false });
+    // Do not depend on watched values here: otherwise every manual select change
+    // gets overwritten by the saved initial value and the field feels locked.
+  }, [initialData?.department, initialData?.country, departmentOptions, countryOptions, setValue]);
 
   const onSubmit = async (values: ProjectValues) => {
     setMessage(isEdit ? "Guardando cambios…" : "Creando proyecto…");
