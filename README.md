@@ -1,3 +1,7 @@
+# FlowTask — V58.16.3 Ver Proyecto Premium 2026 Design Match
+
+Rediseño afinado de Ver Proyecto basado en el PDF descriptivo: hero premium, KPI row, timeline con builder contenido, tareas internas inline, actividad humanizada y conexión a datos actuales.
+
 # FlowTask — V58.16.2-ver-proyecto-premium-2026 Project Detail Tasks Inline Architecture
 
 Media final para proyectos y clientes: imagen de proyecto en listado/detalle/form, avatar de cliente en registros y avatares, con migración `projects.image_url` y `clients.avatar_url` ya aplicada.

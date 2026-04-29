@@ -198,6 +198,7 @@ function ProjectHeroCard({ project, tasks, members, currentQuery }: { project: a
   return (
     <section className="relative overflow-hidden rounded-[24px] border border-[#E7EDF5] bg-white p-6 shadow-[0_12px_35px_rgba(15,23,42,0.05)]">
       <div className="pointer-events-none absolute right-0 top-0 h-full w-1/2 bg-gradient-to-l from-[#ECFDF5] via-[#EFF6FF]/50 to-transparent" />
+      <div className="pointer-events-none absolute right-6 top-6 h-[78%] w-[34%] rounded-[28px] bg-[radial-gradient(circle_at_1px_1px,rgba(22,199,132,0.13)_1px,transparent_0)] [background-size:14px_14px] opacity-70" />
       <div className="relative grid gap-6 lg:grid-cols-[230px_minmax(0,1fr)_360px]">
         <div className="relative h-[190px] overflow-hidden rounded-[20px] bg-slate-100">
           <Image src={cover} alt={project.title || "Proyecto FlowTask"} fill className="object-cover" sizes="230px" priority={false} unoptimized={Boolean(project.image_url)} />
@@ -323,7 +324,7 @@ function ProjectActivityCard({ activity }: { activity: ActivityItem[] }) {
 
 export function ProjectDetailPro({ project, tasks, members, attachments, activity, currentQuery = "", canCreateTask = false }: ProjectDetailProProps) {
   return (
-    <div id="resumen" className="mx-auto max-w-[1440px] space-y-6 px-0 py-1 text-[#0F172A]">
+    <div id="resumen" className="mx-auto max-w-[1440px] space-y-6 px-4 py-5 text-[#0F172A] sm:px-6 lg:px-6">
       <nav className="flex flex-wrap items-center gap-2 text-sm font-black text-[#64748B]">
         <Link href="/app/projects" className="transition hover:text-[#0F172A]">Proyectos</Link><span>›</span><span className="text-[#0F172A]">{project.title}</span>
       </nav>
