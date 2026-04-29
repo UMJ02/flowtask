@@ -42,7 +42,7 @@ export async function getWorkspaceOnboardingSummary(): Promise<WorkspaceOnboardi
 
   const organizationId = organizationContext?.activeOrganization?.id ?? null;
   const role = organizationContext?.activeOrganization?.role ?? null;
-  const organizationName = organizationContext?.activeOrganization?.name ?? "Sin organización activa";
+  const organizationName = organizationContext?.activeOrganization?.name ?? "Workspace personal";
 
   const [organizationMetrics, rolesData, projectsRes, tasksRes] = await Promise.all([
     getOrganizationMetrics(organizationId),
@@ -86,12 +86,14 @@ export async function getWorkspaceOnboardingSummary(): Promise<WorkspaceOnboardi
       category: "foundation",
     },
     {
-      id: "organization",
-      title: "Define organización activa",
-      description: "Confirma la organización desde donde vas a trabajar para mantener el contexto del workspace.",
-      href: "/app/organization",
-      cta: "Revisar organización",
-      done: hasOrganization,
+      id: "workspace-mode",
+      title: hasOrganization ? "Confirma el workspace activo" : "Trabaja desde tu espacio personal",
+      description: hasOrganization
+        ? "Estás operando dentro de una organización elegida explícitamente."
+        : "Flowtask inicia siempre desde la cuenta individual; las organizaciones se crean después como espacios administrados por el usuario.",
+      href: hasOrganization ? "/app/organization" : "/app/dashboard",
+      cta: hasOrganization ? "Revisar organización" : "Ir al dashboard",
+      done: true,
       category: "foundation",
     },
     {
@@ -146,8 +148,8 @@ export async function getWorkspaceOnboardingSummary(): Promise<WorkspaceOnboardi
   const score = total ? Math.round((completed / total) * 100) : 0;
 
   const recommendations = [
-    !hasOrganization ? "Activa o crea una organización antes de seguir para mantener el workspace con scoping correcto." : null,
-    !hasClients ? "Carga por lo menos un cliente para que la capa operativa tenga un punto real de trabajo." : null,
+    !hasOrganization ? "Puedes seguir en modo personal; crea una organización solo cuando necesites equipo, clientes compartidos o permisos." : null,
+    !hasClients && hasOrganization ? "Carga por lo menos un cliente para que la capa operativa de la organización tenga un punto real de trabajo." : null,
     !hasProjects ? "Crea un proyecto inicial para habilitar seguimiento, watchlist y reportes con señal útil." : null,
     !hasTasks ? "Registra tareas activas para que dashboard, kanban y vencimientos muestren prioridad real." : null,
     !automationEnabled ? "Configura al menos un canal o rutina de notificaciones para empezar a automatizar seguimiento." : null,

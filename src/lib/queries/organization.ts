@@ -35,10 +35,9 @@ export async function getOrganizationContext() {
 
   const cookieStore = await cookies();
   const preference = normalizeWorkspacePreference(cookieStore.get(ACTIVE_WORKSPACE_COOKIE)?.value ?? null);
-  const defaultOrganization = organizations[0] ?? null;
-  const activeOrganization = preference === PERSONAL_WORKSPACE_VALUE
-    ? null
-    : (organizations.find((item: { id: string }) => item.id === preference) ?? defaultOrganization);
+  const activeOrganization = preference && preference !== PERSONAL_WORKSPACE_VALUE
+    ? (organizations.find((item: { id: string }) => item.id === preference) ?? null)
+    : null;
   const access = deriveOrganizationAccess(activeOrganization?.role ?? null);
 
   const { data: clientPermissions } = activeOrganization
