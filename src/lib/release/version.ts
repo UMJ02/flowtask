@@ -1,3 +1,3 @@
-export const APP_VERSION = "58.17.1-account-model-db-contract-fix";
-export const APP_RELEASE_NAME = "v58.17.1 Account Model & DB Contract Fix";
-export const APP_RELEASE_STAGE = "release-candidate";
+export const APP_VERSION = "58.17.1a-supabase-migration-hotfix";
+export const APP_RELEASE_NAME = "v58.17.1a Supabase Migration Hotfix";
+export const APP_RELEASE_STAGE = "hotfix";
