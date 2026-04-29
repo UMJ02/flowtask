@@ -59,18 +59,14 @@ export async function getActiveMembership() {
     };
   }).filter((membership: any) => !membership.deletedAt);
 
+  const fallbackMembership = normalizedMemberships[0] ?? null;
   const matchingMembership = preference && preference !== PERSONAL_WORKSPACE_VALUE
     ? normalizedMemberships.find((membership: ActiveMembershipSummary & { deletedAt?: string | null }) => membership.organizationId === preference) ?? null
     : null;
 
-  // v58.17.1 Account Model Gate:
-  // The authenticated individual account is always the primary identity.
-  // A user may belong to many organizations, but an organization is only active
-  // when the user explicitly chooses that workspace. No cookie/no preference
-  // must resolve to the personal workspace to prevent accidental data leakage.
   return {
     supabase,
     user,
-    membership: matchingMembership,
+    membership: preference === PERSONAL_WORKSPACE_VALUE ? null : (matchingMembership ?? fallbackMembership),
   };
 }
