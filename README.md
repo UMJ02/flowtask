@@ -1,4 +1,4 @@
-# FlowTask — V58.16 Project Task Architecture
+# FlowTask — V58.16.1 Project Detail Tasks Inline Architecture
 
 Media final para proyectos y clientes: imagen de proyecto en listado/detalle/form, avatar de cliente en registros y avatares, con migración `projects.image_url` y `clients.avatar_url` ya aplicada.
 
@@ -25,4 +25,4 @@ npm run vercel:build
 ```
 
 3. Subir a GitHub y desplegar en Vercel.
-\n## V58.16 Project Task Architecture\n\nSeparación entre tareas simples y tareas hijas de proyectos.
+\n## V58.16.1 Project Detail Tasks Inline Architecture\n\nSeparación entre tareas simples y tareas hijas de proyectos.

@@ -33,8 +33,6 @@ export default async function ProjectDetailPage({
 
   if (!project) notFound();
 
-  const createTaskHref = `/app/tasks/new?projectId=${encodeURIComponent(project.id)}${project.client_name ? `&clientName=${encodeURIComponent(project.client_name)}` : ''}`;
-
   return (
     <ProjectDetailPro
       project={project}
@@ -43,7 +41,6 @@ export default async function ProjectDetailPage({
       attachments={attachments}
       activity={access.canViewActivity ? activity : []}
       currentQuery={queryString}
-      createTaskHref={createTaskHref}
       canCreateTask={access.canCreateTask}
     />
   );

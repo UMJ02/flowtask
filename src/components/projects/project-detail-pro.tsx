@@ -21,6 +21,7 @@ import { projectEditRoute, taskDetailRoute } from "@/lib/navigation/routes";
 import { formatDate } from "@/lib/utils/dates";
 import { CopyCurrentUrlButton } from "@/components/ui/copy-current-url-button";
 import { ProjectPlanningTimeline } from "@/components/projects/project-planning-timeline";
+import { ProjectInlineTasks } from "@/components/projects/project-inline-tasks";
 
 const cardClass = "rounded-[24px] border border-[#E5EAF1] bg-white shadow-[0_12px_30px_rgba(15,23,42,0.04)]";
 
@@ -32,7 +33,7 @@ type ProjectDetailProProps = {
   activity: ActivityItem[];
   currentQuery?: string;
   canCreateTask?: boolean;
-  createTaskHref: string;
+  createTaskHref?: string;
 };
 
 function statusLabel(value?: string | null) {
@@ -101,11 +102,23 @@ function attachmentIcon(fileName?: string | null) {
   return <FileText className="h-4 w-4" />;
 }
 
+const projectActivityLabels: Record<string, string> = {
+  project_updated: "Proyecto actualizado",
+  project_status_changed: "Estado del proyecto actualizado",
+  project_task_added: "Nueva tarea interna creada",
+  project_task_updated: "Tarea interna actualizada",
+  project_task_completed: "Tarea interna completada",
+  project_task_deleted: "Tarea interna eliminada",
+  project_file_uploaded: "Archivo subido al proyecto",
+  project_member_added: "Miembro agregado al proyecto",
+  project_view_saved: "Vista guardada",
+};
+
 function activityCopy(item: ActivityItem) {
-  const action = item.action.replaceAll("_", " ");
+  const label = projectActivityLabels[item.action] ?? "Actividad registrada";
   const title = typeof item.metadata?.title === "string" ? item.metadata.title : null;
   const name = typeof item.metadata?.name === "string" ? item.metadata.name : null;
-  return title || name ? `${action}: ${title ?? name}` : action;
+  return title || name ? `${label}: ${title ?? name}` : label;
 }
 
 function ProjectStatsRow({ tasks }: { tasks: any[] }) {
@@ -349,7 +362,7 @@ function ProjectActivityCard({ activity }: { activity: ActivityItem[] }) {
   );
 }
 
-export function ProjectDetailPro({ project, tasks, members, attachments, activity, currentQuery = "", createTaskHref, canCreateTask = false }: ProjectDetailProProps) {
+export function ProjectDetailPro({ project, tasks, members, attachments, activity, currentQuery = "", canCreateTask = false }: ProjectDetailProProps) {
   return (
     <div className="space-y-5">
       <div className="flex flex-wrap items-center gap-2 text-sm font-bold text-[#64748B]">
@@ -365,18 +378,18 @@ export function ProjectDetailPro({ project, tasks, members, attachments, activit
 
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_380px]">
         <div className="space-y-5">
-          <RecentTasksCard tasks={tasks} />
+          <ProjectInlineTasks project={project} initialTasks={tasks} members={members} canManage={canCreateTask} />
           <ProjectActivityCard activity={activity} />
         </div>
         <aside className="space-y-5 xl:sticky xl:top-6 xl:self-start">
           <div className={`${cardClass} p-5`}>
             <p className="text-xs font-black uppercase tracking-[0.18em] text-[#64748B]">Acción rápida</p>
-            <h3 className="mt-2 text-lg font-black text-[#0F172A]">Crear tarea vinculada</h3>
-            <p className="mt-1 text-sm leading-6 text-[#64748B]">Abre una nueva tarea ya conectada con este proyecto para mantener el flujo limpio.</p>
-            <Link href={createTaskHref} aria-disabled={!canCreateTask} className={`mt-4 inline-flex h-11 w-full items-center justify-center gap-2 rounded-[14px] text-sm font-black ${canCreateTask ? "bg-[#16C784] text-white shadow-[0_12px_24px_rgba(22,199,132,0.22)]" : "pointer-events-none bg-slate-100 text-slate-400"}`}>
+            <h3 className="mt-2 text-lg font-black text-[#0F172A]">Crear tarea interna</h3>
+            <p className="mt-1 text-sm leading-6 text-[#64748B]">Las tareas de proyecto se crean y editan dentro de esta vista. No redirigen al módulo Tareas.</p>
+            <a href="#tareas" className={`mt-4 inline-flex h-11 w-full items-center justify-center gap-2 rounded-[14px] text-sm font-black ${canCreateTask ? "bg-[#16C784] text-white shadow-[0_12px_24px_rgba(22,199,132,0.22)]" : "pointer-events-none bg-slate-100 text-slate-400"}`}>
               <Plus className="h-4 w-4" />
-              Nueva tarea vinculada
-            </Link>
+              Ir a tareas internas
+            </a>
           </div>
           <ProjectMembersCard members={members} />
           <RecentFilesCard attachments={attachments} />

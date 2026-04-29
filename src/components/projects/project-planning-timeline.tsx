@@ -1,10 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Link from "next/link";
 import { CalendarDays, ChevronDown, Download, Eye, Link2, Save, Settings2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import { taskDetailRoute } from "@/lib/navigation/routes";
 import { cn } from "@/lib/utils/classnames";
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
@@ -212,7 +210,7 @@ export function ProjectPlanningTimeline({ project, tasks, currentQuery = "" }: P
                         <div key={task.id} className="flex h-[64px] items-center gap-3 border-b border-[#EEF2F7] px-4 last:border-b-0">
                           <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-100 text-xs font-black text-slate-700">{String(task.client_name ?? task.title ?? "FT").slice(0, 1).toUpperCase()}</span>
                           <div className="min-w-0">
-                            <Link href={taskDetailRoute(task.id, currentQuery)} className="block truncate text-sm font-black text-[#0F172A] hover:text-emerald-700">{task.title}</Link>
+                            <p className="block truncate text-sm font-black text-[#0F172A]">{task.title}</p>
                             <p className="truncate text-xs font-semibold text-[#64748B]">{statusLabel(task.status)} · {priorityLabel(task.priority)}</p>
                           </div>
                         </div>
@@ -232,9 +230,9 @@ export function ProjectPlanningTimeline({ project, tasks, currentQuery = "" }: P
                         return (
                           <div key={task.id} className="relative h-[64px] border-b border-[#EEF2F7] last:border-b-0">
                             <div className="absolute inset-0 grid" style={{ gridTemplateColumns: `repeat(${days.length}, minmax(40px, 1fr))` }}>{days.map((day) => <div key={day.toISOString()} className="border-r border-[#F1F5F9] last:border-r-0" />)}</div>
-                            <Link href={taskDetailRoute(task.id, currentQuery)} className="absolute top-1/2 h-5 -translate-y-1/2 overflow-hidden rounded-full bg-slate-100 shadow-[0_8px_18px_rgba(15,23,42,0.12)] transition hover:scale-[1.02]" style={barStyle(task, range.start, range.end)} title={`${task.title} · ${pct}%`}>
+                            <span className="absolute top-1/2 h-5 -translate-y-1/2 overflow-hidden rounded-full bg-slate-100 shadow-[0_8px_18px_rgba(15,23,42,0.12)]" style={barStyle(task, range.start, range.end)} title={`${task.title} · ${pct}%`}>
                               <span className={cn("block h-full rounded-full", colorClass(task, colorBy))} style={{ width: `${pct}%` }} />
-                            </Link>
+                            </span>
                           </div>
                         );
                       })}

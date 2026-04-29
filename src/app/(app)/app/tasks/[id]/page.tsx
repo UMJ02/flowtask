@@ -226,6 +226,7 @@ export default async function TaskDetailPage({
 
           <TaskChecklistCard taskId={task.id} initialItems={checklistItems} canManage={access.canEdit || access.isAssignee} />
 
+          {!task.project_id ? (
           <section className="rounded-[24px] border border-[#FDECC8] bg-[#FFF8E8] p-6 shadow-[0_10px_30px_rgba(15,23,42,0.04)]">
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
               <div>
@@ -236,6 +237,7 @@ export default async function TaskDetailPage({
               <a href={`/app/projects/new?sourceTaskId=${task.id}`} className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-[14px] bg-[#050B18] px-5 text-sm font-black text-white hover:bg-slate-900">Convertir en proyecto <ArrowRight className="h-4 w-4" /></a>
             </div>
           </section>
+          ) : null}
 
           <TaskQuickCommentsCard taskId={task.id} comments={comments as any[]} canComment={access.canComment} />
 

@@ -84,6 +84,7 @@ export async function getProjects(filters: ProjectFiltersInput = {}): Promise<Pr
           country,
           is_collaborative,
           client_id,
+          department_id,
           image_url,
           country,
           created_at,
@@ -223,7 +224,7 @@ export async function getProjectTasks(projectId: string) {
   const access = await getClientAccessSummaryCached(user.id, activeOrganizationId);
   const { data, error } = await supabase
     .from("tasks")
-    .select("id,title,status,client_name,due_date,priority,completed_at,client_id")
+    .select("id,title,status,client_name,due_date,priority,completed_at,client_id,project_id,created_at,task_assignees ( user_id )")
     .eq("project_id", projectId)
     .order("created_at", { ascending: false });
 
