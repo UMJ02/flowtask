@@ -241,7 +241,7 @@ export function ProjectInlineTasks({ project, initialTasks, members, canManage =
       </div>
 
       <div className="mb-5 grid gap-3 rounded-[22px] border border-[#E7EDF5] bg-[#FBFCFE] p-3 lg:grid-cols-[minmax(0,1fr)_160px_150px_190px_auto] lg:items-center">
-        <input value={draft.title} onChange={(e) => setDraft((current) => ({ ...current, title: e.target.value }))} disabled={!canManage} className="h-12 rounded-[16px] border border-[#E7EDF5] bg-white px-4 text-sm font-bold text-[#0F172A] outline-none focus:border-[#16C784] focus:ring-4 focus:ring-[#16C784]/10" placeholder="Nueva tarea del proyecto..." />
+        <input value={draft.title} onChange={(e) => setDraft((current) => ({ ...current, title: e.target.value }))} disabled={!canManage} className="h-12 rounded-[16px] border border-[#E7EDF5] bg-white px-4 text-sm font-bold text-[#0F172A] outline-none focus:border-[#16C784] focus:ring-4 focus:ring-[#16C784]/10" placeholder="Nueva tarea interna..." />
         <input type="date" value={draft.dueDate} onChange={(e) => setDraft((current) => ({ ...current, dueDate: e.target.value }))} disabled={!canManage} className="h-12 rounded-[16px] border border-[#E7EDF5] bg-white px-3 text-sm font-bold text-[#0F172A] outline-none" />
         <select value={draft.priority} onChange={(e) => setDraft((current) => ({ ...current, priority: e.target.value }))} disabled={!canManage} className="h-12 rounded-[16px] border border-[#E7EDF5] bg-white px-3 text-sm font-bold text-[#0F172A] outline-none">
           <option value="media">Media</option><option value="alta">Alta</option><option value="baja">Baja</option>

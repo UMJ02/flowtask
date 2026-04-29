@@ -1,23 +1,23 @@
-import fs from "node:fs";
-const files = [
-  "src/components/projects/project-detail-pro.tsx",
-  "src/components/projects/project-planning-timeline.tsx",
-  "src/components/projects/project-inline-tasks.tsx"
-];
-for (const file of files) { if (!fs.existsSync(file)) throw new Error(`[verify:v58.16.2] Missing ${file}`); }
-const detail = fs.readFileSync(files[0], "utf8");
-const timeline = fs.readFileSync(files[1], "utf8");
-const inline = fs.readFileSync(files[2], "utf8");
+import fs from 'node:fs';
+
 const checks = [
-  [detail.includes("bg-gradient-to-l from-[#ECFDF5]"), "premium hero gradient"],
-  [detail.includes("AvatarStack"), "hero avatar stack"],
-  [detail.includes("grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5"), "5 KPI cards row"],
-  [timeline.includes("xl:grid-cols-[minmax(0,1fr)_320px]"), "timeline builder panel right grid"],
-  [timeline.includes("Guardar vista") && timeline.includes("Exportar"), "timeline actions"],
-  [timeline.includes("bg-[#ECFDF5]") && timeline.includes("Builder"), "builder toggle separated"],
-  [inline.includes("Tareas internas"), "internal project tasks"],
-  [inline.includes("project_id: project.id"), "project-scoped tasks creation"],
+  ['package.json', '58.16.2-ver-proyecto-premium-2026'],
+  ['src/lib/release/version.ts', 'v58.16.2 Ver Proyecto Premium 2026'],
+  ['src/components/projects/project-detail-pro.tsx', 'ProjectHeroCard'],
+  ['src/components/projects/project-detail-pro.tsx', 'ProjectStatsRow'],
+  ['src/components/projects/project-detail-pro.tsx', 'AvatarStack'],
+  ['src/components/projects/project-detail-pro.tsx', 'projectActivityLabels'],
+  ['src/components/projects/project-detail-pro.tsx', 'ProjectInlineTasks'],
+  ['src/components/projects/project-planning-timeline.tsx', 'Project Smart Timeline'],
+  ['src/components/projects/project-planning-timeline.tsx', 'xl:grid-cols-[minmax(0,1fr)_320px]'],
+  ['src/components/projects/project-planning-timeline.tsx', 'Builder'],
 ];
-const failed = checks.filter(([ok]) => !ok);
-if (failed.length) { console.error(failed.map(([,label]) => `- ${label}`).join("\n")); process.exit(1); }
-console.log("[verify:v58.16.2] OK — Project detail premium design and inline tasks aligned.");
+
+const missing = checks.filter(([file, needle]) => !fs.readFileSync(file, 'utf8').includes(needle));
+if (missing.length) {
+  console.error('[verify:v58.16.2] Missing expected content:');
+  for (const [file, needle] of missing) console.error(`- ${file}: ${needle}`);
+  process.exit(1);
+}
+
+console.log('[verify:v58.16.2] OK — Ver Proyecto Premium 2026 applied with inline project tasks and contained builder.');

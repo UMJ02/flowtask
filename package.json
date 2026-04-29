@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "58.16.2-project-detail-premium-2026",
+  "version": "58.16.2-ver-proyecto-premium-2026",
   "private": true,
   "scripts": {
     "dev": "node node_modules/next/dist/bin/next dev",
