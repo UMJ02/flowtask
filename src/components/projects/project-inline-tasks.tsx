@@ -226,7 +226,7 @@ export function ProjectInlineTasks({ project, initialTasks, members, canManage =
   }
 
   return (
-    <section id="tareas" className="scroll-mt-28 rounded-[24px] border border-[#E5EAF1] bg-white p-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
+    <section id="tareas" className="scroll-mt-28 rounded-[24px] border border-[#E7EDF5] bg-white p-6 shadow-[0_12px_35px_rgba(15,23,42,0.05)]">
       <div className="mb-5 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <p className="text-xs font-black uppercase tracking-[0.18em] text-[#16A36C]">Tareas internas</p>
@@ -240,20 +240,20 @@ export function ProjectInlineTasks({ project, initialTasks, members, canManage =
         </div>
       </div>
 
-      <div className="mb-5 grid gap-3 rounded-[22px] border border-[#E5EAF1] bg-[#FBFCFE] p-3 lg:grid-cols-[minmax(0,1fr)_160px_150px_190px_auto] lg:items-center">
-        <input value={draft.title} onChange={(e) => setDraft((current) => ({ ...current, title: e.target.value }))} disabled={!canManage} className="h-12 rounded-[16px] border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-[#0F172A] outline-none focus:border-[#16C784] focus:ring-4 focus:ring-[#16C784]/10" placeholder="Nueva tarea del proyecto..." />
-        <input type="date" value={draft.dueDate} onChange={(e) => setDraft((current) => ({ ...current, dueDate: e.target.value }))} disabled={!canManage} className="h-12 rounded-[16px] border border-[#E5EAF1] bg-white px-3 text-sm font-bold text-[#0F172A] outline-none" />
-        <select value={draft.priority} onChange={(e) => setDraft((current) => ({ ...current, priority: e.target.value }))} disabled={!canManage} className="h-12 rounded-[16px] border border-[#E5EAF1] bg-white px-3 text-sm font-bold text-[#0F172A] outline-none">
+      <div className="mb-5 grid gap-3 rounded-[22px] border border-[#E7EDF5] bg-[#FBFCFE] p-3 lg:grid-cols-[minmax(0,1fr)_160px_150px_190px_auto] lg:items-center">
+        <input value={draft.title} onChange={(e) => setDraft((current) => ({ ...current, title: e.target.value }))} disabled={!canManage} className="h-12 rounded-[16px] border border-[#E7EDF5] bg-white px-4 text-sm font-bold text-[#0F172A] outline-none focus:border-[#16C784] focus:ring-4 focus:ring-[#16C784]/10" placeholder="Nueva tarea del proyecto..." />
+        <input type="date" value={draft.dueDate} onChange={(e) => setDraft((current) => ({ ...current, dueDate: e.target.value }))} disabled={!canManage} className="h-12 rounded-[16px] border border-[#E7EDF5] bg-white px-3 text-sm font-bold text-[#0F172A] outline-none" />
+        <select value={draft.priority} onChange={(e) => setDraft((current) => ({ ...current, priority: e.target.value }))} disabled={!canManage} className="h-12 rounded-[16px] border border-[#E7EDF5] bg-white px-3 text-sm font-bold text-[#0F172A] outline-none">
           <option value="media">Media</option><option value="alta">Alta</option><option value="baja">Baja</option>
         </select>
-        <select value={draft.assigneeId || firstMemberId} onChange={(e) => setDraft((current) => ({ ...current, assigneeId: e.target.value }))} disabled={!canManage || !members.length} className="h-12 rounded-[16px] border border-[#E5EAF1] bg-white px-3 text-sm font-bold text-[#0F172A] outline-none">
+        <select value={draft.assigneeId || firstMemberId} onChange={(e) => setDraft((current) => ({ ...current, assigneeId: e.target.value }))} disabled={!canManage || !members.length} className="h-12 rounded-[16px] border border-[#E7EDF5] bg-white px-3 text-sm font-bold text-[#0F172A] outline-none">
           <option value="">Sin responsable</option>
           {members.map((member) => <option key={member.user_id} value={member.user_id}>{memberName(member)}</option>)}
         </select>
         <button type="button" onClick={createProjectTask} disabled={!canManage || !draft.title.trim() || busyId === "new"} className="inline-flex h-12 items-center justify-center gap-2 rounded-[16px] bg-[#16C784] px-5 text-sm font-black text-white shadow-[0_12px_24px_rgba(22,199,132,0.22)] disabled:opacity-50"><Plus className="h-4 w-4" />Agregar</button>
       </div>
 
-      <div className="divide-y divide-[#EEF2F7] overflow-hidden rounded-[22px] border border-[#E5EAF1] bg-white">
+      <div className="divide-y divide-[#EEF2F7] overflow-hidden rounded-[22px] border border-[#E7EDF5] bg-white">
         {tasks.length ? tasks.map((task) => {
           const isEditing = editingId === task.id;
           const currentAssigneeId = isEditing ? editDraft.assigneeId : (task.assignee_id ?? task.task_assignees?.[0]?.user_id ?? "");
@@ -263,13 +263,13 @@ export function ProjectInlineTasks({ project, initialTasks, members, canManage =
             <div key={task.id} className="p-4">
               {isEditing ? (
                 <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_140px_140px_180px_auto] lg:items-center">
-                  <input value={editDraft.title} onChange={(e) => setEditDraft((current) => ({ ...current, title: e.target.value }))} className="h-11 rounded-[14px] border border-[#E5EAF1] px-3 text-sm font-bold outline-none" />
-                  <input type="date" value={editDraft.dueDate} onChange={(e) => setEditDraft((current) => ({ ...current, dueDate: e.target.value }))} className="h-11 rounded-[14px] border border-[#E5EAF1] px-3 text-sm font-bold outline-none" />
-                  <select value={editDraft.status} onChange={(e) => setEditDraft((current) => ({ ...current, status: e.target.value }))} className="h-11 rounded-[14px] border border-[#E5EAF1] px-3 text-sm font-bold outline-none"><option value="en_proceso">En proceso</option><option value="en_espera">En espera</option><option value="concluido">Completada</option></select>
-                  <select value={editDraft.assigneeId} onChange={(e) => setEditDraft((current) => ({ ...current, assigneeId: e.target.value }))} className="h-11 rounded-[14px] border border-[#E5EAF1] px-3 text-sm font-bold outline-none"><option value="">Sin responsable</option>{members.map((member) => <option key={member.user_id} value={member.user_id}>{memberName(member)}</option>)}</select>
+                  <input value={editDraft.title} onChange={(e) => setEditDraft((current) => ({ ...current, title: e.target.value }))} className="h-11 rounded-[14px] border border-[#E7EDF5] px-3 text-sm font-bold outline-none" />
+                  <input type="date" value={editDraft.dueDate} onChange={(e) => setEditDraft((current) => ({ ...current, dueDate: e.target.value }))} className="h-11 rounded-[14px] border border-[#E7EDF5] px-3 text-sm font-bold outline-none" />
+                  <select value={editDraft.status} onChange={(e) => setEditDraft((current) => ({ ...current, status: e.target.value }))} className="h-11 rounded-[14px] border border-[#E7EDF5] px-3 text-sm font-bold outline-none"><option value="en_proceso">En proceso</option><option value="en_espera">En espera</option><option value="concluido">Completada</option></select>
+                  <select value={editDraft.assigneeId} onChange={(e) => setEditDraft((current) => ({ ...current, assigneeId: e.target.value }))} className="h-11 rounded-[14px] border border-[#E7EDF5] px-3 text-sm font-bold outline-none"><option value="">Sin responsable</option>{members.map((member) => <option key={member.user_id} value={member.user_id}>{memberName(member)}</option>)}</select>
                   <div className="flex gap-2">
                     <button type="button" onClick={() => saveProjectTask(task.id)} disabled={busyId === task.id} className="grid h-11 w-11 place-items-center rounded-[14px] bg-[#050B18] text-white"><Save className="h-4 w-4" /></button>
-                    <button type="button" onClick={() => setEditingId(null)} className="grid h-11 w-11 place-items-center rounded-[14px] border border-[#E5EAF1] bg-white text-[#64748B]"><X className="h-4 w-4" /></button>
+                    <button type="button" onClick={() => setEditingId(null)} className="grid h-11 w-11 place-items-center rounded-[14px] border border-[#E7EDF5] bg-white text-[#64748B]"><X className="h-4 w-4" /></button>
                   </div>
                 </div>
               ) : (
@@ -284,8 +284,8 @@ export function ProjectInlineTasks({ project, initialTasks, members, canManage =
                   <span className="inline-flex items-center gap-1 text-xs font-bold text-[#64748B]"><CalendarDays className="h-3.5 w-3.5" />{task.due_date ? formatDate(task.due_date) : "Sin fecha"}</span>
                   <div className="flex items-center justify-end gap-2">
                     <span className={`hidden w-fit rounded-full px-2.5 py-1 text-xs font-bold ring-1 lg:inline-flex ${priorityClass(task.priority)}`}>{priorityLabel(task.priority)}</span>
-                    <button type="button" onClick={() => openEdit(task)} disabled={!canManage} className="grid h-9 w-9 place-items-center rounded-[12px] border border-[#E5EAF1] bg-white text-[#64748B] hover:bg-slate-50"><Edit3 className="h-4 w-4" /></button>
-                    <button type="button" onClick={() => deleteProjectTask(task)} disabled={!canManage || busyId === task.id} className="grid h-9 w-9 place-items-center rounded-[12px] border border-[#E5EAF1] bg-white text-[#64748B] hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600"><Trash2 className="h-4 w-4" /></button>
+                    <button type="button" onClick={() => openEdit(task)} disabled={!canManage} className="grid h-9 w-9 place-items-center rounded-[12px] border border-[#E7EDF5] bg-white text-[#64748B] hover:bg-slate-50"><Edit3 className="h-4 w-4" /></button>
+                    <button type="button" onClick={() => deleteProjectTask(task)} disabled={!canManage || busyId === task.id} className="grid h-9 w-9 place-items-center rounded-[12px] border border-[#E7EDF5] bg-white text-[#64748B] hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600"><Trash2 className="h-4 w-4" /></button>
                   </div>
                 </div>
               )}

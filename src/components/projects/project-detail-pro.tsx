@@ -23,7 +23,7 @@ import { CopyCurrentUrlButton } from "@/components/ui/copy-current-url-button";
 import { ProjectPlanningTimeline } from "@/components/projects/project-planning-timeline";
 import { ProjectInlineTasks } from "@/components/projects/project-inline-tasks";
 
-const cardClass = "rounded-[24px] border border-[#E5EAF1] bg-white shadow-[0_12px_30px_rgba(15,23,42,0.04)]";
+const cardClass = "rounded-[24px] border border-[#E7EDF5] bg-white shadow-[0_12px_35px_rgba(15,23,42,0.05)]";
 
 type ProjectDetailProProps = {
   project: any;
@@ -50,10 +50,10 @@ function statusLabel(value?: string | null) {
 }
 
 function statusClass(value?: string | null) {
-  if (value === "concluido" || value === "completado") return "bg-emerald-50 text-emerald-700 ring-emerald-200";
-  if (value === "en_espera" || value === "en_pausa") return "bg-amber-50 text-amber-700 ring-amber-200";
-  if (value === "vencido") return "bg-rose-50 text-rose-700 ring-rose-200";
-  if (value === "activo" || value === "en_proceso") return "bg-blue-50 text-blue-700 ring-blue-200";
+  if (value === "concluido" || value === "completado") return "bg-[#ECFDF5] text-[#16A36C] ring-emerald-200";
+  if (value === "en_espera" || value === "en_pausa") return "bg-[#FFF8E8] text-[#B45309] ring-amber-200";
+  if (value === "vencido") return "bg-[#FFF1F2] text-[#EF4444] ring-rose-200";
+  if (value === "activo" || value === "en_proceso") return "bg-[#EFF6FF] text-[#3B82F6] ring-blue-200";
   return "bg-slate-50 text-slate-700 ring-slate-200";
 }
 
@@ -63,9 +63,9 @@ function priorityLabel(value?: string | null) {
 }
 
 function priorityClass(value?: string | null) {
-  if (value === "alta") return "bg-rose-50 text-rose-700 ring-rose-200";
-  if (value === "baja") return "bg-emerald-50 text-emerald-700 ring-emerald-200";
-  return "bg-amber-50 text-amber-700 ring-amber-200";
+  if (value === "alta") return "bg-[#FFF1F2] text-[#EF4444] ring-rose-200";
+  if (value === "baja") return "bg-[#ECFDF5] text-[#16A36C] ring-emerald-200";
+  return "bg-[#FFF8E8] text-[#B45309] ring-amber-200";
 }
 
 function profileFrom(member: any) {
@@ -128,19 +128,19 @@ function ProjectStatsRow({ tasks }: { tasks: any[] }) {
   const waiting = tasks.filter((task) => task.status === "en_espera").length;
   const overdue = tasks.filter((task) => task.due_date && new Date(`${task.due_date}T23:59:59`) < new Date() && task.status !== "concluido").length;
   const items = [
-    { label: "Total de tareas", value: total, helper: "tareas creadas", icon: Sparkles, tone: "bg-violet-50 text-violet-700" },
-    { label: "Completadas", value: completed, helper: total ? `${Math.round((completed / Math.max(total, 1)) * 100)}% del total` : "sin avance", icon: CheckCircle2, tone: "bg-emerald-50 text-emerald-700" },
-    { label: "En progreso", value: progress, helper: "trabajo activo", icon: ArrowRight, tone: "bg-blue-50 text-blue-700" },
-    { label: "En espera", value: waiting, helper: "pendientes", icon: TimerReset, tone: "bg-amber-50 text-amber-700" },
-    { label: "Atrasadas", value: overdue, helper: "requieren atención", icon: Flag, tone: "bg-rose-50 text-rose-700" },
+    { label: "Total de tareas", value: total, helper: "tareas creadas", icon: Sparkles, tone: "bg-[#F6F0FF] text-[#7C3AED]" },
+    { label: "Completadas", value: completed, helper: total ? `${Math.round((completed / Math.max(total, 1)) * 100)}% del total` : "sin avance", icon: CheckCircle2, tone: "bg-[#ECFDF5] text-[#16A36C]" },
+    { label: "En progreso", value: progress, helper: "trabajo activo", icon: ArrowRight, tone: "bg-[#EFF6FF] text-[#3B82F6]" },
+    { label: "En espera", value: waiting, helper: "pendientes", icon: TimerReset, tone: "bg-[#FFF8E8] text-[#B45309]" },
+    { label: "Atrasadas", value: overdue, helper: "requieren atención", icon: Flag, tone: "bg-[#FFF1F2] text-[#EF4444]" },
   ];
 
   return (
-    <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5">
       {items.map((item) => {
         const Icon = item.icon;
         return (
-          <div key={item.label} className={`${cardClass} flex items-center gap-4 px-5 py-5`}>
+          <div key={item.label} className={`${cardClass} flex items-center gap-4 p-5 transition hover:-translate-y-0.5`}>
             <span className={`inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full ${item.tone}`}>
               <Icon className="h-5 w-5" />
             </span>
@@ -156,16 +156,23 @@ function ProjectStatsRow({ tasks }: { tasks: any[] }) {
   );
 }
 
-function ProjectHeroCard({ project, tasks, currentQuery }: { project: any; tasks: any[]; currentQuery: string }) {
+function AvatarStack({ members }: { members: any[] }) {
+  const visible = members.slice(0, 5);
+  if (!visible.length) return null;
+  return <div className="mt-4 flex items-center gap-3"><div className="flex -space-x-2">{visible.map((member) => { const profile = profileFrom(member); const name = profile?.full_name || profile?.email || "Usuario"; return <span key={member.id ?? member.user_id} className="grid h-9 w-9 place-items-center rounded-full border-2 border-white bg-[#ECFDF5] text-xs font-black text-[#087A4B] shadow-sm">{initials(name)}</span>; })}</div><span className="text-xs font-bold text-[#64748B]">{members.length} miembro{members.length === 1 ? "" : "s"}</span></div>;
+}
+
+function ProjectHeroCard({ project, tasks, members, currentQuery }: { project: any; tasks: any[]; members: any[]; currentQuery: string }) {
   const completed = tasks.filter((task) => task.status === "concluido").length;
   const progress = tasks.length ? Math.round((completed / Math.max(tasks.length, 1)) * 100) : project.status === "completado" ? 100 : 65;
   const department = Array.isArray(project.departments) ? project.departments[0] : project.departments;
 
   return (
-    <section className={`${cardClass} p-4 md:p-5`}>
-      <div className="grid gap-5 lg:grid-cols-[220px_minmax(0,1fr)_360px] lg:items-center">
-        <div className="relative h-44 overflow-hidden rounded-[20px] bg-slate-100 lg:h-48">
-          <Image src={project.image_url || "/imagenes/organization-team-hero.png"} alt={project.title || "Proyecto FlowTask"} fill className="object-cover" sizes="220px" priority={false} unoptimized={Boolean(project.image_url)} />
+    <section className={`${cardClass} relative overflow-hidden p-6`}>
+      <div className="pointer-events-none absolute right-0 top-0 h-full w-1/2 bg-gradient-to-l from-[#ECFDF5] via-[#EFF6FF]/50 to-transparent" />
+      <div className="relative grid gap-6 lg:grid-cols-[230px_minmax(0,1fr)_360px] lg:items-center">
+        <div className="relative h-[190px] overflow-hidden rounded-[20px] bg-slate-100">
+          <Image src={project.image_url || "/imagenes/organization-team-hero.png"} alt={project.title || "Proyecto FlowTask"} fill className="object-cover" sizes="230px" priority={false} unoptimized={Boolean(project.image_url)} />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950/20 to-transparent" />
         </div>
 
@@ -178,16 +185,17 @@ function ProjectHeroCard({ project, tasks, currentQuery }: { project: any; tasks
             {department?.name ? <span className="rounded-full bg-slate-50 px-3 py-1 text-xs font-bold text-slate-600 ring-1 ring-slate-200">{department.name}</span> : null}
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <h1 className="text-2xl font-black tracking-tight text-[#0F172A] md:text-3xl">{project.title}</h1>
+            <h1 className="text-[34px] font-black tracking-[-0.035em] text-[#0F172A]">{project.title}</h1>
             <Star className="h-5 w-5 text-slate-400" />
           </div>
           <p className="mt-2 text-sm font-medium text-[#64748B]">Creado el {project.created_at ? formatDate(project.created_at) : "—"}</p>
-          <p className="mt-4 max-w-3xl text-sm leading-6 text-[#64748B]">{project.description || "Proyecto activo del workspace. Centraliza tareas, equipo, archivos y seguimiento operativo en un solo lugar."}</p>
+          <p className="mt-4 max-w-2xl text-base leading-7 text-[#64748B]">{project.description || "Proyecto activo del workspace. Centraliza tareas, equipo, archivos y seguimiento operativo en un solo lugar."}</p>
+          <AvatarStack members={members} />
         </div>
 
-        <div className="space-y-5">
+        <div className="flex flex-col justify-between gap-6">
           <div className="flex flex-wrap justify-start gap-2 lg:justify-end">
-            <CopyCurrentUrlButton label="Compartir" className="inline-flex h-11 items-center justify-center gap-2 rounded-[14px] border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-[#334155] shadow-[0_8px_20px_rgba(15,23,42,0.035)] transition hover:bg-slate-50" />
+            <CopyCurrentUrlButton label="Compartir" className="inline-flex h-11 items-center justify-center gap-2 rounded-[14px] border border-[#E7EDF5] bg-white px-4 text-sm font-bold text-[#334155] shadow-[0_8px_20px_rgba(15,23,42,0.035)] transition hover:bg-slate-50" />
             <Link href={projectEditRoute(project.id, currentQuery)} className="inline-flex h-11 items-center justify-center gap-2 rounded-[14px] bg-[#050B18] px-4 text-sm font-bold text-white shadow-[0_10px_24px_rgba(5,11,24,0.18)] transition hover:-translate-y-0.5">
               <MoreVertical className="h-4 w-4" />
               Editar proyecto
@@ -236,9 +244,9 @@ function ProjectTabs() {
     { label: "Configuración", href: "#configuracion" },
   ];
   return (
-    <div className="flex gap-7 overflow-x-auto border-b border-[#E5EAF1] px-1">
+    <div className="flex h-14 items-center gap-8 overflow-x-auto border-b border-[#E7EDF5] px-1">
       {tabs.map((tab, index) => (
-        <a key={tab.label} href={tab.href} className={`relative whitespace-nowrap pb-3 text-sm font-bold ${index === 0 ? "text-[#16A66F]" : "text-[#64748B] hover:text-[#0F172A]"}`}>
+        <a key={tab.label} href={tab.href} className={`relative flex h-14 shrink-0 items-center whitespace-nowrap text-sm font-bold ${index === 0 ? "text-[#16A66F]" : "text-[#64748B] hover:text-[#0F172A]"}`}>
           {tab.label}
           {index === 0 ? <span className="absolute inset-x-0 -bottom-px h-0.5 rounded-full bg-[#16C784]" /> : null}
         </a>
@@ -269,14 +277,14 @@ function RecentTasksCard({ tasks }: { tasks: any[] }) {
             </div>
             <span className="text-xs font-bold text-[#64748B]">{task.due_date ? formatDate(task.due_date) : "Sin fecha"}</span>
             <span className={`w-fit rounded-full px-3 py-1 text-xs font-bold ring-1 ${priorityClass(task.priority)}`}>{priorityLabel(task.priority)}</span>
-            <Link href={taskDetailRoute(task.id)} className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-[#E5EAF1] text-[#64748B] hover:bg-slate-50"><MoreVertical className="h-4 w-4" /></Link>
+            <Link href={taskDetailRoute(task.id)} className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-[#E7EDF5] text-[#64748B] hover:bg-slate-50"><MoreVertical className="h-4 w-4" /></Link>
           </div>
         )) : (
           <p className="py-6 text-sm font-medium text-[#64748B]">Todavía no hay tareas hijas en este proyecto. Usa el botón Nueva tarea dentro del proyecto para crearlas sin ensuciar la vista principal de tareas.</p>
         )}
       </div>
       <div className="mt-4 flex justify-center">
-        <span className="inline-flex h-11 items-center justify-center gap-2 rounded-[14px] border border-[#E5EAF1] bg-white px-5 text-sm font-bold text-[#334155]">
+        <span className="inline-flex h-11 items-center justify-center gap-2 rounded-[14px] border border-[#E7EDF5] bg-white px-5 text-sm font-bold text-[#334155]">
           Vista aislada del proyecto
           <ArrowRight className="h-4 w-4" />
         </span>
@@ -290,7 +298,7 @@ function ProjectMembersCard({ members }: { members: any[] }) {
     <section id="equipo" className={`${cardClass} p-5 scroll-mt-28`}>
       <div className="mb-4 flex items-center justify-between gap-3">
         <h2 className="text-lg font-black text-[#0F172A]">Miembros del proyecto</h2>
-        <Link href="/app/organization/roles" className="inline-flex h-9 items-center gap-1 rounded-[12px] border border-[#E5EAF1] bg-white px-3 text-xs font-bold text-[#475569] hover:bg-slate-50"><Plus className="h-4 w-4" />Invitar</Link>
+        <Link href="/app/organization/roles" className="inline-flex h-9 items-center gap-1 rounded-[12px] border border-[#E7EDF5] bg-white px-3 text-xs font-bold text-[#475569] hover:bg-slate-50"><Plus className="h-4 w-4" />Invitar</Link>
       </div>
       <div className="space-y-4">
         {members.length ? members.slice(0, 6).map((member) => {
@@ -308,7 +316,7 @@ function ProjectMembersCard({ members }: { members: any[] }) {
                   <p className="truncate text-xs font-medium text-[#64748B]">{member.role === "owner" ? "Líder del proyecto" : roleLabel(member.role)}</p>
                 </div>
               </div>
-              <span className="rounded-full border border-[#E5EAF1] bg-white px-3 py-1 text-xs font-bold text-[#64748B]">{roleLabel(member.role)}</span>
+              <span className="rounded-full border border-[#E7EDF5] bg-white px-3 py-1 text-xs font-bold text-[#64748B]">{roleLabel(member.role)}</span>
             </div>
           );
         }) : <p className="text-sm font-medium text-[#64748B]">Todavía no hay colaboradores agregados.</p>}
@@ -322,7 +330,7 @@ function RecentFilesCard({ attachments }: { attachments: any[] }) {
     <section id="archivos" className={`${cardClass} p-5 scroll-mt-28`}>
       <div className="mb-4 flex items-center justify-between gap-3">
         <h2 className="text-lg font-black text-[#0F172A]">Archivos recientes</h2>
-        <a href="#archivos" className="inline-flex h-9 items-center rounded-[12px] border border-[#E5EAF1] bg-white px-3 text-xs font-bold text-[#475569] hover:bg-slate-50">Ver todo</a>
+        <a href="#archivos" className="inline-flex h-9 items-center rounded-[12px] border border-[#E7EDF5] bg-white px-3 text-xs font-bold text-[#475569] hover:bg-slate-50">Ver todo</a>
       </div>
       <div className="space-y-3">
         {attachments.length ? attachments.slice(0, 4).map((file) => (
@@ -345,7 +353,7 @@ function ProjectActivityCard({ activity }: { activity: ActivityItem[] }) {
     <section id="actividad" className={`${cardClass} p-5 scroll-mt-28`}>
       <div className="mb-4 flex items-center justify-between gap-3">
         <h2 className="text-lg font-black text-[#0F172A]">Actividad reciente</h2>
-        <a href="#actividad" className="inline-flex h-9 items-center rounded-[12px] border border-[#E5EAF1] bg-white px-3 text-xs font-bold text-[#475569] hover:bg-slate-50">Ver toda la actividad</a>
+        <a href="#actividad" className="inline-flex h-9 items-center rounded-[12px] border border-[#E7EDF5] bg-white px-3 text-xs font-bold text-[#475569] hover:bg-slate-50">Ver toda la actividad</a>
       </div>
       <div className="space-y-4">
         {activity.length ? activity.slice(0, 3).map((item) => (
@@ -371,12 +379,12 @@ export function ProjectDetailPro({ project, tasks, members, attachments, activit
         <span className="text-[#0F172A]">{project.title}</span>
       </div>
 
-      <ProjectHeroCard project={project} tasks={tasks} currentQuery={currentQuery} />
+      <ProjectHeroCard project={project} tasks={tasks} members={members} currentQuery={currentQuery} />
       <ProjectStatsRow tasks={tasks} />
       <ProjectTabs />
       <ProjectPlanningTimeline project={project} tasks={tasks} currentQuery={currentQuery} />
 
-      <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_380px]">
+      <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
         <div className="space-y-5">
           <ProjectInlineTasks project={project} initialTasks={tasks} members={members} canManage={canCreateTask} />
           <ProjectActivityCard activity={activity} />
