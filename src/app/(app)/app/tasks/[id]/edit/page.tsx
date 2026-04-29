@@ -1,10 +1,11 @@
 
 export const dynamic = 'force-dynamic';
 
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { TaskForm } from '@/components/tasks/task-form';
 import { getTaskById } from '@/lib/queries/tasks';
 import { safeServerCall } from '@/lib/runtime/safe-server';
+import { projectDetailRoute } from '@/lib/navigation/routes';
 
 export default async function TaskEditPage({
   params,
@@ -20,6 +21,10 @@ export default async function TaskEditPage({
   ).toString();
   const task = await safeServerCall('getTaskById', () => getTaskById(id), null);
   if (!task) notFound();
+
+  if (task.project_id) {
+    redirect(projectDetailRoute(task.project_id));
+  }
 
   const department = Array.isArray(task.departments) ? task.departments[0] : task.departments;
   return (

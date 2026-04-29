@@ -3,8 +3,8 @@ import path from "node:path";
 
 const root = process.cwd();
 const failures = [];
-const expectedVersion = "58.16.4-project-timeline-full-width-polish";
-const expectedReleaseLabel = "V58.16.4";
+const expectedVersion = "58.17-core-consolidation-release";
+const expectedReleaseLabel = "V58.17";
 
 function requireFile(rel) {
   if (!fs.existsSync(path.join(root, rel))) failures.push(`Missing required file: ${rel}`);
@@ -23,7 +23,7 @@ requireFile(".nvmrc");
 requireFile(".env.example");
 requireFile("scripts/runtime-check.mjs");
 requireFile("scripts/validate-env.mjs");
-requireFile("scripts/verify-v58.16.4.mjs");
+requireFile("scripts/verify-v58.17.mjs");
 requireFile("supabase/migrations/0038_v58_12_6_database_sanitization_foundation.sql");
 requireFile("docs/release/V58.12.6_WORKSPACE_CATALOG_DELETE_FLOW_FIX.md");
 requireFile("docs/release/DB_CONTINUITY_SOURCE_OF_TRUTH.md");
@@ -34,8 +34,8 @@ for (const scriptName of ["build", "vercel:build", "deploy:readiness", "build:pr
   if (!scripts[scriptName]) failures.push(`Missing package script: ${scriptName}`);
 }
 if (pkg.version !== expectedVersion) failures.push(`Unexpected package version: ${pkg.version}`);
-if (scripts["verify:current"] !== "npm run verify:v58.16.4") failures.push("verify:current must target verify:v58.16.4");
-if (scripts["verify:v58.16.4"] !== "node scripts/verify-v58.16.4.mjs") failures.push("verify:v58.16.4 must target scripts/verify-v58.16.4.mjs");
+if (scripts["verify:current"] !== "npm run verify:v58.17") failures.push("verify:current must target verify:v58.17");
+if (scripts["verify:v58.17"] !== "node scripts/verify-v58.17.mjs") failures.push("verify:v58.17 must target scripts/verify-v58.17.mjs");
 
 const vercel = JSON.parse(fs.readFileSync(path.join(root, "vercel.json"), "utf8"));
 if (vercel.framework !== "nextjs") failures.push("vercel.json framework must be nextjs");
@@ -57,4 +57,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log("[build-deploy-readiness] OK — V58.16.4 package, env, release exports y continuidad maestra alineados.");
+console.log("[build-deploy-readiness] OK — V58.17 package, env, release exports y continuidad maestra alineados.");

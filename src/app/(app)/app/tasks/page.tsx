@@ -79,7 +79,7 @@ export default async function TasksPage({ searchParams }: { searchParams?: Promi
         <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-[#0F172A]">Tareas</h1>
-            <p className="mt-1 text-sm font-medium text-[#64748B]">Gestiona y organiza todas tus tareas en un solo lugar.</p>
+            <p className="mt-1 text-sm font-medium text-[#64748B]">Gestiona tus tareas simples del día a día. Las tareas internas de proyectos viven dentro de cada proyecto.</p>
           </div>
           <Link
             href={taskNewRoute(queryString)}
@@ -91,7 +91,7 @@ export default async function TasksPage({ searchParams }: { searchParams?: Promi
         </div>
 
         <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
-          <StatCard label="Total visibles" value={stats.total} helper="Resultado actual" tone="violet" icon={ClipboardList} />
+          <StatCard label="Tareas simples" value={stats.total} helper="Sin tareas de proyecto" tone="violet" icon={ClipboardList} />
           <StatCard label="En progreso" value={stats.inProgress} helper="Trabajo activo" tone="sky" icon={PlayCircle} />
           <StatCard label="En espera" value={stats.waiting} helper="Standby sin vencimiento" tone="amber" icon={Hourglass} />
           <StatCard label="Concluidas ocultas" value={stats.hiddenDone} helper="No impactan atraso" tone="emerald" icon={CheckCircle2} />
@@ -119,7 +119,7 @@ export default async function TasksPage({ searchParams }: { searchParams?: Promi
       <Card className="rounded-[20px] border border-emerald-200/80 bg-emerald-50/80 p-4 shadow-none">
         <div className="flex items-center gap-3 text-sm font-medium text-emerald-900">
           <Clock3 className="h-4 w-4 shrink-0" />
-          Consejo: usa los filtros y vistas rápidas para encontrar tus tareas más importantes y mantener el foco.
+          Consejo: usa Tareas para trabajo simple. Cuando una tarea crece, conviértela en proyecto; las tareas internas se gestionan desde Proyectos.
         </div>
       </Card>
     </div>

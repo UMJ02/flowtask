@@ -1,6 +1,6 @@
 export const dynamic = 'force-dynamic';
 
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { ActivityTimeline } from '@/components/activity/activity-timeline';
 import { EntityAttachments } from '@/components/attachments/entity-attachments';
 import { TaskChecklistCard } from '@/components/tasks/task-checklist-card';
@@ -15,6 +15,7 @@ import { getTaskChecklistItems } from '@/lib/queries/task-checklist';
 import { getTaskStandbyDays, getTaskStatusLabel, isTaskOverdue, isTaskWaiting } from '@/lib/tasks/status';
 import { safeServerCall } from '@/lib/runtime/safe-server';
 import { formatDate } from '@/lib/utils/dates';
+import { projectDetailRoute } from '@/lib/navigation/routes';
 import { ArrowRight, CalendarDays, CheckCircle2, Clock3, FileArchive, FileText, Flag, Folder, ListChecks, MessageCircle, Paperclip, Plus, Upload, UserRound } from 'lucide-react';
 
 function statusLabel(status?: string | null) {
@@ -163,6 +164,10 @@ export default async function TaskDetailPage({
   ]);
 
   if (!task) notFound();
+
+  if (task.project_id) {
+    redirect(projectDetailRoute(task.project_id));
+  }
 
   const department = first(task.departments as any);
   const project = first(task.projects as any);
