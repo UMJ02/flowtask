@@ -20,6 +20,7 @@ export type WorkspaceOnboardingSummary = {
   total: number;
   role: string;
   organizationName: string;
+  workspaceMode: "personal" | "organization";
   recommendations: string[];
   quickStats: {
     members: number;
@@ -42,7 +43,8 @@ export async function getWorkspaceOnboardingSummary(): Promise<WorkspaceOnboardi
 
   const organizationId = organizationContext?.activeOrganization?.id ?? null;
   const role = organizationContext?.activeOrganization?.role ?? null;
-  const organizationName = organizationContext?.activeOrganization?.name ?? "Sin organización activa";
+  const organizationName = organizationContext?.activeOrganization?.name ?? "Espacio personal";
+  const workspaceMode = organizationId ? "organization" : "personal";
 
   const [organizationMetrics, rolesData, projectsRes, tasksRes] = await Promise.all([
     getOrganizationMetrics(organizationId),
@@ -86,12 +88,14 @@ export async function getWorkspaceOnboardingSummary(): Promise<WorkspaceOnboardi
       category: "foundation",
     },
     {
-      id: "organization",
-      title: "Define organización activa",
-      description: "Confirma la organización desde donde vas a trabajar para mantener el contexto del workspace.",
-      href: "/app/organization",
-      cta: "Revisar organización",
-      done: hasOrganization,
+      id: "workspace-mode",
+      title: hasOrganization ? "Confirma tu workspace activo" : "Tu espacio personal está listo",
+      description: hasOrganization
+        ? "Estás trabajando dentro de una organización seleccionada explícitamente desde el selector de workspace."
+        : "Flowtask siempre inicia desde tu cuenta individual. Puedes crear una organización cuando el plan lo permita.",
+      href: hasOrganization ? "/app/organization" : "/app/tasks/new",
+      cta: hasOrganization ? "Revisar organización" : "Crear primera tarea",
+      done: true,
       category: "foundation",
     },
     {
@@ -146,7 +150,6 @@ export async function getWorkspaceOnboardingSummary(): Promise<WorkspaceOnboardi
   const score = total ? Math.round((completed / total) * 100) : 0;
 
   const recommendations = [
-    !hasOrganization ? "Activa o crea una organización antes de seguir para mantener el workspace con scoping correcto." : null,
     !hasClients ? "Carga por lo menos un cliente para que la capa operativa tenga un punto real de trabajo." : null,
     !hasProjects ? "Crea un proyecto inicial para habilitar seguimiento, watchlist y reportes con señal útil." : null,
     !hasTasks ? "Registra tareas activas para que dashboard, kanban y vencimientos muestren prioridad real." : null,
@@ -157,8 +160,9 @@ export async function getWorkspaceOnboardingSummary(): Promise<WorkspaceOnboardi
     score,
     completed,
     total,
-    role: formatOrganizationRole(role),
+    role: hasOrganization ? formatOrganizationRole(role) : "Personal",
     organizationName,
+    workspaceMode,
     recommendations,
     quickStats: {
       members,

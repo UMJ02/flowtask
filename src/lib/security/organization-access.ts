@@ -59,14 +59,16 @@ export async function getActiveMembership() {
     };
   }).filter((membership: any) => !membership.deletedAt);
 
-  const fallbackMembership = normalizedMemberships[0] ?? null;
   const matchingMembership = preference && preference !== PERSONAL_WORKSPACE_VALUE
     ? normalizedMemberships.find((membership: ActiveMembershipSummary & { deletedAt?: string | null }) => membership.organizationId === preference) ?? null
     : null;
 
+  // v58.17.1a: the individual user is the primary identity.
+  // Do not auto-promote the first/default organization as active workspace.
+  // Organization context must be explicit through the workspace cookie.
   return {
     supabase,
     user,
-    membership: preference === PERSONAL_WORKSPACE_VALUE ? null : (matchingMembership ?? fallbackMembership),
+    membership: preference === PERSONAL_WORKSPACE_VALUE ? null : matchingMembership,
   };
 }
