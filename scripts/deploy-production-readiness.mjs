@@ -14,9 +14,9 @@ const checks = [
   ["vercel security headers", Array.isArray(vercel.headers) && vercel.headers.length > 0],
   ["env has NEXT_PUBLIC_APP_URL", envExample.includes("NEXT_PUBLIC_APP_URL=")],
   ["env has FLOWTASK_BASE_URL helper", envExample.includes("FLOWTASK_BASE_URL=")],
-  ["readme mentions V58.16.3", readme.includes("V58.16.3")],
+  ["readme mentions V58.16.4", readme.includes("V58.16.4")],
   ["release exports include APP_RELEASE_STAGE", releaseVersion.includes("APP_RELEASE_STAGE")],
-  ["package version aligned", pkg.version === "58.16.3-ver-proyecto-premium-design-match"],
+  ["package version aligned", pkg.version === "58.16.4-project-timeline-full-width-polish"],
   ["migration includes client delete RPC", migration.includes("delete_workspace_client")],
   ["migration includes scoped catalog indexes", migration.includes("countries_scope_name_unique") && migration.includes("departments_scope_name_unique")],
 ];

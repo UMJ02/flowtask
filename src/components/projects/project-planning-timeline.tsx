@@ -121,12 +121,13 @@ function exportCsv(project: any, tasks: any[]) {
   URL.revokeObjectURL(href);
 }
 
+// timeline-full-width-when-builder-hidden
 export function ProjectPlanningTimeline({ project, tasks, currentQuery = "" }: ProjectPlanningTimelineProps) {
   const supabase = useMemo(() => createClient(), []);
   const [zoom, setZoom] = useState<ZoomMode>("week");
   const [colorBy, setColorBy] = useState<ColorMode>("status");
   const [groupBy, setGroupBy] = useState<GroupMode>("none");
-  const [showBuilder, setShowBuilder] = useState(true);
+  const [showBuilder, setShowBuilder] = useState(false);
   const [showConcluded, setShowConcluded] = useState(false);
   const [offset, setOffset] = useState(0);
   const [busy, setBusy] = useState(false);
@@ -187,10 +188,10 @@ export function ProjectPlanningTimeline({ project, tasks, currentQuery = "" }: P
       </div>
 
       <div className="mt-5 flex justify-center xl:justify-end">
-        <button type="button" onClick={() => setShowBuilder((v) => !v)} className="inline-flex h-10 items-center gap-2 rounded-[14px] bg-[#ECFDF5] px-5 text-sm font-black text-[#087A4B] ring-1 ring-[#BBF7D0]"><Settings2 className="h-4 w-4" />Builder</button>
+        <button type="button" aria-pressed={showBuilder} onClick={() => setShowBuilder((v) => !v)} className={cn("inline-flex h-10 items-center gap-2 rounded-[14px] px-5 text-sm font-black ring-1 transition", showBuilder ? "bg-[#050B18] text-white ring-[#050B18] shadow-[0_10px_24px_rgba(5,11,24,0.16)]" : "bg-[#ECFDF5] text-[#087A4B] ring-[#BBF7D0]")}><Settings2 className="h-4 w-4" />Builder</button>
       </div>
 
-      <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
+      <div className={cn("mt-6 grid gap-6", showBuilder ? "xl:grid-cols-[minmax(0,1fr)_320px]" : "xl:grid-cols-1")}>
         <div className="min-w-0">
           <div className="mb-4 flex flex-col gap-3 rounded-[18px] border border-[#E7EDF5] bg-[#FBFCFE] p-3 md:flex-row md:items-center md:justify-between">
             <div className="flex items-center gap-2">

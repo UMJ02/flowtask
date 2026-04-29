@@ -1,3 +1,7 @@
+# FlowTask — V58.16.4 Project Timeline Full Width Polish
+
+Pulido final de Ver Proyecto: el timeline se expande a ancho completo cuando Builder está oculto, Builder inicia contraído para evitar espacios laterales feos y el toggle conserva el panel contenido sin flotar. Mantiene la arquitectura de tareas internas de proyecto, hero premium, KPI row, actividad humanizada y datos conectados.
+
 # FlowTask — V58.16.3 Ver Proyecto Premium 2026 Design Match
 
 Rediseño afinado de Ver Proyecto basado en el PDF descriptivo: hero premium, KPI row, timeline con builder contenido, tareas internas inline, actividad humanizada y conexión a datos actuales.
