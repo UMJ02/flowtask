@@ -77,73 +77,26 @@ export async function getWorkspaceOnboardingSummary(): Promise<WorkspaceOnboardi
     preferences && (preferences.enable_toasts || preferences.enable_email || preferences.enable_whatsapp || preferences.delivery_frequency === "daily"),
   );
 
-  const steps: OnboardingStep[] = [
-    {
-      id: "profile",
-      title: "Completa tu perfil",
-      description: "Asegura nombre visible y correo correcto para asignaciones, comentarios y notificaciones.",
-      href: "/app/settings",
-      cta: "Ir a configuración",
-      done: hasProfile,
-      category: "foundation",
-    },
-    {
-      id: "workspace-mode",
-      title: hasOrganization ? "Confirma tu workspace activo" : "Tu espacio personal está listo",
-      description: hasOrganization
-        ? "Estás trabajando dentro de una organización seleccionada explícitamente desde el selector de workspace."
-        : "Flowtask siempre inicia desde tu cuenta individual. Puedes crear una organización cuando el plan lo permita.",
-      href: hasOrganization ? "/app/organization" : "/app/tasks/new",
-      cta: hasOrganization ? "Revisar organización" : "Crear primera tarea",
-      done: true,
-      category: "foundation",
-    },
-    {
-      id: "clients",
-      title: "Carga tu primer cliente",
-      description: "Agrega al menos un cliente para empezar a vincular proyectos, permisos y actividad.",
-      href: "/app/clients",
-      cta: "Abrir clientes",
-      done: hasClients,
-      category: "operation",
-    },
-    {
-      id: "projects",
-      title: "Levanta un proyecto base",
-      description: "Crea el proyecto inicial del workspace para que reportes y seguimiento empiecen a tener señal real.",
-      href: "/app/projects/new",
-      cta: "Nuevo proyecto",
-      done: hasProjects,
-      category: "operation",
-    },
-    {
-      id: "tasks",
-      title: "Registra tareas operativas",
-      description: "Sin tareas, el dashboard y el kanban no muestran la carga diaria ni prioridades.",
-      href: "/app/tasks/new",
-      cta: "Nueva tarea",
-      done: hasTasks,
-      category: "operation",
-    },
-    {
-      id: "roles",
-      title: "Ordena equipo y permisos",
-      description: "Deja roles y acceso por cliente bien resueltos antes de crecer el workspace.",
-      href: "/app/organization/roles",
-      cta: "Ver permisos",
-      done: hasTeam && (hasRoles || hasClientPermissions),
-      category: "foundation",
-    },
-    {
-      id: "automation",
-      title: "Activa automatizaciones básicas",
-      description: "Habilita toasts, correo, WhatsApp o digest diario para empezar a sacar trabajo fuera de la app.",
-      href: "/app/settings",
-      cta: "Configurar avisos",
-      done: automationEnabled,
-      category: "automation",
-    },
+  const personalSteps: OnboardingStep[] = [
+    { id: "profile", title: "Completa tu perfil individual", description: "Tu cuenta individual es la identidad principal de Flowtask. Nombre y correo correctos ayudan con asignaciones, comentarios y avisos.", href: "/app/settings", cta: "Ir a configuración", done: hasProfile, category: "foundation" },
+    { id: "personal-workspace", title: "Espacio personal activo", description: "Flowtask siempre puede funcionar como cuenta personal. Las organizaciones son espacios adicionales creados por un usuario individual.", href: "/app/tasks/new", cta: "Crear primera tarea", done: true, category: "foundation" },
+    { id: "personal-projects", title: "Crea tu primer proyecto personal", description: "Un proyecto personal permite agrupar tareas sin depender de una organización.", href: "/app/projects/new", cta: "Nuevo proyecto", done: hasProjects, category: "operation" },
+    { id: "personal-tasks", title: "Registra tus primeras tareas", description: "Las tareas personales alimentan dashboard, kanban, vencimientos y radar operativo.", href: "/app/tasks/new", cta: "Nueva tarea", done: hasTasks, category: "operation" },
+    { id: "personal-automation", title: "Activa recordatorios personales", description: "Configura toasts, correo, WhatsApp o digest diario para empezar a automatizar seguimiento.", href: "/app/settings", cta: "Configurar avisos", done: automationEnabled, category: "automation" },
   ];
+
+  const organizationSteps: OnboardingStep[] = [
+    { id: "profile", title: "Confirma tu perfil de administrador", description: "La organización fue creada por un usuario individual. Ese usuario opera como owner/admin, no como una cuenta de organización separada.", href: "/app/settings", cta: "Ir a configuración", done: hasProfile, category: "foundation" },
+    { id: "organization-workspace", title: "Configura la organización seleccionada", description: "Este workspace está activo porque fue seleccionado explícitamente desde el selector de workspace.", href: "/app/organization", cta: "Revisar organización", done: hasOrganization, category: "foundation" },
+    { id: "organization-team", title: "Invita o valida tu equipo", description: "Agrega miembros cuando el plan lo permita y mantené roles claros antes de crecer la operación.", href: "/app/organization", cta: "Ver miembros", done: hasTeam, category: "foundation" },
+    { id: "organization-clients", title: "Carga clientes de la organización", description: "Los clientes organizacionales habilitan permisos, seguimiento compartido y reportes más claros.", href: "/app/clients", cta: "Abrir clientes", done: hasClients, category: "operation" },
+    { id: "organization-projects", title: "Levanta un proyecto compartido", description: "Crea el proyecto inicial de la organización para que el equipo tenga un centro operativo común.", href: "/app/projects/new", cta: "Nuevo proyecto", done: hasProjects, category: "operation" },
+    { id: "organization-tasks", title: "Registra tareas del equipo", description: "Sin tareas, el workspace organizacional no puede mostrar carga diaria, prioridades ni vencimientos.", href: "/app/tasks/new", cta: "Nueva tarea", done: hasTasks, category: "operation" },
+    { id: "organization-roles", title: "Ordena roles y permisos", description: "Deja roles y acceso por cliente bien resueltos antes de invitar más personas.", href: "/app/organization/roles", cta: "Ver permisos", done: hasRoles || hasClientPermissions, category: "foundation" },
+    { id: "organization-automation", title: "Activa automatizaciones del workspace", description: "Habilita canales o digest para que el seguimiento no dependa solo de revisar la app.", href: "/app/settings", cta: "Configurar avisos", done: automationEnabled, category: "automation" },
+  ];
+
+  const steps: OnboardingStep[] = hasOrganization ? organizationSteps : personalSteps;
 
   const completed = steps.filter((step) => step.done).length;
   const total = steps.length;

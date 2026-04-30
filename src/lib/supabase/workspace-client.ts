@@ -101,13 +101,14 @@ export async function getClientWorkspaceContext(): Promise<ClientWorkspaceContex
     })
     .filter((item: { deletedAt: string | null }) => !item.deletedAt);
 
-  const defaultMembership = memberships[0] ?? null;
   const matchingMembership = cookiePreference && cookiePreference !== PERSONAL_WORKSPACE_VALUE
     ? memberships.find((item: { organizationId: string }) => item.organizationId === cookiePreference) ?? null
     : null;
+  // v58.17.1b: the individual user is always the primary identity.
+  // Personal workspace is the safe default; organization context requires explicit selection.
   const activeOrganizationId = cookiePreference === PERSONAL_WORKSPACE_VALUE
     ? null
-    : matchingMembership?.organizationId ?? defaultMembership?.organizationId ?? null;
+    : matchingMembership?.organizationId ?? null;
 
   return {
     supabase,

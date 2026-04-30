@@ -111,7 +111,8 @@
     "verify:v58.16.2": "node scripts/verify-v58.16.2.mjs",
     "verify:v58.16.3": "node scripts/verify-v58.16.3.mjs",
     "verify:v58.17": "node scripts/verify-v58.17.mjs",
-    "verify:v58.17.1a": "node scripts/verify-v58.17.1a.mjs"
+    "verify:v58.17.1a": "node scripts/verify-v58.17.1a.mjs",
+    "verify:v58.17.1b": "node scripts/verify-v58.17.1b.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
