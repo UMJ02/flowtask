@@ -232,35 +232,49 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery, work
 
   useEffect(() => {
     setHydrated(true);
-  }, [workspaceKey]);
+  }, []);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    const localStatusOverrides = readStatusOverrides(workspaceKey);
+    const localOrderOverrides = readOrderOverrides(workspaceKey);
+
+    setStatusOverrides(localStatusOverrides);
+    setOrderOverrides(localOrderOverrides);
+    setBoardTasks(applyStatusOverrides(tasks, localStatusOverrides));
+    setLastServerSignature(serverSignature);
+  }, [hydrated, serverSignature, tasks, workspaceKey]);
 
   useEffect(() => {
     if (!hydrated) return;
     let active = true;
 
-    const syncBoardConfig = async () => {
-      const board = await readBoardLayoutConfig(supabase);
-      if (!active || !board) return;
+    const timeout = window.setTimeout(() => {
+      const syncBoardConfig = async () => {
+        const board = await readBoardLayoutConfig(supabase);
+        if (!active || !board) return;
 
-      const dbStatusOverrides = normalizeStatusValue(board.layoutConfig[getScopedLayoutKey("kanbanStatusOverrides", workspaceKey)] ?? board.layoutConfig.kanbanStatusOverrides);
-      const dbOrderOverrides = normalizeOrderValue(board.layoutConfig[getScopedLayoutKey("kanbanOrderOverrides", workspaceKey)] ?? board.layoutConfig.kanbanOrderOverrides);
-      const localStatusOverrides = readStatusOverrides(workspaceKey);
-      const localOrderOverrides = readOrderOverrides(workspaceKey);
+        const dbStatusOverrides = normalizeStatusValue(board.layoutConfig[getScopedLayoutKey("kanbanStatusOverrides", workspaceKey)] ?? board.layoutConfig.kanbanStatusOverrides);
+        const dbOrderOverrides = normalizeOrderValue(board.layoutConfig[getScopedLayoutKey("kanbanOrderOverrides", workspaceKey)] ?? board.layoutConfig.kanbanOrderOverrides);
+        const localStatusOverrides = readStatusOverrides(workspaceKey);
+        const localOrderOverrides = readOrderOverrides(workspaceKey);
 
-      const mergedStatusOverrides = { ...dbStatusOverrides, ...localStatusOverrides };
-      const mergedOrderOverrides = mergeOrderOverrides(dbOrderOverrides, localOrderOverrides);
+        const mergedStatusOverrides = { ...dbStatusOverrides, ...localStatusOverrides };
+        const mergedOrderOverrides = mergeOrderOverrides(dbOrderOverrides, localOrderOverrides);
 
-      setStatusOverrides(mergedStatusOverrides);
-      setOrderOverrides(mergedOrderOverrides);
-      setBoardTasks(applyStatusOverrides(tasks, mergedStatusOverrides));
-      writeStatusOverrides(workspaceKey, mergedStatusOverrides);
-      writeOrderOverrides(workspaceKey, mergedOrderOverrides);
-    };
+        setStatusOverrides(mergedStatusOverrides);
+        setOrderOverrides(mergedOrderOverrides);
+        setBoardTasks(applyStatusOverrides(tasks, mergedStatusOverrides));
+        writeStatusOverrides(workspaceKey, mergedStatusOverrides);
+        writeOrderOverrides(workspaceKey, mergedOrderOverrides);
+      };
 
-    void syncBoardConfig();
+      void syncBoardConfig();
+    }, 220);
 
     return () => {
       active = false;
+      window.clearTimeout(timeout);
     };
   }, [hydrated, serverSignature, supabase, tasks, workspaceKey]);
 

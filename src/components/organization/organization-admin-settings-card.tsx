@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { LogOut, PencilLine, Trash2 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
@@ -17,6 +18,7 @@ export function OrganizationAdminSettingsCard({
   isOwner?: boolean;
   canManage?: boolean;
 }) {
+  const router = useRouter();
   const [name, setName] = useState(organizationName);
   const [loading, setLoading] = useState<'save' | 'leave' | 'delete' | null>(null);
   const [status, setStatus] = useState<string | null>(null);
@@ -36,7 +38,7 @@ export function OrganizationAdminSettingsCard({
       const payload = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(payload?.error || 'No fue posible actualizar la organización.');
       setStatus(payload?.message || 'Información actualizada correctamente.');
-      window.location.reload();
+      router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'No fue posible actualizar la organización.');
     } finally {
@@ -58,7 +60,8 @@ export function OrganizationAdminSettingsCard({
       });
       const payload = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(payload?.error || 'No fue posible salir de la organización.');
-      window.location.href = '/app/organization';
+      router.replace('/app/organization');
+      router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'No fue posible salir de la organización.');
     } finally {
@@ -80,7 +83,8 @@ export function OrganizationAdminSettingsCard({
       });
       const payload = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(payload?.error || 'No fue posible programar la eliminación de la organización.');
-      window.location.href = '/app/organization';
+      router.replace('/app/organization');
+      router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'No fue posible programar la eliminación de la organización.');
     } finally {

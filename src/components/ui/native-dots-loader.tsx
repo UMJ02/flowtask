@@ -1,3 +1,4 @@
+import { memo } from 'react';
 const DOTS = [
   'bg-blue-200/90',
   'bg-blue-300/90',
@@ -5,7 +6,7 @@ const DOTS = [
   'bg-blue-600',
 ];
 
-export function NativeDotsLoader() {
+function NativeDotsLoaderComponent() {
   return (
     <div className="flex items-center justify-center gap-4" aria-hidden="true">
       {DOTS.map((color, index) => (
@@ -18,3 +19,5 @@ export function NativeDotsLoader() {
     </div>
   );
 }
+
+export const NativeDotsLoader = memo(NativeDotsLoaderComponent);

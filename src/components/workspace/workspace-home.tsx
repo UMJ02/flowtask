@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import { useDeferredValue, useEffect, useMemo, useState } from 'react';
 import {
   BellRing,
   CalendarDays,
@@ -25,7 +25,6 @@ import {
 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { TaskKanbanBoard, type TaskItem } from '@/components/tasks/task-kanban-board';
-import { createClient } from '@/lib/supabase/client';
 import { applyClientWorkspaceScope, getClientWorkspaceContext } from '@/lib/supabase/workspace-client';
 import { cn } from '@/lib/utils/classnames';
 import { projectListRoute, taskNewRoute } from '@/lib/navigation/routes';
@@ -157,7 +156,6 @@ function WorkspaceQuickWidget({
 
 export function WorkspaceHome() {
   const router = useRouter();
-  const supabase = useMemo(() => createClient(), []);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [tasks, setTasks] = useState<WorkspaceTask[]>([]);
@@ -175,6 +173,13 @@ export function WorkspaceHome() {
   const [flowStatusFilter, setFlowStatusFilter] = useState<'all' | 'en_proceso' | 'en_espera' | 'concluido'>('all');
   const [flowPriorityFilter, setFlowPriorityFilter] = useState<'all' | 'alta' | 'media' | 'baja'>('all');
   const [flowGroupBy, setFlowGroupBy] = useState<'status' | 'priority' | 'client'>('status');
+  const deferredFlowSearch = useDeferredValue(flowSearch);
+
+  useEffect(() => {
+    router.prefetch('/app/tasks');
+    router.prefetch(taskNewRoute());
+    router.prefetch(projectListRoute());
+  }, [router]);
 
   useEffect(() => {
     let cancelled = false;
@@ -239,7 +244,7 @@ export function WorkspaceHome() {
     return () => {
       cancelled = true;
     };
-  }, [refreshTick, supabase]);
+  }, [refreshTick]);
 
   const today = todayIso();
   const openTasks = useMemo(() => tasks.filter((task) => task.status !== 'concluido'), [tasks]);
@@ -273,7 +278,7 @@ export function WorkspaceHome() {
   const radarScore = Math.max(60, 200 - overdueTasks.length * 25 - waiting.length * 4);
 
   const filteredFlowTasks = useMemo(() => {
-    const query = flowSearch.trim().toLowerCase();
+    const query = deferredFlowSearch.trim().toLowerCase();
     const rankedPriority = { alta: 0, media: 1, baja: 2 } as Record<string, number>;
     return tasks
       .filter((task) => {
@@ -295,7 +300,7 @@ export function WorkspaceHome() {
         if (a.due_date && !b.due_date) return -1;
         return (a.due_date ?? '').localeCompare(b.due_date ?? '') || a.title.localeCompare(b.title);
       });
-  }, [flowGroupBy, flowPriorityFilter, flowSearch, flowStatusFilter, tasks]);
+  }, [deferredFlowSearch, flowGroupBy, flowPriorityFilter, flowStatusFilter, tasks]);
 
   const activeFlowFilters = Number(Boolean(flowSearch.trim())) + Number(flowStatusFilter !== 'all') + Number(flowPriorityFilter !== 'all');
   const groupLabel = flowGroupBy === 'priority' ? 'Prioridad' : flowGroupBy === 'client' ? 'Registro' : 'Estado';

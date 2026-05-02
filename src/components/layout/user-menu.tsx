@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { LogOut, Settings, UserCircle2 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
@@ -70,6 +71,7 @@ export function UserMenu({
   email: string;
   avatarUrl?: string | null;
 }) {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [liveFullName, setLiveFullName] = useState(fullName ?? '');
@@ -110,7 +112,8 @@ export function UserMenu({
     const supabase = createClient();
     window.localStorage.removeItem(getProfileStorageKey(userId));
     await supabase.auth.signOut();
-    window.location.href = '/login';
+    router.replace('/login');
+    router.refresh();
   };
 
   return (

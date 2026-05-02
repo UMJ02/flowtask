@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useEffect, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useState, type MouseEvent, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { AuthPremiumLoader } from '@/components/ui/auth-premium-loader';
 
@@ -28,19 +28,32 @@ export function PublicTransitionLink({
     setMounted(true);
   }, []);
 
+  useEffect(() => {
+    router.prefetch(href);
+  }, [href, router]);
+
+  const warmRoute = useCallback(() => {
+    router.prefetch(href);
+  }, [href, router]);
+
+  const handleNavigate = useCallback((event: MouseEvent<HTMLAnchorElement>) => {
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return;
+    event.preventDefault();
+    if (pending) return;
+    setPending(true);
+    router.prefetch(href);
+    window.setTimeout(() => router.push(href), PUBLIC_TRANSITION_MS);
+  }, [href, pending, router]);
+
   return (
     <>
       <a
         href={href}
         className={className}
         aria-busy={pending}
-        onClick={(event) => {
-          if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return;
-          event.preventDefault();
-          if (pending) return;
-          setPending(true);
-          window.setTimeout(() => router.push(href), PUBLIC_TRANSITION_MS);
-        }}
+        onPointerEnter={warmRoute}
+        onFocus={warmRoute}
+        onClick={handleNavigate}
       >
         {children}
       </a>

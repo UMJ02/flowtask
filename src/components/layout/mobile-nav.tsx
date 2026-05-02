@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useMemo, useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { LogOut, Menu, X } from 'lucide-react';
@@ -21,6 +21,7 @@ const mainNavLinks = appNavLinks.filter((link) => !footerHrefs.has(link.href));
 
 export function MobileNav() {
   const pathname = usePathname();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
@@ -47,7 +48,8 @@ export function MobileNav() {
     setLoggingOut(true);
     const supabase = createClient();
     await supabase.auth.signOut();
-    window.location.href = '/login';
+    router.replace('/login');
+    router.refresh();
   };
 
   const panel = (

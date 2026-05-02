@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { MailCheck, Users } from 'lucide-react';
 import { Card } from '@/components/ui/card';
@@ -8,6 +9,7 @@ import type { PendingOrganizationInviteSummary } from '@/types/organization';
 import { formatOrganizationRole } from '@/lib/organization/labels';
 
 export function OrganizationPendingInvitesCard({ invites }: { invites: PendingOrganizationInviteSummary[] }) {
+  const router = useRouter();
   const [items, setItems] = useState(invites);
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -25,7 +27,8 @@ export function OrganizationPendingInvitesCard({ invites }: { invites: PendingOr
       if (!response.ok) {
         throw new Error(payload?.error || 'No fue posible aceptar la invitación.');
       }
-      window.location.href = payload?.redirectTo || '/app/organization';
+      router.replace(payload?.redirectTo || '/app/organization');
+      router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'No fue posible aceptar la invitación.');
     } finally {

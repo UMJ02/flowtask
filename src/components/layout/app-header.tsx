@@ -1,10 +1,20 @@
-import { Building2, SunMedium } from 'lucide-react';
+import dynamic from 'next/dynamic';
+import { Building2, Search, SunMedium } from 'lucide-react';
 import { NotificationBell } from '@/components/notifications/notification-bell';
-import { CommandPalette } from '@/components/layout/command-palette';
 import { MobileNav } from '@/components/layout/mobile-nav';
 import { UserMenu } from '@/components/layout/user-menu';
 import { OrganizationSwitcher } from '@/components/layout/organization-switcher';
 import type { OrganizationSummary } from '@/types/organization';
+
+const CommandPalette = dynamic(() => import('@/components/layout/command-palette').then((mod) => mod.CommandPalette), {
+  loading: () => (
+    <div className="flex h-11 w-full items-center gap-3 rounded-full border border-[#E5EAF1] bg-white px-4 text-sm font-semibold text-slate-400 shadow-[0_4px_14px_rgba(15,23,42,0.04)]">
+      <Search className="h-4 w-4" />
+      <span>Buscar o abrir comando…</span>
+    </div>
+  ),
+});
+
 
 function getFirstName(name?: string | null) {
   const clean = name?.trim();

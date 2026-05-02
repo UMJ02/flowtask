@@ -1,6 +1,7 @@
+import { memo } from 'react';
 import { NativeDotsLoader } from '@/components/ui/native-dots-loader';
 
-export function AuthPremiumLoader({
+function AuthPremiumLoaderComponent({
   title = 'Cargando Flowtask…',
 }: {
   title?: string;
@@ -25,3 +26,5 @@ export function AuthPremiumLoader({
     </div>
   );
 }
+
+export const AuthPremiumLoader = memo(AuthPremiumLoaderComponent);

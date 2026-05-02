@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useMemo, useState, useTransition } from 'react';
 import { Building2, ChevronDown, Check, Loader2, RotateCcw, UserRound } from 'lucide-react';
 import type { OrganizationSummary } from '@/types/organization';
@@ -61,6 +61,7 @@ export function OrganizationSwitcher({
   collapsed?: boolean;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pendingWorkspace, setPendingWorkspace] = useState<string | null>(null);
@@ -87,7 +88,8 @@ export function OrganizationSwitcher({
         await updateActiveWorkspace(workspace);
         setOpen(false);
         const target = workspace === 'personal' ? '/app/dashboard' : (pathname?.startsWith('/app/organization') ? '/app/organization' : pathname || '/app/dashboard');
-        window.location.assign(target);
+        router.replace(target);
+        router.refresh();
       } catch (err) {
         setOptimisticWorkspace(null);
         setError(err instanceof Error ? err.message : 'No fue posible cambiar el workspace activo.');
@@ -104,7 +106,8 @@ export function OrganizationSwitcher({
       try {
         await reactivateWorkspace(workspace);
         setOpen(false);
-        window.location.assign('/app/organization?reactivated=1');
+        router.replace('/app/organization?reactivated=1');
+        router.refresh();
       } catch (err) {
         setError(err instanceof Error ? err.message : 'No fue posible reactivar el workspace.');
       } finally {

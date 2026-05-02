@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Building2, RotateCcw, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -26,6 +27,7 @@ function getPurgeSummary(purgeScheduledAt?: string | null) {
 }
 
 export function DeletedOrganizationsPanel({ organizations }: { organizations: DeletedOrganizationSummary[] }) {
+  const router = useRouter();
   const [loading, setLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -40,7 +42,8 @@ export function DeletedOrganizationsPanel({ organizations }: { organizations: De
       });
       const payload = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(payload?.error || 'No fue posible reactivar la organización.');
-      window.location.href = '/app/organization?reactivated=1';
+      router.replace('/app/organization?reactivated=1');
+      router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'No fue posible reactivar la organización.');
     } finally {
@@ -61,7 +64,8 @@ export function DeletedOrganizationsPanel({ organizations }: { organizations: De
       });
       const payload = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(payload?.error || 'No fue posible borrar la organización.');
-      window.location.assign(payload?.redirectTo || '/app/organization?deleted=1');
+      router.replace(payload?.redirectTo || '/app/organization?deleted=1');
+      router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'No fue posible borrar la organización.');
     } finally {

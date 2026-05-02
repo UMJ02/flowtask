@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { Download, Smartphone, X } from 'lucide-react';
 
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[];
@@ -96,7 +95,7 @@ export function PwaRegister() {
       <div className="rounded-[28px] border border-slate-200/80 bg-white/95 p-4 shadow-[0_20px_50px_rgba(15,23,42,0.16)] backdrop-blur">
         <div className="flex items-start gap-3">
           <div className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600">
-            <Smartphone className="h-5 w-5" />
+            <span className="text-lg" aria-hidden="true">▣</span>
           </div>
           <div className="min-w-0 flex-1">
             <p className="text-sm font-semibold text-slate-900">Instala FlowTask en tu celular</p>
@@ -112,7 +111,7 @@ export function PwaRegister() {
             onClick={() => setDismissed(true)}
             className="inline-flex h-9 w-9 items-center justify-center rounded-xl text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
           >
-            <X className="h-4 w-4" />
+            <span className="text-base leading-none" aria-hidden="true">×</span>
           </button>
         </div>
 
@@ -124,7 +123,7 @@ export function PwaRegister() {
               disabled={installing}
               className="inline-flex flex-1 items-center justify-center gap-2 rounded-2xl bg-emerald-500 px-4 py-3 text-sm font-semibold text-white transition hover:bg-emerald-600 disabled:opacity-60"
             >
-              <Download className="h-4 w-4" />
+              <span className="text-base leading-none" aria-hidden="true">↓</span>
               {installing ? 'Instalando…' : 'Instalar app'}
             </button>
             <button
