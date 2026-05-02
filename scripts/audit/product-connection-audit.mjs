@@ -16,4 +16,5 @@ for(const file of TARGETS.flatMap(t=>walk(path.join(ROOT,t)))){
  for(const pattern of patterns){ const count=[...content.matchAll(pattern.re)].length; if(count) results.push({file:path.relative(ROOT,file),issue:pattern.name,count}); }
 }
 console.table(results);
-fs.writeFileSync('product-connection-audit.json', JSON.stringify(results,null,2));
+fs.mkdirSync('docs/audits', { recursive: true });
+fs.writeFileSync('docs/audits/product-connection-audit.json', JSON.stringify(results,null,2));

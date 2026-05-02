@@ -15,4 +15,4 @@ Corregir el preflight/verify para que deje de arrastrar referencias a verificado
 - se quitó la dependencia obligatoria de `.github/workflows/ci.yml`
 - se mantienen obligatorios `.nvmrc` y `.env.example`
 - `README.md` actualizado
-- `REQUIRED_DEPLOY_FILES_LOCATION.md` actualizado
+- `docs/deployment/REQUIRED_DEPLOY_FILES_LOCATION.md` actualizado

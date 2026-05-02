@@ -14,7 +14,7 @@ const requiredFiles = [
   "scripts/deploy-production-readiness.mjs",
   "docs/release/V58_10_3_VERIFY_ALIGNMENT_FIX.md",
   "docs/release/V58_10_4_RELEASE_EXPORTS_FIX.md",
-  "REQUIRED_DEPLOY_FILES_LOCATION.md",
+  "docs/deployment/REQUIRED_DEPLOY_FILES_LOCATION.md",
   "src/lib/release/version.ts",
   "src/components/security/access-summary-card.tsx",
   "src/components/organization/organization-bootstrap-card.tsx",
