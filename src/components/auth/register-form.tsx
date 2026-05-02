@@ -209,7 +209,7 @@ export function RegisterForm({ initialNext }: { initialNext?: string }) {
 
         <div className="text-center text-sm text-slate-500">
           ¿Ya tienes cuenta?{' '}
-          <PublicTransitionLink href={initialNext ? `/login?next=${encodeURIComponent(initialNext)}` : '/login'} className="font-semibold text-emerald-700 hover:text-emerald-800" title="Preparando acceso…" description="Estamos dejando el login listo para entrar.">
+          <PublicTransitionLink href={initialNext ? `/login?next=${encodeURIComponent(initialNext)}` : '/login'} className="font-semibold text-emerald-700 hover:text-emerald-800" title="Cargando ingreso…">
             Iniciar sesión
           </PublicTransitionLink>
         </div>

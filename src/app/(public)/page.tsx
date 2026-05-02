@@ -74,8 +74,7 @@ function HeroGlassCard() {
           <PublicTransitionLink
             href="/register"
             className="group inline-flex h-[54px] w-full items-center justify-center gap-3 rounded-[15px] bg-[#16C784] px-5 text-[0.98rem] font-black text-white shadow-[0_22px_42px_rgba(22,199,132,0.24)] transition hover:-translate-y-0.5 hover:bg-[#12b877]"
-            title="Preparando registro…"
-            description="Estamos dejando tu cuenta lista para empezar."
+            title="Cargando registro…"
           >
             Crear cuenta gratis
             <ArrowRight className="h-5 w-5 transition group-hover:translate-x-1" />
@@ -83,8 +82,7 @@ function HeroGlassCard() {
           <PublicTransitionLink
             href="/login"
             className="inline-flex h-[54px] w-full items-center justify-center rounded-[15px] border border-white/20 bg-white/[0.035] px-5 text-[0.98rem] font-bold text-white shadow-inner shadow-white/5 transition hover:bg-white/[0.075]"
-            title="Preparando acceso…"
-            description="Estamos dejando el login listo para entrar."
+            title="Cargando ingreso…"
           >
             Iniciar sesión
           </PublicTransitionLink>

@@ -11,8 +11,8 @@ export function PublicTransitionLink({
   href,
   children,
   className,
-  title = 'Preparando tu espacio…',
-  description = 'Estamos cargando Flowtask.',
+  title = 'Cargando Flowtask…',
+  description = '',
 }: {
   href: string;
   children: ReactNode;

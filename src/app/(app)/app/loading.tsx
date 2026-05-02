@@ -1,11 +1,5 @@
-import { LoadingState } from '@/components/ui/loading-state';
+import { AuthPremiumLoader } from '@/components/ui/auth-premium-loader';
 
 export default function AppLoading() {
-  return (
-    <LoadingState
-      title="Preparando tu espacio…"
-      description="Cargando tarjetas, listas y accesos rápidos para que todo aparezca de una forma más fluida."
-      cards={3}
-    />
-  );
+  return <AuthPremiumLoader title="Cargando workspace…" />;
 }

@@ -154,7 +154,7 @@ export function LoginForm({ initialNext }: { initialNext?: string }) {
 
         <div className="flex items-center justify-between text-sm text-slate-600">
           <Link href="/forgot-password" className="hover:text-slate-900">Olvidé mi contraseña</Link>
-          <PublicTransitionLink href="/register" className="hover:text-slate-900" title="Preparando registro…" description="Estamos dejando tu cuenta lista para empezar.">Crear cuenta</PublicTransitionLink>
+          <PublicTransitionLink href="/register" className="hover:text-slate-900" title="Cargando registro…">Crear cuenta</PublicTransitionLink>
         </div>
       </form>
     </>
