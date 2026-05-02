@@ -1,15 +1,14 @@
+import Image from 'next/image';
 import { cn } from '@/lib/utils/classnames';
 
 export function BrandLoader({ className, label = 'Cargando FlowTask' }: { className?: string; label?: string }) {
   return (
-    <div className={cn('flex flex-col items-center justify-center gap-2.5', className)} aria-label={label} role="status">
-      <div className="relative h-[72px] w-[72px] overflow-hidden rounded-[24px] border border-emerald-100 bg-white shadow-[0_14px_32px_rgba(15,23,42,0.06)]">
-        <div className="absolute inset-3 rounded-[18px] bg-emerald-50" />
-        <div className="absolute left-4 top-4 h-3 w-9 rounded-full bg-emerald-100" />
-        <div className="absolute left-4 top-9 h-2.5 w-7 rounded-full bg-slate-100" />
-        <div className="absolute bottom-4 right-4 h-4 w-4 rounded-full bg-[#16C784]/25" />
+    <div className={cn('flex flex-col items-center justify-center gap-3', className)} aria-label={label} role="status">
+      <div className="relative grid h-[76px] w-[76px] place-items-center rounded-[26px] border border-slate-200/80 bg-white shadow-[0_18px_42px_rgba(15,23,42,0.08)]">
+        <span className="absolute inset-0 rounded-[26px] bg-[radial-gradient(circle_at_30%_20%,rgba(22,199,132,0.12),transparent_52%)]" aria-hidden />
+        <Image src="/icons/icon.png" alt="" width={46} height={46} className="relative h-[46px] w-[46px] object-contain" priority />
       </div>
-      <span className="text-[10px] font-semibold uppercase tracking-[0.24em] text-emerald-700/90">{label}</span>
+      <span className="text-[10px] font-semibold uppercase tracking-[0.24em] text-slate-500">{label}</span>
     </div>
   );
 }
