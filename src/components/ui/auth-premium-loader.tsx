@@ -25,8 +25,8 @@ export function AuthPremiumLoader({
           preload="auto"
           aria-hidden="true"
         >
-          <source src="/animations/flowtask-loading.webm" type="video/webm" />
-          <source src="/animations/flowtask-loading.mp4" type="video/mp4" />
+          <source src="/animations/flowtask-loading.mov" type="video/mov" />
+          <source src="/animations/flowtask-loading2.mp4" type="video/mp4" />
         </video>
         <h1 className="mt-2 text-[1rem] font-semibold tracking-[-0.02em] text-slate-950 sm:text-lg">{title}</h1>
       </section>
