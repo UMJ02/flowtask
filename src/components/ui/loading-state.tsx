@@ -8,26 +8,17 @@ export function LoadingState({
   cards?: number;
 }) {
   return (
-    <div className="space-y-3">
-      <div className="rounded-[24px] border border-slate-200/80 bg-white/[0.9] p-4 shadow-[0_12px_26px_rgba(15,23,42,0.05)] md:p-[18px]">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center">
-          <div className="flex h-[76px] w-[76px] shrink-0 items-center justify-center rounded-[24px] border border-emerald-100 bg-emerald-50/70">
-            <div className="space-y-2">
-              <div className="skeleton h-3 w-9 rounded-full" />
-              <div className="skeleton h-3 w-12 rounded-full" />
-              <div className="skeleton h-3 w-7 rounded-full" />
-            </div>
+    <div className="space-y-3" aria-busy="true" aria-live="polite" role="status">
+      <div className="rounded-[24px] border border-slate-200/80 bg-white/[0.92] p-4 shadow-[0_12px_26px_rgba(15,23,42,0.05)] md:p-[18px]">
+        <div className="min-w-0 space-y-3">
+          <div className="space-y-2">
+            <div className="skeleton h-3 w-20 rounded-full" />
+            <div className="skeleton h-7 w-full max-w-[280px] rounded-full" />
           </div>
-          <div className="min-w-0 flex-1 space-y-3">
-            <div className="space-y-2">
-              <div className="skeleton h-3 w-20 rounded-full" />
-              <div className="skeleton h-7 w-full max-w-[280px] rounded-full" />
-            </div>
-            <div className="skeleton h-3 w-full max-w-2xl rounded-full" />
-            <div className="rounded-[20px] border border-emerald-100 bg-emerald-50/80 px-3.5 py-3">
-              <div className="text-sm font-semibold text-emerald-700">{title}</div>
-              <p className="mt-1 text-sm leading-6 text-emerald-800/80">{description}</p>
-            </div>
+          <div className="skeleton h-3 w-full max-w-2xl rounded-full" />
+          <div className="rounded-[18px] border border-slate-200/80 bg-slate-50/80 px-3.5 py-3">
+            <div className="text-sm font-semibold text-slate-800">{title}</div>
+            <p className="mt-1 text-sm leading-6 text-slate-500">{description}</p>
           </div>
         </div>
       </div>

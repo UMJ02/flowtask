@@ -267,3 +267,9 @@ textarea::placeholder {
   from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+@keyframes auth-loader-slide {
+  0% { transform: translateX(-110%); }
+  50% { transform: translateX(55%); }
+  100% { transform: translateX(220%); }
+}
