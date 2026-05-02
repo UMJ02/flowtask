@@ -178,6 +178,7 @@ export async function createOnboardingDemoData(): Promise<OnboardingDemoResult> 
 
   revalidatePath("/app/onboarding");
   revalidatePath("/app");
+  revalidatePath("/app/dashboard");
   revalidatePath("/app/tasks");
   revalidatePath("/app/projects");
   revalidatePath("/app/clients");

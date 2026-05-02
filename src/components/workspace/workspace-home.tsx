@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import {
   BellRing,
@@ -153,6 +154,7 @@ function WorkspaceQuickWidget({
 }
 
 export function WorkspaceHome() {
+  const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -291,8 +293,9 @@ export function WorkspaceHome() {
 
       const created = payload.created;
       const tasksCreated = typeof created?.tasks === 'number' ? created.tasks : 0;
-      setDemoMessage(tasksCreated > 0 ? `Listo. Creamos ${tasksCreated} tareas y 1 proyecto demo en este workspace.` : payload.message || 'Datos de ejemplo cargados correctamente.');
+      setDemoMessage(tasksCreated > 0 ? `Listo. Creamos 1 proyecto demo y ${tasksCreated} tareas de ejemplo en este workspace.` : payload.message || 'Datos de ejemplo cargados correctamente.');
       setRefreshTick((value) => value + 1);
+      router.refresh();
     } catch (err) {
       setDemoError(err instanceof Error ? err.message : 'No fue posible cargar el ejemplo seguro.');
     } finally {
