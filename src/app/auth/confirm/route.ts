@@ -43,5 +43,7 @@ export async function GET(request: NextRequest) {
     return buildRedirect(request, '/auth-error', { reason: 'expired-or-used' });
   }
 
+  await supabase.auth.signOut();
+
   return buildRedirect(request, '/confirmed');
 }
