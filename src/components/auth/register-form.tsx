@@ -54,6 +54,7 @@ export function RegisterForm({ initialNext }: { initialNext?: string }) {
       email: values.email,
       password: values.password,
       options: {
+        emailRedirectTo: `${window.location.origin}/auth/confirm`,
         data: {
           full_name: values.fullName,
         },
