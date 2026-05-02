@@ -16,7 +16,7 @@ export function AppSidebar({ organizations = [], activeOrganization = null, user
   const { collapsed, toggle } = useSidebarState();
 
   return (
-    <aside className={`hidden bg-[linear-gradient(180deg,#071120_0%,#0A1730_100%)] text-[#E2E8F0] shadow-[16px_0_40px_rgba(2,6,23,0.08)] md:sticky md:top-0 md:flex md:h-screen md:flex-col md:overflow-hidden transition-[width] duration-[220ms] ease-[cubic-bezier(.2,.8,.2,1)] ${collapsed ? 'md:w-[72px]' : 'md:w-[260px]'}`}>
+    <aside className="hidden min-w-0 bg-[linear-gradient(180deg,#071120_0%,#0A1730_100%)] text-[#E2E8F0] shadow-[16px_0_40px_rgba(2,6,23,0.08)] md:sticky md:top-0 md:flex md:h-screen md:w-full md:flex-col md:overflow-hidden">
       <div className={`flex shrink-0 items-center ${collapsed ? 'justify-center px-3 py-6' : 'justify-between px-5 py-6'}`}>
         <Link href="/app/dashboard" className={`group flex min-w-0 items-center ${collapsed ? 'justify-center' : 'gap-3'}`} title={collapsed ? 'FlowTask' : undefined}>
           <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-[14px] bg-[#16C784]/10 ring-1 ring-[#16C784]/20 transition group-hover:scale-[1.03]">
@@ -39,7 +39,7 @@ export function AppSidebar({ organizations = [], activeOrganization = null, user
         </div>
       ) : null}
 
-      <div className={`min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-hidden ${collapsed ? 'px-2' : 'px-4'}`}>
+      <div className={`min-h-0 min-w-0 flex-1 overscroll-contain overflow-y-auto overflow-x-hidden ${collapsed ? 'px-2' : 'px-4'}`}>
         {!collapsed ? <p className="mb-2 px-2 text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">Navegación</p> : null}
         <nav className="min-w-0 space-y-1.5 pb-4">
           {mainNavLinks.map((link) => {
@@ -56,7 +56,7 @@ export function AppSidebar({ organizations = [], activeOrganization = null, user
         </nav>
       </div>
 
-      <div className={`relative z-20 shrink-0 bg-[#0A1730] ${collapsed ? 'px-2 pb-4' : 'px-4 pb-5'}`}>
+      <div className={`relative z-20 shrink-0 border-t border-white/10 bg-[#0A1730] pt-3 ${collapsed ? 'px-2 pb-4' : 'px-4 pb-5'}`}>
         <SidebarFooter organizations={organizations} activeOrganization={activeOrganization} userEmail={userEmail} userName={userName} collapsed={collapsed} />
         {!collapsed ? (
           <button type="button" onClick={toggle} className="mt-4 flex h-11 w-full items-center justify-center gap-3 rounded-[14px] border border-white/10 bg-white/[0.035] text-sm font-semibold text-slate-300 transition hover:-translate-y-px hover:bg-white/[0.07] hover:text-white">

@@ -163,6 +163,9 @@ export function WorkspaceHome() {
   const [noteDraft, setNoteDraft] = useState('');
   const [notes, setNotes] = useState<QuickNote[]>([]);
   const [refreshTick, setRefreshTick] = useState(0);
+  const [demoLoading, setDemoLoading] = useState(false);
+  const [demoMessage, setDemoMessage] = useState<string | null>(null);
+  const [demoError, setDemoError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -268,6 +271,35 @@ export function WorkspaceHome() {
     writeNotes(workspaceKey, next);
     setNoteDraft('');
   }
+  async function loadSafeDemoData() {
+    if (demoLoading) return;
+
+    setDemoLoading(true);
+    setDemoMessage(null);
+    setDemoError(null);
+
+    try {
+      const response = await fetch('/api/onboarding/demo-data', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      const payload = await response.json().catch(() => ({}));
+
+      if (!response.ok || !payload?.ok) {
+        throw new Error(payload?.message || 'No fue posible cargar el ejemplo seguro.');
+      }
+
+      const created = payload.created;
+      const tasksCreated = typeof created?.tasks === 'number' ? created.tasks : 0;
+      setDemoMessage(tasksCreated > 0 ? `Listo. Creamos ${tasksCreated} tareas y 1 proyecto demo en este workspace.` : payload.message || 'Datos de ejemplo cargados correctamente.');
+      setRefreshTick((value) => value + 1);
+    } catch (err) {
+      setDemoError(err instanceof Error ? err.message : 'No fue posible cargar el ejemplo seguro.');
+    } finally {
+      setDemoLoading(false);
+    }
+  }
+
 
   return (
     <div className="space-y-6 pb-3">
@@ -341,6 +373,40 @@ export function WorkspaceHome() {
           </div>
         </div>
         {error ? <div className="mb-4 rounded-2xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div> : null}
+        {!loading && !error && tasks.length === 0 && projects.length === 0 ? (
+          <div className="mb-5 overflow-hidden rounded-[22px] border border-emerald-100 bg-[linear-gradient(135deg,#F0FDF4_0%,#FFFFFF_58%,#F8FAFC_100%)] p-5 shadow-[0_14px_34px_rgba(15,23,42,0.05)]">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+              <div className="flex min-w-0 gap-4">
+                <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-700 ring-1 ring-emerald-200">
+                  <Sparkles className="h-5 w-5" />
+                </span>
+                <div className="min-w-0">
+                  <p className="text-xs font-black uppercase tracking-[0.18em] text-emerald-700">Workspace nuevo</p>
+                  <h3 className="mt-1 text-xl font-black tracking-[-0.03em] text-[#0F172A]">Tu workspace está listo para empezar</h3>
+                  <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
+                    Podés cargar un ejemplo seguro para ver proyectos, tareas y checklist sin tocar datos reales. Solo se activa cuando este workspace tiene 0 tareas y 0 proyectos.
+                  </p>
+                  {demoMessage ? <p className="mt-3 rounded-2xl border border-emerald-100 bg-white/80 px-4 py-2 text-sm font-semibold text-emerald-700">{demoMessage}</p> : null}
+                  {demoError ? <p className="mt-3 rounded-2xl border border-rose-100 bg-white/80 px-4 py-2 text-sm font-semibold text-rose-700">{demoError}</p> : null}
+                </div>
+              </div>
+              <div className="flex shrink-0 flex-col gap-2 sm:flex-row lg:flex-col xl:flex-row">
+                <button
+                  type="button"
+                  onClick={loadSafeDemoData}
+                  disabled={demoLoading}
+                  className="inline-flex h-11 items-center justify-center rounded-[14px] bg-[#16C784] px-5 text-sm font-bold text-white shadow-[0_12px_24px_rgba(22,199,132,0.22)] transition hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-70"
+                >
+                  {demoLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+                  Cargar ejemplo seguro
+                </button>
+                <Link href={taskNewRoute()} className="inline-flex h-11 items-center justify-center rounded-[14px] border border-[#E5EAF1] bg-white px-5 text-sm font-bold text-[#0F172A] shadow-[0_8px_18px_rgba(15,23,42,0.04)] transition hover:bg-slate-50">
+                  Crear primera tarea
+                </Link>
+              </div>
+            </div>
+          </div>
+        ) : null}
         <TaskKanbanBoard tasks={tasks} showHeader={false} workspaceKey={workspaceKey} />
       </section>
 
