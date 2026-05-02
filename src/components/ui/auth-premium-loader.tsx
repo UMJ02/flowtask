@@ -17,7 +17,7 @@ export function AuthPremiumLoader({
       >
         <BrandLoader className="mx-auto" label="Flowtask" />
         <div className="mx-auto mt-5 h-[3px] w-full max-w-[220px] overflow-hidden rounded-full bg-slate-100">
-          <div className="h-full w-1/2 animate-[auth-loader-slide_3.4s_ease-in-out_infinite] rounded-full bg-[#16C784]" />
+          <div className="h-full w-1/2 animate-[auth-loader-slide_1.15s_ease-in-out_infinite] rounded-full bg-[#16C784]" />
         </div>
         <h1 className="mt-5 text-lg font-semibold tracking-[-0.02em] text-slate-950">{title}</h1>
         <p className="mx-auto mt-2 max-w-[280px] text-sm leading-6 text-slate-500">{description}</p>

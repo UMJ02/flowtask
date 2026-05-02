@@ -1,6 +1,6 @@
 'use client';
 
-import { PublicTransitionLink } from '@/components/public/public-transition-link';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { type ChangeEvent, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -209,9 +209,9 @@ export function RegisterForm({ initialNext }: { initialNext?: string }) {
 
         <div className="text-center text-sm text-slate-500">
           ¿Ya tienes cuenta?{' '}
-          <PublicTransitionLink href={initialNext ? `/login?next=${encodeURIComponent(initialNext)}` : '/login'} className="font-semibold text-emerald-700 hover:text-emerald-800" title="Preparando acceso…" description="Estamos dejando el login listo para entrar.">
+          <Link href={initialNext ? `/login?next=${encodeURIComponent(initialNext)}` : '/login'} className="font-semibold text-emerald-700 hover:text-emerald-800">
             Iniciar sesión
-          </PublicTransitionLink>
+          </Link>
         </div>
       </form>
     </>

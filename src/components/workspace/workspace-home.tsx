@@ -9,8 +9,6 @@ import {
   CalendarDays,
   ChevronDown,
   ChevronRight,
-  Search,
-  X,
   ClipboardList,
   FolderKanban,
   LayoutGrid,
@@ -170,11 +168,6 @@ export function WorkspaceHome() {
   const [demoLoading, setDemoLoading] = useState(false);
   const [demoMessage, setDemoMessage] = useState<string | null>(null);
   const [demoError, setDemoError] = useState<string | null>(null);
-  const [flowFiltersOpen, setFlowFiltersOpen] = useState(false);
-  const [flowSearch, setFlowSearch] = useState('');
-  const [flowStatusFilter, setFlowStatusFilter] = useState<'all' | 'en_proceso' | 'en_espera' | 'concluido'>('all');
-  const [flowPriorityFilter, setFlowPriorityFilter] = useState<'all' | 'alta' | 'media' | 'baja'>('all');
-  const [flowGroupBy, setFlowGroupBy] = useState<'status' | 'priority' | 'client'>('status');
 
   useEffect(() => {
     let cancelled = false;
@@ -271,44 +264,6 @@ export function WorkspaceHome() {
       : 'Sin urgencias críticas. Aprovechá para planear, documentar y avanzar proyectos activos.';
 
   const radarScore = Math.max(60, 200 - overdueTasks.length * 25 - waiting.length * 4);
-
-  const filteredFlowTasks = useMemo(() => {
-    const query = flowSearch.trim().toLowerCase();
-    const rankedPriority = { alta: 0, media: 1, baja: 2 } as Record<string, number>;
-    return tasks
-      .filter((task) => {
-        const matchesSearch = !query || [task.title, task.client_name, task.description].some((value) => (value ?? '').toLowerCase().includes(query));
-        const matchesStatus = flowStatusFilter === 'all' || task.status === flowStatusFilter;
-        const matchesPriority = flowPriorityFilter === 'all' || task.priority === flowPriorityFilter;
-        return matchesSearch && matchesStatus && matchesPriority;
-      })
-      .sort((a, b) => {
-        if (flowGroupBy === 'priority') {
-          const byPriority = (rankedPriority[a.priority ?? 'media'] ?? 1) - (rankedPriority[b.priority ?? 'media'] ?? 1);
-          if (byPriority !== 0) return byPriority;
-        }
-        if (flowGroupBy === 'client') {
-          const byClient = (a.client_name ?? 'Sin registro').localeCompare(b.client_name ?? 'Sin registro');
-          if (byClient !== 0) return byClient;
-        }
-        if (!a.due_date && b.due_date) return 1;
-        if (a.due_date && !b.due_date) return -1;
-        return (a.due_date ?? '').localeCompare(b.due_date ?? '') || a.title.localeCompare(b.title);
-      });
-  }, [flowGroupBy, flowPriorityFilter, flowSearch, flowStatusFilter, tasks]);
-
-  const activeFlowFilters = Number(Boolean(flowSearch.trim())) + Number(flowStatusFilter !== 'all') + Number(flowPriorityFilter !== 'all');
-  const groupLabel = flowGroupBy === 'priority' ? 'Prioridad' : flowGroupBy === 'client' ? 'Registro' : 'Estado';
-
-  function cycleFlowGroup() {
-    setFlowGroupBy((current) => current === 'status' ? 'priority' : current === 'priority' ? 'client' : 'status');
-  }
-
-  function clearFlowFilters() {
-    setFlowSearch('');
-    setFlowStatusFilter('all');
-    setFlowPriorityFilter('all');
-  }
 
   function saveQuickNote() {
     const text = noteDraft.trim();
@@ -411,39 +366,15 @@ export function WorkspaceHome() {
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-3">
-            <button type="button" onClick={() => setFlowFiltersOpen((value) => !value)} className={cn("inline-flex h-10 items-center gap-2 rounded-[14px] border px-4 text-sm font-semibold transition", flowFiltersOpen || activeFlowFilters ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-[#E5EAF1] bg-white text-slate-600 hover:bg-slate-50")} aria-expanded={flowFiltersOpen}>
+            <button type="button" className="inline-flex h-10 items-center gap-2 rounded-[14px] border border-[#E5EAF1] bg-white px-4 text-sm font-semibold text-slate-600 transition hover:bg-slate-50">
               <SlidersHorizontal className="h-4 w-4" /> Filtros
-              {activeFlowFilters ? <span className="ml-0.5 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[#16C784] px-1.5 text-[11px] font-black text-white">{activeFlowFilters}</span> : null}
             </button>
-            <button type="button" onClick={cycleFlowGroup} className="inline-flex h-10 items-center gap-2 rounded-[14px] border border-[#E5EAF1] bg-white px-4 text-sm font-semibold text-slate-600 transition hover:bg-slate-50" title="Cambiar agrupamiento">
-              Agrupar: {groupLabel} <ChevronDown className="h-4 w-4" />
+            <button type="button" className="inline-flex h-10 items-center gap-2 rounded-[14px] border border-[#E5EAF1] bg-white px-4 text-sm font-semibold text-slate-600 transition hover:bg-slate-50">
+              Agrupar: Estado <ChevronDown className="h-4 w-4" />
             </button>
             <Link href={taskNewRoute()} className="inline-flex h-10 items-center justify-center rounded-[14px] bg-[#16C784] px-5 text-sm font-bold text-white shadow-[0_12px_24px_rgba(22,199,132,0.22)] transition hover:bg-emerald-600"><Plus className="mr-2 h-4 w-4" /> Nueva tarea</Link>
           </div>
         </div>
-        {flowFiltersOpen ? (
-          <div className="mb-4 grid gap-3 rounded-[20px] border border-[#E5EAF1] bg-slate-50/70 p-3 shadow-inner md:grid-cols-[minmax(240px,1fr)_170px_170px_auto]">
-            <label className="relative block">
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-              <input value={flowSearch} onChange={(event) => setFlowSearch(event.target.value)} placeholder="Buscar en mi flujo..." className="h-11 w-full rounded-[14px] border border-[#E5EAF1] bg-white pl-9 pr-3 text-sm font-semibold text-slate-700 outline-none transition focus:border-emerald-200 focus:ring-4 focus:ring-emerald-50" />
-            </label>
-            <select value={flowStatusFilter} onChange={(event) => setFlowStatusFilter(event.target.value as typeof flowStatusFilter)} className="h-11 rounded-[14px] border border-[#E5EAF1] bg-white px-3 text-sm font-semibold text-slate-700 outline-none">
-              <option value="all">Todos los estados</option>
-              <option value="en_proceso">En progreso</option>
-              <option value="en_espera">En espera</option>
-              <option value="concluido">Hecho</option>
-            </select>
-            <select value={flowPriorityFilter} onChange={(event) => setFlowPriorityFilter(event.target.value as typeof flowPriorityFilter)} className="h-11 rounded-[14px] border border-[#E5EAF1] bg-white px-3 text-sm font-semibold text-slate-700 outline-none">
-              <option value="all">Todas las prioridades</option>
-              <option value="alta">Alta</option>
-              <option value="media">Media</option>
-              <option value="baja">Baja</option>
-            </select>
-            <button type="button" onClick={clearFlowFilters} className="inline-flex h-11 items-center justify-center gap-2 rounded-[14px] border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-slate-600 transition hover:bg-white">
-              <X className="h-4 w-4" /> Limpiar
-            </button>
-          </div>
-        ) : null}
         {error ? <div className="mb-4 rounded-2xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div> : null}
         {!loading && !error && tasks.length === 0 && projects.length === 0 ? (
           <div className="mb-5 overflow-hidden rounded-[22px] border border-emerald-100 bg-[linear-gradient(135deg,#F0FDF4_0%,#FFFFFF_58%,#F8FAFC_100%)] p-5 shadow-[0_14px_34px_rgba(15,23,42,0.05)]">
@@ -479,7 +410,7 @@ export function WorkspaceHome() {
             </div>
           </div>
         ) : null}
-        <TaskKanbanBoard tasks={filteredFlowTasks} showHeader={false} workspaceKey={`${workspaceKey}:${flowGroupBy}`} />
+        <TaskKanbanBoard tasks={tasks} showHeader={false} workspaceKey={workspaceKey} />
       </section>
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
