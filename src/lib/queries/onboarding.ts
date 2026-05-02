@@ -28,6 +28,13 @@ export type WorkspaceOnboardingSummary = {
     activeProjects: number;
     openTasks: number;
   };
+  demoData: {
+    eligible: boolean;
+    mode: "personal" | "organization";
+    title: string;
+    description: string;
+    safetyNote: string;
+  };
   steps: OnboardingStep[];
 };
 
@@ -61,7 +68,7 @@ export async function getWorkspaceOnboardingSummary(): Promise<WorkspaceOnboardi
     ),
   ]);
 
-  const members = organizationMetrics?.members ?? 0;
+  const members = organizationMetrics?.members ?? (organizationId ? 1 : 0);
   const clients = organizationMetrics?.clients ?? 0;
   const activeProjects = organizationMetrics?.activeProjects ?? projectsRes.count ?? 0;
   const openTasks = organizationMetrics?.openTasks ?? tasksRes.count ?? 0;
@@ -97,13 +104,13 @@ export async function getWorkspaceOnboardingSummary(): Promise<WorkspaceOnboardi
   ];
 
   const steps: OnboardingStep[] = hasOrganization ? organizationSteps : personalSteps;
-
   const completed = steps.filter((step) => step.done).length;
   const total = steps.length;
   const score = total ? Math.round((completed / total) * 100) : 0;
+  const demoEligible = !hasProjects && !hasTasks;
 
   const recommendations = [
-    !hasClients ? "Carga por lo menos un cliente para que la capa operativa tenga un punto real de trabajo." : null,
+    !hasClients && hasOrganization ? "Carga por lo menos un cliente para que la capa operativa tenga un punto real de trabajo." : null,
     !hasProjects ? "Crea un proyecto inicial para habilitar seguimiento, watchlist y reportes con señal útil." : null,
     !hasTasks ? "Registra tareas activas para que dashboard, kanban y vencimientos muestren prioridad real." : null,
     !automationEnabled ? "Configura al menos un canal o rutina de notificaciones para empezar a automatizar seguimiento." : null,
@@ -122,6 +129,17 @@ export async function getWorkspaceOnboardingSummary(): Promise<WorkspaceOnboardi
       clients,
       activeProjects,
       openTasks,
+    },
+    demoData: {
+      eligible: demoEligible,
+      mode: workspaceMode,
+      title: demoEligible ? "Cargar datos de ejemplo" : "Datos reales protegidos",
+      description: demoEligible
+        ? hasOrganization
+          ? "Crea 1 cliente demo, 1 proyecto y 3 tareas para que la organización no arranque vacía."
+          : "Crea 1 proyecto personal y 3 tareas demo para probar Flowtask sin partir desde cero."
+        : "Este workspace ya tiene proyectos o tareas. Flowtask no insertará ejemplos automáticamente para no mezclar información real.",
+      safetyNote: "Solo se ejecuta cuando proyectos = 0 y tareas = 0 en el workspace activo.",
     },
     steps,
   };

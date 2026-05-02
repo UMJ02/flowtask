@@ -13,12 +13,14 @@ function getFirstName(name?: string | null) {
 }
 
 export function AppHeader({
+  userId,
   userEmail,
   userName,
   avatarUrl,
   organizations = [],
   activeOrganization = null,
 }: {
+  userId: string;
   userEmail: string;
   userName?: string | null;
   avatarUrl?: string | null;
@@ -63,7 +65,7 @@ export function AppHeader({
             <SunMedium className="h-[18px] w-[18px]" />
           </button>
           <NotificationBell />
-          <UserMenu fullName={userName} email={userEmail} avatarUrl={avatarUrl} />
+          <UserMenu userId={userId} fullName={userName} email={userEmail} avatarUrl={avatarUrl} />
         </div>
       </div>
     </header>

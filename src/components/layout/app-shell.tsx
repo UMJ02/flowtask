@@ -32,6 +32,7 @@ export function AppShell({
         <ShellFrame
           userEmail={userEmail}
           userName={userName}
+          userId={userId}
           userAvatarUrl={userAvatarUrl}
           organizations={organizations}
           activeOrganization={activeOrganization}
@@ -46,6 +47,7 @@ export function AppShell({
 function ShellFrame({
   userEmail,
   userName,
+  userId,
   userAvatarUrl,
   organizations = [],
   activeOrganization = null,
@@ -53,6 +55,7 @@ function ShellFrame({
 }: {
   userEmail: string;
   userName?: string | null;
+  userId: string;
   userAvatarUrl?: string | null;
   organizations?: OrganizationSummary[];
   activeOrganization?: OrganizationSummary | null;
@@ -65,7 +68,7 @@ function ShellFrame({
       <div className={`grid min-h-screen transition-[grid-template-columns] duration-300 ${collapsed ? 'md:grid-cols-[72px_minmax(0,1fr)]' : 'md:grid-cols-[260px_minmax(0,1fr)]'}`}>
         <AppSidebar organizations={organizations} activeOrganization={activeOrganization} userEmail={userEmail} userName={userName} />
         <div className="min-w-0 px-4 py-4 md:px-6 md:py-6">
-          <AppHeader userEmail={userEmail} userName={userName} avatarUrl={userAvatarUrl} organizations={organizations} activeOrganization={activeOrganization} />
+          <AppHeader userId={userId} userEmail={userEmail} userName={userName} avatarUrl={userAvatarUrl} organizations={organizations} activeOrganization={activeOrganization} />
           <main className="mt-5 min-w-0">{children}</main>
           <div className="mt-6 pb-4">
             <AppFooter />

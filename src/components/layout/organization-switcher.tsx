@@ -141,7 +141,7 @@ export function OrganizationSwitcher({
   ];
 
   const menu = (
-    <div className={`absolute ${dark ? 'bottom-[calc(100%+10px)]' : 'top-[calc(100%+10px)]'} right-0 z-30 w-full min-w-[280px] rounded-[24px] border p-3 shadow-[0_24px_50px_rgba(15,23,42,0.16)] ${dark ? 'border-white/10 bg-slate-950 text-white' : 'border-slate-200 bg-white'}`}>
+    <div className={`absolute ${dark ? 'bottom-[calc(100%+10px)]' : 'top-[calc(100%+10px)]'} right-0 z-30 w-full min-w-0 max-w-full rounded-[24px] border p-3 shadow-[0_24px_50px_rgba(15,23,42,0.16)] ${dark ? 'border-white/10 bg-slate-950 text-white' : 'border-slate-200 bg-white'}`}>
       <div className="space-y-2">
         {options.map((option) => {
           const isActive = !option.isDeleted && option.id === activeWorkspaceId;
@@ -154,15 +154,15 @@ export function OrganizationSwitcher({
               type="button"
               onClick={() => option.isDeleted ? handleReactivate(option.id) : handleSwitch(option.id)}
               disabled={loading || reactivating}
-              className={`flex w-full items-center justify-between rounded-2xl px-3 py-2 text-left transition ${isActive ? dark ? 'bg-emerald-500/15 text-emerald-200' : 'bg-emerald-50 text-emerald-700' : option.isDeleted ? dark ? 'bg-amber-500/12 text-amber-100 hover:bg-amber-500/16' : 'bg-amber-50 text-amber-800 hover:bg-amber-100' : dark ? 'bg-white/5 text-slate-200 hover:bg-white/10' : 'bg-slate-50 text-slate-700 hover:bg-slate-100'} ${(loading || reactivating) ? 'opacity-70' : ''}`}
+              className={`flex w-full min-w-0 items-center justify-between gap-3 rounded-2xl px-3 py-2 text-left transition ${isActive ? dark ? 'bg-emerald-500/15 text-emerald-200' : 'bg-emerald-50 text-emerald-700' : option.isDeleted ? dark ? 'bg-amber-500/12 text-amber-100 hover:bg-amber-500/16' : 'bg-amber-50 text-amber-800 hover:bg-amber-100' : dark ? 'bg-white/5 text-slate-200 hover:bg-white/10' : 'bg-slate-50 text-slate-700 hover:bg-slate-100'} ${(loading || reactivating) ? 'opacity-70' : ''}`}
             >
-              <div className="min-w-0 flex items-center gap-3">
+              <div className="flex min-w-0 flex-1 items-center gap-3">
                 <span className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl ${isActive ? dark ? 'bg-emerald-500/20 text-emerald-200' : 'bg-white text-emerald-700 ring-1 ring-emerald-100' : option.isDeleted ? dark ? 'bg-amber-500/15 text-amber-100' : 'bg-white text-amber-700 ring-1 ring-amber-100' : dark ? 'bg-white/10 text-slate-200' : 'bg-white text-slate-600 ring-1 ring-slate-200'}`}>
                   <Icon className="h-4 w-4" />
                 </span>
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold">{option.name}</p>
-                  <p className="truncate text-xs opacity-80">{option.role ? option.helper : 'Se mantiene separado del espacio de equipo'}</p>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-semibold" title={option.name}>{option.name}</p>
+                  <p className="truncate text-xs opacity-80" title={option.role ? option.helper : 'Se mantiene separado del espacio de equipo'}>{option.role ? option.helper : 'Se mantiene separado del espacio de equipo'}</p>
                 </div>
               </div>
               {loading || reactivating ? <Loader2 className="h-4 w-4 shrink-0 animate-spin" /> : isActive ? <Check className="h-4 w-4 shrink-0" /> : null}
@@ -183,7 +183,7 @@ export function OrganizationSwitcher({
 
   if (collapsed) {
     return (
-      <div className="relative">
+      <div className="relative min-w-0">
         <button
           type="button"
           onClick={() => setOpen((value) => !value)}
@@ -202,15 +202,15 @@ export function OrganizationSwitcher({
       <button
         type="button"
         onClick={() => setOpen((value) => !value)}
-        className={`flex w-full min-w-0 items-center justify-between gap-3 rounded-[26px] border px-4 py-3 text-left transition ${dark ? 'border-white/10 bg-white/6 hover:border-emerald-400/30 hover:bg-white/10' : 'border-slate-200 bg-slate-50 hover:border-emerald-200 hover:bg-white'}`}
+        className={`flex w-full min-w-0 max-w-full items-center justify-between gap-3 overflow-hidden rounded-[26px] border px-4 py-3 text-left transition ${dark ? 'border-white/10 bg-white/6 hover:border-emerald-400/30 hover:bg-white/10' : 'border-slate-200 bg-slate-50 hover:border-emerald-200 hover:bg-white'}`}
       >
-        <div className="min-w-0 flex items-center gap-3">
+        <div className="flex min-w-0 flex-1 items-center gap-3">
           <span className={`inline-flex shrink-0 items-center justify-center rounded-2xl h-10 w-10 ${dark ? 'bg-emerald-500/15 text-emerald-300' : 'bg-emerald-50 text-emerald-600'}`}>
             {activeOrganization ? <Building2 className="h-5 w-5" /> : <UserRound className="h-5 w-5" />}
           </span>
           <div className="min-w-0">
             <p className={`text-[11px] font-semibold uppercase tracking-[0.16em] ${dark ? 'text-slate-400' : 'text-slate-500'}`}>Workspace</p>
-            <p className={`truncate text-sm font-semibold ${dark ? 'text-white' : 'text-slate-900'}`}>{label}</p>
+            <p className={`truncate text-sm font-semibold ${dark ? 'text-white' : 'text-slate-900'}`} title={label}>{label}</p>
             <p className={`truncate text-xs ${dark ? 'text-slate-400' : 'text-slate-500'}`}>Rol: {formatRole(activeWorkspaceRole)}</p>
           </div>
         </div>

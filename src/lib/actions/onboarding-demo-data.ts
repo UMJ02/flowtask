@@ -20,6 +20,11 @@ function plusDays(days: number) {
   return date.toISOString().slice(0, 10);
 }
 
+
+export async function createOnboardingDemoDataFormAction(_formData: FormData): Promise<void> {
+  await createOnboardingDemoData();
+}
+
 export async function createOnboardingDemoData(): Promise<OnboardingDemoResult> {
   const workspace = await getWorkspaceContext();
 

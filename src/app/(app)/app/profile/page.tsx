@@ -52,6 +52,7 @@ export default async function ProfilePage() {
         </p>
         <div className="mt-4">
           <ProfileSettingsForm
+            userId={profile?.id ?? ''}
             initialFullName={profile?.fullName ?? ''}
             email={profile?.email ?? ''}
             initialAvatarUrl={profile?.avatarUrl ?? ''}

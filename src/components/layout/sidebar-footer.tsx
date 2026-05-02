@@ -15,14 +15,14 @@ export function SidebarFooter({ organizations, activeOrganization, userEmail, us
   const initials = getInitials(displayName, userEmail);
 
   return (
-    <div className="border-t border-white/10 pt-4">
+    <div className="min-w-0 overflow-visible border-t border-white/10 pt-4">
       {!collapsed ? (
-        <div className="space-y-4">
-          <div>
+        <div className="min-w-0 space-y-4">
+          <div className="min-w-0">
             <p className="mb-2 px-1 text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">Workspace activo</p>
             <OrganizationSwitcher organizations={organizations ?? []} activeOrganization={activeOrganization} compact dark />
           </div>
-          <div>
+          <div className="min-w-0">
             <p className="mb-2 px-1 text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">Perfil</p>
             <Link href="/app/profile" className="group flex min-w-0 items-center gap-3 rounded-[18px] border border-white/10 bg-white/[0.04] px-3 py-3 transition hover:-translate-y-px hover:border-[#16C784]/25 hover:bg-white/[0.07]">
               <span className="relative inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white text-sm font-bold text-slate-950 ring-1 ring-white/15">

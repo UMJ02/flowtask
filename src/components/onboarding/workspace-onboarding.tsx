@@ -1,8 +1,9 @@
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, Rocket, ShieldCheck, Sparkles, UsersRound } from "lucide-react";
+import { ArrowRight, CheckCircle2, DatabaseZap, Rocket, ShieldCheck, Sparkles, UsersRound } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { asRoute } from '@/lib/navigation/routes';
+import { createOnboardingDemoDataFormAction } from "@/lib/actions/onboarding-demo-data";
 import type { WorkspaceOnboardingSummary } from "@/lib/queries/onboarding";
 
 const categoryStyles: Record<WorkspaceOnboardingSummary["steps"][number]["category"], string> = {
@@ -65,10 +66,10 @@ export function WorkspaceOnboarding({ summary, compact = false }: { summary: Wor
       <Card className="bg-[linear-gradient(135deg,#06291d_0%,#0f172a_58%,#111827_100%)] text-white shadow-[0_24px_60px_rgba(15,23,42,0.25)]">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">Workspace onboarding</p>
-            <h2 className="mt-2 text-3xl font-bold">Centro de arranque y cierre operativo</h2>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">v58.18 Client Ready</p>
+            <h2 className="mt-2 text-3xl font-bold">Centro de arranque para cliente final</h2>
             <p className="mt-2 text-sm text-slate-300">
-              Usa esta vista para convertir el workspace en una base lista para escalar, con modo individual o equipo, operación y automatización cerradas.
+              Flowtask arranca desde la cuenta individual. El modo organización solo aparece cuando el usuario lo crea y lo selecciona explícitamente.
             </p>
           </div>
           <div className="grid gap-3 sm:grid-cols-3">
@@ -78,8 +79,8 @@ export function WorkspaceOnboarding({ summary, compact = false }: { summary: Wor
               <p className="mt-1 text-sm text-slate-300">Nivel de cierre del workspace.</p>
             </div>
             <div className="rounded-[26px] bg-white/10 px-4 py-3 ring-1 ring-white/10">
-              <p className="text-xs uppercase tracking-[0.16em] text-slate-300">Equipo</p>
-              <p className="mt-2 text-lg font-bold">{summary.organizationName}</p>
+              <p className="text-xs uppercase tracking-[0.16em] text-slate-300">Modo</p>
+              <p className="mt-2 text-lg font-bold">{summary.workspaceMode === "organization" ? summary.organizationName : "Personal"}</p>
               <p className="mt-1 text-sm text-slate-300">Rol actual: {summary.role}</p>
             </div>
             <div className="rounded-[26px] bg-white/10 px-4 py-3 ring-1 ring-white/10">
@@ -96,7 +97,7 @@ export function WorkspaceOnboarding({ summary, compact = false }: { summary: Wor
           <div className="flex items-center justify-between gap-3">
             <div>
               <h3 className="text-lg font-semibold text-slate-900">Checklist maestro</h3>
-              <p className="mt-1 text-sm text-slate-500">Cada bloque está pensado para cerrar base, operación y automatización sin improvisar.</p>
+              <p className="mt-1 text-sm text-slate-500">Personal y organización tienen caminos separados para que el usuario nuevo no se pierda.</p>
             </div>
             <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-100 text-slate-700 ring-1 ring-slate-200">
               <ShieldCheck className="h-5 w-5" />
@@ -131,6 +132,32 @@ export function WorkspaceOnboarding({ summary, compact = false }: { summary: Wor
         </Card>
 
         <div className="space-y-4">
+          <Card className="border-emerald-100 bg-[radial-gradient(circle_at_top_right,rgba(16,185,129,0.12),transparent_30%),#fff]">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-700">Demo data inteligente</p>
+                <h3 className="mt-1 text-lg font-semibold text-slate-900">{summary.demoData.title}</h3>
+                <p className="mt-1 text-sm leading-6 text-slate-500">{summary.demoData.description}</p>
+                <p className="mt-3 rounded-2xl bg-white/80 px-3 py-2 text-xs font-medium text-slate-500 ring-1 ring-slate-200">
+                  {summary.demoData.safetyNote}
+                </p>
+              </div>
+              <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100">
+                <DatabaseZap className="h-5 w-5" />
+              </span>
+            </div>
+            <div className="mt-5 flex flex-col gap-3 sm:flex-row">
+              {summary.demoData.eligible ? (
+                <form action={createOnboardingDemoDataFormAction}>
+                  <Button type="submit">Cargar ejemplo seguro</Button>
+                </form>
+              ) : null}
+              <Link href={summary.workspaceMode === "organization" ? "/app/projects/new" : "/app/tasks/new"}>
+                <Button variant="secondary">Crear manualmente</Button>
+              </Link>
+            </div>
+          </Card>
+
           <Card>
             <div className="flex items-center justify-between gap-3">
               <div>
@@ -142,22 +169,10 @@ export function WorkspaceOnboarding({ summary, compact = false }: { summary: Wor
               </span>
             </div>
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
-                <p className="text-xs uppercase tracking-[0.16em] text-slate-500">Miembros</p>
-                <p className="mt-2 text-2xl font-bold text-slate-900">{summary.quickStats.members}</p>
-              </div>
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
-                <p className="text-xs uppercase tracking-[0.16em] text-slate-500">Clientes</p>
-                <p className="mt-2 text-2xl font-bold text-slate-900">{summary.quickStats.clients}</p>
-              </div>
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
-                <p className="text-xs uppercase tracking-[0.16em] text-slate-500">Proyectos activos</p>
-                <p className="mt-2 text-2xl font-bold text-slate-900">{summary.quickStats.activeProjects}</p>
-              </div>
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
-                <p className="text-xs uppercase tracking-[0.16em] text-slate-500">Tareas abiertas</p>
-                <p className="mt-2 text-2xl font-bold text-slate-900">{summary.quickStats.openTasks}</p>
-              </div>
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3"><p className="text-xs uppercase tracking-[0.16em] text-slate-500">Miembros</p><p className="mt-2 text-2xl font-bold text-slate-900">{summary.quickStats.members}</p></div>
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3"><p className="text-xs uppercase tracking-[0.16em] text-slate-500">Clientes</p><p className="mt-2 text-2xl font-bold text-slate-900">{summary.quickStats.clients}</p></div>
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3"><p className="text-xs uppercase tracking-[0.16em] text-slate-500">Proyectos activos</p><p className="mt-2 text-2xl font-bold text-slate-900">{summary.quickStats.activeProjects}</p></div>
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3"><p className="text-xs uppercase tracking-[0.16em] text-slate-500">Tareas abiertas</p><p className="mt-2 text-2xl font-bold text-slate-900">{summary.quickStats.openTasks}</p></div>
             </div>
           </Card>
 
@@ -173,9 +188,7 @@ export function WorkspaceOnboarding({ summary, compact = false }: { summary: Wor
             </div>
             <div className="mt-5 space-y-3">
               {summary.recommendations.length ? summary.recommendations.map((item) => (
-                <div key={item} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
-                  {item}
-                </div>
+                <div key={item} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">{item}</div>
               )) : (
                 <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-4 text-sm text-emerald-700">
                   El workspace ya tiene una base sólida. Desde aquí conviene escalar automatizaciones, reportes o colaboración avanzada.
@@ -183,12 +196,8 @@ export function WorkspaceOnboarding({ summary, compact = false }: { summary: Wor
               )}
             </div>
             <div className="mt-5 grid gap-3">
-              <Link href="/app/settings">
-                <Button className="w-full justify-between">Ajustar automatizaciones <ArrowRight className="h-4 w-4" /></Button>
-              </Link>
-              <Link href="/app/reports">
-                <Button variant="secondary" className="w-full justify-between">Revisar reportes <ArrowRight className="h-4 w-4" /></Button>
-              </Link>
+              <Link href="/app/settings"><Button className="w-full justify-between">Ajustar automatizaciones <ArrowRight className="h-4 w-4" /></Button></Link>
+              <Link href="/app/reports"><Button variant="secondary" className="w-full justify-between">Revisar reportes <ArrowRight className="h-4 w-4" /></Button></Link>
             </div>
           </Card>
         </div>

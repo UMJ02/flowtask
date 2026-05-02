@@ -6,14 +6,19 @@ import { useEffect, useMemo, useState } from 'react';
 import { LogOut, Settings, UserCircle2 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 
-const PROFILE_STORAGE_KEY = 'flowtask.profile-shell';
+const LEGACY_PROFILE_STORAGE_KEY = 'flowtask.profile-shell';
 const PROFILE_UPDATED_EVENT = 'flowtask:profile-updated';
 
 type ProfileShellPayload = {
+  userId?: string;
   fullName?: string | null;
   email?: string | null;
   avatarUrl?: string | null;
 };
+
+function getProfileStorageKey(userId: string) {
+  return `flowtask.profile-shell.${userId}`;
+}
 
 function getInitials(name: string, email: string) {
   const source = name?.trim() || email?.trim() || 'U';
@@ -22,12 +27,15 @@ function getInitials(name: string, email: string) {
   return `${parts[0][0] ?? ''}${parts[1][0] ?? ''}`.toUpperCase();
 }
 
-function readShellProfile(): ProfileShellPayload | null {
+function readShellProfile(userId: string): ProfileShellPayload | null {
   if (typeof window === 'undefined') return null;
   try {
-    const raw = window.localStorage.getItem(PROFILE_STORAGE_KEY);
+    window.localStorage.removeItem(LEGACY_PROFILE_STORAGE_KEY);
+    const raw = window.localStorage.getItem(getProfileStorageKey(userId));
     if (!raw) return null;
-    return JSON.parse(raw) as ProfileShellPayload;
+    const payload = JSON.parse(raw) as ProfileShellPayload;
+    if (payload.userId && payload.userId !== userId) return null;
+    return payload;
   } catch {
     return null;
   }
@@ -52,10 +60,12 @@ function AvatarBadge({ avatarUrl, initials }: { avatarUrl?: string | null; initi
 }
 
 export function UserMenu({
+  userId,
   fullName,
   email,
   avatarUrl,
 }: {
+  userId: string;
   fullName?: string | null;
   email: string;
   avatarUrl?: string | null;
@@ -68,18 +78,12 @@ export function UserMenu({
 
   useEffect(() => {
     setLiveFullName(fullName ?? '');
-  }, [fullName]);
-
-  useEffect(() => {
     setLiveEmail(email);
-  }, [email]);
-
-  useEffect(() => {
     setLiveAvatarUrl(avatarUrl ?? '');
-  }, [avatarUrl]);
+  }, [userId, fullName, email, avatarUrl]);
 
   useEffect(() => {
-    const shellProfile = readShellProfile();
+    const shellProfile = readShellProfile(userId);
     if (shellProfile) {
       if (typeof shellProfile.fullName === 'string') setLiveFullName(shellProfile.fullName);
       if (typeof shellProfile.email === 'string' && shellProfile.email) setLiveEmail(shellProfile.email);
@@ -88,7 +92,7 @@ export function UserMenu({
 
     const handleProfileUpdated = (event: Event) => {
       const detail = (event as CustomEvent<ProfileShellPayload>).detail;
-      if (!detail) return;
+      if (!detail || detail.userId !== userId) return;
       if (typeof detail.fullName === 'string') setLiveFullName(detail.fullName);
       if (typeof detail.email === 'string' && detail.email) setLiveEmail(detail.email);
       if ('avatarUrl' in detail) setLiveAvatarUrl(detail.avatarUrl ?? '');
@@ -96,7 +100,7 @@ export function UserMenu({
 
     window.addEventListener(PROFILE_UPDATED_EVENT, handleProfileUpdated as EventListener);
     return () => window.removeEventListener(PROFILE_UPDATED_EVENT, handleProfileUpdated as EventListener);
-  }, []);
+  }, [userId]);
 
   const initials = useMemo(() => getInitials(liveFullName ?? '', liveEmail), [liveFullName, liveEmail]);
   const displayName = liveFullName?.trim() || 'Mi perfil';
@@ -104,6 +108,7 @@ export function UserMenu({
   const handleLogout = async () => {
     setLoading(true);
     const supabase = createClient();
+    window.localStorage.removeItem(getProfileStorageKey(userId));
     await supabase.auth.signOut();
     window.location.href = '/login';
   };

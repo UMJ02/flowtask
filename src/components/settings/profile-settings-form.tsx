@@ -20,13 +20,19 @@ function normalizeFileName(name: string) {
 }
 
 
-const PROFILE_STORAGE_KEY = 'flowtask.profile-shell';
+const LEGACY_PROFILE_STORAGE_KEY = 'flowtask.profile-shell';
 const PROFILE_UPDATED_EVENT = 'flowtask:profile-updated';
 
-function syncProfileShell(payload: { fullName?: string | null; email?: string | null; avatarUrl?: string | null }) {
+function getProfileStorageKey(userId: string) {
+  return `flowtask.profile-shell.${userId}`;
+}
+
+function syncProfileShell(userId: string, payload: { fullName?: string | null; email?: string | null; avatarUrl?: string | null }) {
   if (typeof window === 'undefined') return;
-  window.localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(payload));
-  window.dispatchEvent(new CustomEvent(PROFILE_UPDATED_EVENT, { detail: payload }));
+  const scopedPayload = { userId, ...payload };
+  window.localStorage.removeItem(LEGACY_PROFILE_STORAGE_KEY);
+  window.localStorage.setItem(getProfileStorageKey(userId), JSON.stringify(scopedPayload));
+  window.dispatchEvent(new CustomEvent(PROFILE_UPDATED_EVENT, { detail: scopedPayload }));
 }
 
 function extractStoragePath(publicUrl: string, bucket: string) {
@@ -42,10 +48,12 @@ function extractStoragePath(publicUrl: string, bucket: string) {
 }
 
 export function ProfileSettingsForm({
+  userId,
   initialFullName,
   email,
   initialAvatarUrl,
 }: {
+  userId: string;
   initialFullName?: string | null;
   email: string;
   initialAvatarUrl?: string | null;
@@ -140,7 +148,7 @@ export function ProfileSettingsForm({
 
     setAvatarUrl(publicUrl);
     setLastUploadedAvatarUrl(publicUrl);
-    syncProfileShell({ fullName, email: nextEmail, avatarUrl: publicUrl });
+    syncProfileShell(userId, { fullName, email: nextEmail, avatarUrl: publicUrl });
     router.refresh();
     setUploadingAvatar(false);
     setMessage('Tu foto de perfil se actualizó correctamente y ya se reflejó en el header.');
@@ -234,7 +242,7 @@ export function ProfileSettingsForm({
       setLastUploadedAvatarUrl(cleanedAvatarUrl);
     }
 
-    syncProfileShell({ fullName, email: nextEmail.trim() || email, avatarUrl: cleanedAvatarUrl || null });
+    syncProfileShell(userId, { fullName, email: nextEmail.trim() || email, avatarUrl: cleanedAvatarUrl || null });
     router.refresh();
     setSaving(false);
     setPassword('');
