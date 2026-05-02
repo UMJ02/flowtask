@@ -25,6 +25,7 @@ import {
   CalendarDays,
   ChevronDown,
   CircleHelp,
+  ClipboardCheck,
   Clock3,
   FileText,
   Flag,
@@ -66,6 +67,7 @@ export function TaskForm({
   const [clientOptions, setClientOptions] = useState<Array<{ id: string; name: string }>>([]);
   const [workspaceOwnerLabel, setWorkspaceOwnerLabel] = useState("Cargando usuario…");
   const [quickTipIndex, setQuickTipIndex] = useState(0);
+  const [checklistStats, setChecklistStats] = useState({ total: 0, done: 0, loaded: false });
   const router = useRouter();
   const isEdit = Boolean(taskId);
   const fixedProjectId = initialData?.projectId ?? "";
@@ -154,6 +156,32 @@ export function TaskForm({
     const timer = window.setInterval(() => setQuickTipIndex((value) => (value + 1) % QUICK_TIPS.length), 6000);
     return () => window.clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+    let active = true;
+    async function loadChecklistStats() {
+      if (!taskId) {
+        setChecklistStats({ total: 0, done: 0, loaded: true });
+        return;
+      }
+      const workspace = await getClientWorkspaceContext();
+      const { data, error } = await workspace.supabase
+        .from("task_checklist_items")
+        .select("done")
+        .eq("task_id", taskId);
+      if (!active) return;
+      if (error) {
+        setChecklistStats({ total: 0, done: 0, loaded: true });
+        return;
+      }
+      const rows = Array.isArray(data) ? data : [];
+      setChecklistStats({ total: rows.length, done: rows.filter((item) => Boolean(item.done)).length, loaded: true });
+    }
+    void loadChecklistStats();
+    return () => {
+      active = false;
+    };
+  }, [taskId]);
 
   useEffect(() => {
     let active = true;
@@ -347,7 +375,7 @@ export function TaskForm({
   const selectedPriority = useWatch({ control, name: "priority" });
   const selectedStatus = useWatch({ control, name: "status" });
   const editorTitle = isEdit ? "Editar tarea" : "Nueva tarea";
-  const statusProgress = selectedStatus === "concluido" ? 100 : selectedStatus === "en_espera" ? 25 : 65;
+  const statusProgress = checklistStats.total > 0 ? Math.round((checklistStats.done / checklistStats.total) * 100) : 0;
 
   return (
     <form className="-mx-4 min-h-screen bg-[#F6F8FC] pb-8 md:-mx-6" onSubmit={handleSubmit(onSubmit)}>
@@ -488,7 +516,7 @@ export function TaskForm({
               <div>
                 <div className="mb-2 flex items-center justify-between text-xs font-black uppercase tracking-[0.16em] text-slate-500"><span>Progreso operativo</span><span className="text-base tracking-normal text-slate-800">{statusProgress}%</span></div>
                 <div className="h-2 rounded-full bg-slate-200"><div className="h-2 rounded-full bg-[#16C784] transition-all" style={{ width: `${statusProgress}%` }} /></div>
-                <p className="mt-2 text-xs font-semibold text-[#64748B]">Se calcula según estado real; el avance detallado vive en el checklist.</p>
+                <p className="mt-2 text-xs font-semibold text-[#64748B]">Se sincroniza con el checklist: {checklistStats.total ? `${checklistStats.done}/${checklistStats.total} puntos completados.` : 'sin checklist, inicia en 0%.'}</p>
               </div>
               <FieldMini label="Prioridad actual">
                 <div className="flex h-12 items-center rounded-2xl border border-[#E5EAF1] bg-white px-4 text-sm font-black text-slate-800">{priorityLabel(selectedPriority)}</div>
@@ -496,6 +524,17 @@ export function TaskForm({
               <FieldMini label="Próximo check-in">
                 <Input type="date" className="h-12 rounded-2xl border-[#E5EAF1] bg-white font-semibold" />
               </FieldMini>
+              {isEdit && checklistStats.loaded && checklistStats.total === 0 ? (
+                <Link href={taskId ? `${taskDetailRoute(taskId)}#checklist` : taskListRoute()} className="group flex items-start gap-3 rounded-[18px] border border-amber-200 bg-amber-100/80 p-4 text-left shadow-[0_12px_30px_rgba(245,158,11,0.12)] transition hover:-translate-y-0.5 hover:bg-amber-100">
+                  <span className="mt-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-white text-amber-600 ring-1 ring-amber-200">
+                    <ClipboardCheck className="h-5 w-5" />
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block text-sm font-black text-amber-950">Agregá checklist para medir avance real</span>
+                    <span className="mt-1 block text-xs font-semibold leading-5 text-amber-800">Esta tarea empieza en 0%. Creá puntos de seguimiento para que la barra avance sincronizada.</span>
+                  </span>
+                </Link>
+              ) : null}
             </div>
           </SideCard>
 
