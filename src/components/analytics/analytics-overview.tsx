@@ -6,6 +6,7 @@ import {
   BarChart3,
   CalendarDays,
   CheckCircle2,
+  ExternalLink,
   ChevronDown,
   Clock3,
   Download,
@@ -17,8 +18,9 @@ import {
   Users,
   Zap,
 } from 'lucide-react';
-import { useMemo, useState, type ComponentType } from 'react';
+import { useMemo, useState, type ComponentType, type ReactNode } from 'react';
 import { Card } from '@/components/ui/card';
+import { buildSharedAnalyticsPayload, downloadAnalyticsCsv, encodeAnalyticsShareToken } from '@/lib/share/analytics-share';
 import type { AnalyticsTimeSeriesPoint, WorkspaceAnalyticsSummary } from '@/lib/queries/analytics';
 
 type IconType = ComponentType<{ className?: string }>;
@@ -51,6 +53,45 @@ function downloadCsv(filename: string, rows: string[][]) {
   link.download = filename;
   link.click();
   URL.revokeObjectURL(href);
+}
+
+function ActionTooltip({ title }: { title: string }) {
+  return (
+    <span className="pointer-events-none absolute -bottom-9 left-1/2 z-20 -translate-x-1/2 whitespace-nowrap rounded-full border border-[#E5EAF1] bg-white px-3 py-1.5 text-xs font-bold text-[#334155] opacity-0 shadow-[0_12px_24px_rgba(15,23,42,0.10)] transition group-hover:-translate-y-1 group-hover:opacity-100">
+      {title}
+    </span>
+  );
+}
+
+function ActionIconButton({ title, onClick, children }: { title: string; onClick: () => void; children: ReactNode }) {
+  return (
+    <button
+      type="button"
+      aria-label={title}
+      title={title}
+      onClick={onClick}
+      className="group relative inline-flex h-12 w-12 items-center justify-center rounded-[16px] border border-[#E5EAF1] bg-white text-[#334155] shadow-[0_10px_24px_rgba(15,23,42,0.03)] transition hover:border-[#16C784]/40 hover:text-[#0F172A]"
+    >
+      {children}
+      <ActionTooltip title={title} />
+    </button>
+  );
+}
+
+function ActionIconLink({ title, href, children, dark = false }: { title: string; href: string; children: ReactNode; dark?: boolean }) {
+  return (
+    <Link
+      href={href}
+      aria-label={title}
+      title={title}
+      className={dark
+        ? 'group relative inline-flex h-12 w-12 items-center justify-center rounded-[16px] bg-[#050B18] text-white shadow-[0_10px_24px_rgba(15,23,42,0.10)] transition hover:bg-[#111827]'
+        : 'group relative inline-flex h-12 w-12 items-center justify-center rounded-[16px] border border-[#E5EAF1] bg-white text-[#334155] shadow-[0_10px_24px_rgba(15,23,42,0.03)] transition hover:border-[#16C784]/40 hover:text-[#0F172A]'}
+    >
+      {children}
+      <ActionTooltip title={title} />
+    </Link>
+  );
 }
 
 function clamp(value: number, min = 0, max = 100) {
@@ -409,6 +450,8 @@ export function AnalyticsOverview({ summary, compact = false }: { summary: Works
   const sparkCompleted = summary.timeSeries.map((item) => item.completed);
   const sparkDue = summary.timeSeries.map((item) => item.activeDue);
   const sparkOperational = summary.timeSeries.map((_, index) => Math.max(0, real.operationalTasks - (summary.timeSeries.length - index - 1)));
+  const sharePayload = useMemo(() => buildSharedAnalyticsPayload(summary), [summary]);
+  const shareHref = useMemo(() => `/share?data=${encodeAnalyticsShareToken(sharePayload)}`, [sharePayload]);
   const kpis: KpiItem[] = [
     { label: 'Tareas operativas', value: String(real.operationalTasks), helper: 'En proceso; excluye concluidas y espera.', tone: 'blue', icon: ListChecks, points: sparkOperational },
     { label: 'En espera', value: String(real.waitingTasks), helper: 'Standby; no cuenta como vencido.', tone: 'amber', icon: Clock3, points: summary.timeSeries.map(() => real.waitingTasks) },
@@ -448,13 +491,16 @@ export function AnalyticsOverview({ summary, compact = false }: { summary: Works
           <h1 className="mt-3 text-[30px] font-bold leading-tight tracking-[-0.04em] text-[#0F172A]">Analytics operativo</h1>
           <p className="mt-2 text-[15px] font-medium text-[#64748B]">Gráficas calculadas desde tareas, proyectos, comentarios y adjuntos reales. Concluidas y en espera no contaminan vencidos.</p>
         </div>
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-          <button type="button" onClick={() => downloadCsv('flowtask-analytics-real.csv', [['metric', 'value'], ['Tareas totales', String(real.totalTasks)], ['Tareas operativas', String(real.operationalTasks)], ['En espera', String(real.waitingTasks)], ['Concluidas', String(real.completedTasks)], ['Vencidas reales', String(real.overdueActiveTasks)], ['Adjuntos', String(real.attachmentsCount)], ['Comentarios', String(real.commentsCount)], ['Promedio cierre dias', String(real.avgCloseDays)]])} className="inline-flex h-12 items-center justify-center gap-3 rounded-[16px] border border-[#E5EAF1] bg-white px-5 text-sm font-bold text-[#334155] shadow-[0_10px_24px_rgba(15,23,42,0.03)] transition hover:border-[#16C784]/40 hover:text-[#0F172A]">
-            <Download className="h-4 w-4" /> Exportar datos reales
-          </button>
-          <Link href="/app/tasks?includeCompleted=true" className="inline-flex h-12 items-center justify-center gap-3 rounded-[16px] bg-[#050B18] px-5 text-sm font-bold text-white shadow-[0_10px_24px_rgba(15,23,42,0.10)] transition hover:bg-[#111827]">
-            <CalendarDays className="h-4 w-4" /> Ver concluidas
-          </Link>
+        <div className="flex flex-wrap items-center gap-2">
+          <ActionIconButton title="Exportar datos reales" onClick={() => downloadAnalyticsCsv(sharePayload)}>
+            <Download className="h-4 w-4" />
+          </ActionIconButton>
+          <ActionIconLink href={shareHref} title="Landing pública">
+            <ExternalLink className="h-4 w-4" />
+          </ActionIconLink>
+          <ActionIconLink href="/app/tasks?includeCompleted=true" title="Ver concluidas" dark>
+            <CalendarDays className="h-4 w-4" />
+          </ActionIconLink>
         </div>
       </section>
 
