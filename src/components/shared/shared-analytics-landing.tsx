@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useMemo, useState, type ComponentType, type ReactNode } from 'react';
-import { CheckCircle2, ClipboardCheck, Clock3, Download, ExternalLink, FileSpreadsheet, Filter, Home, Printer, Share2, SlidersHorizontal } from 'lucide-react';
+import { useEffect, useMemo, useState, type ComponentType } from 'react';
+import { CheckCircle2, ClipboardCheck, Clock3, Download, Home, Printer, Share2, SlidersHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { decodeAnalyticsShareToken, downloadAnalyticsCsv, getSharedReportTasks } from '@/lib/share/analytics-share';
 
@@ -65,17 +65,14 @@ export function SharedAnalyticsLanding({ token, autoPrint = false }: { token: st
 
   return (
     <main className="min-h-screen bg-[#F7F9FC] text-[#071333] print:bg-white">
-      <div className="mx-auto grid w-full max-w-[1440px] gap-5 px-4 py-5 lg:grid-cols-[minmax(0,1fr)_320px] print:block print:max-w-none print:px-0 print:py-0">
+      <div className="mx-auto w-full max-w-[1180px] px-4 py-5 print:block print:max-w-none print:px-0 print:py-0">
         <section className="overflow-hidden rounded-[28px] border border-[#E5EAF1] bg-white shadow-[0_28px_80px_rgba(7,19,51,0.06)] print:border-none print:shadow-none">
           <header className="flex items-center justify-between gap-4 px-7 py-6 print:px-4">
             <div className="flex items-center gap-3">
               <img src="/icons/icon.png" alt="FlowTask" className="h-8 w-8 rounded-xl" />
               <span className="text-[1.35rem] font-extrabold tracking-[-0.04em]">FlowTask</span>
             </div>
-            <div className="flex items-center gap-2 print:hidden">
-              <Button variant="secondary" onClick={handleShare}><Share2 className="h-4 w-4" /> Compartir</Button>
-              <Button variant="secondary" onClick={() => downloadAnalyticsCsv(payload)}><FileSpreadsheet className="h-4 w-4" /> Exportar</Button>
-            </div>
+            <span className="rounded-full bg-[#E6F8F1] px-3 py-1 text-xs font-extrabold uppercase tracking-[0.12em] text-[#009B6A] print:hidden">Reporte público</span>
           </header>
 
           <section className="relative px-7 pb-8 pt-5 text-center print:px-4">
@@ -154,39 +151,20 @@ export function SharedAnalyticsLanding({ token, autoPrint = false }: { token: st
             </div>
           </section>
 
-          <section className="mx-7 mb-9 rounded-[22px] border border-dashed border-[#B8C6DB] bg-[#F8FAFC] px-5 py-5 text-center text-sm font-semibold text-[#52617A] print:mx-4">
+          <section className="mx-7 mb-7 rounded-[22px] border border-dashed border-[#B8C6DB] bg-[#F8FAFC] px-5 py-5 text-center text-sm font-semibold text-[#52617A] print:mx-4">
             Este es un enlace público de solo lectura. Los datos se actualizan cuando se genera un nuevo enlace desde FlowTask.
+          </section>
+
+          <section className="mx-7 mb-9 flex flex-col gap-3 rounded-[24px] border border-[#E5EAF1] bg-white p-4 shadow-[0_16px_44px_rgba(7,19,51,0.04)] sm:flex-row sm:items-center sm:justify-center print:hidden">
+            <Button onClick={handleShare} variant="secondary"><Share2 className="h-4 w-4" /> Compartir</Button>
+            <Button onClick={() => window.print()} variant="secondary"><Printer className="h-4 w-4" /> Descargar PDF</Button>
+            <Button onClick={() => downloadAnalyticsCsv(payload)}><Download className="h-4 w-4" /> Exportar reporte</Button>
+            <Link href="/"><Button variant="secondary" className="w-full sm:w-auto"><Home className="h-4 w-4" /> Ir a FlowTask</Button></Link>
           </section>
 
           <footer className="bg-[#16A878] px-7 py-4 text-center text-sm font-bold text-white print:hidden">© 2026 FlowTask. Todos los derechos reservados.</footer>
         </section>
 
-        <aside className="space-y-5 rounded-[28px] border border-[#E5EAF1] bg-white p-5 shadow-[0_28px_80px_rgba(7,19,51,0.04)] print:hidden">
-          <h2 className="text-sm font-extrabold uppercase tracking-[0.12em] text-[#009B6A]">Resumen del reporte</h2>
-          <InfoBlock title="Descripción">Landing pública de solo lectura para compartir la carga de trabajo, estados, prioridades y últimos comentarios sin pedir registro.</InfoBlock>
-          <InfoBlock title="Lectura inteligente">
-            <ul className="space-y-2">
-              {payload.shareDigest.shareSummary.map((item, index) => <li key={item} className="flex gap-2"><span className="font-extrabold text-[#16A878]">{index + 1}</span><span>{item}</span></li>)}
-            </ul>
-          </InfoBlock>
-          <InfoBlock title="Recomendaciones">
-            <ul className="space-y-2">
-              {(payload.recommendations.length ? payload.recommendations : ['Mantén el seguimiento semanal y actualiza comentarios en tareas bloqueadas.']).map((item) => <li key={item} className="flex gap-2"><CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[#16A878]" /><span>{item}</span></li>)}
-            </ul>
-          </InfoBlock>
-          <InfoBlock title="Características">
-            <ul className="space-y-2">
-              <li className="flex gap-2"><ExternalLink className="mt-0.5 h-4 w-4 shrink-0 text-[#16A878]" />Enlace público compartible.</li>
-              <li className="flex gap-2"><FileSpreadsheet className="mt-0.5 h-4 w-4 shrink-0 text-[#16A878]" />Exportación compatible con Excel.</li>
-              <li className="flex gap-2"><Filter className="mt-0.5 h-4 w-4 shrink-0 text-[#16A878]" />Filtros por estado.</li>
-            </ul>
-          </InfoBlock>
-          <div className="grid gap-2 border-t border-[#E5EAF1] pt-5">
-            <Button onClick={() => window.print()} variant="secondary"><Printer className="h-4 w-4" /> Descargar PDF</Button>
-            <Button onClick={() => downloadAnalyticsCsv(payload)}><Download className="h-4 w-4" /> Exportar reporte</Button>
-            <Link href="/"><Button variant="secondary" className="w-full"><Home className="h-4 w-4" /> Ir a FlowTask</Button></Link>
-          </div>
-        </aside>
       </div>
     </main>
   );
@@ -219,13 +197,4 @@ function StatusBadge({ status }: { status: string }) {
 function PriorityDot({ priority }: { priority: string }) {
   const cls = priority === 'Alta' ? 'bg-red-500' : priority === 'Baja' ? 'bg-blue-400' : 'bg-amber-500';
   return <span className="inline-flex items-center gap-2 text-sm font-bold text-[#52617A]"><span className={`h-2.5 w-2.5 rounded-full ${cls}`} />{priority}</span>;
-}
-
-function InfoBlock({ title, children }: { title: string; children: ReactNode }) {
-  return (
-    <section className="border-t border-[#E5EAF1] pt-5 first:border-t-0 first:pt-0">
-      <h3 className="text-xs font-extrabold uppercase tracking-[0.12em] text-[#071333]">{title}</h3>
-      <div className="mt-3 text-sm leading-6 text-[#334155]">{children}</div>
-    </section>
-  );
 }
