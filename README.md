@@ -1,4 +1,4 @@
-# FlowTask — V58.17 Core Consolidation Release
+# FlowTask — v58.19.8 Final User Readiness
 
 Consolidación del core sobre V58.16.4: Tareas queda como módulo de tareas simples, Proyectos administra tareas internas inline y cualquier tarea con `project_id` vuelve al Project Center para evitar mezclar flujos. Mantiene media system, timeline full width con Builder ocultable, Ver Proyecto premium y datos conectados.
 

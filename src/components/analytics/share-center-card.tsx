@@ -55,7 +55,7 @@ export function ShareCenterCard({ summary }: { summary: WorkspaceAnalyticsSummar
           <Button className="bg-slate-950 text-white hover:bg-slate-900" onClick={handleCopy}><Copy className="h-4 w-4" />Copiar link</Button>
           <Button variant="secondary" className="w-full" loading={openingLanding} onClick={openLanding}><ExternalLink className="h-4 w-4" />{openingLanding ? 'Abriendo…' : 'Ver landing'}</Button>
           <Button variant="secondary" onClick={() => triggerAnalyticsPdf(shareUrl)}><Printer className="h-4 w-4" />Descargar PDF</Button>
-          <Button variant="secondary" onClick={() => downloadAnalyticsCsv(sharePayload)}><FileSpreadsheet className="h-4 w-4" />Excel / CSV</Button>
+          <Button variant="secondary" onClick={() => downloadAnalyticsCsv(sharePayload)}><FileSpreadsheet className="h-4 w-4" />Excel</Button>
           <a href={`mailto:?subject=${encodeURIComponent(subject)}&body=${body}`} className="sm:col-span-2">
             <Button variant="secondary" className="w-full"><Mail className="h-4 w-4" />Enviar email</Button>
           </a>
