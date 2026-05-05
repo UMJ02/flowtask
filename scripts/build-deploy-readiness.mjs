@@ -4,8 +4,8 @@ import path from "node:path";
 
 const root = process.cwd();
 const failures = [];
-const expectedVersion = "58.19.8-final-user-readiness";
-const expectedReleaseLabel = "v58.19.8 Final User Readiness";
+const expectedVersion = "58.19.9-supabase-live-qa-vercel-verify-fix";
+const expectedReleaseLabel = "v58.19.9 Supabase Live QA + Vercel Verify Fix";
 
 function requireFile(rel) {
   if (!fs.existsSync(path.join(root, rel))) failures.push(`Missing required file: ${rel}`);
@@ -24,20 +24,20 @@ requireFile(".nvmrc");
 requireFile(".env.example");
 requireFile("scripts/runtime-check.mjs");
 requireFile("scripts/validate-env.mjs");
-requireFile("scripts/verify-v58.19.8.mjs");
+requireFile("scripts/verify-v58.19.9.mjs");
 requireFile("supabase/migrations/0038_v58_12_6_database_sanitization_foundation.sql");
 requireFile("docs/release/V58.12.6_WORKSPACE_CATALOG_DELETE_FLOW_FIX.md");
 requireFile("docs/release/DB_CONTINUITY_SOURCE_OF_TRUTH.md");
-requireFile("docs/qa/FLOWTASK_V58.19.8_FINAL_USER_READINESS_SMOKE.md");
+requireFile("docs/qa/FLOWTASK_V58.19.9_SUPABASE_LIVE_QA_SMOKE.md");
 
 const pkg = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
 const scripts = pkg.scripts ?? {};
-for (const scriptName of ["build", "vercel:build", "deploy:readiness", "build:preflight", "verify:current", "deploy:production:ready", "verify:v58.19.8"]) {
+for (const scriptName of ["build", "vercel:build", "deploy:readiness", "build:preflight", "verify:current", "deploy:production:ready", "verify:v58.19.9"]) {
   if (!scripts[scriptName]) failures.push(`Missing package script: ${scriptName}`);
 }
 if (pkg.version !== expectedVersion) failures.push(`Unexpected package version: ${pkg.version}`);
-if (scripts["verify:current"] !== "npm run verify:v58.19.8") failures.push("verify:current must target verify:v58.19.8");
-if (scripts["verify:v58.19.8"] !== "node scripts/verify-v58.19.8.mjs") failures.push("verify:v58.19.8 must target scripts/verify-v58.19.8.mjs");
+if (scripts["verify:current"] !== "npm run verify:v58.19.9") failures.push("verify:current must target verify:v58.19.9");
+if (scripts["verify:v58.19.9"] !== "node scripts/verify-v58.19.9.mjs") failures.push("verify:v58.19.9 must target scripts/verify-v58.19.9.mjs");
 
 const vercel = JSON.parse(fs.readFileSync(path.join(root, "vercel.json"), "utf8"));
 if (vercel.framework !== "nextjs") failures.push("vercel.json framework must be nextjs");
@@ -59,4 +59,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log("[build-deploy-readiness] OK — v58.19.8 package, env, release exports and final readiness docs aligned.");
+console.log("[build-deploy-readiness] OK — v58.19.9 package, env, release exports and Vercel-safe final readiness docs aligned.");
