@@ -1,4 +1,4 @@
-# FlowTask — v58.19.9 Supabase Live QA + Vercel Verify Fix
+# FlowTask — v58.20 Task Workspace Pro
 
 Consolidación del core sobre V58.16.4: Tareas queda como módulo de tareas simples, Proyectos administra tareas internas inline y cualquier tarea con `project_id` vuelve al Project Center para evitar mezclar flujos. Mantiene media system, timeline full width con Builder ocultable, Ver Proyecto premium y datos conectados.
 

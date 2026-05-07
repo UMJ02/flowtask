@@ -15,12 +15,12 @@ const requiredFiles = [
   "scripts/runtime-check.mjs",
   "scripts/security-check.mjs",
   "scripts/release-check.mjs",
-  "scripts/verify-v58.19.9.mjs",
+  "scripts/verify-v58.20.mjs",
   "src/lib/release/version.ts",
   "supabase/migrations/0027_v54_2_1_db_cleanup_index_normalization.sql",
   "docs/release/DB_CONTINUITY_SOURCE_OF_TRUTH.md",
-  "docs/releases/RELEASE_NOTES_v58.19.9.md",
-  "docs/qa/FLOWTASK_V58.19.9_SUPABASE_LIVE_QA_SMOKE.md"
+  "docs/releases/RELEASE_NOTES_v58.20.md",
+  "docs/qa/FLOWTASK_V58.20_TASK_WORKSPACE_PRO_SMOKE.md"
 ];
 
 const forbiddenPaths = [
@@ -35,7 +35,7 @@ const forbiddenPaths = [
 
 let failures = 0;
 
-console.log("\n[release-check] FlowTask v58.19.9 Supabase Live QA + Vercel Verify Fix\n");
+console.log("\n[release-check] FlowTask v58.20 Task Workspace Pro\n");
 
 for (const file of requiredFiles) {
   const ok = fs.existsSync(path.join(root, file));
@@ -76,4 +76,4 @@ if (failures > 0) {
   process.exit(1);
 }
 
-console.log("\n[release-check] All final user readiness checks passed.\n");
+console.log("\n[release-check] All Task Workspace Pro readiness checks passed.\n");
