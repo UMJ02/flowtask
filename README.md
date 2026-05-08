@@ -1,6 +1,21 @@
-# FlowTask — v58.20 Task Workspace Pro
+# FlowTask — v58.20 Task Workspace Inline Redesign
 
 Consolidación del core sobre V58.16.4: Tareas queda como módulo de tareas simples, Proyectos administra tareas internas inline y cualquier tarea con `project_id` vuelve al Project Center para evitar mezclar flujos. Mantiene media system, timeline full width con Builder ocultable, Ver Proyecto premium y datos conectados.
+
+
+## v58.20 Task Workspace Inline Redesign
+
+Base oficial: v58.19.9 Supabase Live QA + Vercel Verify Fix.
+
+Esta versión rehace la vista de tareas siguiendo el blueprint Task Workspace Inline:
+- `/app/tasks/[id]` usa una sola experiencia de lectura/edición inline.
+- `/app/tasks/[id]/edit` redirige a `?mode=edit` en la misma vista.
+- Header limpio con estado, prioridad, progreso real y acciones principales.
+- Descripción, estado, prioridad, cliente y deadline se editan dentro del workspace.
+- Checklist protagonista: progreso inicia en 0% si no hay ítems.
+- Comentarios y actividad se integran como Feed Operativo.
+- Sidebar contextual simple: información, responsables, fechas y adjuntos.
+- Se preservan XLSX real, landing pública limpia, Supabase readiness y aislamiento personal/organización.
 
 ## Checks recomendados
 

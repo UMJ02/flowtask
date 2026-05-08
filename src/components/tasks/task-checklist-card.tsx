@@ -23,7 +23,7 @@ export function TaskChecklistCard({ taskId, initialItems = [], canManage = true 
   const [busyId, setBusyId] = useState<string | null>(null);
   const [, startRefresh] = useTransition();
   const done = useMemo(() => items.filter((item) => item.done).length, [items]);
-  const pct = Math.round((done / Math.max(items.length, 1)) * 100);
+  const pct = items.length ? Math.round((done / items.length) * 100) : 0;
 
   const toggle = async (id: string) => {
     if (!canManage) return;
@@ -76,7 +76,7 @@ export function TaskChecklistCard({ taskId, initialItems = [], canManage = true 
   };
 
   return (
-    <section id="checklist" className="rounded-[24px] border border-violet-100 bg-gradient-to-br from-white via-white to-violet-50/70 p-7 shadow-[0_10px_30px_rgba(15,23,42,0.04)]">
+    <section id="checklist" className="space-y-3">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-wrap items-center gap-3">
           <h2 className="text-lg font-black text-[#0F172A]">Checklist</h2>
@@ -87,7 +87,7 @@ export function TaskChecklistCard({ taskId, initialItems = [], canManage = true 
         </div>
         <span className="text-sm font-bold text-[#64748B]">{done}/{items.length} completadas ({pct}%)</span>
       </div>
-      <div className="mt-5 h-2 rounded-full bg-[#EEF2F7]"><div className="h-2 rounded-full bg-[#7C3AED] transition-all" style={{ width: `${pct}%` }} /></div>
+      <div className="mt-5 h-2 rounded-full bg-[#EEF2F7]"><div className="h-2 rounded-full bg-[#16C784] transition-all" style={{ width: `${pct}%` }} /></div>
       {error ? <p className="mt-3 rounded-[14px] bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-600">{error}</p> : null}
       <div className="mt-5 divide-y divide-[#E5EAF1]">
         {items.length ? items.map((item) => (

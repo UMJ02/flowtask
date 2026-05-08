@@ -72,48 +72,30 @@ export function TaskQuickCommentsCard({ taskId, comments, canComment = true }: {
   };
 
   return (
-    <section id="comments" className="rounded-[24px] border border-violet-100 bg-gradient-to-br from-white via-white to-violet-50/70 p-7 shadow-[0_10px_30px_rgba(15,23,42,0.04)]">
-      <div className="mb-4">
-        <h2 className="text-lg font-black text-[#0F172A]">Comentarios</h2>
-        <p className="text-sm font-semibold text-[#64748B]">Siguiendo cronológicamente</p>
-      </div>
-
-      <form className="flex flex-col gap-3 sm:flex-row" onSubmit={submit}>
-        <input
-          value={content}
-          onChange={(event) => setContent(event.target.value)}
-          disabled={!canComment || isSaving}
-          placeholder="Escribe un comentario o menciona a alguien con @"
-          className="h-12 flex-1 rounded-[16px] border border-[#E5EAF1] bg-white px-4 text-sm font-semibold outline-none transition placeholder:text-[#94A3B8] focus:border-[#16C784] focus:ring-4 focus:ring-[#16C784]/10"
-        />
-        <button type="submit" disabled={!canComment || isSaving || !content.trim()} className="h-12 rounded-[16px] bg-[#7C3AED] px-6 text-sm font-black text-white shadow-[0_14px_28px_rgba(124,58,237,0.18)] transition hover:bg-[#6D28D9] disabled:cursor-not-allowed disabled:opacity-50">
-          {isSaving ? "Comentando..." : "Comentar"}
-        </button>
+    <section id="comments" className="space-y-4">
+      <form className="flex items-center gap-3" onSubmit={submit}>
+        <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#ECFDF5] text-sm font-black text-[#16A36C]">FT</div>
+        <div className="flex h-12 flex-1 items-center gap-3 rounded-[16px] border border-[#E2E8F0] bg-white px-4 shadow-[0_6px_18px_rgba(15,23,42,0.025)]">
+          <input value={content} onChange={(event) => setContent(event.target.value)} disabled={!canComment || isSaving} placeholder="Comentar o mencionar con @" className="h-full min-w-0 flex-1 bg-transparent text-sm font-semibold outline-none placeholder:text-[#94A3B8]" />
+          <button type="submit" disabled={!canComment || isSaving || !content.trim()} className="grid h-9 w-9 place-items-center rounded-full text-[#64748B] transition hover:bg-[#F8FAFC] hover:text-[#16A36C] disabled:cursor-not-allowed disabled:opacity-50" aria-label="Enviar comentario">➤</button>
+        </div>
       </form>
-      {!canComment ? <p className="mt-3 text-sm font-semibold text-[#64748B]">Tu acceso actual permite ver comentarios, pero no agregar nuevos.</p> : null}
-      {error ? <p className="mt-3 text-sm font-semibold text-rose-600">{error}</p> : null}
-
-      <div className="mt-6 divide-y divide-[#E5EAF1]">
-        {comments.length ? comments.map((comment) => {
+      {!canComment ? <p className="text-sm font-semibold text-[#64748B]">Tu acceso actual permite ver comentarios, pero no agregar nuevos.</p> : null}
+      {error ? <p className="text-sm font-semibold text-rose-600">{error}</p> : null}
+      <div className="space-y-4">
+        {comments.slice(0, 3).map((comment) => {
           const profile = getProfile(comment);
           const name = profile?.full_name || profile?.email || "Usuario";
           return (
-            <article key={comment.id} className="flex gap-3 py-4">
-              <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#ECFDF5] text-sm font-black text-[#16A36C]">
-                {name.slice(0, 1).toUpperCase()}
-              </div>
+            <article key={comment.id} className="flex gap-3">
+              <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#EFF6FF] text-sm font-black text-[#3B82F6]">{name.slice(0, 1).toUpperCase()}</div>
               <div className="min-w-0 flex-1">
-                <div className="flex flex-wrap items-center gap-2">
-                  <p className="text-sm font-black text-[#0F172A]">{name}</p>
-                  <p className="text-xs font-bold text-[#94A3B8]">{comment.created_at ? formatDate(comment.created_at) : "Sin fecha"}</p>
-                </div>
+                <div className="flex flex-wrap items-center gap-2"><p className="text-sm font-black text-[#0F172A]">{name}</p><p className="text-xs font-bold text-[#94A3B8]">{comment.created_at ? formatDate(comment.created_at) : "Sin fecha"}</p></div>
                 <p className="mt-1 text-sm font-semibold leading-6 text-[#334155]">{comment.content}</p>
               </div>
             </article>
           );
-        }) : (
-          <p className="rounded-[16px] bg-[#F8FAFC] p-4 text-sm font-semibold text-[#64748B]">Todavía no hay comentarios en esta tarea.</p>
-        )}
+        })}
       </div>
     </section>
   );

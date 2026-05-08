@@ -20,7 +20,7 @@ const requiredFiles = [
   "supabase/migrations/0027_v54_2_1_db_cleanup_index_normalization.sql",
   "docs/release/DB_CONTINUITY_SOURCE_OF_TRUTH.md",
   "docs/releases/RELEASE_NOTES_v58.20.md",
-  "docs/qa/FLOWTASK_V58.20_TASK_WORKSPACE_PRO_SMOKE.md"
+  "docs/qa/FLOWTASK_V58.20_TASK_WORKSPACE_INLINE_QA.md"
 ];
 
 const forbiddenPaths = [
@@ -35,7 +35,7 @@ const forbiddenPaths = [
 
 let failures = 0;
 
-console.log("\n[release-check] FlowTask v58.20 Task Workspace Pro\n");
+console.log("\n[release-check] FlowTask v58.20 Task Workspace Inline Redesign\n");
 
 for (const file of requiredFiles) {
   const ok = fs.existsSync(path.join(root, file));
@@ -76,4 +76,4 @@ if (failures > 0) {
   process.exit(1);
 }
 
-console.log("\n[release-check] All Task Workspace Pro readiness checks passed.\n");
+console.log("\n[release-check] All final user readiness checks passed.\n");

@@ -9,15 +9,15 @@ const readme = fs.readFileSync(path.join(root, "README.md"), "utf8");
 const envExample = fs.readFileSync(path.join(root, ".env.example"), "utf8");
 const releaseVersion = fs.readFileSync(path.join(root, "src/lib/release/version.ts"), "utf8");
 const migration = fs.readFileSync(path.join(root, "supabase/migrations/0038_v58_12_6_database_sanitization_foundation.sql"), "utf8");
-const smokeDoc = fs.readFileSync(path.join(root, "docs/qa/FLOWTASK_V58.20_TASK_WORKSPACE_PRO_SMOKE.md"), "utf8");
+const smokeDoc = fs.readFileSync(path.join(root, "docs/qa/FLOWTASK_V58.20_TASK_WORKSPACE_INLINE_QA.md"), "utf8");
 
-const expectedVersion = "58.20-task-workspace-pro";
+const expectedVersion = "58.20-task-workspace-inline-redesign";
 const checks = [
   ["vercel build command", vercel.buildCommand === "npm run vercel:build"],
   ["vercel security headers", Array.isArray(vercel.headers) && vercel.headers.length > 0],
   ["env has NEXT_PUBLIC_APP_URL", envExample.includes("NEXT_PUBLIC_APP_URL=")],
   ["env has FLOWTASK_BASE_URL helper", envExample.includes("FLOWTASK_BASE_URL=")],
-  ["readme mentions v58.20", readme.includes("v58.20 Task Workspace Pro")],
+  ["readme mentions v58.20", readme.includes("v58.20 Task Workspace Inline Redesign")],
   ["release exports include APP_RELEASE_STAGE", releaseVersion.includes("APP_RELEASE_STAGE")],
   ["release exports production-candidate", releaseVersion.includes("production-candidate")],
   ["package version aligned", pkg.version === expectedVersion],

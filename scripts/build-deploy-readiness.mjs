@@ -4,8 +4,8 @@ import path from "node:path";
 
 const root = process.cwd();
 const failures = [];
-const expectedVersion = "58.20-task-workspace-pro";
-const expectedReleaseLabel = "v58.20 Task Workspace Pro";
+const expectedVersion = "58.20-task-workspace-inline-redesign";
+const expectedReleaseLabel = "v58.20 Task Workspace Inline Redesign";
 
 function requireFile(rel) {
   if (!fs.existsSync(path.join(root, rel))) failures.push(`Missing required file: ${rel}`);
@@ -28,7 +28,7 @@ requireFile("scripts/verify-v58.20.mjs");
 requireFile("supabase/migrations/0038_v58_12_6_database_sanitization_foundation.sql");
 requireFile("docs/release/V58.12.6_WORKSPACE_CATALOG_DELETE_FLOW_FIX.md");
 requireFile("docs/release/DB_CONTINUITY_SOURCE_OF_TRUTH.md");
-requireFile("docs/qa/FLOWTASK_V58.20_TASK_WORKSPACE_PRO_SMOKE.md");
+requireFile("docs/qa/FLOWTASK_V58.20_TASK_WORKSPACE_INLINE_QA.md");
 
 const pkg = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
 const scripts = pkg.scripts ?? {};
@@ -59,4 +59,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log("[build-deploy-readiness] OK — v58.20 package, env, release exports and Task Workspace Pro readiness docs aligned.");
+console.log("[build-deploy-readiness] OK — v58.20 package, env, release exports and Task Workspace Inline readiness docs aligned.");
