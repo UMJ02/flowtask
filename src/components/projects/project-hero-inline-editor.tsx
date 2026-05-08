@@ -141,7 +141,7 @@ export function ProjectHeroInlineEditor({ project, progress, currentQuery = "" }
     const organizationId = project.organization_id ?? workspace.activeOrganizationId ?? null;
 
     if (!user) {
-      setServerError("Sesión no válida.");
+      setServerError("Tu sesión expiró. Vuelve a iniciar sesión para continuar.");
       setMessage(null);
       return;
     }
@@ -156,7 +156,7 @@ export function ProjectHeroInlineEditor({ project, progress, currentQuery = "" }
     try {
       departmentId = await getWorkspaceDepartmentIdByCode({ code: form.department, userId: user.id, organizationId });
     } catch (error) {
-      setServerError(error instanceof Error ? error.message : "No fue posible cargar el departamento.");
+      setServerError(error instanceof Error ? error.message : "No pudimos cargar el departamento. Intenta de nuevo.");
       setMessage(null);
       return;
     }
@@ -166,7 +166,7 @@ export function ProjectHeroInlineEditor({ project, progress, currentQuery = "" }
     const access = await getClientAccessSummary(supabase as any, user.id, organizationId);
 
     if (organizationId && clientId && !hasClientAccess(access, clientId, "edit")) {
-      setServerError("No tienes permisos para editar proyectos sobre ese registro.");
+      setServerError("No puedes usar este registro en el proyecto. Elige otro registro o pide acceso al administrador.");
       setMessage(null);
       return;
     }
@@ -201,7 +201,7 @@ export function ProjectHeroInlineEditor({ project, progress, currentQuery = "" }
     });
 
     void trackEvent({ eventName: "update_project_inline", organizationId, metadata: { project_id: project.id, client_id: clientId, country: payload.country, collaborative: payload.is_collaborative } });
-    setMessage("Cambios guardados.");
+    setMessage("Proyecto actualizado. Puedes seguir trabajando aquí.");
     startTransition(() => {
       router.refresh();
       const base = `/app/projects/${project.id}`;
@@ -222,8 +222,8 @@ export function ProjectHeroInlineEditor({ project, progress, currentQuery = "" }
 
         <div className="space-y-4">
           <div className="flex flex-wrap gap-2">
-            <span className="rounded-full bg-[#ECFDF5] px-3 py-1 text-xs font-black text-[#087A4B] ring-1 ring-[#BBF7D0]">Editando inline</span>
-            <span className="rounded-full bg-[#F6F0FF] px-3 py-1 text-xs font-black text-[#7C3AED] ring-1 ring-[#E9D5FF]">Misma estructura del detalle</span>
+            <span className="rounded-full bg-[#ECFDF5] px-3 py-1 text-xs font-black text-[#087A4B] ring-1 ring-[#BBF7D0]">Editando proyecto</span>
+            <span className="rounded-full bg-[#F6F0FF] px-3 py-1 text-xs font-black text-[#7C3AED] ring-1 ring-[#E9D5FF]">Sin salir de esta vista</span>
           </div>
           <Input value={form.title} onChange={(event) => setField("title", event.target.value)} className="min-h-[58px] rounded-[18px] border-[#E5EAF1] bg-white px-4 text-[30px] font-black tracking-[-0.035em] text-[#0F172A] focus:border-[#16C784] focus:ring-4 focus:ring-emerald-500/10" placeholder="Nombre del proyecto" />
           <p className="text-sm font-semibold text-[#64748B]">Creado el {project.created_at ? formatDate(project.created_at) : "—"}</p>
@@ -242,9 +242,9 @@ export function ProjectHeroInlineEditor({ project, progress, currentQuery = "" }
             <label className="space-y-2 text-xs font-black uppercase tracking-[0.16em] text-slate-500"><span className="flex items-center gap-2"><Tag className="h-4 w-4" />Registro</span><Input value={form.clientName} onChange={(event) => setField("clientName", event.target.value)} list="project-inline-client-options" className="h-11 rounded-2xl border-[#E5EAF1] bg-white font-semibold" /><datalist id="project-inline-client-options">{clientOptions.map((item) => <option key={item.id} value={item.name} />)}</datalist></label>
             <div className="grid grid-cols-2 gap-3">
               <label className="space-y-2 text-xs font-black uppercase tracking-[0.16em] text-slate-500"><span className="flex items-center gap-2"><Globe2 className="h-4 w-4" />País</span><Select value={form.country} onChange={(event) => setField("country", event.target.value)} className="h-11 rounded-2xl border-[#E5EAF1] bg-white font-semibold"><option value="">País</option>{countryOptions.map((item) => <option key={item.id} value={item.name}>{item.name}</option>)}</Select></label>
-              <label className="space-y-2 text-xs font-black uppercase tracking-[0.16em] text-slate-500"><span className="flex items-center gap-2"><CalendarDays className="h-4 w-4" />Deadline</span><Input type="date" value={form.dueDate} onChange={(event) => setField("dueDate", event.target.value)} className="h-11 rounded-2xl border-[#E5EAF1] bg-white font-semibold" /></label>
+              <label className="space-y-2 text-xs font-black uppercase tracking-[0.16em] text-slate-500"><span className="flex items-center gap-2"><CalendarDays className="h-4 w-4" />Fecha límite</span><Input type="date" value={form.dueDate} onChange={(event) => setField("dueDate", event.target.value)} className="h-11 rounded-2xl border-[#E5EAF1] bg-white font-semibold" /></label>
             </div>
-            <label className="flex items-center justify-between rounded-2xl border border-[#BBF7D0] bg-[#ECFDF5] px-4 py-3 text-sm font-black text-[#0F172A]"><span className="flex items-center gap-2"><Link2 className="h-4 w-4" />Colaborativo</span><input type="checkbox" checked={form.isCollaborative} onChange={(event) => setField("isCollaborative", event.target.checked)} className="h-5 w-5 accent-[#16C784]" /></label>
+            <label className="flex items-center justify-between rounded-2xl border border-[#BBF7D0] bg-[#ECFDF5] px-4 py-3 text-sm font-black text-[#0F172A]"><span className="flex items-center gap-2"><Link2 className="h-4 w-4" />Proyecto colaborativo</span><input type="checkbox" checked={form.isCollaborative} onChange={(event) => setField("isCollaborative", event.target.checked)} className="h-5 w-5 accent-[#16C784]" /></label>
           </div>
 
           <div>

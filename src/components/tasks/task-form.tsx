@@ -135,7 +135,7 @@ export function TaskForm({
   function getProfileLabel(profile?: { full_name?: string | null; email?: string | null } | null) {
     const fullName = profile?.full_name?.trim() ?? "";
     const isPlaceholder = !fullName || fullName.toLowerCase() === "workspace owner" || fullName.toLowerCase() === "owner";
-    return isPlaceholder ? profile?.email?.trim() || "Usuario del workspace" : fullName;
+    return isPlaceholder ? profile?.email?.trim() || "Usuario del espacio" : fullName;
   }
   const resetValues = useMemo(
     () => ({
@@ -233,7 +233,7 @@ export function TaskForm({
     const formOrganizationId = isEdit ? (initialData?.organizationId ?? null) : workspace.activeOrganizationId;
 
     if (!user) {
-      setServerError("Sesión no válida.");
+      setServerError("Tu sesión expiró. Vuelve a iniciar sesión para continuar.");
       setMessage(null);
       return;
     }
@@ -253,19 +253,19 @@ export function TaskForm({
     const selectedProject = await resolveProjectEntityContext(supabase as any, fixedProjectId || null);
 
     if (formOrganizationId && clientId && !hasClientAccess(access, clientId, "edit")) {
-      setServerError("No tienes permisos para crear o editar tareas sobre ese cliente.");
+      setServerError("No puedes usar este registro en la tarea. Elige otro registro o pide acceso al administrador.");
       setMessage(null);
       return;
     }
 
     if (fixedProjectId) {
       if (!selectedProject) {
-        setServerError("El proyecto seleccionado no existe o no está disponible en tu workspace.");
+        setServerError("No encontramos ese proyecto en tu espacio de trabajo.");
         setMessage(null);
         return;
       }
       if (formOrganizationId && !hasClientAccess(access, selectedProject.clientId ?? null, "edit")) {
-        setServerError("No tienes permisos para crear o editar tareas en el proyecto seleccionado.");
+        setServerError("No tienes acceso para crear tareas en este proyecto.");
         setMessage(null);
         return;
       }
@@ -279,7 +279,7 @@ export function TaskForm({
     });
 
     if (!integrity.ok) {
-      setServerError(integrity.message ?? "La tarea no respeta la integridad del proyecto y cliente seleccionado.");
+      setServerError(integrity.message ?? "La tarea no coincide con la información del proyecto seleccionado.");
       setMessage(null);
       return;
     }
@@ -343,7 +343,7 @@ export function TaskForm({
       },
     });
 
-    const okMessage = successMessage ?? (isEdit ? "Cambios guardados al instante." : "Tarea creada y lista para seguir trabajando.");
+    const okMessage = successMessage ?? (isEdit ? "Tarea actualizada. Puedes seguir trabajando." : "Tarea creada y lista para seguir trabajando.");
     setMessage(okMessage);
 
     if (!isEdit && !createdTaskId) {
@@ -388,12 +388,12 @@ export function TaskForm({
             </Link>
             <div className="min-w-0">
               <h1 className="truncate text-2xl font-black tracking-[-0.035em] text-[#0F172A] sm:text-3xl">{editorTitle}</h1>
-              <p className="mt-1 line-clamp-1 text-sm font-medium text-[#64748B]">Gestiona la información clave sin perder contexto operativo.</p>
+              <p className="mt-1 line-clamp-1 text-sm font-medium text-[#64748B]">Crea una tarea clara para que tu equipo sepa qué hacer y cuándo entregarlo.</p>
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2 lg:justify-end">
             <button type="button" onClick={() => reset(resetValues)} className="inline-flex h-11 items-center gap-2 rounded-2xl border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-slate-800 shadow-[0_10px_24px_rgba(15,23,42,0.04)] transition hover:bg-slate-50">
-              Restablecer <ChevronDown className="h-4 w-4 rotate-90" />
+              Limpiar <ChevronDown className="h-4 w-4 rotate-90" />
             </button>
             <Link href={cancelHref} className="inline-flex h-11 items-center justify-center rounded-2xl border border-[#E5EAF1] bg-white px-5 text-sm font-bold text-slate-800 shadow-[0_10px_24px_rgba(15,23,42,0.04)] transition hover:bg-slate-50">
               Cancelar
@@ -424,7 +424,7 @@ export function TaskForm({
                 <span className="text-xs font-bold text-slate-400">{watchedDescription.length} / 2000</span>
               </div>
               <div className="flex flex-wrap items-center gap-2 border-b border-[#E5EAF1] bg-slate-50/60 px-4 py-3 text-xs font-semibold text-slate-500">
-                Campo de texto simple conectado al guardado real de la tarea.
+                Agrega detalles, entregables o notas que ayuden a completar esta tarea.
               </div>
               <Textarea {...register("description")} placeholder="Describe el contexto, entregables o notas importantes…" className="min-h-[130px] rounded-none border-0 bg-white px-5 py-4 text-base leading-7 shadow-none focus:border-0 focus:ring-0" />
             </div>
@@ -444,7 +444,7 @@ export function TaskForm({
             {isProjectTask ? (
               <div className="rounded-[20px] border border-emerald-200 bg-emerald-50/80 p-4 shadow-[0_12px_30px_rgba(15,23,42,0.035)] md:col-span-2">
                 <p className="text-xs font-black uppercase tracking-[0.16em] text-emerald-700">Tarea de proyecto</p>
-                <p className="mt-2 text-sm font-semibold text-slate-700">Esta tarea queda anidada al proyecto y hereda su cliente, país, departamento y contexto operativo.</p>
+                <p className="mt-2 text-sm font-semibold text-slate-700">Esta tarea quedará dentro del proyecto y usará su misma información base.</p>
               </div>
             ) : null}
             <FieldCard label="Responsable" icon={<UserRound className="h-4 w-4" />}>
@@ -481,11 +481,11 @@ export function TaskForm({
 
           <details className="group overflow-hidden rounded-[24px] border border-[#E5EAF1] bg-white shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
             <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-5 py-4">
-              <span className="text-xs font-black uppercase tracking-[0.18em] text-slate-500">Detalles adicionales</span>
+              <span className="text-xs font-black uppercase tracking-[0.18em] text-slate-500">Datos relacionados</span>
               <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-50 text-slate-500 transition group-open:rotate-180"><ChevronDown className="h-4 w-4" /></span>
             </summary>
             <div className="border-t border-[#E5EAF1] p-5">
-              <p className="text-sm font-medium leading-6 text-[#64748B]">Los campos conectados actualmente son estado, prioridad, responsable, departamento, país, fecha límite y registro. No se muestran campos decorativos sin respaldo en base de datos.</p>
+              <p className="text-sm font-medium leading-6 text-[#64748B]">Aquí aparecerá información útil según el país, registro o proyecto que selecciones. Solo mostramos datos que la app puede guardar correctamente.</p>
             </div>
           </details>
 
@@ -497,16 +497,16 @@ export function TaskForm({
           <SideCard tone="green">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.18em] text-slate-600"><ShieldCheck className="h-4 w-4" /> Acceso operativo</p>
-                <p className="mt-3 text-sm font-medium leading-6 text-[#64748B]">El control completo de permisos vive en Settings para mantener esta tarea más limpia.</p>
+                <p className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.18em] text-slate-600"><ShieldCheck className="h-4 w-4" /> Acceso</p>
+                <p className="mt-3 text-sm font-medium leading-6 text-[#64748B]">Los permisos se gestionan desde Ajustes. Aquí solo verás las opciones que puedes usar.</p>
               </div>
-              <span className="shrink-0 rounded-full bg-emerald-50 px-3 py-1 text-xs font-black text-emerald-700">Permiso full</span>
+              <span className="shrink-0 rounded-full bg-emerald-50 px-3 py-1 text-xs font-black text-emerald-700">Acceso completo</span>
             </div>
           </SideCard>
 
           <SideCard tone="amber">
             <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-600">Seguimiento</p>
-            <p className="mt-2 text-sm font-medium text-[#64748B]">Gestiona el avance y mantén a todos alineados.</p>
+            <p className="mt-2 text-sm font-medium text-[#64748B]">Revisa el estado, la prioridad y el avance antes de guardar.</p>
             <div className="mt-5 space-y-4">
               <FieldMini label="Estado de seguimiento">
                 <Select className="h-12 rounded-2xl border-amber-100 bg-amber-50/70 font-semibold" value={selectedStatus ?? "en_proceso"} onChange={(event) => setValue("status", event.target.value as TaskValues["status"], { shouldDirty: true })}>
@@ -514,15 +514,15 @@ export function TaskForm({
                 </Select>
               </FieldMini>
               <div>
-                <div className="mb-2 flex items-center justify-between text-xs font-black uppercase tracking-[0.16em] text-slate-500"><span>Progreso operativo</span><span className="text-base tracking-normal text-slate-800">{statusProgress}%</span></div>
+                <div className="mb-2 flex items-center justify-between text-xs font-black uppercase tracking-[0.16em] text-slate-500"><span>Avance</span><span className="text-base tracking-normal text-slate-800">{statusProgress}%</span></div>
                 <div className="h-2 rounded-full bg-slate-200"><div className="h-2 rounded-full bg-[#16C784] transition-all" style={{ width: `${statusProgress}%` }} /></div>
-                <p className="mt-2 text-xs font-semibold text-[#64748B]">Se sincroniza con el checklist: {checklistStats.total ? `${checklistStats.done}/${checklistStats.total} puntos completados.` : 'sin checklist, inicia en 0%.'}</p>
+                <p className="mt-2 text-xs font-semibold text-[#64748B]">Se sincroniza con el checklist: {checklistStats.total ? `${checklistStats.done}/${checklistStats.total} puntos completados.` : 'sin checklist todavía.'}</p>
               </div>
               <FieldMini label="Prioridad actual">
                 <div className="flex h-12 items-center rounded-2xl border border-[#E5EAF1] bg-white px-4 text-sm font-black text-slate-800">{priorityLabel(selectedPriority)}</div>
               </FieldMini>
               <div className="rounded-[18px] border border-amber-200 bg-white/70 p-4 text-sm font-semibold leading-6 text-amber-900">
-                Próximo check-in se mantiene como guía operativa visual. No se guarda como campo real hasta que exista contrato Supabase.
+                Próximo seguimiento: podrás definirlo después de crear la tarea, usando comentarios, recordatorios o checklist.
               </div>
               {isEdit && checklistStats.loaded && checklistStats.total === 0 ? (
                 <Link href={taskId ? `${taskDetailRoute(taskId)}#checklist` : taskListRoute()} className="group flex items-start gap-3 rounded-[18px] border border-amber-200 bg-amber-100/80 p-4 text-left shadow-[0_12px_30px_rgba(245,158,11,0.12)] transition hover:-translate-y-0.5 hover:bg-amber-100">
@@ -530,8 +530,8 @@ export function TaskForm({
                     <ClipboardCheck className="h-5 w-5" />
                   </span>
                   <span className="min-w-0">
-                    <span className="block text-sm font-black text-amber-950">Agregá checklist para medir avance real</span>
-                    <span className="mt-1 block text-xs font-semibold leading-5 text-amber-800">Esta tarea empieza en 0%. Creá puntos de seguimiento para que la barra avance sincronizada.</span>
+                    <span className="block text-sm font-black text-amber-950">Agrega un checklist para medir el avance</span>
+                    <span className="mt-1 block text-xs font-semibold leading-5 text-amber-800">Divide el trabajo en pasos pequeños para que el avance sea más fácil de seguir.</span>
                   </span>
                 </Link>
               ) : null}
@@ -539,11 +539,11 @@ export function TaskForm({
           </SideCard>
 
           <SideCard tone="purple">
-            <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-600">Comentarios, adjuntos y bitácora</p>
-            <p className="mt-3 text-sm font-medium leading-6 text-[#64748B]">Los comentarios, adjuntos y bitácora real se gestionan desde el detalle de la tarea para mantener una sola fuente de verdad.</p>
+            <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-600">Comentarios y archivos</p>
+            <p className="mt-3 text-sm font-medium leading-6 text-[#64748B]">Después de crear la tarea podrás agregar comentarios, archivos y revisar la actividad en un solo lugar.</p>
             {isEdit && taskId ? (
               <Link href={taskDetailRoute(taskId)} className="mt-5 inline-flex h-11 w-full items-center justify-center rounded-2xl bg-[#050B18] px-4 text-sm font-bold text-white shadow-[0_14px_28px_rgba(5,11,24,0.18)] transition hover:-translate-y-0.5">
-                Abrir detalle operativo
+                Abrir detalle de la tarea
               </Link>
             ) : null}
           </SideCard>
@@ -615,6 +615,6 @@ function priorityLabel(value?: string) {
 const QUICK_TIPS = [
   { title: "Define un título claro", text: "Usa una frase corta que explique el resultado esperado de la tarea." },
   { title: "Agrega contexto útil", text: "Incluye entregables, referencias o instrucciones para evitar retrabajo." },
-  { title: "Asigna prioridad y fecha", text: "Prioridad y deadline ayudan a ordenar el trabajo diario sin perder foco." },
+  { title: "Asigna prioridad y fecha", text: "La prioridad y la fecha límite ayudan a ordenar el trabajo diario sin perder foco." },
   { title: "Usa checklist para medir progreso", text: "Divide tareas complejas en pasos pequeños y accionables." },
 ];

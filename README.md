@@ -1,4 +1,4 @@
-# FlowTask — v58.21.0 Create Flow Refresh + Project Inline Activation
+# FlowTask — v58.21.1 User Language + Interaction Cleanup
 
 # FlowTask — v58.20 Task Workspace Inline Redesign
 
@@ -60,3 +60,8 @@ npm run vercel:build
 
 3. Subir a GitHub y desplegar en Vercel.
 \n## V58.16.2-ver-proyecto-premium-2026 Project Detail Tasks Inline Architecture\n\nSeparación entre tareas simples y tareas hijas de proyectos.
+
+
+## v58.21.1 — User Language + Interaction Cleanup
+
+Patch de calidad UX sobre v58.21.0. Mejora textos, mensajes de error, tabs de proyecto y elimina elementos visibles que podían confundirse como funcionalidad real sin respaldo de datos. No agrega migraciones ni cambia contratos Supabase.

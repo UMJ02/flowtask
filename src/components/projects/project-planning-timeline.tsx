@@ -174,7 +174,7 @@ export function ProjectPlanningTimeline({ project, tasks, currentQuery = "" }: P
     <section id="timeline" className="scroll-mt-28 rounded-[24px] border border-[#E7EDF5] bg-white p-6 shadow-[0_12px_35px_rgba(15,23,42,0.05)]">
       <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
         <div>
-          <p className="text-xs font-black uppercase tracking-[0.2em] text-[#16A36C]">Project Smart Timeline</p>
+          <p className="text-xs font-black uppercase tracking-[0.2em] text-[#16A36C]">Project Planificación inteligente</p>
           <h2 className="mt-1 text-2xl font-black tracking-[-0.02em] text-[#0F172A]">Planificación colaborativa del proyecto</h2>
           <p className="mt-1 max-w-3xl text-sm font-medium text-[#64748B]">Timeline híbrido con progreso, fechas y vista flexible. Las tareas simples viven en Tareas; la planificación avanzada vive aquí.</p>
         </div>
@@ -188,7 +188,7 @@ export function ProjectPlanningTimeline({ project, tasks, currentQuery = "" }: P
       </div>
 
       <div className="mt-5 flex justify-center xl:justify-end">
-        <button type="button" aria-pressed={showBuilder} onClick={() => setShowBuilder((v) => !v)} className={cn("inline-flex h-10 items-center gap-2 rounded-[14px] px-5 text-sm font-black ring-1 transition", showBuilder ? "bg-[#050B18] text-white ring-[#050B18] shadow-[0_10px_24px_rgba(5,11,24,0.16)]" : "bg-[#ECFDF5] text-[#087A4B] ring-[#BBF7D0]")}><Settings2 className="h-4 w-4" />Builder</button>
+        <button type="button" aria-pressed={showBuilder} onClick={() => setShowBuilder((v) => !v)} className={cn("inline-flex h-10 items-center gap-2 rounded-[14px] px-5 text-sm font-black ring-1 transition", showBuilder ? "bg-[#050B18] text-white ring-[#050B18] shadow-[0_10px_24px_rgba(5,11,24,0.16)]" : "bg-[#ECFDF5] text-[#087A4B] ring-[#BBF7D0]")}><Settings2 className="h-4 w-4" />Ajustes de vista</button>
       </div>
 
       <div className={cn("mt-6 grid gap-6", showBuilder ? "xl:grid-cols-[minmax(0,1fr)_320px]" : "xl:grid-cols-1")}>
@@ -255,7 +255,7 @@ export function ProjectPlanningTimeline({ project, tasks, currentQuery = "" }: P
 
         {showBuilder ? (
           <aside className="rounded-[20px] border border-[#E7EDF5] bg-white p-5 shadow-[0_10px_24px_rgba(15,23,42,0.035)]">
-            <p className="text-xs font-black uppercase tracking-[0.18em] text-[#64748B]">Builder</p>
+            <p className="text-xs font-black uppercase tracking-[0.18em] text-[#64748B]">Ajustes de vista</p>
             <h3 className="mt-2 text-lg font-black text-[#0F172A]">Modificar vista</h3>
             <div className="mt-5 space-y-4">
               <label className="flex items-center justify-between rounded-[14px] border border-[#E7EDF5] bg-[#F8FAFC] px-4 py-3 text-sm font-bold text-[#0F172A]">Incluir concluidas<input type="checkbox" checked={showConcluded} onChange={(e) => setShowConcluded(e.target.checked)} /></label>

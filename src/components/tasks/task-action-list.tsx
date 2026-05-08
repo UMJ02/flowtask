@@ -538,7 +538,7 @@ function TaskActionListComponent({
     <Card className="overflow-hidden rounded-[24px] border border-[#E5EAF1] bg-white p-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
       <div className="mb-5 flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
         <div>
-          <p className="text-xs font-black uppercase tracking-[0.18em] text-[#16C784]">Smart Timeline</p>
+          <p className="text-xs font-black uppercase tracking-[0.18em] text-[#16C784]">Planificación inteligente</p>
           <h3 className="mt-1 text-xl font-black text-[#0F172A]">Vista híbrida Calendario + Gantt</h3>
           <p className="mt-1 text-sm font-medium text-[#64748B]">Planifica campañas, producción y duración visual usando las tareas actuales.</p>
         </div>
@@ -627,7 +627,7 @@ function TaskActionListComponent({
             {(["Hoy", "Día", "Semana", "Mes"] as const).map((label) => (
               <button key={label} type="button" onClick={() => setCalendarScale(label)} className={cn("h-10 rounded-[14px] border px-4 text-sm font-bold transition", calendarScale === label ? "border-[#16C784] bg-[#16C784] text-white" : "border-[#E5EAF1] bg-white text-slate-700 hover:bg-slate-50")}>{label}</button>
             ))}
-            <button type="button" onClick={() => setShowCalendarSummary((value) => !value)} className="inline-flex h-10 items-center gap-2 rounded-[14px] border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-slate-700 hover:bg-slate-50"><Settings2 className="h-4 w-4" />Config</button>
+            <button type="button" onClick={() => setShowCalendarSummary((value) => !value)} className="inline-flex h-10 items-center gap-2 rounded-[14px] border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-slate-700 hover:bg-slate-50"><Settings2 className="h-4 w-4" />Ajustes</button>
           </div>
         </div>
 
@@ -678,7 +678,7 @@ function TaskActionListComponent({
     <Card className="rounded-[24px] border border-[#E5EAF1] bg-white p-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
       <div className="mb-5 flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
         <div>
-          <p className="text-xs font-black uppercase tracking-[0.18em] text-[#16C784]">Custom Gantt Builder</p>
+          <p className="text-xs font-black uppercase tracking-[0.18em] text-[#16C784]">Vista personalizada</p>
           <h3 className="mt-1 text-xl font-black text-[#0F172A]">Gantt personalizable y potente</h3>
           <p className="mt-1 text-sm font-medium text-[#64748B]">Control avanzado de planificación, progreso y vistas guardadas.</p>
         </div>

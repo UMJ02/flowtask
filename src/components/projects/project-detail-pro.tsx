@@ -218,7 +218,7 @@ function ProjectHeroCard({ project, tasks, members, currentQuery }: { project: a
             <Star className="h-5 w-5 text-slate-400" />
           </div>
           <p className="mt-2 text-sm font-semibold text-[#64748B]">Creado el {project.created_at ? formatDate(project.created_at) : "—"}</p>
-          <p className="mt-4 max-w-2xl text-base leading-7 text-[#64748B]">{project.description || "Proyecto activo del workspace. Centraliza tareas internas, equipo, archivos y seguimiento operativo en un solo lugar."}</p>
+          <p className="mt-4 max-w-2xl text-base leading-7 text-[#64748B]">{project.description || "Proyecto activo. Centraliza tareas, equipo, archivos y seguimiento en un solo lugar."}</p>
           <AvatarStack members={members} />
         </div>
 
@@ -234,10 +234,9 @@ function ProjectHeroCard({ project, tasks, members, currentQuery }: { project: a
             </div>
             <div className="h-[7px] rounded-full bg-[#EEF2F7]"><div className="h-[7px] rounded-full bg-[#16C784]" style={{ width: `${Math.min(100, Math.max(0, progress))}%` }} /></div>
           </div>
-          <div className="grid grid-cols-3 gap-4 text-sm">
+          <div className="grid grid-cols-2 gap-4 text-sm">
             <div><p className="text-xs font-bold text-[#64748B]">Fecha límite</p><p className="mt-2 inline-flex items-center gap-1.5 font-black text-[#0F172A]"><CalendarDays className="h-4 w-4 text-[#64748B]" />{project.due_date ? formatDate(project.due_date) : "Sin fecha"}</p></div>
             <div><p className="text-xs font-bold text-[#64748B]">Estado</p><span className={`mt-2 inline-flex rounded-full px-3 py-1 text-xs font-black ring-1 ${statusClass(project.status)}`}>{statusLabel(project.status)}</span></div>
-            <div><p className="text-xs font-bold text-[#64748B]">Prioridad</p><span className="mt-2 inline-flex rounded-full bg-[#FFF8E8] px-3 py-1 text-xs font-black text-[#B45309] ring-1 ring-[#FDECC8]">Media</span></div>
           </div>
         </div>
       </div>
@@ -249,12 +248,10 @@ function ProjectTabs() {
   const tabs = [
     { label: "Resumen", href: "#resumen" },
     { label: "Tareas", href: "#tareas" },
-    { label: "Timeline", href: "#timeline" },
-    { label: "Builder", href: "#timeline" },
+    { label: "Planificación", href: "#timeline" },
     { label: "Equipo", href: "#equipo" },
     { label: "Archivos", href: "#archivos" },
     { label: "Actividad", href: "#actividad" },
-    { label: "Configuración", href: "#configuracion" },
   ];
   return (
     <nav className="flex h-14 items-center gap-8 overflow-x-auto border-b border-[#E7EDF5]">
@@ -286,7 +283,7 @@ function ProjectMembersCard({ members }: { members: any[] }) {
               <span className="rounded-full border border-[#E7EDF5] bg-white px-3 py-1 text-xs font-black text-[#64748B]">{roleLabel(member.role)}</span>
             </div>
           );
-        }) : <p className="text-sm font-medium text-[#64748B]">Todavía no hay colaboradores agregados.</p>}
+        }) : <p className="text-sm font-medium text-[#64748B]">Aún no hay personas agregadas al proyecto.</p>}
       </div>
     </section>
   );
@@ -312,14 +309,14 @@ function RecentFilesCard({ attachments }: { attachments: any[] }) {
 function ProjectActivityCard({ activity }: { activity: ActivityItem[] }) {
   return (
     <section id="actividad" className={`${projectUi.card} scroll-mt-28 p-6`}>
-      <div className="mb-5 flex items-center justify-between gap-3"><div><p className={projectUi.eyebrow}>Actividad reciente</p><h2 className="mt-2 text-2xl font-black text-[#0F172A]">Historial del proyecto</h2></div><a href="#actividad" className="inline-flex h-10 items-center rounded-[14px] border border-[#E7EDF5] bg-white px-4 text-xs font-black text-[#475569] hover:bg-slate-50">Ver toda la actividad</a></div>
+      <div className="mb-5 flex items-center justify-between gap-3"><div><p className={projectUi.eyebrow}>Actividad reciente</p><h2 className="mt-2 text-2xl font-black text-[#0F172A]">Actividad del proyecto</h2></div><a href="#actividad" className="inline-flex h-10 items-center rounded-[14px] border border-[#E7EDF5] bg-white px-4 text-xs font-black text-[#475569] hover:bg-slate-50">Ver actividad</a></div>
       <div className="space-y-4">
         {activity.length ? activity.slice(0, 5).map((item) => (
           <div key={item.id} className="flex gap-3">
             <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#F6F0FF] text-xs font-black text-[#7C3AED] ring-1 ring-[#E9D5FF]">FT</span>
             <div><p className="text-sm font-bold text-[#334155]">{activityCopy(item)}</p><p className="mt-1 text-xs font-medium text-[#64748B]">{item.created_at ? formatDate(item.created_at) : "Ahora"}</p></div>
           </div>
-        )) : <p className="text-sm font-medium text-[#64748B]">Sin actividad reciente para mostrar.</p>}
+        )) : <p className="text-sm font-medium text-[#64748B]">Aún no hay actividad para mostrar.</p>}
       </div>
     </section>
   );
@@ -346,8 +343,8 @@ export function ProjectDetailPro({ project, tasks, members, attachments, activit
           <section className="rounded-[24px] border border-[#BBF7D0] bg-[#ECFDF5] p-6 shadow-[0_10px_24px_rgba(15,23,42,0.04)]">
             <p className="text-xs font-black uppercase tracking-[0.20em] text-[#087A4B]">Acción rápida</p>
             <h3 className="mt-2 text-xl font-black text-[#0F172A]">Crear tarea interna</h3>
-            <p className="mt-2 text-sm leading-6 text-[#64748B]">Abre una nueva fila dentro del proyecto y mantiene el flujo limpio, sin enviar al módulo Tareas.</p>
-            <a href="#tareas" className={`mt-5 inline-flex h-12 w-full items-center justify-center gap-2 rounded-[16px] text-sm font-black ${canCreateTask ? "bg-[#16C784] text-white shadow-[0_12px_24px_rgba(22,199,132,0.22)]" : "pointer-events-none bg-white/70 text-slate-400"}`}><Plus className="h-4 w-4" />Ir a tareas internas</a>
+            <p className="mt-2 text-sm leading-6 text-[#64748B]">Agrega tareas dentro de este proyecto sin salir de esta vista.</p>
+            <a href="#tareas" className={`mt-5 inline-flex h-12 w-full items-center justify-center gap-2 rounded-[16px] text-sm font-black ${canCreateTask ? "bg-[#16C784] text-white shadow-[0_12px_24px_rgba(22,199,132,0.22)]" : "pointer-events-none bg-white/70 text-slate-400"}`}><Plus className="h-4 w-4" />Ir a tareas del proyecto</a>
           </section>
           <ProjectMembersCard members={members} />
           <RecentFilesCard attachments={attachments} />

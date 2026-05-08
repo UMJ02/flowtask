@@ -140,7 +140,7 @@ export function ProjectForm({ projectId, initialData, submitLabel, successMessag
     const formOrganizationId = isEdit ? (initialData?.organizationId ?? null) : workspace.activeOrganizationId;
 
     if (!user) {
-      setServerError("Sesión no válida.");
+      setServerError("Tu sesión expiró. Vuelve a iniciar sesión para continuar.");
       setMessage(null);
       return;
     }
@@ -149,7 +149,7 @@ export function ProjectForm({ projectId, initialData, submitLabel, successMessag
     try {
       departmentId = await getWorkspaceDepartmentIdByCode({ code: values.department, userId: user.id, organizationId: formOrganizationId });
     } catch (error) {
-      setServerError(error instanceof Error ? error.message : "No fue posible cargar el departamento.");
+      setServerError(error instanceof Error ? error.message : "No pudimos cargar el departamento. Intenta de nuevo.");
       setMessage(null);
       return;
     }
@@ -159,7 +159,7 @@ export function ProjectForm({ projectId, initialData, submitLabel, successMessag
     const access = await getClientAccessSummary(supabase as any, user.id, formOrganizationId);
 
     if (formOrganizationId && clientId && !hasClientAccess(access, clientId, "edit")) {
-      setServerError("No tienes permisos para crear o editar proyectos sobre ese registro.");
+      setServerError("No puedes usar este registro en el proyecto. Elige otro registro o pide acceso al administrador.");
       setMessage(null);
       return;
     }
@@ -389,7 +389,7 @@ export function ProjectForm({ projectId, initialData, submitLabel, successMessag
               </Select>
             </FieldCard>
 
-            <FieldCard label="Registro" icon={<Tag className="h-4 w-4" />} helper="Mantiene la relación real con clientes/registros del workspace.">
+            <FieldCard label="Registro" icon={<Tag className="h-4 w-4" />} helper="Asocia este proyecto con el registro correcto para mantener todo organizado.">
               <Input {...register("clientName")} placeholder="Nombre del registro" list="project-registry-client-options" className="h-12 rounded-2xl border-[#E5EAF1] bg-white font-semibold" />
               <datalist id="project-registry-client-options">{clientOptions.map((item) => <option key={item.id} value={item.name} />)}</datalist>
             </FieldCard>
@@ -421,19 +421,19 @@ export function ProjectForm({ projectId, initialData, submitLabel, successMessag
         <aside className="space-y-5 xl:sticky xl:top-[104px] xl:self-start">
           <SideCard tone="green">
             <p className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.18em] text-slate-600"><Sparkles className="h-4 w-4" /> ¿Qué es este proyecto?</p>
-            <p className="mt-3 text-sm font-medium leading-6 text-[#64748B]">Un proyecto agrupa tareas internas, equipo, archivos y seguimiento. Esta pantalla solo captura campos existentes; la operación vive en el detalle del proyecto.</p>
+            <p className="mt-3 text-sm font-medium leading-6 text-[#64748B]">Un proyecto reúne tareas, equipo, archivos y fechas en un solo lugar. Después de crearlo podrás trabajar desde su detalle.</p>
           </SideCard>
           <SideCard tone="blue">
             <p className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.18em] text-slate-600"><Users className="h-4 w-4" /> Siguiente paso</p>
             <div className="mt-4 space-y-3 text-sm font-semibold leading-6 text-[#64748B]">
               <p>1. Crea el proyecto.</p>
               <p>2. Entra al detalle para agregar tareas internas.</p>
-              <p>3. Usa editar inline para ajustes rápidos sin salir de la vista.</p>
+              <p>3. Usa editar aquí mismo para ajustes rápidos sin salir de la vista.</p>
             </div>
           </SideCard>
           <SideCard tone="amber">
-            <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-600">Contrato protegido</p>
-            <p className="mt-3 text-sm font-medium leading-6 text-[#64748B]">Se mantienen nombre, descripción, imagen, estado, departamento, registro, país, deadline y colaborativo. No se agregan campos decorativos sin migración.</p>
+            <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-600">Información que se guardará</p>
+            <p className="mt-3 text-sm font-medium leading-6 text-[#64748B]">Este formulario guarda solo la información necesaria: nombre, descripción, imagen, estado, departamento, registro, país, fecha límite y colaboración.</p>
             <span className="mt-4 inline-flex rounded-full bg-white px-3 py-1 text-xs font-black text-slate-700 ring-1 ring-[#E5EAF1]">{watchedCollaborative ? "Modo colaborativo" : "Modo individual"}</span>
           </SideCard>
         </aside>
