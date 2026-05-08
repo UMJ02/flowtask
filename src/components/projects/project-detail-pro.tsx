@@ -21,6 +21,7 @@ import { formatDate } from "@/lib/utils/dates";
 import { CopyCurrentUrlButton } from "@/components/ui/copy-current-url-button";
 import { ProjectPlanningTimeline } from "@/components/projects/project-planning-timeline";
 import { ProjectInlineTasks } from "@/components/projects/project-inline-tasks";
+import { ProjectHeroInlineEditor } from "@/components/projects/project-hero-inline-editor";
 
 const projectUi = {
   card: "rounded-[24px] border border-[#E7EDF5] bg-white shadow-[0_12px_35px_rgba(15,23,42,0.05)]",
@@ -38,6 +39,8 @@ type ProjectDetailProProps = {
   activity: ActivityItem[];
   currentQuery?: string;
   canCreateTask?: boolean;
+  canEdit?: boolean;
+  editMode?: boolean;
   createTaskHref?: string;
 };
 
@@ -322,13 +325,18 @@ function ProjectActivityCard({ activity }: { activity: ActivityItem[] }) {
   );
 }
 
-export function ProjectDetailPro({ project, tasks, members, attachments, activity, currentQuery = "", canCreateTask = false }: ProjectDetailProProps) {
+export function ProjectDetailPro({ project, tasks, members, attachments, activity, currentQuery = "", canCreateTask = false, canEdit = false, editMode = false }: ProjectDetailProProps) {
+  const progress = projectProgress(tasks, project.status);
   return (
     <div id="resumen" className="mx-auto max-w-[1440px] space-y-6 px-4 py-5 text-[#0F172A] sm:px-6 lg:px-6">
       <nav className="flex flex-wrap items-center gap-2 text-sm font-black text-[#64748B]">
         <Link href="/app/projects" className="transition hover:text-[#0F172A]">Proyectos</Link><span>›</span><span className="text-[#0F172A]">{project.title}</span>
       </nav>
-      <ProjectHeroCard project={project} tasks={tasks} members={members} currentQuery={currentQuery} />
+      {editMode && canEdit ? (
+        <ProjectHeroInlineEditor project={project} progress={progress} currentQuery={currentQuery.replace(/(^|&)mode=edit(&|$)/, "$1").replace(/&$/, "")} />
+      ) : (
+        <ProjectHeroCard project={project} tasks={tasks} members={members} currentQuery={currentQuery} />
+      )}
       <ProjectStatsRow tasks={tasks} />
       <ProjectTabs />
       <ProjectPlanningTimeline project={project} tasks={tasks} currentQuery={currentQuery} />

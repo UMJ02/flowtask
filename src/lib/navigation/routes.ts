@@ -51,7 +51,10 @@ export function projectDetailRoute(id: string, query = ""): AppRoute {
 }
 
 export function projectEditRoute(id: string, query = ""): AppRoute {
-  return (query ? `/app/projects/${id}/edit?${query}` : `/app/projects/${id}/edit`) as AppRoute;
+  const params = new URLSearchParams(query);
+  params.set("mode", "edit");
+  const nextQuery = params.toString();
+  return (nextQuery ? `/app/projects/${id}?${nextQuery}` : `/app/projects/${id}?mode=edit`) as AppRoute;
 }
 
 export function projectListRoute(query = ""): AppRoute {

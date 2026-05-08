@@ -1,3 +1,5 @@
+# FlowTask — v58.21.0 Create Flow Refresh + Project Inline Activation
+
 # FlowTask — v58.20 Task Workspace Inline Redesign
 
 Consolidación del core sobre V58.16.4: Tareas queda como módulo de tareas simples, Proyectos administra tareas internas inline y cualquier tarea con `project_id` vuelve al Project Center para evitar mezclar flujos. Mantiene media system, timeline full width con Builder ocultable, Ver Proyecto premium y datos conectados.

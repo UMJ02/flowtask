@@ -521,9 +521,9 @@ export function TaskForm({
               <FieldMini label="Prioridad actual">
                 <div className="flex h-12 items-center rounded-2xl border border-[#E5EAF1] bg-white px-4 text-sm font-black text-slate-800">{priorityLabel(selectedPriority)}</div>
               </FieldMini>
-              <FieldMini label="Próximo check-in">
-                <Input type="date" className="h-12 rounded-2xl border-[#E5EAF1] bg-white font-semibold" />
-              </FieldMini>
+              <div className="rounded-[18px] border border-amber-200 bg-white/70 p-4 text-sm font-semibold leading-6 text-amber-900">
+                Próximo check-in se mantiene como guía operativa visual. No se guarda como campo real hasta que exista contrato Supabase.
+              </div>
               {isEdit && checklistStats.loaded && checklistStats.total === 0 ? (
                 <Link href={taskId ? `${taskDetailRoute(taskId)}#checklist` : taskListRoute()} className="group flex items-start gap-3 rounded-[18px] border border-amber-200 bg-amber-100/80 p-4 text-left shadow-[0_12px_30px_rgba(245,158,11,0.12)] transition hover:-translate-y-0.5 hover:bg-amber-100">
                   <span className="mt-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-white text-amber-600 ring-1 ring-amber-200">

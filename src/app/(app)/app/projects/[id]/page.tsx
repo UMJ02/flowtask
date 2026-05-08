@@ -17,9 +17,9 @@ export default async function ProjectDetailPage({
 }) {
   const { id } = await params;
   const search = (await searchParams) ?? {};
-  const queryString = new URLSearchParams(
-    Object.entries(search).flatMap(([key, value]) => typeof value === 'string' && value ? [[key, value]] : [])
-  ).toString();
+  const queryEntries = Object.entries(search).flatMap(([key, value]) => typeof value === 'string' && value ? [[key, value]] : []);
+  const editMode = search.mode === 'edit';
+  const queryString = new URLSearchParams(queryEntries.filter(([key]) => key !== 'mode')).toString();
 
   const [project, comments, tasks, members, attachments, activity, access] = await Promise.all([
     safeServerCall('getProjectById', () => getProjectById(id), null),
@@ -42,6 +42,8 @@ export default async function ProjectDetailPage({
       activity={access.canViewActivity ? activity : []}
       currentQuery={queryString}
       canCreateTask={access.canCreateTask}
+      canEdit={access.canEdit}
+      editMode={editMode}
     />
   );
 }
