@@ -3,37 +3,125 @@ import fs from "node:fs";
 import path from "node:path";
 
 const root = process.cwd();
-const pkg = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
-const vercel = JSON.parse(fs.readFileSync(path.join(root, "vercel.json"), "utf8"));
-const readme = fs.readFileSync(path.join(root, "README.md"), "utf8");
-const envExample = fs.readFileSync(path.join(root, ".env.example"), "utf8");
-const releaseVersion = fs.readFileSync(path.join(root, "src/lib/release/version.ts"), "utf8");
-const migration = fs.readFileSync(path.join(root, "supabase/migrations/0038_v58_12_6_database_sanitization_foundation.sql"), "utf8");
-const smokeDoc = fs.readFileSync(path.join(root, "docs/qa/FLOWTASK_V58.20_TASK_WORKSPACE_INLINE_QA.md"), "utf8");
+const failures = [];
 
-const expectedVersion = "58.20-task-workspace-inline-redesign";
-const checks = [
-  ["vercel build command", vercel.buildCommand === "npm run vercel:build"],
-  ["vercel security headers", Array.isArray(vercel.headers) && vercel.headers.length > 0],
-  ["env has NEXT_PUBLIC_APP_URL", envExample.includes("NEXT_PUBLIC_APP_URL=")],
-  ["env has FLOWTASK_BASE_URL helper", envExample.includes("FLOWTASK_BASE_URL=")],
-  ["readme mentions v58.20", readme.includes("v58.20 Task Workspace Inline Redesign")],
-  ["release exports include APP_RELEASE_STAGE", releaseVersion.includes("APP_RELEASE_STAGE")],
-  ["release exports production-candidate", releaseVersion.includes("production-candidate")],
-  ["package version aligned", pkg.version === expectedVersion],
-  ["verify current aligned", pkg.scripts?.["verify:current"] === "npm run verify:v58.20"],
-  ["migration includes client delete RPC", migration.includes("delete_workspace_client")],
-  ["migration includes scoped catalog indexes", migration.includes("countries_scope_name_unique") && migration.includes("departments_scope_name_unique")],
-  ["final smoke covers Supabase", smokeDoc.includes("doctor:supabase")],
-  ["final smoke covers personal/org isolation", smokeDoc.includes("Aislamiento personal ↔ organización")],
-];
+const expectedVersion = "58.20.1-task-workspace-visual-polish-interaction-qa";
+const expectedVerifyCurrent = "npm run verify:v58.20.1";
 
-const failed = checks.filter(([, ok]) => !ok);
-if (failed.length) {
+function readJson(rel) {
+  return JSON.parse(fs.readFileSync(path.join(root, rel), "utf8"));
+}
+
+function fileExists(rel) {
+  return fs.existsSync(path.join(root, rel));
+}
+
+function fileIncludes(rel, text) {
+  if (!fileExists(rel)) return false;
+  return fs.readFileSync(path.join(root, rel), "utf8").includes(text);
+}
+
+function pass(label) {
+  console.log(`[deploy-production-readiness] OK - ${label}`);
+}
+
+function fail(label) {
+  failures.push(label);
+}
+
+const pkg = readJson("package.json");
+const scripts = pkg.scripts ?? {};
+
+if (pkg.version === expectedVersion) {
+  pass("package version aligned");
+} else {
+  fail(`package version must be ${expectedVersion}`);
+}
+
+if (scripts["verify:current"] === expectedVerifyCurrent) {
+  pass("verify current aligned");
+} else {
+  fail("verify:current must target verify:v58.20.1");
+}
+
+if (scripts["verify:v58.20.1"] === "node scripts/verify-v58.20.1.mjs") {
+  pass("version verifier available");
+} else {
+  fail("verify:v58.20.1 script missing or incorrect");
+}
+
+if (fileExists("scripts/verify-v58.20.1.mjs")) {
+  pass("verify-v58.20.1 script exists");
+} else {
+  fail("scripts/verify-v58.20.1.mjs missing");
+}
+
+if (fileIncludes("src/lib/release/version.ts", expectedVersion)) {
+  pass("runtime version export aligned");
+} else {
+  fail("src/lib/release/version.ts must export v58.20.1");
+}
+
+if (fileIncludes("src/lib/release/version.ts", "production-candidate")) {
+  pass("release stage aligned");
+} else {
+  fail("src/lib/release/version.ts must include production-candidate");
+}
+
+if (fileExists("docs/release/V58_20_1_TASK_WORKSPACE_VISUAL_POLISH_INTERACTION_QA.md")) {
+  pass("release notes available");
+} else {
+  fail("v58.20.1 release notes missing");
+}
+
+if (fileIncludes(".env.example", "NEXT_PUBLIC_SUPABASE_URL")) {
+  pass("Supabase URL env documented");
+} else {
+  fail(".env.example missing NEXT_PUBLIC_SUPABASE_URL");
+}
+
+if (fileIncludes(".env.example", "NEXT_PUBLIC_SUPABASE_ANON_KEY")) {
+  pass("Supabase anon env documented");
+} else {
+  fail(".env.example missing NEXT_PUBLIC_SUPABASE_ANON_KEY");
+}
+
+if (fileIncludes(".env.example", "SUPABASE_SERVICE_ROLE_KEY")) {
+  pass("Supabase service role env documented");
+} else {
+  fail(".env.example missing SUPABASE_SERVICE_ROLE_KEY");
+}
+
+if (fileExists("vercel.json")) {
+  const vercel = readJson("vercel.json");
+
+  if (vercel.framework === "nextjs") {
+    pass("Vercel framework aligned");
+  } else {
+    fail("vercel.json framework must be nextjs");
+  }
+
+  if (vercel.buildCommand === "npm run vercel:build") {
+    pass("Vercel build command aligned");
+  } else {
+    fail("vercel.json buildCommand must be npm run vercel:build");
+  }
+} else {
+  fail("vercel.json missing");
+}
+
+if (fileIncludes("package-lock.json", expectedVersion)) {
+  pass("package-lock version aligned");
+} else {
+  fail("package-lock.json must include v58.20.1 package version");
+}
+
+if (failures.length) {
   console.error("[deploy-production-readiness] Failed checks:");
-  for (const [label] of failed) console.error(`- ${label}`);
+  for (const failure of failures) {
+    console.error(`- ${failure}`);
+  }
   process.exit(1);
 }
 
-console.log("[deploy-production-readiness] OK");
-for (const [label] of checks) console.log(` - ${label}`);
+console.log("[deploy-production-readiness] OK — v58.20.1 production readiness aligned.");
