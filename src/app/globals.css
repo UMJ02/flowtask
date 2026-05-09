@@ -871,3 +871,134 @@
 @media (prefers-reduced-motion: reduce) {
   .board-selection-ring { animation: none; }
 }
+
+/* v58.24.5 — Board Toolbar Collapse Animation Fix */
+.board-tool-palette {
+  overflow: visible;
+  transform-origin: top left;
+  transition:
+    width 180ms cubic-bezier(.2,.8,.2,1),
+    padding 180ms cubic-bezier(.2,.8,.2,1),
+    border-radius 180ms cubic-bezier(.2,.8,.2,1),
+    box-shadow 180ms ease,
+    transform 180ms cubic-bezier(.2,.8,.2,1) !important;
+  will-change: width, transform;
+}
+.board-tool-palette::before {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(255,255,255,.92));
+}
+.board-tool-palette-header,
+.board-tool-palette-body,
+.board-tool-collapse-hide {
+  min-width: 0;
+}
+.board-tool-palette-header {
+  overflow: hidden;
+}
+.board-tool-palette-collapsed {
+  width: 64px !important;
+  padding: 9px !important;
+  border-radius: 26px !important;
+}
+.board-tool-palette-collapsed .board-tool-palette-header {
+  display: grid !important;
+  grid-template-columns: 22px 22px;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 3px !important;
+  height: 26px !important;
+  margin-bottom: 8px !important;
+  padding-inline: 0 !important;
+}
+.board-tool-palette-collapsed .board-tool-drag-handle,
+.board-tool-palette-collapsed .board-tool-mini-btn {
+  height: 22px !important;
+  width: 22px !important;
+  border-radius: 10px !important;
+}
+.board-tool-palette-collapsed .board-tool-palette-title,
+.board-tool-palette-collapsed .board-tool-label {
+  display: none !important;
+}
+.board-tool-palette-collapsed .board-tool-palette-btn,
+.board-tool-palette-collapsed .board-tool-palette-btn-icon {
+  height: 44px !important;
+  min-height: 44px !important;
+  width: 44px !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  gap: 0 !important;
+  border-radius: 16px !important;
+  overflow: visible !important;
+}
+.board-tool-palette-collapsed .board-tool-palette-btn svg,
+.board-tool-palette-collapsed .board-tool-palette-btn-icon svg {
+  height: 19px !important;
+  width: 19px !important;
+}
+.board-tool-collapse-hide {
+  display: grid;
+  height: 30px;
+  width: 44px;
+  place-items: center;
+  margin-top: 7px;
+  border: 1px solid transparent;
+  border-radius: 15px;
+  background: transparent;
+  color: #94A3B8;
+  transition: background .16s ease, color .16s ease, transform .16s cubic-bezier(.2,.8,.2,1), border-color .16s ease;
+}
+.board-tool-collapse-hide:hover {
+  border-color: #E8EDF5;
+  background: #F8FAFC;
+  color: #0F172A;
+  transform: translateY(-1px);
+}
+.board-tool-palette-expanded .board-tool-palette-btn {
+  overflow: hidden;
+}
+.board-tool-palette-expanded .board-tool-label {
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity 150ms ease 60ms, transform 170ms cubic-bezier(.2,.8,.2,1) 60ms;
+}
+.board-tool-palette-collapsed .board-tooltip {
+  display: block;
+}
+.board-tooltip {
+  background: rgba(255,255,255,.98) !important;
+  color: #0F172A !important;
+  border-color: #E8EDF5 !important;
+  box-shadow: 0 16px 40px rgba(15,23,42,.12) !important;
+}
+.board-tooltip::before {
+  content: "";
+  position: absolute;
+  left: -5px;
+  top: 50%;
+  height: 9px;
+  width: 9px;
+  transform: translateY(-50%) rotate(45deg);
+  border-left: 1px solid #E8EDF5;
+  border-bottom: 1px solid #E8EDF5;
+  background: rgba(255,255,255,.98);
+}
+.board-tool-palette-expanded .board-tooltip {
+  display: none !important;
+}
+.board-tool-palette-collapsed .board-tool-popover {
+  left: 58px !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .board-tool-palette,
+  .board-tool-label,
+  .board-tool-collapse-hide {
+    transition: none !important;
+  }
+}
