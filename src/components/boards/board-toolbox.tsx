@@ -5,41 +5,49 @@ import { BOARD_TOOLS } from "@/lib/boards/board-tools";
 
 type BoardToolboxProps = { activeTool: BoardTool; onToolChange: (tool: BoardTool) => void };
 
+const groupLabels: Record<string, string> = {
+  basics: "Básicos",
+  diagrams: "Diagramas",
+  tables: "Tablas",
+  media: "Media",
+};
+
 export function BoardToolbox({ activeTool, onToolChange }: BoardToolboxProps) {
-  const groups = [
-    { id: "basics", label: "Básicos" },
-    { id: "diagrams", label: "Diagramas" },
-    { id: "tables", label: "Tablas" },
-    { id: "media", label: "Archivos" },
-  ] as const;
+  const groups = ["basics", "diagrams", "tables", "media"] as const;
 
   return (
-    <aside className="ft-glass-panel absolute left-4 top-4 z-30 w-[220px] p-3 md:left-6 md:top-6">
-      <p className="ft-text-label px-2 text-slate-500">Herramientas</p>
-      <div className="mt-3 space-y-4">
-        {groups.map((group) => (
-          <section key={group.id}>
-            <p className="mb-2 px-2 text-[11px] font-bold uppercase tracking-[0.14em] text-slate-400">{group.label}</p>
-            <div className="grid grid-cols-2 gap-2">
-              {BOARD_TOOLS.filter((tool) => tool.group === group.id).map((tool) => {
-                const Icon = tool.icon;
-                const active = activeTool === tool.id;
-                return (
-                  <button
-                    key={tool.id}
-                    type="button"
-                    onClick={() => onToolChange(tool.id)}
-                    className={`ft-pressable flex min-h-[70px] flex-col items-center justify-center gap-2 rounded-[16px] border px-2 text-center transition ${active ? "border-emerald-300 bg-emerald-50 text-emerald-700" : "border-slate-200 bg-white text-slate-600 hover:border-emerald-200 hover:bg-emerald-50/70"}`}
-                    title={tool.hint}
-                  >
-                    <Icon className="h-4 w-4" />
-                    <span className="text-[11px] font-bold leading-tight">{tool.label}</span>
-                  </button>
-                );
-              })}
-            </div>
-          </section>
-        ))}
+    <aside className="board-panel absolute left-4 top-4 z-30 w-[92px] max-h-[calc(100%-120px)] overflow-y-auto p-2 lg:left-5 lg:top-5">
+      <p className="px-1 text-center text-[10px] font-extrabold uppercase tracking-[0.16em] text-slate-400">Herr.</p>
+      <div className="mt-3 space-y-3">
+        {groups.map((group) => {
+          const tools = BOARD_TOOLS.filter((tool) => tool.group === group);
+          if (!tools.length) return null;
+          return (
+            <section key={group}>
+              <p className="mb-1.5 text-center text-[9px] font-extrabold uppercase tracking-[0.14em] text-slate-400">{groupLabels[group]}</p>
+              <div className="grid gap-1.5">
+                {tools.map((tool) => {
+                  const Icon = tool.icon;
+                  const active = activeTool === tool.id;
+                  return (
+                    <button
+                      key={tool.id}
+                      type="button"
+                      onClick={() => onToolChange(tool.id)}
+                      className={`ft-pressable grid h-[62px] place-items-center rounded-[16px] border text-center transition ${active ? "border-emerald-300 bg-emerald-50 text-emerald-700 shadow-[0_10px_22px_rgba(22,199,132,.10)]" : "border-slate-200 bg-white text-slate-600 hover:border-emerald-200 hover:bg-emerald-50/70"}`}
+                      title={tool.hint ?? tool.label}
+                    >
+                      <span className="flex flex-col items-center gap-1">
+                        <Icon className="h-4 w-4" />
+                        <span className="max-w-[58px] truncate text-[10px] font-bold leading-tight">{tool.label}</span>
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+          );
+        })}
       </div>
     </aside>
   );

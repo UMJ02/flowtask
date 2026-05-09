@@ -1,6 +1,7 @@
 "use client";
 
-import { MapPin, MessageCircle, Send, Sparkles } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Clock3, MapPin, MessageCircle, PanelLeftClose, Send, Sparkles } from "lucide-react";
 import type { VisualBoardActivity, VisualBoardComment } from "@/lib/boards/board-types";
 
 type Props = {
@@ -18,37 +19,78 @@ type Props = {
 function activityLabel(activity: VisualBoardActivity) {
   const payload = activity.payload ?? {};
   const type = activity.type;
-  if (type === "template_applied") return `Se aplicó una plantilla con ${String(payload.elements ?? "varios")} elementos.`;
-  if (type === "board_created") return "Se creó la pizarra.";
-  if (type === "element_created") return `Se agregó ${String(payload.elementType ?? "un elemento")}.`;
-  if (type === "elements_deleted") return `Se eliminaron ${String(payload.count ?? 1)} elemento(s).`;
-  if (type === "element_duplicated") return "Se duplicó un elemento.";
-  if (type === "comment_created") return "Se agregó un comentario.";
-  if (type === "table_changed") return "Se actualizó una tabla visual.";
-  return "Movimiento registrado.";
+  if (type === "template_applied") return `Plantilla aplicada · ${String(payload.elements ?? "varios")} elementos`;
+  if (type === "board_created") return "Pizarra creada";
+  if (type === "element_created") return `Se agregó ${String(payload.elementType ?? "un elemento")}`;
+  if (type === "elements_deleted") return `Se eliminaron ${String(payload.count ?? 1)} elemento(s)`;
+  if (type === "element_duplicated") return "Elemento duplicado";
+  if (type === "comment_created") return "Comentario agregado";
+  if (type === "table_changed") return "Tabla actualizada";
+  return "Movimiento registrado";
+}
+
+function shortDate(value: string) {
+  return new Date(value).toLocaleDateString("es-CR", { day: "2-digit", month: "short" });
 }
 
 export function BoardCommentsActivity({ comments, activities, selectedElementId, pendingAnchor, focusedCommentId, draft, savingComment, onDraftChange, onSubmitComment }: Props) {
-  const visibleComments = comments.slice(0, 5);
-  const visibleActivities = activities.slice(0, 5);
+  const [open, setOpen] = useState(false);
+  const [tab, setTab] = useState<"comments" | "activity">("comments");
+
+  useEffect(() => {
+    if (pendingAnchor || focusedCommentId) {
+      setOpen(true);
+      setTab("comments");
+    }
+  }, [pendingAnchor, focusedCommentId]);
+
+  const visibleComments = useMemo(() => comments.slice(0, 8), [comments]);
+  const visibleActivities = useMemo(() => activities.slice(0, 10), [activities]);
+
+  if (!open) {
+    return (
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="board-panel absolute bottom-5 left-[116px] z-40 hidden h-11 items-center gap-2 px-3 text-xs font-bold text-slate-700 transition hover:-translate-y-0.5 hover:border-emerald-200 hover:text-emerald-700 lg:flex"
+        title="Abrir comentarios y actividad"
+      >
+        <MessageCircle className="h-4 w-4" />
+        Seguimiento
+        <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] text-slate-500">{comments.length + activities.length}</span>
+      </button>
+    );
+  }
+
   return (
-    <aside className="ft-glass-panel absolute bottom-5 left-5 z-30 hidden w-[340px] p-3 lg:block">
-      <div className="flex items-center justify-between gap-2">
-        <div>
-          <p className="ft-text-label text-emerald-700">Comentarios y actividad</p>
-          <h2 className="ft-title-card mt-1">Seguimiento de la pizarra</h2>
+    <aside className="board-panel absolute bottom-5 left-[116px] top-5 z-40 hidden w-[300px] flex-col overflow-hidden p-0 lg:flex">
+      <div className="flex items-center justify-between border-b border-[#E5EAF1] px-3 py-3">
+        <div className="min-w-0">
+          <p className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-emerald-700">Seguimiento</p>
+          <h2 className="truncate text-sm font-bold text-[#0F172A]">Comentarios y actividad</h2>
         </div>
-        <Sparkles className="h-4 w-4 text-emerald-600" />
+        <button type="button" onClick={() => setOpen(false)} className="grid h-8 w-8 place-items-center rounded-xl text-slate-500 hover:bg-slate-100" title="Ocultar seguimiento">
+          <PanelLeftClose className="h-4 w-4" />
+        </button>
+      </div>
+
+      <div className="grid grid-cols-2 gap-1 border-b border-[#E5EAF1] bg-slate-50/70 p-1.5">
+        <button type="button" onClick={() => setTab("comments")} className={`rounded-xl px-2 py-2 text-xs font-bold transition ${tab === "comments" ? "bg-white text-emerald-700 shadow-sm" : "text-slate-500 hover:bg-white/70"}`}>
+          Comentarios <span className="text-[10px]">{comments.length}</span>
+        </button>
+        <button type="button" onClick={() => setTab("activity")} className={`rounded-xl px-2 py-2 text-xs font-bold transition ${tab === "activity" ? "bg-white text-emerald-700 shadow-sm" : "text-slate-500 hover:bg-white/70"}`}>
+          Actividad <span className="text-[10px]">{activities.length}</span>
+        </button>
       </div>
 
       {pendingAnchor ? (
-        <div className="mt-3 flex items-center gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-700">
+        <div className="mx-3 mt-3 flex items-center gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-700">
           <MapPin className="h-3.5 w-3.5" />
-          {pendingAnchor.elementId ? "Comentario anclado al elemento seleccionado" : "Comentario anclado al lienzo"}
+          {pendingAnchor.elementId ? "Comentario anclado al elemento" : "Comentario anclado al lienzo"}
         </div>
       ) : null}
 
-      <div className="mt-3 rounded-2xl border border-slate-200 bg-white/85 p-2">
+      <div className="mx-3 mt-3 rounded-2xl border border-slate-200 bg-white p-2">
         <div className="flex items-center gap-2">
           <MessageCircle className="h-4 w-4 text-slate-500" />
           <input
@@ -61,7 +103,7 @@ export function BoardCommentsActivity({ comments, activities, selectedElementId,
                 onSubmitComment();
               }
             }}
-            placeholder={selectedElementId ? "Comenta sobre el elemento seleccionado..." : "Comenta sobre la pizarra..."}
+            placeholder={selectedElementId ? "Comenta sobre el elemento..." : "Comenta sobre la pizarra..."}
             className="min-w-0 flex-1 bg-transparent text-sm font-semibold text-slate-700 outline-none placeholder:text-slate-400"
           />
           <button
@@ -76,36 +118,35 @@ export function BoardCommentsActivity({ comments, activities, selectedElementId,
         </div>
       </div>
 
-      <div className="mt-3 grid gap-3">
-        <section>
-          <div className="flex items-center justify-between">
-            <h3 className="text-xs font-bold uppercase tracking-[0.14em] text-slate-500">Comentarios</h3>
-            <span className="text-[11px] font-bold text-slate-400">{comments.length}</span>
-          </div>
-          <div className="mt-2 space-y-2">
+      <div className="min-h-0 flex-1 overflow-y-auto px-3 py-3">
+        {tab === "comments" ? (
+          <div className="space-y-2">
             {visibleComments.length ? visibleComments.map((comment) => (
-              <article key={comment.id} className={`rounded-2xl border p-2.5 ${focusedCommentId === comment.id ? "border-emerald-300 bg-emerald-50/70" : "border-slate-200 bg-white/80"}`}>
+              <article key={comment.id} className={`rounded-2xl border p-2.5 ${focusedCommentId === comment.id ? "border-emerald-300 bg-emerald-50/70" : "border-slate-200 bg-white"}`}>
                 <p className="text-sm font-semibold leading-5 text-slate-700">{comment.body}</p>
-                <p className="mt-1 text-[11px] font-bold text-slate-400">{new Date(comment.createdAt).toLocaleDateString("es-CR")}{comment.elementId ? " · elemento" : comment.x !== null && comment.y !== null ? " · lienzo" : ""}</p>
+                <p className="mt-1 text-[11px] font-bold text-slate-400">{shortDate(comment.createdAt)}{comment.elementId ? " · elemento" : comment.x !== null && comment.y !== null ? " · lienzo" : ""}</p>
               </article>
-            )) : <p className="rounded-2xl border border-dashed border-slate-200 bg-white/60 p-3 text-xs font-semibold text-slate-500">Aún no hay comentarios.</p>}
+            )) : <p className="rounded-2xl border border-dashed border-slate-200 bg-white/70 p-3 text-xs font-semibold text-slate-500">Aún no hay comentarios.</p>}
           </div>
-        </section>
-
-        <section>
-          <div className="flex items-center justify-between">
-            <h3 className="text-xs font-bold uppercase tracking-[0.14em] text-slate-500">Actividad</h3>
-            <span className="text-[11px] font-bold text-slate-400">{activities.length}</span>
-          </div>
-          <div className="mt-2 space-y-2">
+        ) : (
+          <div className="space-y-2">
             {visibleActivities.length ? visibleActivities.map((activity) => (
-              <article key={activity.id} className="rounded-2xl border border-slate-200 bg-white/70 p-2.5">
-                <p className="text-xs font-bold text-slate-700">{activityLabel(activity)}</p>
-                <p className="mt-1 text-[11px] font-bold text-slate-400">{new Date(activity.createdAt).toLocaleDateString("es-CR")}</p>
+              <article key={activity.id} className="rounded-2xl border border-slate-200 bg-white p-2.5">
+                <div className="flex gap-2">
+                  <span className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-xl bg-emerald-50 text-emerald-700"><Clock3 className="h-3.5 w-3.5" /></span>
+                  <div className="min-w-0">
+                    <p className="text-xs font-bold leading-5 text-slate-700">{activityLabel(activity)}</p>
+                    <p className="text-[11px] font-bold text-slate-400">{shortDate(activity.createdAt)}</p>
+                  </div>
+                </div>
               </article>
-            )) : <p className="rounded-2xl border border-dashed border-slate-200 bg-white/60 p-3 text-xs font-semibold text-slate-500">Los movimientos importantes aparecerán aquí.</p>}
+            )) : <p className="rounded-2xl border border-dashed border-slate-200 bg-white/70 p-3 text-xs font-semibold text-slate-500">Los movimientos importantes aparecerán aquí.</p>}
           </div>
-        </section>
+        )}
+      </div>
+
+      <div className="border-t border-[#E5EAF1] bg-slate-50/70 px-3 py-2 text-[11px] font-semibold text-slate-500">
+        <Sparkles className="mr-1 inline h-3.5 w-3.5 text-emerald-600" /> Panel compacto para no saturar el lienzo.
       </div>
     </aside>
   );

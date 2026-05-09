@@ -15,7 +15,7 @@ type BoardTopbarProps = {
 
 export function BoardTopbar({ board, savingState, collaborators, onTitleChange, onOpenShare }: BoardTopbarProps) {
   return (
-    <header className="z-30 flex h-[64px] items-center justify-between border-b border-[#E5EAF1] bg-white/90 px-4 backdrop-blur-xl md:px-6">
+    <header className="z-30 flex h-[72px] items-center justify-between border-b border-[#E5EAF1] bg-white/90 px-4 backdrop-blur-xl md:px-6">
       <div className="flex min-w-0 items-center gap-3">
         <Link href="/app/boards" className="ft-pressable grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50" aria-label="Volver a pizarras">
           <ArrowLeft className="h-4 w-4" />

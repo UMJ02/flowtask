@@ -11,6 +11,7 @@ import { BoardToolbox } from "@/components/boards/board-toolbox";
 import { BoardSharingPanel } from "@/components/boards/board-sharing-panel";
 import { BoardCommentsActivity } from "@/components/boards/board-comments-activity";
 import { BoardTopbar } from "@/components/boards/board-topbar";
+import { BoardWorkspaceRail } from "@/components/boards/board-workspace-rail";
 import { ConnectorLayer } from "@/components/boards/connector-layer";
 import { FloatingFormatToolbar } from "@/components/boards/floating-format-toolbar";
 import { PropertiesPanel } from "@/components/boards/properties-panel";
@@ -864,8 +865,9 @@ export function BoardPage({ boardId }: BoardPageProps) {
   if (error || !board) return <div className="ft-governed-screen"><div className="ft-section-card border-rose-200 bg-rose-50 text-rose-700">{error ?? "No pudimos cargar la pizarra."}</div></div>;
 
   return (
-    <div className="fixed inset-0 z-50 grid bg-[#F7F9FC] text-[#0F172A]">
-      <section className="grid min-h-screen grid-rows-[64px_1fr] overflow-hidden">
+    <div className="fixed inset-0 z-50 grid grid-cols-1 bg-[#F7F9FC] text-[#0F172A] lg:grid-cols-[76px_1fr]">
+      <BoardWorkspaceRail />
+      <section className="grid min-h-screen grid-rows-[72px_1fr] overflow-hidden">
         <BoardTopbar board={board} savingState={savingState} collaborators={collaborators} onTitleChange={(title) => setBoard((current) => current ? { ...current, title } : current)} onOpenShare={() => setShareOpen(true)} />
         <input ref={imageInputRef} type="file" accept="image/*" className="hidden" onChange={(event) => void handleBoardFileSelected(event, "image")} />
         <input ref={fileInputRef} type="file" className="hidden" onChange={(event) => void handleBoardFileSelected(event, "file")} />
