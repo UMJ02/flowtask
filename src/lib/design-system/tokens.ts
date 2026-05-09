@@ -1,8 +1,8 @@
-export const designSystemVersion = "58.21.9-full-style-enforcement-component-migration";
+export const designSystemVersion = "58.22.0-semantic-ui-classes-density-contracts";
 
 export const ds = {
   semantic: true,
-  density: "style-enforcement-compact",
+  density: "semantic-density-contracts",
   spacing: {
     none: "0",
     xxs: "2px",
@@ -142,4 +142,34 @@ export const styleEnforcement = {
   allowedSurfaces: ["ft-section-card", "ft-main-card", "ft-mini-card", "ft-raised-card", "ft-floating-card", "ft-overlay-card"],
   forbiddenPatterns: ["heavy-bespoke-shadows", "oversized-radius", "loose-8-step-spacing"],
   migrationPolicy: "secondary app components must use named system surfaces instead of bespoke visual classes",
+} as const;
+
+
+export const densityContracts = {
+  compact: { purpose: "tables, lists, filters and small repeated controls", gap: "8px", card: "ft-mini-card", text: "ft-text-meta" },
+  medium: { purpose: "task/project detail workspaces", gap: "12px", card: "ft-section-card", text: "ft-text-body" },
+  create: { purpose: "create flows that need guidance without landing-sized spacing", gap: "14px", card: "ft-main-card", text: "ft-text-body" },
+  relaxed: { purpose: "auth, onboarding and public flows", gap: "16px", card: "ft-main-card", text: "ft-text-body" },
+} as const;
+
+export const semanticClasses = {
+  titlePage: "ft-title-page",
+  titleSection: "ft-title-section",
+  titleCard: "ft-title-card",
+  textBody: "ft-text-body",
+  textMuted: "ft-text-muted",
+  textMeta: "ft-text-meta",
+  surfaceCard: "ft-surface-card",
+  surfaceMuted: "ft-surface-muted",
+  input: "ft-input",
+  inputLarge: "ft-input-lg",
+  textarea: "ft-textarea",
+  buttonPrimary: "ft-btn ft-btn-md ft-btn-primary",
+  buttonSecondary: "ft-btn ft-btn-md ft-btn-secondary",
+} as const;
+
+export const semanticGovernance = {
+  policy: "components should consume semantic UI classes or named density contracts instead of raw visual values",
+  typographyPolicy: "page, section, card, body, muted, meta and label roles govern text scale",
+  densityPolicy: "compact, medium, create and relaxed density contracts define spacing by screen purpose",
 } as const;

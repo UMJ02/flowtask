@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils/classnames";
 
-export function AppToolbar({ children, className }: { children: ReactNode; className?: string }) {
-  return <div className={cn("rounded-[16px] border border-slate-200/75 bg-white p-2.5", className)}>{children}</div>;
+export function AppToolbar({ children, className, density = "compact" }: { children: ReactNode; className?: string; density?: "compact" | "medium" }) {
+  return <div className={cn("ft-toolbar", density === "compact" ? "ft-density-compact" : "ft-density-medium", className)}>{children}</div>;
 }
