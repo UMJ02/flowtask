@@ -24,7 +24,7 @@ export function AuthFeedbackModal({
     <div className="pointer-events-none fixed inset-0 z-[120] flex items-center justify-center bg-slate-950/18 px-4 backdrop-blur-[2px]">
       <div
         className={cn(
-          'pointer-events-auto w-full max-w-sm rounded-[24px] border bg-white p-5 shadow-[0_24px_60px_rgba(15,23,42,0.18)]',
+          'pointer-events-auto w-full max-w-sm rounded-[24px] border bg-white p-5 shadow-[0_18px_44px_rgba(15,23,42,0.14)]',
           isSuccess ? 'border-emerald-200' : 'border-rose-200'
         )}
       >

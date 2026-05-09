@@ -327,7 +327,7 @@ export function CommandPalette() {
             onClick={() => setOpen(false)}
             type="button"
           />
-          <div className="absolute left-1/2 top-[calc(100%+14px)] z-50 w-[min(760px,calc(100vw-32px))] -translate-x-1/2 overflow-hidden rounded-[24px] border border-[#E5EAF1] bg-white shadow-[0_24px_60px_rgba(15,23,42,0.14)]">
+          <div className="absolute left-1/2 top-[calc(100%+14px)] z-50 w-[min(760px,calc(100vw-32px))] -translate-x-1/2 overflow-hidden rounded-[24px] border border-[#E5EAF1] bg-white shadow-[0_18px_44px_rgba(15,23,42,0.12)]">
             <div className="flex items-center gap-3 border-b border-[#E5EAF1] bg-white px-4 py-4">
               <Search className="h-5 w-5 text-[#64748B]" />
               <input

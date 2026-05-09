@@ -65,7 +65,7 @@ export function ControlTower({ summary, compact = false }: { summary: ControlTow
       </div>
 
       <div className="grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
-        <Card className="bg-[linear-gradient(135deg,#083344_0%,#0f172a_55%,#0f172a_100%)] text-white shadow-[0_24px_60px_rgba(8,51,68,0.24)]">
+        <Card className="bg-[linear-gradient(135deg,#083344_0%,#0f172a_55%,#0f172a_100%)] text-white shadow-none">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-2xl">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-200">Execution view</p>

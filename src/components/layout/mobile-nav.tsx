@@ -60,7 +60,7 @@ export function MobileNav() {
         type="button"
         aria-label="Cerrar menú"
       />
-      <div className="absolute left-0 top-0 mt-2 flex w-[88%] max-w-sm flex-col overflow-hidden rounded-r-[26px] bg-[linear-gradient(180deg,#020617_0%,#0f172a_100%)] p-4 text-white shadow-[0_24px_60px_rgba(15,23,42,0.35)] max-h-[calc(100vh-1rem)]">
+      <div className="absolute left-0 top-0 mt-2 flex w-[88%] max-w-sm flex-col overflow-hidden rounded-r-[26px] bg-[linear-gradient(180deg,#020617_0%,#0f172a_100%)] p-4 text-white shadow-[0_18px_44px_rgba(15,23,42,0.18)] max-h-[calc(100vh-1rem)]">
         <div className="mb-4 flex items-center justify-between">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-emerald-300">FlowTask</p>

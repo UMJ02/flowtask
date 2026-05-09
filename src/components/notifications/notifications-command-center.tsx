@@ -31,7 +31,7 @@ export function NotificationsCommandCenter({
       : 'Todo limpio por ahora';
 
   return (
-    <Card className="overflow-hidden bg-[linear-gradient(135deg,#062b2a_0%,#0f172a_58%,#111827_100%)] text-white shadow-[0_24px_60px_rgba(2,6,23,0.2)]">
+    <Card className="overflow-hidden bg-[linear-gradient(135deg,#062b2a_0%,#0f172a_58%,#111827_100%)] text-white shadow-none">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div className="max-w-3xl">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">Notification command</p>

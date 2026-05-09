@@ -56,7 +56,7 @@ export function WorkspaceOperatingSystem({
 
   return (
     <div className="space-y-4">
-      <Card className="bg-[linear-gradient(135deg,#4c1d95_0%,#1e1b4b_50%,#0f172a_100%)] text-white shadow-[0_24px_60px_rgba(76,29,149,0.24)]">
+      <Card className="bg-[linear-gradient(135deg,#4c1d95_0%,#1e1b4b_50%,#0f172a_100%)] text-white shadow-none">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-3xl">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-fuchsia-200">Workspace operating system</p>

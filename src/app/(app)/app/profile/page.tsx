@@ -16,7 +16,7 @@ export default async function ProfilePage() {
 
   return (
     <div className="space-y-4">
-      <Card className="overflow-hidden bg-[linear-gradient(135deg,#0f172a_0%,#111827_55%,#1e293b_100%)] text-white shadow-[0_24px_60px_rgba(15,23,42,0.2)]">
+      <Card className="overflow-hidden bg-[linear-gradient(135deg,#0f172a_0%,#111827_55%,#1e293b_100%)] text-white shadow-none">
         <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
           <div className="max-w-3xl">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">Perfil</p>

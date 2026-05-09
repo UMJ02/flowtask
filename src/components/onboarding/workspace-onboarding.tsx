@@ -63,7 +63,7 @@ export function WorkspaceOnboarding({ summary, compact = false }: { summary: Wor
 
   return (
     <div className="space-y-4">
-      <Card className="bg-[linear-gradient(135deg,#06291d_0%,#0f172a_58%,#111827_100%)] text-white shadow-[0_24px_60px_rgba(15,23,42,0.25)]">
+      <Card className="bg-[linear-gradient(135deg,#06291d_0%,#0f172a_58%,#111827_100%)] text-white shadow-none">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">v58.18 Client Ready</p>

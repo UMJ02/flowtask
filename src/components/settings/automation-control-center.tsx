@@ -32,7 +32,7 @@ export function AutomationControlCenter({ preferences }: { preferences: Notifica
 
   return (
     <div className="grid gap-4 xl:grid-cols-[1.15fr_0.85fr]">
-      <Card className="bg-[linear-gradient(135deg,#0f172a_0%,#111827_55%,#1f2937_100%)] text-white shadow-[0_24px_60px_rgba(15,23,42,0.22)]">
+      <Card className="bg-[linear-gradient(135deg,#0f172a_0%,#111827_55%,#1f2937_100%)] text-white shadow-none">
         <div className="flex flex-col gap-5">
           <div className="flex items-start gap-3">
             <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-white/10 text-emerald-300 ring-1 ring-white/10">

@@ -1,8 +1,8 @@
-export const designSystemVersion = "58.21.6-visual-rhythm-legacy-style-cleanup";
+export const designSystemVersion = "58.21.7-style-cascade-reset-interaction-polish";
 
 export const ds = {
   semantic: true,
-  density: "visual-rhythm-compact",
+  density: "cascade-reset-compact",
   color: {
     surface: {
       app: "bg-[#F7F8FA]",
@@ -112,4 +112,4 @@ export const controls = {
 
 export const flowtaskDesignSystem = { ds, typography, surfaces, controls } as const;
 
-export const visualRhythmCleanup = { legacyHardcodePolicy: "core screens avoid oversized text, p-8 cards, rounded-[34px], and decorative shadows", shadowPolicy: "border-first surfaces; shadow only for floating UI" } as const;
+export const styleCascadeReset = { legacyHardcodePolicy: "core screens avoid oversized text, oversized radius, decorative shadows, and duplicated ft utility definitions", shadowPolicy: "border-first surfaces by default; shadow is a named variant only for floating UI", cascadePolicy: "globals.css must keep one final definition per ft utility" } as const;

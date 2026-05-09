@@ -69,7 +69,7 @@ export function RiskRadar({ summary, compact = false }: { summary: RiskRadarSumm
       </div>
 
       <div className="grid gap-4 xl:grid-cols-[1.08fr_0.92fr]">
-        <Card className="bg-[linear-gradient(135deg,#4c0519_0%,#0f172a_60%,#0f172a_100%)] text-white shadow-[0_24px_60px_rgba(76,5,25,0.28)]">
+        <Card className="bg-[linear-gradient(135deg,#4c0519_0%,#0f172a_60%,#0f172a_100%)] text-white shadow-none">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-2xl">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-rose-200">Operational exposure</p>
