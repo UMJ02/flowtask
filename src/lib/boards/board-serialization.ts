@@ -1,4 +1,4 @@
-import type { BoardElement, BoardElementType, BoardStyle, ConnectorElement, TableElement, VisualBoard, VisualBoardActivity, VisualBoardActivityRow, VisualBoardComment, VisualBoardCommentRow, VisualBoardElementRow, VisualBoardRow } from "@/lib/boards/board-types";
+import type { BoardElement, BoardElementType, BoardStyle, ConnectorElement, TableElement, VisualBoard, VisualBoardActivity, VisualBoardActivityRow, VisualBoardComment, VisualBoardCommentRow, VisualBoardElementRow, VisualBoardRow, VisualBoardCollaborator, VisualBoardCollaboratorRow } from "@/lib/boards/board-types";
 
 export function mapBoardRow(row: VisualBoardRow): VisualBoard {
   return {
@@ -10,6 +10,8 @@ export function mapBoardRow(row: VisualBoardRow): VisualBoard {
     title: row.title,
     description: row.description,
     visibility: row.visibility,
+    shareToken: row.share_token ?? null,
+    publicCanEdit: Boolean(row.public_can_edit),
     thumbnailUrl: row.thumbnail_url,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
@@ -128,5 +130,19 @@ export function mapBoardActivityRow(row: VisualBoardActivityRow): VisualBoardAct
     type: row.type,
     payload: row.payload ?? {},
     createdAt: row.created_at,
+  };
+}
+
+
+export function mapBoardCollaboratorRow(row: VisualBoardCollaboratorRow): VisualBoardCollaborator {
+  return {
+    id: row.id,
+    boardId: row.board_id,
+    userId: row.user_id,
+    email: row.email,
+    role: row.role,
+    invitedBy: row.invited_by,
+    createdAt: row.created_at,
+    acceptedAt: row.accepted_at,
   };
 }

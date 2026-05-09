@@ -5,14 +5,15 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Minus, Plus, RotateCcw } from "lucide-react";
 import { BoardElementView } from "@/components/boards/board-element";
 import { BoardToolbox } from "@/components/boards/board-toolbox";
+import { BoardSharingPanel } from "@/components/boards/board-sharing-panel";
 import { BoardCommentsActivity } from "@/components/boards/board-comments-activity";
 import { BoardTopbar } from "@/components/boards/board-topbar";
 import { ConnectorLayer } from "@/components/boards/connector-layer";
 import { FloatingFormatToolbar } from "@/components/boards/floating-format-toolbar";
 import { PropertiesPanel } from "@/components/boards/properties-panel";
 import { createDefaultBoardElement, createDefaultConnector } from "@/lib/boards/board-defaults";
-import { mapBoardActivityRow, mapBoardCommentRow, mapBoardRow, mapElementRow, serializeElementForUpsert } from "@/lib/boards/board-serialization";
-import type { BoardElement, BoardPoint, BoardTool, ConnectorElement, VisualBoard, VisualBoardActivity, VisualBoardActivityRow, VisualBoardComment, VisualBoardCommentRow, VisualBoardElementRow, VisualBoardRow } from "@/lib/boards/board-types";
+import { mapBoardActivityRow, mapBoardCollaboratorRow, mapBoardCommentRow, mapBoardRow, mapElementRow, serializeElementForUpsert } from "@/lib/boards/board-serialization";
+import type { BoardElement, BoardPoint, BoardTool, ConnectorElement, VisualBoard, VisualBoardActivity, VisualBoardActivityRow, VisualBoardCollaborator, VisualBoardCollaboratorRow, VisualBoardComment, VisualBoardCommentRow, VisualBoardElementRow, VisualBoardRow } from "@/lib/boards/board-types";
 import { createClient } from "@/lib/supabase/client";
 import { getClientWorkspaceContext } from "@/lib/supabase/workspace-client";
 
@@ -38,6 +39,9 @@ export function BoardPage({ boardId }: BoardPageProps) {
   const [elements, setElements] = useState<BoardElement[]>([]);
   const [comments, setComments] = useState<VisualBoardComment[]>([]);
   const [activities, setActivities] = useState<VisualBoardActivity[]>([]);
+  const [collaborators, setCollaborators] = useState<VisualBoardCollaborator[]>([]);
+  const [shareOpen, setShareOpen] = useState(false);
+  const [shareSaving, setShareSaving] = useState(false);
   const [commentDraft, setCommentDraft] = useState("");
   const [savingComment, setSavingComment] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -66,10 +70,10 @@ export function BoardPage({ boardId }: BoardPageProps) {
     }
     setUserId(context.user.id);
 
-    const [boardRes, elementsRes, commentsRes, activityRes] = await Promise.all([
+    const [boardRes, elementsRes, commentsRes, activityRes, collaboratorsRes] = await Promise.all([
       supabase
         .from("visual_boards")
-        .select("id,owner_id,organization_id,project_id,task_id,title,description,visibility,thumbnail_url,created_at,updated_at")
+        .select("id,owner_id,organization_id,project_id,task_id,title,description,visibility,share_token,public_can_edit,thumbnail_url,created_at,updated_at")
         .eq("id", boardId)
         .is("deleted_at", null)
         .maybeSingle(),
@@ -91,6 +95,11 @@ export function BoardPage({ boardId }: BoardPageProps) {
         .eq("board_id", boardId)
         .order("created_at", { ascending: false })
         .limit(30),
+      supabase
+        .from("visual_board_collaborators")
+        .select("id,board_id,user_id,email,role,invited_by,created_at,accepted_at")
+        .eq("board_id", boardId)
+        .order("created_at", { ascending: true }),
     ]);
 
     if (boardRes.error || !boardRes.data) {
@@ -103,6 +112,7 @@ export function BoardPage({ boardId }: BoardPageProps) {
     setElements(((elementsRes.data ?? []) as VisualBoardElementRow[]).map(mapElementRow));
     setComments(((commentsRes.data ?? []) as VisualBoardCommentRow[]).map(mapBoardCommentRow));
     setActivities(((activityRes.data ?? []) as VisualBoardActivityRow[]).map(mapBoardActivityRow));
+    setCollaborators(((collaboratorsRes.data ?? []) as VisualBoardCollaboratorRow[]).map(mapBoardCollaboratorRow));
     setLoading(false);
   }, [boardId, supabase]);
 
@@ -197,6 +207,63 @@ export function BoardPage({ boardId }: BoardPageProps) {
     setCommentDraft("");
     setComments((current) => [mapBoardCommentRow(data as VisualBoardCommentRow), ...current].slice(0, 20));
     await logBoardActivity("comment_created", { elementId: selectedElement });
+  }
+
+
+  function createShareToken() {
+    return `board_${crypto.randomUUID().replaceAll("-", "").slice(0, 24)}`;
+  }
+
+  async function updateBoardSharing(patch: { visibility?: VisualBoard["visibility"]; publicCanEdit?: boolean; ensureToken?: boolean }) {
+    if (!board) return null;
+    setShareSaving(true);
+    const nextToken = patch.ensureToken && !board.shareToken ? createShareToken() : board.shareToken;
+    const payload: Record<string, unknown> = {
+      updated_at: new Date().toISOString(),
+    };
+    if (patch.visibility) payload.visibility = patch.visibility;
+    if (typeof patch.publicCanEdit === "boolean") payload.public_can_edit = patch.publicCanEdit;
+    if (patch.ensureToken) payload.share_token = nextToken;
+
+    const { data, error: updateError } = await supabase
+      .from("visual_boards")
+      .update(payload)
+      .eq("id", board.id)
+      .select("id,owner_id,organization_id,project_id,task_id,title,description,visibility,share_token,public_can_edit,thumbnail_url,created_at,updated_at")
+      .maybeSingle();
+
+    setShareSaving(false);
+    if (updateError || !data) {
+      setSavingState("error");
+      return null;
+    }
+    const next = mapBoardRow(data as VisualBoardRow);
+    setBoard(next);
+    setSavingState("saved");
+    await logBoardActivity("sharing_updated", { visibility: next.visibility, publicCanEdit: next.publicCanEdit });
+    return next;
+  }
+
+  async function inviteBoardCollaborator(email: string, role: "viewer" | "editor") {
+    if (!board || !userId) return false;
+    const { data, error: insertError } = await supabase
+      .from("visual_board_collaborators")
+      .upsert({
+        board_id: board.id,
+        email,
+        role,
+        invited_by: userId,
+      }, { onConflict: "board_id,email" })
+      .select("id,board_id,user_id,email,role,invited_by,created_at,accepted_at")
+      .maybeSingle();
+    if (insertError || !data) {
+      setSavingState("error");
+      return false;
+    }
+    const next = mapBoardCollaboratorRow(data as VisualBoardCollaboratorRow);
+    setCollaborators((current) => [next, ...current.filter((item) => item.id !== next.id && item.email !== next.email)]);
+    await logBoardActivity("collaborator_invited", { email, role });
+    return true;
   }
 
   function patchElement(id: string, patch: Partial<BoardElement>) {
@@ -445,7 +512,8 @@ export function BoardPage({ boardId }: BoardPageProps) {
   return (
     <div className="fixed inset-0 z-50 grid bg-[#F7F9FC] text-[#0F172A]">
       <section className="grid min-h-screen grid-rows-[64px_1fr] overflow-hidden">
-        <BoardTopbar title={board.title} savingState={savingState} onTitleChange={(title) => setBoard((current) => current ? { ...current, title } : current)} />
+        <BoardTopbar board={board} savingState={savingState} collaborators={collaborators} onTitleChange={(title) => setBoard((current) => current ? { ...current, title } : current)} onOpenShare={() => setShareOpen(true)} />
+        {shareOpen ? <BoardSharingPanel board={board} collaborators={collaborators} saving={shareSaving} onClose={() => setShareOpen(false)} onUpdateSharing={updateBoardSharing} onInviteCollaborator={inviteBoardCollaborator} /> : null}
         <main className="relative overflow-hidden bg-[#FBFCFE]">
           <div
             ref={canvasRef}

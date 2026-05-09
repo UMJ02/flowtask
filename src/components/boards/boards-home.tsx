@@ -30,7 +30,7 @@ export function BoardsHome() {
 
     let query = supabase
       .from("visual_boards")
-      .select("id,owner_id,organization_id,project_id,task_id,title,description,visibility,thumbnail_url,created_at,updated_at")
+      .select("id,owner_id,organization_id,project_id,task_id,title,description,visibility,share_token,public_can_edit,thumbnail_url,created_at,updated_at")
       .is("deleted_at", null)
       .order("updated_at", { ascending: false });
 

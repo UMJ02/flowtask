@@ -83,6 +83,8 @@ export type VisualBoard = {
   title: string;
   description: string | null;
   visibility: "private" | "workspace" | "public_link";
+  shareToken: string | null;
+  publicCanEdit: boolean;
   thumbnailUrl: string | null;
   createdAt: string;
   updatedAt: string;
@@ -97,6 +99,8 @@ export type VisualBoardRow = {
   title: string;
   description: string | null;
   visibility: "private" | "workspace" | "public_link";
+  share_token?: string | null;
+  public_can_edit?: boolean | null;
   thumbnail_url: string | null;
   created_at: string;
   updated_at: string;
@@ -162,4 +166,29 @@ export type VisualBoardActivityRow = {
   type: string;
   payload: Record<string, unknown>;
   created_at: string;
+};
+
+
+export type VisualBoardCollaboratorRole = "viewer" | "editor" | "admin";
+
+export type VisualBoardCollaborator = {
+  id: string;
+  boardId: string;
+  userId: string | null;
+  email: string | null;
+  role: VisualBoardCollaboratorRole;
+  invitedBy: string | null;
+  createdAt: string;
+  acceptedAt: string | null;
+};
+
+export type VisualBoardCollaboratorRow = {
+  id: string;
+  board_id: string;
+  user_id: string | null;
+  email: string | null;
+  role: VisualBoardCollaboratorRole;
+  invited_by: string | null;
+  created_at: string;
+  accepted_at: string | null;
 };

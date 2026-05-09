@@ -97,3 +97,8 @@ Adds visual connectors, connector layer and richer properties panel for the Boar
 ## v58.23.2 Board Tables + Inline Editing
 
 Extiende el módulo Pizarras con tablas visuales editables dentro del canvas. Las celdas se editan inline, las filas/columnas se pueden agregar desde la toolbar y el panel de propiedades permite renombrar o eliminar columnas. Usa el modelo flexible existente `visual_board_elements.data` y no agrega migraciones Supabase.
+
+
+## v58.23.4 — Board Sharing + Collaboration Layer
+
+Adds controlled visual board sharing, public read-only links, collaborator access metadata, and a shared board view without changing task/project logic.
