@@ -77,6 +77,6 @@ Base visual global sobre v58.21.2. Normaliza tokens de diseño, tipografía, bot
 Pulido visual y de interacción sobre v58.21.1: feed operativo dividido, límites con “Ver más”, filtros de proyectos simplificados, thumbnails reales en adjuntos y tareas internas con layout responsive. No incluye migraciones ni cambios de RLS.
 
 
-## v58.22.0 Semantic UI Classes + Density Contracts
+## v58.22.1 Full Semantic Migration + Motion Experience Layer
 
 Semantic UI classes and density contracts now govern typography, layout rhythm, surfaces, controls and spacing across the core FlowTask app without Supabase/RLS changes.

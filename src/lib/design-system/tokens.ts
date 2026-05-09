@@ -1,8 +1,9 @@
-export const designSystemVersion = "58.22.0-semantic-ui-classes-density-contracts";
+export const designSystemVersion = "58.22.1-full-semantic-migration-motion-experience-layer";
 
 export const ds = {
   semantic: true,
   density: "semantic-density-contracts",
+  motionExperience: "full-semantic-motion-layer",
   spacing: {
     none: "0",
     xxs: "2px",
@@ -172,4 +173,19 @@ export const semanticGovernance = {
   policy: "components should consume semantic UI classes or named density contracts instead of raw visual values",
   typographyPolicy: "page, section, card, body, muted, meta and label roles govern text scale",
   densityPolicy: "compact, medium, create and relaxed density contracts define spacing by screen purpose",
+} as const;
+
+
+export const motionExperienceLayer = {
+  policy: "motion is used for orientation, feedback and state changes, not decoration",
+  surfaces: ["ft-glass-panel", "ft-glass-toolbar", "ft-popover-surface", "ft-drawer-surface", "ft-command-surface"],
+  interactions: ["ft-motion-tab", "ft-motion-list-item", "ft-motion-expandable", "ft-motion-feedback", "ft-liquid-hover"],
+  feedbackStates: ["ft-state-saving", "ft-state-success", "ft-state-error", "ft-state-selected"],
+  skeleton: "ft-skeleton",
+} as const;
+
+export const semanticMigrationLayer = {
+  policy: "core interactive components should use semantic surfaces, density contracts and motion roles",
+  components: ["AppMotion", "AppSkeleton", "AppFeedback", "AppGlassPanel", "AppAnimatedTabs"],
+  disallow: ["unscoped heavy manual shadows", "oversized controls", "unanimated expandable UI", "unstyled feedback states"],
 } as const;

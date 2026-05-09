@@ -24,7 +24,7 @@ export function AppCard({ children, className, variant = "section", density, int
         density === "compact" && "ft-density-compact",
         density === "medium" && "ft-density-medium",
         density === "relaxed" && "ft-density-relaxed",
-        interactive && "ft-hover-lift",
+        interactive && "ft-liquid-hover",
         className,
       )}
     >

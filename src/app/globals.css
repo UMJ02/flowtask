@@ -2,8 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-/* v58.22.0 Semantic UI Classes + Density Contracts
-   Semantic typography, density contracts and governed UI roles for consistent product rhythm. */
+/* v58.22.1 Full Semantic Migration + Motion Experience Layer
+   Full semantic UI migration, app-wide motion experience roles, glass surfaces and feedback states. */
 
 @layer base {
   :root {
@@ -212,6 +212,33 @@
   .animate-fade-in { animation: ft-reveal var(--ft-motion-enter); }
   .animate-ft-reveal { animation: ft-reveal var(--ft-motion-enter); }
   .animate-ft-slide-fade { animation: ft-slide-fade var(--ft-motion-normal); }
+
+  /* v58.22.1 motion experience layer and semantic state roles */
+  .ft-glass-panel { @apply rounded-[16px] border border-white/70 bg-white/80 backdrop-blur-xl shadow-none; }
+  .ft-glass-toolbar { @apply rounded-[14px] border border-white/70 bg-white/75 p-2 backdrop-blur-xl shadow-none; }
+  .ft-liquid-hover { @apply transition-[transform,background-color,border-color,box-shadow,opacity] duration-200 ease-out hover:-translate-y-[1px] hover:border-emerald-200 hover:bg-white active:scale-[0.985]; }
+  .ft-motion-tab { @apply relative inline-flex h-8 items-center justify-center rounded-lg px-2.5 text-[12px] font-semibold text-slate-600 transition-[color,background-color,transform] duration-150 hover:bg-slate-100 hover:text-slate-950 active:scale-[0.98]; }
+  .ft-motion-tab[data-active="true"] { @apply bg-slate-950 text-white; }
+  .ft-motion-list-item { @apply transition-[transform,background-color,border-color] duration-150 hover:-translate-y-[1px] hover:border-slate-300 hover:bg-white active:scale-[0.995]; }
+  .ft-motion-expandable { @apply overflow-hidden transition-[max-height,opacity,transform] duration-200 ease-out; }
+  .ft-motion-feedback { @apply transition-[opacity,transform,background-color,border-color] duration-200 ease-out; }
+  .ft-state-selected { @apply border-emerald-200 bg-emerald-50/55 ring-1 ring-emerald-100; }
+  .ft-state-saving { @apply border-amber-200 bg-amber-50/60 text-amber-700; }
+  .ft-state-success { @apply border-emerald-200 bg-emerald-50/60 text-emerald-700; }
+  .ft-state-error { @apply border-rose-200 bg-rose-50/60 text-rose-700; }
+  .ft-status-dot { @apply inline-block h-2 w-2 rounded-full bg-current; }
+  .ft-skeleton { @apply relative overflow-hidden rounded-xl bg-slate-100; }
+  .ft-skeleton::after { content: ""; position: absolute; inset: 0; transform: translateX(-100%); background: linear-gradient(90deg, transparent, rgba(255,255,255,.72), transparent); animation: ft-shimmer 1.35s ease-in-out infinite; }
+  .ft-feedback { @apply inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[12px] font-semibold ft-motion-feedback; }
+  .ft-feedback-saving { @apply ft-feedback ft-state-saving; }
+  .ft-feedback-success { @apply ft-feedback ft-state-success; }
+  .ft-feedback-error { @apply ft-feedback ft-state-error; }
+  .ft-feedback-neutral { @apply ft-feedback border-slate-200 bg-slate-50 text-slate-600; }
+  .ft-command-surface { @apply ft-glass-panel shadow-[var(--ft-shadow-floating)]; }
+  .ft-drawer-surface { @apply ft-glass-panel shadow-[var(--ft-shadow-overlay)]; }
+  .ft-popover-surface { @apply ft-glass-panel shadow-[var(--ft-shadow-floating)]; }
+  .ft-animated-tabs { @apply inline-flex items-center gap-1 rounded-xl border border-slate-200 bg-white p-1; }
+
 }
 
 @layer utilities {
@@ -231,6 +258,7 @@
 @keyframes ft-expand { from { opacity: 0; transform: scaleY(0.985); } to { opacity: 1; transform: scaleY(1); } }
 @keyframes ft-pop { 0% { opacity: 0; transform: scale(0.985); } 100% { opacity: 1; transform: scale(1); } }
 @keyframes ft-soft-pulse { 0%,100% { opacity: 0.72; } 50% { opacity: 1; } }
+@keyframes ft-shimmer { 100% { transform: translateX(100%); } }
 @keyframes flowtask-native-dot-loader { 0%, 100% { opacity: 0.42; transform: translateY(0) scale(0.82); } 36% { opacity: 1; transform: translateY(-4px) scale(1.14); } 64% { opacity: 0.72; transform: translateY(2px) scale(0.96); } }
 
 @media (prefers-reduced-motion: reduce) {
