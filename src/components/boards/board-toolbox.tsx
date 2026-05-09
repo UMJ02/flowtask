@@ -42,7 +42,7 @@ const shapeOptions: Array<{ id: ShapeKind; label: string; icon: typeof Rectangle
   { id: "pill", label: "Píldora", icon: Pill },
 ];
 
-const STORAGE_KEY = "flowtask.board.toolbar.v58.24.3";
+const STORAGE_KEY = "flowtask.board.toolbar.v58.24.4";
 const DEFAULT_POSITION = { x: 22, y: 22 };
 
 function toolById(id: BoardTool) {
@@ -130,9 +130,10 @@ export function BoardToolbox({ activeTool, activeShape, onToolChange, onShapeCha
           className={`board-tool-palette-btn ${isCollapsed ? "board-tool-palette-btn-icon" : ""} ${active ? "board-tool-palette-btn-active" : ""}`}
           title={tool.hint ?? tool.label}
           aria-label={tool.label}
+          data-tooltip={tool.label}
         >
           <Icon className="h-4 w-4" />
-          {!isCollapsed ? <span>{tool.label}</span> : null}
+          {!isCollapsed ? <span className="board-tool-label">{tool.label}</span> : <span className="board-tooltip" role="tooltip">{tool.label}</span>}
           {isShape && !isCollapsed ? <ChevronDown className="absolute right-1.5 top-1.5 h-3 w-3 text-slate-400" /> : null}
         </button>
         {isShape && shapeOpen ? (
@@ -208,9 +209,10 @@ export function BoardToolbox({ activeTool, activeShape, onToolChange, onShapeCha
             className={`board-tool-palette-btn ${isCollapsed ? "board-tool-palette-btn-icon" : ""}`}
             title="Más herramientas"
             aria-label="Más herramientas"
+            data-tooltip="Más"
           >
             <MoreHorizontal className="h-4 w-4" />
-            {!isCollapsed ? <span>Más</span> : null}
+            {!isCollapsed ? <span className="board-tool-label">Más</span> : <span className="board-tooltip" role="tooltip">Más</span>}
           </button>
           {moreOpen ? (
             <div className="board-tool-popover animate-board-pop" style={{ bottom: 0, left: popoverOffset, width: 190 }}>

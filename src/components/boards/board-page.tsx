@@ -1097,13 +1097,13 @@ export function BoardPage({ boardId }: BoardPageProps) {
   if (error || !board) return <div className="ft-governed-screen"><div className="ft-section-card border-rose-200 bg-rose-50 text-rose-700">{error ?? "No pudimos cargar la pizarra."}</div></div>;
 
   return (
-    <div className="fixed inset-0 z-50 bg-[#F7F9FC] text-[#0F172A]">
-      <section className="grid min-h-screen grid-rows-[72px_1fr] overflow-hidden">
+    <div className="board-shell fixed inset-0 z-50 text-[#0F172A]">
+      <section className="grid min-h-screen grid-rows-[92px_1fr] overflow-hidden">
         <BoardTopbar board={board} savingState={savingState} collaborators={collaborators} onTitleChange={(title) => setBoard((current) => current ? { ...current, title } : current)} onOpenShare={() => setShareOpen(true)} />
         <input ref={imageInputRef} type="file" accept="image/*" className="hidden" onChange={(event) => void handleBoardFileSelected(event, "image")} />
         <input ref={fileInputRef} type="file" className="hidden" onChange={(event) => void handleBoardFileSelected(event, "file")} />
         {shareOpen ? <BoardSharingPanel board={board} collaborators={collaborators} saving={shareSaving} onClose={() => setShareOpen(false)} onUpdateSharing={updateBoardSharing} onInviteCollaborator={inviteBoardCollaborator} /> : null}
-        <main className="relative overflow-hidden bg-[#FBFCFE]">
+        <main className="board-editor-main relative overflow-hidden">
           <div
             ref={canvasRef}
             className={`board-canvas h-full w-full ${activeTool === "hand" ? "cursor-grab" : activeTool === "select" ? "cursor-default" : activeTool === "image" || activeTool === "file" || activeTool === "comment" ? "cursor-crosshair" : "cursor-crosshair"}`}
@@ -1193,7 +1193,7 @@ export function BoardPage({ boardId }: BoardPageProps) {
             onResolveComment={resolveBoardComment}
             onDeleteComment={deleteBoardComment}
           />
-          <div className="ft-popover-surface absolute bottom-5 left-1/2 z-40 flex -translate-x-1/2 items-center gap-2 px-3 py-2">
+          <div className="board-zoom-controls absolute bottom-5 left-1/2 z-40 flex -translate-x-1/2 items-center gap-2 px-3 py-2">
             <button className="ft-pressable grid h-9 w-9 place-items-center rounded-xl hover:bg-slate-100" onClick={() => setViewport((current) => ({ ...current, zoom: Math.max(0.5, current.zoom - 0.1) }))}><Minus className="h-4 w-4" /></button>
             <span className="min-w-[54px] text-center text-xs font-bold text-slate-600">{Math.round(viewport.zoom * 100)}%</span>
             <button className="ft-pressable grid h-9 w-9 place-items-center rounded-xl hover:bg-slate-100" onClick={() => setViewport((current) => ({ ...current, zoom: Math.min(1.8, current.zoom + 0.1) }))}><Plus className="h-4 w-4" /></button>

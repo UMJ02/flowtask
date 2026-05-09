@@ -40,7 +40,7 @@ export function PropertiesPanel({ selected, onPatch, onDelete, onSetTableRowCoun
   const media = selected?.type === "image" || selected?.type === "file" ? selected : null;
 
   return (
-    <aside className="ft-glass-panel absolute bottom-6 right-6 top-6 z-30 hidden w-[320px] overflow-y-auto p-4 xl:block">
+    <aside className="board-inspector ft-glass-panel absolute bottom-6 right-6 top-6 z-30 hidden w-[320px] overflow-y-auto p-4 xl:block">
       <div className="flex items-center justify-between gap-3">
         <div>
           <p className="ft-text-label text-slate-500">Propiedades</p>
@@ -64,18 +64,18 @@ export function PropertiesPanel({ selected, onPatch, onDelete, onSetTableRowCoun
 
           {isConnector ? (
             <>
-              <section className="rounded-2xl border border-slate-200 bg-white/80 p-3">
+              <section className="board-inspector-section rounded-2xl border border-slate-200 bg-white/80 p-3">
                 <label className="ft-text-label text-slate-500">Puntos del conector</label>
                 <div className="mt-2 grid grid-cols-2 gap-2">
-                  <div><label className="text-[10px] font-bold uppercase text-slate-400">Inicio X</label><input type="number" value={Math.round(connector!.from.x)} onChange={(event) => onPatch({ from: { ...connector!.from, x: numberPatch(event.target.value, connector!.from.x) } } as Partial<ConnectorElement>)} className="ft-input mt-1 w-full" /></div>
-                  <div><label className="text-[10px] font-bold uppercase text-slate-400">Inicio Y</label><input type="number" value={Math.round(connector!.from.y)} onChange={(event) => onPatch({ from: { ...connector!.from, y: numberPatch(event.target.value, connector!.from.y) } } as Partial<ConnectorElement>)} className="ft-input mt-1 w-full" /></div>
-                  <div><label className="text-[10px] font-bold uppercase text-slate-400">Final X</label><input type="number" value={Math.round(connector!.to.x)} onChange={(event) => onPatch({ to: { ...connector!.to, x: numberPatch(event.target.value, connector!.to.x) } } as Partial<ConnectorElement>)} className="ft-input mt-1 w-full" /></div>
-                  <div><label className="text-[10px] font-bold uppercase text-slate-400">Final Y</label><input type="number" value={Math.round(connector!.to.y)} onChange={(event) => onPatch({ to: { ...connector!.to, y: numberPatch(event.target.value, connector!.to.y) } } as Partial<ConnectorElement>)} className="ft-input mt-1 w-full" /></div>
+                  <div><label className="text-[10px] font-bold uppercase text-slate-400">Inicio X</label><input type="number" value={Math.round(connector!.from.x)} onChange={(event) => onPatch({ from: { ...connector!.from, x: numberPatch(event.target.value, connector!.from.x) } } as Partial<ConnectorElement>)} className="board-input ft-input mt-1 w-full" /></div>
+                  <div><label className="text-[10px] font-bold uppercase text-slate-400">Inicio Y</label><input type="number" value={Math.round(connector!.from.y)} onChange={(event) => onPatch({ from: { ...connector!.from, y: numberPatch(event.target.value, connector!.from.y) } } as Partial<ConnectorElement>)} className="board-input ft-input mt-1 w-full" /></div>
+                  <div><label className="text-[10px] font-bold uppercase text-slate-400">Final X</label><input type="number" value={Math.round(connector!.to.x)} onChange={(event) => onPatch({ to: { ...connector!.to, x: numberPatch(event.target.value, connector!.to.x) } } as Partial<ConnectorElement>)} className="board-input ft-input mt-1 w-full" /></div>
+                  <div><label className="text-[10px] font-bold uppercase text-slate-400">Final Y</label><input type="number" value={Math.round(connector!.to.y)} onChange={(event) => onPatch({ to: { ...connector!.to, y: numberPatch(event.target.value, connector!.to.y) } } as Partial<ConnectorElement>)} className="board-input ft-input mt-1 w-full" /></div>
                 </div>
               </section>
               <section>
                 <label className="ft-text-label text-slate-500">Etiqueta</label>
-                <input value={connector?.label ?? ""} onChange={(event) => onPatch({ label: event.target.value } as Partial<BoardElement>)} placeholder="Ej. Sí, No, Aprobado..." className="ft-input mt-2 w-full" />
+                <input value={connector?.label ?? ""} onChange={(event) => onPatch({ label: event.target.value } as Partial<BoardElement>)} placeholder="Ej. Sí, No, Aprobado..." className="board-input ft-input mt-2 w-full" />
               </section>
               <section>
                 <label className="ft-text-label text-slate-500">Color de línea</label>
@@ -84,34 +84,34 @@ export function PropertiesPanel({ selected, onPatch, onDelete, onSetTableRowCoun
                 </div>
               </section>
               <section className="grid grid-cols-2 gap-2">
-                <div><label className="ft-text-label text-slate-500">Grosor</label><select value={connector?.style?.strokeWidth ?? 2} onChange={(event) => onPatch(mergeStyle(selected, { strokeWidth: Number(event.target.value) }))} className="ft-input mt-2 w-full"><option value={1}>1 px</option><option value={2}>2 px</option><option value={3}>3 px</option><option value={4}>4 px</option></select></div>
-                <div><label className="ft-text-label text-slate-500">Tipo</label><select value={connector?.style?.lineType ?? "straight"} onChange={(event) => onPatch(mergeStyle(selected, { lineType: event.target.value as BoardStyle["lineType"] }))} className="ft-input mt-2 w-full"><option value="straight">Recta</option><option value="elbow">Codo</option><option value="curve">Curva</option></select></div>
+                <div><label className="ft-text-label text-slate-500">Grosor</label><select value={connector?.style?.strokeWidth ?? 2} onChange={(event) => onPatch(mergeStyle(selected, { strokeWidth: Number(event.target.value) }))} className="board-input ft-input mt-2 w-full"><option value={1}>1 px</option><option value={2}>2 px</option><option value={3}>3 px</option><option value={4}>4 px</option></select></div>
+                <div><label className="ft-text-label text-slate-500">Tipo</label><select value={connector?.style?.lineType ?? "straight"} onChange={(event) => onPatch(mergeStyle(selected, { lineType: event.target.value as BoardStyle["lineType"] }))} className="board-input ft-input mt-2 w-full"><option value="straight">Recta</option><option value="elbow">Codo</option><option value="curve">Curva</option></select></div>
               </section>
               <label className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white/80 px-3 py-3 text-sm font-bold text-slate-700">Flecha final<input type="checkbox" checked={connector?.style?.arrowEnd !== false} onChange={(event) => onPatch(mergeStyle(selected, { arrowEnd: event.target.checked }))} /></label>
             </>
           ) : (
             <>
-              <section className="rounded-2xl border border-slate-200 bg-white/80 p-3">
+              <section className="board-inspector-section rounded-2xl border border-slate-200 bg-white/80 p-3">
                 <label className="ft-text-label text-slate-500">Posición y tamaño</label>
                 <div className="mt-2 grid grid-cols-2 gap-2">
-                  <div><label className="text-[10px] font-bold uppercase text-slate-400">X</label><input type="number" value={Math.round(selected.x)} onChange={(event) => onPatch({ x: numberPatch(event.target.value, selected.x) } as Partial<BoardElement>)} className="ft-input mt-1 w-full" /></div>
-                  <div><label className="text-[10px] font-bold uppercase text-slate-400">Y</label><input type="number" value={Math.round(selected.y)} onChange={(event) => onPatch({ y: numberPatch(event.target.value, selected.y) } as Partial<BoardElement>)} className="ft-input mt-1 w-full" /></div>
-                  <div><label className="text-[10px] font-bold uppercase text-slate-400">W</label><input type="number" min={32} value={Math.round(selected.width)} onChange={(event) => onPatch({ width: Math.max(32, numberPatch(event.target.value, selected.width)) } as Partial<BoardElement>)} className="ft-input mt-1 w-full" /></div>
-                  <div><label className="text-[10px] font-bold uppercase text-slate-400">H</label><input type="number" min={32} value={Math.round(selected.height)} onChange={(event) => onPatch({ height: Math.max(32, numberPatch(event.target.value, selected.height)) } as Partial<BoardElement>)} className="ft-input mt-1 w-full" /></div>
+                  <div><label className="text-[10px] font-bold uppercase text-slate-400">X</label><input type="number" value={Math.round(selected.x)} onChange={(event) => onPatch({ x: numberPatch(event.target.value, selected.x) } as Partial<BoardElement>)} className="board-input ft-input mt-1 w-full" /></div>
+                  <div><label className="text-[10px] font-bold uppercase text-slate-400">Y</label><input type="number" value={Math.round(selected.y)} onChange={(event) => onPatch({ y: numberPatch(event.target.value, selected.y) } as Partial<BoardElement>)} className="board-input ft-input mt-1 w-full" /></div>
+                  <div><label className="text-[10px] font-bold uppercase text-slate-400">W</label><input type="number" min={32} value={Math.round(selected.width)} onChange={(event) => onPatch({ width: Math.max(32, numberPatch(event.target.value, selected.width)) } as Partial<BoardElement>)} className="board-input ft-input mt-1 w-full" /></div>
+                  <div><label className="text-[10px] font-bold uppercase text-slate-400">H</label><input type="number" min={32} value={Math.round(selected.height)} onChange={(event) => onPatch({ height: Math.max(32, numberPatch(event.target.value, selected.height)) } as Partial<BoardElement>)} className="board-input ft-input mt-1 w-full" /></div>
                 </div>
               </section>
 
               {shape ? (
                 <section>
                   <label className="ft-text-label text-slate-500">Tipo de forma</label>
-                  <select value={shape.shape} onChange={(event) => onPatch({ shape: event.target.value as ShapeElement["shape"] } as Partial<ShapeElement>)} className="ft-input mt-2 w-full">
+                  <select value={shape.shape} onChange={(event) => onPatch({ shape: event.target.value as ShapeElement["shape"] } as Partial<ShapeElement>)} className="board-input ft-input mt-2 w-full">
                     {shapeOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
                   </select>
                 </section>
               ) : null}
 
               {media ? (
-                <section className="rounded-2xl border border-slate-200 bg-white/80 p-3">
+                <section className="board-inspector-section rounded-2xl border border-slate-200 bg-white/80 p-3">
                   <div className="flex items-start gap-3"><div className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-slate-100 text-slate-600">{media.type === "image" ? <Image className="h-5 w-5" /> : <FileText className="h-5 w-5" />}</div><div className="min-w-0 flex-1"><p className="truncate text-sm font-bold text-slate-800">{media.data.name}</p><p className="mt-1 text-xs font-semibold text-slate-500">{Math.max(1, Math.round(media.data.size / 1024))} KB · {media.data.mime}</p></div></div>
                   <a href={media.data.url} target="_blank" rel="noreferrer" className="ft-btn-secondary mt-3 flex h-9 w-full justify-center gap-2 text-xs"><Download className="h-3.5 w-3.5" /> Abrir archivo</a>
                 </section>
@@ -122,7 +122,7 @@ export function PropertiesPanel({ selected, onPatch, onDelete, onSetTableRowCoun
               {!table && !media ? (
                 <>
                   <section><label className="ft-text-label text-slate-500">Relleno</label><div className="mt-2 flex flex-wrap gap-2">{fillSwatches.map((fill) => <button key={fill} type="button" onClick={() => onPatch(mergeStyle(selected, { fill }))} className="h-7 w-7 rounded-full border border-slate-200 transition hover:scale-110" style={{ backgroundColor: fill }} />)}</div></section>
-                  <section><label className="ft-text-label text-slate-500">Texto</label><div className="mt-2 grid grid-cols-2 gap-2"><select value={selected.style?.fontSize ?? 14} onChange={(event) => onPatch(mergeStyle(selected, { fontSize: Number(event.target.value) }))} className="ft-input w-full"><option value={12}>12 px</option><option value={14}>14 px</option><option value={16}>16 px</option><option value={18}>18 px</option><option value={22}>22 px</option></select><select value={selected.style?.textAlign ?? "center"} onChange={(event) => onPatch(mergeStyle(selected, { textAlign: event.target.value as BoardStyle["textAlign"] }))} className="ft-input w-full"><option value="left">Izquierda</option><option value="center">Centro</option><option value="right">Derecha</option></select></div></section>
+                  <section><label className="ft-text-label text-slate-500">Texto</label><div className="mt-2 grid grid-cols-2 gap-2"><select value={selected.style?.fontSize ?? 14} onChange={(event) => onPatch(mergeStyle(selected, { fontSize: Number(event.target.value) }))} className="board-input ft-input w-full"><option value={12}>12 px</option><option value={14}>14 px</option><option value={16}>16 px</option><option value={18}>18 px</option><option value={22}>22 px</option></select><select value={selected.style?.textAlign ?? "center"} onChange={(event) => onPatch(mergeStyle(selected, { textAlign: event.target.value as BoardStyle["textAlign"] }))} className="board-input ft-input w-full"><option value="left">Izquierda</option><option value="center">Centro</option><option value="right">Derecha</option></select></div></section>
                 </>
               ) : null}
             </>
@@ -144,7 +144,7 @@ function Stepper({ label, value, min, onChange }: { label: string; value: number
       <label className="text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400">{label}</label>
       <div className="mt-2 flex items-center gap-2">
         <button type="button" onClick={() => onChange(Math.max(min, value - 1))} className="grid h-8 w-8 place-items-center rounded-xl border border-slate-200 hover:bg-slate-50"><Minus className="h-3.5 w-3.5" /></button>
-        <input type="number" min={min} value={value} onChange={(event) => onChange(Math.max(min, numberPatch(event.target.value, value)))} className="ft-input h-8 min-w-0 flex-1 text-center" />
+        <input type="number" min={min} value={value} onChange={(event) => onChange(Math.max(min, numberPatch(event.target.value, value)))} className="board-input ft-input h-8 min-w-0 flex-1 text-center" />
         <button type="button" onClick={() => onChange(value + 1)} className="grid h-8 w-8 place-items-center rounded-xl border border-slate-200 hover:bg-slate-50"><Plus className="h-3.5 w-3.5" /></button>
       </div>
     </div>

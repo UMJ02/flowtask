@@ -87,7 +87,7 @@ export function BoardElementView({
   if (element.type === "connector") return null;
 
   const common = "group absolute touch-none select-none transition duration-150";
-  const selection = selected ? "ring-2 ring-emerald-400 ring-offset-2 ring-offset-[#FBFCFE]" : "hover:ring-1 hover:ring-slate-300";
+  const selection = selected ? "board-selection-ring" : "hover:ring-1 hover:ring-slate-300";
   const connectorMode = activeTool === "connector";
   const commentMode = activeTool === "comment";
   const canResize = selected && activeTool === "select" && !element.locked;
