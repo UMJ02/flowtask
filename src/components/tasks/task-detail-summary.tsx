@@ -24,7 +24,7 @@ export function TaskDetailSummary({ task, currentQuery = "" }: { task: any; curr
   const project = Array.isArray(task.projects) ? task.projects[0] : task.projects;
 
   return (
-    <section className="rounded-[20px] border border-[#E5EAF1] bg-white px-5 py-5 sm:px-8 sm:py-7">
+    <section className="rounded-[16px] border border-[#E5EAF1] bg-white px-4 py-4 sm:px-5 sm:py-5">
       <div className="flex flex-col gap-5">
         <Link href={taskListRoute(currentQuery)} className="inline-flex w-fit items-center gap-2 text-sm font-bold text-[#64748B] transition hover:text-[#0F172A]" aria-label="Volver al listado">
           <span aria-hidden>←</span> Volver al listado

@@ -25,8 +25,8 @@ export function SharedAnalyticsLanding({ token, autoPrint = false }: { token: st
 
   if (!payload) {
     return (
-      <main className="min-h-screen bg-[#F7F9FC] px-4 py-8 text-[#071333]">
-        <section className="mx-auto max-w-[760px] rounded-[24px] border border-[#E5EAF1] bg-white p-8 shadow-[0_28px_80px_rgba(7,19,51,0.08)]">
+      <main className="min-h-screen bg-[#F7F9FC] px-4 py-5 text-[#071333]">
+        <section className="mx-auto max-w-[760px] rounded-[18px] border border-[#E5EAF1] bg-white p-5 shadow-none">
           <p className="text-xs font-extrabold uppercase tracking-[0.22em] text-[#16A878]">FlowTask</p>
           <h1 className="mt-3 text-[2rem] font-extrabold tracking-[-0.04em]">No se pudo abrir este reporte</h1>
           <p className="mt-3 text-sm leading-6 text-[#64748B]">El enlace compartido es inválido, quedó incompleto o ya no contiene la información necesaria.</p>
@@ -66,7 +66,7 @@ export function SharedAnalyticsLanding({ token, autoPrint = false }: { token: st
   return (
     <main className="min-h-screen bg-[#F7F9FC] text-[#071333] print:bg-white">
       <div className="mx-auto w-full max-w-[1180px] px-4 py-5 print:block print:max-w-none print:px-0 print:py-0">
-        <section className="overflow-hidden rounded-[24px] border border-[#E5EAF1] bg-white shadow-[0_28px_80px_rgba(7,19,51,0.06)] print:border-none print:shadow-none">
+        <section className="overflow-hidden rounded-[18px] border border-[#E5EAF1] bg-white shadow-none print:border-none print:shadow-none">
           <header className="flex items-center justify-between gap-4 px-7 py-5 print:px-4">
             <div className="flex items-center gap-3">
               <img src="/icons/icon.png" alt="FlowTask" className="h-8 w-8 rounded-xl" />
@@ -135,7 +135,7 @@ export function SharedAnalyticsLanding({ token, autoPrint = false }: { token: st
                       <td className="max-w-[260px] px-4 py-3 text-[#52617A]">{task.lastComment || '—'}</td>
                     </tr>
                   )) : (
-                    <tr><td colSpan={7} className="px-4 py-8 text-center text-sm font-semibold text-[#64748B]">No hay tareas para este filtro.</td></tr>
+                    <tr><td colSpan={7} className="px-4 py-5 text-center text-sm font-semibold text-[#64748B]">No hay tareas para este filtro.</td></tr>
                   )}
                 </tbody>
               </table>

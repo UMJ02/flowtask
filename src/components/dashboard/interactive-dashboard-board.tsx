@@ -1069,7 +1069,7 @@ function InteractiveDashboardBoardComponent() {
                     showHeader={false}
                   />
                 ) : (
-                  <div className="rounded-[24px] border border-dashed border-emerald-200 bg-white/[0.70] px-4 py-8 text-sm text-slate-500">
+                  <div className="rounded-[16px] border border-dashed border-emerald-200 bg-white/[0.70] px-3 py-5 text-sm text-slate-500">
                     Usa <span className="font-semibold text-slate-700">Desplegar flujo</span> para volver a abrir las columnas.
                   </div>
                 )}

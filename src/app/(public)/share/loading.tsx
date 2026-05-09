@@ -2,7 +2,7 @@ import { LoadingState } from '@/components/ui/loading-state';
 
 export default function SharedLandingLoading() {
   return (
-    <main className="min-h-screen bg-white px-4 py-8">
+    <main className="min-h-screen bg-white px-4 py-5">
       <div className="mx-auto max-w-[1080px]">
         <LoadingState
           title="Abriendo reporte compartido…"

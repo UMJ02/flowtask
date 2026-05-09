@@ -88,7 +88,7 @@ export function AccessSummaryCard({
 
   return (
     <section className="overflow-hidden rounded-[26px] border border-slate-200/90 bg-white">
-      <div className="relative overflow-hidden bg-[radial-gradient(circle_at_top,_rgba(37,99,235,0.22),_transparent_35%),linear-gradient(90deg,#020617_0%,#071127_42%,#020617_100%)] px-5 py-5 text-white lg:px-8 lg:py-7">
+      <div className="relative overflow-hidden bg-[radial-gradient(circle_at_top,_rgba(37,99,235,0.22),_transparent_35%),linear-gradient(90deg,#020617_0%,#071127_42%,#020617_100%)] px-4 py-4 text-white lg:px-5 lg:py-5">
         <div className="absolute inset-y-0 right-0 hidden w-1/3 bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.08),_transparent_60%)] lg:block" />
         <div className="relative flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:gap-5">
@@ -110,7 +110,7 @@ export function AccessSummaryCard({
         </div>
       </div>
 
-      <div className="px-5 py-5 lg:px-8 lg:py-5">
+      <div className="px-4 py-4 lg:px-5 lg:py-4">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-3xl">
             <div className="flex items-center gap-2 text-slate-700">

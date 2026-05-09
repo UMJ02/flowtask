@@ -78,7 +78,7 @@ export function RiskRadar({ summary, compact = false }: { summary: RiskRadarSumm
             </div>
             <div className="rounded-[26px] bg-white/10 px-4 py-3 ring-1 ring-white/10">
               <p className="text-xs uppercase tracking-[0.16em] text-rose-100/80">Riesgo global</p>
-              <p className="mt-2 text-[32px] font-bold">{summary.kpis.riskScore}%</p>
+              <p className="mt-2 text-[26px] font-semibold">{summary.kpis.riskScore}%</p>
             </div>
           </div>
           <div className="mt-5 grid gap-3 sm:grid-cols-3">

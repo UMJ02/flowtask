@@ -21,7 +21,7 @@ export function AppPage({ kicker, title, description, action, children, classNam
             {title ? <h1 className="ft-page-title">{title}</h1> : null}
             {description ? <p className="ft-page-subtitle">{description}</p> : null}
           </div>
-          {action ? <div className="flex shrink-0 flex-wrap items-center gap-2">{action}</div> : null}
+          {action ? <div className="flex shrink-0 flex-wrap items-center gap-1.5">{action}</div> : null}
         </header>
       ) : null}
       {children}

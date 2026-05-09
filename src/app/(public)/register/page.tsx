@@ -16,11 +16,11 @@ export default async function RegisterPage({
         <div className="absolute bottom-[-120px] right-[-80px] h-[260px] w-[260px] rounded-full bg-emerald-300/35 blur-3xl" />
       </div>
 
-      <div className="container-page relative flex min-h-screen items-center justify-center py-8">
+      <div className="container-page relative flex min-h-screen items-center justify-center py-5">
         <div className="w-full max-w-[620px] rounded-[24px] border border-white/80 bg-white/90 p-5 shadow-none backdrop-blur-xl md:p-6">
           <AuthBrand />
           <div className="mb-8 text-center">
-            <h1 className="text-[28px] font-bold text-slate-900 md:text-[32px]">Crear cuenta</h1>
+            <h1 className="text-[24px] font-semibold tracking-[-0.02em] text-slate-900 md:text-[28px]">Crear cuenta</h1>
             <p className="mt-2 text-sm text-slate-600 md:text-base">Tu tablero es privado. Tus proyectos pueden ser colaborativos.</p>
           </div>
 

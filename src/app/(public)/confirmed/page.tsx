@@ -11,15 +11,15 @@ export default function ConfirmedPage() {
         <div className="absolute bottom-[-120px] right-[-80px] h-[260px] w-[260px] rounded-full bg-emerald-300/25 blur-3xl" />
       </div>
 
-      <div className="container-page relative flex min-h-screen items-center justify-center px-4 py-8">
-        <section className="w-full max-w-[560px] overflow-hidden rounded-[24px] border border-slate-200 bg-white p-5 text-center shadow-[0_24px_64px_rgba(15,23,42,0.08)] md:p-8">
+      <div className="container-page relative flex min-h-screen items-center justify-center px-4 py-5">
+        <section className="w-full max-w-[560px] overflow-hidden rounded-[18px] border border-slate-200 bg-white p-5 text-center shadow-none md:p-6">
           <AuthBrand />
           <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-emerald-50 ring-8 ring-emerald-50/70">
             <CheckCircle2 className="h-10 w-10 text-[#16C784]" aria-hidden="true" />
           </div>
 
           <p className="text-xs font-bold uppercase tracking-[0.28em] text-emerald-700">Confirmación completada</p>
-          <h1 className="mt-3 text-[28px] font-bold text-slate-950 md:text-[32px]">Cuenta confirmada</h1>
+          <h1 className="mt-3 text-[24px] font-semibold tracking-[-0.02em] text-slate-950 md:text-[28px]">Cuenta confirmada</h1>
           <p className="mx-auto mt-3 max-w-[390px] text-sm leading-6 text-slate-600 md:text-base">
             Tu correo fue validado correctamente. Ya podés iniciar sesión y continuar con tu workspace de FlowTask.
           </p>

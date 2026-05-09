@@ -20,7 +20,7 @@ export default async function ProfilePage() {
         <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
           <div className="max-w-3xl">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">Perfil</p>
-            <h1 className="mt-2 text-[28px] font-bold md:text-[32px]">Tu identidad dentro de FlowTask</h1>
+            <h1 className="mt-2 text-[24px] font-semibold tracking-[-0.02em] md:text-[28px]">Tu identidad dentro de FlowTask</h1>
             <p className="mt-2 max-w-2xl text-sm text-slate-300 md:text-base">
               Gestiona nombre, correo, contraseña y foto de perfil desde una sola vista clara, segura y cómoda en desktop y móvil.
             </p>

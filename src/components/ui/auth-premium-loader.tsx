@@ -9,7 +9,7 @@ function AuthPremiumLoaderComponent({
 }) {
   return (
     <div
-      className="fixed inset-0 z-[9999] flex min-h-dvh w-screen items-center justify-center overflow-hidden bg-white/86 px-5 py-8 backdrop-blur-[22px]"
+      className="fixed inset-0 z-[9999] flex min-h-dvh w-screen items-center justify-center overflow-hidden bg-white/86 px-5 py-5 backdrop-blur-[22px]"
       aria-busy="true"
       aria-live="polite"
       role="status"

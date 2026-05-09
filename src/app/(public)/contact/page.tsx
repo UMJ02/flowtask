@@ -4,7 +4,7 @@ export default function ContactPage() {
   return (
     <main className="min-h-screen bg-slate-50 py-16">
       <div className="container-page max-w-2xl">
-        <div className="rounded-[24px] bg-white p-8 shadow-soft text-center">
+        <div className="rounded-[18px] bg-white p-5 shadow-none text-center">
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">FlowTask</p>
           <h1 className="mt-2 text-[28px] font-bold text-slate-900">Contacto</h1>
           <p className="mt-3 text-slate-600">Escríbenos directo por WhatsApp Costa Rica para soporte o consultas.</p>
