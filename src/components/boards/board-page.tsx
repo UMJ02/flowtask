@@ -1,8 +1,9 @@
 "use client";
 
-import type { PointerEvent as ReactPointerEvent } from "react";
+import type { PointerEvent as ReactPointerEvent, WheelEvent as ReactWheelEvent } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Minus, Plus, RotateCcw } from "lucide-react";
+import { BoardMiniMap } from "@/components/boards/board-minimap";
 import { BoardElementView } from "@/components/boards/board-element";
 import { BoardToolbox } from "@/components/boards/board-toolbox";
 import { BoardSharingPanel } from "@/components/boards/board-sharing-panel";
@@ -32,6 +33,23 @@ type PendingConnector = {
   elementId?: string | null;
 };
 
+type PanState = {
+  startX: number;
+  startY: number;
+  originX: number;
+  originY: number;
+};
+
+type BoardSnapshot = BoardElement[];
+
+function cloneBoardElements(items: BoardElement[]): BoardSnapshot {
+  return JSON.parse(JSON.stringify(items)) as BoardSnapshot;
+}
+
+function snapshotsEqual(a: BoardSnapshot, b: BoardSnapshot) {
+  return JSON.stringify(a) === JSON.stringify(b);
+}
+
 export function BoardPage({ boardId }: BoardPageProps) {
   const supabase = useMemo(() => createClient(), []);
   const canvasRef = useRef<HTMLDivElement | null>(null);
@@ -52,6 +70,9 @@ export function BoardPage({ boardId }: BoardPageProps) {
   const [dirtyMap, setDirtyMap] = useState<Record<string, BoardElement>>({});
   const [deletedIds, setDeletedIds] = useState<string[]>([]);
   const [dragState, setDragState] = useState<DragState | null>(null);
+  const [panState, setPanState] = useState<PanState | null>(null);
+  const [historyPast, setHistoryPast] = useState<BoardSnapshot[]>([]);
+  const [historyFuture, setHistoryFuture] = useState<BoardSnapshot[]>([]);
   const [pendingConnector, setPendingConnector] = useState<PendingConnector | null>(null);
   const [viewport, setViewport] = useState({ x: 0, y: 0, zoom: 1 });
   const [error, setError] = useState<string | null>(null);
@@ -110,6 +131,8 @@ export function BoardPage({ boardId }: BoardPageProps) {
 
     setBoard(mapBoardRow(boardRes.data as VisualBoardRow));
     setElements(((elementsRes.data ?? []) as VisualBoardElementRow[]).map(mapElementRow));
+    setHistoryPast([]);
+    setHistoryFuture([]);
     setComments(((commentsRes.data ?? []) as VisualBoardCommentRow[]).map(mapBoardCommentRow));
     setActivities(((activityRes.data ?? []) as VisualBoardActivityRow[]).map(mapBoardActivityRow));
     setCollaborators(((collaboratorsRes.data ?? []) as VisualBoardCollaboratorRow[]).map(mapBoardCollaboratorRow));
@@ -170,6 +193,55 @@ export function BoardPage({ boardId }: BoardPageProps) {
 
   function markDirty(element: BoardElement) {
     setDirtyMap((current) => ({ ...current, [element.id]: element }));
+  }
+
+  function markSnapshotForPersistence(snapshot: BoardSnapshot, previous: BoardSnapshot = elements) {
+    const nextIds = new Set(snapshot.map((item) => item.id));
+    const deleted = previous.filter((item) => !nextIds.has(item.id)).map((item) => item.id);
+    setDirtyMap((current) => {
+      const next = { ...current };
+      for (const item of snapshot) next[item.id] = item;
+      return next;
+    });
+    if (deleted.length) setDeletedIds((current) => Array.from(new Set([...current, ...deleted])));
+  }
+
+  function pushHistorySnapshot() {
+    const snapshot = cloneBoardElements(elements);
+    setHistoryPast((current) => {
+      const last = current[current.length - 1];
+      if (last && snapshotsEqual(last, snapshot)) return current;
+      return [...current.slice(-29), snapshot];
+    });
+    setHistoryFuture([]);
+  }
+
+  function restoreHistorySnapshot(snapshot: BoardSnapshot, previous: BoardSnapshot) {
+    const next = cloneBoardElements(snapshot);
+    setElements(next);
+    setSelectedIds([]);
+    setPendingConnector(null);
+    markSnapshotForPersistence(next, previous);
+  }
+
+  function undoBoardChange() {
+    if (!historyPast.length) return;
+    const currentSnapshot = cloneBoardElements(elements);
+    const previous = historyPast[historyPast.length - 1];
+    setHistoryPast((current) => current.slice(0, -1));
+    setHistoryFuture((current) => [currentSnapshot, ...current.slice(0, 29)]);
+    restoreHistorySnapshot(previous, elements);
+    setSavingState("saving");
+  }
+
+  function redoBoardChange() {
+    if (!historyFuture.length) return;
+    const currentSnapshot = cloneBoardElements(elements);
+    const nextSnapshot = historyFuture[0];
+    setHistoryFuture((current) => current.slice(1));
+    setHistoryPast((current) => [...current.slice(-29), currentSnapshot]);
+    restoreHistorySnapshot(nextSnapshot, elements);
+    setSavingState("saving");
   }
 
   async function logBoardActivity(type: string, payload: Record<string, unknown> = {}) {
@@ -267,6 +339,7 @@ export function BoardPage({ boardId }: BoardPageProps) {
   }
 
   function patchElement(id: string, patch: Partial<BoardElement>) {
+    pushHistorySnapshot();
     setElements((current) => current.map((item) => {
       if (item.id !== id) return item;
       const next = { ...item, ...patch, updatedAt: new Date().toISOString() } as BoardElement;
@@ -292,6 +365,7 @@ export function BoardPage({ boardId }: BoardPageProps) {
 
   function createConnectorFromPending(to: PendingConnector) {
     if (!pendingConnector || !userId) return;
+    pushHistorySnapshot();
     const connector = createDefaultConnector(
       boardId,
       pendingConnector.point,
@@ -309,17 +383,22 @@ export function BoardPage({ boardId }: BoardPageProps) {
 
   function handleCanvasClick(event: ReactPointerEvent<HTMLDivElement>) {
     if (!userId) return;
+    if (activeTool === "hand") {
+      event.currentTarget.setPointerCapture(event.pointerId);
+      setPanState({ startX: event.clientX, startY: event.clientY, originX: viewport.x, originY: viewport.y });
+      return;
+    }
     if (activeTool === "select") {
       if (event.target === event.currentTarget) setSelectedIds([]);
       return;
     }
-    if (activeTool === "hand") return;
     const point = screenToCanvas(event.clientX, event.clientY);
     if (activeTool === "connector") {
       if (pendingConnector) createConnectorFromPending({ point, elementId: null });
       else setPendingConnector({ point, elementId: null });
       return;
     }
+    pushHistorySnapshot();
     const next = createDefaultBoardElement(activeTool, boardId, point, userId);
     setElements((current) => [...current, next]);
     setSelectedIds([next.id]);
@@ -345,6 +424,7 @@ export function BoardPage({ boardId }: BoardPageProps) {
     if (!element || element.locked || activeTool !== "select") return;
     event.stopPropagation();
     event.currentTarget.setPointerCapture(event.pointerId);
+    pushHistorySnapshot();
     setSelectedIds([id]);
     setDragState({ id, startX: event.clientX, startY: event.clientY, originX: element.x, originY: element.y });
   }
@@ -375,6 +455,10 @@ export function BoardPage({ boardId }: BoardPageProps) {
   }
 
   function handlePointerMove(event: ReactPointerEvent<HTMLDivElement>) {
+    if (panState) {
+      setViewport((current) => ({ ...current, x: panState.originX + event.clientX - panState.startX, y: panState.originY + event.clientY - panState.startY }));
+      return;
+    }
     if (!dragState) return;
     const dx = (event.clientX - dragState.startX) / viewport.zoom;
     const dy = (event.clientY - dragState.startY) / viewport.zoom;
@@ -392,6 +476,10 @@ export function BoardPage({ boardId }: BoardPageProps) {
   }
 
   function handlePointerUp() {
+    if (panState) {
+      setPanState(null);
+      return;
+    }
     if (!dragState) return;
     const moved = elements.find((item) => item.id === dragState.id);
     if (moved) markDirty(moved);
@@ -399,6 +487,7 @@ export function BoardPage({ boardId }: BoardPageProps) {
   }
 
   function updateContent(id: string, content: string) {
+    pushHistorySnapshot();
     setElements((current) => current.map((item) => {
       if (item.id !== id || !("content" in item)) return item;
       const next = { ...item, content, updatedAt: new Date().toISOString() } as BoardElement;
@@ -408,6 +497,7 @@ export function BoardPage({ boardId }: BoardPageProps) {
   }
 
   function patchTable(id: string, updater: (table: Extract<BoardElement, { type: "table" }>) => Extract<BoardElement, { type: "table" }>) {
+    pushHistorySnapshot();
     setElements((current) => current.map((item) => {
       if (item.id !== id || item.type !== "table") return item;
       const next = { ...updater(item), updatedAt: new Date().toISOString() } as BoardElement;
@@ -472,6 +562,7 @@ export function BoardPage({ boardId }: BoardPageProps) {
 
   function deleteSelected() {
     if (!selectedIds.length) return;
+    pushHistorySnapshot();
     setElements((current) => current.filter((item) => !selectedIds.includes(item.id)));
     setDeletedIds((current) => Array.from(new Set([...current, ...selectedIds])));
     void logBoardActivity("elements_deleted", { count: selectedIds.length });
@@ -481,6 +572,7 @@ export function BoardPage({ boardId }: BoardPageProps) {
 
   function duplicateSelected() {
     if (!selected || !userId) return;
+    pushHistorySnapshot();
     const now = new Date().toISOString();
     const duplicate = { ...selected, id: crypto.randomUUID(), x: selected.x + 24, y: selected.y + 24, createdAt: now, updatedAt: now, createdBy: userId, zIndex: selected.zIndex + 1 } as BoardElement;
     setElements((current) => [...current, duplicate]);
@@ -500,11 +592,44 @@ export function BoardPage({ boardId }: BoardPageProps) {
         event.preventDefault();
         duplicateSelected();
       }
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "z") {
+        event.preventDefault();
+        if (event.shiftKey) redoBoardChange();
+        else undoBoardChange();
+      }
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "y") {
+        event.preventDefault();
+        redoBoardChange();
+      }
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "s") {
+        event.preventDefault();
+        setSavingState("saving");
+      }
+      if (!event.metaKey && !event.ctrlKey && !event.altKey) {
+        const key = event.key.toLowerCase();
+        const target = event.target as HTMLElement | null;
+        if (target?.tagName !== "TEXTAREA" && target?.tagName !== "INPUT") {
+          if (key === "v") setActiveTool("select");
+          if (key === "h") setActiveTool("hand");
+          if (key === "n") setActiveTool("sticky");
+          if (key === "t") setActiveTool("text");
+          if (key === "r") setActiveTool("shape");
+          if (key === "l") setActiveTool("connector");
+        }
+      }
       if (event.key === "Escape") setPendingConnector(null);
     }
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [selectedIds, selected, userId, pendingConnector]);
+
+
+  function handleCanvasWheel(event: ReactWheelEvent<HTMLDivElement>) {
+    if (!event.ctrlKey && !event.metaKey) return;
+    event.preventDefault();
+    const delta = event.deltaY > 0 ? -0.08 : 0.08;
+    setViewport((current) => ({ ...current, zoom: Math.min(1.8, Math.max(0.5, current.zoom + delta)) }));
+  }
 
   if (loading) return <div className="grid min-h-[70vh] place-items-center text-sm font-semibold text-slate-500">Cargando pizarra...</div>;
   if (error || !board) return <div className="ft-governed-screen"><div className="ft-section-card border-rose-200 bg-rose-50 text-rose-700">{error ?? "No pudimos cargar la pizarra."}</div></div>;
@@ -521,6 +646,7 @@ export function BoardPage({ boardId }: BoardPageProps) {
             onPointerDown={handleCanvasClick}
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
+            onWheel={handleCanvasWheel}
           >
             <div style={{ transform: `translate(${viewport.x}px, ${viewport.y}px) scale(${viewport.zoom})`, transformOrigin: "0 0" }} className="absolute inset-0">
               <ConnectorLayer connectors={connectors} selectedIds={selectedIds} pendingPoint={pendingConnector?.point ?? null} onSelect={(id) => setSelectedIds([id])} />
@@ -580,12 +706,11 @@ export function BoardPage({ boardId }: BoardPageProps) {
             <button className="ft-pressable grid h-9 w-9 place-items-center rounded-xl hover:bg-slate-100" onClick={() => setViewport((current) => ({ ...current, zoom: Math.min(1.8, current.zoom + 0.1) }))}><Plus className="h-4 w-4" /></button>
             <button className="ft-pressable grid h-9 w-9 place-items-center rounded-xl hover:bg-slate-100" onClick={() => setViewport({ x: 0, y: 0, zoom: 1 })}><RotateCcw className="h-4 w-4" /></button>
           </div>
-          <div className="ft-glass-panel absolute bottom-5 right-5 z-20 hidden h-[120px] w-[164px] p-3 lg:block">
-            <p className="ft-text-label text-slate-500">Minimap</p>
-            <div className="relative mt-2 h-[74px] rounded-xl border border-slate-200 bg-white/70 p-2">
-              {elements.slice(0, 10).map((item) => <span key={item.id} className="absolute h-2 w-4 rounded-sm bg-emerald-300" style={{ transform: `translate(${Math.max(4, item.x / 14)}px, ${Math.max(24, item.y / 14)}px)` }} />)}
-            </div>
-          </div>
+          <BoardMiniMap
+            elements={elements}
+            viewport={viewport}
+            onViewportChange={setViewport}
+          />
         </main>
       </section>
     </div>
