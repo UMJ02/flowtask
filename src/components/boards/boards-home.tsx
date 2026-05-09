@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { ArrowRight, Loader2, Plus, Sparkles, Workflow } from "lucide-react";
+import { ArrowRight, LayoutTemplate, Loader2, Plus, Sparkles, Workflow } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { createClient } from "@/lib/supabase/client";
 import { getClientWorkspaceContext } from "@/lib/supabase/workspace-client";
 import type { VisualBoard, VisualBoardRow } from "@/lib/boards/board-types";
-import { mapBoardRow } from "@/lib/boards/board-serialization";
+import { mapBoardRow, serializeElementForUpsert } from "@/lib/boards/board-serialization";
+import { BOARD_TEMPLATES, createTemplateElements, type BoardTemplateId } from "@/lib/boards/board-templates";
 
 export function BoardsHome() {
   const supabase = useMemo(() => createClient(), []);
@@ -51,7 +52,7 @@ export function BoardsHome() {
     void loadBoards();
   }, []);
 
-  async function createBoard() {
+  async function createBoard(templateId: BoardTemplateId = "blank") {
     setCreating(true);
     setError(null);
     const context = await getClientWorkspaceContext();
@@ -73,11 +74,39 @@ export function BoardsHome() {
       .select("id")
       .single();
 
-    setCreating(false);
     if (insertError || !data?.id) {
+      setCreating(false);
       setError("No pudimos crear la pizarra. Confirma que la migración de Boards esté aplicada.");
       return;
     }
+
+    const templateElements = createTemplateElements(templateId, data.id, context.user.id);
+    if (templateElements.length) {
+      const { error: templateError } = await supabase
+        .from("visual_board_elements")
+        .upsert(templateElements.map(serializeElementForUpsert), { onConflict: "id" })
+        .select("id");
+      if (templateError) {
+        setCreating(false);
+        setError("Creamos la pizarra, pero no pudimos cargar la plantilla. Abre la pizarra e intenta agregar elementos manualmente.");
+        return;
+      }
+      await supabase.from("visual_board_activity").insert({
+        board_id: data.id,
+        actor_id: context.user.id,
+        type: "template_applied",
+        payload: { templateId, elements: templateElements.length },
+      });
+    } else {
+      await supabase.from("visual_board_activity").insert({
+        board_id: data.id,
+        actor_id: context.user.id,
+        type: "board_created",
+        payload: { templateId },
+      });
+    }
+
+    setCreating(false);
     window.location.href = `/app/boards/${data.id}`;
   }
 
@@ -95,7 +124,7 @@ export function BoardsHome() {
               <p className="ft-text-muted mt-2 max-w-3xl">Organiza ideas en un lienzo flexible: notas, textos, formas y tablas visuales con guardado real en Supabase.</p>
             </div>
           </div>
-          <Button onClick={createBoard} disabled={creating} className="ft-btn-primary">
+          <Button onClick={() => createBoard()} disabled={creating} className="ft-btn-primary">
             {creating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
             Nueva pizarra
           </Button>
@@ -103,6 +132,32 @@ export function BoardsHome() {
       </Card>
 
       {error ? <Card className="ft-mini-card border-rose-200 bg-rose-50 text-sm font-semibold text-rose-700">{error}</Card> : null}
+
+      <section className="ft-section-card">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <p className="ft-text-label text-emerald-700">Plantillas rápidas</p>
+            <h2 className="ft-title-section mt-1">Empieza con una estructura visual</h2>
+            <p className="ft-text-muted mt-1">Elige una plantilla para cargar notas, tablas y diagramas iniciales en segundos.</p>
+          </div>
+          <LayoutTemplate className="hidden h-5 w-5 text-emerald-600 md:block" />
+        </div>
+        <div className="mt-4 grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
+          {BOARD_TEMPLATES.map((template) => (
+            <button
+              key={template.id}
+              type="button"
+              disabled={creating}
+              onClick={() => createBoard(template.id)}
+              className="ft-motion-list-item rounded-2xl border border-slate-200 bg-white/85 p-3 text-left transition hover:border-emerald-200 hover:bg-emerald-50/50 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              <span className="inline-flex rounded-full bg-emerald-50 px-2 py-1 text-[11px] font-bold text-emerald-700">{template.badge}</span>
+              <h3 className="ft-title-card mt-2">{template.title}</h3>
+              <p className="ft-text-muted mt-1 line-clamp-2 text-sm">{template.description}</p>
+            </button>
+          ))}
+        </div>
+      </section>
 
       <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
         {loading ? Array.from({ length: 3 }).map((_, index) => <Card key={index} className="ft-section-card h-40 animate-pulse bg-slate-100"><span className="sr-only">Cargando pizarra</span></Card>) : null}
@@ -112,7 +167,7 @@ export function BoardsHome() {
               <span className="grid h-14 w-14 place-items-center rounded-2xl bg-emerald-50 text-emerald-700"><Sparkles className="h-6 w-6" /></span>
               <h2 className="ft-title-section mt-4">Todavía no tienes pizarras</h2>
               <p className="ft-text-muted mt-2 max-w-xl">Crea la primera para diseñar un flujo, ordenar ideas o preparar una propuesta visual.</p>
-              <Button onClick={createBoard} disabled={creating} className="ft-btn-primary mt-5"><Plus className="h-4 w-4" /> Crear pizarra</Button>
+              <Button onClick={() => createBoard()} disabled={creating} className="ft-btn-primary mt-5"><Plus className="h-4 w-4" /> Crear pizarra</Button>
             </div>
           </Card>
         ) : null}

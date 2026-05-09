@@ -1,3 +1,7 @@
+# FlowTask — v58.23.3 Board Templates + Comments Activity
+
+Módulo Pizarras actualizado con plantillas rápidas, comentarios y actividad básica sobre el canvas visual. Base: v58.23.2 Board Tables + Inline Editing.
+
 # FlowTask — v58.21.5 Modern Density + Motion System
 
 # FlowTask — v58.20 Task Workspace Inline Redesign

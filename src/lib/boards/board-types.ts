@@ -121,3 +121,45 @@ export type VisualBoardElementRow = {
   updated_at: string;
   deleted_at?: string | null;
 };
+
+export type VisualBoardComment = {
+  id: string;
+  boardId: string;
+  elementId: string | null;
+  authorId: string | null;
+  body: string;
+  x: number | null;
+  y: number | null;
+  resolved: boolean;
+  createdAt: string;
+};
+
+export type VisualBoardCommentRow = {
+  id: string;
+  board_id: string;
+  element_id: string | null;
+  author_id: string | null;
+  body: string;
+  x: number | string | null;
+  y: number | string | null;
+  resolved: boolean;
+  created_at: string;
+};
+
+export type VisualBoardActivity = {
+  id: string;
+  boardId: string;
+  actorId: string | null;
+  type: string;
+  payload: Record<string, unknown>;
+  createdAt: string;
+};
+
+export type VisualBoardActivityRow = {
+  id: string;
+  board_id: string;
+  actor_id: string | null;
+  type: string;
+  payload: Record<string, unknown>;
+  created_at: string;
+};

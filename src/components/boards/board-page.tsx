@@ -5,13 +5,14 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Minus, Plus, RotateCcw } from "lucide-react";
 import { BoardElementView } from "@/components/boards/board-element";
 import { BoardToolbox } from "@/components/boards/board-toolbox";
+import { BoardCommentsActivity } from "@/components/boards/board-comments-activity";
 import { BoardTopbar } from "@/components/boards/board-topbar";
 import { ConnectorLayer } from "@/components/boards/connector-layer";
 import { FloatingFormatToolbar } from "@/components/boards/floating-format-toolbar";
 import { PropertiesPanel } from "@/components/boards/properties-panel";
 import { createDefaultBoardElement, createDefaultConnector } from "@/lib/boards/board-defaults";
-import { mapBoardRow, mapElementRow, serializeElementForUpsert } from "@/lib/boards/board-serialization";
-import type { BoardElement, BoardPoint, BoardTool, ConnectorElement, VisualBoard, VisualBoardElementRow, VisualBoardRow } from "@/lib/boards/board-types";
+import { mapBoardActivityRow, mapBoardCommentRow, mapBoardRow, mapElementRow, serializeElementForUpsert } from "@/lib/boards/board-serialization";
+import type { BoardElement, BoardPoint, BoardTool, ConnectorElement, VisualBoard, VisualBoardActivity, VisualBoardActivityRow, VisualBoardComment, VisualBoardCommentRow, VisualBoardElementRow, VisualBoardRow } from "@/lib/boards/board-types";
 import { createClient } from "@/lib/supabase/client";
 import { getClientWorkspaceContext } from "@/lib/supabase/workspace-client";
 
@@ -35,6 +36,10 @@ export function BoardPage({ boardId }: BoardPageProps) {
   const canvasRef = useRef<HTMLDivElement | null>(null);
   const [board, setBoard] = useState<VisualBoard | null>(null);
   const [elements, setElements] = useState<BoardElement[]>([]);
+  const [comments, setComments] = useState<VisualBoardComment[]>([]);
+  const [activities, setActivities] = useState<VisualBoardActivity[]>([]);
+  const [commentDraft, setCommentDraft] = useState("");
+  const [savingComment, setSavingComment] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [activeTool, setActiveTool] = useState<BoardTool>("select");
   const [userId, setUserId] = useState<string | null>(null);
@@ -61,7 +66,7 @@ export function BoardPage({ boardId }: BoardPageProps) {
     }
     setUserId(context.user.id);
 
-    const [boardRes, elementsRes] = await Promise.all([
+    const [boardRes, elementsRes, commentsRes, activityRes] = await Promise.all([
       supabase
         .from("visual_boards")
         .select("id,owner_id,organization_id,project_id,task_id,title,description,visibility,thumbnail_url,created_at,updated_at")
@@ -74,6 +79,18 @@ export function BoardPage({ boardId }: BoardPageProps) {
         .eq("board_id", boardId)
         .is("deleted_at", null)
         .order("z_index", { ascending: true }),
+      supabase
+        .from("visual_board_comments")
+        .select("id,board_id,element_id,author_id,body,x,y,resolved,created_at")
+        .eq("board_id", boardId)
+        .order("created_at", { ascending: false })
+        .limit(20),
+      supabase
+        .from("visual_board_activity")
+        .select("id,board_id,actor_id,type,payload,created_at")
+        .eq("board_id", boardId)
+        .order("created_at", { ascending: false })
+        .limit(30),
     ]);
 
     if (boardRes.error || !boardRes.data) {
@@ -84,6 +101,8 @@ export function BoardPage({ boardId }: BoardPageProps) {
 
     setBoard(mapBoardRow(boardRes.data as VisualBoardRow));
     setElements(((elementsRes.data ?? []) as VisualBoardElementRow[]).map(mapElementRow));
+    setComments(((commentsRes.data ?? []) as VisualBoardCommentRow[]).map(mapBoardCommentRow));
+    setActivities(((activityRes.data ?? []) as VisualBoardActivityRow[]).map(mapBoardActivityRow));
     setLoading(false);
   }, [boardId, supabase]);
 
@@ -143,6 +162,43 @@ export function BoardPage({ boardId }: BoardPageProps) {
     setDirtyMap((current) => ({ ...current, [element.id]: element }));
   }
 
+  async function logBoardActivity(type: string, payload: Record<string, unknown> = {}) {
+    if (!userId) return;
+    const { data } = await supabase
+      .from("visual_board_activity")
+      .insert({ board_id: boardId, actor_id: userId, type, payload })
+      .select("id,board_id,actor_id,type,payload,created_at")
+      .maybeSingle();
+    if (data) setActivities((current) => [mapBoardActivityRow(data as VisualBoardActivityRow), ...current].slice(0, 30));
+  }
+
+  async function submitComment() {
+    const body = commentDraft.trim();
+    if (!body || !userId) return;
+    setSavingComment(true);
+    const selectedElement = selectedIds.length === 1 ? selectedIds[0] : null;
+    const { data, error: insertError } = await supabase
+      .from("visual_board_comments")
+      .insert({
+        board_id: boardId,
+        element_id: selectedElement,
+        author_id: userId,
+        body,
+        x: null,
+        y: null,
+      })
+      .select("id,board_id,element_id,author_id,body,x,y,resolved,created_at")
+      .maybeSingle();
+    setSavingComment(false);
+    if (insertError || !data) {
+      setSavingState("error");
+      return;
+    }
+    setCommentDraft("");
+    setComments((current) => [mapBoardCommentRow(data as VisualBoardCommentRow), ...current].slice(0, 20));
+    await logBoardActivity("comment_created", { elementId: selectedElement });
+  }
+
   function patchElement(id: string, patch: Partial<BoardElement>) {
     setElements((current) => current.map((item) => {
       if (item.id !== id) return item;
@@ -180,6 +236,7 @@ export function BoardPage({ boardId }: BoardPageProps) {
     setElements((current) => [...current, connector]);
     setSelectedIds([connector.id]);
     markDirty(connector);
+    void logBoardActivity("element_created", { elementType: "connector" });
     setPendingConnector(null);
   }
 
@@ -200,6 +257,7 @@ export function BoardPage({ boardId }: BoardPageProps) {
     setElements((current) => [...current, next]);
     setSelectedIds([next.id]);
     markDirty(next);
+    void logBoardActivity("element_created", { elementType: next.type });
     setActiveTool("select");
   }
 
@@ -310,6 +368,7 @@ export function BoardPage({ boardId }: BoardPageProps) {
       ...table,
       rows: [...table.rows, { id: crypto.randomUUID(), cells: Object.fromEntries(table.columns.map((column) => [column.id, ""])) }],
     }));
+    void logBoardActivity("table_changed", { action: "add_row", elementId });
   }
 
   function addTableColumn(elementId: string) {
@@ -320,6 +379,7 @@ export function BoardPage({ boardId }: BoardPageProps) {
       columns: [...table.columns, { id: columnId, label: "Nueva columna", width: 140 }],
       rows: table.rows.map((row) => ({ ...row, cells: { ...row.cells, [columnId]: "" } })),
     }));
+    void logBoardActivity("table_changed", { action: "add_column", elementId });
   }
 
   function removeTableRow(elementId: string, rowId: string) {
@@ -347,6 +407,7 @@ export function BoardPage({ boardId }: BoardPageProps) {
     if (!selectedIds.length) return;
     setElements((current) => current.filter((item) => !selectedIds.includes(item.id)));
     setDeletedIds((current) => Array.from(new Set([...current, ...selectedIds])));
+    void logBoardActivity("elements_deleted", { count: selectedIds.length });
     setSelectedIds([]);
     setPendingConnector(null);
   }
@@ -358,6 +419,7 @@ export function BoardPage({ boardId }: BoardPageProps) {
     setElements((current) => [...current, duplicate]);
     setSelectedIds([duplicate.id]);
     markDirty(duplicate);
+    void logBoardActivity("element_duplicated", { elementType: duplicate.type });
   }
 
   useEffect(() => {
@@ -434,6 +496,15 @@ export function BoardPage({ boardId }: BoardPageProps) {
             onAddTableColumn={() => selected?.type === "table" ? addTableColumn(selected.id) : undefined}
             onRemoveTableColumn={(columnId) => selected?.type === "table" ? removeTableColumn(selected.id, columnId) : undefined}
             onRenameTableColumn={(columnId, label) => selected?.type === "table" ? updateTableColumnLabel(selected.id, columnId, label) : undefined}
+          />
+          <BoardCommentsActivity
+            comments={comments}
+            activities={activities}
+            selectedElementId={selectedIds.length === 1 ? selectedIds[0] : null}
+            draft={commentDraft}
+            savingComment={savingComment}
+            onDraftChange={setCommentDraft}
+            onSubmitComment={submitComment}
           />
           <div className="ft-popover-surface absolute bottom-5 left-1/2 z-40 flex -translate-x-1/2 items-center gap-2 px-3 py-2">
             <button className="ft-pressable grid h-9 w-9 place-items-center rounded-xl hover:bg-slate-100" onClick={() => setViewport((current) => ({ ...current, zoom: Math.max(0.5, current.zoom - 0.1) }))}><Minus className="h-4 w-4" /></button>

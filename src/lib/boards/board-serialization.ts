@@ -1,4 +1,4 @@
-import type { BoardElement, BoardElementType, BoardStyle, ConnectorElement, TableElement, VisualBoard, VisualBoardElementRow, VisualBoardRow } from "@/lib/boards/board-types";
+import type { BoardElement, BoardElementType, BoardStyle, ConnectorElement, TableElement, VisualBoard, VisualBoardActivity, VisualBoardActivityRow, VisualBoardComment, VisualBoardCommentRow, VisualBoardElementRow, VisualBoardRow } from "@/lib/boards/board-types";
 
 export function mapBoardRow(row: VisualBoardRow): VisualBoard {
   return {
@@ -103,5 +103,30 @@ export function serializeElementForUpsert(element: BoardElement) {
     created_by: element.createdBy,
     updated_at: new Date().toISOString(),
     deleted_at: null,
+  };
+}
+
+export function mapBoardCommentRow(row: VisualBoardCommentRow): VisualBoardComment {
+  return {
+    id: row.id,
+    boardId: row.board_id,
+    elementId: row.element_id,
+    authorId: row.author_id,
+    body: row.body,
+    x: numberValue(row.x, 0),
+    y: numberValue(row.y, 0),
+    resolved: Boolean(row.resolved),
+    createdAt: row.created_at,
+  };
+}
+
+export function mapBoardActivityRow(row: VisualBoardActivityRow): VisualBoardActivity {
+  return {
+    id: row.id,
+    boardId: row.board_id,
+    actorId: row.actor_id,
+    type: row.type,
+    payload: row.payload ?? {},
+    createdAt: row.created_at,
   };
 }
