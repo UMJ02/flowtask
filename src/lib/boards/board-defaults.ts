@@ -1,4 +1,4 @@
-import type { BoardElement, BoardTool, ConnectorElement, ShapeElement } from "@/lib/boards/board-types";
+import type { BoardElement, BoardFileData, BoardTool, ConnectorElement, FileElement, ImageElement, ShapeElement } from "@/lib/boards/board-types";
 
 function nowIso() {
   return new Date().toISOString();
@@ -40,6 +40,36 @@ export function createDefaultConnector(
     createdAt,
     updatedAt: createdAt,
   };
+}
+
+
+export function createFileBoardElement(
+  type: "image" | "file",
+  boardId: string,
+  point: { x: number; y: number },
+  userId: string,
+  fileData: BoardFileData,
+): ImageElement | FileElement {
+  const createdAt = nowIso();
+  const isImage = type === "image";
+  return {
+    id: crypto.randomUUID(),
+    boardId,
+    type,
+    x: Math.round(point.x),
+    y: Math.round(point.y),
+    width: isImage ? 260 : 260,
+    height: isImage ? 180 : 96,
+    rotation: 0,
+    zIndex: 10,
+    locked: false,
+    hidden: false,
+    data: fileData,
+    style: { fill: "#FFFFFF", stroke: "#E5EAF1", radius: 18, shadow: "none" },
+    createdBy: userId,
+    createdAt,
+    updatedAt: createdAt,
+  } as ImageElement | FileElement;
 }
 
 export function createDefaultBoardElement(type: BoardTool, boardId: string, point: { x: number; y: number }, userId: string): BoardElement {

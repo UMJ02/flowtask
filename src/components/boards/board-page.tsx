@@ -1,9 +1,10 @@
 "use client";
 
-import type { PointerEvent as ReactPointerEvent, WheelEvent as ReactWheelEvent } from "react";
+import type { ChangeEvent as ReactChangeEvent, PointerEvent as ReactPointerEvent, WheelEvent as ReactWheelEvent } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Minus, Plus, RotateCcw } from "lucide-react";
 import { BoardMiniMap } from "@/components/boards/board-minimap";
+import { BoardCommentPins } from "@/components/boards/board-comment-pins";
 import { BoardElementView } from "@/components/boards/board-element";
 import { BoardToolbox } from "@/components/boards/board-toolbox";
 import { BoardSharingPanel } from "@/components/boards/board-sharing-panel";
@@ -12,7 +13,7 @@ import { BoardTopbar } from "@/components/boards/board-topbar";
 import { ConnectorLayer } from "@/components/boards/connector-layer";
 import { FloatingFormatToolbar } from "@/components/boards/floating-format-toolbar";
 import { PropertiesPanel } from "@/components/boards/properties-panel";
-import { createDefaultBoardElement, createDefaultConnector } from "@/lib/boards/board-defaults";
+import { createDefaultBoardElement, createDefaultConnector, createFileBoardElement } from "@/lib/boards/board-defaults";
 import { mapBoardActivityRow, mapBoardCollaboratorRow, mapBoardCommentRow, mapBoardRow, mapElementRow, serializeElementForUpsert } from "@/lib/boards/board-serialization";
 import type { BoardElement, BoardPoint, BoardTool, ConnectorElement, VisualBoard, VisualBoardActivity, VisualBoardActivityRow, VisualBoardCollaborator, VisualBoardCollaboratorRow, VisualBoardComment, VisualBoardCommentRow, VisualBoardElementRow, VisualBoardRow } from "@/lib/boards/board-types";
 import { createClient } from "@/lib/supabase/client";
@@ -30,6 +31,11 @@ type DragState = {
 
 type PendingConnector = {
   point: BoardPoint;
+  elementId?: string | null;
+};
+
+type PendingCommentTarget = {
+  point?: BoardPoint | null;
   elementId?: string | null;
 };
 
@@ -53,6 +59,9 @@ function snapshotsEqual(a: BoardSnapshot, b: BoardSnapshot) {
 export function BoardPage({ boardId }: BoardPageProps) {
   const supabase = useMemo(() => createClient(), []);
   const canvasRef = useRef<HTMLDivElement | null>(null);
+  const imageInputRef = useRef<HTMLInputElement | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const pendingFilePointRef = useRef<BoardPoint | null>(null);
   const [board, setBoard] = useState<VisualBoard | null>(null);
   const [elements, setElements] = useState<BoardElement[]>([]);
   const [comments, setComments] = useState<VisualBoardComment[]>([]);
@@ -74,6 +83,9 @@ export function BoardPage({ boardId }: BoardPageProps) {
   const [historyPast, setHistoryPast] = useState<BoardSnapshot[]>([]);
   const [historyFuture, setHistoryFuture] = useState<BoardSnapshot[]>([]);
   const [pendingConnector, setPendingConnector] = useState<PendingConnector | null>(null);
+  const [pendingCommentTarget, setPendingCommentTarget] = useState<PendingCommentTarget | null>(null);
+  const [commentFocusId, setCommentFocusId] = useState<string | null>(null);
+  const [uploadingFile, setUploadingFile] = useState(false);
   const [viewport, setViewport] = useState({ x: 0, y: 0, zoom: 1 });
   const [error, setError] = useState<string | null>(null);
 
@@ -258,7 +270,8 @@ export function BoardPage({ boardId }: BoardPageProps) {
     const body = commentDraft.trim();
     if (!body || !userId) return;
     setSavingComment(true);
-    const selectedElement = selectedIds.length === 1 ? selectedIds[0] : null;
+    const selectedElement = pendingCommentTarget?.elementId ?? (selectedIds.length === 1 ? selectedIds[0] : null);
+    const point = pendingCommentTarget?.point ?? null;
     const { data, error: insertError } = await supabase
       .from("visual_board_comments")
       .insert({
@@ -266,8 +279,8 @@ export function BoardPage({ boardId }: BoardPageProps) {
         element_id: selectedElement,
         author_id: userId,
         body,
-        x: null,
-        y: null,
+        x: point?.x ?? null,
+        y: point?.y ?? null,
       })
       .select("id,board_id,element_id,author_id,body,x,y,resolved,created_at")
       .maybeSingle();
@@ -277,8 +290,11 @@ export function BoardPage({ boardId }: BoardPageProps) {
       return;
     }
     setCommentDraft("");
-    setComments((current) => [mapBoardCommentRow(data as VisualBoardCommentRow), ...current].slice(0, 20));
-    await logBoardActivity("comment_created", { elementId: selectedElement });
+    setPendingCommentTarget(null);
+    const nextComment = mapBoardCommentRow(data as VisualBoardCommentRow);
+    setCommentFocusId(nextComment.id);
+    setComments((current) => [nextComment, ...current].slice(0, 40));
+    await logBoardActivity("comment_created", { elementId: selectedElement, anchored: Boolean(point || selectedElement) });
   }
 
 
@@ -363,6 +379,62 @@ export function BoardPage({ boardId }: BoardPageProps) {
     return { x: element.x + element.width / 2, y: element.y + element.height / 2 };
   }
 
+  async function createFileElementFromUpload(file: File, type: "image" | "file", point: BoardPoint) {
+    if (!userId) return;
+    setUploadingFile(true);
+    setSavingState("saving");
+    try {
+      const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "-");
+      const path = `${boardId}/${crypto.randomUUID()}-${safeName}`;
+      const { error: uploadError } = await supabase.storage
+        .from("visual-board-files")
+        .upload(path, file, { cacheControl: "3600", upsert: false });
+      if (uploadError) throw uploadError;
+      const { data } = supabase.storage.from("visual-board-files").getPublicUrl(path);
+      const element = createFileBoardElement(type, boardId, point, userId, {
+        name: file.name,
+        size: file.size,
+        mime: file.type || "application/octet-stream",
+        path,
+        url: data.publicUrl,
+        bucket: "visual-board-files",
+      });
+      pushHistorySnapshot();
+      setElements((current) => [...current, element]);
+      setSelectedIds([element.id]);
+      markDirty(element);
+      await logBoardActivity("file_added", { elementType: type, fileName: file.name });
+      setSavingState("saved");
+    } catch {
+      setSavingState("error");
+    } finally {
+      setUploadingFile(false);
+    }
+  }
+
+  async function handleBoardFileSelected(event: ReactChangeEvent<HTMLInputElement>, type: "image" | "file") {
+    const file = event.target.files?.[0];
+    const point = pendingFilePointRef.current;
+    event.target.value = "";
+    pendingFilePointRef.current = null;
+    if (!file || !point) return;
+    await createFileElementFromUpload(file, type, point);
+    setActiveTool("select");
+  }
+
+  function openFilePicker(type: "image" | "file", point: BoardPoint) {
+    pendingFilePointRef.current = point;
+    if (type === "image") imageInputRef.current?.click();
+    else fileInputRef.current?.click();
+  }
+
+  function handleCommentTarget(target: PendingCommentTarget) {
+    setPendingCommentTarget(target);
+    setCommentDraft("");
+    setActiveTool("select");
+    setTimeout(() => document.getElementById("board-comment-input")?.focus(), 50);
+  }
+
   function createConnectorFromPending(to: PendingConnector) {
     if (!pendingConnector || !userId) return;
     pushHistorySnapshot();
@@ -398,6 +470,14 @@ export function BoardPage({ boardId }: BoardPageProps) {
       else setPendingConnector({ point, elementId: null });
       return;
     }
+    if (activeTool === "comment") {
+      handleCommentTarget({ point, elementId: null });
+      return;
+    }
+    if (activeTool === "image" || activeTool === "file") {
+      openFilePicker(activeTool, point);
+      return;
+    }
     pushHistorySnapshot();
     const next = createDefaultBoardElement(activeTool, boardId, point, userId);
     setElements((current) => [...current, next]);
@@ -417,6 +497,12 @@ export function BoardPage({ boardId }: BoardPageProps) {
     }
     setPendingConnector({ point, elementId: id });
     setSelectedIds([id]);
+  }
+
+  function handleCommentElementTarget(id: string) {
+    const point = getElementCenter(id);
+    setSelectedIds([id]);
+    handleCommentTarget({ point, elementId: id });
   }
 
   function handleDragStart(id: string, event: ReactPointerEvent<HTMLDivElement>) {
@@ -615,9 +701,15 @@ export function BoardPage({ boardId }: BoardPageProps) {
           if (key === "t") setActiveTool("text");
           if (key === "r") setActiveTool("shape");
           if (key === "l") setActiveTool("connector");
+          if (key === "c") setActiveTool("comment");
+          if (key === "i") setActiveTool("image");
+          if (key === "f") setActiveTool("file");
         }
       }
-      if (event.key === "Escape") setPendingConnector(null);
+      if (event.key === "Escape") {
+        setPendingConnector(null);
+        setPendingCommentTarget(null);
+      }
     }
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
@@ -638,11 +730,13 @@ export function BoardPage({ boardId }: BoardPageProps) {
     <div className="fixed inset-0 z-50 grid bg-[#F7F9FC] text-[#0F172A]">
       <section className="grid min-h-screen grid-rows-[64px_1fr] overflow-hidden">
         <BoardTopbar board={board} savingState={savingState} collaborators={collaborators} onTitleChange={(title) => setBoard((current) => current ? { ...current, title } : current)} onOpenShare={() => setShareOpen(true)} />
+        <input ref={imageInputRef} type="file" accept="image/*" className="hidden" onChange={(event) => void handleBoardFileSelected(event, "image")} />
+        <input ref={fileInputRef} type="file" className="hidden" onChange={(event) => void handleBoardFileSelected(event, "file")} />
         {shareOpen ? <BoardSharingPanel board={board} collaborators={collaborators} saving={shareSaving} onClose={() => setShareOpen(false)} onUpdateSharing={updateBoardSharing} onInviteCollaborator={inviteBoardCollaborator} /> : null}
         <main className="relative overflow-hidden bg-[#FBFCFE]">
           <div
             ref={canvasRef}
-            className={`board-canvas h-full w-full ${activeTool === "hand" ? "cursor-grab" : activeTool === "select" ? "cursor-default" : "cursor-crosshair"}`}
+            className={`board-canvas h-full w-full ${activeTool === "hand" ? "cursor-grab" : activeTool === "select" ? "cursor-default" : activeTool === "image" || activeTool === "file" || activeTool === "comment" ? "cursor-crosshair" : "cursor-crosshair"}`}
             onPointerDown={handleCanvasClick}
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
@@ -660,18 +754,38 @@ export function BoardPage({ boardId }: BoardPageProps) {
                   onDragStart={handleDragStart}
                   onUpdateContent={updateContent}
                   onConnectorTarget={handleConnectorTarget}
+                  onCommentTarget={handleCommentElementTarget}
                   onUpdateTableCell={updateTableCell}
                   onAddTableRow={addTableRow}
                   onAddTableColumn={addTableColumn}
                   onRemoveTableRow={removeTableRow}
                 />
               ))}
+              <BoardCommentPins
+                comments={comments}
+                elements={elements}
+                selectedElementId={selectedIds.length === 1 ? selectedIds[0] : null}
+                onSelectComment={(comment) => {
+                  setCommentFocusId(comment.id);
+                  if (comment.elementId) setSelectedIds([comment.elementId]);
+                }}
+              />
             </div>
           </div>
           <BoardToolbox activeTool={activeTool} onToolChange={(tool) => { setActiveTool(tool); setPendingConnector(null); }} />
           {activeTool === "connector" && pendingConnector ? (
             <div className="ft-popover-surface absolute left-1/2 top-[76px] z-50 -translate-x-1/2 px-3 py-2 text-xs font-bold text-emerald-700">
               Selecciona el destino del conector o haz clic en el lienzo. Esc cancela.
+            </div>
+          ) : null}
+          {activeTool === "comment" ? (
+            <div className="ft-popover-surface absolute left-1/2 top-[76px] z-50 -translate-x-1/2 px-3 py-2 text-xs font-bold text-emerald-700">
+              Haz clic en un elemento o en el lienzo para anclar un comentario.
+            </div>
+          ) : null}
+          {(activeTool === "image" || activeTool === "file" || uploadingFile) ? (
+            <div className="ft-popover-surface absolute left-1/2 top-[76px] z-50 -translate-x-1/2 px-3 py-2 text-xs font-bold text-slate-700">
+              {uploadingFile ? "Subiendo archivo..." : activeTool === "image" ? "Haz clic en el lienzo para subir una imagen." : "Haz clic en el lienzo para adjuntar un archivo."}
             </div>
           ) : null}
           <FloatingFormatToolbar
@@ -694,7 +808,9 @@ export function BoardPage({ boardId }: BoardPageProps) {
           <BoardCommentsActivity
             comments={comments}
             activities={activities}
-            selectedElementId={selectedIds.length === 1 ? selectedIds[0] : null}
+            selectedElementId={pendingCommentTarget?.elementId ?? (selectedIds.length === 1 ? selectedIds[0] : null)}
+            pendingAnchor={pendingCommentTarget}
+            focusedCommentId={commentFocusId}
             draft={commentDraft}
             savingComment={savingComment}
             onDraftChange={setCommentDraft}

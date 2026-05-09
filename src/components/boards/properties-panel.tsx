@@ -1,6 +1,6 @@
 "use client";
 
-import { GitBranch, Lock, Plus, Trash2, Unlock } from "lucide-react";
+import { Download, FileText, GitBranch, Image, Lock, Plus, Trash2, Unlock } from "lucide-react";
 import type { BoardElement, BoardStyle } from "@/lib/boards/board-types";
 
 const fillSwatches = ["#FFFFFF", "#ECFDF5", "#DBEAFE", "#F5F3FF", "#FEF3C7", "#FFE4E6"];
@@ -24,13 +24,14 @@ export function PropertiesPanel({ selected, onPatch, onDelete, onAddTableRow, on
   const connector = selected?.type === "connector" ? selected : null;
   const table = selected?.type === "table" ? selected : null;
   const isConnector = Boolean(connector);
+  const media = selected?.type === "image" || selected?.type === "file" ? selected : null;
 
   return (
     <aside className="ft-glass-panel absolute bottom-6 right-6 top-6 z-30 hidden w-[312px] overflow-y-auto p-4 xl:block">
       <div className="flex items-center justify-between gap-3">
         <div>
           <p className="ft-text-label text-slate-500">Propiedades</p>
-          <h2 className="ft-title-card mt-1">{selected ? (isConnector ? "Conector" : table ? "Tabla" : "Elemento") : "Pizarra"}</h2>
+          <h2 className="ft-title-card mt-1">{selected ? (isConnector ? "Conector" : table ? "Tabla" : media ? (media.type === "image" ? "Imagen" : "Archivo") : "Elemento") : "Pizarra"}</h2>
         </div>
         {selected ? <button type="button" onClick={onDelete} className="grid h-9 w-9 place-items-center rounded-xl border border-rose-200 text-rose-600 hover:bg-rose-50"><Trash2 className="h-4 w-4" /></button> : null}
       </div>
@@ -48,7 +49,32 @@ export function PropertiesPanel({ selected, onPatch, onDelete, onAddTableRow, on
             </p>
           </section>
 
-          {isConnector ? (
+          {media ? (
+            <>
+              <section className="rounded-2xl border border-slate-200 bg-white/80 p-3">
+                <div className="flex items-start gap-3">
+                  <div className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-slate-100 text-slate-600">
+                    {media.type === "image" ? <Image className="h-5 w-5" /> : <FileText className="h-5 w-5" />}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-bold text-slate-800">{media.data.name}</p>
+                    <p className="mt-1 text-xs font-semibold text-slate-500">{Math.max(1, Math.round(media.data.size / 1024))} KB · {media.data.mime}</p>
+                  </div>
+                </div>
+                <a href={media.data.url} target="_blank" rel="noreferrer" className="ft-btn-secondary mt-3 flex h-9 w-full justify-center gap-2 text-xs">
+                  <Download className="h-3.5 w-3.5" /> Abrir archivo
+                </a>
+              </section>
+              <section>
+                <label className="ft-text-label text-slate-500">Borde</label>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {strokeSwatches.map((stroke) => (
+                    <button key={stroke} type="button" onClick={() => onPatch(mergeStyle(selected, { stroke }))} className="h-7 w-7 rounded-full border border-slate-200 transition hover:scale-110" style={{ backgroundColor: stroke }} />
+                  ))}
+                </div>
+              </section>
+            </>
+          ) : isConnector ? (
             <>
               <section>
                 <label className="ft-text-label text-slate-500">Etiqueta</label>

@@ -72,6 +72,21 @@ export function mapElementRow(row: VisualBoardElementRow): BoardElement {
     } as ConnectorElement;
   }
 
+  if (row.type === "image" || row.type === "file") {
+    return {
+      ...common,
+      type: row.type,
+      data: {
+        name: String((data as any).name ?? "Archivo"),
+        size: Number((data as any).size ?? 0),
+        mime: String((data as any).mime ?? "application/octet-stream"),
+        path: String((data as any).path ?? ""),
+        url: String((data as any).url ?? ""),
+        bucket: String((data as any).bucket ?? "visual-board-files"),
+      },
+    } as BoardElement;
+  }
+
   if (row.type === "shape") {
     return { ...common, type: "shape", shape: String((data as any).shape ?? "rounded") as any, content: String((data as any).content ?? "") } as BoardElement;
   }
@@ -84,9 +99,11 @@ export function serializeElementForUpsert(element: BoardElement) {
     ? { columns: element.columns, rows: element.rows }
     : element.type === "connector"
       ? { fromElementId: element.fromElementId ?? null, toElementId: element.toElementId ?? null, from: element.from, to: element.to, label: element.label ?? "" }
-      : element.type === "shape"
-        ? { shape: element.shape, content: element.content }
-        : { content: (element as any).content ?? "" };
+      : element.type === "image" || element.type === "file"
+        ? { ...element.data }
+        : element.type === "shape"
+          ? { shape: element.shape, content: element.content }
+          : { content: (element as any).content ?? "" };
 
   return {
     id: element.id,

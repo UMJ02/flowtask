@@ -10,6 +10,7 @@ export function BoardToolbox({ activeTool, onToolChange }: BoardToolboxProps) {
     { id: "basics", label: "Básicos" },
     { id: "diagrams", label: "Diagramas" },
     { id: "tables", label: "Tablas" },
+    { id: "media", label: "Archivos" },
   ] as const;
 
   return (

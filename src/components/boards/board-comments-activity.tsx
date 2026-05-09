@@ -1,12 +1,14 @@
 "use client";
 
-import { MessageCircle, Send, Sparkles } from "lucide-react";
+import { MapPin, MessageCircle, Send, Sparkles } from "lucide-react";
 import type { VisualBoardActivity, VisualBoardComment } from "@/lib/boards/board-types";
 
 type Props = {
   comments: VisualBoardComment[];
   activities: VisualBoardActivity[];
   selectedElementId?: string | null;
+  pendingAnchor?: { point?: { x: number; y: number } | null; elementId?: string | null } | null;
+  focusedCommentId?: string | null;
   draft: string;
   savingComment: boolean;
   onDraftChange: (value: string) => void;
@@ -26,8 +28,8 @@ function activityLabel(activity: VisualBoardActivity) {
   return "Movimiento registrado.";
 }
 
-export function BoardCommentsActivity({ comments, activities, selectedElementId, draft, savingComment, onDraftChange, onSubmitComment }: Props) {
-  const visibleComments = comments.slice(0, 3);
+export function BoardCommentsActivity({ comments, activities, selectedElementId, pendingAnchor, focusedCommentId, draft, savingComment, onDraftChange, onSubmitComment }: Props) {
+  const visibleComments = comments.slice(0, 5);
   const visibleActivities = activities.slice(0, 5);
   return (
     <aside className="ft-glass-panel absolute bottom-5 left-5 z-30 hidden w-[340px] p-3 lg:block">
@@ -39,10 +41,18 @@ export function BoardCommentsActivity({ comments, activities, selectedElementId,
         <Sparkles className="h-4 w-4 text-emerald-600" />
       </div>
 
+      {pendingAnchor ? (
+        <div className="mt-3 flex items-center gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-700">
+          <MapPin className="h-3.5 w-3.5" />
+          {pendingAnchor.elementId ? "Comentario anclado al elemento seleccionado" : "Comentario anclado al lienzo"}
+        </div>
+      ) : null}
+
       <div className="mt-3 rounded-2xl border border-slate-200 bg-white/85 p-2">
         <div className="flex items-center gap-2">
           <MessageCircle className="h-4 w-4 text-slate-500" />
           <input
+            id="board-comment-input"
             value={draft}
             onChange={(event) => onDraftChange(event.target.value)}
             onKeyDown={(event) => {
@@ -74,9 +84,9 @@ export function BoardCommentsActivity({ comments, activities, selectedElementId,
           </div>
           <div className="mt-2 space-y-2">
             {visibleComments.length ? visibleComments.map((comment) => (
-              <article key={comment.id} className="rounded-2xl border border-slate-200 bg-white/80 p-2.5">
+              <article key={comment.id} className={`rounded-2xl border p-2.5 ${focusedCommentId === comment.id ? "border-emerald-300 bg-emerald-50/70" : "border-slate-200 bg-white/80"}`}>
                 <p className="text-sm font-semibold leading-5 text-slate-700">{comment.body}</p>
-                <p className="mt-1 text-[11px] font-bold text-slate-400">{new Date(comment.createdAt).toLocaleDateString("es-CR")}{comment.elementId ? " · elemento" : ""}</p>
+                <p className="mt-1 text-[11px] font-bold text-slate-400">{new Date(comment.createdAt).toLocaleDateString("es-CR")}{comment.elementId ? " · elemento" : comment.x !== null && comment.y !== null ? " · lienzo" : ""}</p>
               </article>
             )) : <p className="rounded-2xl border border-dashed border-slate-200 bg-white/60 p-3 text-xs font-semibold text-slate-500">Aún no hay comentarios.</p>}
           </div>

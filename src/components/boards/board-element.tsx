@@ -1,7 +1,7 @@
 "use client";
 
 import type { CSSProperties, PointerEvent as ReactPointerEvent } from "react";
-import { Plus, Trash2 } from "lucide-react";
+import { Download, FileText, Plus, Trash2 } from "lucide-react";
 import type { BoardElement, BoardTool } from "@/lib/boards/board-types";
 
 type BoardElementViewProps = {
@@ -12,6 +12,7 @@ type BoardElementViewProps = {
   onDragStart: (id: string, event: ReactPointerEvent<HTMLDivElement>) => void;
   onUpdateContent: (id: string, content: string) => void;
   onConnectorTarget: (id: string) => void;
+  onCommentTarget?: (id: string) => void;
   onUpdateTableCell: (elementId: string, rowId: string, columnId: string, value: string) => void;
   onAddTableRow: (elementId: string) => void;
   onAddTableColumn: (elementId: string) => void;
@@ -39,6 +40,7 @@ export function BoardElementView({
   onDragStart,
   onUpdateContent,
   onConnectorTarget,
+  onCommentTarget,
   onUpdateTableCell,
   onAddTableRow,
   onAddTableColumn,
@@ -49,9 +51,10 @@ export function BoardElementView({
   const common = "group absolute touch-none select-none transition duration-150";
   const selection = selected ? "ring-2 ring-emerald-400 ring-offset-2 ring-offset-[#FBFCFE]" : "hover:ring-1 hover:ring-slate-300";
   const connectorMode = activeTool === "connector";
+  const commentMode = activeTool === "comment";
 
   function handlePointerDown(event: ReactPointerEvent<HTMLDivElement>) {
-    if (connectorMode) return;
+    if (connectorMode || commentMode) return;
     onDragStart(element.id, event);
   }
 
@@ -60,14 +63,57 @@ export function BoardElementView({
       onConnectorTarget(element.id);
       return;
     }
+    if (commentMode) {
+      onCommentTarget?.(element.id);
+      return;
+    }
     onSelect(element.id);
+  }
+
+  if (element.type === "image") {
+    return (
+      <div
+        style={getStyle(element)}
+        className={`${common} overflow-hidden rounded-[18px] border border-slate-200 bg-white ${selection} ${connectorMode || commentMode ? "cursor-crosshair hover:border-emerald-300" : ""}`}
+        onPointerDown={handlePointerDown}
+        onClick={handleClick}
+      >
+        <img src={element.data.url} alt={element.data.name} className="h-[calc(100%-44px)] w-full object-cover" draggable={false} />
+        <div className="flex h-11 items-center justify-between gap-2 border-t border-slate-100 bg-white px-3">
+          <p className="min-w-0 truncate text-xs font-bold text-slate-700">{element.data.name}</p>
+          <a href={element.data.url} target="_blank" rel="noreferrer" onClick={(event) => event.stopPropagation()} className="grid h-7 w-7 shrink-0 place-items-center rounded-lg text-slate-500 hover:bg-slate-100" title="Abrir imagen">
+            <Download className="h-3.5 w-3.5" />
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  if (element.type === "file") {
+    return (
+      <div
+        style={getStyle(element)}
+        className={`${common} flex items-center gap-3 rounded-[18px] border border-slate-200 bg-white p-3 ${selection} ${connectorMode || commentMode ? "cursor-crosshair hover:border-emerald-300" : ""}`}
+        onPointerDown={handlePointerDown}
+        onClick={handleClick}
+      >
+        <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-slate-100 text-slate-600">
+          <FileText className="h-5 w-5" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-sm font-bold text-slate-800">{element.data.name}</p>
+          <p className="mt-0.5 text-xs font-semibold text-slate-400">{Math.max(1, Math.round(element.data.size / 1024))} KB · {element.data.mime}</p>
+        </div>
+        <a href={element.data.url} target="_blank" rel="noreferrer" onClick={(event) => event.stopPropagation()} className="ft-btn-secondary h-8 px-3 text-xs">Abrir</a>
+      </div>
+    );
   }
 
   if (element.type === "table") {
     return (
       <div
         style={getStyle(element)}
-        className={`${common} overflow-hidden rounded-[16px] border border-violet-200 bg-white ${selection} ${connectorMode ? "cursor-crosshair hover:border-emerald-300" : ""}`}
+        className={`${common} overflow-hidden rounded-[16px] border border-violet-200 bg-white ${selection} ${connectorMode || commentMode ? "cursor-crosshair hover:border-emerald-300" : ""}`}
         onPointerDown={handlePointerDown}
         onClick={handleClick}
       >
@@ -114,7 +160,7 @@ export function BoardElementView({
                       <td key={column.id} className="border border-slate-100 p-0 text-slate-700">
                         <textarea
                           value={row.cells[column.id] ?? ""}
-                          readOnly={connectorMode || element.locked}
+                          readOnly={connectorMode || commentMode || element.locked}
                           onPointerDown={(event) => event.stopPropagation()}
                           onClick={(event) => event.stopPropagation()}
                           onChange={(event) => onUpdateTableCell(element.id, row.id, column.id, event.target.value)}
@@ -155,13 +201,13 @@ export function BoardElementView({
   return (
     <div
       style={{ ...getStyle(element), background: fill === "transparent" ? "transparent" : fill, borderColor: stroke, borderRadius: radius, color: textColor }}
-      className={`${common} ${selection} ${connectorMode ? "cursor-crosshair hover:border-emerald-300 hover:bg-emerald-50/50" : ""} flex items-center justify-center border p-3`}
+      className={`${common} ${selection} ${connectorMode || commentMode ? "cursor-crosshair hover:border-emerald-300 hover:bg-emerald-50/50" : ""} flex items-center justify-center border p-3`}
       onPointerDown={handlePointerDown}
       onClick={handleClick}
     >
       <textarea
         value={content}
-        readOnly={connectorMode || element.locked}
+        readOnly={connectorMode || commentMode || element.locked}
         onPointerDown={(event) => event.stopPropagation()}
         onChange={(event) => onUpdateContent(element.id, event.target.value)}
         className="h-full w-full resize-none border-none bg-transparent text-center text-[14px] font-semibold leading-5 outline-none placeholder:text-slate-400"

@@ -1,6 +1,6 @@
-export type BoardTool = "select" | "hand" | "sticky" | "text" | "shape" | "connector" | "table";
+export type BoardTool = "select" | "hand" | "sticky" | "text" | "shape" | "connector" | "table" | "image" | "file" | "comment";
 
-export type BoardElementType = "sticky" | "text" | "shape" | "connector" | "table";
+export type BoardElementType = "sticky" | "text" | "shape" | "connector" | "table" | "image" | "file";
 
 export type BoardPoint = { x: number; y: number };
 
@@ -72,7 +72,28 @@ export type TableElement = BoardElementBase & {
   style: BoardStyle;
 };
 
-export type BoardElement = StickyElement | TextElement | ShapeElement | ConnectorElement | TableElement;
+export type BoardFileData = {
+  name: string;
+  size: number;
+  mime: string;
+  path: string;
+  url: string;
+  bucket?: string;
+};
+
+export type ImageElement = BoardElementBase & {
+  type: "image";
+  data: BoardFileData;
+  style: BoardStyle;
+};
+
+export type FileElement = BoardElementBase & {
+  type: "file";
+  data: BoardFileData;
+  style: BoardStyle;
+};
+
+export type BoardElement = StickyElement | TextElement | ShapeElement | ConnectorElement | TableElement | ImageElement | FileElement;
 
 export type VisualBoard = {
   id: string;
@@ -167,7 +188,6 @@ export type VisualBoardActivityRow = {
   payload: Record<string, unknown>;
   created_at: string;
 };
-
 
 export type VisualBoardCollaboratorRole = "viewer" | "editor" | "admin";
 
