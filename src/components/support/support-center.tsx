@@ -91,7 +91,7 @@ export function SupportCenter({
         <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Post-release ops</p>
-            <h1 className="mt-1 text-2xl font-bold text-slate-900">Observabilidad y soporte</h1>
+            <h1 className="mt-1 text-xl font-bold text-slate-900">Observabilidad y soporte</h1>
             <p className="mt-2 max-w-2xl text-sm text-slate-600">
               Registra incidencias reales, sigue la actividad clave del workspace y mantén soporte operativo sin salir de la plataforma.
             </p>
@@ -192,7 +192,7 @@ function Metric({ label, value }: { label: string; value: number }) {
   return (
     <div>
       <p className="text-[11px] uppercase tracking-[0.18em] text-slate-300">{label}</p>
-      <p className="mt-1 text-2xl font-bold">{value}</p>
+      <p className="mt-1 text-xl font-bold">{value}</p>
     </div>
   );
 }

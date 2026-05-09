@@ -54,7 +54,7 @@ function Metric({ label, value, hint }: { label: string; value: string; hint: st
   return (
     <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4">
       <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">{label}</p>
-      <p className="mt-2 text-lg font-bold text-slate-900">{value}</p>
+      <p className="mt-2 text-base font-bold text-slate-900">{value}</p>
       <p className="mt-1 text-sm text-slate-600">{hint}</p>
     </div>
   );

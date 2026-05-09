@@ -24,7 +24,7 @@ export default function GlobalError({
   }, [error, logError]);
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-2xl items-center justify-center bg-slate-50 px-6 py-16">
+    <main className="mx-auto flex min-h-screen max-w-2xl items-center justify-center bg-slate-50 px-5 py-16">
       <div className="w-full">
         <ErrorState
           title="Algo falló en esta vista"

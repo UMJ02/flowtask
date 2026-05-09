@@ -52,7 +52,7 @@ export function IntelligentAttentionSettingsCard() {
   };
 
   return (
-    <Card className="rounded-[24px] border border-slate-200/85 bg-[linear-gradient(135deg,rgba(255,255,255,0.99),rgba(247,249,252,0.98))] shadow-[0_16px_32px_rgba(15,23,42,0.06)]">
+    <Card className="rounded-[24px] border border-slate-200/85 bg-[linear-gradient(135deg,rgba(255,255,255,0.99),rgba(247,249,252,0.98))]">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div className="max-w-3xl">
           <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-700 ring-1 ring-emerald-100">
@@ -88,7 +88,7 @@ export function IntelligentAttentionSettingsCard() {
                     type="button"
                     onClick={() => persist({ ...settings, sensitivity: key })}
                     className={active
-                      ? "rounded-[20px] border border-emerald-200 bg-emerald-50 px-4 py-4 text-left shadow-sm"
+                      ? "rounded-[20px] border border-emerald-200 bg-emerald-50 px-4 py-4 text-left shadow-none"
                       : "rounded-[20px] border border-slate-200 bg-slate-50 px-4 py-4 text-left hover:border-slate-300 hover:bg-white"}
                   >
                     <p className="text-sm font-semibold text-slate-900">{SENSITIVITY_LABELS[key].title}</p>

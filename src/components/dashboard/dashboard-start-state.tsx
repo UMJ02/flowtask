@@ -22,14 +22,14 @@ export function DashboardStartState() {
   ];
 
   return (
-    <Card className="rounded-[28px] border border-dashed border-slate-300 bg-gradient-to-br from-white to-slate-50 p-6 md:p-7">
-      <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+    <Card className="rounded-[24px] border border-dashed border-slate-300 bg-gradient-to-br from-white to-slate-50 p-5 md:p-5">
+      <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
         <div className="max-w-2xl">
           <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-emerald-700 ring-1 ring-emerald-100">
             <Sparkles className="h-3.5 w-3.5" />
             Inicio rápido
           </div>
-          <h2 className="mt-4 text-2xl font-bold tracking-tight text-slate-900">Tu workspace está listo para arrancar</h2>
+          <h2 className="mt-4 text-xl font-bold tracking-tight text-slate-900">Tu workspace está listo para arrancar</h2>
           <p className="mt-2 max-w-xl text-sm leading-6 text-slate-600">
             Ya tienes la estructura base. El siguiente paso es crear un proyecto o una tarea para empezar a usar el dashboard con datos reales.
           </p>
@@ -42,7 +42,7 @@ export function DashboardStartState() {
               <Link
                 key={step.title}
                 href={step.href}
-                className="group rounded-[22px] border border-slate-200 bg-white px-4 py-4 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md"
+                className="group rounded-[22px] border border-slate-200 bg-white px-4 py-4 shadow-none transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-none"
               >
                 <div className="flex items-start gap-3">
                   <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-slate-900 text-white">

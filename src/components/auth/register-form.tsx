@@ -137,7 +137,7 @@ export function RegisterForm({ initialNext }: { initialNext?: string }) {
           <label className="text-sm font-medium text-slate-700" htmlFor="register-full-name">Nombre completo</label>
           <Input
             id="register-full-name"
-            className="h-12 bg-white/90"
+            className="h-10 bg-white/90"
             placeholder="Tu nombre"
             autoComplete="name"
             aria-invalid={Boolean(errors.fullName)}
@@ -150,7 +150,7 @@ export function RegisterForm({ initialNext }: { initialNext?: string }) {
           <label className="text-sm font-medium text-slate-700" htmlFor="register-email">Correo</label>
           <Input
             id="register-email"
-            className="h-12 bg-white/90"
+            className="h-10 bg-white/90"
             type="email"
             placeholder="correo@empresa.com"
             autoComplete="email"
@@ -167,7 +167,7 @@ export function RegisterForm({ initialNext }: { initialNext?: string }) {
           </div>
           <AuthPasswordField
             id="register-password"
-            className="h-12 bg-white/90"
+            className="h-10 bg-white/90"
             placeholder="••••••••"
             autoComplete="new-password"
             aria-invalid={Boolean(errors.password)}
@@ -183,7 +183,7 @@ export function RegisterForm({ initialNext }: { initialNext?: string }) {
           <label className="text-sm font-medium text-slate-700" htmlFor="register-confirm-password">Confirmar contraseña</label>
           <AuthPasswordField
             id="register-confirm-password"
-            className="h-12 bg-white/90"
+            className="h-10 bg-white/90"
             placeholder="••••••••"
             autoComplete="new-password"
             aria-invalid={Boolean(errors.confirmPassword)}
@@ -203,7 +203,7 @@ export function RegisterForm({ initialNext }: { initialNext?: string }) {
           </div>
         ) : null}
 
-        <Button className="h-12 w-full rounded-2xl" disabled={isBlocked} loading={isSubmitting} type="submit">
+        <Button className="h-10 w-full rounded-2xl" disabled={isBlocked} loading={isSubmitting} type="submit">
           {isSubmitting ? 'Creando cuenta...' : isBlocked ? 'Intento bloqueado temporalmente' : 'Crear cuenta'}
         </Button>
 

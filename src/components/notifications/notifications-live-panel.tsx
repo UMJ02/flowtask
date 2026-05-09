@@ -228,7 +228,7 @@ export function NotificationsLivePanel({
     <Card className="space-y-4">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <h2 className="text-lg font-semibold text-slate-900">Centro de notificaciones</h2>
+          <h2 className="text-base font-semibold text-slate-900">Centro de notificaciones</h2>
           <p className="max-w-2xl text-sm text-slate-500">Usa búsqueda y filtros inteligentes para revisar solo lo que de verdad requiere atención.</p>
         </div>
         <span className="inline-flex w-fit rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
@@ -342,7 +342,7 @@ export function NotificationsLivePanel({
           })}
 
           {!visibleNotifications.length ? (
-            <div className="rounded-2xl border border-dashed border-slate-200 bg-white p-6 text-sm text-slate-600">
+            <div className="rounded-2xl border border-dashed border-slate-200 bg-white p-5 text-sm text-slate-600">
               No hay notificaciones para este filtro. Ajusta la búsqueda o abre los filtros inteligentes.
             </div>
           ) : null}

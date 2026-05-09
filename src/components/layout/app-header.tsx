@@ -8,7 +8,7 @@ import type { OrganizationSummary } from '@/types/organization';
 
 const CommandPalette = dynamic(() => import('@/components/layout/command-palette').then((mod) => mod.CommandPalette), {
   loading: () => (
-    <div className="flex h-11 w-full items-center gap-3 rounded-full border border-[#E5EAF1] bg-white px-4 text-sm font-semibold text-slate-400 shadow-[0_4px_14px_rgba(15,23,42,0.04)]">
+    <div className="flex h-11 w-full items-center gap-3 rounded-full border border-[#E5EAF1] bg-white px-4 text-sm font-semibold text-slate-400">
       <Search className="h-4 w-4" />
       <span>Buscar o abrir comando…</span>
     </div>
@@ -41,8 +41,8 @@ export function AppHeader({
   const workspaceLabel = activeOrganization ? `Estás trabajando en ${activeOrganization.name}.` : 'Enfócate en lo importante. Tú decides el impacto de hoy.';
 
   return (
-    <header className="sticky top-4 z-30 animate-[flowtaskFadeUp_250ms_ease-out] rounded-[20px] border border-[#E5EAF1] bg-white/85 px-5 py-4 shadow-[0_8px_30px_rgba(2,6,23,0.06)] backdrop-blur-[16px] md:h-[82px] md:px-6 md:py-0">
-      <div className="flex h-full min-w-0 flex-col gap-4 md:flex-row md:items-center md:justify-between md:gap-6">
+    <header className="sticky top-4 z-30 animate-[flowtaskFadeUp_250ms_ease-out] rounded-[20px] border border-[#E5EAF1] bg-white/85 px-5 py-4 backdrop-blur-[16px] md:h-[82px] md:px-5 md:py-0">
+      <div className="flex h-full min-w-0 flex-col gap-4 md:flex-row md:items-center md:justify-between md:gap-5">
         <div className="flex min-w-0 items-center gap-3 md:w-[36%]">
           <MobileNav />
           <span className="hidden h-9 w-1 shrink-0 rounded-full bg-[#16C784] shadow-[0_0_18px_rgba(22,199,132,0.35)] md:inline-flex" aria-hidden="true" />
@@ -70,7 +70,7 @@ export function AppHeader({
             type="button"
             aria-label="Cambiar tema"
             title="Tema"
-            className="hidden h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[#E5EAF1] bg-white text-[#0F172A] shadow-[0_4px_14px_rgba(15,23,42,0.04)] transition-all duration-150 hover:-translate-y-0.5 hover:scale-[1.03] hover:bg-[#F7F9FC] md:inline-flex"
+            className="hidden h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[#E5EAF1] bg-white text-[#0F172A] transition-all duration-150 hover:-translate-y-0.5 hover:scale-[1.03] hover:bg-[#F7F9FC] md:inline-flex"
           >
             <SunMedium className="h-[18px] w-[18px]" />
           </button>

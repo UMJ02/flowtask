@@ -41,7 +41,7 @@ export function ClientPermissionsPanel({
             </tr>
           )) : (
             <tr>
-              <td colSpan={4} className="py-6 text-sm text-slate-500">Todavía no tienes permisos asignados de forma directa en esta organización.</td>
+              <td colSpan={4} className="py-5 text-sm text-slate-500">Todavía no tienes permisos asignados de forma directa en esta organización.</td>
             </tr>
           )}
         </tbody>

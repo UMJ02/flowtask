@@ -40,7 +40,7 @@ export default async function SettingsPage() {
 
       <Card className="rounded-[22px]">
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Settings</p>
-        <h2 className="mt-2 text-2xl font-bold text-slate-900 md:text-[28px]">Preferencias operativas</h2>
+        <h2 className="mt-2 text-xl font-bold text-slate-900 md:text-[28px]">Preferencias operativas</h2>
         <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
           Aquí decides qué avisos quieres ver, cómo se entregan y qué ventanas prefieres mantener en silencio.
         </p>

@@ -328,7 +328,7 @@ const CalendarPanel = memo(function CalendarPanel({
                 onClick={() => onModeChange(item)}
                 className={cn(
                   'rounded-md px-3 py-1.5 text-xs font-semibold transition',
-                  mode === item ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'
+                  mode === item ? 'bg-white text-slate-900 shadow-none' : 'text-slate-500 hover:text-slate-700'
                 )}
               >
                 {item === 'week' ? '2 semanas' : 'Mes'}
@@ -367,7 +367,7 @@ const CalendarPanel = memo(function CalendarPanel({
                     'flex min-w-0 flex-col justify-start rounded-lg border p-3 text-left transition',
                     mode === 'week' ? 'min-h-[88px]' : 'min-h-[84px]',
                     isSelected
-                      ? 'border-sky-500 bg-white shadow-sm'
+                      ? 'border-sky-500 bg-white shadow-none'
                       : inMonth
                         ? 'border-slate-200 bg-slate-50/70 hover:border-slate-300 hover:bg-white'
                         : 'border-slate-100 bg-slate-50/30 text-slate-400 hover:border-slate-200'
@@ -404,7 +404,7 @@ const CalendarPanel = memo(function CalendarPanel({
                 return (
                   <div
                     key={item.id}
-                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-3 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-emerald-200 hover:shadow"
+                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-3 text-left shadow-none transition hover:-translate-y-0.5 hover:border-emerald-200 hover:shadow"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
@@ -729,18 +729,18 @@ function InteractiveDashboardBoardComponent() {
   if (!hydrated) {
     return (
       <div className="space-y-4">
-        <Card className="border-slate-200 bg-white px-5 py-5 shadow-sm">
+        <Card className="border-slate-200 bg-white px-5 py-5 shadow-none">
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-600">Modo pizarra</p>
-              <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-950">Tablero visual premium</h2>
+              <h2 className="mt-2 text-xl font-bold tracking-tight text-slate-950">Tablero visual premium</h2>
               <p className="mt-1 max-w-2xl text-sm text-slate-500">Cargando la pizarra con tu configuración y paneles…</p>
             </div>
           </div>
         </Card>
         <div className="grid gap-4 xl:grid-cols-[340px_minmax(0,1fr)]">
-          <Card className="border-slate-200 bg-white p-5 shadow-sm"><div className="h-[420px] rounded-3xl bg-slate-50" /></Card>
-          <Card className="border-slate-200 bg-white p-5 shadow-sm"><div className="h-[420px] rounded-3xl bg-slate-50" /></Card>
+          <Card className="border-slate-200 bg-white p-5 shadow-none"><div className="h-[420px] rounded-[22px] bg-slate-50" /></Card>
+          <Card className="border-slate-200 bg-white p-5 shadow-none"><div className="h-[420px] rounded-[22px] bg-slate-50" /></Card>
         </div>
       </div>
     );
@@ -933,11 +933,11 @@ function InteractiveDashboardBoardComponent() {
 
   return (
     <div className="space-y-4">
-      <Card className="border-slate-200 bg-white px-5 py-5 shadow-sm">
+      <Card className="border-slate-200 bg-white px-5 py-5 shadow-none">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-600">Modo pizarra</p>
-            <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-950">Tablero visual premium</h2>
+            <h2 className="mt-2 text-xl font-bold tracking-tight text-slate-950">Tablero visual premium</h2>
             <p className="mt-1 max-w-2xl text-sm text-slate-500">Calendario, tareas rápidas y proyectos activos leyendo desde la base real del workspace.</p>
             <div className="mt-3 flex flex-wrap gap-2">
               <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-600">{activeCount} paneles activos</span>
@@ -947,17 +947,17 @@ function InteractiveDashboardBoardComponent() {
             <div className="mt-4 grid gap-3 sm:grid-cols-3">
               <div className="rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-3">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">Vence hoy</p>
-                <p className="mt-2 text-2xl font-bold text-slate-950">{tasksToday.length}</p>
+                <p className="mt-2 text-xl font-bold text-slate-950">{tasksToday.length}</p>
                 <p className="text-xs text-slate-500">Tareas abiertas con fecha de hoy.</p>
               </div>
               <div className="rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-3">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">Agenda cliente</p>
-                <p className="mt-2 text-2xl font-bold text-slate-950">{selectedAgendaItems.length}</p>
+                <p className="mt-2 text-xl font-bold text-slate-950">{selectedAgendaItems.length}</p>
                 <p className="text-xs text-slate-500">Favoritas abiertas en la fecha seleccionada.</p>
               </div>
               <div className="rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-3">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">Pendientes fecha</p>
-                <p className="mt-2 text-2xl font-bold text-slate-950">{selectedDateOpenTasks.length}</p>
+                <p className="mt-2 text-xl font-bold text-slate-950">{selectedDateOpenTasks.length}</p>
                 <p className="text-xs text-slate-500">Abiertas para la fecha activa y {activeProjects.length} proyectos activos.</p>
               </div>
             </div>
@@ -981,7 +981,7 @@ function InteractiveDashboardBoardComponent() {
 
       <div className="space-y-4">
         {asideOpen ? (
-          <Card className="animate-[fade-in_220ms_ease-out] border-sky-200 bg-[linear-gradient(180deg,rgba(239,246,255,0.92),rgba(255,255,255,0.98))] p-4 shadow-[0_14px_34px_rgba(59,130,246,0.08)]">
+          <Card className="animate-[fade-in_220ms_ease-out] border-sky-200 bg-[linear-gradient(180deg,rgba(239,246,255,0.92),rgba(255,255,255,0.98))] p-4">
             <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-sky-700">Paneles de pizarra</p>
@@ -1009,7 +1009,7 @@ function InteractiveDashboardBoardComponent() {
                     onClick={() => (active ? removePanel(key) : restorePanel(key))}
                     className={cn(
                       'flex w-full min-w-0 items-start gap-3 rounded-2xl border px-3 py-3 text-left transition duration-200 hover:-translate-y-0.5',
-                      active ? 'border-emerald-200 bg-white shadow-[0_10px_24px_rgba(16,185,129,0.10)] ring-2 ring-emerald-100' : 'border-sky-100 bg-white/95 hover:border-sky-200 hover:bg-sky-50/60 hover:shadow-[0_10px_24px_rgba(59,130,246,0.10)]'
+                      active ? 'border-emerald-200 bg-white ring-2 ring-emerald-100' : 'border-sky-100 bg-white/95 hover:border-sky-200 hover:bg-sky-50/60 hover:'
                     )}
                   >
                     <span className={cn('inline-flex h-10 w-10 items-center justify-center rounded-lg transition', active ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-700')}>
@@ -1027,10 +1027,10 @@ function InteractiveDashboardBoardComponent() {
         ) : null}
 
         <div className="space-y-4">
-          <Card className="border-slate-200 bg-white p-4 md:p-5 shadow-sm">
+          <Card className="border-slate-200 bg-white p-4 md:p-5 shadow-none">
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50/80 px-4 py-3 xl:pr-24">
               <div className="flex items-center gap-3">
-                <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-white text-slate-700 shadow-sm"><LayoutPanelLeft className="h-4 w-4" /></span>
+                <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-white text-slate-700 shadow-none"><LayoutPanelLeft className="h-4 w-4" /></span>
                 <div>
                   <p className="text-sm font-semibold text-slate-900">Organiza tu tablero</p>
                   <p className="text-xs text-slate-500">Quita paneles, vuelve a activarlos desde el lateral y deja solo lo que usarás hoy.</p>
@@ -1040,7 +1040,7 @@ function InteractiveDashboardBoardComponent() {
             </div>
             {dataError ? <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">{dataError}</div> : null}
             {activePanels.includes('kanban') ? (
-              <div className="mb-4 rounded-[28px] border border-emerald-200 bg-gradient-to-br from-white via-emerald-50/40 to-white p-4 md:p-5 shadow-[0_16px_36px_rgba(16,185,129,0.08)]">
+              <div className="mb-4 rounded-[24px] border border-emerald-200 bg-gradient-to-br from-white via-emerald-50/40 to-white p-4 md:p-5">
                 <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-[24px] border border-emerald-100 bg-white/[0.80] px-4 py-3">
                   <div className="flex items-center gap-3">
                     <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100"><CheckCircle2 className="h-5 w-5" /></span>
@@ -1078,11 +1078,11 @@ function InteractiveDashboardBoardComponent() {
 
             <div className="grid gap-4 xl:grid-cols-2">
               {activePanels.includes('task') ? (
-                <div className="rounded-xl border border-emerald-200 bg-white p-4 shadow-sm transition hover:shadow-md">
+                <div className="rounded-xl border border-emerald-200 bg-white p-4 shadow-none transition hover:shadow-none">
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Panel</p>
-                      <h3 className="mt-1 text-2xl font-bold text-slate-950">Tarea</h3>
+                      <h3 className="mt-1 text-xl font-bold text-slate-950">Tarea</h3>
                     </div>
                     <div className="flex items-center gap-2">
                       <button type="button" onClick={() => removePanel('task')} className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition hover:-translate-y-0.5 hover:bg-slate-50"><X className="h-4 w-4" /></button>
@@ -1097,13 +1097,13 @@ function InteractiveDashboardBoardComponent() {
                         value={taskDraft.title}
                         onChange={(event) => setTaskDraft((current) => ({ ...current, title: event.target.value }))}
                         placeholder="Nombre de la tarea"
-                        className="h-12 w-full rounded-full border border-emerald-200 bg-white px-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-emerald-300"
+                        className="h-10 w-full rounded-full border border-emerald-200 bg-white px-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-emerald-300"
                       />
                       <input
                         value={taskDraft.detail}
                         onChange={(event) => setTaskDraft((current) => ({ ...current, detail: event.target.value }))}
                         placeholder="Detalle rápido"
-                        className="h-12 w-full rounded-full border border-emerald-200 bg-white px-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-emerald-300"
+                        className="h-10 w-full rounded-full border border-emerald-200 bg-white px-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-emerald-300"
                       />
                       <div className="flex flex-wrap items-center justify-between gap-3">
                         <p className="text-xs text-slate-500">Se agenda para <span className="font-semibold text-slate-700 capitalize">{formatLongDate(new Date(selectedDate))}</span>.</p>
@@ -1116,7 +1116,7 @@ function InteractiveDashboardBoardComponent() {
                         <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-3 text-sm text-emerald-900">
                           <p className="font-semibold">La tarea se creó correctamente.</p>
                           <div className="mt-2 flex flex-wrap gap-2">
-                            <button type="button" onClick={() => openTask(createdTaskId)} className="inline-flex items-center rounded-lg bg-white px-3 py-2 text-xs font-semibold text-emerald-700 shadow-sm">Abrir detalle</button>
+                            <button type="button" onClick={() => openTask(createdTaskId)} className="inline-flex items-center rounded-lg bg-white px-3 py-2 text-xs font-semibold text-emerald-700 shadow-none">Abrir detalle</button>
                             <Link href={taskEditRoute(createdTaskId)} className="inline-flex items-center rounded-lg border border-emerald-200 bg-emerald-100/60 px-3 py-2 text-xs font-semibold text-emerald-700">Completar en tareas</Link>
                             {createdTask ? (
                               <button type="button" onClick={() => toggleTaskFavorite(createdTask)} className="inline-flex items-center rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-700">{favoriteTaskIds.has(createdTask.id) ? 'Quitar de agenda' : 'Agregar a agenda'}</button>
@@ -1128,7 +1128,7 @@ function InteractiveDashboardBoardComponent() {
                         {(nextTasks.length ? nextTasks : openTasks.slice(0, 4)).map((task) => {
                           const favorite = favoriteTaskIds.has(task.id);
                           return (
-                            <div key={task.id} className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-3 text-left transition hover:-translate-y-0.5 hover:bg-white hover:shadow-sm">
+                            <div key={task.id} className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-3 text-left transition hover:-translate-y-0.5 hover:bg-white hover:shadow-none">
                             <div className="flex items-start justify-between gap-3">
                               <button type="button" onClick={() => openTask(task.id)} className="min-w-0 flex-1 text-left">
                                 <p className="text-sm font-semibold text-slate-900">{task.title}</p>
@@ -1155,11 +1155,11 @@ function InteractiveDashboardBoardComponent() {
               ) : null}
 
               {activePanels.includes('projects') ? (
-                <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-md">
+                <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-none transition hover:shadow-none">
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Panel</p>
-                      <h3 className="mt-1 text-2xl font-bold text-slate-950">Proyectos</h3>
+                      <h3 className="mt-1 text-xl font-bold text-slate-950">Proyectos</h3>
                     </div>
                     <div className="flex items-center gap-2">
                       <button type="button" onClick={() => removePanel('projects')} className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition hover:-translate-y-0.5 hover:bg-slate-50"><X className="h-4 w-4" /></button>
@@ -1171,7 +1171,7 @@ function InteractiveDashboardBoardComponent() {
                   {expanded.projects ? (
                     <div className="mt-4 grid gap-3 sm:grid-cols-2">
                       {activeProjects.map((project) => (
-                        <Link key={project.id} href={projectDetailRoute(project.id)} className="rounded-lg border border-slate-200 bg-white px-4 py-3 transition hover:-translate-y-0.5 hover:shadow-sm">
+                        <Link key={project.id} href={projectDetailRoute(project.id)} className="rounded-lg border border-slate-200 bg-white px-4 py-3 transition hover:-translate-y-0.5 hover:shadow-none">
                           <p className="text-sm font-semibold text-slate-900">{project.title}</p>
                           <p className="mt-1 text-xs text-slate-500">{project.client_name?.trim() || 'Sin cliente'} · {formatStatus(project.status)}</p>
                           <p className="mt-2 text-[11px] font-medium uppercase tracking-[0.14em] text-emerald-700">{project.due_date || 'Sin fecha'}</p>
@@ -1189,11 +1189,11 @@ function InteractiveDashboardBoardComponent() {
             </div>
 
             {activePanels.includes('calendar') ? (
-              <div className="mt-4 rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-md">
+              <div className="mt-4 rounded-xl border border-slate-200 bg-white p-4 shadow-none transition hover:shadow-none">
                 <div className="mb-4 flex items-center justify-between gap-3">
                   <div>
                     <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Panel</p>
-                    <h3 className="mt-1 text-2xl font-bold text-slate-950">Calendario</h3>
+                    <h3 className="mt-1 text-xl font-bold text-slate-950">Calendario</h3>
                   </div>
                   <div className="flex items-center gap-2">
                     <button type="button" onClick={() => removePanel('calendar')} className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition hover:-translate-y-0.5 hover:bg-slate-50"><X className="h-4 w-4" /></button>
@@ -1223,14 +1223,14 @@ function InteractiveDashboardBoardComponent() {
 
 
 
-          <Card className="border-slate-200 bg-white p-4 md:p-5 transition hover:shadow-md">
+          <Card className="border-slate-200 bg-white p-4 md:p-5 transition hover:shadow-none">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
               <div className="flex items-center gap-3">
                 <span className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
                   <StickyNote className="h-5 w-5" />
                 </span>
                 <div>
-                  <p className="text-lg font-semibold text-slate-900">Notas rápidas</p>
+                  <p className="text-base font-semibold text-slate-900">Notas rápidas</p>
                   <p className="text-sm text-slate-500">Guarda recordatorios al vuelo y edítalos directo dentro de cada fila.</p>
                 </div>
               </div>

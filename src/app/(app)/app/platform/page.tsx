@@ -28,7 +28,7 @@ export default async function PlatformPage() {
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Platform command center</p>
-            <h1 className="mt-1 text-2xl font-bold text-slate-900">Operación SaaS, soporte y cuentas</h1>
+            <h1 className="mt-1 text-xl font-bold text-slate-900">Operación SaaS, soporte y cuentas</h1>
             <p className="mt-2 max-w-3xl text-sm text-slate-600">Vista ejecutiva para administración global de organizaciones, suscripciones y casos internos de plataforma desde una sola pantalla.</p>
           </div>
           <div className="rounded-2xl bg-slate-950 px-5 py-4 text-white">

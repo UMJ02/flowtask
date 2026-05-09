@@ -44,7 +44,7 @@ export function ReminderList({ reminders }: ReminderListProps) {
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
                   {reminder.task_id ? "Tarea" : "Proyecto"}
                 </p>
-                <h3 className="mt-1 text-lg font-semibold text-slate-900">{task?.title || project?.title || "Elemento asociado"}</h3>
+                <h3 className="mt-1 text-base font-semibold text-slate-900">{task?.title || project?.title || "Elemento asociado"}</h3>
                 <p className="mt-2 text-sm text-slate-600">Programado para {formatDate(reminder.remind_at)}</p>
               </div>
               <div className="flex gap-2">

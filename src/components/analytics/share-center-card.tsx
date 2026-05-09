@@ -40,7 +40,7 @@ export function ShareCenterCard({ summary }: { summary: WorkspaceAnalyticsSummar
   };
 
   return (
-    <Card className="border-slate-200/80 bg-white px-4 py-4 shadow-[0_12px_28px_rgba(15,23,42,0.05)] md:px-5 md:py-4">
+    <Card className="border-slate-200/80 bg-white px-4 py-4 md:px-5 md:py-4">
       <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
         <div className="max-w-3xl min-w-0">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-700">Share center</p>

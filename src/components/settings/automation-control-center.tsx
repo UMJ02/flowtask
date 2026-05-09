@@ -35,12 +35,12 @@ export function AutomationControlCenter({ preferences }: { preferences: Notifica
       <Card className="bg-[linear-gradient(135deg,#0f172a_0%,#111827_55%,#1f2937_100%)] text-white shadow-[0_24px_60px_rgba(15,23,42,0.22)]">
         <div className="flex flex-col gap-5">
           <div className="flex items-start gap-3">
-            <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10 text-emerald-300 ring-1 ring-white/10">
+            <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-white/10 text-emerald-300 ring-1 ring-white/10">
               <Sparkles className="h-5 w-5" />
             </span>
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">Automation center</p>
-              <h2 className="mt-2 text-2xl font-bold">Tu rutina de notificaciones ya tiene una estructura clara</h2>
+              <h2 className="mt-2 text-xl font-bold">Tu rutina de notificaciones ya tiene una estructura clara</h2>
               <p className="mt-2 max-w-2xl text-sm text-slate-300">
                 Aquí ves cómo se combinan tus alertas inmediatas, horas silenciosas y resúmenes para que el sistema trabaje contigo sin saturarte.
               </p>
@@ -59,7 +59,7 @@ export function AutomationControlCenter({ preferences }: { preferences: Notifica
             </div>
             <div className="rounded-[26px] bg-white/10 px-4 py-3 ring-1 ring-white/10">
               <p className="text-xs uppercase tracking-[0.16em] text-slate-300">Horas silenciosas</p>
-              <p className="mt-2 text-lg font-bold">{quietHours}</p>
+              <p className="mt-2 text-base font-bold">{quietHours}</p>
               <p className="mt-1 text-sm text-slate-300">Ventana actual de menor interrupción.</p>
             </div>
           </div>

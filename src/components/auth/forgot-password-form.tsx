@@ -57,7 +57,7 @@ export function ForgotPasswordForm() {
       <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
         <div className="space-y-2">
           <label className="text-sm font-medium text-slate-700">Correo</label>
-          <Input className="h-12 bg-white/90" type="email" placeholder="correo@empresa.com" {...register('email')} />
+          <Input className="h-10 bg-white/90" type="email" placeholder="correo@empresa.com" {...register('email')} />
           <p className="text-xs text-slate-400">Te enviaremos un enlace para restablecer tu contraseña.</p>
           {errors.email ? <p className="text-sm text-rose-600">{errors.email.message}</p> : null}
         </div>
@@ -68,7 +68,7 @@ export function ForgotPasswordForm() {
           </div>
         ) : null}
 
-        <Button className="h-12 w-full rounded-2xl" loading={isSubmitting} type="submit">
+        <Button className="h-10 w-full rounded-2xl" loading={isSubmitting} type="submit">
           {isSubmitting ? 'Enviando...' : 'Enviar correo'}
         </Button>
 

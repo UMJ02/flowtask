@@ -18,7 +18,7 @@ export function ProjectSharePanel({ enabled, token }: { enabled: boolean; token:
 
   return (
     <Card>
-      <h3 className="text-lg font-semibold text-slate-900">Enlace compartido</h3>
+      <h3 className="text-base font-semibold text-slate-900">Enlace compartido</h3>
       {!link ? (
         <p className="mt-2 text-sm text-slate-500">Activa la opción de compartir para generar la vista de jefatura.</p>
       ) : (

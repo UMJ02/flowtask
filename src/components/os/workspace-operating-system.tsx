@@ -46,7 +46,7 @@ export function WorkspaceOperatingSystem({
           {scoreCards.map((card) => (
             <div key={card.label} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
               <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">{card.label}</p>
-              <p className="mt-2 text-2xl font-bold text-slate-900">{card.value}</p>
+              <p className="mt-2 text-xl font-bold text-slate-900">{card.value}</p>
             </div>
           ))}
         </div>
@@ -66,7 +66,7 @@ export function WorkspaceOperatingSystem({
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="rounded-[26px] bg-white/10 px-4 py-3 ring-1 ring-white/10">
               <p className="text-xs uppercase tracking-[0.16em] text-fuchsia-100/80">Organización</p>
-              <p className="mt-2 text-lg font-bold">{summary.foundations.organizationName}</p>
+              <p className="mt-2 text-base font-bold">{summary.foundations.organizationName}</p>
               <p className="mt-1 text-sm text-fuchsia-100/80">Rol base: {summary.foundations.role}</p>
             </div>
             <div className="rounded-[26px] bg-white/10 px-4 py-3 ring-1 ring-white/10">
@@ -91,7 +91,7 @@ export function WorkspaceOperatingSystem({
         <Card>
           <div className="flex items-center justify-between gap-3">
             <div>
-              <h3 className="text-lg font-semibold text-slate-900">Carriles del sistema</h3>
+              <h3 className="text-base font-semibold text-slate-900">Carriles del sistema</h3>
               <p className="mt-1 text-sm text-slate-500">La forma más rápida de ver qué segmento necesita más atención.</p>
             </div>
             <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-fuchsia-50 text-fuchsia-700 ring-1 ring-fuchsia-100">
@@ -107,7 +107,7 @@ export function WorkspaceOperatingSystem({
                     <p className="mt-1 text-sm text-slate-500">{lane.detail}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-2xl font-bold text-slate-900">{lane.value}</p>
+                    <p className="text-xl font-bold text-slate-900">{lane.value}</p>
                     <span className={`mt-2 inline-flex rounded-full px-3 py-1 text-xs font-semibold ${toneClasses[lane.tone]}`}>{toneLabels[lane.tone]}</span>
                   </div>
                 </div>
@@ -119,7 +119,7 @@ export function WorkspaceOperatingSystem({
         <Card>
           <div className="flex items-center justify-between gap-3">
             <div>
-              <h3 className="text-lg font-semibold text-slate-900">Prioridades cruzadas</h3>
+              <h3 className="text-base font-semibold text-slate-900">Prioridades cruzadas</h3>
               <p className="mt-1 text-sm text-slate-500">Dónde conviene actuar primero para mover todo el sistema con menos fricción.</p>
             </div>
             <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-100 text-slate-700 ring-1 ring-slate-200">
@@ -149,7 +149,7 @@ export function WorkspaceOperatingSystem({
         <Card>
           <div className="flex items-center justify-between gap-3">
             <div>
-              <h3 className="text-lg font-semibold text-slate-900">Acciones sugeridas</h3>
+              <h3 className="text-base font-semibold text-slate-900">Acciones sugeridas</h3>
               <p className="mt-1 text-sm text-slate-500">Acciones concretas para dejar cada bloque más profesional y estable.</p>
             </div>
             <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100">
@@ -166,7 +166,7 @@ export function WorkspaceOperatingSystem({
         <Card>
           <div className="flex items-center justify-between gap-3">
             <div>
-              <h3 className="text-lg font-semibold text-slate-900">Accesos del cierre profesional</h3>
+              <h3 className="text-base font-semibold text-slate-900">Accesos del cierre profesional</h3>
               <p className="mt-1 text-sm text-slate-500">Entra directo a la capa que necesites ajustar sin perder contexto del sistema completo.</p>
             </div>
             <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-rose-50 text-rose-700 ring-1 ring-rose-100">

@@ -10,7 +10,7 @@ interface ProjectClientMetric {
 export function ProjectClientMetrics({ items }: { items: ProjectClientMetric[] }) {
   return (
     <Card>
-      <h3 className="text-lg font-semibold text-slate-900">Métricas por cliente</h3>
+      <h3 className="text-base font-semibold text-slate-900">Métricas por cliente</h3>
       <p className="mt-1 text-sm text-slate-500">Carga de tareas dentro de este proyecto agrupada por cliente.</p>
       <div className="mt-4 space-y-3">
         {items.length ? items.map((item) => (

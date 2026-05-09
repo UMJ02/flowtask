@@ -226,7 +226,7 @@ export function ProjectInlineTasks({ project, initialTasks, members, canManage =
   }
 
   return (
-    <section id="tareas" className="scroll-mt-28 rounded-[24px] border border-[#E7EDF5] bg-white p-6 shadow-[0_12px_35px_rgba(15,23,42,0.05)]">
+    <section id="tareas" className="scroll-mt-28 rounded-[24px] border border-[#E7EDF5] bg-white p-5">
       <div className="mb-5 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#16A36C]">Tareas internas</p>
@@ -241,16 +241,16 @@ export function ProjectInlineTasks({ project, initialTasks, members, canManage =
       </div>
 
       <div className="mb-5 grid gap-3 rounded-[22px] border border-[#E7EDF5] bg-[#FBFCFE] p-3 md:grid-cols-2 xl:grid-cols-[minmax(220px,1fr)_170px_150px_minmax(190px,240px)_130px] xl:items-center">
-        <input value={draft.title} onChange={(e) => setDraft((current) => ({ ...current, title: e.target.value }))} disabled={!canManage} className="h-12 rounded-[16px] border border-[#E7EDF5] bg-white px-4 text-sm font-bold text-[#0F172A] outline-none focus:border-[#16C784] focus:ring-4 focus:ring-[#16C784]/10" placeholder="Nueva tarea del proyecto..." />
-        <input type="date" value={draft.dueDate} onChange={(e) => setDraft((current) => ({ ...current, dueDate: e.target.value }))} disabled={!canManage} className="h-12 rounded-[16px] border border-[#E7EDF5] bg-white px-3 text-sm font-bold text-[#0F172A] outline-none" />
-        <select value={draft.priority} onChange={(e) => setDraft((current) => ({ ...current, priority: e.target.value }))} disabled={!canManage} className="h-12 rounded-[16px] border border-[#E7EDF5] bg-white px-3 text-sm font-bold text-[#0F172A] outline-none">
+        <input value={draft.title} onChange={(e) => setDraft((current) => ({ ...current, title: e.target.value }))} disabled={!canManage} className="h-10 rounded-[16px] border border-[#E7EDF5] bg-white px-4 text-sm font-bold text-[#0F172A] outline-none focus:border-[#16C784] focus:ring-4 focus:ring-[#16C784]/10" placeholder="Nueva tarea del proyecto..." />
+        <input type="date" value={draft.dueDate} onChange={(e) => setDraft((current) => ({ ...current, dueDate: e.target.value }))} disabled={!canManage} className="h-10 rounded-[16px] border border-[#E7EDF5] bg-white px-3 text-sm font-bold text-[#0F172A] outline-none" />
+        <select value={draft.priority} onChange={(e) => setDraft((current) => ({ ...current, priority: e.target.value }))} disabled={!canManage} className="h-10 rounded-[16px] border border-[#E7EDF5] bg-white px-3 text-sm font-bold text-[#0F172A] outline-none">
           <option value="media">Media</option><option value="alta">Alta</option><option value="baja">Baja</option>
         </select>
-        <select value={draft.assigneeId || firstMemberId} onChange={(e) => setDraft((current) => ({ ...current, assigneeId: e.target.value }))} disabled={!canManage || !members.length} className="h-12 rounded-[16px] border border-[#E7EDF5] bg-white px-3 text-sm font-bold text-[#0F172A] outline-none">
+        <select value={draft.assigneeId || firstMemberId} onChange={(e) => setDraft((current) => ({ ...current, assigneeId: e.target.value }))} disabled={!canManage || !members.length} className="h-10 rounded-[16px] border border-[#E7EDF5] bg-white px-3 text-sm font-bold text-[#0F172A] outline-none">
           <option value="">Sin responsable</option>
           {members.map((member) => <option key={member.user_id} value={member.user_id}>{memberName(member)}</option>)}
         </select>
-        <button type="button" onClick={createProjectTask} disabled={!canManage || !draft.title.trim() || busyId === "new"} className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-[16px] bg-[#16C784] px-5 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(22,199,132,0.22)] disabled:opacity-50"><Plus className="h-4 w-4" />Agregar</button>
+        <button type="button" onClick={createProjectTask} disabled={!canManage || !draft.title.trim() || busyId === "new"} className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-[16px] bg-[#16C784] px-5 text-sm font-semibold text-white disabled:opacity-50"><Plus className="h-4 w-4" />Agregar</button>
       </div>
 
       <div className="divide-y divide-[#EEF2F7] overflow-hidden rounded-[22px] border border-[#E7EDF5] bg-white">
@@ -292,7 +292,7 @@ export function ProjectInlineTasks({ project, initialTasks, members, canManage =
             </div>
           );
         }) : (
-          <div className="px-6 py-10 text-center">
+          <div className="px-5 py-10 text-center">
             <UserRound className="mx-auto h-10 w-10 text-[#94A3B8]" />
             <p className="mt-3 text-base font-semibold text-[#0F172A]">Todavía no hay tareas internas.</p>
             <p className="mt-1 text-sm font-medium text-[#64748B]">Agrega la primera tarea para empezar a medir el avance del proyecto.</p>

@@ -41,7 +41,7 @@ export function WorkspaceIntelligence({ summary, compact = false }: { summary: W
                 <span className="text-sm">{card.label}</span>
                 <span className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-white text-cyan-700 ring-1 ring-slate-200">{card.icon}</span>
               </div>
-              <p className="mt-3 text-2xl font-bold text-slate-900">{card.value}</p>
+              <p className="mt-3 text-xl font-bold text-slate-900">{card.value}</p>
             </div>
           ))}
         </div>
@@ -59,7 +59,7 @@ export function WorkspaceIntelligence({ summary, compact = false }: { summary: W
                 <p className="text-sm text-slate-500">{card.label}</p>
                 <p className="mt-3 text-[28px] font-bold text-slate-900">{card.value}</p>
               </div>
-              <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-700 ring-1 ring-cyan-100">{card.icon}</span>
+              <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-700 ring-1 ring-cyan-100">{card.icon}</span>
             </div>
           </Card>
         ))}
@@ -92,7 +92,7 @@ export function WorkspaceIntelligence({ summary, compact = false }: { summary: W
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Siguiente movimiento</p>
               <h3 className="mt-2 text-xl font-bold text-slate-900">Recomendaciones accionables</h3>
             </div>
-            <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-700 ring-1 ring-slate-200">
+            <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-100 text-slate-700 ring-1 ring-slate-200">
               <ArrowUpRight className="h-5 w-5" />
             </span>
           </div>
@@ -113,7 +113,7 @@ export function WorkspaceIntelligence({ summary, compact = false }: { summary: W
         <Card>
           <div className="flex items-center justify-between gap-3">
             <div>
-              <h3 className="text-lg font-semibold text-slate-900">Señales ejecutivas</h3>
+              <h3 className="text-base font-semibold text-slate-900">Señales ejecutivas</h3>
               <p className="mt-1 text-sm text-slate-500">El estado agregado de los indicadores que más mueven el workspace.</p>
             </div>
             <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-700 ring-1 ring-cyan-100">
@@ -129,7 +129,7 @@ export function WorkspaceIntelligence({ summary, compact = false }: { summary: W
                     <p className="mt-1 text-sm text-slate-500">{item.description}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-2xl font-bold text-slate-900">{item.value}{typeof item.value === 'number' && item.label !== 'Carga vencida' ? '%' : ''}</p>
+                    <p className="text-xl font-bold text-slate-900">{item.value}{typeof item.value === 'number' && item.label !== 'Carga vencida' ? '%' : ''}</p>
                     <span className={`mt-2 inline-flex rounded-full px-3 py-1 text-xs font-semibold ${toneClasses[item.tone]}`}>{toneLabel(item.tone)}</span>
                   </div>
                 </div>
@@ -141,7 +141,7 @@ export function WorkspaceIntelligence({ summary, compact = false }: { summary: W
         <Card>
           <div className="flex items-center justify-between gap-3">
             <div>
-              <h3 className="text-lg font-semibold text-slate-900">Prioridades cruzadas</h3>
+              <h3 className="text-base font-semibold text-slate-900">Prioridades cruzadas</h3>
               <p className="mt-1 text-sm text-slate-500">Lo más importante que aparece al cruzar módulos y no verlos aislados.</p>
             </div>
             <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-blue-50 text-blue-700 ring-1 ring-blue-100">
@@ -166,7 +166,7 @@ export function WorkspaceIntelligence({ summary, compact = false }: { summary: W
       <Card>
         <div className="flex items-center justify-between gap-3">
           <div>
-            <h3 className="text-lg font-semibold text-slate-900">Watchlist unificado</h3>
+            <h3 className="text-base font-semibold text-slate-900">Watchlist unificado</h3>
             <p className="mt-1 text-sm text-slate-500">Un bloque rápido con proyectos, clientes y tareas que merecen seguimiento.</p>
           </div>
         </div>

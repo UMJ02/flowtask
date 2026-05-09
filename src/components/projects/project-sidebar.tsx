@@ -17,11 +17,11 @@ export function ProjectSidebar({
   return (
     <aside className="rounded-[24px] bg-white p-5 shadow-soft">
       <div className="flex items-center gap-3">
-        <span className="inline-flex h-12 w-12 items-center justify-center rounded-3xl bg-emerald-50 text-emerald-600">
+        <span className="inline-flex h-10 w-10 items-center justify-center rounded-[22px] bg-emerald-50 text-emerald-600">
           <FolderKanban className="h-5 w-5" />
         </span>
         <div>
-          <h2 className="text-lg font-semibold text-slate-900">Proyectos</h2>
+          <h2 className="text-base font-semibold text-slate-900">Proyectos</h2>
           <p className="text-sm text-slate-500">Abre los más importantes y guárdalos para volver rápido.</p>
         </div>
       </div>
@@ -29,7 +29,7 @@ export function ProjectSidebar({
       <div className="mt-4 space-y-3">
         {projects.length ? (
           projects.map((project) => (
-            <div key={project.id} className="rounded-3xl border border-slate-100 bg-slate-50 px-4 py-4 transition hover:border-emerald-200 hover:bg-emerald-50/50">
+            <div key={project.id} className="rounded-[22px] border border-slate-100 bg-slate-50 px-4 py-4 transition hover:border-emerald-200 hover:bg-emerald-50/50">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">

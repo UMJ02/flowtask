@@ -12,7 +12,7 @@ export function ClientMetrics({ items }: { items: ClientMetric[] }) {
   return (
     <Card className="space-y-4">
       <div>
-        <h2 className="text-lg font-semibold text-slate-900">Lectura por cliente</h2>
+        <h2 className="text-base font-semibold text-slate-900">Lectura por cliente</h2>
         <p className="text-sm text-slate-500">Combina tareas y proyectos para detectar clientes con mayor carga y seguimiento.</p>
       </div>
       <div className="space-y-3">

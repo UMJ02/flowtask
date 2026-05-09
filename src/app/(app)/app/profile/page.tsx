@@ -35,7 +35,7 @@ export default async function ProfilePage() {
                     <Icon className="h-4 w-4" />
                     <p className="text-xs uppercase tracking-[0.16em]">{item.label}</p>
                   </div>
-                  <p title={item.value} className="mt-3 overflow-hidden text-ellipsis break-words text-xl font-semibold leading-tight text-white md:text-2xl">
+                  <p title={item.value} className="mt-3 overflow-hidden text-ellipsis break-words text-xl font-semibold leading-tight text-white md:text-xl">
                     {item.value}
                   </p>
                 </div>
@@ -46,7 +46,7 @@ export default async function ProfilePage() {
       </Card>
 
       <Card>
-        <h2 className="text-lg font-semibold text-slate-900">Editar perfil</h2>
+        <h2 className="text-base font-semibold text-slate-900">Editar perfil</h2>
         <p className="mt-1 text-sm text-slate-500">
           Aquí solo ves datos personales y seguridad básica. La configuración operativa sigue separada en Settings.
         </p>

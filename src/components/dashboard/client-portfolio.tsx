@@ -8,7 +8,7 @@ export function ClientPortfolio({ items }: { items: ClientDashboardItem[] }) {
       <div className="flex items-center justify-between gap-3">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Clientes</p>
-          <h2 className="mt-1 text-lg font-semibold text-slate-900">Lectura por cliente y organización</h2>
+          <h2 className="mt-1 text-base font-semibold text-slate-900">Lectura por cliente y organización</h2>
         </div>
         <Link href="/app/clients" className="text-sm font-semibold text-slate-700">Ver clientes</Link>
       </div>

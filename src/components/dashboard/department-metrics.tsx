@@ -10,7 +10,7 @@ export function DepartmentMetrics({ items }: { items: DepartmentMetric[] }) {
   return (
     <Card className="space-y-4">
       <div>
-        <h2 className="text-lg font-semibold text-slate-900">Carga por departamento</h2>
+        <h2 className="text-base font-semibold text-slate-900">Carga por departamento</h2>
         <p className="text-sm text-slate-500">Resumen de tareas activas agrupadas para lectura de jefatura.</p>
       </div>
       <div className="space-y-3">

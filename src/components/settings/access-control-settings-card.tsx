@@ -114,7 +114,7 @@ export function AccessControlSettingsCard({
         : 'Plan individual activo';
 
   return (
-    <Card className="rounded-[24px] border border-slate-200/90 bg-white/[0.95] p-4 shadow-[0_12px_30px_rgba(15,23,42,0.05)] md:p-5">
+    <Card className="rounded-[24px] border border-slate-200/90 bg-white/[0.95] p-4 md:p-5">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <div className="flex items-center gap-2 text-slate-700">
@@ -133,7 +133,7 @@ export function AccessControlSettingsCard({
             onClick={() => setTab('organization')}
             className={`inline-flex h-10 items-center rounded-full px-4 text-sm font-semibold transition ${
               tab === 'organization'
-                ? 'bg-slate-900 text-white shadow-[0_10px_24px_rgba(15,23,42,0.18)]'
+                ? 'bg-slate-900 text-white'
                 : 'border border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
             }`}
           >
@@ -144,7 +144,7 @@ export function AccessControlSettingsCard({
             onClick={() => setTab('plan')}
             className={`inline-flex h-10 items-center rounded-full px-4 text-sm font-semibold transition ${
               tab === 'plan'
-                ? 'bg-slate-900 text-white shadow-[0_10px_24px_rgba(15,23,42,0.18)]'
+                ? 'bg-slate-900 text-white'
                 : 'border border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
             }`}
           >

@@ -79,7 +79,7 @@ export function TaskChecklistCard({ taskId, initialItems = [], canManage = true 
     <section id="checklist" className="space-y-3">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-wrap items-center gap-3">
-          <h2 className="text-lg font-semibold text-[#0F172A]">Checklist</h2>
+          <h2 className="text-base font-semibold text-[#0F172A]">Checklist</h2>
           <div className="flex min-w-[220px] overflow-hidden rounded-[14px] border border-[#E5EAF1] bg-white">
             <input value={draft} onChange={(event) => setDraft(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter") { event.preventDefault(); addItem(); } }} disabled={!canManage || busyId === "new"} placeholder="Nueva tarea..." className="h-10 min-w-0 flex-1 px-3 text-sm font-semibold outline-none placeholder:text-[#94A3B8] disabled:bg-slate-50" />
             <button type="button" onClick={addItem} disabled={!canManage || busyId === "new" || !draft.trim()} className="inline-flex h-10 items-center gap-2 border-l border-[#E5EAF1] px-3 text-sm font-semibold text-[#0F172A] transition hover:bg-[#F8FAFC] disabled:cursor-not-allowed disabled:opacity-50"><Plus className="h-4 w-4" /> {busyId === "new" ? "Guardando..." : "Agregar"}</button>

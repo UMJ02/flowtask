@@ -60,7 +60,7 @@ export function ProjectMembers({ projectId, members, canManage = true }: { proje
 
   return (
     <Card>
-      <h3 className="text-lg font-semibold text-slate-900">Miembros del proyecto</h3>
+      <h3 className="text-base font-semibold text-slate-900">Miembros del proyecto</h3>
       <p className="mt-1 text-sm text-slate-500">Owner, editor y viewer para controlar mejor quién edita y quién solo revisa.</p>
       <div className="mt-4 space-y-3">
         {members.length ? members.map((member) => {

@@ -9,7 +9,7 @@ export function UpcomingItems() {
 
   return (
     <Card>
-      <h2 className="text-lg font-semibold text-slate-900">Por vencer</h2>
+      <h2 className="text-base font-semibold text-slate-900">Por vencer</h2>
       <ul className="mt-4 space-y-3 text-sm text-slate-600">
         {items.map((item) => (
           <li key={item} className="rounded-2xl bg-slate-50 px-4 py-3">

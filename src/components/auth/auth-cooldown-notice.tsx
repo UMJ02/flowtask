@@ -46,7 +46,7 @@ export function AuthCooldownNotice({ cooldown, label = 'correo', onDone }: AuthC
   return (
     <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
       <div className="flex items-start gap-3">
-        <span className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white text-amber-700 shadow-sm">
+        <span className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white text-amber-700 shadow-none">
           <Clock3 className="h-4 w-4" aria-hidden="true" />
         </span>
         <div>

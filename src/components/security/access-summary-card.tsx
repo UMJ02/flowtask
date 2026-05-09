@@ -40,8 +40,8 @@ function iconFor(label: string) {
 
 function permissionTone(enabled: boolean) {
   return enabled
-    ? "border-emerald-200/90 bg-emerald-50 text-emerald-700 shadow-[0_8px_24px_rgba(16,185,129,0.08)]"
-    : "border-red-200/90 bg-red-50 text-red-600 shadow-[0_8px_24px_rgba(239,68,68,0.08)]";
+    ? "border-emerald-200/90 bg-emerald-50 text-emerald-700"
+    : "border-red-200/90 bg-red-50 text-red-600";
 }
 
 function PermissionStatusIcon({ enabled, title }: { enabled: boolean; title: string }) {
@@ -49,8 +49,8 @@ function PermissionStatusIcon({ enabled, title }: { enabled: boolean; title: str
   const imagePath = enabled ? "/icons/ck.png" : "/icons/dn.png";
   const FallbackIcon = enabled ? BadgeCheck : ShieldX;
   const shellTone = enabled
-    ? "bg-emerald-400/95 ring-4 ring-emerald-300/30 shadow-[0_18px_38px_rgba(22,163,74,0.35)]"
-    : "bg-red-500/95 ring-4 ring-red-300/30 shadow-[0_18px_38px_rgba(220,38,38,0.35)]";
+    ? "bg-emerald-400/95 ring-4 ring-emerald-300/30"
+    : "bg-red-500/95 ring-4 ring-red-300/30";
 
   return (
     <div className={`relative flex h-24 w-24 items-center justify-center rounded-full ${shellTone}`}>
@@ -58,11 +58,11 @@ function PermissionStatusIcon({ enabled, title }: { enabled: boolean; title: str
         <img
           src={imagePath}
           alt={title}
-          className="h-14 w-14 object-contain drop-shadow-[0_8px_12px_rgba(15,23,42,0.18)]"
+          className="h-10 w-14 object-contain drop-"
           onError={() => setMissingAsset(true)}
         />
       ) : (
-        <FallbackIcon className="h-12 w-12 text-white drop-shadow-[0_8px_12px_rgba(15,23,42,0.18)]" />
+        <FallbackIcon className="h-10 w-10 text-white drop-" />
       )}
     </div>
   );
@@ -87,8 +87,8 @@ export function AccessSummaryCard({
   const statusAccent = allEnabled || hasSomeEnabled ? "text-emerald-300" : "text-red-300";
 
   return (
-    <section className="overflow-hidden rounded-[32px] border border-slate-200/90 bg-white shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
-      <div className="relative overflow-hidden bg-[radial-gradient(circle_at_top,_rgba(37,99,235,0.22),_transparent_35%),linear-gradient(90deg,#020617_0%,#071127_42%,#020617_100%)] px-6 py-6 text-white lg:px-8 lg:py-7">
+    <section className="overflow-hidden rounded-[26px] border border-slate-200/90 bg-white">
+      <div className="relative overflow-hidden bg-[radial-gradient(circle_at_top,_rgba(37,99,235,0.22),_transparent_35%),linear-gradient(90deg,#020617_0%,#071127_42%,#020617_100%)] px-5 py-5 text-white lg:px-8 lg:py-7">
         <div className="absolute inset-y-0 right-0 hidden w-1/3 bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.08),_transparent_60%)] lg:block" />
         <div className="relative flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:gap-5">
@@ -110,7 +110,7 @@ export function AccessSummaryCard({
         </div>
       </div>
 
-      <div className="px-6 py-5 lg:px-8 lg:py-6">
+      <div className="px-5 py-5 lg:px-8 lg:py-5">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-3xl">
             <div className="flex items-center gap-2 text-slate-700">
@@ -129,7 +129,7 @@ export function AccessSummaryCard({
               type="button"
               aria-expanded={isExpanded}
               onClick={() => setIsExpanded((current) => !current)}
-              className="inline-flex h-11 items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-5 text-sm font-semibold text-slate-700 shadow-[0_10px_24px_rgba(15,23,42,0.05)] transition hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-50"
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-5 text-sm font-semibold text-slate-700 transition hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-50"
             >
               Ver permisos activos
               {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}

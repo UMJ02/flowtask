@@ -26,7 +26,7 @@ export function SharedAnalyticsLanding({ token, autoPrint = false }: { token: st
   if (!payload) {
     return (
       <main className="min-h-screen bg-[#F7F9FC] px-4 py-8 text-[#071333]">
-        <section className="mx-auto max-w-[760px] rounded-[28px] border border-[#E5EAF1] bg-white p-8 shadow-[0_28px_80px_rgba(7,19,51,0.08)]">
+        <section className="mx-auto max-w-[760px] rounded-[24px] border border-[#E5EAF1] bg-white p-8 shadow-[0_28px_80px_rgba(7,19,51,0.08)]">
           <p className="text-xs font-extrabold uppercase tracking-[0.22em] text-[#16A878]">FlowTask</p>
           <h1 className="mt-3 text-[2rem] font-extrabold tracking-[-0.04em]">No se pudo abrir este reporte</h1>
           <p className="mt-3 text-sm leading-6 text-[#64748B]">El enlace compartido es inválido, quedó incompleto o ya no contiene la información necesaria.</p>
@@ -66,8 +66,8 @@ export function SharedAnalyticsLanding({ token, autoPrint = false }: { token: st
   return (
     <main className="min-h-screen bg-[#F7F9FC] text-[#071333] print:bg-white">
       <div className="mx-auto w-full max-w-[1180px] px-4 py-5 print:block print:max-w-none print:px-0 print:py-0">
-        <section className="overflow-hidden rounded-[28px] border border-[#E5EAF1] bg-white shadow-[0_28px_80px_rgba(7,19,51,0.06)] print:border-none print:shadow-none">
-          <header className="flex items-center justify-between gap-4 px-7 py-6 print:px-4">
+        <section className="overflow-hidden rounded-[24px] border border-[#E5EAF1] bg-white shadow-[0_28px_80px_rgba(7,19,51,0.06)] print:border-none print:shadow-none">
+          <header className="flex items-center justify-between gap-4 px-7 py-5 print:px-4">
             <div className="flex items-center gap-3">
               <img src="/icons/icon.png" alt="FlowTask" className="h-8 w-8 rounded-xl" />
               <span className="text-[1.35rem] font-extrabold tracking-[-0.04em]">FlowTask</span>
@@ -155,7 +155,7 @@ export function SharedAnalyticsLanding({ token, autoPrint = false }: { token: st
             Este es un enlace público de solo lectura. Los datos se actualizan cuando se genera un nuevo enlace desde FlowTask.
           </section>
 
-          <section className="mx-7 mb-9 flex flex-col gap-3 rounded-[24px] border border-[#E5EAF1] bg-white p-4 shadow-[0_16px_44px_rgba(7,19,51,0.04)] sm:flex-row sm:items-center sm:justify-center print:hidden">
+          <section className="mx-7 mb-9 flex flex-col gap-3 rounded-[24px] border border-[#E5EAF1] bg-white p-4 sm:flex-row sm:items-center sm:justify-center print:hidden">
             <Button onClick={handleShare} variant="secondary"><Share2 className="h-4 w-4" /> Compartir</Button>
             <Button onClick={() => window.print()} variant="secondary"><Printer className="h-4 w-4" /> Descargar PDF</Button>
             <Button onClick={() => downloadAnalyticsCsv(payload)}><Download className="h-4 w-4" /> Exportar reporte</Button>
@@ -180,7 +180,7 @@ function moduleLabel(payload: NonNullable<ReturnType<typeof decodeAnalyticsShare
 function MetricCard({ label, value, helper, icon: Icon, tone }: { label: string; value: number; helper: string; icon: ComponentType<{ className?: string }>; tone: string }) {
   const toneClass = tone === 'amber' ? 'bg-amber-50 text-amber-600' : tone === 'blue' ? 'bg-blue-50 text-blue-600' : tone === 'orange' ? 'bg-orange-50 text-orange-600' : 'bg-emerald-50 text-emerald-600';
   return (
-    <article className="rounded-[18px] border border-[#E5EAF1] bg-white p-4 shadow-[0_16px_36px_rgba(7,19,51,0.03)]">
+    <article className="rounded-[18px] border border-[#E5EAF1] bg-white p-4">
       <div className={`inline-flex h-11 w-11 items-center justify-center rounded-2xl ${toneClass}`}><Icon className="h-5 w-5" /></div>
       <div className="mt-3 text-[1.65rem] font-extrabold tracking-[-0.04em]">{value}</div>
       <p className="text-sm font-extrabold text-[#071333]">{label}</p>

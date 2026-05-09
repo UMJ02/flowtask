@@ -258,11 +258,11 @@ export function ProfileSettingsForm({
 
           <div className="mt-6 flex justify-center">
             {avatarUrl ? (
-              <div className="relative h-[193px] w-[193px] overflow-hidden rounded-full border border-slate-200 bg-slate-950 shadow-sm">
+              <div className="relative h-[193px] w-[193px] overflow-hidden rounded-full border border-slate-200 bg-slate-950 shadow-none">
                 <Image src={avatarUrl} alt="Foto de perfil" fill className="object-cover" sizes="193px" unoptimized />
               </div>
             ) : (
-              <div className="flex h-[193px] w-[193px] items-center justify-center rounded-full bg-slate-950 text-5xl font-bold text-white shadow-sm">
+              <div className="flex h-[193px] w-[193px] items-center justify-center rounded-full bg-slate-950 text-5xl font-bold text-white shadow-none">
                 {initials}
               </div>
             )}
@@ -311,7 +311,7 @@ export function ProfileSettingsForm({
               </button>
 
               {showAvatarInfo ? (
-                <div className="absolute right-0 top-full z-20 mt-2 w-[300px] rounded-2xl border border-slate-200 bg-white p-4 text-sm leading-6 text-slate-600 shadow-[0_18px_45px_rgba(15,23,42,0.14)]">
+                <div className="absolute right-0 top-full z-20 mt-2 w-[300px] rounded-2xl border border-slate-200 bg-white p-4 text-sm leading-6 text-slate-600">
                   Formatos sugeridos: JPG, PNG o WEBP. Tamaño recomendado: 800×800 o superior para verse bien en toda la app.
                 </div>
               ) : null}

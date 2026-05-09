@@ -52,9 +52,9 @@ export default async function OrganizationPage({ searchParams }: { searchParams?
         organizations.length || deletedOrganizations.length ? (
           <div className="space-y-4">
             {organizations.length ? (
-              <div className="rounded-[28px] border border-slate-200 bg-white px-6 py-6 shadow-[0_18px_40px_rgba(15,23,42,0.06)]">
+              <div className="rounded-[24px] border border-slate-200 bg-white px-5 py-5">
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-600">Workspace personal activo</p>
-                <h2 className="mt-2 text-2xl font-bold text-slate-900">Tu organización sigue disponible, pero no reemplaza tu modo individual</h2>
+                <h2 className="mt-2 text-xl font-bold text-slate-900">Tu organización sigue disponible, pero no reemplaza tu modo individual</h2>
                 <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-600">Ahora FlowTask mantiene separados tu trabajo personal y los workspaces de equipo. Usa el selector del sidebar para cambiar entre <strong>Workspace personal</strong> y cualquiera de tus organizaciones sin perder acceso a tus tareas, proyectos y catálogos anteriores.</p>
                 <div className="mt-4 inline-flex rounded-full bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-700 ring-1 ring-emerald-200">Organizaciones disponibles: {organizations.length}</div>
               </div>

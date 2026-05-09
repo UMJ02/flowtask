@@ -44,7 +44,7 @@ export function RiskRadar({ summary, compact = false }: { summary: RiskRadarSumm
                 <span className="text-sm">{card.label}</span>
                 <span className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-white text-rose-700 ring-1 ring-slate-200">{card.icon}</span>
               </div>
-              <p className="mt-3 text-2xl font-bold text-slate-900">{card.value}</p>
+              <p className="mt-3 text-xl font-bold text-slate-900">{card.value}</p>
             </div>
           ))}
         </div>
@@ -62,7 +62,7 @@ export function RiskRadar({ summary, compact = false }: { summary: RiskRadarSumm
                 <p className="text-sm text-slate-500">{card.label}</p>
                 <p className="mt-3 text-[28px] font-bold text-slate-900">{card.value}</p>
               </div>
-              <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-50 text-rose-700 ring-1 ring-rose-100">{card.icon}</span>
+              <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-rose-50 text-rose-700 ring-1 ring-rose-100">{card.icon}</span>
             </div>
           </Card>
         ))}
@@ -97,7 +97,7 @@ export function RiskRadar({ summary, compact = false }: { summary: RiskRadarSumm
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Recomendaciones</p>
               <h3 className="mt-2 text-xl font-bold text-slate-900">Qué atacar primero</h3>
             </div>
-            <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-700 ring-1 ring-slate-200">
+            <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-100 text-slate-700 ring-1 ring-slate-200">
               <ArrowUpRight className="h-5 w-5" />
             </span>
           </div>
@@ -117,7 +117,7 @@ export function RiskRadar({ summary, compact = false }: { summary: RiskRadarSumm
         <Card>
           <div className="flex items-center justify-between gap-3">
             <div>
-              <h3 className="text-lg font-semibold text-slate-900">Hotspots por departamento</h3>
+              <h3 className="text-base font-semibold text-slate-900">Hotspots por departamento</h3>
               <p className="mt-1 text-sm text-slate-500">Dónde se concentra la presión de fechas y carga activa.</p>
             </div>
             <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-rose-50 text-rose-700 ring-1 ring-rose-100">
@@ -146,7 +146,7 @@ export function RiskRadar({ summary, compact = false }: { summary: RiskRadarSumm
         <Card>
           <div className="flex items-center justify-between gap-3">
             <div>
-              <h3 className="text-lg font-semibold text-slate-900">Proyectos en watchlist</h3>
+              <h3 className="text-base font-semibold text-slate-900">Proyectos en watchlist</h3>
               <p className="mt-1 text-sm text-slate-500">Los que tienen más probabilidad de pedir intervención rápida.</p>
             </div>
             <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-amber-50 text-amber-700 ring-1 ring-amber-100">
@@ -167,7 +167,7 @@ export function RiskRadar({ summary, compact = false }: { summary: RiskRadarSumm
                   <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${toneClasses[item.urgency]}`}>{toneLabels[item.urgency]}</span>
                 </div>
               </Link>
-            )) : <div className="rounded-2xl border border-dashed border-slate-300 px-4 py-6 text-sm text-slate-500">No hay proyectos suficientes para armar un watchlist ahora mismo.</div>}
+            )) : <div className="rounded-2xl border border-dashed border-slate-300 px-4 py-5 text-sm text-slate-500">No hay proyectos suficientes para armar un watchlist ahora mismo.</div>}
           </div>
         </Card>
       </div>
@@ -175,7 +175,7 @@ export function RiskRadar({ summary, compact = false }: { summary: RiskRadarSumm
       <Card>
         <div className="flex items-center justify-between gap-3">
           <div>
-            <h3 className="text-lg font-semibold text-slate-900">Clientes con presión operativa</h3>
+            <h3 className="text-base font-semibold text-slate-900">Clientes con presión operativa</h3>
             <p className="mt-1 text-sm text-slate-500">Clientes con más carga combinada entre tareas y proyectos activos.</p>
           </div>
           <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-blue-50 text-blue-700 ring-1 ring-blue-100">
@@ -205,7 +205,7 @@ export function RiskRadar({ summary, compact = false }: { summary: RiskRadarSumm
               </div>
               <div className="mt-3"><StatusBadge value={client.status} /></div>
             </Link>
-          )) : <div className="rounded-2xl border border-dashed border-slate-300 px-4 py-6 text-sm text-slate-500">Todavía no hay clientes con carga suficiente para marcar presión operativa.</div>}
+          )) : <div className="rounded-2xl border border-dashed border-slate-300 px-4 py-5 text-sm text-slate-500">Todavía no hay clientes con carga suficiente para marcar presión operativa.</div>}
         </div>
       </Card>
     </div>

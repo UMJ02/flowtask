@@ -20,7 +20,7 @@ export function ProjectHealthStrip({ tasks }: { tasks: Array<{ status?: string |
       {cards.map((card) => (
         <Card key={card.label} className="rounded-[24px] border border-slate-200 bg-white px-4 py-4">
           <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">{card.label}</p>
-          <p className="mt-2 text-2xl font-bold tracking-tight text-slate-900">{card.value}</p>
+          <p className="mt-2 text-xl font-bold tracking-tight text-slate-900">{card.value}</p>
         </Card>
       ))}
     </div>

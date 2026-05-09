@@ -165,10 +165,10 @@ export function EntityAttachments({
     <Card className="rounded-[22px] border border-[#E5EAF1] bg-white p-4 shadow-none md:p-5">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h3 className="text-lg font-bold text-[#0F172A]">Adjuntos</h3>
+          <h3 className="text-base font-bold text-[#0F172A]">Adjuntos</h3>
           <p className="mt-1 text-sm text-[#64748B]">Sube archivos de respaldo para esta {entityType === "task" ? "tarea" : "proyecto"}.</p>
         </div>
-        <label className={`inline-flex items-center gap-2 h-12 rounded-[16px] px-6 text-sm font-bold ${canManage ? "cursor-pointer bg-[#050B18] text-white shadow-[0_10px_24px_rgba(5,11,24,0.18)] hover:bg-[#111827]" : "cursor-not-allowed bg-slate-200 text-slate-500"}`}>
+        <label className={`inline-flex items-center gap-2 h-10 rounded-[16px] px-5 text-sm font-bold ${canManage ? "cursor-pointer bg-[#050B18] text-white hover:bg-[#111827]" : "cursor-not-allowed bg-slate-200 text-slate-500"}`}>
           <Upload className="h-4 w-4" />
           {uploading ? "Subiendo..." : "Subir archivo"}
           <input type="file" className="hidden" onChange={handleUpload} disabled={!canManage || uploading} />
@@ -182,7 +182,7 @@ export function EntityAttachments({
         {attachments.length ? attachments.map((attachment) => {
           const image = isImageAttachment(attachment);
           return (
-            <div key={attachment.id} className="overflow-hidden rounded-[18px] border border-[#E5EAF1] bg-white shadow-[0_8px_18px_rgba(15,23,42,0.035)]">
+            <div key={attachment.id} className="overflow-hidden rounded-[18px] border border-[#E5EAF1] bg-white">
               {attachment.public_url ? (
                 <a href={attachment.public_url} target="_blank" rel="noreferrer" className="block">
                   <div className="grid aspect-[4/3] place-items-center overflow-hidden bg-[#F8FAFC] text-[#64748B]">
@@ -225,7 +225,7 @@ export function EntityAttachments({
             </div>
           );
         }) : (
-          <div className="rounded-[18px] border border-dashed border-[#BFDBFE] bg-[#F8FBFF] px-4 py-6 text-center text-sm font-semibold text-[#64748B] sm:col-span-2 xl:col-span-3">
+          <div className="rounded-[18px] border border-dashed border-[#BFDBFE] bg-[#F8FBFF] px-4 py-5 text-center text-sm font-semibold text-[#64748B] sm:col-span-2 xl:col-span-3">
             Todavía no hay archivos. Puedes subir briefs, facturas, capturas o documentos de soporte.
           </div>
         )}

@@ -9,7 +9,7 @@ export function CollaborationMetrics({ items }: { items: CollaborationMetricItem
   return (
     <Card className="space-y-4">
       <div>
-        <h2 className="text-lg font-semibold text-slate-900">Colaboradores más activos</h2>
+        <h2 className="text-base font-semibold text-slate-900">Colaboradores más activos</h2>
         <p className="text-sm text-slate-500">Participación en proyectos colaborativos donde eres owner.</p>
       </div>
       <div className="space-y-3">

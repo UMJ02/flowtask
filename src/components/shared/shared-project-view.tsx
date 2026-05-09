@@ -11,7 +11,7 @@ export async function SharedProjectView({ token }: { token: string }) {
         <div className="container-page max-w-5xl space-y-4">
           <Card>
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">FlowTask</p>
-            <h1 className="mt-2 text-2xl font-bold text-slate-900">Vista compartida de proyecto</h1>
+            <h1 className="mt-2 text-xl font-bold text-slate-900">Vista compartida de proyecto</h1>
             <p className="mt-2 text-sm text-slate-600">No se encontró un proyecto compartido con este enlace o ya fue desactivado.</p>
           </Card>
         </div>
@@ -28,14 +28,14 @@ export async function SharedProjectView({ token }: { token: string }) {
       <div className="container-page max-w-5xl space-y-4">
         <Card className="border border-slate-100 bg-gradient-to-br from-white to-slate-50">
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">FlowTask</p>
-          <h1 className="mt-2 text-2xl font-bold text-slate-900">Resumen ejecutivo del proyecto</h1>
+          <h1 className="mt-2 text-xl font-bold text-slate-900">Resumen ejecutivo del proyecto</h1>
           <p className="mt-2 text-sm text-slate-600">Vista simple para jefatura, con datos clave y seguimiento general.</p>
         </Card>
 
         <div className="grid gap-4 md:grid-cols-3">
-          <Card><p className="text-xs uppercase tracking-[0.2em] text-slate-500">Estado</p><p className="mt-2 text-2xl font-bold text-slate-900">{data.project.status}</p></Card>
-          <Card><p className="text-xs uppercase tracking-[0.2em] text-slate-500">Tareas abiertas</p><p className="mt-2 text-2xl font-bold text-slate-900">{pendingTasks}</p></Card>
-          <Card><p className="text-xs uppercase tracking-[0.2em] text-slate-500">Tareas cerradas</p><p className="mt-2 text-2xl font-bold text-slate-900">{completedTasks}</p></Card>
+          <Card><p className="text-xs uppercase tracking-[0.2em] text-slate-500">Estado</p><p className="mt-2 text-xl font-bold text-slate-900">{data.project.status}</p></Card>
+          <Card><p className="text-xs uppercase tracking-[0.2em] text-slate-500">Tareas abiertas</p><p className="mt-2 text-xl font-bold text-slate-900">{pendingTasks}</p></Card>
+          <Card><p className="text-xs uppercase tracking-[0.2em] text-slate-500">Tareas cerradas</p><p className="mt-2 text-xl font-bold text-slate-900">{completedTasks}</p></Card>
         </div>
 
         <Card>
@@ -55,7 +55,7 @@ export async function SharedProjectView({ token }: { token: string }) {
         </Card>
 
         <Card>
-          <h3 className="text-lg font-semibold text-slate-900">Tareas del proyecto</h3>
+          <h3 className="text-base font-semibold text-slate-900">Tareas del proyecto</h3>
           <div className="mt-4 space-y-3">
             {data.tasks.length ? data.tasks.map((task) => (
               <div key={task.id} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
@@ -71,7 +71,7 @@ export async function SharedProjectView({ token }: { token: string }) {
         </Card>
 
         <Card>
-          <h3 className="text-lg font-semibold text-slate-900">Seguimiento y comentarios</h3>
+          <h3 className="text-base font-semibold text-slate-900">Seguimiento y comentarios</h3>
           <div className="mt-4 space-y-3">
             {data.comments.length ? data.comments.map((comment, index) => (
               <div key={`${comment.created_at}-${index}`} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">

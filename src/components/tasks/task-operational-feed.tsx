@@ -26,7 +26,7 @@ export function TaskOperationalFeed({ taskId, comments, activity, canComment = t
       </div>
 
       <div className="grid gap-4 xl:grid-cols-2">
-        <div className="rounded-[22px] border border-[#E2E8F0] bg-white p-4 shadow-[0_8px_24px_rgba(15,23,42,0.035)]">
+        <div className="rounded-[22px] border border-[#E2E8F0] bg-white p-4">
           <div className="mb-4">
             <h3 className="text-sm font-semibold text-[#0F172A]">Comentarios</h3>
             <p className="mt-1 text-xs font-semibold text-[#64748B]">Conversaciones del equipo sobre esta tarea.</p>
@@ -34,7 +34,7 @@ export function TaskOperationalFeed({ taskId, comments, activity, canComment = t
           <TaskQuickCommentsCard taskId={taskId} comments={comments as any[]} canComment={canComment} />
         </div>
 
-        <div className="rounded-[22px] border border-[#E2E8F0] bg-white p-4 shadow-[0_8px_24px_rgba(15,23,42,0.035)]">
+        <div className="rounded-[22px] border border-[#E2E8F0] bg-white p-4">
           <div className="mb-4 flex items-start justify-between gap-3">
             <div>
               <h3 className="text-sm font-semibold text-[#0F172A]">Actividad del sistema</h3>

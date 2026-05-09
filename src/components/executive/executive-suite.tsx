@@ -44,7 +44,7 @@ export function ExecutiveSuite({ summary, compact = false }: { summary: Executiv
           {cards.map((card) => (
             <div key={card.label} className="rounded-[12px] border border-slate-200 bg-slate-50/80 px-4 py-3">
               <p className="line-clamp-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">{card.label}</p>
-              <p className="mt-3 text-2xl font-bold leading-none tracking-tight text-slate-950">{card.value}</p>
+              <p className="mt-3 text-xl font-bold leading-none tracking-tight text-slate-950">{card.value}</p>
             </div>
           ))}
         </div>
@@ -54,7 +54,7 @@ export function ExecutiveSuite({ summary, compact = false }: { summary: Executiv
 
   return (
     <div className="space-y-4">
-      <Card className="bg-[linear-gradient(135deg,#312e81_0%,#581c87_55%,#0f172a_100%)] text-white shadow-[0_20px_48px_rgba(49,46,129,0.2)]">
+      <Card className="bg-[linear-gradient(135deg,#312e81_0%,#581c87_55%,#0f172a_100%)] text-white">
         <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
           <div className="max-w-3xl">
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-violet-200">Executive suite</p>
@@ -87,7 +87,7 @@ export function ExecutiveSuite({ summary, compact = false }: { summary: Executiv
         <Card>
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <h3 className="text-lg font-semibold tracking-tight text-slate-950">Decision board</h3>
+              <h3 className="text-base font-semibold tracking-tight text-slate-950">Decision board</h3>
               <p className="mt-1 max-w-xl text-sm leading-6 text-slate-500">Lo que más conviene mover primero para sostener ritmo y bajar fricción.</p>
             </div>
             <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px] bg-violet-50 text-violet-700 ring-1 ring-violet-100">
@@ -115,7 +115,7 @@ export function ExecutiveSuite({ summary, compact = false }: { summary: Executiv
         <Card>
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <h3 className="text-lg font-semibold tracking-tight text-slate-950">Cadencia semanal</h3>
+              <h3 className="text-base font-semibold tracking-tight text-slate-950">Cadencia semanal</h3>
               <p className="mt-1 max-w-md text-sm leading-6 text-slate-500">Los cuatro números que no deberían perderse en la conversación del equipo.</p>
             </div>
             <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px] bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100">
@@ -130,7 +130,7 @@ export function ExecutiveSuite({ summary, compact = false }: { summary: Executiv
                     <p className="text-sm font-semibold text-slate-900">{item.label}</p>
                     <p className="mt-1 text-sm text-slate-500">{item.detail}</p>
                   </div>
-                  <p className="text-2xl font-bold text-slate-900">{item.value}</p>
+                  <p className="text-xl font-bold text-slate-900">{item.value}</p>
                 </div>
               </div>
             ))}
@@ -142,7 +142,7 @@ export function ExecutiveSuite({ summary, compact = false }: { summary: Executiv
         <Card>
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <h3 className="text-lg font-semibold tracking-tight text-slate-950">Governance watchlist</h3>
+              <h3 className="text-base font-semibold tracking-tight text-slate-950">Governance watchlist</h3>
               <p className="mt-1 max-w-xl text-sm leading-6 text-slate-500">Items que vale la pena llevar a revisión con responsables visibles y contexto corto.</p>
             </div>
             <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px] bg-slate-100 text-slate-700 ring-1 ring-slate-200">
@@ -171,7 +171,7 @@ export function ExecutiveSuite({ summary, compact = false }: { summary: Executiv
         <Card>
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <h3 className="text-lg font-semibold tracking-tight text-slate-950">Recomendaciones ejecutivas</h3>
+              <h3 className="text-base font-semibold tracking-tight text-slate-950">Recomendaciones ejecutivas</h3>
               <p className="mt-1 max-w-xl text-sm leading-6 text-slate-500">Próximos movimientos para cerrar la semana con foco profesional y sin sobrecomplicar la operación.</p>
             </div>
             <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px] bg-blue-50 text-blue-700 ring-1 ring-blue-100">

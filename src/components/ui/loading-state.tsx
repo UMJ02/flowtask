@@ -9,7 +9,7 @@ export function LoadingState({
 }) {
   return (
     <div className="space-y-3" aria-busy="true" aria-live="polite" role="status">
-      <div className="rounded-[24px] border border-slate-200/80 bg-white/[0.92] p-4 shadow-[0_12px_26px_rgba(15,23,42,0.05)] md:p-[18px]">
+      <div className="rounded-[24px] border border-slate-200/80 bg-white/[0.92] p-4 md:p-[18px]">
         <div className="min-w-0 space-y-3">
           <div className="space-y-2">
             <div className="skeleton h-3 w-20 rounded-full" />

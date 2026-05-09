@@ -15,9 +15,9 @@ function FlowtaskLogo() {
 function LandingNavbar() {
   return (
     <header className="absolute inset-x-0 top-0 z-30">
-      <nav className="mx-auto flex w-full max-w-[1480px] items-center justify-between px-6 py-7 md:px-10 lg:px-16">
+      <nav className="mx-auto flex w-full max-w-[1480px] items-center justify-between px-5 py-7 md:px-10 lg:px-16">
         <FlowtaskLogo />
-        <div className="h-12 w-12" aria-hidden />
+        <div className="h-10 w-10" aria-hidden />
       </nav>
     </header>
   );
@@ -26,9 +26,9 @@ function LandingNavbar() {
 function MiniMetricCards() {
   return (
     <div className="grid gap-4 sm:grid-cols-2">
-      <div className="rounded-[18px] border border-white/10 bg-white/[0.045] p-4 shadow-[0_16px_42px_rgba(0,0,0,0.18)] backdrop-blur-md">
+      <div className="rounded-[18px] border border-white/10 bg-white/[0.045] p-4 backdrop-blur-md">
         <div className="flex items-center gap-4">
-          <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#16C784]/18 text-[#16C784] ring-1 ring-[#16C784]/20">
+          <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#16C784]/18 text-[#16C784] ring-1 ring-[#16C784]/20">
             <CalendarCheck className="h-5 w-5" />
           </span>
           <div>
@@ -37,9 +37,9 @@ function MiniMetricCards() {
           </div>
         </div>
       </div>
-      <div className="rounded-[18px] border border-white/10 bg-white/[0.045] p-4 shadow-[0_16px_42px_rgba(0,0,0,0.18)] backdrop-blur-md">
+      <div className="rounded-[18px] border border-white/10 bg-white/[0.045] p-4 backdrop-blur-md">
         <div className="flex items-center gap-4">
-          <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-violet-500/18 text-violet-300 ring-1 ring-violet-300/20">
+          <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-violet-500/18 text-violet-300 ring-1 ring-violet-300/20">
             <CheckCircle2 className="h-5 w-5" />
           </span>
           <div>
@@ -54,7 +54,7 @@ function MiniMetricCards() {
 
 function HeroGlassCard() {
   return (
-    <section className="relative w-full max-w-[520px] rounded-[30px] border border-white/20 bg-[#050B18]/42 p-6 shadow-[0_30px_90px_rgba(0,0,0,0.35)] backdrop-blur-[18px] md:p-9">
+    <section className="relative w-full max-w-[520px] rounded-[30px] border border-white/20 bg-[#050B18]/42 p-5 shadow-[0_30px_90px_rgba(0,0,0,0.35)] backdrop-blur-[18px] md:p-9">
       <div className="pointer-events-none absolute inset-0 rounded-[30px] bg-[radial-gradient(circle_at_30%_0%,rgba(255,255,255,0.16),transparent_42%),linear-gradient(135deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02))]" />
       <div className="relative z-10">
         <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/[0.055] px-3.5 py-2 text-xs font-bold text-white/80 shadow-inner shadow-white/5">
@@ -103,7 +103,7 @@ function HeroGlassCard() {
 
 function SideValueCard() {
   return (
-    <aside className="hidden w-full max-w-[420px] rounded-[22px] border border-white/10 bg-[#050B18]/48 p-6 shadow-[0_26px_70px_rgba(0,0,0,0.34)] backdrop-blur-[14px] lg:block">
+    <aside className="hidden w-full max-w-[420px] rounded-[22px] border border-white/10 bg-[#050B18]/48 p-5 shadow-[0_26px_70px_rgba(0,0,0,0.34)] backdrop-blur-[14px] lg:block">
       <div className="flex items-center gap-2 text-sm font-semibold text-[#16C784]">
         <Sparkles className="h-4 w-4" />
         Planea, organiza y ejecuta
@@ -158,7 +158,7 @@ export default function HomePage() {
 
       <LandingNavbar />
 
-      <section className="relative z-10 mx-auto flex min-h-screen w-full max-w-[1480px] items-center px-6 pb-24 pt-28 md:px-10 lg:px-16 lg:pb-28 lg:pt-28">
+      <section className="relative z-10 mx-auto flex min-h-screen w-full max-w-[1480px] items-center px-5 pb-24 pt-28 md:px-10 lg:px-16 lg:pb-28 lg:pt-28">
         <div className="grid w-full items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(460px,540px)]">
           <div className="flex min-h-[520px] items-end">
             <SideValueCard />

@@ -114,7 +114,7 @@ export function OrganizationInvitesPanel({
             </tr>
           )) : (
             <tr>
-              <td colSpan={canManageInvites ? 5 : 4} className="py-6 text-sm text-slate-500">
+              <td colSpan={canManageInvites ? 5 : 4} className="py-5 text-sm text-slate-500">
                 {canManageInvites ? 'Todavía no hay invitaciones activas en este workspace.' : 'No tienes acceso a la bandeja de invitaciones de este workspace.'}
               </td>
             </tr>

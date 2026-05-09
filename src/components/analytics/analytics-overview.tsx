@@ -57,7 +57,7 @@ function downloadCsv(filename: string, rows: string[][]) {
 
 function ActionTooltip({ title }: { title: string }) {
   return (
-    <span className="pointer-events-none absolute -bottom-9 left-1/2 z-20 -translate-x-1/2 whitespace-nowrap rounded-full border border-[#E5EAF1] bg-white px-3 py-1.5 text-xs font-bold text-[#334155] opacity-0 shadow-[0_12px_24px_rgba(15,23,42,0.10)] transition group-hover:-translate-y-1 group-hover:opacity-100">
+    <span className="pointer-events-none absolute -bottom-9 left-1/2 z-20 -translate-x-1/2 whitespace-nowrap rounded-full border border-[#E5EAF1] bg-white px-3 py-1.5 text-xs font-bold text-[#334155] opacity-0 transition group-hover:-translate-y-1 group-hover:opacity-100">
       {title}
     </span>
   );
@@ -70,7 +70,7 @@ function ActionIconButton({ title, onClick, children }: { title: string; onClick
       aria-label={title}
       title={title}
       onClick={onClick}
-      className="group relative inline-flex h-12 w-12 items-center justify-center rounded-[16px] border border-[#E5EAF1] bg-white text-[#334155] shadow-[0_10px_24px_rgba(15,23,42,0.03)] transition hover:border-[#16C784]/40 hover:text-[#0F172A]"
+      className="group relative inline-flex h-10 w-10 items-center justify-center rounded-[16px] border border-[#E5EAF1] bg-white text-[#334155] transition hover:border-[#16C784]/40 hover:text-[#0F172A]"
     >
       {children}
       <ActionTooltip title={title} />
@@ -85,8 +85,8 @@ function ActionIconLink({ title, href, children, dark = false }: { title: string
       aria-label={title}
       title={title}
       className={dark
-        ? 'group relative inline-flex h-12 w-12 items-center justify-center rounded-[16px] bg-[#050B18] text-white shadow-[0_10px_24px_rgba(15,23,42,0.10)] transition hover:bg-[#111827]'
-        : 'group relative inline-flex h-12 w-12 items-center justify-center rounded-[16px] border border-[#E5EAF1] bg-white text-[#334155] shadow-[0_10px_24px_rgba(15,23,42,0.03)] transition hover:border-[#16C784]/40 hover:text-[#0F172A]'}
+        ? 'group relative inline-flex h-10 w-10 items-center justify-center rounded-[16px] bg-[#050B18] text-white transition hover:bg-[#111827]'
+        : 'group relative inline-flex h-10 w-10 items-center justify-center rounded-[16px] border border-[#E5EAF1] bg-white text-[#334155] transition hover:border-[#16C784]/40 hover:text-[#0F172A]'}
     >
       {children}
       <ActionTooltip title={title} />
@@ -148,7 +148,7 @@ function KpiCard({ item }: { item: KpiItem }) {
   const tone = palette[item.tone];
 
   return (
-    <Card className="group rounded-[20px] border-[#E5EAF1] bg-white p-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(15,23,42,0.07)]">
+    <Card className="group rounded-[20px] border-[#E5EAF1] bg-white p-5 transition-all duration-200 hover:-translate-y-0.5 hover:">
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-[13px] font-semibold text-[#334155]">{item.label}</p>
@@ -197,7 +197,7 @@ function TeamActivityChart({ summary }: { summary: WorkspaceAnalyticsSummary }) 
   const grid = [0, Math.round(maxValue * 0.25), Math.round(maxValue * 0.5), Math.round(maxValue * 0.75), maxValue];
 
   return (
-    <Card className="rounded-[20px] border-[#E5EAF1] bg-white p-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)] xl:col-span-2">
+    <Card className="rounded-[20px] border-[#E5EAF1] bg-white p-5 xl:col-span-2">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h2 className="text-[17px] font-bold text-[#0F172A]">Actividad real del workspace</h2>
@@ -214,7 +214,7 @@ function TeamActivityChart({ summary }: { summary: WorkspaceAnalyticsSummary }) 
       <div className="relative mt-4 overflow-hidden">
         {hovered ? (
           <div
-            className="pointer-events-none absolute z-10 -translate-x-1/2 -translate-y-full rounded-2xl border border-[#E5EAF1] bg-white px-3 py-2 text-xs shadow-[0_16px_34px_rgba(15,23,42,0.13)]"
+            className="pointer-events-none absolute z-10 -translate-x-1/2 -translate-y-full rounded-2xl border border-[#E5EAF1] bg-white px-3 py-2 text-xs"
             style={{ left: `${(hovered.x / width) * 100}%`, top: `${(hovered.y / height) * 100}%` }}
           >
             <p className="font-bold text-[#0F172A]">{hovered.day}</p>
@@ -297,7 +297,7 @@ function DonutChart({ summary }: { summary: WorkspaceAnalyticsSummary }) {
           <span className="text-sm font-semibold text-[#64748B]">Tareas</span>
         </div>
         {activeItem ? (
-          <div className="absolute left-1/2 top-3 -translate-x-1/2 rounded-2xl border border-[#E5EAF1] bg-white px-3 py-2 text-center text-xs shadow-[0_16px_34px_rgba(15,23,42,0.13)]">
+          <div className="absolute left-1/2 top-3 -translate-x-1/2 rounded-2xl border border-[#E5EAF1] bg-white px-3 py-2 text-center text-xs">
             <p className="inline-flex items-center justify-center gap-2 whitespace-nowrap font-bold text-[#0F172A]"><span className="h-2 w-2 rounded-full" style={{ backgroundColor: activeItem.color }} /> {activeItem.label}</p>
             <p className="mt-1 font-semibold" style={{ color: activeItem.color }}>{activeItem.count} · {Math.round((activeItem.count / total) * 100)}%</p>
           </div>
@@ -320,7 +320,7 @@ function DonutChart({ summary }: { summary: WorkspaceAnalyticsSummary }) {
 
 function TaskStatusDonut({ summary }: { summary: WorkspaceAnalyticsSummary }) {
   return (
-    <Card className="rounded-[20px] border-[#E5EAF1] bg-white p-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
+    <Card className="rounded-[20px] border-[#E5EAF1] bg-white p-5">
       <h2 className="text-[17px] font-bold text-[#0F172A]">Distribución real por estado</h2>
       <p className="mt-2 text-sm font-medium text-[#64748B]">Concluidas se muestran como cierre histórico, no como atraso.</p>
       <div className="mt-5">
@@ -348,7 +348,7 @@ function ProgressBar({ label, percent, meta }: { label: string; percent: number;
 function ProjectsProgressCard({ summary }: { summary: WorkspaceAnalyticsSummary }) {
   const rows = summary.projectProgress;
   return (
-    <Card className="rounded-[20px] border-[#E5EAF1] bg-white p-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
+    <Card className="rounded-[20px] border-[#E5EAF1] bg-white p-5">
       <h2 className="text-[17px] font-bold text-[#0F172A]">Progreso real por proyecto</h2>
       <div className="mt-5 space-y-4">
         {rows.length ? rows.map((item) => (
@@ -366,7 +366,7 @@ function WorkloadCard({ summary }: { summary: WorkspaceAnalyticsSummary }) {
   const rows = summary.workload;
   const max = Math.max(1, ...rows.map((item) => item.total));
   return (
-    <Card className="rounded-[20px] border-[#E5EAF1] bg-white p-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
+    <Card className="rounded-[20px] border-[#E5EAF1] bg-white p-5">
       <h2 className="text-[17px] font-bold text-[#0F172A]">Carga operativa real</h2>
       <p className="mt-2 text-xs font-semibold text-[#64748B]">Tareas activas y en espera por cliente/departamento.</p>
       <div className="mt-5 space-y-4">
@@ -402,7 +402,7 @@ function RecentActivityCard({ summary }: { summary: WorkspaceAnalyticsSummary })
     stable: 'bg-emerald-50 text-emerald-600',
   };
   return (
-    <Card className="rounded-[20px] border-[#E5EAF1] bg-white p-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
+    <Card className="rounded-[20px] border-[#E5EAF1] bg-white p-5">
       <div className="flex items-center justify-between gap-4">
         <h2 className="text-[17px] font-bold text-[#0F172A]">Foco operativo</h2>
         <Link href="/app/tasks" className="rounded-2xl border border-[#E5EAF1] px-4 py-2 text-sm font-bold text-[#334155] transition hover:border-[#16C784]/40">Ver tareas</Link>
@@ -427,7 +427,7 @@ function RecentActivityCard({ summary }: { summary: WorkspaceAnalyticsSummary })
 
 function RecommendationsCard({ summary }: { summary: WorkspaceAnalyticsSummary }) {
   return (
-    <Card className="rounded-[20px] border-[#E5EAF1] bg-white p-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)] xl:col-span-3">
+    <Card className="rounded-[20px] border-[#E5EAF1] bg-white p-5 xl:col-span-3">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="text-[17px] font-bold text-[#0F172A]">Inteligencia operativa</h2>

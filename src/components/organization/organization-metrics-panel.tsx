@@ -5,7 +5,7 @@ export function OrganizationMetricsPanel({ metrics }: { metrics?: OrganizationMe
   return (
     <Card>
       <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Dashboard por organización</p>
-      <h2 className="mt-1 text-lg font-semibold text-slate-900">Salud operativa consolidada</h2>
+      <h2 className="mt-1 text-base font-semibold text-slate-900">Salud operativa consolidada</h2>
       <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <Metric label="Miembros" value={String(metrics?.members ?? 0)} />
         <Metric label="Clientes" value={String(metrics?.clients ?? 0)} />
@@ -39,7 +39,7 @@ function Metric({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-2xl bg-slate-900 px-4 py-3 text-white">
       <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400">{label}</p>
-      <p className="mt-1 text-lg font-bold">{value}</p>
+      <p className="mt-1 text-base font-bold">{value}</p>
     </div>
   );
 }

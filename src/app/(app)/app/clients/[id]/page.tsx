@@ -17,7 +17,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
 
   return (
     <div className="space-y-4">
-      <Card className="rounded-[28px] border border-slate-200/90 bg-white/[0.92] p-5 shadow-[0_10px_30px_rgba(15,23,42,0.04)]">
+      <Card className="rounded-[24px] border border-slate-200/90 bg-white/[0.92] p-5">
         <Link href="/app/clients" className="inline-flex items-center gap-2 text-sm font-semibold text-slate-600 transition hover:text-slate-900">
           <ArrowLeft className="h-4 w-4" />
           Volver a clientes

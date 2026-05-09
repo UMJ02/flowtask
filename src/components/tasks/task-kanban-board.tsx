@@ -319,13 +319,13 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery, work
         {columns.map((column) => {
           const Icon = column.icon;
           return (
-            <Card key={column.value} className="rounded-[20px] border border-slate-200/85 bg-white p-4 shadow-[0_14px_30px_rgba(15,23,42,0.045)]">
+            <Card key={column.value} className="rounded-[20px] border border-slate-200/85 bg-white p-4">
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
                   <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200/90 text-slate-500 bg-slate-50"><Icon className="h-7 w-7" /></span>
-                  <h3 className="text-2xl font-bold tracking-tight text-slate-950">{column.label}</h3>
+                  <h3 className="text-xl font-bold tracking-tight text-slate-950">{column.label}</h3>
                 </div>
-                <span className="inline-flex h-11 min-w-11 items-center justify-center rounded-2xl border border-slate-200/90 px-3 text-lg font-semibold text-slate-700 bg-white">0</span>
+                <span className="inline-flex h-11 min-w-11 items-center justify-center rounded-2xl border border-slate-200/90 px-3 text-base font-semibold text-slate-700 bg-white">0</span>
               </div>
             </Card>
           );
@@ -389,7 +389,7 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery, work
   return (
     <div className="space-y-4">
       {showHeader ? (
-        <Card className="rounded-[18px] border border-slate-200/85 p-4 shadow-[0_14px_28px_rgba(15,23,42,0.05)] md:p-4.5">
+        <Card className="rounded-[18px] border border-slate-200/85 p-4 md:p-4.5">
           <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
             <div className="max-w-2xl">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Pizarra</p>
@@ -422,7 +422,7 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery, work
             <section
               key={column.value}
               className={`rounded-[18px] border p-3 transition ${
-                isActiveDropzone || isRecentDrop ? "border-emerald-300 bg-emerald-50/60 shadow-[0_12px_28px_rgba(16,185,129,0.08)]" : column.value === "en_proceso" ? "border-[#BFDBFE] bg-[linear-gradient(180deg,#F8FBFF,#FFFFFF)]" : column.value === "en_espera" ? "border-[#FDE68A] bg-[linear-gradient(180deg,#FFFDF5,#FFFFFF)]" : "border-[#BBF7D0] bg-[linear-gradient(180deg,#F7FFFB,#FFFFFF)]"
+                isActiveDropzone || isRecentDrop ? "border-emerald-300 bg-emerald-50/60" : column.value === "en_proceso" ? "border-[#BFDBFE] bg-[linear-gradient(180deg,#F8FBFF,#FFFFFF)]" : column.value === "en_espera" ? "border-[#FDE68A] bg-[linear-gradient(180deg,#FFFDF5,#FFFFFF)]" : "border-[#BBF7D0] bg-[linear-gradient(180deg,#F7FFFB,#FFFFFF)]"
               }`}
               onDragOver={(event) => {
                 event.preventDefault();
@@ -485,7 +485,7 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery, work
                         }}
                         className={draggingId === task.id ? "opacity-60" : "opacity-100"}
                       >
-                        <Card className={`rounded-[14px] border bg-white p-3 shadow-[0_8px_20px_rgba(15,23,42,0.04)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_24px_rgba(15,23,42,0.08)] ${
+                        <Card className={`rounded-[14px] border bg-white p-3 transition hover:-translate-y-0.5 hover: ${
                           isHoverCard ? "border-emerald-300 ring-2 ring-emerald-100" : "border-white/70 hover:border-slate-200"
                         }`}>
                           <div className="space-y-3">
@@ -540,7 +540,7 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery, work
                     );
                   })
                 ) : (
-                  <div className="rounded-2xl border border-dashed border-slate-300 bg-white/60 px-4 py-6 text-center text-sm text-slate-500">
+                  <div className="rounded-2xl border border-dashed border-slate-300 bg-white/60 px-4 py-5 text-center text-sm text-slate-500">
                     {isActiveDropzone ? "Suelta para moverla aquí." : "Suelta una tarea aquí."}
                   </div>
                 )}

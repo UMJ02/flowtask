@@ -5,7 +5,7 @@ export function OrganizationUsagePanel({ invoices }: { invoices: OrganizationInv
   return (
     <Card>
       <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Facturación</p>
-      <h2 className="mt-1 text-lg font-semibold text-slate-900">Últimas facturas</h2>
+      <h2 className="mt-1 text-base font-semibold text-slate-900">Últimas facturas</h2>
       <div className="mt-4 space-y-3">
         {invoices.length === 0 ? <p className="text-sm text-slate-500">No hay facturas registradas todavía.</p> : null}
         {invoices.map((invoice) => (

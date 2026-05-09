@@ -171,11 +171,11 @@ export function ProjectPlanningTimeline({ project, tasks, currentQuery = "" }: P
   };
 
   return (
-    <section id="timeline" className="scroll-mt-28 rounded-[24px] border border-[#E7EDF5] bg-white p-6 shadow-[0_12px_35px_rgba(15,23,42,0.05)]">
+    <section id="timeline" className="scroll-mt-28 rounded-[24px] border border-[#E7EDF5] bg-white p-5">
       <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#16A36C]">Project Planificación inteligente</p>
-          <h2 className="mt-1 text-2xl font-semibold tracking-[-0.02em] text-[#0F172A]">Planificación colaborativa del proyecto</h2>
+          <h2 className="mt-1 text-xl font-semibold tracking-[-0.02em] text-[#0F172A]">Planificación colaborativa del proyecto</h2>
           <p className="mt-1 max-w-3xl text-sm font-medium text-[#64748B]">Timeline híbrido con progreso, fechas y vista flexible. Las tareas simples viven en Tareas; la planificación avanzada vive aquí.</p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -188,10 +188,10 @@ export function ProjectPlanningTimeline({ project, tasks, currentQuery = "" }: P
       </div>
 
       <div className="mt-5 flex justify-center xl:justify-end">
-        <button type="button" aria-pressed={showBuilder} onClick={() => setShowBuilder((v) => !v)} className={cn("inline-flex h-10 items-center gap-2 rounded-[14px] px-5 text-sm font-semibold ring-1 transition", showBuilder ? "bg-[#050B18] text-white ring-[#050B18] shadow-[0_10px_24px_rgba(5,11,24,0.16)]" : "bg-[#ECFDF5] text-[#087A4B] ring-[#BBF7D0]")}><Settings2 className="h-4 w-4" />Ajustes de vista</button>
+        <button type="button" aria-pressed={showBuilder} onClick={() => setShowBuilder((v) => !v)} className={cn("inline-flex h-10 items-center gap-2 rounded-[14px] px-5 text-sm font-semibold ring-1 transition", showBuilder ? "bg-[#050B18] text-white ring-[#050B18]" : "bg-[#ECFDF5] text-[#087A4B] ring-[#BBF7D0]")}><Settings2 className="h-4 w-4" />Ajustes de vista</button>
       </div>
 
-      <div className={cn("mt-6 grid gap-6", showBuilder ? "xl:grid-cols-[minmax(0,1fr)_320px]" : "xl:grid-cols-1")}>
+      <div className={cn("mt-6 grid gap-5", showBuilder ? "xl:grid-cols-[minmax(0,1fr)_320px]" : "xl:grid-cols-1")}>
         <div className="min-w-0">
           <div className="mb-4 flex flex-col gap-3 rounded-[18px] border border-[#E7EDF5] bg-[#FBFCFE] p-3 md:flex-row md:items-center md:justify-between">
             <div className="flex items-center gap-2">
@@ -206,7 +206,7 @@ export function ProjectPlanningTimeline({ project, tasks, currentQuery = "" }: P
             <div className="overflow-x-auto rounded-[20px] border border-[#E7EDF5]">
               <div className="min-w-[980px] grid grid-cols-[320px_1fr] bg-white">
                 <div className="border-r border-[#E7EDF5]">
-                  <div className="h-12 border-b border-[#E7EDF5] bg-slate-50/80 px-4 py-4 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#64748B]">Tarea / Responsable</div>
+                  <div className="h-10 border-b border-[#E7EDF5] bg-slate-50/80 px-4 py-4 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#64748B]">Tarea / Responsable</div>
                   {groupedTasks.map((group) => (
                     <div key={group.label}>
                       <div className="border-b border-[#E7EDF5] bg-[#F8FAFC] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#64748B]">{group.label}</div>
@@ -223,7 +223,7 @@ export function ProjectPlanningTimeline({ project, tasks, currentQuery = "" }: P
                   ))}
                 </div>
                 <div className="relative">
-                  <div className="grid h-12 border-b border-[#E7EDF5] bg-slate-50/80" style={{ gridTemplateColumns: `repeat(${days.length}, minmax(40px, 1fr))` }}>
+                  <div className="grid h-10 border-b border-[#E7EDF5] bg-slate-50/80" style={{ gridTemplateColumns: `repeat(${days.length}, minmax(40px, 1fr))` }}>
                     {days.map((day) => <div key={day.toISOString()} className="border-r border-[#EEF2F7] px-1 py-3 text-center text-[11px] font-semibold text-[#64748B] last:border-r-0">{day.getDate()}</div>)}
                   </div>
                   {groupedTasks.map((group) => (
@@ -234,7 +234,7 @@ export function ProjectPlanningTimeline({ project, tasks, currentQuery = "" }: P
                         return (
                           <div key={task.id} className="relative h-[64px] border-b border-[#EEF2F7] last:border-b-0">
                             <div className="absolute inset-0 grid" style={{ gridTemplateColumns: `repeat(${days.length}, minmax(40px, 1fr))` }}>{days.map((day) => <div key={day.toISOString()} className="border-r border-[#F1F5F9] last:border-r-0" />)}</div>
-                            <span className="absolute top-1/2 h-5 -translate-y-1/2 overflow-hidden rounded-full bg-slate-100 shadow-[0_8px_18px_rgba(15,23,42,0.12)]" style={barStyle(task, range.start, range.end)} title={`${task.title} · ${pct}%`}>
+                            <span className="absolute top-1/2 h-5 -translate-y-1/2 overflow-hidden rounded-full bg-slate-100" style={barStyle(task, range.start, range.end)} title={`${task.title} · ${pct}%`}>
                               <span className={cn("block h-full rounded-full", colorClass(task, colorBy))} style={{ width: `${pct}%` }} />
                             </span>
                           </div>
@@ -246,17 +246,17 @@ export function ProjectPlanningTimeline({ project, tasks, currentQuery = "" }: P
               </div>
             </div>
           ) : (
-            <div className="rounded-[20px] border border-dashed border-[#CBD5E1] bg-[#F8FAFC] px-6 py-10 text-center">
-              <p className="text-lg font-semibold text-[#0F172A]">Este proyecto aún no tiene tareas internas.</p>
+            <div className="rounded-[20px] border border-dashed border-[#CBD5E1] bg-[#F8FAFC] px-5 py-10 text-center">
+              <p className="text-base font-semibold text-[#0F172A]">Este proyecto aún no tiene tareas internas.</p>
               <p className="mt-2 text-sm font-medium text-[#64748B]">Crea fases o tareas vinculadas para construir el timeline del proyecto.</p>
             </div>
           )}
         </div>
 
         {showBuilder ? (
-          <aside className="rounded-[20px] border border-[#E7EDF5] bg-white p-5 shadow-[0_10px_24px_rgba(15,23,42,0.035)]">
+          <aside className="rounded-[20px] border border-[#E7EDF5] bg-white p-5">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#64748B]">Ajustes de vista</p>
-            <h3 className="mt-2 text-lg font-semibold text-[#0F172A]">Modificar vista</h3>
+            <h3 className="mt-2 text-base font-semibold text-[#0F172A]">Modificar vista</h3>
             <div className="mt-5 space-y-4">
               <label className="flex items-center justify-between rounded-[14px] border border-[#E7EDF5] bg-[#F8FAFC] px-4 py-3 text-sm font-bold text-[#0F172A]">Incluir concluidas<input type="checkbox" checked={showConcluded} onChange={(e) => setShowConcluded(e.target.checked)} /></label>
               <label className="block text-xs font-semibold uppercase tracking-[0.14em] text-[#64748B]">Colores<select value={colorBy} onChange={(e) => setColorBy(e.target.value as ColorMode)} className="mt-2 h-11 w-full rounded-[14px] border border-[#E7EDF5] bg-white px-3 text-sm font-bold text-[#0F172A]"><option value="status">Por estado</option><option value="priority">Por prioridad</option><option value="responsible">Por responsable</option></select></label>

@@ -17,7 +17,7 @@ export function AppSidebar({ organizations = [], activeOrganization = null, user
 
   return (
     <aside className="hidden min-w-0 bg-[linear-gradient(180deg,#071120_0%,#0A1730_100%)] text-[#E2E8F0] shadow-[16px_0_40px_rgba(2,6,23,0.08)] md:relative md:flex md:min-h-screen md:w-full md:self-stretch md:flex-col md:overflow-hidden">
-      <div className={`flex shrink-0 items-center ${collapsed ? 'justify-center px-3 py-6' : 'justify-between px-5 py-6'}`}>
+      <div className={`flex shrink-0 items-center ${collapsed ? 'justify-center px-3 py-5' : 'justify-between px-5 py-5'}`}>
         <Link href="/app/dashboard" className={`group flex min-w-0 items-center ${collapsed ? 'justify-center' : 'gap-3'}`} title={collapsed ? 'FlowTask' : undefined}>
           <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-[14px] bg-[#16C784]/10 ring-1 ring-[#16C784]/20 transition group-hover:scale-[1.03]">
             <Image src="/icons/icon.png" alt="FlowTask" width={30} height={30} className="h-7 w-7 object-contain" priority />

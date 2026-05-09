@@ -60,7 +60,7 @@ export function MobileNav() {
         type="button"
         aria-label="Cerrar menú"
       />
-      <div className="absolute left-0 top-0 mt-2 flex w-[88%] max-w-sm flex-col overflow-hidden rounded-r-[32px] bg-[linear-gradient(180deg,#020617_0%,#0f172a_100%)] p-4 text-white shadow-[0_24px_60px_rgba(15,23,42,0.35)] max-h-[calc(100vh-1rem)]">
+      <div className="absolute left-0 top-0 mt-2 flex w-[88%] max-w-sm flex-col overflow-hidden rounded-r-[26px] bg-[linear-gradient(180deg,#020617_0%,#0f172a_100%)] p-4 text-white shadow-[0_24px_60px_rgba(15,23,42,0.35)] max-h-[calc(100vh-1rem)]">
         <div className="mb-4 flex items-center justify-between">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-emerald-300">FlowTask</p>
@@ -77,14 +77,14 @@ export function MobileNav() {
         </div>
 
         <div className="space-y-4 overflow-y-auto pr-1">
-          <nav className="space-y-2 rounded-[28px] border border-white/10 bg-white/[0.03] p-2">
+          <nav className="space-y-2 rounded-[24px] border border-white/10 bg-white/[0.03] p-2">
             {groups.main.map((link) => {
               const Icon = link.icon;
               const active = pathname === link.href || pathname?.startsWith(`${link.href}/`);
               return (
                 <Link
                   key={link.href}
-                  className={`flex items-center justify-between rounded-3xl border px-4 py-3 transition ${active ? 'border-emerald-400/40 bg-white/10 shadow-[0_0_0_1px_rgba(16,185,129,0.12)]' : 'border-white/10 bg-white/5 hover:bg-white/8'}`}
+                  className={`flex items-center justify-between rounded-[22px] border px-4 py-3 transition ${active ? 'border-emerald-400/40 bg-white/10 shadow-[0_0_0_1px_rgba(16,185,129,0.12)]' : 'border-white/10 bg-white/5 hover:bg-white/8'}`}
                   href={link.href}
                   onClick={() => setOpen(false)}
                 >
@@ -102,12 +102,12 @@ export function MobileNav() {
             })}
           </nav>
 
-          <div className="rounded-[28px] border border-white/10 bg-white/[0.03] p-2">
+          <div className="rounded-[24px] border border-white/10 bg-white/[0.03] p-2">
             <button
               type="button"
               onClick={handleLogout}
               disabled={loggingOut}
-              className="flex w-full items-center gap-3 rounded-3xl border border-white/10 bg-white/5 px-4 py-3 text-left transition hover:bg-white/8 disabled:opacity-60"
+              className="flex w-full items-center gap-3 rounded-[22px] border border-white/10 bg-white/5 px-4 py-3 text-left transition hover:bg-white/8 disabled:opacity-60"
             >
               <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-white/10 text-rose-300">
                 <LogOut className="h-5 w-5" />
@@ -129,7 +129,7 @@ export function MobileNav() {
     <>
       <button
         aria-label="Abrir menú"
-        className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-900 shadow-sm md:hidden"
+        className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-900 shadow-none md:hidden"
         onClick={() => setOpen(true)}
         type="button"
       >

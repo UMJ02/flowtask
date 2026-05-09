@@ -13,7 +13,7 @@ export function UrgentProjects({ items }: { items: UrgentProjectItem[] }) {
   return (
     <Card className="space-y-4">
       <div>
-        <h2 className="text-lg font-semibold text-slate-900">Proyectos a vigilar</h2>
+        <h2 className="text-base font-semibold text-slate-900">Proyectos a vigilar</h2>
         <p className="text-sm text-slate-500">Activos con deadline dentro de la próxima semana.</p>
       </div>
       <div className="space-y-3">

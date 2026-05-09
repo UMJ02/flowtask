@@ -36,11 +36,11 @@ export function OrganizationRolesPanel({
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">Roles del equipo</p>
-          <h2 className="mt-1 text-lg font-semibold text-slate-950">Qué puede hacer cada perfil</h2>
+          <h2 className="mt-1 text-base font-semibold text-slate-950">Qué puede hacer cada perfil</h2>
           <p className="mt-1 text-sm text-slate-600">Una lectura simple para entender permisos sin navegar entre varias pantallas.</p>
         </div>
         {canManageRoles ? (
-          <a href="/app/organization/roles" className="inline-flex h-10 items-center justify-center rounded-2xl bg-slate-950 px-4 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(15,23,42,0.14)]">
+          <a href="/app/organization/roles" className="inline-flex h-10 items-center justify-center rounded-2xl bg-slate-950 px-4 text-sm font-semibold text-white">
             Gestionar roles
           </a>
         ) : null}
@@ -55,7 +55,7 @@ export function OrganizationRolesPanel({
                 key={role.id}
                 type="button"
                 onClick={() => setActiveRoleId(role.id)}
-                className={`flex w-full items-center justify-between rounded-[20px] border px-4 py-3 text-left transition-all ${isActive ? 'border-slate-300 bg-slate-950 text-white shadow-[0_12px_24px_rgba(15,23,42,0.12)]' : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50'}`}
+                className={`flex w-full items-center justify-between rounded-[20px] border px-4 py-3 text-left transition-all ${isActive ? 'border-slate-300 bg-slate-950 text-white' : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50'}`}
               >
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">

@@ -24,7 +24,7 @@ export function AuthFeedbackModal({
     <div className="pointer-events-none fixed inset-0 z-[120] flex items-center justify-center bg-slate-950/18 px-4 backdrop-blur-[2px]">
       <div
         className={cn(
-          'pointer-events-auto w-full max-w-sm rounded-[28px] border bg-white p-5 shadow-[0_24px_60px_rgba(15,23,42,0.18)]',
+          'pointer-events-auto w-full max-w-sm rounded-[24px] border bg-white p-5 shadow-[0_24px_60px_rgba(15,23,42,0.18)]',
           isSuccess ? 'border-emerald-200' : 'border-rose-200'
         )}
       >
@@ -39,7 +39,7 @@ export function AuthFeedbackModal({
           </span>
 
           <div>
-            <h3 className="text-lg font-bold text-slate-900">{title}</h3>
+            <h3 className="text-base font-bold text-slate-900">{title}</h3>
             <p className="mt-1 text-sm leading-6 text-slate-600">{message}</p>
           </div>
         </div>

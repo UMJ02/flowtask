@@ -5,7 +5,7 @@ import { formatDate } from "@/lib/utils/dates";
 export function ProjectTaskList({ tasks }: { tasks: any[] }) {
   return (
     <Card>
-      <h3 className="text-lg font-semibold text-slate-900">Tareas vinculadas</h3>
+      <h3 className="text-base font-semibold text-slate-900">Tareas vinculadas</h3>
       <p className="mt-1 text-sm text-slate-500">Control de tareas relacionadas con este proyecto.</p>
       <div className="mt-4 space-y-3">
         {tasks.length ? tasks.map((task) => (

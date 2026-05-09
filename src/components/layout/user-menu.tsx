@@ -121,7 +121,7 @@ export function UserMenu({
       <Link
         href="/app/profile"
         aria-label="Abrir perfil"
-        className="relative inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[#E5EAF1] bg-white text-left shadow-[0_4px_14px_rgba(15,23,42,0.04)] transition-all duration-150 hover:-translate-y-0.5 hover:scale-[1.03] hover:border-emerald-200 hover:bg-emerald-50 md:hidden"
+        className="relative inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[#E5EAF1] bg-white text-left transition-all duration-150 hover:-translate-y-0.5 hover:scale-[1.03] hover:border-emerald-200 hover:bg-emerald-50 md:hidden"
       >
         <AvatarBadge avatarUrl={liveAvatarUrl} initials={initials} />
       </Link>
@@ -131,7 +131,7 @@ export function UserMenu({
           type="button"
           aria-label="Abrir menú de usuario"
           onClick={() => setOpen((value) => !value)}
-          className="group relative inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[#E5EAF1] bg-white text-left shadow-[0_4px_14px_rgba(15,23,42,0.04)] transition-all duration-150 hover:-translate-y-0.5 hover:scale-[1.03] hover:border-emerald-200 hover:bg-emerald-50"
+          className="group relative inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[#E5EAF1] bg-white text-left transition-all duration-150 hover:-translate-y-0.5 hover:scale-[1.03] hover:border-emerald-200 hover:bg-emerald-50"
         >
           <AvatarBadge avatarUrl={liveAvatarUrl} initials={initials} />
           <span className="pointer-events-none absolute -bottom-10 left-1/2 hidden -translate-x-1/2 whitespace-nowrap rounded-xl bg-slate-950 px-3 py-1.5 text-xs font-medium text-white shadow-lg group-hover:block">

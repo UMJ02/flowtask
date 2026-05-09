@@ -31,7 +31,7 @@ export default async function AuthErrorPage({
       </div>
 
       <div className="container-page relative flex min-h-screen items-center justify-center px-4 py-8">
-        <section className="w-full max-w-[560px] overflow-hidden rounded-[28px] border border-slate-200 bg-white p-6 text-center shadow-[0_24px_64px_rgba(15,23,42,0.08)] md:p-8">
+        <section className="w-full max-w-[560px] overflow-hidden rounded-[24px] border border-slate-200 bg-white p-5 text-center shadow-[0_24px_64px_rgba(15,23,42,0.08)] md:p-8">
           <AuthBrand />
           <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-rose-50 ring-8 ring-rose-50/70">
             <AlertCircle className="h-10 w-10 text-rose-500" aria-hidden="true" />
@@ -42,10 +42,10 @@ export default async function AuthErrorPage({
           <p className="mx-auto mt-3 max-w-[420px] text-sm leading-6 text-slate-600 md:text-base">{getErrorCopy(reason)}</p>
 
           <div className="mt-7 grid gap-3 sm:grid-cols-2">
-            <Link className="inline-flex h-12 items-center justify-center rounded-2xl bg-slate-950 px-3.5 py-2.5 text-sm font-semibold text-white shadow-[0_12px_28px_rgba(15,23,42,0.12)] transition-colors hover:bg-slate-900" href="/login">
+            <Link className="inline-flex h-10 items-center justify-center rounded-2xl bg-slate-950 px-3.5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-slate-900" href="/login">
               Ir al login
             </Link>
-            <Link className="inline-flex h-12 items-center justify-center rounded-2xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-800 shadow-[0_8px_18px_rgba(15,23,42,0.04)] transition-colors hover:bg-slate-50" href="/register">
+            <Link className="inline-flex h-10 items-center justify-center rounded-2xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-800 transition-colors hover:bg-slate-50" href="/register">
               Crear cuenta nueva
             </Link>
           </div>

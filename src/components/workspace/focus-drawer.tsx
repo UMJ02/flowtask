@@ -84,7 +84,7 @@ export function FocusDrawer({
               title="Ocultar 30 segundos"
               aria-label="Ocultar foco del día por 30 segundos"
               onClick={hideTemporarily}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-emerald-200 bg-white text-emerald-700 shadow-[0_12px_28px_rgba(15,23,42,0.12)] transition hover:bg-emerald-50"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-emerald-200 bg-white text-emerald-700 transition hover:bg-emerald-50"
             >
               <EyeOff className="h-4 w-4" />
             </button>
@@ -96,7 +96,7 @@ export function FocusDrawer({
             title="Ver foco del día"
             aria-label="Ver foco del día"
             className={cn(
-              'pointer-events-auto rounded-l-[22px] bg-emerald-500 text-white shadow-[0_18px_40px_rgba(16,185,129,0.28)] transition hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:ring-offset-2',
+              'pointer-events-auto rounded-l-[22px] bg-emerald-500 text-white transition hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:ring-offset-2',
               open ? 'translate-x-full opacity-0' : 'translate-x-0 opacity-100'
             )}
           >

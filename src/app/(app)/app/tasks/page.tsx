@@ -32,14 +32,14 @@ function StatCard({
   } as const;
 
   return (
-    <Card className="rounded-[20px] border border-[#E5EAF1] bg-white p-4 shadow-[0_12px_30px_rgba(15,23,42,0.04)] md:p-5">
+    <Card className="rounded-[20px] border border-[#E5EAF1] bg-white p-4 md:p-5">
       <div className="flex items-center gap-4">
-        <span className={`inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ring-1 ${tones[tone]}`}>
+        <span className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl ring-1 ${tones[tone]}`}>
           <Icon className="h-5 w-5" />
         </span>
         <div className="min-w-0">
           <p className="text-xs font-semibold text-[#64748B]">{label}</p>
-          <p className="mt-1 text-2xl font-bold tracking-tight text-[#0F172A]">{value}</p>
+          <p className="mt-1 text-xl font-bold tracking-tight text-[#0F172A]">{value}</p>
           <p className="mt-1 text-xs font-medium text-[#64748B]">{helper}</p>
         </div>
       </div>

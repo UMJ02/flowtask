@@ -22,7 +22,7 @@ const hoverThemes: Record<MetricVariant, {
 }> = {
   waiting: {
     border: 'hover:border-amber-300 hover:ring-2 hover:ring-amber-200/70',
-    shadow: 'hover:shadow-[0_18px_34px_rgba(245,158,11,0.18)]',
+    shadow: 'hover:',
     surface: 'hover:bg-amber-50/70',
     icon: 'group-hover:border-amber-300 group-hover:bg-amber-100 group-hover:text-amber-800',
     text: 'group-hover:text-amber-950',
@@ -30,7 +30,7 @@ const hoverThemes: Record<MetricVariant, {
   },
   overdue: {
     border: 'hover:border-rose-300 hover:ring-2 hover:ring-rose-200/70',
-    shadow: 'hover:shadow-[0_18px_34px_rgba(244,63,94,0.18)]',
+    shadow: 'hover:',
     surface: 'hover:bg-rose-50/70',
     icon: 'group-hover:border-rose-300 group-hover:bg-rose-100 group-hover:text-rose-800',
     text: 'group-hover:text-rose-950',
@@ -38,7 +38,7 @@ const hoverThemes: Record<MetricVariant, {
   },
   dueSoon: {
     border: 'hover:border-orange-300 hover:ring-2 hover:ring-orange-200/70',
-    shadow: 'hover:shadow-[0_18px_34px_rgba(249,115,22,0.18)]',
+    shadow: 'hover:',
     surface: 'hover:bg-orange-50/70',
     icon: 'group-hover:border-orange-300 group-hover:bg-orange-100 group-hover:text-orange-800',
     text: 'group-hover:text-orange-950',
@@ -46,7 +46,7 @@ const hoverThemes: Record<MetricVariant, {
   },
   projects: {
     border: 'hover:border-emerald-300 hover:ring-2 hover:ring-emerald-200/70',
-    shadow: 'hover:shadow-[0_18px_34px_rgba(16,185,129,0.18)]',
+    shadow: 'hover:',
     surface: 'hover:bg-emerald-50/70',
     icon: 'group-hover:border-emerald-300 group-hover:bg-emerald-100 group-hover:text-emerald-800',
     text: 'group-hover:text-emerald-950',
@@ -121,7 +121,7 @@ export function DashboardHero({
   ];
 
   return (
-    <Card className="rounded-[20px] border border-slate-200/80 bg-[radial-gradient(circle_at_top_left,_rgba(16,185,129,0.14),_transparent_28%),radial-gradient(circle_at_top_right,_rgba(59,130,246,0.08),_transparent_22%),linear-gradient(135deg,rgba(255,255,255,0.98),rgba(248,250,252,0.98))] p-3 shadow-[0_16px_32px_rgba(15,23,42,0.06)] md:p-4">
+    <Card className="rounded-[20px] border border-slate-200/80 bg-[radial-gradient(circle_at_top_left,_rgba(16,185,129,0.14),_transparent_28%),radial-gradient(circle_at_top_right,_rgba(59,130,246,0.08),_transparent_22%),linear-gradient(135deg,rgba(255,255,255,0.98),rgba(248,250,252,0.98))] p-3 md:p-4">
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1.25fr)_minmax(360px,0.95fr)] xl:items-start">
         <div>
           <div className="inline-flex items-center gap-2 rounded-full bg-white/[0.85] px-3 py-1 text-xs font-semibold tracking-[0.16em] text-emerald-700 ring-1 ring-emerald-100">
@@ -161,7 +161,7 @@ export function DashboardHero({
                 key={metric.label}
                 href={metric.href}
                 className={[
-                  'group relative overflow-hidden rounded-[16px] border border-slate-200 bg-white/96 p-3 shadow-[0_10px_22px_rgba(15,23,42,0.045)] ring-1 ring-white transition-all duration-300 hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-200',
+                  'group relative overflow-hidden rounded-[16px] border border-slate-200 bg-white/96 p-3 ring-1 ring-white transition-all duration-300 hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-200',
                   theme.border,
                   theme.shadow,
                   theme.surface,

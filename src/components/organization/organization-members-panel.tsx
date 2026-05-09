@@ -37,7 +37,7 @@ function roleHelper(role: OrganizationMemberItem['role']) {
 
 function StatCard({ title, value, helper, tone }: { title: string; value: number | string; helper: string; tone: string }) {
   return (
-    <div className={`rounded-[20px] px-4 py-4 shadow-[0_8px_20px_rgba(15,23,42,0.04)] ${tone}`}>
+    <div className={`rounded-[20px] px-4 py-4 ${tone}`}>
       <p className="text-[11px] font-semibold uppercase tracking-[0.22em] opacity-80">{title}</p>
       <p className="mt-2 text-[28px] font-bold leading-none">{value}</p>
       <p className="mt-2 text-sm opacity-85">{helper}</p>
@@ -133,7 +133,7 @@ export function OrganizationMembersPanel({
         <div className={`grid transition-[grid-template-columns] duration-300 ease-out xl:min-h-[540px] ${teamExpanded ? 'xl:grid-cols-[1.02fr_1.15fr]' : 'xl:grid-cols-[1fr_0fr]'}`}>
           <div className="min-w-0 border-b border-slate-200/80 p-4 xl:border-b-0 xl:border-r">
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">Panel del workspace</p>
-            <h3 className="mt-1 text-lg font-semibold text-slate-950">Lo importante del espacio hoy</h3>
+            <h3 className="mt-1 text-base font-semibold text-slate-950">Lo importante del espacio hoy</h3>
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               <StatCard title="Miembros" value={String(metrics?.members ?? items.length ?? 0)} helper="Personas activas en este equipo" tone={metricTones.admins} />
               <StatCard title="Clientes" value={String(metrics?.clients ?? 0)} helper="Clientes gestionados por la organización" tone={metricTones.managers} />
@@ -167,7 +167,7 @@ export function OrganizationMembersPanel({
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">Detalle del equipo</p>
-                  <h3 className="mt-1 text-lg font-semibold text-slate-950">Personas, cupos y roles</h3>
+                  <h3 className="mt-1 text-base font-semibold text-slate-950">Personas, cupos y roles</h3>
                 </div>
                 {nearCapacity ? (
                   <span className="inline-flex items-center gap-2 rounded-full bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-700 ring-1 ring-amber-100">
@@ -194,7 +194,7 @@ export function OrganizationMembersPanel({
                   const canEditThisMember = canManageRoles && !isOwner;
 
                   return (
-                    <div key={member.id} className="rounded-[22px] border border-slate-200/80 bg-white px-3.5 py-3.5 shadow-[0_8px_22px_rgba(15,23,42,0.04)]">
+                    <div key={member.id} className="rounded-[22px] border border-slate-200/80 bg-white px-3.5 py-3.5">
                       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
                         <div className="min-w-0 flex-1">
                           <div className="flex flex-wrap items-center gap-2.5">

@@ -311,31 +311,31 @@ export function ProjectForm({ projectId, initialData, submitLabel, successMessag
 
   return (
     <form className="-mx-4 min-h-screen bg-[#F6F8FC] pb-8 md:-mx-6" onSubmit={handleSubmit(onSubmit)}>
-      <div className="sticky top-0 z-40 mb-6 px-3 py-2 sm:px-4 lg:px-6">
-        <div className="rounded-[28px] border border-[#E5EAF1] bg-white/95 px-4 py-4 shadow-[0_10px_30px_rgba(15,23,42,0.035)] backdrop-blur-xl sm:px-5 lg:px-6">
+      <div className="sticky top-0 z-40 mb-6 px-3 py-2 sm:px-4 lg:px-5">
+        <div className="rounded-[24px] border border-[#E5EAF1] bg-white/95 px-4 py-4 backdrop-blur-xl sm:px-5 lg:px-5">
           <div className="flex min-h-[72px] w-full flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex min-w-0 items-center gap-3">
-              <Link href={cancelHref} className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#050B18] text-white shadow-[0_14px_28px_rgba(5,11,24,0.18)] transition hover:-translate-y-0.5" aria-label="Volver">
+              <Link href={cancelHref} className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#050B18] text-white transition hover:-translate-y-0.5" aria-label="Volver">
                 <ArrowLeft className="h-5 w-5" />
               </Link>
               <div className="min-w-0">
                 <p className="text-xs font-semibold uppercase tracking-[0.20em] text-[#16A36C]">FlowTask · Crear proyecto</p>
-                <h1 className="truncate text-2xl font-semibold tracking-[-0.035em] text-[#0F172A] sm:text-[28px]">{isEdit ? "Editar proyecto" : "Nuevo proyecto"}</h1>
+                <h1 className="truncate text-xl font-semibold tracking-[-0.035em] text-[#0F172A] sm:text-[28px]">{isEdit ? "Editar proyecto" : "Nuevo proyecto"}</h1>
                 <p className="mt-1 line-clamp-1 text-sm font-medium text-[#64748B]">Define el frente de trabajo sin cambiar el contrato actual de Supabase.</p>
               </div>
             </div>
             <div className="flex flex-wrap items-center gap-2 lg:justify-end">
-              <button type="button" onClick={() => { reset(resetValues); setProjectImagePreview(initialData?.imageUrl ?? ""); setProjectImageFile(null); }} className="inline-flex h-11 items-center rounded-2xl border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-slate-800 shadow-[0_10px_24px_rgba(15,23,42,0.04)] transition hover:bg-slate-50">Restablecer</button>
-              <Link href={cancelHref} className="inline-flex h-11 items-center justify-center rounded-2xl border border-[#E5EAF1] bg-white px-5 text-sm font-bold text-slate-800 shadow-[0_10px_24px_rgba(15,23,42,0.04)] transition hover:bg-slate-50">Cancelar</Link>
-              <Button loading={isBusy} type="submit" className="h-11 rounded-2xl bg-[#16C784] px-6 text-white shadow-[0_16px_30px_rgba(22,199,132,0.24)] hover:bg-[#12b777]">{submitLabel ?? (isEdit ? "Guardar cambios" : "Crear proyecto")}</Button>
+              <button type="button" onClick={() => { reset(resetValues); setProjectImagePreview(initialData?.imageUrl ?? ""); setProjectImageFile(null); }} className="inline-flex h-11 items-center rounded-2xl border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-slate-800 transition hover:bg-slate-50">Restablecer</button>
+              <Link href={cancelHref} className="inline-flex h-11 items-center justify-center rounded-2xl border border-[#E5EAF1] bg-white px-5 text-sm font-bold text-slate-800 transition hover:bg-slate-50">Cancelar</Link>
+              <Button loading={isBusy} type="submit" className="h-11 rounded-2xl bg-[#16C784] px-5 text-white hover:bg-[#12b777]">{submitLabel ?? (isEdit ? "Guardar cambios" : "Crear proyecto")}</Button>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="grid w-full gap-4 px-3 sm:px-4 lg:px-6 xl:grid-cols-[minmax(0,1fr)_380px] 2xl:gap-5">
+      <div className="grid w-full gap-4 px-3 sm:px-4 lg:px-5 xl:grid-cols-[minmax(0,1fr)_380px] 2xl:gap-5">
         <div className="space-y-5">
-          <section className="rounded-[24px] border border-[#E5EAF1] bg-white p-4 shadow-[0_12px_30px_rgba(15,23,42,0.04)] sm:p-5">
+          <section className="rounded-[24px] border border-[#E5EAF1] bg-white p-4 sm:p-5">
             <div className="rounded-[20px] border border-[#E5EAF1] bg-white p-5 transition focus-within:border-emerald-200 focus-within:ring-4 focus-within:ring-emerald-50">
               <div className="mb-3 flex items-center justify-between gap-3">
                 <label className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Nombre del proyecto</label>
@@ -362,7 +362,7 @@ export function ProjectForm({ projectId, initialData, submitLabel, successMessag
                 </div>
                 <div className="space-y-3">
                   <input type="hidden" {...register("imageUrl")} />
-                  <Input type="file" accept="image/*" className="h-12 rounded-2xl border-[#E5EAF1] bg-white font-semibold" onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                  <Input type="file" accept="image/*" className="h-10 rounded-2xl border-[#E5EAF1] bg-white font-semibold" onChange={(event: ChangeEvent<HTMLInputElement>) => {
                     const file = event.target.files?.[0] ?? null;
                     setProjectImageFile(file);
                     if (file) {
@@ -377,35 +377,35 @@ export function ProjectForm({ projectId, initialData, submitLabel, successMessag
             </FieldCard>
 
             <FieldCard label="Estado" icon={<CheckCircle2 className="h-4 w-4" />}>
-              <Select {...register("status")} className="h-12 rounded-2xl border-[#E5EAF1] bg-white font-semibold">
+              <Select {...register("status")} className="h-10 rounded-2xl border-[#E5EAF1] bg-white font-semibold">
                 {PROJECT_STATUSES.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
               </Select>
             </FieldCard>
 
             <FieldCard label="Departamento" icon={<FolderKanban className="h-4 w-4" />}>
-              <Select {...register("department")} className="h-12 rounded-2xl border-[#E5EAF1] bg-white font-semibold">
+              <Select {...register("department")} className="h-10 rounded-2xl border-[#E5EAF1] bg-white font-semibold">
                 <option value="">Seleccionar</option>
                 {departmentOptions.map((item) => <option key={item.id} value={item.code}>{item.name}</option>)}
               </Select>
             </FieldCard>
 
             <FieldCard label="Registro" icon={<Tag className="h-4 w-4" />} helper="Asocia este proyecto con el registro correcto para mantener todo organizado.">
-              <Input {...register("clientName")} placeholder="Nombre del registro" list="project-registry-client-options" className="h-12 rounded-2xl border-[#E5EAF1] bg-white font-semibold" />
+              <Input {...register("clientName")} placeholder="Nombre del registro" list="project-registry-client-options" className="h-10 rounded-2xl border-[#E5EAF1] bg-white font-semibold" />
               <datalist id="project-registry-client-options">{clientOptions.map((item) => <option key={item.id} value={item.name} />)}</datalist>
             </FieldCard>
 
             <FieldCard label="País" icon={<Globe2 className="h-4 w-4" />}>
-              <Select {...register("country")} className="h-12 rounded-2xl border-[#E5EAF1] bg-white font-semibold">
+              <Select {...register("country")} className="h-10 rounded-2xl border-[#E5EAF1] bg-white font-semibold">
                 <option value="">Seleccionar país</option>
                 {countryOptions.map((item) => <option key={item.id} value={item.name}>{item.name}</option>)}
               </Select>
             </FieldCard>
 
             <FieldCard label="Deadline" icon={<CalendarDays className="h-4 w-4" />}>
-              <Input {...register("dueDate")} type="date" className="h-12 rounded-2xl border-[#E5EAF1] bg-white font-semibold" />
+              <Input {...register("dueDate")} type="date" className="h-10 rounded-2xl border-[#E5EAF1] bg-white font-semibold" />
             </FieldCard>
 
-            <label className="md:col-span-2 flex cursor-pointer items-center justify-between gap-4 rounded-[22px] border border-[#BBF7D0] bg-[#ECFDF5] p-5 shadow-[0_12px_30px_rgba(15,23,42,0.035)]">
+            <label className="md:col-span-2 flex cursor-pointer items-center justify-between gap-4 rounded-[22px] border border-[#BBF7D0] bg-[#ECFDF5] p-5">
               <span className="flex min-w-0 items-start gap-3">
                 <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-white text-[#16A36C] ring-1 ring-[#BBF7D0]"><Link2 className="h-5 w-5" /></span>
                 <span className="min-w-0"><span className="block text-sm font-semibold text-[#0F172A]">Proyecto colaborativo y con enlace compartible</span><span className="mt-1 block text-sm font-medium leading-6 text-[#64748B]">Activa la visibilidad compartida usando los mismos campos reales: is_collaborative, share_enabled y share_token.</span></span>
@@ -444,7 +444,7 @@ export function ProjectForm({ projectId, initialData, submitLabel, successMessag
 
 function FieldCard({ label, icon, helper, children }: { label: string; icon: ReactNode; helper?: string; children: ReactNode }) {
   return (
-    <div className="rounded-[20px] border border-[#E5EAF1] bg-white p-4 shadow-[0_12px_30px_rgba(15,23,42,0.035)] md:col-span-1">
+    <div className="rounded-[20px] border border-[#E5EAF1] bg-white p-4 md:col-span-1">
       <label className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
         <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-slate-50 text-slate-500">{icon}</span>
         {label}
@@ -457,5 +457,5 @@ function FieldCard({ label, icon, helper, children }: { label: string; icon: Rea
 
 function SideCard({ children, tone = "white" }: { children: ReactNode; tone?: "white" | "green" | "amber" | "blue" }) {
   const toneClass = tone === "green" ? "border-[#BBF7D0] bg-[#ECFDF5]" : tone === "amber" ? "border-[#FDECC8] bg-[#FFF8E8]" : tone === "blue" ? "border-[#BFDBFE] bg-[#EFF6FF]" : "border-[#E5EAF1] bg-white";
-  return <section className={`rounded-[24px] border p-6 shadow-[0_10px_30px_rgba(15,23,42,0.04)] ${toneClass}`}>{children}</section>;
+  return <section className={`rounded-[24px] border p-5 ${toneClass}`}>{children}</section>;
 }

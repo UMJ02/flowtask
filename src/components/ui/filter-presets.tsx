@@ -85,7 +85,7 @@ export function FilterPresets({
   };
 
   return (
-    <div className="rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+    <div className="rounded-lg border border-slate-200 bg-white px-4 py-3">
       <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
         <div className="min-w-0">
           <div className="flex items-center gap-2 text-slate-900">

@@ -470,3 +470,235 @@ textarea::placeholder {
     @apply rounded-2xl border border-[#E7ECF3] bg-slate-50/70 p-4;
   }
 }
+
+/* v58.21.5 Modern Density + Motion System */
+@layer base {
+  :root {
+    --ft-color-app-bg: #F7F8FA;
+    --ft-color-card: #FFFFFF;
+    --ft-color-border: rgba(203, 213, 225, 0.78);
+    --ft-color-text: #0F172A;
+    --ft-color-muted: #64748B;
+    --ft-radius-main: 24px;
+    --ft-radius-card: 22px;
+    --ft-radius-control: 12px;
+    --ft-shadow-card: none;
+    --ft-shadow-lift: 0 10px 24px rgba(15, 23, 42, 0.045);
+    --ft-motion-fast: 150ms cubic-bezier(0.2, 0, 0, 1);
+    --ft-motion-normal: 200ms cubic-bezier(0.2, 0, 0, 1);
+  }
+
+  body {
+    background: #F7F8FA;
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  h1 {
+    font-size: clamp(26px, 2.7vw, 30px);
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+    font-weight: 650;
+  }
+
+  h2 {
+    font-size: clamp(18px, 1.8vw, 20px);
+    line-height: 1.16;
+    letter-spacing: -0.02em;
+    font-weight: 650;
+  }
+
+  h3 {
+    font-size: 16px;
+    line-height: 1.25;
+    font-weight: 650;
+  }
+}
+
+@layer components {
+  .ft-page-shell {
+    @apply mx-auto w-full max-w-7xl px-4 py-5 md:px-6 lg:px-7;
+  }
+
+  .ft-page-header {
+    @apply mb-5 flex flex-col gap-3 md:flex-row md:items-end md:justify-between;
+  }
+
+  .ft-page-kicker {
+    @apply text-[11px] font-semibold uppercase tracking-[0.13em] text-slate-500;
+  }
+
+  .ft-page-title {
+    @apply text-[26px] font-semibold leading-[1.08] tracking-[-0.03em] text-slate-950 lg:text-[30px];
+  }
+
+  .ft-page-subtitle {
+    @apply mt-1.5 max-w-2xl text-[14px] leading-6 text-slate-500;
+  }
+
+  .ft-section-title {
+    @apply text-[18px] font-semibold leading-tight tracking-[-0.02em] text-slate-950 lg:text-[20px];
+  }
+
+  .ft-card-title {
+    @apply text-[15px] font-semibold leading-tight text-slate-950 lg:text-[16px];
+  }
+
+  .ft-small-title {
+    @apply text-[13px] font-semibold leading-tight text-slate-900;
+  }
+
+  .ft-body {
+    @apply text-[14px] leading-6 text-slate-700;
+  }
+
+  .ft-secondary {
+    @apply text-[13px] leading-5 text-slate-500;
+  }
+
+  .ft-meta {
+    @apply text-[12px] leading-4 text-slate-500;
+  }
+
+  .ft-label {
+    @apply text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-500;
+  }
+
+  .ft-main-card {
+    @apply rounded-[24px] border border-slate-200/80 bg-white p-5 shadow-none;
+  }
+
+  .ft-section-card {
+    @apply rounded-[22px] border border-slate-200/80 bg-white p-4 shadow-none;
+  }
+
+  .ft-mini-card {
+    @apply rounded-[18px] border border-slate-200/80 bg-white p-3 shadow-none;
+  }
+
+  .ft-floating-card {
+    @apply rounded-[22px] border border-slate-200/80 bg-white shadow-[0_16px_40px_rgba(15,23,42,0.08)];
+  }
+
+  .ft-control {
+    @apply h-10 rounded-xl border-slate-200 text-[14px] transition duration-150 focus:border-emerald-300 focus:ring-4 focus:ring-emerald-500/10;
+  }
+
+  .ft-control-lg {
+    @apply h-11 rounded-[14px] border-slate-200 text-[14px] transition duration-150 focus:border-emerald-300 focus:ring-4 focus:ring-emerald-500/10;
+  }
+
+  .ft-button {
+    @apply inline-flex h-10 items-center justify-center gap-2 rounded-xl px-4 text-[13px] font-semibold transition duration-150 active:scale-[0.98];
+  }
+
+  .ft-button-lg {
+    @apply inline-flex h-11 items-center justify-center gap-2 rounded-[14px] px-5 text-[14px] font-semibold transition duration-150 active:scale-[0.98];
+  }
+
+  .ft-button-sm {
+    @apply inline-flex h-8 items-center justify-center gap-2 rounded-lg px-3 text-[12px] font-semibold transition duration-150 active:scale-[0.98];
+  }
+
+  .ft-icon-button {
+    @apply inline-flex h-9 w-9 items-center justify-center rounded-lg transition duration-150 active:scale-[0.98];
+  }
+
+  .ft-chip {
+    @apply inline-flex h-7 items-center rounded-full px-2.5 text-[11px] font-semibold;
+  }
+
+  .ft-hover-lift {
+    @apply transition duration-200 ease-out hover:-translate-y-px hover:border-slate-300 hover:shadow-none;
+  }
+
+  .ft-governed-screen {
+    @apply space-y-5;
+  }
+
+  .ft-core-grid {
+    @apply grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px];
+  }
+
+  .ft-toolbar-grid {
+    @apply grid gap-2.5 md:grid-cols-2 lg:grid-cols-[minmax(260px,1fr)_160px_180px_auto];
+  }
+
+  .ft-action-row {
+    @apply flex flex-wrap items-center gap-2;
+  }
+
+  .ft-table-shell {
+    @apply overflow-x-auto rounded-b-[24px];
+  }
+
+  .ft-data-table {
+    @apply w-full border-separate border-spacing-0 text-[13px];
+  }
+
+  .ft-data-th {
+    @apply px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-500;
+  }
+
+  .ft-data-td {
+    @apply px-4 py-3 align-middle;
+  }
+
+  .ft-muted-panel {
+    @apply rounded-[18px] border border-slate-200/80 bg-slate-50/70 p-3;
+  }
+
+  .ft-motion-reveal {
+    animation: ft-reveal 180ms cubic-bezier(0.2, 0, 0, 1);
+  }
+
+  .ft-motion-slide-fade {
+    animation: ft-slide-fade 160ms cubic-bezier(0.2, 0, 0, 1);
+  }
+}
+
+@keyframes ft-reveal {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes ft-slide-fade {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ft-motion-reveal,
+  .ft-motion-slide-fade,
+  .animate-ft-reveal,
+  .animate-ft-slide-fade {
+    animation: none !important;
+  }
+
+  .ft-hover-lift,
+  .ft-button,
+  .ft-button-lg,
+  .ft-button-sm,
+  .ft-icon-button {
+    transition: none !important;
+  }
+}
+
+/* v58.21.5 shadow governance: regular app surfaces are border-led, not shadow-led. */
+body [class*="shadow-[0_1px"],
+body [class*="shadow-[0_4px"],
+body [class*="shadow-[0_8px"],
+body [class*="shadow-[0_10px"],
+body [class*="shadow-[0_12px"],
+body [class*="shadow-[0_14px"],
+body [class*="shadow-[0_16px"],
+body [class*="shadow-[0_18px"],
+body [class*="shadow-[0_20px"] {
+  box-shadow: none !important;
+}
+
+.ft-floating-card,
+[role="dialog"],
+[data-floating="true"] {
+  box-shadow: 0 18px 48px rgba(15, 23, 42, 0.12) !important;
+}

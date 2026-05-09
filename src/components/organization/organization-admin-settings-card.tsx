@@ -97,7 +97,7 @@ export function OrganizationAdminSettingsCard({
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">Ajustes del workspace</p>
-          <h3 className="mt-1 text-lg font-semibold text-slate-950">Mantén el nombre y las acciones sensibles bajo control</h3>
+          <h3 className="mt-1 text-base font-semibold text-slate-950">Mantén el nombre y las acciones sensibles bajo control</h3>
           <p className="mt-1 text-sm text-slate-600">Aquí puedes actualizar el nombre del equipo, salir del espacio o iniciar una eliminación programada.</p>
         </div>
       </div>

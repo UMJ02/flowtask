@@ -39,7 +39,7 @@ export function OrganizationPendingInvitesCard({ invites }: { invites: PendingOr
   if (!items.length) return null;
 
   return (
-    <Card className="border border-sky-200/80 bg-sky-50/80 shadow-[0_16px_44px_rgba(14,165,233,0.08)]">
+    <Card className="border border-sky-200/80 bg-sky-50/80">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div className="max-w-2xl">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-sky-700">Invitaciones pendientes</p>
@@ -48,7 +48,7 @@ export function OrganizationPendingInvitesCard({ invites }: { invites: PendingOr
             Si ya te invitaron a una organización, acepta desde aquí y FlowTask activará ese workspace sin ocultar tu espacio personal.
           </p>
         </div>
-        <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-sky-700 ring-1 ring-sky-200">
+        <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-white text-sky-700 ring-1 ring-sky-200">
           <MailCheck className="h-5 w-5" />
         </span>
       </div>

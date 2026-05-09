@@ -41,7 +41,7 @@ function RecommendationCarousel({ recommendations }: { recommendations: string[]
       <div className="flex flex-col gap-3.5 md:flex-row md:items-center md:justify-between">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Recomendaciones</p>
-          <h3 className="mt-1 text-lg font-semibold text-slate-900">Qué conviene revisar primero</h3>
+          <h3 className="mt-1 text-base font-semibold text-slate-900">Qué conviene revisar primero</h3>
         </div>
         {slides.length > 1 ? (
           <div className="flex items-center gap-2">
@@ -110,7 +110,7 @@ function PlanningModules({ summary }: { summary: PlanningOverview }) {
                 onClick={() => setActiveTab(tab.key)}
                 className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm font-medium transition ${
                   isActive
-                    ? 'border-violet-200 bg-violet-50 text-violet-800 shadow-[0_10px_24px_rgba(139,92,246,0.12)]'
+                    ? 'border-violet-200 bg-violet-50 text-violet-800'
                     : 'border-slate-200 bg-white text-slate-600 hover:border-violet-200 hover:text-violet-700'
                 }`}
               >
@@ -124,7 +124,7 @@ function PlanningModules({ summary }: { summary: PlanningOverview }) {
 
       {activeTab === 'departmentCapacity' ? (
         <div className="pt-3">
-          <h3 className="text-lg font-semibold text-slate-900">Capacidad por departamento</h3>
+          <h3 className="text-base font-semibold text-slate-900">Capacidad por departamento</h3>
           <p className="mt-1 text-sm text-slate-500">Qué bloques tienen más presión cerca.</p>
           <div className="mt-3 divide-y divide-slate-200 rounded-[16px] border border-slate-200 bg-white">
             {summary.departmentCapacity.length ? summary.departmentCapacity.slice(0, limit).map((item) => (
@@ -137,14 +137,14 @@ function PlanningModules({ summary }: { summary: PlanningOverview }) {
                   {item.state === 'high' ? 'Alta presión' : item.state === 'medium' ? 'Atención media' : 'Estable'}
                 </span>
               </div>
-            )) : <div className="px-4 py-6 text-sm text-slate-500">Todavía no hay departamentos con carga suficiente para resumir.</div>}
+            )) : <div className="px-4 py-5 text-sm text-slate-500">Todavía no hay departamentos con carga suficiente para resumir.</div>}
           </div>
         </div>
       ) : null}
 
       {activeTab === 'weeklyFocus' ? (
         <div className="pt-3">
-          <h3 className="text-lg font-semibold text-slate-900">Foco semanal</h3>
+          <h3 className="text-base font-semibold text-slate-900">Foco semanal</h3>
           <p className="mt-1 text-sm text-slate-500">Las tareas que conviene resolver primero.</p>
           <div className="mt-3 divide-y divide-slate-200 rounded-[16px] border border-slate-200 bg-white">
             {summary.weeklyFocus.length ? summary.weeklyFocus.slice(0, limit).map((task) => (
@@ -155,14 +155,14 @@ function PlanningModules({ summary }: { summary: PlanningOverview }) {
                 </div>
                 <StatusBadge value={task.status} className="shrink-0" />
               </Link>
-            )) : <div className="px-4 py-6 text-sm text-slate-500">No hay tareas abiertas para mostrar en el foco semanal.</div>}
+            )) : <div className="px-4 py-5 text-sm text-slate-500">No hay tareas abiertas para mostrar en el foco semanal.</div>}
           </div>
         </div>
       ) : null}
 
       {activeTab === 'clientMomentum' ? (
         <div className="pt-3">
-          <h3 className="text-lg font-semibold text-slate-900">Clientes con más movimiento</h3>
+          <h3 className="text-base font-semibold text-slate-900">Clientes con más movimiento</h3>
           <p className="mt-1 text-sm text-slate-500">Te ayuda a planificar llamadas, revisiones y seguimiento.</p>
           <div className="mt-3 divide-y divide-slate-200 rounded-[16px] border border-slate-200 bg-white">
             {summary.clientMomentum.length ? summary.clientMomentum.slice(0, limit).map((client) => (
@@ -173,14 +173,14 @@ function PlanningModules({ summary }: { summary: PlanningOverview }) {
                 </div>
                 <StatusBadge value={client.status} className="shrink-0" />
               </Link>
-            )) : <div className="px-4 py-6 text-sm text-slate-500">No hay clientes con actividad suficiente para resumir.</div>}
+            )) : <div className="px-4 py-5 text-sm text-slate-500">No hay clientes con actividad suficiente para resumir.</div>}
           </div>
         </div>
       ) : null}
 
       {activeTab === 'projectPipeline' ? (
         <div className="pt-3">
-          <h3 className="text-lg font-semibold text-slate-900">Pipeline de proyectos</h3>
+          <h3 className="text-base font-semibold text-slate-900">Pipeline de proyectos</h3>
           <p className="mt-1 text-sm text-slate-500">Proyectos activos ordenados por cercanía y coordinación.</p>
           <div className="mt-3 divide-y divide-slate-200 rounded-[16px] border border-slate-200 bg-white">
             {summary.projectPipeline.length ? summary.projectPipeline.slice(0, limit).map((project) => (
@@ -191,7 +191,7 @@ function PlanningModules({ summary }: { summary: PlanningOverview }) {
                 </div>
                 <StatusBadge value={project.status} className="shrink-0" />
               </Link>
-            )) : <div className="px-4 py-6 text-sm text-slate-500">No hay proyectos activos para mostrar en el pipeline.</div>}
+            )) : <div className="px-4 py-5 text-sm text-slate-500">No hay proyectos activos para mostrar en el pipeline.</div>}
           </div>
         </div>
       ) : null}
@@ -236,7 +236,7 @@ export function PlanningCenter({ summary, compact = false }: { summary: Planning
                 <span className="text-sm">{card.label}</span>
                 <span className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-white text-violet-700 ring-1 ring-slate-200">{card.icon}</span>
               </div>
-              <p className="mt-3 text-2xl font-bold text-slate-900">{card.value}</p>
+              <p className="mt-3 text-xl font-bold text-slate-900">{card.value}</p>
             </div>
           ))}
         </div>
@@ -246,7 +246,7 @@ export function PlanningCenter({ summary, compact = false }: { summary: Planning
 
   return (
     <div className="space-y-2.5">
-      <Card className="bg-[linear-gradient(135deg,#221b55_0%,#342d8d_58%,#151c4a_100%)] px-4 py-3 text-white shadow-[0_18px_42px_rgba(49,46,129,0.15)] md:px-5 md:py-3.5">
+      <Card className="bg-[linear-gradient(135deg,#221b55_0%,#342d8d_58%,#151c4a_100%)] px-4 py-3 text-white md:px-5 md:py-3.5">
         <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
           <div className="max-w-3xl">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet-200">Planning center</p>

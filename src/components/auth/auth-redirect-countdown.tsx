@@ -34,7 +34,7 @@ export function AuthRedirectCountdown({ seconds = 5, href = '/login' }: AuthRedi
       <div className="rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-800">
         Redirigiendo al inicio de sesión en <span className="font-bold">{remaining}</span>s.
       </div>
-      <Button className="h-12 w-full rounded-2xl bg-[#16C784] text-slate-950 hover:bg-[#12b876]" onClick={() => router.replace(href)} type="button">
+      <Button className="h-10 w-full rounded-2xl bg-[#16C784] text-slate-950 hover:bg-[#12b876]" onClick={() => router.replace(href)} type="button">
         Ir al login ahora
       </Button>
     </div>

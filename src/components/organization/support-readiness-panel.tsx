@@ -39,7 +39,7 @@ export function SupportReadinessPanel({ summary, tickets, organizationName }: { 
             <p className="mt-2 text-xs text-slate-500">Creado: {ticket.createdAtLabel}</p>
           </div>
         )) : (
-          <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-6 text-sm text-slate-600">No hay casos de soporte registrados para la organización activa.</div>
+          <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-5 text-sm text-slate-600">No hay casos de soporte registrados para la organización activa.</div>
         )}
       </div>
     </Card>

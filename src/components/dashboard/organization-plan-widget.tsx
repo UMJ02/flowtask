@@ -5,7 +5,7 @@ export function OrganizationPlanWidget({ summary }: { summary?: OrganizationPlan
   return (
     <Card>
       <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Plan de organización</p>
-      <h2 className="mt-1 text-lg font-semibold text-slate-900">{summary ? summary.planName : "Sin plan"}</h2>
+      <h2 className="mt-1 text-base font-semibold text-slate-900">{summary ? summary.planName : "Sin plan"}</h2>
       <p className="mt-2 text-sm text-slate-600">
         {summary ? `Estado ${summary.status} · ${summary.seatsUsed}/${summary.seatsIncluded} usuarios · ${summary.projectsUsed}/${summary.projectsIncluded} proyectos` : "Configura una suscripción para habilitar límites, renovación y reportes de uso."}
       </p>

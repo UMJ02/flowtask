@@ -379,26 +379,26 @@ export function TaskForm({
 
   return (
     <form className="-mx-4 min-h-screen bg-[#F6F8FC] pb-8 md:-mx-6" onSubmit={handleSubmit(onSubmit)}>
-      <div className="sticky top-0 z-40 mb-6 px-3 py-2 sm:px-4 lg:px-6">
-        <div className="rounded-[28px] border border-[#E5EAF1] bg-white/95 px-4 py-4 shadow-[0_10px_30px_rgba(15,23,42,0.035)] backdrop-blur-xl sm:px-5 lg:px-6">
+      <div className="sticky top-0 z-40 mb-6 px-3 py-2 sm:px-4 lg:px-5">
+        <div className="rounded-[24px] border border-[#E5EAF1] bg-white/95 px-4 py-4 backdrop-blur-xl sm:px-5 lg:px-5">
           <div className="flex min-h-[72px] w-full flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex min-w-0 items-center gap-3">
-            <Link href={cancelHref} className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#050B18] text-white shadow-[0_14px_28px_rgba(5,11,24,0.18)] transition hover:-translate-y-0.5" aria-label="Volver">
+            <Link href={cancelHref} className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#050B18] text-white transition hover:-translate-y-0.5" aria-label="Volver">
               <ArrowLeft className="h-5 w-5" />
             </Link>
             <div className="min-w-0">
-              <h1 className="truncate text-2xl font-semibold tracking-[-0.035em] text-[#0F172A] sm:text-[28px]">{editorTitle}</h1>
+              <h1 className="truncate text-xl font-semibold tracking-[-0.035em] text-[#0F172A] sm:text-[28px]">{editorTitle}</h1>
               <p className="mt-1 line-clamp-1 text-sm font-medium text-[#64748B]">Crea una tarea clara para que tu equipo sepa qué hacer y cuándo entregarlo.</p>
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2 lg:justify-end">
-            <button type="button" onClick={() => reset(resetValues)} className="inline-flex h-11 items-center gap-2 rounded-2xl border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-slate-800 shadow-[0_10px_24px_rgba(15,23,42,0.04)] transition hover:bg-slate-50">
+            <button type="button" onClick={() => reset(resetValues)} className="inline-flex h-11 items-center gap-2 rounded-2xl border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-slate-800 transition hover:bg-slate-50">
               Limpiar <ChevronDown className="h-4 w-4 rotate-90" />
             </button>
-            <Link href={cancelHref} className="inline-flex h-11 items-center justify-center rounded-2xl border border-[#E5EAF1] bg-white px-5 text-sm font-bold text-slate-800 shadow-[0_10px_24px_rgba(15,23,42,0.04)] transition hover:bg-slate-50">
+            <Link href={cancelHref} className="inline-flex h-11 items-center justify-center rounded-2xl border border-[#E5EAF1] bg-white px-5 text-sm font-bold text-slate-800 transition hover:bg-slate-50">
               Cancelar
             </Link>
-            <Button loading={isBusy} type="submit" className="h-11 rounded-2xl bg-[#16C784] px-6 text-white shadow-[0_16px_30px_rgba(22,199,132,0.24)] hover:bg-[#12b777]">
+            <Button loading={isBusy} type="submit" className="h-11 rounded-2xl bg-[#16C784] px-5 text-white hover:bg-[#12b777]">
               {submitLabel ?? (isEdit ? "Guardar cambios" : "Crear tarea")}
             </Button>
           </div>
@@ -406,9 +406,9 @@ export function TaskForm({
       </div>
 
       </div>
-      <div className="grid w-full gap-4 px-3 sm:px-4 lg:px-6 xl:grid-cols-[minmax(0,1fr)_380px] 2xl:gap-5">
+      <div className="grid w-full gap-4 px-3 sm:px-4 lg:px-5 xl:grid-cols-[minmax(0,1fr)_380px] 2xl:gap-5">
         <div className="space-y-5">
-          <section className="rounded-[24px] border border-[#E5EAF1] bg-white p-4 shadow-[0_12px_30px_rgba(15,23,42,0.04)] sm:p-5">
+          <section className="rounded-[24px] border border-[#E5EAF1] bg-white p-4 sm:p-5">
             <div className="rounded-[20px] border border-[#E5EAF1] bg-white p-5 transition focus-within:border-emerald-200 focus-within:ring-4 focus-within:ring-emerald-50">
               <div className="mb-3 flex items-center justify-between gap-3">
                 <label className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Título</label>
@@ -432,34 +432,34 @@ export function TaskForm({
 
           <section className="grid gap-4 md:grid-cols-2">
             <FieldCard label="Estado" icon={<Clock3 className="h-4 w-4" />}>
-              <Select {...register("status")} className="h-12 rounded-2xl border-[#E5EAF1] bg-white font-semibold">
+              <Select {...register("status")} className="h-10 rounded-2xl border-[#E5EAF1] bg-white font-semibold">
                 {TASK_STATUSES.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
               </Select>
             </FieldCard>
             <FieldCard label="Prioridad" icon={<Flag className="h-4 w-4" />}>
-              <Select {...register("priority")} className="h-12 rounded-2xl border-[#E5EAF1] bg-white font-semibold">
+              <Select {...register("priority")} className="h-10 rounded-2xl border-[#E5EAF1] bg-white font-semibold">
                 {TASK_PRIORITIES.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
               </Select>
             </FieldCard>
             {isProjectTask ? (
-              <div className="rounded-[20px] border border-emerald-200 bg-emerald-50/80 p-4 shadow-[0_12px_30px_rgba(15,23,42,0.035)] md:col-span-2">
+              <div className="rounded-[20px] border border-emerald-200 bg-emerald-50/80 p-4 md:col-span-2">
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-700">Tarea de proyecto</p>
                 <p className="mt-2 text-sm font-semibold text-slate-700">Esta tarea quedará dentro del proyecto y usará su misma información base.</p>
               </div>
             ) : null}
             <FieldCard label="Responsable" icon={<UserRound className="h-4 w-4" />}>
-              <Input value={workspaceOwnerLabel} readOnly className="h-12 rounded-2xl border-[#E5EAF1] bg-slate-50 font-semibold text-slate-500" />
+              <Input value={workspaceOwnerLabel} readOnly className="h-10 rounded-2xl border-[#E5EAF1] bg-slate-50 font-semibold text-slate-500" />
             </FieldCard>
 {!isProjectTask ? (
               <>
                 <FieldCard label="Departamento" icon={<FileText className="h-4 w-4" />}>
-                  <Select {...register("department")} className="h-12 rounded-2xl border-[#E5EAF1] bg-white font-semibold">
+                  <Select {...register("department")} className="h-10 rounded-2xl border-[#E5EAF1] bg-white font-semibold">
                     <option value="">Seleccionar</option>
                     {departmentOptions.map((item) => <option key={item.id} value={item.code}>{item.name}</option>)}
                   </Select>
                 </FieldCard>
                 <FieldCard label="País" icon={<Flag className="h-4 w-4" />}>
-                  <Select {...register("country")} className="h-12 rounded-2xl border-[#E5EAF1] bg-white font-semibold">
+                  <Select {...register("country")} className="h-10 rounded-2xl border-[#E5EAF1] bg-white font-semibold">
                     <option value="">Seleccionar país</option>
                     {countryOptions.map((item) => <option key={item.id} value={item.name}>{item.name}</option>)}
                   </Select>
@@ -467,11 +467,11 @@ export function TaskForm({
               </>
             ) : null}
             <FieldCard label="Deadline" icon={<CalendarDays className="h-4 w-4" />}>
-              <Input {...register("dueDate")} type="date" className="h-12 rounded-2xl border-[#E5EAF1] bg-white font-semibold" />
+              <Input {...register("dueDate")} type="date" className="h-10 rounded-2xl border-[#E5EAF1] bg-white font-semibold" />
             </FieldCard>
 {!isProjectTask ? (
               <FieldCard label="Registro" icon={<Tag className="h-4 w-4" />}>
-                <Input {...register("clientName")} placeholder="Nombre del registro" list="registry-client-options" className="h-12 rounded-2xl border-[#E5EAF1] bg-white font-semibold" />
+                <Input {...register("clientName")} placeholder="Nombre del registro" list="registry-client-options" className="h-10 rounded-2xl border-[#E5EAF1] bg-white font-semibold" />
                 <datalist id="registry-client-options">
                   {clientOptions.map((item) => <option key={item.id} value={item.name} />)}
                 </datalist>
@@ -479,7 +479,7 @@ export function TaskForm({
             ) : null}
           </section>
 
-          <details className="group overflow-hidden rounded-[24px] border border-[#E5EAF1] bg-white shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
+          <details className="group overflow-hidden rounded-[24px] border border-[#E5EAF1] bg-white">
             <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-5 py-4">
               <span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Datos relacionados</span>
               <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-50 text-slate-500 transition group-open:rotate-180"><ChevronDown className="h-4 w-4" /></span>
@@ -509,7 +509,7 @@ export function TaskForm({
             <p className="mt-2 text-sm font-medium text-[#64748B]">Revisa el estado, la prioridad y el avance antes de guardar.</p>
             <div className="mt-5 space-y-4">
               <FieldMini label="Estado de seguimiento">
-                <Select className="h-12 rounded-2xl border-amber-100 bg-amber-50/70 font-semibold" value={selectedStatus ?? "en_proceso"} onChange={(event) => setValue("status", event.target.value as TaskValues["status"], { shouldDirty: true })}>
+                <Select className="h-10 rounded-2xl border-amber-100 bg-amber-50/70 font-semibold" value={selectedStatus ?? "en_proceso"} onChange={(event) => setValue("status", event.target.value as TaskValues["status"], { shouldDirty: true })}>
                   {TASK_STATUSES.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
                 </Select>
               </FieldMini>
@@ -519,13 +519,13 @@ export function TaskForm({
                 <p className="mt-2 text-xs font-semibold text-[#64748B]">Se sincroniza con el checklist: {checklistStats.total ? `${checklistStats.done}/${checklistStats.total} puntos completados.` : 'sin checklist todavía.'}</p>
               </div>
               <FieldMini label="Prioridad actual">
-                <div className="flex h-12 items-center rounded-2xl border border-[#E5EAF1] bg-white px-4 text-sm font-semibold text-slate-800">{priorityLabel(selectedPriority)}</div>
+                <div className="flex h-10 items-center rounded-2xl border border-[#E5EAF1] bg-white px-4 text-sm font-semibold text-slate-800">{priorityLabel(selectedPriority)}</div>
               </FieldMini>
               <div className="rounded-[18px] border border-amber-200 bg-white/70 p-4 text-sm font-semibold leading-6 text-amber-900">
                 Próximo seguimiento: podrás definirlo después de crear la tarea, usando comentarios, recordatorios o checklist.
               </div>
               {isEdit && checklistStats.loaded && checklistStats.total === 0 ? (
-                <Link href={taskId ? `${taskDetailRoute(taskId)}#checklist` : taskListRoute()} className="group flex items-start gap-3 rounded-[18px] border border-amber-200 bg-amber-100/80 p-4 text-left shadow-[0_12px_30px_rgba(245,158,11,0.12)] transition hover:-translate-y-0.5 hover:bg-amber-100">
+                <Link href={taskId ? `${taskDetailRoute(taskId)}#checklist` : taskListRoute()} className="group flex items-start gap-3 rounded-[18px] border border-amber-200 bg-amber-100/80 p-4 text-left transition hover:-translate-y-0.5 hover:bg-amber-100">
                   <span className="mt-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-white text-amber-600 ring-1 ring-amber-200">
                     <ClipboardCheck className="h-5 w-5" />
                   </span>
@@ -542,7 +542,7 @@ export function TaskForm({
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-600">Comentarios y archivos</p>
             <p className="mt-3 text-sm font-medium leading-6 text-[#64748B]">Después de crear la tarea podrás agregar comentarios, archivos y revisar la actividad en un solo lugar.</p>
             {isEdit && taskId ? (
-              <Link href={taskDetailRoute(taskId)} className="mt-5 inline-flex h-11 w-full items-center justify-center rounded-2xl bg-[#050B18] px-4 text-sm font-bold text-white shadow-[0_14px_28px_rgba(5,11,24,0.18)] transition hover:-translate-y-0.5">
+              <Link href={taskDetailRoute(taskId)} className="mt-5 inline-flex h-11 w-full items-center justify-center rounded-2xl bg-[#050B18] px-4 text-sm font-bold text-white transition hover:-translate-y-0.5">
                 Abrir detalle de la tarea
               </Link>
             ) : null}
@@ -569,7 +569,7 @@ export function TaskForm({
 
 function FieldCard({ label, icon, helper, children }: { label: string; icon: ReactNode; helper?: string; children: ReactNode }) {
   return (
-    <div className="rounded-[20px] border border-[#E5EAF1] bg-white p-4 shadow-[0_12px_30px_rgba(15,23,42,0.035)]">
+    <div className="rounded-[20px] border border-[#E5EAF1] bg-white p-4">
       <label className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
         <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-slate-50 text-slate-500">{icon}</span>
         {label}
@@ -591,7 +591,7 @@ function FieldMini({ label, children }: { label: string; children: ReactNode }) 
 
 function SideCard({ children, tone = "white" }: { children: ReactNode; tone?: "white" | "green" | "amber" | "purple" | "blue" }) {
   const toneClass = tone === "green" ? "border-[#BBF7D0] bg-[#ECFDF5]" : tone === "amber" ? "border-[#FDECC8] bg-[#FFF8E8]" : tone === "purple" ? "border-[#E9D5FF] bg-[#FAF5FF]" : tone === "blue" ? "border-[#BFDBFE] bg-[#EFF6FF]" : "border-[#E5EAF1] bg-white";
-  return <section className={`rounded-[24px] border p-6 shadow-[0_10px_30px_rgba(15,23,42,0.04)] ${toneClass}`}>{children}</section>;
+  return <section className={`rounded-[24px] border p-5 ${toneClass}`}>{children}</section>;
 }
 
 function CommentBubble({ name, meta, text }: { name: string; meta: string; text: string }) {

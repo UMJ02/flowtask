@@ -62,7 +62,7 @@ export function ReminderForm({ tasks, projects }: ReminderFormProps) {
   return (
     <form className="space-y-4 rounded-[24px] bg-white p-5 shadow-soft" onSubmit={handleSubmit}>
       <div>
-        <h2 className="text-lg font-semibold text-slate-900">Nuevo recordatorio</h2>
+        <h2 className="text-base font-semibold text-slate-900">Nuevo recordatorio</h2>
         <p className="mt-1 text-sm text-slate-500">Programa un aviso para una tarea o proyecto.</p>
       </div>
       <div className="grid gap-4 md:grid-cols-3">

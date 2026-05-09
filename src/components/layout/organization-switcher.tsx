@@ -191,7 +191,7 @@ export function OrganizationSwitcher({
           type="button"
           onClick={() => setOpen((value) => !value)}
           title={label}
-          className="inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-white/6 text-emerald-300 transition hover:border-emerald-400/30 hover:bg-white/10"
+          className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/6 text-emerald-300 transition hover:border-emerald-400/30 hover:bg-white/10"
         >
           {activeOrganization ? <Building2 className="h-5 w-5" /> : <UserRound className="h-5 w-5" />}
         </button>

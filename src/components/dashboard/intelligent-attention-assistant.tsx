@@ -143,7 +143,7 @@ export function IntelligentAttentionAssistant({
   return (
     <Card
       className={[
-        "relative overflow-hidden rounded-[22px] border p-0 shadow-[0_16px_32px_rgba(15,23,42,0.08)]",
+        "relative overflow-hidden rounded-[22px] border p-0",
         moodStyles[activeCard.mood],
         motionStyles[settings.animationLevel],
         visible && settings.animationLevel !== "off" ? "translate-y-0 opacity-100" : "opacity-100",
@@ -182,7 +182,7 @@ export function IntelligentAttentionAssistant({
 
           <div className="min-w-0">
             <div className="flex items-start gap-3">
-              <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl border border-emerald-200/70 bg-emerald-50/90 text-emerald-700 shadow-sm">
+              <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl border border-emerald-200/70 bg-emerald-50/90 text-emerald-700 shadow-none">
                 <Icon className="h-4.5 w-4.5" />
               </span>
               <div className="min-w-0 lg:pr-1">

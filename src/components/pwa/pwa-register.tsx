@@ -92,10 +92,10 @@ export function PwaRegister() {
 
   return (
     <div className="fixed inset-x-3 bottom-3 z-[90] md:hidden">
-      <div className="rounded-[28px] border border-slate-200/80 bg-white/95 p-4 shadow-[0_20px_50px_rgba(15,23,42,0.16)] backdrop-blur">
+      <div className="rounded-[24px] border border-slate-200/80 bg-white/95 p-4 backdrop-blur">
         <div className="flex items-start gap-3">
           <div className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600">
-            <span className="text-lg" aria-hidden="true">▣</span>
+            <span className="text-base" aria-hidden="true">▣</span>
           </div>
           <div className="min-w-0 flex-1">
             <p className="text-sm font-semibold text-slate-900">Instala FlowTask en tu celular</p>

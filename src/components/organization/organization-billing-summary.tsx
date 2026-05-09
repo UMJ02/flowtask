@@ -13,7 +13,7 @@ export function OrganizationBillingSummary({ summary }: { summary?: Organization
     return (
       <Card>
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Suscripción</p>
-        <h2 className="mt-1 text-lg font-semibold text-slate-900">Sin plan configurado</h2>
+        <h2 className="mt-1 text-base font-semibold text-slate-900">Sin plan configurado</h2>
         <p className="mt-2 text-sm text-slate-600">Crea una suscripción por organización para activar límites, renovación y facturación.</p>
       </Card>
     );
@@ -24,7 +24,7 @@ export function OrganizationBillingSummary({ summary }: { summary?: Organization
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Suscripción</p>
-          <h2 className="mt-1 text-lg font-semibold text-slate-900">Plan {summary.planName}</h2>
+          <h2 className="mt-1 text-base font-semibold text-slate-900">Plan {summary.planName}</h2>
           <p className="mt-2 text-sm text-slate-600">Estado: {statusCopy[summary.status] ?? summary.status} · Ciclo {summary.billingCycle === "annual" ? "anual" : "mensual"}</p>
         </div>
         <a href="/app/organization/billing" className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white">Gestionar plan</a>
@@ -46,7 +46,7 @@ function Metric({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-2xl bg-slate-900 px-4 py-3 text-white">
       <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400">{label}</p>
-      <p className="mt-1 text-lg font-bold">{value}</p>
+      <p className="mt-1 text-base font-bold">{value}</p>
     </div>
   );
 }

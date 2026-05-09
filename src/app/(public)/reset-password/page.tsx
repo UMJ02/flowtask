@@ -10,7 +10,7 @@ export default function ResetPasswordPage() {
       </div>
 
       <div className="container-page relative flex min-h-screen items-center justify-center py-8">
-        <div className="w-full max-w-[560px] rounded-[34px] border border-white/80 bg-white/88 p-6 shadow-[0_30px_80px_rgba(15,23,42,0.10)] backdrop-blur-xl md:p-8">
+        <div className="w-full max-w-[560px] rounded-[34px] border border-white/80 bg-white/88 p-5 shadow-[0_30px_80px_rgba(15,23,42,0.10)] backdrop-blur-xl md:p-8">
           <AuthBrand />
           <div className="mb-8 text-center">
             <h1 className="text-[28px] font-bold text-slate-900 md:text-[32px]">Nueva contraseña</h1>

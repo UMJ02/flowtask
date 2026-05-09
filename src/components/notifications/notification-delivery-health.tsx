@@ -34,26 +34,26 @@ export function NotificationDeliveryHealth({
             <Inbox className="h-5 w-5" />
           </span>
           <div>
-            <h2 className="text-lg font-semibold text-slate-900">Salud de entregas</h2>
+            <h2 className="text-base font-semibold text-slate-900">Salud de entregas</h2>
             <p className="mt-1 text-sm text-slate-500">Mide si tus avisos están saliendo como deben y detecta rápido si hay algo que revisar.</p>
           </div>
         </div>
         <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Total</p>
-            <p className="mt-2 text-2xl font-bold text-slate-900">{deliverySummary.total}</p>
+            <p className="mt-2 text-xl font-bold text-slate-900">{deliverySummary.total}</p>
           </div>
           <div className="rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-3">
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-700">Enviadas</p>
-            <p className="mt-2 text-2xl font-bold text-slate-900">{deliverySummary.sent}</p>
+            <p className="mt-2 text-xl font-bold text-slate-900">{deliverySummary.sent}</p>
           </div>
           <div className="rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3">
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-amber-700">Pendientes</p>
-            <p className="mt-2 text-2xl font-bold text-slate-900">{deliverySummary.pending}</p>
+            <p className="mt-2 text-xl font-bold text-slate-900">{deliverySummary.pending}</p>
           </div>
           <div className="rounded-2xl border border-rose-100 bg-rose-50 px-4 py-3">
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-rose-700">Fallidas</p>
-            <p className="mt-2 text-2xl font-bold text-slate-900">{deliverySummary.failed}</p>
+            <p className="mt-2 text-xl font-bold text-slate-900">{deliverySummary.failed}</p>
           </div>
         </div>
         <div className="mt-4 rounded-2xl border border-slate-200 bg-white px-4 py-3">

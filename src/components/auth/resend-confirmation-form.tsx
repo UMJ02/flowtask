@@ -59,11 +59,11 @@ export function ResendConfirmationForm() {
   };
 
   return (
-    <form className="space-y-3 rounded-[24px] border border-slate-200 bg-white p-4 shadow-[0_16px_42px_rgba(15,23,42,0.06)]" onSubmit={handleSubmit}>
+    <form className="space-y-3 rounded-[24px] border border-slate-200 bg-white p-4" onSubmit={handleSubmit}>
       <div className="space-y-2 text-left">
         <label className="text-sm font-semibold text-slate-700">Reenviar correo de confirmación</label>
         <Input
-          className="h-12 bg-white"
+          className="h-10 bg-white"
           inputMode="email"
           onChange={(event) => setEmail(event.target.value)}
           placeholder="correo@empresa.com"
@@ -84,7 +84,7 @@ export function ResendConfirmationForm() {
         </div>
       ) : null}
 
-      <Button className="h-12 w-full rounded-2xl" loading={status === 'loading'} type="submit">
+      <Button className="h-10 w-full rounded-2xl" loading={status === 'loading'} type="submit">
         {status === 'loading' ? 'Reenviando...' : 'Reenviar correo'}
       </Button>
     </form>

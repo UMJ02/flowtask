@@ -24,10 +24,10 @@ import { ProjectInlineTasks } from "@/components/projects/project-inline-tasks";
 import { ProjectHeroInlineEditor } from "@/components/projects/project-hero-inline-editor";
 
 const projectUi = {
-  card: "rounded-[24px] border border-[#E7EDF5] bg-white shadow-[0_12px_35px_rgba(15,23,42,0.05)]",
-  smallCard: "rounded-[22px] border border-[#E7EDF5] bg-white p-5 shadow-[0_10px_24px_rgba(15,23,42,0.04)]",
-  buttonDark: "inline-flex h-12 items-center justify-center gap-2 rounded-[16px] bg-[#050B18] px-6 text-sm font-bold text-white shadow-[0_12px_28px_rgba(5,11,24,0.18)] transition hover:-translate-y-0.5 hover:bg-[#111827]",
-  buttonGhost: "inline-flex h-12 items-center justify-center gap-2 rounded-[16px] border border-[#E7EDF5] bg-white px-5 text-sm font-bold text-[#0F172A] transition hover:bg-[#F8FAFC]",
+  card: "rounded-[24px] border border-[#E7EDF5] bg-white",
+  smallCard: "rounded-[22px] border border-[#E7EDF5] bg-white p-5",
+  buttonDark: "inline-flex h-10 items-center justify-center gap-2 rounded-[16px] bg-[#050B18] px-5 text-sm font-bold text-white transition hover:-translate-y-0.5 hover:bg-[#111827]",
+  buttonGhost: "inline-flex h-10 items-center justify-center gap-2 rounded-[16px] border border-[#E7EDF5] bg-white px-5 text-sm font-bold text-[#0F172A] transition hover:bg-[#F8FAFC]",
   eyebrow: "text-xs font-semibold uppercase tracking-[0.22em] text-[#16A36C]",
 };
 
@@ -151,7 +151,7 @@ function AvatarStack({ members }: { members: any[] }) {
         {visible.map((member) => {
           const name = memberName(member);
           return (
-            <span key={member.id ?? member.user_id} className="grid h-9 w-9 place-items-center rounded-full border-2 border-white bg-[#ECFDF5] text-[11px] font-semibold text-[#087A4B] shadow-sm">
+            <span key={member.id ?? member.user_id} className="grid h-9 w-9 place-items-center rounded-full border-2 border-white bg-[#ECFDF5] text-[11px] font-semibold text-[#087A4B] shadow-none">
               {initials(name)}
             </span>
           );
@@ -181,9 +181,9 @@ function ProjectStatsRow({ tasks }: { tasks: any[] }) {
       {items.map((item) => {
         const Icon = item.icon;
         return (
-          <article key={item.label} className="rounded-[22px] border border-[#E7EDF5] bg-white p-5 shadow-[0_10px_24px_rgba(15,23,42,0.04)] transition hover:-translate-y-0.5">
+          <article key={item.label} className="rounded-[22px] border border-[#E7EDF5] bg-white p-5 transition hover:-translate-y-0.5">
             <div className="flex items-center gap-4">
-              <span className={`grid h-12 w-12 place-items-center rounded-full ${item.tone}`}><Icon className="h-5 w-5" /></span>
+              <span className={`grid h-10 w-10 place-items-center rounded-full ${item.tone}`}><Icon className="h-5 w-5" /></span>
               <div>
                 <p className="text-sm font-semibold text-[#64748B]">{item.label}</p>
                 <p className="mt-1 text-[28px] font-semibold leading-none text-[#0F172A]">{item.value}</p>
@@ -203,10 +203,10 @@ function ProjectHeroCard({ project, tasks, members, currentQuery }: { project: a
   const cover = project.image_url || "/imagenes/organization-team-hero.png";
 
   return (
-    <section className="relative overflow-hidden rounded-[24px] border border-[#E7EDF5] bg-white p-6 shadow-[0_12px_35px_rgba(15,23,42,0.05)]">
+    <section className="relative overflow-hidden rounded-[24px] border border-[#E7EDF5] bg-white p-5">
       <div className="pointer-events-none absolute right-0 top-0 h-full w-1/2 bg-gradient-to-l from-[#ECFDF5] via-[#EFF6FF]/50 to-transparent" />
-      <div className="pointer-events-none absolute right-6 top-6 h-[78%] w-[34%] rounded-[28px] bg-[radial-gradient(circle_at_1px_1px,rgba(22,199,132,0.13)_1px,transparent_0)] [background-size:14px_14px] opacity-70" />
-      <div className="relative grid gap-6 lg:grid-cols-[230px_minmax(0,1fr)_360px]">
+      <div className="pointer-events-none absolute right-6 top-5 h-[78%] w-[34%] rounded-[24px] bg-[radial-gradient(circle_at_1px_1px,rgba(22,199,132,0.13)_1px,transparent_0)] [background-size:14px_14px] opacity-70" />
+      <div className="relative grid gap-5 lg:grid-cols-[230px_minmax(0,1fr)_360px]">
         <div className="relative h-[190px] overflow-hidden rounded-[20px] bg-slate-100">
           <Image src={cover} alt={project.title || "Proyecto FlowTask"} fill className="object-cover" sizes="230px" priority={false} unoptimized={Boolean(project.image_url)} />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950/20 to-transparent" />
@@ -226,7 +226,7 @@ function ProjectHeroCard({ project, tasks, members, currentQuery }: { project: a
           <AvatarStack members={members} />
         </div>
 
-        <div className="flex flex-col justify-between gap-6">
+        <div className="flex flex-col justify-between gap-5">
           <div className="flex justify-start gap-3 lg:justify-end">
             <CopyCurrentUrlButton label="Compartir" className={projectUi.buttonGhost} />
             <Link href={projectEditRoute(project.id, currentQuery)} className={projectUi.buttonDark}><MoreVertical className="h-4 w-4" />Editar proyecto</Link>
@@ -234,7 +234,7 @@ function ProjectHeroCard({ project, tasks, members, currentQuery }: { project: a
           <div>
             <div className="mb-2 flex items-center justify-between text-sm">
               <span className="font-semibold text-[#64748B]">Progreso general</span>
-              <span className="text-2xl font-semibold text-[#16A36C]">{progress}%</span>
+              <span className="text-xl font-semibold text-[#16A36C]">{progress}%</span>
             </div>
             <div className="h-[7px] rounded-full bg-[#EEF2F7]"><div className="h-[7px] rounded-full bg-[#16C784]" style={{ width: `${Math.min(100, Math.max(0, progress))}%` }} /></div>
           </div>
@@ -258,9 +258,9 @@ function ProjectTabs() {
     { label: "Actividad", href: "#actividad" },
   ];
   return (
-    <nav className="flex h-14 items-center gap-8 overflow-x-auto border-b border-[#E7EDF5]">
+    <nav className="flex h-10 items-center gap-8 overflow-x-auto border-b border-[#E7EDF5]">
       {tabs.map((tab, index) => (
-        <a key={tab.label} href={tab.href} data-active={index === 0} className="relative h-14 shrink-0 text-sm font-semibold text-[#64748B] transition hover:text-[#0F172A] data-[active=true]:text-[#16A36C] after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full after:rounded-full after:bg-[#16C784] after:opacity-0 data-[active=true]:after:opacity-100">
+        <a key={tab.label} href={tab.href} data-active={index === 0} className="relative h-10 shrink-0 text-sm font-semibold text-[#64748B] transition hover:text-[#0F172A] data-[active=true]:text-[#16A36C] after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full after:rounded-full after:bg-[#16C784] after:opacity-0 data-[active=true]:after:opacity-100">
           {tab.label}
         </a>
       ))}
@@ -272,7 +272,7 @@ function ProjectMembersCard({ members }: { members: any[] }) {
   return (
     <section id="equipo" className={`${projectUi.smallCard} scroll-mt-28`}>
       <div className="mb-4 flex items-center justify-between gap-3">
-        <h2 className="text-lg font-semibold text-[#0F172A]">Miembros del proyecto</h2>
+        <h2 className="text-base font-semibold text-[#0F172A]">Miembros del proyecto</h2>
         <Link href="/app/organization/roles" className="inline-flex h-9 items-center gap-1 rounded-[12px] border border-[#E7EDF5] bg-white px-3 text-xs font-semibold text-[#475569] hover:bg-slate-50"><Plus className="h-4 w-4" />Invitar</Link>
       </div>
       <div className="space-y-4">
@@ -296,10 +296,10 @@ function ProjectMembersCard({ members }: { members: any[] }) {
 function RecentFilesCard({ attachments }: { attachments: any[] }) {
   return (
     <section id="archivos" className={`${projectUi.smallCard} scroll-mt-28`}>
-      <div className="mb-4 flex items-center justify-between gap-3"><h2 className="text-lg font-semibold text-[#0F172A]">Archivos recientes</h2><a href="#archivos" className="inline-flex h-9 items-center rounded-[12px] border border-[#E7EDF5] bg-white px-3 text-xs font-semibold text-[#475569] hover:bg-slate-50">Ver todo</a></div>
+      <div className="mb-4 flex items-center justify-between gap-3"><h2 className="text-base font-semibold text-[#0F172A]">Archivos recientes</h2><a href="#archivos" className="inline-flex h-9 items-center rounded-[12px] border border-[#E7EDF5] bg-white px-3 text-xs font-semibold text-[#475569] hover:bg-slate-50">Ver todo</a></div>
       <div className="grid grid-cols-2 gap-3">
         {attachments.length ? attachments.slice(0, 4).map((file) => (
-          <a key={file.id} href={file.public_url || "#"} className="group overflow-hidden rounded-[16px] border border-[#E7EDF5] bg-white transition hover:-translate-y-0.5 hover:shadow-[0_12px_24px_rgba(15,23,42,0.07)]">
+          <a key={file.id} href={file.public_url || "#"} className="group overflow-hidden rounded-[16px] border border-[#E7EDF5] bg-white transition hover:-translate-y-0.5 hover:">
             <span className="grid aspect-square place-items-center overflow-hidden bg-[#F8FAFC] text-[#64748B]">
               {isImageAttachment(file) ? <img src={file.public_url} alt={file.file_name || "Archivo"} className="h-full w-full object-cover" /> : attachmentIcon(file.file_name)}
             </span>
@@ -313,8 +313,8 @@ function RecentFilesCard({ attachments }: { attachments: any[] }) {
 
 function ProjectActivityCard({ activity }: { activity: ActivityItem[] }) {
   return (
-    <section id="actividad" className={`${projectUi.card} scroll-mt-28 p-6`}>
-      <div className="mb-5 flex items-center justify-between gap-3"><div><p className={projectUi.eyebrow}>Actividad reciente</p><h2 className="mt-2 text-2xl font-semibold text-[#0F172A]">Movimientos del proyecto</h2></div><a href="#actividad" className="inline-flex h-10 items-center rounded-[14px] border border-[#E7EDF5] bg-white px-4 text-xs font-semibold text-[#475569] hover:bg-slate-50">Ver movimientos</a></div>
+    <section id="actividad" className={`${projectUi.card} scroll-mt-28 p-5`}>
+      <div className="mb-5 flex items-center justify-between gap-3"><div><p className={projectUi.eyebrow}>Actividad reciente</p><h2 className="mt-2 text-xl font-semibold text-[#0F172A]">Movimientos del proyecto</h2></div><a href="#actividad" className="inline-flex h-10 items-center rounded-[14px] border border-[#E7EDF5] bg-white px-4 text-xs font-semibold text-[#475569] hover:bg-slate-50">Ver movimientos</a></div>
       <div className="space-y-4">
         {activity.length ? activity.slice(0, 5).map((item) => (
           <div key={item.id} className="flex gap-3">
@@ -330,7 +330,7 @@ function ProjectActivityCard({ activity }: { activity: ActivityItem[] }) {
 export function ProjectDetailPro({ project, tasks, members, attachments, activity, currentQuery = "", canCreateTask = false, canEdit = false, editMode = false }: ProjectDetailProProps) {
   const progress = projectProgress(tasks, project.status);
   return (
-    <div id="resumen" className="mx-auto max-w-[1440px] space-y-6 px-4 py-5 text-[#0F172A] sm:px-6 lg:px-6">
+    <div id="resumen" className="mx-auto max-w-[1440px] space-y-5 px-4 py-5 text-[#0F172A] sm:px-5 lg:px-5">
       <nav className="flex flex-wrap items-center gap-2 text-sm font-semibold text-[#64748B]">
         <Link href="/app/projects" className="transition hover:text-[#0F172A]">Proyectos</Link><span>›</span><span className="text-[#0F172A]">{project.title}</span>
       </nav>
@@ -342,14 +342,14 @@ export function ProjectDetailPro({ project, tasks, members, attachments, activit
       <ProjectStatsRow tasks={tasks} />
       <ProjectTabs />
       <ProjectPlanningTimeline project={project} tasks={tasks} currentQuery={currentQuery} />
-      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
-        <section className="space-y-6"><ProjectInlineTasks project={project} initialTasks={tasks} members={members} canManage={canCreateTask} /><ProjectActivityCard activity={activity} /></section>
-        <aside className="space-y-6 xl:sticky xl:top-6 xl:self-start">
-          <section className="rounded-[24px] border border-[#BBF7D0] bg-[#ECFDF5] p-6 shadow-[0_10px_24px_rgba(15,23,42,0.04)]">
+      <div className="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
+        <section className="space-y-5"><ProjectInlineTasks project={project} initialTasks={tasks} members={members} canManage={canCreateTask} /><ProjectActivityCard activity={activity} /></section>
+        <aside className="space-y-5 xl:sticky xl:top-5 xl:self-start">
+          <section className="rounded-[24px] border border-[#BBF7D0] bg-[#ECFDF5] p-5">
             <p className="text-xs font-semibold uppercase tracking-[0.20em] text-[#087A4B]">Acción rápida</p>
             <h3 className="mt-2 text-xl font-semibold text-[#0F172A]">Crear tarea interna</h3>
             <p className="mt-2 text-sm leading-6 text-[#64748B]">Agrega tareas dentro de este proyecto sin salir de esta vista.</p>
-            <a href="#tareas" className={`mt-5 inline-flex h-12 w-full items-center justify-center gap-2 rounded-[16px] text-sm font-semibold ${canCreateTask ? "bg-[#16C784] text-white shadow-[0_12px_24px_rgba(22,199,132,0.22)]" : "pointer-events-none bg-white/70 text-slate-400"}`}><Plus className="h-4 w-4" />Ir a tareas del proyecto</a>
+            <a href="#tareas" className={`mt-5 inline-flex h-10 w-full items-center justify-center gap-2 rounded-[16px] text-sm font-semibold ${canCreateTask ? "bg-[#16C784] text-white" : "pointer-events-none bg-white/70 text-slate-400"}`}><Plus className="h-4 w-4" />Ir a tareas del proyecto</a>
           </section>
           <ProjectMembersCard members={members} />
           <RecentFilesCard attachments={attachments} />

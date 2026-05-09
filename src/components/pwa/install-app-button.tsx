@@ -47,7 +47,7 @@ export function InstallAppButton({ compact = false }: { compact?: boolean }) {
         type="button"
         onClick={handleInstall}
         disabled={installing}
-        className="group relative inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:border-slate-900 hover:bg-slate-900 disabled:opacity-60"
+        className="group relative inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-slate-200 bg-white shadow-none transition-all duration-300 hover:border-slate-900 hover:bg-slate-900 disabled:opacity-60"
         aria-label="Instalar app"
         title="Descargar app"
       >
@@ -70,7 +70,7 @@ export function InstallAppButton({ compact = false }: { compact?: boolean }) {
       type="button"
       onClick={handleInstall}
       disabled={installing}
-      className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 shadow-sm transition hover:border-emerald-200 hover:bg-emerald-50 disabled:opacity-60"
+      className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 shadow-none transition hover:border-emerald-200 hover:bg-emerald-50 disabled:opacity-60"
       aria-label="Instalar app"
     >
       <Download className="h-4 w-4" />

@@ -66,14 +66,14 @@ export function ResetPasswordForm() {
             <label className="text-sm font-medium text-slate-700">Nueva contraseña</label>
             <span className="text-xs text-slate-400">Mínimo 6 caracteres</span>
           </div>
-          <Input className="h-12 bg-white/90" type="password" placeholder="••••••••" {...register('password')} />
+          <Input className="h-10 bg-white/90" type="password" placeholder="••••••••" {...register('password')} />
           <p className="text-xs text-slate-400">Usa una contraseña segura y diferente a la anterior.</p>
           {errors.password ? <p className="text-sm text-rose-600">{errors.password.message}</p> : null}
         </div>
 
         <div className="space-y-2">
           <label className="text-sm font-medium text-slate-700">Confirmar contraseña</label>
-          <Input className="h-12 bg-white/90" type="password" placeholder="••••••••" {...register('confirmPassword')} />
+          <Input className="h-10 bg-white/90" type="password" placeholder="••••••••" {...register('confirmPassword')} />
           {!errors.confirmPassword && passwordValue ? (
             <p className="text-xs text-slate-400">Confirma exactamente la misma contraseña.</p>
           ) : null}
@@ -86,7 +86,7 @@ export function ResetPasswordForm() {
           </div>
         ) : null}
 
-        <Button className="h-12 w-full rounded-2xl" loading={isSubmitting} type="submit">
+        <Button className="h-10 w-full rounded-2xl" loading={isSubmitting} type="submit">
           {isSubmitting ? 'Guardando...' : 'Guardar nueva contraseña'}
         </Button>
       </form>

@@ -12,7 +12,7 @@ export default function ConfirmedPage() {
       </div>
 
       <div className="container-page relative flex min-h-screen items-center justify-center px-4 py-8">
-        <section className="w-full max-w-[560px] overflow-hidden rounded-[28px] border border-slate-200 bg-white p-6 text-center shadow-[0_24px_64px_rgba(15,23,42,0.08)] md:p-8">
+        <section className="w-full max-w-[560px] overflow-hidden rounded-[24px] border border-slate-200 bg-white p-5 text-center shadow-[0_24px_64px_rgba(15,23,42,0.08)] md:p-8">
           <AuthBrand />
           <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-emerald-50 ring-8 ring-emerald-50/70">
             <CheckCircle2 className="h-10 w-10 text-[#16C784]" aria-hidden="true" />

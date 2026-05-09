@@ -1,7 +1,7 @@
 export default function OfflinePage() {
   return (
-    <main className="mx-auto flex min-h-screen max-w-xl flex-col items-center justify-center px-6 text-center">
-      <div className="rounded-[32px] border border-slate-200 bg-white p-8 shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
+    <main className="mx-auto flex min-h-screen max-w-xl flex-col items-center justify-center px-5 text-center">
+      <div className="rounded-[26px] border border-slate-200 bg-white p-8">
         <p className="text-sm font-semibold uppercase tracking-[0.18em] text-emerald-600">FlowTask</p>
         <h1 className="mt-3 text-[28px] font-bold text-slate-900">Sin conexión</h1>
         <p className="mt-3 text-sm leading-6 text-slate-500">

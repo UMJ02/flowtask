@@ -14,7 +14,7 @@ const footerLinks = [
 
 export function AppFooter() {
   return (
-    <footer className="min-h-14 rounded-[20px] border border-[#E8EDF3] bg-white px-5 py-4 text-[14px] text-[#64748B] shadow-[0_8px_24px_rgba(15,23,42,0.03)]">
+    <footer className="min-h-10 rounded-[20px] border border-[#E8EDF3] bg-white px-5 py-4 text-[14px] text-[#64748B]">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <p className="whitespace-nowrap font-medium">© 2026 FlowTask · Costa Rica</p>
         <div className="flex items-center gap-2 text-sm font-medium">

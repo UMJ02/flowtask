@@ -114,7 +114,7 @@ export function LoginForm({ initialNext }: { initialNext?: string }) {
           <label className="text-sm font-medium text-slate-700" htmlFor="login-email">Correo</label>
           <Input
             id="login-email"
-            className="h-12 bg-white/90"
+            className="h-10 bg-white/90"
             type="email"
             placeholder="correo@empresa.com"
             autoComplete="email"
@@ -131,7 +131,7 @@ export function LoginForm({ initialNext }: { initialNext?: string }) {
           </div>
           <AuthPasswordField
             id="login-password"
-            className="h-12 bg-white/90"
+            className="h-10 bg-white/90"
             placeholder="••••••••"
             autoComplete="current-password"
             aria-invalid={Boolean(errors.password)}
@@ -148,7 +148,7 @@ export function LoginForm({ initialNext }: { initialNext?: string }) {
           </div>
         ) : null}
 
-        <Button className="h-12 w-full rounded-2xl" disabled={isBlocked} loading={isSubmitting} type="submit">
+        <Button className="h-10 w-full rounded-2xl" disabled={isBlocked} loading={isSubmitting} type="submit">
           {isSubmitting ? 'Validando...' : isBlocked ? 'Intento bloqueado temporalmente' : 'Ingresar'}
         </Button>
 

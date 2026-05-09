@@ -21,7 +21,7 @@ function AuthPremiumLoaderComponent({
 
       <section className="relative z-10 flex w-full max-w-[320px] flex-col items-center justify-center text-center">
         <NativeDotsLoader />
-        <h1 className="mt-8 text-[1rem] font-semibold tracking-[-0.02em] text-slate-950 sm:text-lg">{title}</h1>
+        <h1 className="mt-8 text-[1rem] font-semibold tracking-[-0.02em] text-slate-950 sm:text-base">{title}</h1>
       </section>
     </div>
   );

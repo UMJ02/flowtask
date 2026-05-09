@@ -167,7 +167,7 @@ function ProjectsStatCard({ icon, label, value, helper, tone }: { icon: ReactNod
   return (
     <div className="ft-section-card">
       <div className="flex items-center gap-4">
-        <span className={`inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-full ${tone}`}>{icon}</span>
+        <span className={`inline-flex h-10 w-14 shrink-0 items-center justify-center rounded-full ${tone}`}>{icon}</span>
         <div>
           <p className="ft-small-title text-slate-500">{label}</p>
           <p className="mt-1 text-[24px] font-semibold tracking-tight text-slate-950">{value}</p>
@@ -228,7 +228,7 @@ function ProjectRow({ project, index, queryString }: { project: ProjectSummary; 
       </td>
       <td className="px-5 py-4 align-middle">
         <div className="flex items-center justify-center gap-2">
-          <Link href={detailHref} aria-label={`Abrir proyecto ${project.title}`} className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-[#E5EAF1] bg-white text-slate-600 transition hover:-translate-y-0.5 hover:border-slate-300 hover:text-[#0F172A] hover:shadow-[0_10px_24px_rgba(15,23,42,0.07)]">
+          <Link href={detailHref} aria-label={`Abrir proyecto ${project.title}`} className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-[#E5EAF1] bg-white text-slate-600 transition hover:-translate-y-0.5 hover:border-slate-300 hover:text-[#0F172A] hover:">
             <Eye className="h-4 w-4" />
           </Link>
           <Link href={projectEditRoute(project.id, queryString)} aria-label={`Editar proyecto ${project.title}`} className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-[#E5EAF1] bg-white text-slate-600 transition hover:-translate-y-0.5 hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700">
@@ -306,7 +306,7 @@ export default async function ProjectsPage({ searchParams }: { searchParams?: Pr
               <summary className="ft-button w-full cursor-pointer list-none border border-[#E7ECF3] bg-white text-slate-700 hover:bg-slate-50">
                 Más filtros <ChevronDown className="h-4 w-4 transition group-open:rotate-180" />
               </summary>
-              <div className="absolute right-0 z-20 mt-2 w-[280px] space-y-3 rounded-[20px] border border-[#E5EAF1] bg-white p-4 shadow-[0_18px_40px_rgba(15,23,42,0.12)]">
+              <div className="absolute right-0 z-20 mt-2 w-[280px] space-y-3 rounded-[20px] border border-[#E5EAF1] bg-white p-4">
                 <label className="block text-xs font-semibold uppercase tracking-[0.12em] text-[#64748B]">Tipo</label>
                 <select name="mode" defaultValue={filters.mode} className="h-11 w-full rounded-[14px] border border-[#E5EAF1] bg-white px-3 text-sm font-bold text-[#334155] outline-none focus:border-[#16C784]">
                   <option value="">Todos</option>
@@ -344,7 +344,7 @@ export default async function ProjectsPage({ searchParams }: { searchParams?: Pr
             <ProjectsPagination total={projects.length} />
           </div>
         ) : (
-          <div className="p-6">
+          <div className="p-5">
             <EmptyState
               icon={<BriefcaseBusiness className="h-6 w-6" />}
               title="No encontramos proyectos con este filtro"

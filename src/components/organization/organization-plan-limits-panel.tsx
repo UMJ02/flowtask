@@ -5,7 +5,7 @@ export function OrganizationPlanLimitsPanel({ items }: { items: OrganizationUsag
   return (
     <Card>
       <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Límites del plan</p>
-      <h2 className="mt-1 text-lg font-semibold text-slate-900">Uso actual de la organización</h2>
+      <h2 className="mt-1 text-base font-semibold text-slate-900">Uso actual de la organización</h2>
       <div className="mt-4 space-y-4">
         {items.map((item) => (
           <div key={item.key} className="rounded-2xl border border-slate-200 p-4">

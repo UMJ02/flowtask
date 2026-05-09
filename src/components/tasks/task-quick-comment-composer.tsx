@@ -76,7 +76,7 @@ export function TaskQuickCommentsCard({ taskId, comments, canComment = true }: {
     <section id="comments" className="space-y-4">
       <form className="flex items-center gap-3" onSubmit={submit}>
         <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#ECFDF5] text-sm font-semibold text-[#16A36C]">FT</div>
-        <div className="flex h-12 flex-1 items-center gap-3 rounded-[16px] border border-[#E2E8F0] bg-white px-4 shadow-[0_6px_18px_rgba(15,23,42,0.025)]">
+        <div className="flex h-10 flex-1 items-center gap-3 rounded-[16px] border border-[#E2E8F0] bg-white px-4 shadow-[0_6px_18px_rgba(15,23,42,0.025)]">
           <input value={content} onChange={(event) => setContent(event.target.value)} disabled={!canComment || isSaving} placeholder="Escribe un comentario o menciona a alguien..." className="h-full min-w-0 flex-1 bg-transparent text-sm font-semibold outline-none placeholder:text-[#94A3B8]" />
           <button type="submit" disabled={!canComment || isSaving || !content.trim()} className="grid h-9 w-9 place-items-center rounded-full text-[#64748B] transition hover:bg-[#F8FAFC] hover:text-[#16A36C] disabled:cursor-not-allowed disabled:opacity-50" aria-label="Enviar comentario">➤</button>
         </div>

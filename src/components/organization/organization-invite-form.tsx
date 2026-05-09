@@ -49,7 +49,7 @@ export function OrganizationInviteForm({ organizationId, canInviteManagers = fal
   }
 
   return (
-    <form onSubmit={onSubmit} className={`grid gap-3 rounded-[24px] border border-slate-200 bg-slate-50/85 p-4 md:grid-cols-[1.2fr_0.7fr_auto] md:items-end ${compact ? 'shadow-[0_10px_24px_rgba(15,23,42,0.04)]' : ''}`}>
+    <form onSubmit={onSubmit} className={`grid gap-3 rounded-[24px] border border-slate-200 bg-slate-50/85 p-4 md:grid-cols-[1.2fr_0.7fr_auto] md:items-end ${compact ? '' : ''}`}>
       <div>
         <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">Invitar a una persona</p>
         <Input type="email" placeholder="correo@empresa.com" value={email} onChange={(event) => setEmail(event.target.value)} disabled={!organizationId || !canManageInvites || loading} />

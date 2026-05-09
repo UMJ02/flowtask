@@ -84,7 +84,7 @@ export function SettingsAccountOverview({
 
   return (
     <Card className="overflow-hidden bg-[linear-gradient(135deg,#0f172a_0%,#111827_58%,#1e293b_100%)] text-white shadow-[0_28px_70px_rgba(15,23,42,0.24)]">
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-5">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">Settings hub</p>
           <h1 className="mt-2 max-w-4xl text-[28px] font-bold md:text-[32px]">Cuenta, notificaciones y contexto de trabajo</h1>
@@ -112,7 +112,7 @@ export function SettingsAccountOverview({
                   <Icon className="h-4 w-4" />
                   <p className="text-[11px] uppercase tracking-[0.16em] sm:text-xs">{item.label}</p>
                 </div>
-                <p title={item.value} className="mt-4 line-clamp-2 break-words text-xl font-bold leading-tight text-white sm:mt-5 sm:text-2xl lg:text-[28px]">
+                <p title={item.value} className="mt-4 line-clamp-2 break-words text-xl font-bold leading-tight text-white sm:mt-5 sm:text-xl lg:text-[28px]">
                   {item.value}
                 </p>
                 <div className="pointer-events-none absolute inset-x-3 bottom-3 hidden translate-y-2 rounded-2xl bg-slate-950/85 px-3 py-2 text-xs text-slate-200 opacity-0 shadow-lg transition duration-200 group-hover:translate-y-0 group-hover:opacity-100 lg:block">

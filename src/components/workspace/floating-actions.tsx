@@ -48,7 +48,7 @@ export function WorkspaceFloatingActions() {
           open ? 'translate-x-0 opacity-100' : 'translate-x-10 opacity-0'
         )}
       >
-        <div className="pointer-events-auto rounded-[28px] border border-emerald-200 bg-white/[0.98] shadow-[0_24px_54px_rgba(15,23,42,0.14)] backdrop-blur">
+        <div className="pointer-events-auto rounded-[24px] border border-emerald-200 bg-white/[0.98] shadow-[0_24px_54px_rgba(15,23,42,0.14)] backdrop-blur">
           <div className="border-b border-slate-100 px-5 py-4">
             <div className="flex items-start justify-between gap-3">
               <div>
@@ -56,7 +56,7 @@ export function WorkspaceFloatingActions() {
                   <Sparkles className="h-3.5 w-3.5" />
                   Accesos rápidos
                 </p>
-                <h3 className="mt-3 text-lg font-bold text-slate-900">Hazlo sin rodeos</h3>
+                <h3 className="mt-3 text-base font-bold text-slate-900">Hazlo sin rodeos</h3>
                 <p className="mt-1 text-sm leading-5 text-slate-500">
                   Entradas directas para empezar sin cargar el dashboard de tarjetas repetidas.
                 </p>
@@ -82,7 +82,7 @@ export function WorkspaceFloatingActions() {
                     key={action.title}
                     href={action.href}
                     onClick={() => setOpen(false)}
-                    className="group flex items-start gap-3 rounded-[20px] border border-slate-200 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,250,252,0.98))] px-4 py-3 transition duration-200 hover:-translate-y-0.5 hover:border-emerald-200 hover:bg-emerald-50/50 hover:shadow-[0_12px_28px_rgba(16,185,129,0.10)]"
+                    className="group flex items-start gap-3 rounded-[20px] border border-slate-200 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,250,252,0.98))] px-4 py-3 transition duration-200 hover:-translate-y-0.5 hover:border-emerald-200 hover:bg-emerald-50/50 hover:"
                   >
                     <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100 transition group-hover:bg-white">
                       <Icon className="h-5 w-5" />

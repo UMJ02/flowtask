@@ -12,7 +12,7 @@ export function TaskPermissionBadge({
   const isFull = canEdit && canManage && canShare;
 
   return (
-    <div className="rounded-[20px] border border-slate-200/90 bg-white/[0.92] px-4 py-3 shadow-[0_10px_24px_rgba(15,23,42,0.04)]">
+    <div className="rounded-[20px] border border-slate-200/90 bg-white/[0.92] px-4 py-3">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">Acceso operativo</p>

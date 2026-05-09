@@ -10,7 +10,7 @@ export function ClientListPanel({ items }: { items: ClientListItem[] }) {
     <Card className="space-y-5">
       <div>
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Clientes</p>
-        <h2 className="mt-1 text-2xl font-bold text-slate-900">Espacios de trabajo por cliente</h2>
+        <h2 className="mt-1 text-xl font-bold text-slate-900">Espacios de trabajo por cliente</h2>
         <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">Cada cliente agrupa proyectos, tareas y actividad por organización con una lectura clara de estado, carga y seguimiento.</p>
       </div>
 
@@ -24,7 +24,7 @@ export function ClientListPanel({ items }: { items: ClientListItem[] }) {
                     <StatusBadge value={item.status} />
                     <span className="text-xs text-slate-500">Creado: {item.createdAtLabel}</span>
                   </div>
-                  <h3 className="mt-3 text-lg font-semibold text-slate-900">{item.name}</h3>
+                  <h3 className="mt-3 text-base font-semibold text-slate-900">{item.name}</h3>
                   <p className="mt-1 text-sm text-slate-500">Abre el detalle para revisar proyectos, tareas y actividad reciente de este cliente.</p>
                 </div>
                 <span className="inline-flex h-10 w-10 overflow-hidden items-center justify-center rounded-md bg-slate-100 text-slate-600">

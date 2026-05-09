@@ -212,9 +212,9 @@ export function ProjectHeroInlineEditor({ project, progress, currentQuery = "" }
   const cover = project.image_url || "/imagenes/organization-team-hero.png";
 
   return (
-    <section className="relative overflow-hidden rounded-[24px] border border-[#BBF7D0] bg-white p-6 shadow-[0_12px_35px_rgba(15,23,42,0.05)]">
+    <section className="relative overflow-hidden rounded-[24px] border border-[#BBF7D0] bg-white p-5">
       <div className="pointer-events-none absolute right-0 top-0 h-full w-1/2 bg-gradient-to-l from-[#ECFDF5] via-[#EFF6FF]/50 to-transparent" />
-      <div className="relative grid gap-6 lg:grid-cols-[230px_minmax(0,1fr)_360px]">
+      <div className="relative grid gap-5 lg:grid-cols-[230px_minmax(0,1fr)_360px]">
         <div className="relative h-[190px] overflow-hidden rounded-[20px] bg-slate-100">
           <Image src={cover} alt={project.title || "Proyecto FlowTask"} fill className="object-cover" sizes="230px" priority={false} unoptimized={Boolean(project.image_url)} />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950/20 to-transparent" />
@@ -232,8 +232,8 @@ export function ProjectHeroInlineEditor({ project, progress, currentQuery = "" }
 
         <div className="flex flex-col justify-between gap-5">
           <div className="flex justify-start gap-3 lg:justify-end">
-            <Button type="button" variant="secondary" disabled={isPending} onClick={cancelInline} className="h-12 rounded-[16px] border-[#E7EDF5] bg-white px-5 text-sm font-bold text-[#0F172A]"><X className="h-4 w-4" />Cancelar</Button>
-            <Button type="button" loading={isPending} onClick={saveInline} className="h-12 rounded-[16px] bg-[#16C784] px-5 text-sm font-bold text-white shadow-[0_12px_28px_rgba(22,199,132,0.22)]"><Save className="h-4 w-4" />Guardar</Button>
+            <Button type="button" variant="secondary" disabled={isPending} onClick={cancelInline} className="h-10 rounded-[16px] border-[#E7EDF5] bg-white px-5 text-sm font-bold text-[#0F172A]"><X className="h-4 w-4" />Cancelar</Button>
+            <Button type="button" loading={isPending} onClick={saveInline} className="h-10 rounded-[16px] bg-[#16C784] px-5 text-sm font-bold text-white"><Save className="h-4 w-4" />Guardar</Button>
           </div>
 
           <div className="grid gap-3">
@@ -248,7 +248,7 @@ export function ProjectHeroInlineEditor({ project, progress, currentQuery = "" }
           </div>
 
           <div>
-            <div className="mb-2 flex items-center justify-between text-sm"><span className="font-semibold text-[#64748B]">Progreso general</span><span className="text-2xl font-semibold text-[#16A36C]">{progress}%</span></div>
+            <div className="mb-2 flex items-center justify-between text-sm"><span className="font-semibold text-[#64748B]">Progreso general</span><span className="text-xl font-semibold text-[#16A36C]">{progress}%</span></div>
             <div className="h-[7px] rounded-full bg-[#EEF2F7]"><div className="h-[7px] rounded-full bg-[#16C784]" style={{ width: `${Math.min(100, Math.max(0, progress))}%` }} /></div>
           </div>
           {serverError ? <p className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">{serverError}</p> : null}

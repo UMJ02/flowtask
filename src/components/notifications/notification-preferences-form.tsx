@@ -84,7 +84,7 @@ export function NotificationPreferencesForm({ initialPreferences }: Props) {
         type="button"
         onClick={() => setActiveTab(value)}
         className={active
-          ? "rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm"
+          ? "rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-none"
           : "rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50"}
       >
         {label}
@@ -97,7 +97,7 @@ export function NotificationPreferencesForm({ initialPreferences }: Props) {
       <Card className="overflow-hidden rounded-[22px]">
         <div className="flex flex-col gap-4 md:gap-5 lg:flex-row lg:items-start lg:justify-between">
           <div>
-            <h2 className="text-lg font-semibold text-slate-900">Preferencias de notificaciones</h2>
+            <h2 className="text-base font-semibold text-slate-900">Preferencias de notificaciones</h2>
             <p className="mt-1 max-w-2xl text-sm leading-6 text-slate-500">Elige qué avisos quieres ver y cuándo prefieres recibirlos, con una vista más clara y compacta.</p>
           </div>
           <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
@@ -133,7 +133,7 @@ export function NotificationPreferencesForm({ initialPreferences }: Props) {
       <Card className="overflow-hidden rounded-[22px]">
         <div className="flex flex-col gap-3 md:gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <h3 className="text-lg font-semibold text-slate-900">Canales y automatización</h3>
+            <h3 className="text-base font-semibold text-slate-900">Canales y automatización</h3>
             <p className="mt-1 max-w-2xl text-sm leading-6 text-slate-500">Agrupamos la configuración en una sola vista con cejillas para reducir ruido visual y mantener una lectura más limpia.</p>
           </div>
           <div className="flex flex-wrap gap-2 md:gap-3">

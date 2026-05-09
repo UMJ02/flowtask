@@ -13,7 +13,7 @@ export function ProjectHealth({ activeProjects, completedProjects, collaborative
   return (
     <Card className="space-y-4">
       <div>
-        <h2 className="text-lg font-semibold text-slate-900">Salud de proyectos</h2>
+        <h2 className="text-base font-semibold text-slate-900">Salud de proyectos</h2>
         <p className="text-sm text-slate-500">Una lectura rápida para saber cómo va el trabajo del equipo.</p>
       </div>
       <div className="grid gap-3 sm:grid-cols-3">

@@ -434,7 +434,7 @@ function TaskActionListComponent({
   };
 
   const renderTable = () => (
-    <div className="overflow-hidden rounded-[24px] border border-[#E5EAF1] bg-white shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
+    <div className="overflow-hidden rounded-[24px] border border-[#E5EAF1] bg-white">
       <div className="hidden grid-cols-[42px_minmax(260px,1.5fr)_minmax(120px,0.7fr)_minmax(130px,0.7fr)_minmax(130px,0.7fr)_minmax(120px,0.65fr)_minmax(130px,0.7fr)_120px] border-b border-[#E5EAF1] bg-slate-50/70 px-5 py-4 text-[11px] font-bold uppercase tracking-[0.12em] text-slate-500 xl:grid">
         <div><input aria-label="Seleccionar tareas de esta página" type="checkbox" checked={allCurrentSelected} onChange={toggleCurrentPage} className="h-4 w-4 rounded border-slate-300" /></div>
         <div>Tarea</div>
@@ -535,7 +535,7 @@ function TaskActionListComponent({
   );
 
   const renderSmartTimeline = () => (
-    <Card className="overflow-hidden rounded-[24px] border border-[#E5EAF1] bg-white p-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
+    <Card className="overflow-hidden rounded-[24px] border border-[#E5EAF1] bg-white p-5">
       <div className="mb-5 flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#16C784]">Planificación inteligente</p>
@@ -562,7 +562,7 @@ function TaskActionListComponent({
       <div className="overflow-x-auto rounded-[18px] border border-[#E5EAF1]">
         <div className="min-w-[960px] grid grid-cols-[300px_1fr]">
           <div className="border-r border-[#E5EAF1] bg-white">
-            <div className="h-12 border-b border-[#E5EAF1] px-4 py-4 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#64748B]">Tarea / responsable</div>
+            <div className="h-10 border-b border-[#E5EAF1] px-4 py-4 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#64748B]">Tarea / responsable</div>
             {timelineItems.map((task) => (
               <div key={task.id} className="flex h-[58px] items-center gap-3 border-b border-[#EEF2F7] px-4 last:border-b-0">
                 <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-100 text-xs font-semibold text-slate-700">{(task.client_name || task.title).slice(0, 1).toUpperCase()}</span>
@@ -574,7 +574,7 @@ function TaskActionListComponent({
             ))}
           </div>
           <div className="relative bg-white">
-            <div className="grid h-12 border-b border-[#E5EAF1]" style={{ gridTemplateColumns: `repeat(${timelineDays.length}, minmax(42px, 1fr))` }}>
+            <div className="grid h-10 border-b border-[#E5EAF1]" style={{ gridTemplateColumns: `repeat(${timelineDays.length}, minmax(42px, 1fr))` }}>
               {timelineDays.map((day) => (
                 <div key={day.toISOString()} className="border-r border-[#EEF2F7] px-2 py-3 text-center text-[11px] font-semibold uppercase text-[#64748B] last:border-r-0">{day.getDate()}</div>
               ))}
@@ -587,7 +587,7 @@ function TaskActionListComponent({
                 <Link
                   href={taskDetailRoute(task.id, currentQuery)}
                   title={`${task.title} · ${formatHumanDate(toIsoDate(getTaskRange(task).start))} - ${formatHumanDate(toIsoDate(getTaskRange(task).end))}`}
-                  className={cn("absolute top-1/2 h-4 -translate-y-1/2 rounded-full shadow-[0_8px_18px_rgba(15,23,42,0.12)] transition hover:scale-[1.02]", barColor(task))}
+                  className={cn("absolute top-1/2 h-4 -translate-y-1/2 rounded-full transition hover:scale-[1.02]", barColor(task))}
                   style={getBarStyle(task, timelineBounds.start, timelineBounds.end)}
                 />
               </div>
@@ -616,7 +616,7 @@ function TaskActionListComponent({
     const percent = items.length ? Math.round((done / items.length) * 100) : 0;
 
     return (
-      <Card className="rounded-[24px] border border-[#E5EAF1] bg-white p-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
+      <Card className="rounded-[24px] border border-[#E5EAF1] bg-white p-5">
         <div className="mb-5 flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#16C784]">Operations Calendar Pro</p>
@@ -642,7 +642,7 @@ function TaskActionListComponent({
                   <div className={cn("mb-3 inline-flex h-7 min-w-7 items-center justify-center rounded-full px-2 text-xs font-semibold", day.isToday ? "bg-[#16C784] text-white" : "text-[#0F172A]")}>{day.label}</div>
                   <div className="space-y-2">
                     {day.tasks.slice(0, 4).map((task) => (
-                      <Link key={task.id} href={taskDetailRoute(task.id, currentQuery)} className={cn("block w-full truncate rounded-full border px-3 py-2 text-left text-xs font-bold shadow-[0_4px_12px_rgba(15,23,42,0.03)] transition hover:-translate-y-0.5 hover:border-[#16C784]/40", priorityTone(task.priority))}>{task.title}</Link>
+                      <Link key={task.id} href={taskDetailRoute(task.id, currentQuery)} className={cn("block w-full truncate rounded-full border px-3 py-2 text-left text-xs font-bold transition hover:-translate-y-0.5 hover:border-[#16C784]/40", priorityTone(task.priority))}>{task.title}</Link>
                     ))}
                     {day.tasks.length > 4 ? <button type="button" onClick={() => changeView("list")} className="text-xs font-bold text-[#64748B]">+{day.tasks.length - 4} más</button> : null}
                   </div>
@@ -662,7 +662,7 @@ function TaskActionListComponent({
               </div>
             </div>
             <div className="rounded-[20px] border border-[#E5EAF1] bg-white p-5 text-center">
-              <div className="mx-auto grid h-32 w-32 place-items-center rounded-full border-[12px] border-emerald-100 text-2xl font-semibold text-[#0F172A]" style={{ background: `conic-gradient(#16C784 ${percent * 3.6}deg, #ECFDF5 0deg)` }}>
+              <div className="mx-auto grid h-32 w-32 place-items-center rounded-full border-[12px] border-emerald-100 text-xl font-semibold text-[#0F172A]" style={{ background: `conic-gradient(#16C784 ${percent * 3.6}deg, #ECFDF5 0deg)` }}>
                 <span className="grid h-24 w-24 place-items-center rounded-full bg-white">{percent}%</span>
               </div>
               <p className="mt-3 text-sm font-bold text-[#64748B]">Completado</p>
@@ -675,7 +675,7 @@ function TaskActionListComponent({
   };
 
   const renderGanttBuilder = () => (
-    <Card className="rounded-[24px] border border-[#E5EAF1] bg-white p-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
+    <Card className="rounded-[24px] border border-[#E5EAF1] bg-white p-5">
       <div className="mb-5 flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#16C784]">Vista personalizada</p>
@@ -750,10 +750,10 @@ function TaskActionListComponent({
 
   return (
     <div className="space-y-4">
-      <Card className="relative z-20 rounded-[24px] border border-[#E5EAF1] bg-white p-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
+      <Card className="relative z-20 rounded-[24px] border border-[#E5EAF1] bg-white p-5">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <h2 className="text-lg font-bold text-[#0F172A]">Vistas de tareas</h2>
+            <h2 className="text-base font-bold text-[#0F172A]">Vistas de tareas</h2>
             <p className="mt-1 text-sm font-medium text-[#64748B]">Tareas queda simple: lista para ejecución diaria y calendario para fechas. La planificación avanzada vive en Proyectos.</p>
           </div>
           <div className="flex flex-wrap gap-3">
@@ -789,7 +789,7 @@ function TaskActionListComponent({
       </div>
 
       {viewMode === "list" ? (
-        <Card className="rounded-[24px] border border-[#E5EAF1] bg-white px-4 py-4 shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
+        <Card className="rounded-[24px] border border-[#E5EAF1] bg-white px-4 py-4">
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <p className="text-sm font-medium text-[#64748B]">
               Mostrando {items.length ? (currentPage - 1) * pageSize + 1 : 0} a {Math.min(currentPage * pageSize, items.length)} de {items.length} tareas
@@ -832,7 +832,7 @@ function ViewButton({ active, icon, label, onClick }: { active: boolean; icon: R
       onClick={onClick}
       className={cn(
         "inline-flex h-11 items-center gap-2 rounded-[14px] border px-4 text-sm font-semibold transition",
-        active ? "border-[#050B18] bg-[#050B18] text-white shadow-[0_12px_26px_rgba(5,11,24,0.16)]" : "border-[#E5EAF1] bg-white text-slate-700 hover:bg-slate-50",
+        active ? "border-[#050B18] bg-[#050B18] text-white" : "border-[#E5EAF1] bg-white text-slate-700 hover:bg-slate-50",
       )}
     >
       {icon}
@@ -861,7 +861,7 @@ function CalendarMetric({ icon, label, value, tone }: { icon: ReactNode; label: 
     <div className="flex items-center justify-between gap-3 rounded-[16px] border border-[#E5EAF1] bg-white p-3">
       <span className={cn("inline-flex h-9 w-9 items-center justify-center rounded-[12px]", tones[tone])}>{icon}</span>
       <span className="mr-auto text-sm font-bold text-[#64748B]">{label}</span>
-      <span className="text-lg font-semibold text-[#0F172A]">{value}</span>
+      <span className="text-base font-semibold text-[#0F172A]">{value}</span>
     </div>
   );
 }

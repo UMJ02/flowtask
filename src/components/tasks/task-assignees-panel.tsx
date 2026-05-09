@@ -115,7 +115,7 @@ export function TaskAssigneesPanel({
   };
 
   return (
-    <div className="h-full space-y-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+    <div className="h-full space-y-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-none">
       <div>
         <h3 className="text-base font-semibold text-slate-900">Responsables</h3>
         <p className="text-sm text-slate-500">Asigna personas relacionadas al proyecto para seguimiento.</p>

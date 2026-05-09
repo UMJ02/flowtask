@@ -30,7 +30,7 @@ export function HomeShowcaseCard() {
               className={cn(
                 'rounded-[20px] border px-4 py-4 transition-all duration-500',
                 active
-                  ? `${item.tone} animate-[pulse-outline_2.8s_ease-in-out_infinite] shadow-[0_14px_36px_rgba(15,23,42,0.10)] ring-1 ring-white/40`
+                  ? `${item.tone} animate-[pulse-outline_2.8s_ease-in-out_infinite] ring-1 ring-white/40`
                   : 'border-white/28 bg-white/45 opacity-84 lg:bg-white/38'
               )}
             >
@@ -44,7 +44,7 @@ export function HomeShowcaseCard() {
               </p>
               <p
                 className={cn(
-                  'mt-1 text-lg font-semibold text-slate-900 transition-all duration-500',
+                  'mt-1 text-base font-semibold text-slate-900 transition-all duration-500',
                   active && 'text-white animate-[fade-rise_500ms_ease-out]'
                 )}
               >

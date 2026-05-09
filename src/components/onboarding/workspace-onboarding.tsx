@@ -32,7 +32,7 @@ export function WorkspaceOnboarding({ summary, compact = false }: { summary: Wor
       <Card>
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex items-start gap-3">
-            <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100">
+            <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100">
               <Rocket className="h-5 w-5" />
             </span>
             <div>
@@ -64,7 +64,7 @@ export function WorkspaceOnboarding({ summary, compact = false }: { summary: Wor
   return (
     <div className="space-y-4">
       <Card className="bg-[linear-gradient(135deg,#06291d_0%,#0f172a_58%,#111827_100%)] text-white shadow-[0_24px_60px_rgba(15,23,42,0.25)]">
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">v58.18 Client Ready</p>
             <h2 className="mt-2 text-[28px] font-bold">Centro de arranque para cliente final</h2>
@@ -80,7 +80,7 @@ export function WorkspaceOnboarding({ summary, compact = false }: { summary: Wor
             </div>
             <div className="rounded-[26px] bg-white/10 px-4 py-3 ring-1 ring-white/10">
               <p className="text-xs uppercase tracking-[0.16em] text-slate-300">Modo</p>
-              <p className="mt-2 text-lg font-bold">{summary.workspaceMode === "organization" ? summary.organizationName : "Personal"}</p>
+              <p className="mt-2 text-base font-bold">{summary.workspaceMode === "organization" ? summary.organizationName : "Personal"}</p>
               <p className="mt-1 text-sm text-slate-300">Rol actual: {summary.role}</p>
             </div>
             <div className="rounded-[26px] bg-white/10 px-4 py-3 ring-1 ring-white/10">
@@ -96,7 +96,7 @@ export function WorkspaceOnboarding({ summary, compact = false }: { summary: Wor
         <Card>
           <div className="flex items-center justify-between gap-3">
             <div>
-              <h3 className="text-lg font-semibold text-slate-900">Checklist maestro</h3>
+              <h3 className="text-base font-semibold text-slate-900">Checklist maestro</h3>
               <p className="mt-1 text-sm text-slate-500">Personal y organización tienen caminos separados para que el usuario nuevo no se pierda.</p>
             </div>
             <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-100 text-slate-700 ring-1 ring-slate-200">
@@ -136,7 +136,7 @@ export function WorkspaceOnboarding({ summary, compact = false }: { summary: Wor
             <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-700">Demo data inteligente</p>
-                <h3 className="mt-1 text-lg font-semibold text-slate-900">{summary.demoData.title}</h3>
+                <h3 className="mt-1 text-base font-semibold text-slate-900">{summary.demoData.title}</h3>
                 <p className="mt-1 text-sm leading-6 text-slate-500">{summary.demoData.description}</p>
                 <p className="mt-3 rounded-2xl bg-white/80 px-3 py-2 text-xs font-medium text-slate-500 ring-1 ring-slate-200">
                   {summary.demoData.safetyNote}
@@ -161,7 +161,7 @@ export function WorkspaceOnboarding({ summary, compact = false }: { summary: Wor
           <Card>
             <div className="flex items-center justify-between gap-3">
               <div>
-                <h3 className="text-lg font-semibold text-slate-900">Pulso del workspace</h3>
+                <h3 className="text-base font-semibold text-slate-900">Pulso del workspace</h3>
                 <p className="mt-1 text-sm text-slate-500">Indicadores básicos para saber si ya existe señal operativa.</p>
               </div>
               <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100">
@@ -169,17 +169,17 @@ export function WorkspaceOnboarding({ summary, compact = false }: { summary: Wor
               </span>
             </div>
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3"><p className="text-xs uppercase tracking-[0.16em] text-slate-500">Miembros</p><p className="mt-2 text-2xl font-bold text-slate-900">{summary.quickStats.members}</p></div>
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3"><p className="text-xs uppercase tracking-[0.16em] text-slate-500">Clientes</p><p className="mt-2 text-2xl font-bold text-slate-900">{summary.quickStats.clients}</p></div>
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3"><p className="text-xs uppercase tracking-[0.16em] text-slate-500">Proyectos activos</p><p className="mt-2 text-2xl font-bold text-slate-900">{summary.quickStats.activeProjects}</p></div>
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3"><p className="text-xs uppercase tracking-[0.16em] text-slate-500">Tareas abiertas</p><p className="mt-2 text-2xl font-bold text-slate-900">{summary.quickStats.openTasks}</p></div>
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3"><p className="text-xs uppercase tracking-[0.16em] text-slate-500">Miembros</p><p className="mt-2 text-xl font-bold text-slate-900">{summary.quickStats.members}</p></div>
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3"><p className="text-xs uppercase tracking-[0.16em] text-slate-500">Clientes</p><p className="mt-2 text-xl font-bold text-slate-900">{summary.quickStats.clients}</p></div>
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3"><p className="text-xs uppercase tracking-[0.16em] text-slate-500">Proyectos activos</p><p className="mt-2 text-xl font-bold text-slate-900">{summary.quickStats.activeProjects}</p></div>
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3"><p className="text-xs uppercase tracking-[0.16em] text-slate-500">Tareas abiertas</p><p className="mt-2 text-xl font-bold text-slate-900">{summary.quickStats.openTasks}</p></div>
             </div>
           </Card>
 
           <Card>
             <div className="flex items-center justify-between gap-3">
               <div>
-                <h3 className="text-lg font-semibold text-slate-900">Próximo movimiento recomendado</h3>
+                <h3 className="text-base font-semibold text-slate-900">Próximo movimiento recomendado</h3>
                 <p className="mt-1 text-sm text-slate-500">Lo más rentable para cerrar el setup sin perder tiempo.</p>
               </div>
               <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-violet-50 text-violet-700 ring-1 ring-violet-100">

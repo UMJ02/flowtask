@@ -19,9 +19,9 @@ export default async function ProjectNewPage({ searchParams }: { searchParams?: 
 
   return (
     <div className="space-y-4">
-      <Card className="rounded-[28px] border border-slate-200/90 bg-white/[0.92] p-5 shadow-[0_10px_30px_rgba(15,23,42,0.04)]">
+      <Card className="rounded-[24px] border border-slate-200/90 bg-white/[0.92] p-5">
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Nuevo proyecto</p>
-        <h1 className="mt-2 text-2xl font-bold text-slate-900">{sourceTask ? 'Convertir tarea en proyecto' : 'Crear proyecto'}</h1>
+        <h1 className="mt-2 text-xl font-bold text-slate-900">{sourceTask ? 'Convertir tarea en proyecto' : 'Crear proyecto'}</h1>
         <p className="mt-2 text-sm text-slate-500">{sourceTask ? 'Convierte una tarea compleja en proyecto colaborativo con planificación avanzada.' : 'Prepara un frente nuevo con su cliente, deadline, área y modo colaborativo.'}</p>
       </Card>
       <ProjectForm

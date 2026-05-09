@@ -13,7 +13,7 @@ export function QuickActions() {
   return (
     <Card>
       <div>
-        <h2 className="text-lg font-semibold text-slate-900">Acciones rápidas</h2>
+        <h2 className="text-base font-semibold text-slate-900">Acciones rápidas</h2>
         <p className="text-sm text-slate-500">Atajos para crear lo que más usas, sin vueltas.</p>
       </div>
       <div className="mt-4 grid gap-3 md:grid-cols-3">

@@ -54,53 +54,53 @@ export function TaskSearchPanel({ filters }: TaskSearchPanelProps) {
   }, [filters.department, filters.due, filters.includeCompleted, filters.priority, filters.status]);
 
   return (
-    <form method="get" className="space-y-4 rounded-[24px] border border-[#E5EAF1] bg-white p-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
+    <form method="get" className="space-y-4 rounded-[24px] border border-[#E5EAF1] bg-white p-5">
       {!!filters.view && <input type="hidden" name="view" value={filters.view} />}
 
       <div className="grid gap-3 xl:grid-cols-[minmax(260px,1.4fr)_auto_auto_auto_auto_auto_auto] xl:items-center">
         <label className="relative block">
           <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
           <Input
-            className="h-12 rounded-[16px] border-[#E5EAF1] bg-white pl-11 text-sm shadow-none placeholder:text-slate-400"
+            className="h-10 rounded-[16px] border-[#E5EAF1] bg-white pl-11 text-sm shadow-none placeholder:text-slate-400"
             defaultValue={filters.q ?? ''}
             name="q"
             placeholder="Buscar tarea, cliente o palabra clave..."
           />
         </label>
 
-        <label className="inline-flex h-12 items-center gap-2 rounded-[16px] border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-slate-700">
+        <label className="inline-flex h-10 items-center gap-2 rounded-[16px] border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-slate-700">
           <input type="checkbox" name="includeCompleted" value="true" defaultChecked={filters.includeCompleted === 'true'} className="h-4 w-4 rounded border-slate-300 text-[#16C784]" />
           Incluir concluidas
         </label>
 
-        <Button className="h-12 rounded-[16px] border-[#E5EAF1] bg-white px-4 text-[#0F172A]" type="submit" variant="secondary">
+        <Button className="h-10 rounded-[16px] border-[#E5EAF1] bg-white px-4 text-[#0F172A]" type="submit" variant="secondary">
           <Filter className="h-4 w-4" />
           Filtros
           {activeChips.length ? <span className="ml-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[#050B18] px-1.5 text-xs text-white">{activeChips.length}</span> : null}
         </Button>
 
-        <Select className="h-12 min-w-[130px] rounded-[16px] border-[#E5EAF1] text-sm font-semibold text-slate-700" defaultValue={filters.status ?? ''} name="status" aria-label="Estado">
+        <Select className="h-10 min-w-[130px] rounded-[16px] border-[#E5EAF1] text-sm font-semibold text-slate-700" defaultValue={filters.status ?? ''} name="status" aria-label="Estado">
           <option value="">Estado</option>
           {TASK_STATUSES.map((item) => (
             <option key={item.value} value={item.value}>{item.label}</option>
           ))}
         </Select>
 
-        <Select className="h-12 min-w-[130px] rounded-[16px] border-[#E5EAF1] text-sm font-semibold text-slate-700" defaultValue={filters.priority ?? ''} name="priority" aria-label="Prioridad">
+        <Select className="h-10 min-w-[130px] rounded-[16px] border-[#E5EAF1] text-sm font-semibold text-slate-700" defaultValue={filters.priority ?? ''} name="priority" aria-label="Prioridad">
           <option value="">Prioridad</option>
           <option value="alta">Alta</option>
           <option value="media">Media</option>
           <option value="baja">Baja</option>
         </Select>
 
-        <Select className="h-12 min-w-[130px] rounded-[16px] border-[#E5EAF1] text-sm font-semibold text-slate-700" defaultValue={filters.department ?? ''} name="department" aria-label="Área">
+        <Select className="h-10 min-w-[130px] rounded-[16px] border-[#E5EAF1] text-sm font-semibold text-slate-700" defaultValue={filters.department ?? ''} name="department" aria-label="Área">
           <option value="">Proyecto</option>
           {DEPARTMENTS.map((item) => (
             <option key={item.code} value={item.code}>{item.label}</option>
           ))}
         </Select>
 
-        <Select className="h-12 min-w-[130px] rounded-[16px] border-[#E5EAF1] text-sm font-semibold text-slate-700" defaultValue={filters.due ?? ''} name="due" aria-label="Fecha">
+        <Select className="h-10 min-w-[130px] rounded-[16px] border-[#E5EAF1] text-sm font-semibold text-slate-700" defaultValue={filters.due ?? ''} name="due" aria-label="Fecha">
           <option value="">Más filtros</option>
           <option value="overdue">Vencidas</option>
           <option value="today">Vencen hoy</option>

@@ -5,7 +5,7 @@ import { EmptyState } from '@/components/ui/empty-state';
 
 export default function NotFound() {
   return (
-    <main className="mx-auto flex min-h-screen max-w-2xl items-center justify-center px-6 py-16">
+    <main className="mx-auto flex min-h-screen max-w-2xl items-center justify-center px-5 py-16">
       <div className="w-full">
         <EmptyState
           icon={<Compass className="h-6 w-6" />}

@@ -41,7 +41,7 @@ export function ExecutionCenter({ summary, compact = false }: { summary: Executi
                 <span className="line-clamp-2 max-w-[12rem] text-[13px] font-medium leading-5">{card.label}</span>
                 <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-[12px] bg-white text-fuchsia-700 ring-1 ring-slate-200">{card.icon}</span>
               </div>
-              <p className="mt-3 text-2xl font-bold tracking-tight text-slate-950">{card.value}</p>
+              <p className="mt-3 text-xl font-bold tracking-tight text-slate-950">{card.value}</p>
             </div>
           ))}
         </div>
@@ -66,7 +66,7 @@ export function ExecutionCenter({ summary, compact = false }: { summary: Executi
       </div>
 
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1.2fr)_minmax(340px,0.8fr)]">
-        <Card className="bg-[linear-gradient(135deg,#4a044e_0%,#701a75_48%,#0f172a_100%)] text-white shadow-[0_20px_48px_rgba(76,29,149,0.18)]">
+        <Card className="bg-[linear-gradient(135deg,#4a044e_0%,#701a75_48%,#0f172a_100%)] text-white">
           <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
             <div className="max-w-2xl">
               <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-fuchsia-200">Execution center</p>
@@ -117,7 +117,7 @@ export function ExecutionCenter({ summary, compact = false }: { summary: Executi
           <Card key={lane.title}>
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
-                <h3 className="text-lg font-semibold tracking-tight text-slate-950">{lane.title}</h3>
+                <h3 className="text-base font-semibold tracking-tight text-slate-950">{lane.title}</h3>
                 <p className="mt-1 max-w-sm text-sm leading-6 text-slate-500">{lane.subtitle}</p>
               </div>
               <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px] bg-fuchsia-50 text-fuchsia-700 ring-1 ring-fuchsia-100">{lane.icon}</span>
@@ -141,7 +141,7 @@ export function ExecutionCenter({ summary, compact = false }: { summary: Executi
       <Card>
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <h3 className="text-lg font-semibold tracking-tight text-slate-950">Team pulse</h3>
+            <h3 className="text-base font-semibold tracking-tight text-slate-950">Team pulse</h3>
             <p className="mt-1 max-w-2xl text-sm leading-6 text-slate-500">Una lectura rápida del área que tiene más carga y presión de corto plazo.</p>
           </div>
           <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px] bg-blue-50 text-blue-700 ring-1 ring-blue-100">
@@ -160,19 +160,19 @@ export function ExecutionCenter({ summary, compact = false }: { summary: Executi
                 <div className="mt-3 grid grid-cols-2 gap-3 text-sm text-slate-500">
                   <div>
                     <p>Open tasks</p>
-                    <p className="mt-1 text-lg font-bold text-slate-900">{item.openTasks}</p>
+                    <p className="mt-1 text-base font-bold text-slate-900">{item.openTasks}</p>
                   </div>
                   <div>
                     <p>Active projects</p>
-                    <p className="mt-1 text-lg font-bold text-slate-900">{item.activeProjects}</p>
+                    <p className="mt-1 text-base font-bold text-slate-900">{item.activeProjects}</p>
                   </div>
                   <div>
                     <p>Near term</p>
-                    <p className="mt-1 text-lg font-bold text-slate-900">{item.nearTermItems}</p>
+                    <p className="mt-1 text-base font-bold text-slate-900">{item.nearTermItems}</p>
                   </div>
                   <div>
                     <p>Score</p>
-                    <p className="mt-1 text-lg font-bold text-slate-900">{item.score}</p>
+                    <p className="mt-1 text-base font-bold text-slate-900">{item.score}</p>
                   </div>
                 </div>
               </div>

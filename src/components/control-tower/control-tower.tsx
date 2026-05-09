@@ -38,7 +38,7 @@ export function ControlTower({ summary, compact = false }: { summary: ControlTow
                 <span className="text-sm">{card.label}</span>
                 <span className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-white text-cyan-700 ring-1 ring-slate-200">{card.icon}</span>
               </div>
-              <p className="mt-3 text-2xl font-bold text-slate-900">{card.value}</p>
+              <p className="mt-3 text-xl font-bold text-slate-900">{card.value}</p>
             </div>
           ))}
         </div>
@@ -56,7 +56,7 @@ export function ControlTower({ summary, compact = false }: { summary: ControlTow
                 <p className="text-sm text-slate-500">{card.label}</p>
                 <p className="mt-3 text-[28px] font-bold text-slate-900">{card.value}</p>
               </div>
-              <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-700 ring-1 ring-cyan-100">
+              <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-700 ring-1 ring-cyan-100">
                 {card.icon}
               </span>
             </div>
@@ -91,7 +91,7 @@ export function ControlTower({ summary, compact = false }: { summary: ControlTow
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Recomendaciones</p>
               <h3 className="mt-2 text-xl font-bold text-slate-900">Qué revisar primero</h3>
             </div>
-            <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-700 ring-1 ring-slate-200">
+            <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-100 text-slate-700 ring-1 ring-slate-200">
               <ArrowUpRight className="h-5 w-5" />
             </span>
           </div>
@@ -111,7 +111,7 @@ export function ControlTower({ summary, compact = false }: { summary: ControlTow
         <Card>
           <div className="flex items-center justify-between gap-3">
             <div>
-              <h3 className="text-lg font-semibold text-slate-900">Carriles de ejecución</h3>
+              <h3 className="text-base font-semibold text-slate-900">Carriles de ejecución</h3>
               <p className="mt-1 text-sm text-slate-500">Cómo se ve la presión operativa ahora mismo.</p>
             </div>
             <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-700 ring-1 ring-cyan-100">
@@ -136,7 +136,7 @@ export function ControlTower({ summary, compact = false }: { summary: ControlTow
         <Card>
           <div className="flex items-center justify-between gap-3">
             <div>
-              <h3 className="text-lg font-semibold text-slate-900">Foco inmediato</h3>
+              <h3 className="text-base font-semibold text-slate-900">Foco inmediato</h3>
               <p className="mt-1 text-sm text-slate-500">Tareas y proyectos que merecen atención antes de cambiar de contexto.</p>
             </div>
             <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-amber-50 text-amber-700 ring-1 ring-amber-100">
@@ -157,7 +157,7 @@ export function ControlTower({ summary, compact = false }: { summary: ControlTow
                   <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${item.urgency === 'critical' ? laneToneClasses.critical : item.urgency === 'focus' ? laneToneClasses.focus : laneToneClasses.stable}`}>{item.type === 'task' ? 'Tarea' : 'Proyecto'}</span>
                 </div>
               </Link>
-            )) : <div className="rounded-2xl border border-dashed border-slate-300 px-4 py-6 text-sm text-slate-500">No hay elementos urgentes por mostrar en este momento.</div>}
+            )) : <div className="rounded-2xl border border-dashed border-slate-300 px-4 py-5 text-sm text-slate-500">No hay elementos urgentes por mostrar en este momento.</div>}
           </div>
         </Card>
       </div>
@@ -165,7 +165,7 @@ export function ControlTower({ summary, compact = false }: { summary: ControlTow
       <Card>
         <div className="flex items-center justify-between gap-3">
           <div>
-            <h3 className="text-lg font-semibold text-slate-900">Señales por cliente</h3>
+            <h3 className="text-base font-semibold text-slate-900">Señales por cliente</h3>
             <p className="mt-1 text-sm text-slate-500">Qué clientes concentran más movimiento cercano.</p>
           </div>
           <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-blue-50 text-blue-700 ring-1 ring-blue-100">
@@ -192,7 +192,7 @@ export function ControlTower({ summary, compact = false }: { summary: ControlTow
               </div>
               <div className="mt-3"><StatusBadge value={client.status} /></div>
             </Link>
-          )) : <div className="rounded-2xl border border-dashed border-slate-300 px-4 py-6 text-sm text-slate-500">Todavía no hay clientes con movimiento suficiente para resumir.</div>}
+          )) : <div className="rounded-2xl border border-dashed border-slate-300 px-4 py-5 text-sm text-slate-500">Todavía no hay clientes con movimiento suficiente para resumir.</div>}
         </div>
       </Card>
     </div>

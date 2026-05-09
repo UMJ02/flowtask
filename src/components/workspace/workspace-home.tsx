@@ -95,9 +95,9 @@ function WorkspaceKpiCard({
   }[tone];
 
   return (
-    <Card className="rounded-[20px] border-[#E5EAF1] bg-white p-5 shadow-[0_10px_30px_rgba(15,23,42,0.04)] ring-0 md:p-5">
+    <Card className="rounded-[20px] border-[#E5EAF1] bg-white p-5 ring-0 md:p-5">
       <div className="flex items-center gap-4">
-        <span className={cn('inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-full ring-1', toneClasses)}>
+        <span className={cn('inline-flex h-10 w-14 shrink-0 items-center justify-center rounded-full ring-1', toneClasses)}>
           <Icon className="h-6 w-6" />
         </span>
         <div className="min-w-0">
@@ -134,12 +134,12 @@ function WorkspaceQuickWidget({
     <Link
       href={href as any}
       className={cn(
-        'group flex min-h-[112px] items-center justify-between rounded-[20px] border px-5 py-5 shadow-[0_12px_30px_rgba(15,23,42,0.045)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_42px_rgba(15,23,42,0.075)]',
+        'group flex min-h-[112px] items-center justify-between rounded-[20px] border px-5 py-5 transition hover:-translate-y-0.5 hover:',
         toneClasses,
       )}
     >
       <div className="flex min-w-0 items-center gap-4">
-        <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/80 ring-1 ring-white/80">
+        <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-white/80 ring-1 ring-white/80">
           <Icon className="h-6 w-6" />
         </span>
         <div className="min-w-0">
@@ -147,7 +147,7 @@ function WorkspaceQuickWidget({
           <p className="mt-1 truncate text-xs font-medium text-slate-500">{helper}</p>
         </div>
       </div>
-      <span className="inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-white/70 ring-1 ring-white/80 transition group-hover:bg-[#050B18] group-hover:text-white">
+      <span className="inline-flex h-10 w-14 shrink-0 items-center justify-center rounded-full bg-white/70 ring-1 ring-white/80 transition group-hover:bg-[#050B18] group-hover:text-white">
         {tone === 'green' ? <Plus className="h-6 w-6" /> : <Icon className="h-6 w-6" />}
       </span>
     </Link>
@@ -355,13 +355,13 @@ export function WorkspaceHome() {
 
 
   return (
-    <div className="space-y-6 pb-3">
-      <section className="relative overflow-hidden rounded-[24px] border border-[#F6C7CD] bg-[linear-gradient(90deg,#FFF7F8_0%,#FFF9FB_100%)] px-6 py-6 shadow-[0_18px_50px_rgba(244,63,94,0.055)] md:px-9 md:py-7">
+    <div className="space-y-5 pb-3">
+      <section className="relative overflow-hidden rounded-[24px] border border-[#F6C7CD] bg-[linear-gradient(90deg,#FFF7F8_0%,#FFF9FB_100%)] px-5 py-5 md:px-9 md:py-7">
         <button type="button" aria-label="Cerrar radar" className="absolute right-5 top-5 hidden h-8 w-8 items-center justify-center rounded-full text-slate-500 transition hover:bg-white/75 hover:text-slate-900 md:inline-flex">
           ×
         </button>
         <div className="grid gap-5 lg:grid-cols-[150px_minmax(0,1fr)_auto] lg:items-center">
-          <div className="hidden h-[132px] w-[132px] items-end justify-center overflow-hidden rounded-[28px] bg-white/35 md:flex">
+          <div className="hidden h-[132px] w-[132px] items-end justify-center overflow-hidden rounded-[24px] bg-white/35 md:flex">
             <Image src="/assistant/guide-male.png" alt="Radar inteligente" width={132} height={132} className="h-[132px] w-[132px] object-contain object-bottom" priority />
           </div>
           <div className="min-w-0">
@@ -373,15 +373,15 @@ export function WorkspaceHome() {
                 {overdueTasks.length ? 'Prioridad alta' : 'En control'}
               </span>
             </div>
-            <h2 className="mt-4 max-w-4xl text-2xl font-semibold tracking-[-0.035em] text-[#0F172A] md:text-[1.7rem]">{radarTitle}</h2>
+            <h2 className="mt-4 max-w-4xl text-xl font-semibold tracking-[-0.035em] text-[#0F172A] md:text-[1.7rem]">{radarTitle}</h2>
             <p className="mt-3 max-w-3xl text-[15px] leading-6 text-slate-500">{radarCopy}</p>
           </div>
           <div className="flex flex-wrap items-center gap-3 lg:justify-end">
             <span className="inline-flex h-9 items-center rounded-full bg-emerald-50 px-4 text-sm font-semibold text-emerald-700 ring-1 ring-emerald-100">Score {radarScore}</span>
-            <Link href="/app/tasks" className="inline-flex h-12 items-center justify-center rounded-[14px] bg-[#050B18] px-6 text-sm font-bold text-white shadow-[0_14px_26px_rgba(5,11,24,0.18)] transition hover:bg-slate-800">
+            <Link href="/app/tasks" className="inline-flex h-10 items-center justify-center rounded-[14px] bg-[#050B18] px-5 text-sm font-bold text-white transition hover:bg-slate-800">
               Revisar ahora <ChevronRight className="ml-2 h-4 w-4" />
             </Link>
-            <Link href="#workspace-flow" className="inline-flex h-12 items-center justify-center rounded-[14px] border border-[#E5EAF1] bg-white px-6 text-sm font-bold text-[#0F172A] shadow-[0_8px_18px_rgba(15,23,42,0.04)] transition hover:bg-slate-50">Ver tablero</Link>
+            <Link href="#workspace-flow" className="inline-flex h-10 items-center justify-center rounded-[14px] border border-[#E5EAF1] bg-white px-5 text-sm font-bold text-[#0F172A] transition hover:bg-slate-50">Ver tablero</Link>
           </div>
         </div>
       </section>
@@ -391,7 +391,7 @@ export function WorkspaceHome() {
         <WorkspaceKpiCard label="Favoritas" value={favoriteCount} helper="Tareas" icon={Star} tone="amber" />
         <WorkspaceKpiCard label="Pendientes" value={openTasks.length} helper="Fecha definida" icon={Timer} tone="violet" />
         <WorkspaceKpiCard label="Proyectos activos" value={activeProjects.length} helper="En curso" icon={FolderKanban} tone="sky" />
-        <Card className="flex items-center justify-center gap-3 rounded-[20px] border-[#E5EAF1] bg-white p-4 shadow-[0_10px_30px_rgba(15,23,42,0.04)] ring-0">
+        <Card className="flex items-center justify-center gap-3 rounded-[20px] border-[#E5EAF1] bg-white p-4 ring-0">
           <button type="button" onClick={() => setRefreshTick((value) => value + 1)} className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-[#E5EAF1] bg-white text-slate-600 transition hover:bg-slate-50" aria-label="Actualizar workspace">
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCcw className="h-4 w-4" />}
           </button>
@@ -404,14 +404,14 @@ export function WorkspaceHome() {
         </Card>
       </div>
 
-      <section id="workspace-flow" className="rounded-[24px] border border-[#E5EAF1] bg-white p-4 shadow-[0_16px_50px_rgba(15,23,42,0.055)] md:p-5">
+      <section id="workspace-flow" className="rounded-[24px] border border-[#E5EAF1] bg-white p-4 md:p-5">
         <div className="mb-5 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-3">
             <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-50 text-slate-600 ring-1 ring-[#E5EAF1]">
               <LayoutGrid className="h-5 w-5" />
             </span>
             <div>
-              <h2 className="text-lg font-semibold tracking-[-0.02em] text-[#0F172A]">Mi flujo de trabajo</h2>
+              <h2 className="text-base font-semibold tracking-[-0.02em] text-[#0F172A]">Mi flujo de trabajo</h2>
               <p className="text-sm text-slate-500">Gestiona tus tareas con enfoque. Arrastra y suelta para organizar.</p>
             </div>
           </div>
@@ -423,7 +423,7 @@ export function WorkspaceHome() {
             <button type="button" onClick={cycleFlowGroup} className="inline-flex h-10 items-center gap-2 rounded-[14px] border border-[#E5EAF1] bg-white px-4 text-sm font-semibold text-slate-600 transition hover:bg-slate-50" title="Cambiar agrupamiento">
               Agrupar: {groupLabel} <ChevronDown className="h-4 w-4" />
             </button>
-            <Link href={taskNewRoute()} className="inline-flex h-10 items-center justify-center rounded-[14px] bg-[#16C784] px-5 text-sm font-bold text-white shadow-[0_12px_24px_rgba(22,199,132,0.22)] transition hover:bg-emerald-600"><Plus className="mr-2 h-4 w-4" /> Nueva tarea</Link>
+            <Link href={taskNewRoute()} className="inline-flex h-10 items-center justify-center rounded-[14px] bg-[#16C784] px-5 text-sm font-bold text-white transition hover:bg-emerald-600"><Plus className="mr-2 h-4 w-4" /> Nueva tarea</Link>
           </div>
         </div>
         {flowFiltersOpen ? (
@@ -451,10 +451,10 @@ export function WorkspaceHome() {
         ) : null}
         {error ? <div className="mb-4 rounded-2xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div> : null}
         {!loading && !error && tasks.length === 0 && projects.length === 0 ? (
-          <div className="mb-5 overflow-hidden rounded-[22px] border border-emerald-100 bg-[linear-gradient(135deg,#F0FDF4_0%,#FFFFFF_58%,#F8FAFC_100%)] p-5 shadow-[0_14px_34px_rgba(15,23,42,0.05)]">
+          <div className="mb-5 overflow-hidden rounded-[22px] border border-emerald-100 bg-[linear-gradient(135deg,#F0FDF4_0%,#FFFFFF_58%,#F8FAFC_100%)] p-5">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
               <div className="flex min-w-0 gap-4">
-                <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-700 ring-1 ring-emerald-200">
+                <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-700 ring-1 ring-emerald-200">
                   <Sparkles className="h-5 w-5" />
                 </span>
                 <div className="min-w-0">
@@ -472,12 +472,12 @@ export function WorkspaceHome() {
                   type="button"
                   onClick={loadSafeDemoData}
                   disabled={demoLoading}
-                  className="inline-flex h-11 items-center justify-center rounded-[14px] bg-[#16C784] px-5 text-sm font-bold text-white shadow-[0_12px_24px_rgba(22,199,132,0.22)] transition hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-70"
+                  className="inline-flex h-11 items-center justify-center rounded-[14px] bg-[#16C784] px-5 text-sm font-bold text-white transition hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-70"
                 >
                   {demoLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
                   Cargar ejemplo seguro
                 </button>
-                <Link href={taskNewRoute()} className="inline-flex h-11 items-center justify-center rounded-[14px] border border-[#E5EAF1] bg-white px-5 text-sm font-bold text-[#0F172A] shadow-[0_8px_18px_rgba(15,23,42,0.04)] transition hover:bg-slate-50">
+                <Link href={taskNewRoute()} className="inline-flex h-11 items-center justify-center rounded-[14px] border border-[#E5EAF1] bg-white px-5 text-sm font-bold text-[#0F172A] transition hover:bg-slate-50">
                   Crear primera tarea
                 </Link>
               </div>
@@ -491,10 +491,10 @@ export function WorkspaceHome() {
         <WorkspaceQuickWidget title="Tarea rápida" helper="Crea una tarea en segundos" href={taskNewRoute()} icon={ClipboardList} tone="green" />
         <WorkspaceQuickWidget title="Proyectos" helper="Ver todos los proyectos" href={projectListRoute()} icon={FolderKanban} tone="blue" />
         <WorkspaceQuickWidget title="Calendario" helper="Ver tu agenda" href="/app/tasks" icon={CalendarDays} tone="violet" />
-        <div className="rounded-[20px] border border-amber-200 bg-amber-50/70 p-5 text-amber-600 shadow-[0_12px_30px_rgba(15,23,42,0.045)]">
+        <div className="rounded-[20px] border border-amber-200 bg-amber-50/70 p-5 text-amber-600">
           <div className="flex items-center justify-between gap-3">
             <div className="flex min-w-0 items-center gap-4">
-              <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/80 ring-1 ring-white/80">
+              <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-white/80 ring-1 ring-white/80">
                 <MessageSquareText className="h-6 w-6" />
               </span>
               <div>
