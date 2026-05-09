@@ -212,3 +212,13 @@ export type VisualBoardCollaboratorRow = {
   created_at: string;
   accepted_at: string | null;
 };
+
+export type VisualBoardPresence = {
+  userId: string;
+  name: string;
+  email?: string | null;
+  color: string;
+  cursor: BoardPoint | null;
+  lastSeenAt: string;
+  isSelf?: boolean;
+};

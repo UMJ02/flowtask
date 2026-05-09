@@ -4,6 +4,7 @@ import type { ChangeEvent as ReactChangeEvent, PointerEvent as ReactPointerEvent
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Minus, Plus, RotateCcw } from "lucide-react";
 import { BoardMiniMap } from "@/components/boards/board-minimap";
+import { BoardRealtimeCursors } from "@/components/boards/board-realtime-cursors";
 import { BoardCommentPins } from "@/components/boards/board-comment-pins";
 import { BoardElementView } from "@/components/boards/board-element";
 import { BoardToolbox } from "@/components/boards/board-toolbox";
@@ -15,7 +16,7 @@ import { FloatingFormatToolbar } from "@/components/boards/floating-format-toolb
 import { PropertiesPanel } from "@/components/boards/properties-panel";
 import { createDefaultBoardElement, createDefaultConnector, createFileBoardElement } from "@/lib/boards/board-defaults";
 import { mapBoardActivityRow, mapBoardCollaboratorRow, mapBoardCommentRow, mapBoardRow, mapElementRow, serializeElementForUpsert } from "@/lib/boards/board-serialization";
-import type { BoardElement, BoardPoint, BoardTool, ConnectorElement, VisualBoard, VisualBoardActivity, VisualBoardActivityRow, VisualBoardCollaborator, VisualBoardCollaboratorRow, VisualBoardComment, VisualBoardCommentRow, VisualBoardElementRow, VisualBoardRow } from "@/lib/boards/board-types";
+import type { BoardElement, BoardPoint, BoardTool, ConnectorElement, VisualBoard, VisualBoardActivity, VisualBoardActivityRow, VisualBoardCollaborator, VisualBoardCollaboratorRow, VisualBoardComment, VisualBoardCommentRow, VisualBoardElementRow, VisualBoardPresence, VisualBoardRow } from "@/lib/boards/board-types";
 import { createClient } from "@/lib/supabase/client";
 import { getClientWorkspaceContext } from "@/lib/supabase/workspace-client";
 
@@ -56,8 +57,38 @@ function snapshotsEqual(a: BoardSnapshot, b: BoardSnapshot) {
   return JSON.stringify(a) === JSON.stringify(b);
 }
 
+function getPresenceColor(userId: string) {
+  const colors = ["#16C784", "#3B82F6", "#8B5CF6", "#F59E0B", "#FB7185", "#14B8A6"];
+  const index = userId.split("").reduce((total, char) => total + char.charCodeAt(0), 0) % colors.length;
+  return colors[index];
+}
+
+function getPresenceName(email?: string | null) {
+  const clean = email?.split("@")[0]?.replace(/[._-]+/g, " ").trim();
+  return clean ? clean.slice(0, 18) : "Colaborador";
+}
+
+function flattenPresenceState(state: Record<string, unknown>, currentUserId: string | null): VisualBoardPresence[] {
+  return Object.values(state)
+    .flatMap((items) => Array.isArray(items) ? items : [])
+    .map((item) => item as Partial<VisualBoardPresence>)
+    .filter((item): item is VisualBoardPresence => typeof item.userId === "string")
+    .map((item) => ({
+      ...item,
+      name: item.name ?? getPresenceName(item.email),
+      color: item.color ?? getPresenceColor(item.userId),
+      cursor: item.cursor ?? null,
+      lastSeenAt: item.lastSeenAt ?? new Date().toISOString(),
+      isSelf: item.userId === currentUserId,
+    }));
+}
+
 export function BoardPage({ boardId }: BoardPageProps) {
   const supabase = useMemo(() => createClient(), []);
+  const realtimeChannelRef = useRef<any>(null);
+  const cursorThrottleRef = useRef(0);
+  const dirtyMapRef = useRef<Record<string, BoardElement>>({});
+  const dragStateRef = useRef<DragState | null>(null);
   const canvasRef = useRef<HTMLDivElement | null>(null);
   const imageInputRef = useRef<HTMLInputElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -74,6 +105,8 @@ export function BoardPage({ boardId }: BoardPageProps) {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [activeTool, setActiveTool] = useState<BoardTool>("select");
   const [userId, setUserId] = useState<string | null>(null);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [activePresence, setActivePresence] = useState<VisualBoardPresence[]>([]);
   const [loading, setLoading] = useState(true);
   const [savingState, setSavingState] = useState<"saved" | "saving" | "error">("saved");
   const [dirtyMap, setDirtyMap] = useState<Record<string, BoardElement>>({});
@@ -102,6 +135,7 @@ export function BoardPage({ boardId }: BoardPageProps) {
       return;
     }
     setUserId(context.user.id);
+    setUserEmail(context.user.email ?? null);
 
     const [boardRes, elementsRes, commentsRes, activityRes, collaboratorsRes] = await Promise.all([
       supabase
@@ -154,6 +188,108 @@ export function BoardPage({ boardId }: BoardPageProps) {
   useEffect(() => {
     void loadBoard();
   }, [loadBoard]);
+
+  useEffect(() => {
+    dirtyMapRef.current = dirtyMap;
+  }, [dirtyMap]);
+
+  useEffect(() => {
+    dragStateRef.current = dragState;
+  }, [dragState]);
+
+  useEffect(() => {
+    if (!userId) return;
+    const channel = supabase.channel(`visual-board:${boardId}`, { config: { presence: { key: userId } } });
+    realtimeChannelRef.current = channel;
+
+    channel
+      .on("presence", { event: "sync" }, () => {
+        setActivePresence(flattenPresenceState(channel.presenceState() as Record<string, unknown>, userId));
+      })
+      .on("presence", { event: "leave" }, () => {
+        setActivePresence(flattenPresenceState(channel.presenceState() as Record<string, unknown>, userId));
+      })
+      .on("postgres_changes", { event: "*", schema: "public", table: "visual_board_elements", filter: `board_id=eq.${boardId}` }, (payload: any) => {
+        const row = payload.new as VisualBoardElementRow | null;
+        const oldRow = payload.old as { id?: string } | null;
+        const targetId = row?.id ?? oldRow?.id;
+        if (!targetId) return;
+        if (dirtyMapRef.current[targetId] || dragStateRef.current?.id === targetId) return;
+        if (payload.eventType === "DELETE" || row?.deleted_at) {
+          setElements((current) => current.filter((item) => item.id !== targetId));
+          return;
+        }
+        if (row) {
+          const next = mapElementRow(row);
+          setElements((current) => {
+            const exists = current.some((item) => item.id === next.id);
+            return exists
+              ? current.map((item) => item.id === next.id ? next : item)
+              : [...current, next].sort((a, b) => a.zIndex - b.zIndex);
+          });
+        }
+      })
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "visual_board_comments", filter: `board_id=eq.${boardId}` }, (payload: any) => {
+        const next = mapBoardCommentRow(payload.new as VisualBoardCommentRow);
+        setComments((current) => current.some((item) => item.id === next.id) ? current : [next, ...current].slice(0, 40));
+      })
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "visual_board_comments", filter: `board_id=eq.${boardId}` }, (payload: any) => {
+        const next = mapBoardCommentRow(payload.new as VisualBoardCommentRow);
+        setComments((current) => current.map((item) => item.id === next.id ? next : item));
+      })
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "visual_board_activity", filter: `board_id=eq.${boardId}` }, (payload: any) => {
+        const next = mapBoardActivityRow(payload.new as VisualBoardActivityRow);
+        setActivities((current) => current.some((item) => item.id === next.id) ? current : [next, ...current].slice(0, 30));
+      })
+      .on("postgres_changes", { event: "*", schema: "public", table: "visual_board_collaborators", filter: `board_id=eq.${boardId}` }, (payload: any) => {
+        const row = payload.new as VisualBoardCollaboratorRow | null;
+        const oldRow = payload.old as { id?: string } | null;
+        if (payload.eventType === "DELETE" && oldRow?.id) {
+          setCollaborators((current) => current.filter((item) => item.id !== oldRow.id));
+          return;
+        }
+        if (row) {
+          const next = mapBoardCollaboratorRow(row);
+          setCollaborators((current) => [next, ...current.filter((item) => item.id !== next.id)]);
+        }
+      })
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "visual_boards", filter: `id=eq.${boardId}` }, (payload: any) => {
+        const next = mapBoardRow(payload.new as VisualBoardRow);
+        setBoard((current) => current ? { ...current, visibility: next.visibility, shareToken: next.shareToken, publicCanEdit: next.publicCanEdit, updatedAt: next.updatedAt } : next);
+      })
+      .subscribe(async (status: string) => {
+        if (status === "SUBSCRIBED") {
+          await channel.track({
+            userId,
+            email: userEmail,
+            name: getPresenceName(userEmail),
+            color: getPresenceColor(userId),
+            cursor: null,
+            lastSeenAt: new Date().toISOString(),
+          } satisfies VisualBoardPresence);
+        }
+      });
+
+    return () => {
+      realtimeChannelRef.current = null;
+      void supabase.removeChannel(channel);
+    };
+  }, [boardId, supabase, userEmail, userId]);
+
+  async function publishRealtimeCursor(point: BoardPoint | null) {
+    if (!userId || !realtimeChannelRef.current) return;
+    const now = Date.now();
+    if (point && now - cursorThrottleRef.current < 100) return;
+    cursorThrottleRef.current = now;
+    await realtimeChannelRef.current.track({
+      userId,
+      email: userEmail,
+      name: getPresenceName(userEmail),
+      color: getPresenceColor(userId),
+      cursor: point,
+      lastSeenAt: new Date().toISOString(),
+    } satisfies VisualBoardPresence);
+  }
 
   useEffect(() => {
     if (!board) return;
@@ -541,6 +677,7 @@ export function BoardPage({ boardId }: BoardPageProps) {
   }
 
   function handlePointerMove(event: ReactPointerEvent<HTMLDivElement>) {
+    void publishRealtimeCursor(screenToCanvas(event.clientX, event.clientY));
     if (panState) {
       setViewport((current) => ({ ...current, x: panState.originX + event.clientX - panState.startX, y: panState.originY + event.clientY - panState.startY }));
       return;
@@ -741,6 +878,7 @@ export function BoardPage({ boardId }: BoardPageProps) {
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
             onWheel={handleCanvasWheel}
+            onPointerLeave={() => void publishRealtimeCursor(null)}
           >
             <div style={{ transform: `translate(${viewport.x}px, ${viewport.y}px) scale(${viewport.zoom})`, transformOrigin: "0 0" }} className="absolute inset-0">
               <ConnectorLayer connectors={connectors} selectedIds={selectedIds} pendingPoint={pendingConnector?.point ?? null} onSelect={(id) => setSelectedIds([id])} />
@@ -770,6 +908,7 @@ export function BoardPage({ boardId }: BoardPageProps) {
                   if (comment.elementId) setSelectedIds([comment.elementId]);
                 }}
               />
+              <BoardRealtimeCursors presence={activePresence} />
             </div>
           </div>
           <BoardToolbox activeTool={activeTool} onToolChange={(tool) => { setActiveTool(tool); setPendingConnector(null); }} />
