@@ -1,6 +1,6 @@
 "use client";
 
-import { GitBranch, Lock, Trash2, Unlock } from "lucide-react";
+import { GitBranch, Lock, Plus, Trash2, Unlock } from "lucide-react";
 import type { BoardElement, BoardStyle } from "@/lib/boards/board-types";
 
 const fillSwatches = ["#FFFFFF", "#ECFDF5", "#DBEAFE", "#F5F3FF", "#FEF3C7", "#FFE4E6"];
@@ -10,8 +10,19 @@ function mergeStyle(selected: BoardElement, style: Partial<BoardStyle>): Partial
   return { style: { ...selected.style, ...style } } as Partial<BoardElement>;
 }
 
-export function PropertiesPanel({ selected, onPatch, onDelete }: { selected: BoardElement | null; onPatch: (patch: Partial<BoardElement>) => void; onDelete: () => void }) {
+type Props = {
+  selected: BoardElement | null;
+  onPatch: (patch: Partial<BoardElement>) => void;
+  onDelete: () => void;
+  onAddTableRow: () => void;
+  onAddTableColumn: () => void;
+  onRemoveTableColumn: (columnId: string) => void;
+  onRenameTableColumn: (columnId: string, label: string) => void;
+};
+
+export function PropertiesPanel({ selected, onPatch, onDelete, onAddTableRow, onAddTableColumn, onRemoveTableColumn, onRenameTableColumn }: Props) {
   const connector = selected?.type === "connector" ? selected : null;
+  const table = selected?.type === "table" ? selected : null;
   const isConnector = Boolean(connector);
 
   return (
@@ -19,13 +30,13 @@ export function PropertiesPanel({ selected, onPatch, onDelete }: { selected: Boa
       <div className="flex items-center justify-between gap-3">
         <div>
           <p className="ft-text-label text-slate-500">Propiedades</p>
-          <h2 className="ft-title-card mt-1">{selected ? (isConnector ? "Conector" : "Elemento") : "Pizarra"}</h2>
+          <h2 className="ft-title-card mt-1">{selected ? (isConnector ? "Conector" : table ? "Tabla" : "Elemento") : "Pizarra"}</h2>
         </div>
         {selected ? <button type="button" onClick={onDelete} className="grid h-9 w-9 place-items-center rounded-xl border border-rose-200 text-rose-600 hover:bg-rose-50"><Trash2 className="h-4 w-4" /></button> : null}
       </div>
       {!selected ? (
         <div className="mt-5 rounded-2xl border border-dashed border-slate-200 bg-white/70 p-4 text-sm font-medium text-slate-500">
-          Selecciona un elemento para editar color, línea, texto, bloqueo y organización. Usa Conector para unir ideas del lienzo.
+          Selecciona un elemento para editar color, línea, texto, tablas, bloqueo y organización. Usa Conector para unir ideas del lienzo.
         </div>
       ) : (
         <div className="mt-5 space-y-4">
@@ -79,6 +90,52 @@ export function PropertiesPanel({ selected, onPatch, onDelete }: { selected: Boa
                 Flecha final
                 <input type="checkbox" checked={connector?.style?.arrowEnd !== false} onChange={(event) => onPatch(mergeStyle(selected, { arrowEnd: event.target.checked }))} />
               </label>
+            </>
+          ) : table ? (
+            <>
+              <section className="rounded-2xl border border-violet-100 bg-violet-50/50 p-3">
+                <div className="flex items-center justify-between gap-2">
+                  <div>
+                    <label className="ft-text-label text-violet-700">Tabla visual</label>
+                    <p className="mt-1 text-xs font-semibold text-slate-500">Edita celdas inline en el canvas o administra columnas aquí.</p>
+                  </div>
+                </div>
+                <div className="mt-3 grid grid-cols-2 gap-2">
+                  <button type="button" onClick={onAddTableRow} className="ft-btn-secondary h-9 justify-center gap-2 text-xs"><Plus className="h-3.5 w-3.5" /> Fila</button>
+                  <button type="button" onClick={onAddTableColumn} className="ft-btn-secondary h-9 justify-center gap-2 text-xs"><Plus className="h-3.5 w-3.5" /> Columna</button>
+                </div>
+              </section>
+              <section>
+                <label className="ft-text-label text-slate-500">Columnas</label>
+                <div className="mt-2 space-y-2">
+                  {table.columns.map((column) => (
+                    <div key={column.id} className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white/80 p-2">
+                      <input
+                        value={column.label}
+                        onChange={(event) => onRenameTableColumn(column.id, event.target.value)}
+                        className="min-w-0 flex-1 bg-transparent text-sm font-semibold text-slate-700 outline-none"
+                      />
+                      <button
+                        type="button"
+                        disabled={table.columns.length <= 1}
+                        onClick={() => onRemoveTableColumn(column.id)}
+                        className="grid h-8 w-8 place-items-center rounded-lg text-rose-500 hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-40"
+                        title="Eliminar columna"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </section>
+              <section>
+                <label className="ft-text-label text-slate-500">Estilo de tabla</label>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {strokeSwatches.map((stroke) => (
+                    <button key={stroke} type="button" onClick={() => onPatch(mergeStyle(selected, { stroke }))} className="h-7 w-7 rounded-full border border-slate-200 transition hover:scale-110" style={{ backgroundColor: stroke }} />
+                  ))}
+                </div>
+              </section>
             </>
           ) : (
             <>

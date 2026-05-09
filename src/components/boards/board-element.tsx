@@ -1,6 +1,7 @@
 "use client";
 
 import type { CSSProperties, PointerEvent as ReactPointerEvent } from "react";
+import { Plus, Trash2 } from "lucide-react";
 import type { BoardElement, BoardTool } from "@/lib/boards/board-types";
 
 type BoardElementViewProps = {
@@ -11,6 +12,10 @@ type BoardElementViewProps = {
   onDragStart: (id: string, event: ReactPointerEvent<HTMLDivElement>) => void;
   onUpdateContent: (id: string, content: string) => void;
   onConnectorTarget: (id: string) => void;
+  onUpdateTableCell: (elementId: string, rowId: string, columnId: string, value: string) => void;
+  onAddTableRow: (elementId: string) => void;
+  onAddTableColumn: (elementId: string) => void;
+  onRemoveTableRow: (elementId: string, rowId: string) => void;
 };
 
 function getStyle(element: BoardElement): CSSProperties {
@@ -26,7 +31,19 @@ function getStyle(element: BoardElement): CSSProperties {
   };
 }
 
-export function BoardElementView({ element, selected, activeTool, onSelect, onDragStart, onUpdateContent, onConnectorTarget }: BoardElementViewProps) {
+export function BoardElementView({
+  element,
+  selected,
+  activeTool,
+  onSelect,
+  onDragStart,
+  onUpdateContent,
+  onConnectorTarget,
+  onUpdateTableCell,
+  onAddTableRow,
+  onAddTableColumn,
+  onRemoveTableRow,
+}: BoardElementViewProps) {
   if (element.type === "connector") return null;
 
   const common = "group absolute touch-none select-none transition duration-150";
@@ -48,17 +65,83 @@ export function BoardElementView({ element, selected, activeTool, onSelect, onDr
 
   if (element.type === "table") {
     return (
-      <div style={getStyle(element)} className={`${common} overflow-hidden rounded-[16px] border border-violet-200 bg-white ${selection} ${connectorMode ? "cursor-crosshair hover:border-emerald-300" : ""}`} onPointerDown={handlePointerDown} onClick={handleClick}>
-        <table className="h-full w-full border-collapse text-[12px]">
-          <thead className="bg-violet-50 text-slate-700">
-            <tr>{element.columns.map((column) => <th key={column.id} className="border border-violet-100 px-2 py-2 text-left font-bold">{column.label}</th>)}</tr>
-          </thead>
-          <tbody>
-            {element.rows.map((row) => (
-              <tr key={row.id}>{element.columns.map((column) => <td key={column.id} className="border border-slate-100 px-2 py-2 text-slate-700">{row.cells[column.id] ?? ""}</td>)}</tr>
-            ))}
-          </tbody>
-        </table>
+      <div
+        style={getStyle(element)}
+        className={`${common} overflow-hidden rounded-[16px] border border-violet-200 bg-white ${selection} ${connectorMode ? "cursor-crosshair hover:border-emerald-300" : ""}`}
+        onPointerDown={handlePointerDown}
+        onClick={handleClick}
+      >
+        <div className="flex h-full flex-col">
+          <div className="flex items-center justify-between border-b border-violet-100 bg-violet-50/90 px-2 py-1.5 text-[11px] font-bold uppercase tracking-[0.12em] text-violet-700">
+            <span>Tabla editable</span>
+            {selected && !connectorMode ? (
+              <div className="flex items-center gap-1 normal-case tracking-normal">
+                <button
+                  type="button"
+                  onPointerDown={(event) => event.stopPropagation()}
+                  onClick={(event) => { event.stopPropagation(); onAddTableRow(element.id); }}
+                  className="inline-flex h-6 items-center gap-1 rounded-lg bg-white px-2 text-[11px] font-bold text-slate-600 hover:bg-violet-100"
+                >
+                  <Plus className="h-3 w-3" /> Fila
+                </button>
+                <button
+                  type="button"
+                  onPointerDown={(event) => event.stopPropagation()}
+                  onClick={(event) => { event.stopPropagation(); onAddTableColumn(element.id); }}
+                  className="inline-flex h-6 items-center gap-1 rounded-lg bg-white px-2 text-[11px] font-bold text-slate-600 hover:bg-violet-100"
+                >
+                  <Plus className="h-3 w-3" /> Col.
+                </button>
+              </div>
+            ) : null}
+          </div>
+          <div className="min-h-0 flex-1 overflow-auto">
+            <table className="h-full min-w-full border-collapse text-[12px]">
+              <thead className="bg-violet-50 text-slate-700">
+                <tr>
+                  {element.columns.map((column) => (
+                    <th key={column.id} style={{ width: column.width }} className="border border-violet-100 px-2 py-2 text-left font-bold">
+                      {column.label}
+                    </th>
+                  ))}
+                  {selected && !connectorMode ? <th className="w-8 border border-violet-100 px-1 py-2" aria-label="Acciones" /> : null}
+                </tr>
+              </thead>
+              <tbody>
+                {element.rows.map((row) => (
+                  <tr key={row.id}>
+                    {element.columns.map((column) => (
+                      <td key={column.id} className="border border-slate-100 p-0 text-slate-700">
+                        <textarea
+                          value={row.cells[column.id] ?? ""}
+                          readOnly={connectorMode || element.locked}
+                          onPointerDown={(event) => event.stopPropagation()}
+                          onClick={(event) => event.stopPropagation()}
+                          onChange={(event) => onUpdateTableCell(element.id, row.id, column.id, event.target.value)}
+                          className="block min-h-[34px] w-full resize-none border-none bg-transparent px-2 py-2 text-[12px] leading-4 outline-none focus:bg-emerald-50/50"
+                          placeholder="Escribe..."
+                        />
+                      </td>
+                    ))}
+                    {selected && !connectorMode ? (
+                      <td className="border border-slate-100 p-1 text-center">
+                        <button
+                          type="button"
+                          onPointerDown={(event) => event.stopPropagation()}
+                          onClick={(event) => { event.stopPropagation(); onRemoveTableRow(element.id, row.id); }}
+                          className="grid h-7 w-7 place-items-center rounded-lg text-rose-500 hover:bg-rose-50"
+                          title="Eliminar fila"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </td>
+                    ) : null}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     );
   }

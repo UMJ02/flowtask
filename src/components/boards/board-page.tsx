@@ -282,6 +282,67 @@ export function BoardPage({ boardId }: BoardPageProps) {
     }));
   }
 
+  function patchTable(id: string, updater: (table: Extract<BoardElement, { type: "table" }>) => Extract<BoardElement, { type: "table" }>) {
+    setElements((current) => current.map((item) => {
+      if (item.id !== id || item.type !== "table") return item;
+      const next = { ...updater(item), updatedAt: new Date().toISOString() } as BoardElement;
+      markDirty(next);
+      return next;
+    }));
+  }
+
+  function updateTableCell(elementId: string, rowId: string, columnId: string, value: string) {
+    patchTable(elementId, (table) => ({
+      ...table,
+      rows: table.rows.map((row) => row.id === rowId ? { ...row, cells: { ...row.cells, [columnId]: value } } : row),
+    }));
+  }
+
+  function updateTableColumnLabel(elementId: string, columnId: string, label: string) {
+    patchTable(elementId, (table) => ({
+      ...table,
+      columns: table.columns.map((column) => column.id === columnId ? { ...column, label } : column),
+    }));
+  }
+
+  function addTableRow(elementId: string) {
+    patchTable(elementId, (table) => ({
+      ...table,
+      rows: [...table.rows, { id: crypto.randomUUID(), cells: Object.fromEntries(table.columns.map((column) => [column.id, ""])) }],
+    }));
+  }
+
+  function addTableColumn(elementId: string) {
+    const columnId = `col_${crypto.randomUUID().slice(0, 8)}`;
+    patchTable(elementId, (table) => ({
+      ...table,
+      width: Math.max(table.width, table.width + 120),
+      columns: [...table.columns, { id: columnId, label: "Nueva columna", width: 140 }],
+      rows: table.rows.map((row) => ({ ...row, cells: { ...row.cells, [columnId]: "" } })),
+    }));
+  }
+
+  function removeTableRow(elementId: string, rowId: string) {
+    patchTable(elementId, (table) => ({
+      ...table,
+      rows: table.rows.length <= 1 ? table.rows : table.rows.filter((row) => row.id !== rowId),
+    }));
+  }
+
+  function removeTableColumn(elementId: string, columnId: string) {
+    patchTable(elementId, (table) => {
+      if (table.columns.length <= 1) return table;
+      return {
+        ...table,
+        columns: table.columns.filter((column) => column.id !== columnId),
+        rows: table.rows.map((row) => {
+          const { [columnId]: _removed, ...cells } = row.cells;
+          return { ...row, cells };
+        }),
+      };
+    });
+  }
+
   function deleteSelected() {
     if (!selectedIds.length) return;
     setElements((current) => current.filter((item) => !selectedIds.includes(item.id)));
@@ -343,6 +404,10 @@ export function BoardPage({ boardId }: BoardPageProps) {
                   onDragStart={handleDragStart}
                   onUpdateContent={updateContent}
                   onConnectorTarget={handleConnectorTarget}
+                  onUpdateTableCell={updateTableCell}
+                  onAddTableRow={addTableRow}
+                  onAddTableColumn={addTableColumn}
+                  onRemoveTableRow={removeTableRow}
                 />
               ))}
             </div>
@@ -358,8 +423,18 @@ export function BoardPage({ boardId }: BoardPageProps) {
             onDuplicate={duplicateSelected}
             onDelete={deleteSelected}
             onChangeColor={(color) => selected ? patchElement(selected.id, { style: selected.type === "connector" ? { ...selected.style, stroke: color } : { ...selected.style, fill: color } } as Partial<BoardElement>) : undefined}
+            onAddTableRow={() => selected?.type === "table" ? addTableRow(selected.id) : undefined}
+            onAddTableColumn={() => selected?.type === "table" ? addTableColumn(selected.id) : undefined}
           />
-          <PropertiesPanel selected={selected} onPatch={(patch) => selected ? patchElement(selected.id, patch) : undefined} onDelete={deleteSelected} />
+          <PropertiesPanel
+            selected={selected}
+            onPatch={(patch) => selected ? patchElement(selected.id, patch) : undefined}
+            onDelete={deleteSelected}
+            onAddTableRow={() => selected?.type === "table" ? addTableRow(selected.id) : undefined}
+            onAddTableColumn={() => selected?.type === "table" ? addTableColumn(selected.id) : undefined}
+            onRemoveTableColumn={(columnId) => selected?.type === "table" ? removeTableColumn(selected.id, columnId) : undefined}
+            onRenameTableColumn={(columnId, label) => selected?.type === "table" ? updateTableColumnLabel(selected.id, columnId, label) : undefined}
+          />
           <div className="ft-popover-surface absolute bottom-5 left-1/2 z-40 flex -translate-x-1/2 items-center gap-2 px-3 py-2">
             <button className="ft-pressable grid h-9 w-9 place-items-center rounded-xl hover:bg-slate-100" onClick={() => setViewport((current) => ({ ...current, zoom: Math.max(0.5, current.zoom - 0.1) }))}><Minus className="h-4 w-4" /></button>
             <span className="min-w-[54px] text-center text-xs font-bold text-slate-600">{Math.round(viewport.zoom * 100)}%</span>

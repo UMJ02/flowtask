@@ -89,3 +89,7 @@ Adds task status Producción, compact task attachment list mode, and inline depa
 
 ## v58.23.1 Board Connectors + Properties Panel
 Adds visual connectors, connector layer and richer properties panel for the Boards MVP.
+
+## v58.23.2 Board Tables + Inline Editing
+
+Extiende el módulo Pizarras con tablas visuales editables dentro del canvas. Las celdas se editan inline, las filas/columnas se pueden agregar desde la toolbar y el panel de propiedades permite renombrar o eliminar columnas. Usa el modelo flexible existente `visual_board_elements.data` y no agrega migraciones Supabase.
