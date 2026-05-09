@@ -1,8 +1,8 @@
-export const designSystemVersion = "58.21.8-spacing-governance-microinteraction-polish";
+export const designSystemVersion = "58.21.9-full-style-enforcement-component-migration";
 
 export const ds = {
   semantic: true,
-  density: "spacing-governance-compact",
+  density: "style-enforcement-compact",
   spacing: {
     none: "0",
     xxs: "2px",
@@ -130,8 +130,16 @@ export const controls = {
 export const flowtaskDesignSystem = { ds, typography, surfaces, controls } as const;
 
 export const spacingGovernance = {
-  policy: "compact page rhythm with 2px, 4px, 8px, 12px, 16px and 24px as governed spacing steps",
+  policy: "strict style enforcement with governed spacing and named surface variants",
   largeSpacePolicy: "32px+ spacing is reserved for outer layout, not repeated cards",
   interactionPolicy: "motion supports orientation, reveal, feedback and expand states without decorative movement",
-  shadowPolicy: "default surfaces are flat; raised, floating and overlay surfaces are named variants only",
+  shadowPolicy: "manual shadows are disallowed outside named raised, floating and overlay variants",
+} as const;
+
+
+export const styleEnforcement = {
+  policy: "no manual heavy shadows, oversized radii or loose spacing in app components",
+  allowedSurfaces: ["ft-section-card", "ft-main-card", "ft-mini-card", "ft-raised-card", "ft-floating-card", "ft-overlay-card"],
+  forbiddenPatterns: ["heavy-bespoke-shadows", "oversized-radius", "loose-8-step-spacing"],
+  migrationPolicy: "secondary app components must use named system surfaces instead of bespoke visual classes",
 } as const;

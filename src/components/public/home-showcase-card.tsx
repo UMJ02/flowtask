@@ -20,7 +20,7 @@ export function HomeShowcaseCard() {
   }, []);
 
   return (
-    <div className="rounded-[26px] border border-white/35 bg-white/14 p-3 backdrop-blur-sm lg:bg-white/8">
+    <div className="rounded-[18px] border border-white/35 bg-white/14 p-3 backdrop-blur-sm lg:bg-white/8">
       <div className="space-y-3">
         {ITEMS.map((item, index) => {
           const active = index === activeIndex;

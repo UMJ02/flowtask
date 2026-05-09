@@ -253,7 +253,7 @@ export function ProfileSettingsForm({
   return (
     <form className="space-y-4" onSubmit={handleSubmit}>
       <div className="grid gap-4 xl:grid-cols-[360px_minmax(0,1fr)]">
-        <div className="rounded-[30px] border border-slate-200 bg-slate-50 p-5">
+        <div className="rounded-[18px] border border-slate-200 bg-slate-50 p-5">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Foto de perfil</p>
 
           <div className="mt-6 flex justify-center">
@@ -320,7 +320,7 @@ export function ProfileSettingsForm({
         </div>
 
         <div className="space-y-4">
-          <div className="rounded-[30px] border border-slate-200 bg-slate-50 p-5">
+          <div className="rounded-[18px] border border-slate-200 bg-slate-50 p-5">
             <div className="flex items-center gap-2 text-slate-900">
               <UserRound className="h-5 w-5" />
               <h3 className="text-xl font-semibold">Datos de usuario</h3>
@@ -348,7 +348,7 @@ export function ProfileSettingsForm({
             </div>
           </div>
 
-          <div className="rounded-[30px] border border-slate-200 bg-slate-50 p-5">
+          <div className="rounded-[18px] border border-slate-200 bg-slate-50 p-5">
             <div className="flex items-center gap-2 text-slate-900">
               <LockKeyhole className="h-5 w-5" />
               <h3 className="text-xl font-semibold">Cambio de contraseña</h3>

@@ -55,7 +55,7 @@ function MiniMetricCards() {
 function HeroGlassCard() {
   return (
     <section className="relative w-full max-w-[520px] rounded-[24px] border border-white/20 bg-[#050B18]/46 p-5 shadow-none backdrop-blur-[18px] md:p-6">
-      <div className="pointer-events-none absolute inset-0 rounded-[30px] bg-[radial-gradient(circle_at_30%_0%,rgba(255,255,255,0.16),transparent_42%),linear-gradient(135deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02))]" />
+      <div className="pointer-events-none absolute inset-0 rounded-[22px] bg-[radial-gradient(circle_at_30%_0%,rgba(255,255,255,0.16),transparent_42%),linear-gradient(135deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02))]" />
       <div className="relative z-10">
         <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/[0.055] px-3.5 py-2 text-xs font-bold text-white/80 shadow-inner shadow-white/5">
           <span className="h-3 w-3 rounded-full bg-[#16C784] shadow-[0_0_20px_rgba(22,199,132,0.7)]" />

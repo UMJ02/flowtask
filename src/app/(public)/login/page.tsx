@@ -17,7 +17,7 @@ export default async function LoginPage({
       </div>
 
       <div className="container-page relative flex min-h-screen items-center justify-center py-5">
-        <div className="w-full max-w-[510px] rounded-[24px] border border-white/80 bg-white/90 p-4 shadow-[0_24px_64px_rgba(15,23,42,0.10)] backdrop-blur-xl md:p-5">
+        <div className="w-full max-w-[510px] rounded-[24px] border border-white/80 bg-white/90 p-4 shadow-[var(--ft-shadow-floating)] backdrop-blur-xl md:p-5">
           <AuthBrand />
           <div className="mb-5 text-center">
             <h1 className="text-[1.8rem] font-bold text-slate-900 md:text-[2.05rem]">Iniciar sesión</h1>

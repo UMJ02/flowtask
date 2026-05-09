@@ -76,7 +76,7 @@ export function RiskRadar({ summary, compact = false }: { summary: RiskRadarSumm
               <h2 className="mt-2 text-[28px] font-bold">Una vista directa del riesgo que sí puede detener la operación</h2>
               <p className="mt-2 text-sm text-rose-100/90">Combina vencimientos, espera, presión por cliente y carga por departamento para decidir dónde intervenir primero.</p>
             </div>
-            <div className="rounded-[26px] bg-white/10 px-4 py-3 ring-1 ring-white/10">
+            <div className="rounded-[18px] bg-white/10 px-4 py-3 ring-1 ring-white/10">
               <p className="text-xs uppercase tracking-[0.16em] text-rose-100/80">Riesgo global</p>
               <p className="mt-2 text-[26px] font-semibold">{summary.kpis.riskScore}%</p>
             </div>

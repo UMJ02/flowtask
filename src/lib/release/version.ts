@@ -1,3 +1,3 @@
-export const APP_VERSION = "58.21.8-spacing-governance-microinteraction-polish";
-export const APP_RELEASE_NAME = "v58.21.8 Spacing Governance + Microinteraction Polish";
+export const APP_VERSION = "58.21.9-full-style-enforcement-component-migration";
+export const APP_RELEASE_NAME = "v58.21.9 Full Style Enforcement + Component Migration";
 export const APP_RELEASE_STAGE = "production-candidate";

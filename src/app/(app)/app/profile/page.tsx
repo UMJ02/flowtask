@@ -30,7 +30,7 @@ export default async function ProfilePage() {
             {heroItems.map((item) => {
               const Icon = item.icon;
               return (
-                <div key={item.label} className="min-w-0 rounded-[26px] bg-white/10 px-5 py-4 ring-1 ring-white/10 backdrop-blur-sm">
+                <div key={item.label} className="min-w-0 rounded-[18px] bg-white/10 px-5 py-4 ring-1 ring-white/10 backdrop-blur-sm">
                   <div className="flex items-center gap-2 text-emerald-300">
                     <Icon className="h-4 w-4" />
                     <p className="text-xs uppercase tracking-[0.16em]">{item.label}</p>

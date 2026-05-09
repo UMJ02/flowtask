@@ -20,7 +20,7 @@ export function QuickActions() {
         {actions.map((action) => {
           const Icon = action.icon;
           return (
-            <Link key={action.label} className="rounded-[26px] border border-slate-200 p-4 transition hover:border-emerald-200 hover:bg-emerald-50" href={action.href}>
+            <Link key={action.label} className="rounded-[18px] border border-slate-200 p-4 transition hover:border-emerald-200 hover:bg-emerald-50" href={action.href}>
               <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-500 text-slate-950">
                 <Icon className="h-5 w-5" />
               </span>

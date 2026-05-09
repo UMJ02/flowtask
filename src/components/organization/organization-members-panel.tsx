@@ -116,7 +116,7 @@ export function OrganizationMembersPanel({
   const nearCapacity = seatsIncluded !== null && seatsUsed !== null ? seatsUsed + pendingInvites >= seatsIncluded : false;
 
   return (
-    <Card className="rounded-[26px] p-4 md:p-5">
+    <Card className="rounded-[18px] p-4 md:p-5">
       <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">Equipo y capacidad</p>

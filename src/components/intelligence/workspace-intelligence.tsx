@@ -74,11 +74,11 @@ export function WorkspaceIntelligence({ summary, compact = false }: { summary: W
               <p className="mt-2 text-sm text-cyan-100/90">Ya no revisas módulos por separado. Esta vista resume señales, riesgo, preparación y ritmo para que ejecutes con más criterio.</p>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
-              <div className="rounded-[26px] bg-white/10 px-4 py-3 ring-1 ring-white/10">
+              <div className="rounded-[18px] bg-white/10 px-4 py-3 ring-1 ring-white/10">
                 <p className="text-xs uppercase tracking-[0.16em] text-cyan-100/80">Señales activas</p>
                 <p className="mt-2 text-[28px] font-bold">{summary.kpis.activeSignals}</p>
               </div>
-              <div className="rounded-[26px] bg-white/10 px-4 py-3 ring-1 ring-white/10">
+              <div className="rounded-[18px] bg-white/10 px-4 py-3 ring-1 ring-white/10">
                 <p className="text-xs uppercase tracking-[0.16em] text-cyan-100/80">Carga vencida</p>
                 <p className="mt-2 text-[28px] font-bold">{summary.kpis.overdueLoad}</p>
               </div>

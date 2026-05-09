@@ -140,7 +140,7 @@ export function UserMenu({
         </button>
 
         {open ? (
-          <div className="absolute right-0 top-[calc(100%+10px)] z-40 w-72 rounded-[24px] border border-slate-200 bg-white p-3 shadow-[0_24px_50px_rgba(15,23,42,0.16)]">
+          <div className="absolute right-0 top-[calc(100%+10px)] z-40 w-72 rounded-[24px] border border-slate-200 bg-white p-3 shadow-[var(--ft-shadow-floating)]">
             <div className="rounded-2xl bg-slate-50 px-4 py-3">
               <p className="text-sm font-semibold text-slate-900">{displayName}</p>
               <p className="mt-1 break-all text-xs text-slate-500">{liveEmail}</p>

@@ -285,7 +285,7 @@ export function NotificationsLivePanel({
       {message ? <p className="text-sm font-medium text-emerald-700">{message}</p> : null}
       {error ? <p className="text-sm font-medium text-rose-700">{error}</p> : null}
 
-      <div className="min-h-[360px] rounded-[26px] border border-slate-200 bg-slate-50 p-4 md:p-5">
+      <div className="min-h-[360px] rounded-[18px] border border-slate-200 bg-slate-50 p-4 md:p-5">
         <div className="space-y-4">
           {(["today", "yesterday", "earlier"] as GroupKey[]).map((groupKey) => {
             const items = groupedNotifications[groupKey];

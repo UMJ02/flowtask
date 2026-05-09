@@ -48,7 +48,7 @@ export function WorkspaceFloatingActions() {
           open ? 'translate-x-0 opacity-100' : 'translate-x-10 opacity-0'
         )}
       >
-        <div className="pointer-events-auto rounded-[24px] border border-emerald-200 bg-white/[0.98] shadow-[0_24px_54px_rgba(15,23,42,0.14)] backdrop-blur">
+        <div className="pointer-events-auto rounded-[24px] border border-emerald-200 bg-white/[0.98] shadow-[var(--ft-shadow-floating)] backdrop-blur">
           <div className="border-b border-slate-100 px-5 py-4">
             <div className="flex items-start justify-between gap-3">
               <div>

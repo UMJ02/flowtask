@@ -116,7 +116,7 @@ export function FocusDrawer({
       >
         <aside
           className={cn(
-            'overflow-hidden rounded-[26px] border border-slate-200 bg-white shadow-[0_28px_60px_rgba(15,23,42,0.18)] transition-transform duration-300',
+            'overflow-hidden rounded-[18px] border border-slate-200 bg-white shadow-[var(--ft-shadow-floating)] transition-transform duration-300',
             open ? 'translate-x-0 opacity-100' : 'translate-x-6 opacity-0'
           )}
         >

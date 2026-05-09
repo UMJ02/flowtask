@@ -64,12 +64,12 @@ export function WorkspaceOperatingSystem({
             <p className="mt-2 text-sm text-fuchsia-100/90">Este frente amarra la base del workspace, el ritmo de la operación y la presión de riesgo para ayudarte a decidir mejor cada semana.</p>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
-            <div className="rounded-[26px] bg-white/10 px-4 py-3 ring-1 ring-white/10">
+            <div className="rounded-[18px] bg-white/10 px-4 py-3 ring-1 ring-white/10">
               <p className="text-xs uppercase tracking-[0.16em] text-fuchsia-100/80">Organización</p>
               <p className="mt-2 text-base font-bold">{summary.foundations.organizationName}</p>
               <p className="mt-1 text-sm text-fuchsia-100/80">Rol base: {summary.foundations.role}</p>
             </div>
-            <div className="rounded-[26px] bg-white/10 px-4 py-3 ring-1 ring-white/10">
+            <div className="rounded-[18px] bg-white/10 px-4 py-3 ring-1 ring-white/10">
               <p className="text-xs uppercase tracking-[0.16em] text-fuchsia-100/80">Prioridades activas</p>
               <p className="mt-2 text-[28px] font-bold">{summary.kpis.priorities}</p>
               <p className="mt-1 text-sm text-fuchsia-100/80">Señales listas para mover.</p>

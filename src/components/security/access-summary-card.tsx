@@ -87,7 +87,7 @@ export function AccessSummaryCard({
   const statusAccent = allEnabled || hasSomeEnabled ? "text-emerald-300" : "text-red-300";
 
   return (
-    <section className="overflow-hidden rounded-[26px] border border-slate-200/90 bg-white">
+    <section className="overflow-hidden rounded-[18px] border border-slate-200/90 bg-white">
       <div className="relative overflow-hidden bg-[radial-gradient(circle_at_top,_rgba(37,99,235,0.22),_transparent_35%),linear-gradient(90deg,#020617_0%,#071127_42%,#020617_100%)] px-4 py-4 text-white lg:px-5 lg:py-5">
         <div className="absolute inset-y-0 right-0 hidden w-1/3 bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.08),_transparent_60%)] lg:block" />
         <div className="relative flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">

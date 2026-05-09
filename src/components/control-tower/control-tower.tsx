@@ -73,11 +73,11 @@ export function ControlTower({ summary, compact = false }: { summary: ControlTow
               <p className="mt-2 text-sm text-cyan-100/90">Te junta foco inmediato, clientes con más presión y una lectura operativa antes de entrar a tareas, proyectos o reportes.</p>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
-              <div className="rounded-[26px] bg-white/10 px-4 py-3 ring-1 ring-white/10">
+              <div className="rounded-[18px] bg-white/10 px-4 py-3 ring-1 ring-white/10">
                 <p className="text-xs uppercase tracking-[0.16em] text-cyan-100/80">Clientes activos</p>
                 <p className="mt-2 text-[28px] font-bold">{summary.kpis.activeClients}</p>
               </div>
-              <div className="rounded-[26px] bg-white/10 px-4 py-3 ring-1 ring-white/10">
+              <div className="rounded-[18px] bg-white/10 px-4 py-3 ring-1 ring-white/10">
                 <p className="text-xs uppercase tracking-[0.16em] text-cyan-100/80">Proyectos en riesgo</p>
                 <p className="mt-2 text-[28px] font-bold">{summary.kpis.atRiskProjects}</p>
               </div>

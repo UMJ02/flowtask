@@ -83,7 +83,7 @@ export function SettingsAccountOverview({
   ] as const;
 
   return (
-    <Card className="overflow-hidden bg-[linear-gradient(135deg,#0f172a_0%,#111827_58%,#1e293b_100%)] text-white shadow-[0_28px_70px_rgba(15,23,42,0.24)]">
+    <Card className="overflow-hidden bg-[linear-gradient(135deg,#0f172a_0%,#111827_58%,#1e293b_100%)] text-white shadow-[var(--ft-shadow-floating)]">
       <div className="flex flex-col gap-5">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">Settings hub</p>

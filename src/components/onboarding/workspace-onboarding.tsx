@@ -73,17 +73,17 @@ export function WorkspaceOnboarding({ summary, compact = false }: { summary: Wor
             </p>
           </div>
           <div className="grid gap-3 sm:grid-cols-3">
-            <div className="rounded-[26px] bg-white/10 px-4 py-3 ring-1 ring-white/10">
+            <div className="rounded-[18px] bg-white/10 px-4 py-3 ring-1 ring-white/10">
               <p className="text-xs uppercase tracking-[0.16em] text-slate-300">Readiness</p>
               <p className="mt-2 text-[28px] font-bold">{summary.score}%</p>
               <p className="mt-1 text-sm text-slate-300">Nivel de cierre del workspace.</p>
             </div>
-            <div className="rounded-[26px] bg-white/10 px-4 py-3 ring-1 ring-white/10">
+            <div className="rounded-[18px] bg-white/10 px-4 py-3 ring-1 ring-white/10">
               <p className="text-xs uppercase tracking-[0.16em] text-slate-300">Modo</p>
               <p className="mt-2 text-base font-bold">{summary.workspaceMode === "organization" ? summary.organizationName : "Personal"}</p>
               <p className="mt-1 text-sm text-slate-300">Rol actual: {summary.role}</p>
             </div>
-            <div className="rounded-[26px] bg-white/10 px-4 py-3 ring-1 ring-white/10">
+            <div className="rounded-[18px] bg-white/10 px-4 py-3 ring-1 ring-white/10">
               <p className="text-xs uppercase tracking-[0.16em] text-slate-300">Bloques cerrados</p>
               <p className="mt-2 text-[28px] font-bold">{summary.completed}/{summary.total}</p>
               <p className="mt-1 text-sm text-slate-300">Pasos completados hasta ahora.</p>
@@ -105,7 +105,7 @@ export function WorkspaceOnboarding({ summary, compact = false }: { summary: Wor
           </div>
           <div className="mt-5 space-y-3">
             {summary.steps.map((step) => (
-              <div key={step.id} className="rounded-[26px] border border-slate-200 bg-white px-4 py-4">
+              <div key={step.id} className="rounded-[18px] border border-slate-200 bg-white px-4 py-4">
                 <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
                   <div className="flex items-start gap-3">
                     <span className={`mt-0.5 inline-flex h-8 w-8 items-center justify-center rounded-full ${step.done ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>
