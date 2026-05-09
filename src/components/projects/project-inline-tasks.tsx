@@ -231,7 +231,7 @@ export function ProjectInlineTasks({ project, initialTasks, members, canManage =
         <div>
           <p className="text-xs font-black uppercase tracking-[0.18em] text-[#16A36C]">Tareas internas</p>
           <h2 className="mt-1 text-xl font-black text-[#0F172A]">Tareas del proyecto</h2>
-          <p className="mt-1 max-w-2xl text-sm font-medium text-[#64748B]">Viven dentro de este proyecto, no aparecen en Tareas simples. Completarlas construye el avance real del proyecto.</p>
+          <p className="mt-1 max-w-2xl text-sm font-medium text-[#64748B]">Estas tareas viven dentro del proyecto y ayudan a medir su avance real.</p>
         </div>
         <div className="min-w-[180px]">
           <div className="flex items-center justify-between text-sm font-black text-[#0F172A]"><span>Avance</span><span>{progress}%</span></div>
@@ -240,8 +240,8 @@ export function ProjectInlineTasks({ project, initialTasks, members, canManage =
         </div>
       </div>
 
-      <div className="mb-5 grid gap-3 rounded-[22px] border border-[#E7EDF5] bg-[#FBFCFE] p-3 lg:grid-cols-[minmax(0,1fr)_160px_150px_190px_auto] lg:items-center">
-        <input value={draft.title} onChange={(e) => setDraft((current) => ({ ...current, title: e.target.value }))} disabled={!canManage} className="h-12 rounded-[16px] border border-[#E7EDF5] bg-white px-4 text-sm font-bold text-[#0F172A] outline-none focus:border-[#16C784] focus:ring-4 focus:ring-[#16C784]/10" placeholder="Nueva tarea interna..." />
+      <div className="mb-5 grid gap-3 rounded-[22px] border border-[#E7EDF5] bg-[#FBFCFE] p-3 md:grid-cols-2 xl:grid-cols-[minmax(220px,1fr)_170px_150px_minmax(190px,240px)_130px] xl:items-center">
+        <input value={draft.title} onChange={(e) => setDraft((current) => ({ ...current, title: e.target.value }))} disabled={!canManage} className="h-12 rounded-[16px] border border-[#E7EDF5] bg-white px-4 text-sm font-bold text-[#0F172A] outline-none focus:border-[#16C784] focus:ring-4 focus:ring-[#16C784]/10" placeholder="Nueva tarea del proyecto..." />
         <input type="date" value={draft.dueDate} onChange={(e) => setDraft((current) => ({ ...current, dueDate: e.target.value }))} disabled={!canManage} className="h-12 rounded-[16px] border border-[#E7EDF5] bg-white px-3 text-sm font-bold text-[#0F172A] outline-none" />
         <select value={draft.priority} onChange={(e) => setDraft((current) => ({ ...current, priority: e.target.value }))} disabled={!canManage} className="h-12 rounded-[16px] border border-[#E7EDF5] bg-white px-3 text-sm font-bold text-[#0F172A] outline-none">
           <option value="media">Media</option><option value="alta">Alta</option><option value="baja">Baja</option>
@@ -250,7 +250,7 @@ export function ProjectInlineTasks({ project, initialTasks, members, canManage =
           <option value="">Sin responsable</option>
           {members.map((member) => <option key={member.user_id} value={member.user_id}>{memberName(member)}</option>)}
         </select>
-        <button type="button" onClick={createProjectTask} disabled={!canManage || !draft.title.trim() || busyId === "new"} className="inline-flex h-12 items-center justify-center gap-2 rounded-[16px] bg-[#16C784] px-5 text-sm font-black text-white shadow-[0_12px_24px_rgba(22,199,132,0.22)] disabled:opacity-50"><Plus className="h-4 w-4" />Agregar</button>
+        <button type="button" onClick={createProjectTask} disabled={!canManage || !draft.title.trim() || busyId === "new"} className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-[16px] bg-[#16C784] px-5 text-sm font-black text-white shadow-[0_12px_24px_rgba(22,199,132,0.22)] disabled:opacity-50"><Plus className="h-4 w-4" />Agregar</button>
       </div>
 
       <div className="divide-y divide-[#EEF2F7] overflow-hidden rounded-[22px] border border-[#E7EDF5] bg-white">
@@ -262,7 +262,7 @@ export function ProjectInlineTasks({ project, initialTasks, members, canManage =
           return (
             <div key={task.id} className="p-4">
               {isEditing ? (
-                <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_140px_140px_180px_auto] lg:items-center">
+                <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-[minmax(220px,1fr)_150px_140px_minmax(180px,230px)_auto] xl:items-center">
                   <input value={editDraft.title} onChange={(e) => setEditDraft((current) => ({ ...current, title: e.target.value }))} className="h-11 rounded-[14px] border border-[#E7EDF5] px-3 text-sm font-bold outline-none" />
                   <input type="date" value={editDraft.dueDate} onChange={(e) => setEditDraft((current) => ({ ...current, dueDate: e.target.value }))} className="h-11 rounded-[14px] border border-[#E7EDF5] px-3 text-sm font-bold outline-none" />
                   <select value={editDraft.status} onChange={(e) => setEditDraft((current) => ({ ...current, status: e.target.value }))} className="h-11 rounded-[14px] border border-[#E7EDF5] px-3 text-sm font-bold outline-none"><option value="en_proceso">En proceso</option><option value="en_espera">En espera</option><option value="concluido">Completada</option></select>
@@ -273,7 +273,7 @@ export function ProjectInlineTasks({ project, initialTasks, members, canManage =
                   </div>
                 </div>
               ) : (
-                <div className="grid gap-3 text-sm md:grid-cols-[32px_minmax(0,1.5fr)_120px_140px_110px_100px] md:items-center">
+                <div className="grid gap-3 text-sm md:grid-cols-[32px_minmax(0,1fr)_130px_150px] xl:grid-cols-[32px_minmax(220px,1.5fr)_120px_150px_130px_110px] md:items-center">
                   <button type="button" onClick={() => toggleDone(task)} disabled={!canManage || busyId === task.id} className={`grid h-6 w-6 place-items-center rounded-md border ${task.status === "concluido" ? "border-[#16C784] bg-[#16C784]" : "border-slate-300 bg-white"}`}>{task.status === "concluido" ? <CheckCircle2 className="h-4 w-4 text-white" /> : null}</button>
                   <div className="min-w-0">
                     <p className="truncate font-black text-[#0F172A]">{task.title}</p>
@@ -295,7 +295,7 @@ export function ProjectInlineTasks({ project, initialTasks, members, canManage =
           <div className="px-6 py-10 text-center">
             <UserRound className="mx-auto h-10 w-10 text-[#94A3B8]" />
             <p className="mt-3 text-base font-black text-[#0F172A]">Todavía no hay tareas internas.</p>
-            <p className="mt-1 text-sm font-medium text-[#64748B]">Creá la primera tarea del proyecto para empezar a construir el 100%.</p>
+            <p className="mt-1 text-sm font-medium text-[#64748B]">Agrega la primera tarea para empezar a medir el avance del proyecto.</p>
           </div>
         )}
       </div>

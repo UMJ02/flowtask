@@ -110,6 +110,10 @@ function attachmentIcon(fileName?: string | null) {
   return <FileText className="h-4 w-4" />;
 }
 
+function isImageAttachment(file: any) {
+  return Boolean(file?.public_url && file?.mime_type?.startsWith?.("image/"));
+}
+
 const projectActivityLabels: Record<string, string> = {
   project_updated: "Proyecto actualizado",
   project_status_changed: "Estado del proyecto actualizado",
@@ -293,14 +297,15 @@ function RecentFilesCard({ attachments }: { attachments: any[] }) {
   return (
     <section id="archivos" className={`${projectUi.smallCard} scroll-mt-28`}>
       <div className="mb-4 flex items-center justify-between gap-3"><h2 className="text-lg font-black text-[#0F172A]">Archivos recientes</h2><a href="#archivos" className="inline-flex h-9 items-center rounded-[12px] border border-[#E7EDF5] bg-white px-3 text-xs font-black text-[#475569] hover:bg-slate-50">Ver todo</a></div>
-      <div className="space-y-3">
+      <div className="grid grid-cols-2 gap-3">
         {attachments.length ? attachments.slice(0, 4).map((file) => (
-          <a key={file.id} href={file.public_url || "#"} className="flex items-center justify-between gap-3 rounded-[16px] p-2 transition hover:bg-slate-50">
-            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-[14px] bg-[#FFF1F2] text-[#EF4444]">{attachmentIcon(file.file_name)}</span>
-            <span className="min-w-0 flex-1"><span className="block truncate text-sm font-black text-[#334155]">{file.file_name || "Archivo"}</span><span className="block truncate text-xs font-medium text-[#64748B]">{formatFileSize(file.file_size)} · {file.created_at ? formatDate(file.created_at) : "Sin fecha"}</span></span>
-            <MoreVertical className="h-4 w-4 text-[#64748B]" />
+          <a key={file.id} href={file.public_url || "#"} className="group overflow-hidden rounded-[16px] border border-[#E7EDF5] bg-white transition hover:-translate-y-0.5 hover:shadow-[0_12px_24px_rgba(15,23,42,0.07)]">
+            <span className="grid aspect-square place-items-center overflow-hidden bg-[#F8FAFC] text-[#64748B]">
+              {isImageAttachment(file) ? <img src={file.public_url} alt={file.file_name || "Archivo"} className="h-full w-full object-cover" /> : attachmentIcon(file.file_name)}
+            </span>
+            <span className="block min-w-0 p-2"><span className="block truncate text-xs font-black text-[#334155]">{file.file_name || "Archivo"}</span><span className="block truncate text-[11px] font-medium text-[#64748B]">{formatFileSize(file.file_size)}</span></span>
           </a>
-        )) : <p className="text-sm font-medium text-[#64748B]">Sin archivos recientes.</p>}
+        )) : <p className="col-span-2 text-sm font-medium text-[#64748B]">Sin archivos recientes.</p>}
       </div>
     </section>
   );
@@ -309,7 +314,7 @@ function RecentFilesCard({ attachments }: { attachments: any[] }) {
 function ProjectActivityCard({ activity }: { activity: ActivityItem[] }) {
   return (
     <section id="actividad" className={`${projectUi.card} scroll-mt-28 p-6`}>
-      <div className="mb-5 flex items-center justify-between gap-3"><div><p className={projectUi.eyebrow}>Actividad reciente</p><h2 className="mt-2 text-2xl font-black text-[#0F172A]">Actividad del proyecto</h2></div><a href="#actividad" className="inline-flex h-10 items-center rounded-[14px] border border-[#E7EDF5] bg-white px-4 text-xs font-black text-[#475569] hover:bg-slate-50">Ver actividad</a></div>
+      <div className="mb-5 flex items-center justify-between gap-3"><div><p className={projectUi.eyebrow}>Actividad reciente</p><h2 className="mt-2 text-2xl font-black text-[#0F172A]">Movimientos del proyecto</h2></div><a href="#actividad" className="inline-flex h-10 items-center rounded-[14px] border border-[#E7EDF5] bg-white px-4 text-xs font-black text-[#475569] hover:bg-slate-50">Ver movimientos</a></div>
       <div className="space-y-4">
         {activity.length ? activity.slice(0, 5).map((item) => (
           <div key={item.id} className="flex gap-3">

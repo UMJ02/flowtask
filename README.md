@@ -1,4 +1,4 @@
-# FlowTask — v58.21.1 User Language + Interaction Cleanup
+# FlowTask — v58.21.2 Layout Cleanup + Feed & Attachment Refinement
 
 # FlowTask — v58.20 Task Workspace Inline Redesign
 
@@ -65,3 +65,8 @@ npm run vercel:build
 ## v58.21.1 — User Language + Interaction Cleanup
 
 Patch de calidad UX sobre v58.21.0. Mejora textos, mensajes de error, tabs de proyecto y elimina elementos visibles que podían confundirse como funcionalidad real sin respaldo de datos. No agrega migraciones ni cambia contratos Supabase.
+
+
+## v58.21.2 Layout Cleanup + Feed & Attachment Refinement
+
+Pulido visual y de interacción sobre v58.21.1: feed operativo dividido, límites con “Ver más”, filtros de proyectos simplificados, thumbnails reales en adjuntos y tareas internas con layout responsive. No incluye migraciones ni cambios de RLS.

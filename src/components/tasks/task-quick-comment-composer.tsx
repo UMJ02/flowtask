@@ -23,6 +23,7 @@ export function TaskQuickCommentsCard({ taskId, comments, canComment = true }: {
   const [content, setContent] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [showAll, setShowAll] = useState(false);
 
   const submit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -34,7 +35,7 @@ export function TaskQuickCommentsCard({ taskId, comments, canComment = true }: {
     const { data: authData } = await supabase.auth.getUser();
     const user = authData.user;
     if (!user) {
-      setError("Sesión no válida.");
+      setError("Tu sesión expiró. Vuelve a iniciar sesión para comentar.");
       setIsSaving(false);
       return;
     }
@@ -76,14 +77,14 @@ export function TaskQuickCommentsCard({ taskId, comments, canComment = true }: {
       <form className="flex items-center gap-3" onSubmit={submit}>
         <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#ECFDF5] text-sm font-black text-[#16A36C]">FT</div>
         <div className="flex h-12 flex-1 items-center gap-3 rounded-[16px] border border-[#E2E8F0] bg-white px-4 shadow-[0_6px_18px_rgba(15,23,42,0.025)]">
-          <input value={content} onChange={(event) => setContent(event.target.value)} disabled={!canComment || isSaving} placeholder="Comentar o mencionar con @" className="h-full min-w-0 flex-1 bg-transparent text-sm font-semibold outline-none placeholder:text-[#94A3B8]" />
+          <input value={content} onChange={(event) => setContent(event.target.value)} disabled={!canComment || isSaving} placeholder="Escribe un comentario o menciona a alguien..." className="h-full min-w-0 flex-1 bg-transparent text-sm font-semibold outline-none placeholder:text-[#94A3B8]" />
           <button type="submit" disabled={!canComment || isSaving || !content.trim()} className="grid h-9 w-9 place-items-center rounded-full text-[#64748B] transition hover:bg-[#F8FAFC] hover:text-[#16A36C] disabled:cursor-not-allowed disabled:opacity-50" aria-label="Enviar comentario">➤</button>
         </div>
       </form>
       {!canComment ? <p className="text-sm font-semibold text-[#64748B]">Tu acceso actual permite ver comentarios, pero no agregar nuevos.</p> : null}
       {error ? <p className="text-sm font-semibold text-rose-600">{error}</p> : null}
       <div className="space-y-4">
-        {comments.slice(0, 3).map((comment) => {
+        {(showAll ? comments : comments.slice(0, 3)).map((comment) => {
           const profile = getProfile(comment);
           const name = profile?.full_name || profile?.email || "Usuario";
           return (
@@ -97,6 +98,11 @@ export function TaskQuickCommentsCard({ taskId, comments, canComment = true }: {
           );
         })}
       </div>
+      {comments.length > 3 ? (
+        <button type="button" onClick={() => setShowAll((value) => !value)} className="inline-flex h-9 items-center rounded-[12px] border border-[#E2E8F0] bg-white px-3 text-xs font-black text-[#475569] transition hover:bg-[#F8FAFC]">
+          {showAll ? "Ver menos comentarios" : `Ver ${comments.length - 3} comentarios más`}
+        </button>
+      ) : null}
     </section>
   );
 }

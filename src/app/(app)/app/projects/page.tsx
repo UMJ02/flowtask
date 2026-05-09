@@ -192,7 +192,6 @@ function ProjectsPagination({ total }: { total: number }) {
 
 function ProjectRow({ project, index, queryString }: { project: ProjectSummary; index: number; queryString: string }) {
   const progress = getProjectProgress(project, index);
-  const priority = getProjectPriority(project, index);
   const coverTone = COVER_GRADIENTS[index % COVER_GRADIENTS.length];
   const detailHref = projectDetailRoute(project.id, queryString);
 
@@ -227,7 +226,6 @@ function ProjectRow({ project, index, queryString }: { project: ProjectSummary; 
       <td className="whitespace-nowrap px-5 py-4 align-middle text-sm font-semibold text-slate-600">
         {project.dueDate || project.due_date ? formatDate((project.dueDate || project.due_date) as string) : 'Sin fecha'}
       </td>
-      <td className="px-5 py-4 align-middle"><PriorityBadge priority={priority} /></td>
       <td className="px-5 py-4 align-middle">
         <div className="flex items-center justify-center gap-2">
           <Link href={detailHref} aria-label={`Abrir proyecto ${project.title}`} className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-[#E5EAF1] bg-white text-slate-600 transition hover:-translate-y-0.5 hover:border-slate-300 hover:text-[#0F172A] hover:shadow-[0_10px_24px_rgba(15,23,42,0.07)]">
@@ -267,7 +265,7 @@ export default async function ProjectsPage({ searchParams }: { searchParams?: Pr
         <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
           <div>
             <h1 className="text-3xl font-black tracking-tight text-[#0F172A]">Proyectos</h1>
-            <p className="mt-2 text-base text-[#64748B]">Todos los proyectos creados en tu workspace.</p>
+            <p className="mt-2 text-base text-[#64748B]">Todos los proyectos de tu espacio de trabajo.</p>
           </div>
           <div className="flex flex-wrap gap-3">
             <a href="#project-filters" className="inline-flex h-12 items-center justify-center gap-2 rounded-[16px] border border-[#E5EAF1] bg-white px-5 text-sm font-bold text-[#334155] transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-[0_12px_26px_rgba(15,23,42,0.06)]">
@@ -291,7 +289,7 @@ export default async function ProjectsPage({ searchParams }: { searchParams?: Pr
 
       <Card className="rounded-[24px] border-[#E5EAF1] bg-white p-0 shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
         <form id="project-filters" className="border-b border-[#E5EAF1] p-5">
-          <div className="grid gap-3 lg:grid-cols-[minmax(280px,1fr)_180px_190px_190px_190px_auto_auto]">
+          <div className="grid gap-3 lg:grid-cols-[minmax(280px,1fr)_180px_190px_auto_auto]">
             <div className="relative">
               <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
               <input name="q" defaultValue={filters.q} placeholder="Buscar proyecto, cliente o departamento..." className="h-12 w-full rounded-[16px] border border-[#E5EAF1] bg-white pl-11 pr-4 text-sm font-medium text-[#0F172A] outline-none transition placeholder:text-slate-400 focus:border-[#16C784] focus:ring-4 focus:ring-emerald-500/10" />
@@ -303,13 +301,22 @@ export default async function ProjectsPage({ searchParams }: { searchParams?: Pr
               <option value="completado">Completado</option>
               <option value="vencido">Atrasado</option>
             </select>
-            <select name="mode" defaultValue={filters.mode} className="h-12 rounded-[16px] border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-[#334155] outline-none focus:border-[#16C784] focus:ring-4 focus:ring-emerald-500/10">
-              <option value="">Modo</option>
-              <option value="solo">Individual</option>
-              <option value="collaborative">Colaborativo</option>
-            </select>
             <input name="department" defaultValue={filters.department} placeholder="Departamento" className="h-12 rounded-[16px] border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-[#334155] outline-none placeholder:text-slate-400 focus:border-[#16C784] focus:ring-4 focus:ring-emerald-500/10" />
-            <input name="client" defaultValue={filters.client} placeholder="Cliente" className="h-12 rounded-[16px] border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-[#334155] outline-none placeholder:text-slate-400 focus:border-[#16C784] focus:ring-4 focus:ring-emerald-500/10" />
+            <details className="group relative">
+              <summary className="inline-flex h-12 w-full cursor-pointer list-none items-center justify-center gap-2 rounded-[16px] border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-[#334155] transition hover:bg-slate-50">
+                Más filtros <ChevronDown className="h-4 w-4 transition group-open:rotate-180" />
+              </summary>
+              <div className="absolute right-0 z-20 mt-2 w-[280px] space-y-3 rounded-[20px] border border-[#E5EAF1] bg-white p-4 shadow-[0_18px_40px_rgba(15,23,42,0.12)]">
+                <label className="block text-xs font-black uppercase tracking-[0.12em] text-[#64748B]">Tipo</label>
+                <select name="mode" defaultValue={filters.mode} className="h-11 w-full rounded-[14px] border border-[#E5EAF1] bg-white px-3 text-sm font-bold text-[#334155] outline-none focus:border-[#16C784]">
+                  <option value="">Todos</option>
+                  <option value="solo">Individuales</option>
+                  <option value="collaborative">Colaborativos</option>
+                </select>
+                <label className="block text-xs font-black uppercase tracking-[0.12em] text-[#64748B]">Cliente</label>
+                <input name="client" defaultValue={filters.client} placeholder="Nombre del cliente" className="h-11 w-full rounded-[14px] border border-[#E5EAF1] bg-white px-3 text-sm font-bold text-[#334155] outline-none placeholder:text-slate-400 focus:border-[#16C784]" />
+              </div>
+            </details>
             <button type="submit" className="inline-flex h-12 items-center justify-center gap-2 rounded-[16px] bg-[#050B18] px-5 text-sm font-black text-white shadow-[0_12px_26px_rgba(5,11,24,0.14)] transition hover:-translate-y-0.5"><Filter className="h-4 w-4" /> Aplicar</button>
             <Link href="/app/projects" className="inline-flex h-12 items-center justify-center rounded-[16px] border border-[#E5EAF1] bg-white px-5 text-sm font-bold text-[#334155] transition hover:bg-slate-50">Limpiar</Link>
           </div>
@@ -317,7 +324,7 @@ export default async function ProjectsPage({ searchParams }: { searchParams?: Pr
 
         {projects.length ? (
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[1040px] border-separate border-spacing-0">
+            <table className="w-full min-w-[880px] border-separate border-spacing-0">
               <thead>
                 <tr className="text-left text-[11px] font-black uppercase tracking-[0.16em] text-[#64748B]">
                   <th className="px-5 py-4">Proyecto</th>
@@ -325,7 +332,6 @@ export default async function ProjectsPage({ searchParams }: { searchParams?: Pr
                   <th className="px-5 py-4">Progreso</th>
                   <th className="px-5 py-4">Miembros</th>
                   <th className="px-5 py-4">Fecha límite</th>
-                  <th className="px-5 py-4">Prioridad</th>
                   <th className="px-5 py-4 text-center">Acciones</th>
                 </tr>
               </thead>
@@ -359,7 +365,7 @@ export default async function ProjectsPage({ searchParams }: { searchParams?: Pr
           <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#16C784] ring-1 ring-emerald-100">
             <ShieldCheck className="h-4 w-4" />
           </span>
-          <p><span className="font-black text-[#0F172A]">Consejo:</span> organiza tus proyectos por prioridad y estado para mantener el enfoque en lo más importante.</p>
+          <p><span className="font-black text-[#0F172A]">Consejo:</span> organiza tus proyectos por estado y fecha límite para mantener el enfoque en lo más importante.</p>
         </div>
         <Clock3 className="hidden h-4 w-4 text-emerald-500 md:block" />
       </div>

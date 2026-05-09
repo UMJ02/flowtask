@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Upload, Paperclip, Trash2, FileText } from "lucide-react";
+import { Upload, Paperclip, Trash2, FileText, FileArchive, FileSpreadsheet, Image as ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { createClient } from "@/lib/supabase/client";
@@ -29,6 +29,19 @@ function formatBytes(bytes?: number | null) {
     index += 1;
   }
   return `${value.toFixed(index === 0 ? 0 : 1)} ${units[index]}`;
+}
+
+function isImageAttachment(attachment: AttachmentRow) {
+  return Boolean(attachment.public_url && attachment.mime_type?.startsWith("image/"));
+}
+
+function AttachmentTypeIcon({ attachment }: { attachment: AttachmentRow }) {
+  const mime = attachment.mime_type ?? "";
+  const name = attachment.file_name.toLowerCase();
+  if (isImageAttachment(attachment)) return <ImageIcon className="h-5 w-5" />;
+  if (mime.includes("spreadsheet") || name.endsWith(".xlsx") || name.endsWith(".csv")) return <FileSpreadsheet className="h-5 w-5" />;
+  if (mime.includes("zip") || name.endsWith(".zip") || name.endsWith(".rar")) return <FileArchive className="h-5 w-5" />;
+  return <FileText className="h-5 w-5" />;
 }
 
 export function EntityAttachments({
@@ -165,39 +178,54 @@ export function EntityAttachments({
       {!canManage ? <p className="mt-3 text-sm text-slate-500">Tu acceso actual permite ver adjuntos existentes, pero no subir ni eliminar archivos.</p> : null}
       {error ? <p className="mt-3 text-sm text-red-600">{error}</p> : null}
 
-      <div className="mt-4 space-y-3">
-        {attachments.length ? attachments.map((attachment) => (
-          <div key={attachment.id} className="flex flex-col gap-3 rounded-[18px] border border-[#E5EAF1] bg-white px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="min-w-0">
-              <div className="flex items-center gap-2">
-                <Paperclip className="h-4 w-4 text-slate-500" />
-                <p className="truncate text-sm font-medium text-slate-900">{attachment.file_name}</p>
-              </div>
-              <p className="mt-1 text-xs text-slate-500">
-                {attachment.mime_type || "Archivo"} · {formatBytes(attachment.file_size)} · {attachment.created_at ? formatDate(attachment.created_at) : "Sin fecha"}
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-2">
+      <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+        {attachments.length ? attachments.map((attachment) => {
+          const image = isImageAttachment(attachment);
+          return (
+            <div key={attachment.id} className="overflow-hidden rounded-[18px] border border-[#E5EAF1] bg-white shadow-[0_8px_18px_rgba(15,23,42,0.035)]">
               {attachment.public_url ? (
-                <a href={attachment.public_url} target="_blank" rel="noreferrer">
-                  <Button type="button" variant="secondary">
-                    <FileText className="mr-2 h-4 w-4" /> Abrir
-                  </Button>
+                <a href={attachment.public_url} target="_blank" rel="noreferrer" className="block">
+                  <div className="grid aspect-[4/3] place-items-center overflow-hidden bg-[#F8FAFC] text-[#64748B]">
+                    {image ? <img src={attachment.public_url} alt={attachment.file_name} className="h-full w-full object-cover" /> : <AttachmentTypeIcon attachment={attachment} />}
+                  </div>
                 </a>
-              ) : null}
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={() => handleDelete(attachment)}
-                disabled={!canManage || deletingId === attachment.id}
-              >
-                <Trash2 className="mr-2 h-4 w-4" />
-                {deletingId === attachment.id ? "Quitando..." : "Eliminar"}
-              </Button>
+              ) : (
+                <div className="grid aspect-[4/3] place-items-center bg-[#F8FAFC] text-[#64748B]"><AttachmentTypeIcon attachment={attachment} /></div>
+              )}
+              <div className="space-y-3 p-3">
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2">
+                    <Paperclip className="h-4 w-4 shrink-0 text-slate-500" />
+                    <p className="truncate text-sm font-bold text-slate-900">{attachment.file_name}</p>
+                  </div>
+                  <p className="mt-1 truncate text-xs text-slate-500">
+                    {formatBytes(attachment.file_size)} · {attachment.created_at ? formatDate(attachment.created_at) : "Sin fecha"}
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {attachment.public_url ? (
+                    <a href={attachment.public_url} target="_blank" rel="noreferrer" className="flex-1">
+                      <Button type="button" variant="secondary" className="w-full">
+                        <FileText className="mr-2 h-4 w-4" /> Abrir
+                      </Button>
+                    </a>
+                  ) : null}
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={() => handleDelete(attachment)}
+                    disabled={!canManage || deletingId === attachment.id}
+                    className="flex-1"
+                  >
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    {deletingId === attachment.id ? "Quitando..." : "Eliminar"}
+                  </Button>
+                </div>
+              </div>
             </div>
-          </div>
-        )) : (
-          <div className="rounded-[18px] border border-dashed border-[#BFDBFE] bg-[#F8FBFF] px-4 py-6 text-center text-sm font-semibold text-[#64748B]">
+          );
+        }) : (
+          <div className="rounded-[18px] border border-dashed border-[#BFDBFE] bg-[#F8FBFF] px-4 py-6 text-center text-sm font-semibold text-[#64748B] sm:col-span-2 xl:col-span-3">
             Todavía no hay archivos. Puedes subir briefs, facturas, capturas o documentos de soporte.
           </div>
         )}
