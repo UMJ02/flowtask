@@ -10,6 +10,7 @@ import {
   Building2,
   ShieldAlert,
   BarChart3,
+  PenTool,
 } from 'lucide-react';
 import type { AppRoute } from '@/lib/navigation/routes';
 
@@ -25,6 +26,7 @@ export const appNavLinks: AppNavLink[] = [
   { href: '/app/dashboard', label: 'Workspace', hint: 'Tu tablero', icon: LayoutGrid },
   { href: '/app/projects', label: 'Proyectos', hint: 'Fechas y avance', icon: FolderKanban },
   { href: '/app/tasks', label: 'Tareas', hint: 'Pendientes al día', icon: ClipboardList },
+  { href: '/app/boards', label: 'Pizarras', hint: 'Diagramas y notas', icon: PenTool },
   { href: '/app/analytics', label: 'Analytics', hint: 'Salud y escala', icon: BarChart3 },
   { href: '/app/clients', label: 'Registros', hint: 'Clientes, departamentos y países', icon: Users },
   { href: '/app/organization', label: 'Equipo', hint: 'Miembros y roles', icon: Building2 },
