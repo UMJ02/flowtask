@@ -431,3 +431,42 @@ textarea::placeholder {
     @apply transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_12px_28px_rgba(15,23,42,0.06)];
   }
 }
+
+/* v58.21.4 Design System Governance */
+@layer components {
+  .ft-governed-screen {
+    @apply space-y-6;
+  }
+
+  .ft-core-grid {
+    @apply grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px];
+  }
+
+  .ft-toolbar-grid {
+    @apply grid gap-3 md:grid-cols-2 lg:grid-cols-[minmax(260px,1fr)_180px_190px_auto];
+  }
+
+  .ft-action-row {
+    @apply flex flex-wrap items-center gap-2;
+  }
+
+  .ft-table-shell {
+    @apply overflow-x-auto rounded-b-[28px];
+  }
+
+  .ft-data-table {
+    @apply w-full border-separate border-spacing-0 text-[14px];
+  }
+
+  .ft-data-th {
+    @apply px-5 py-4 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500;
+  }
+
+  .ft-data-td {
+    @apply px-5 py-4 align-middle;
+  }
+
+  .ft-muted-panel {
+    @apply rounded-2xl border border-[#E7ECF3] bg-slate-50/70 p-4;
+  }
+}

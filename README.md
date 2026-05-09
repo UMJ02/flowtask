@@ -1,4 +1,4 @@
-# FlowTask — v58.21.3 Design System Foundation + Visual Consistency
+# FlowTask — v58.21.4 Design System Governance + Core Screen Migration
 
 # FlowTask — v58.20 Task Workspace Inline Redesign
 
@@ -68,7 +68,7 @@ Patch de calidad UX sobre v58.21.0. Mejora textos, mensajes de error, tabs de pr
 
 
 
-## v58.21.3 Design System Foundation + Visual Consistency
+## v58.21.4 Design System Governance + Core Screen Migration
 
 Base visual global sobre v58.21.2. Normaliza tokens de diseño, tipografía, botones, inputs, cards, chips, espaciados y estados visuales principales para que la app se sienta más consistente y lista para usuario final. No agrega migraciones ni cambia contratos Supabase.
 

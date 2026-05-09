@@ -74,16 +74,16 @@ export default async function TasksPage({ searchParams }: { searchParams?: Promi
   };
 
   return (
-    <div className="space-y-4">
-      <Card className="rounded-[24px] border border-[#E5EAF1] bg-white p-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)] md:p-6">
+    <div className="ft-governed-screen">
+      <Card className="ft-main-card">
         <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-[#0F172A]">Tareas</h1>
-            <p className="mt-1 text-sm font-medium text-[#64748B]">Gestiona tus tareas simples del día a día. Las tareas internas de proyectos viven dentro de cada proyecto.</p>
+            <h1 className="ft-page-title">Tareas</h1>
+            <p className="ft-page-subtitle">Gestiona tus tareas simples del día a día. Las tareas internas de proyectos viven dentro de cada proyecto.</p>
           </div>
           <Link
             href={taskNewRoute(queryString)}
-            className="inline-flex h-12 items-center justify-center gap-2 rounded-[14px] bg-[#050B18] px-5 text-sm font-semibold text-white shadow-[0_14px_30px_rgba(5,11,24,0.16)] transition hover:-translate-y-0.5 hover:bg-slate-900"
+            className="ft-button bg-slate-950 text-white hover:bg-slate-900"
           >
             <Plus className="h-4 w-4" />
             Nueva tarea
@@ -116,7 +116,7 @@ export default async function TasksPage({ searchParams }: { searchParams?: Promi
         created_at: task.created_at,
       }))} filters={filters} currentView={filters.view} currentQuery={queryString} />
 
-      <Card className="rounded-[20px] border border-emerald-200/80 bg-emerald-50/80 p-4 shadow-none">
+      <Card className="ft-mini-card border-emerald-200 bg-emerald-50/80 shadow-none">
         <div className="flex items-center gap-3 text-sm font-medium text-emerald-900">
           <Clock3 className="h-4 w-4 shrink-0" />
           Consejo: usa Tareas para trabajo simple. Cuando una tarea crece, conviértela en proyecto; las tareas internas se gestionan desde Proyectos.

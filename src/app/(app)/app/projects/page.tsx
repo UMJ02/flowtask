@@ -165,13 +165,13 @@ function ProjectMembersAvatars({ countSeed }: { countSeed: number }) {
 
 function ProjectsStatCard({ icon, label, value, helper, tone }: { icon: ReactNode; label: string; value: number; helper: string; tone: string }) {
   return (
-    <div className="rounded-[20px] border border-[#E5EAF1] bg-white p-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
+    <div className="ft-section-card">
       <div className="flex items-center gap-4">
         <span className={`inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-full ${tone}`}>{icon}</span>
         <div>
-          <p className="text-sm font-bold text-[#64748B]">{label}</p>
-          <p className="mt-1 text-2xl font-semibold tracking-tight text-[#0F172A]">{value}</p>
-          <p className="mt-1 text-sm text-[#64748B]">{helper}</p>
+          <p className="ft-small-title text-slate-500">{label}</p>
+          <p className="mt-1 text-[24px] font-semibold tracking-tight text-slate-950">{value}</p>
+          <p className="ft-secondary mt-1">{helper}</p>
         </div>
       </div>
     </div>
@@ -260,19 +260,19 @@ export default async function ProjectsPage({ searchParams }: { searchParams?: Pr
   };
 
   return (
-    <div className="space-y-5 pb-3">
-      <Card className="rounded-[24px] border-[#E5EAF1] bg-white p-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)] md:p-5">
+    <div className="ft-governed-screen pb-3">
+      <Card className="ft-main-card">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
           <div>
-            <h1 className="text-[28px] font-semibold tracking-tight text-[#0F172A]">Proyectos</h1>
-            <p className="mt-2 text-base text-[#64748B]">Todos los proyectos de tu espacio de trabajo.</p>
+            <h1 className="ft-page-title">Proyectos</h1>
+            <p className="ft-page-subtitle">Todos los proyectos de tu espacio de trabajo.</p>
           </div>
           <div className="flex flex-wrap gap-3">
-            <a href="#project-filters" className="inline-flex h-12 items-center justify-center gap-2 rounded-[16px] border border-[#E5EAF1] bg-white px-5 text-sm font-bold text-[#334155] transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-[0_12px_26px_rgba(15,23,42,0.06)]">
+            <a href="#project-filters" className="ft-button border border-[#E7ECF3] bg-white text-slate-700 hover:bg-slate-50">
               <Filter className="h-4 w-4" />
               Filtros
             </a>
-            <Link href={projectNewRoute(queryString)} className="inline-flex h-12 items-center justify-center gap-2 rounded-[16px] bg-[#050B18] px-5 text-sm font-bold text-white shadow-[0_14px_30px_rgba(5,11,24,0.18)] transition hover:-translate-y-0.5 hover:bg-slate-900">
+            <Link href={projectNewRoute(queryString)} className="ft-button bg-slate-950 text-white hover:bg-slate-900">
               <Plus className="h-4 w-4" />
               Nuevo proyecto
             </Link>
@@ -287,23 +287,23 @@ export default async function ProjectsPage({ searchParams }: { searchParams?: Pr
         </div>
       </Card>
 
-      <Card className="rounded-[24px] border-[#E5EAF1] bg-white p-0 shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
-        <form id="project-filters" className="border-b border-[#E5EAF1] p-5">
-          <div className="grid gap-3 lg:grid-cols-[minmax(280px,1fr)_180px_190px_auto_auto]">
+      <Card className="ft-section-card p-0">
+        <form id="project-filters" className="border-b border-[#E7ECF3] p-5">
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-[minmax(280px,1fr)_180px_190px_auto_auto]">
             <div className="relative">
               <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-              <input name="q" defaultValue={filters.q} placeholder="Buscar proyecto, cliente o departamento..." className="h-12 w-full rounded-[16px] border border-[#E5EAF1] bg-white pl-11 pr-4 text-sm font-medium text-[#0F172A] outline-none transition placeholder:text-slate-400 focus:border-[#16C784] focus:ring-4 focus:ring-emerald-500/10" />
+              <input name="q" defaultValue={filters.q} placeholder="Buscar proyecto, cliente o departamento..." className="ft-control w-full pl-11 pr-4" />
             </div>
-            <select name="status" defaultValue={filters.status} className="h-12 rounded-[16px] border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-[#334155] outline-none focus:border-[#16C784] focus:ring-4 focus:ring-emerald-500/10">
+            <select name="status" defaultValue={filters.status} className="ft-control w-full px-4 font-semibold text-slate-700">
               <option value="">Estado</option>
               <option value="activo">En progreso</option>
               <option value="en_pausa">En pausa</option>
               <option value="completado">Completado</option>
               <option value="vencido">Atrasado</option>
             </select>
-            <input name="department" defaultValue={filters.department} placeholder="Departamento" className="h-12 rounded-[16px] border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-[#334155] outline-none placeholder:text-slate-400 focus:border-[#16C784] focus:ring-4 focus:ring-emerald-500/10" />
+            <input name="department" defaultValue={filters.department} placeholder="Departamento" className="ft-control w-full px-4 font-semibold text-slate-700" />
             <details className="group relative">
-              <summary className="inline-flex h-12 w-full cursor-pointer list-none items-center justify-center gap-2 rounded-[16px] border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-[#334155] transition hover:bg-slate-50">
+              <summary className="ft-button w-full cursor-pointer list-none border border-[#E7ECF3] bg-white text-slate-700 hover:bg-slate-50">
                 Más filtros <ChevronDown className="h-4 w-4 transition group-open:rotate-180" />
               </summary>
               <div className="absolute right-0 z-20 mt-2 w-[280px] space-y-3 rounded-[20px] border border-[#E5EAF1] bg-white p-4 shadow-[0_18px_40px_rgba(15,23,42,0.12)]">
@@ -317,22 +317,22 @@ export default async function ProjectsPage({ searchParams }: { searchParams?: Pr
                 <input name="client" defaultValue={filters.client} placeholder="Nombre del cliente" className="h-11 w-full rounded-[14px] border border-[#E5EAF1] bg-white px-3 text-sm font-bold text-[#334155] outline-none placeholder:text-slate-400 focus:border-[#16C784]" />
               </div>
             </details>
-            <button type="submit" className="inline-flex h-12 items-center justify-center gap-2 rounded-[16px] bg-[#050B18] px-5 text-sm font-semibold text-white shadow-[0_12px_26px_rgba(5,11,24,0.14)] transition hover:-translate-y-0.5"><Filter className="h-4 w-4" /> Aplicar</button>
-            <Link href="/app/projects" className="inline-flex h-12 items-center justify-center rounded-[16px] border border-[#E5EAF1] bg-white px-5 text-sm font-bold text-[#334155] transition hover:bg-slate-50">Limpiar</Link>
+            <button type="submit" className="ft-button bg-slate-950 text-white hover:bg-slate-900"><Filter className="h-4 w-4" /> Aplicar</button>
+            <Link href="/app/projects" className="ft-button border border-[#E7ECF3] bg-white text-slate-700 hover:bg-slate-50">Limpiar</Link>
           </div>
         </form>
 
         {projects.length ? (
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[880px] border-separate border-spacing-0">
+          <div className="ft-table-shell">
+            <table className="ft-data-table min-w-[860px]">
               <thead>
-                <tr className="text-left text-[11px] font-semibold uppercase tracking-[0.16em] text-[#64748B]">
-                  <th className="px-5 py-4">Proyecto</th>
-                  <th className="px-5 py-4">Estado</th>
-                  <th className="px-5 py-4">Progreso</th>
-                  <th className="px-5 py-4">Miembros</th>
-                  <th className="px-5 py-4">Fecha límite</th>
-                  <th className="px-5 py-4 text-center">Acciones</th>
+                <tr className="text-left">
+                  <th className="ft-data-th">Proyecto</th>
+                  <th className="ft-data-th">Estado</th>
+                  <th className="ft-data-th">Progreso</th>
+                  <th className="ft-data-th">Miembros</th>
+                  <th className="ft-data-th">Fecha límite</th>
+                  <th className="ft-data-th text-center">Acciones</th>
                 </tr>
               </thead>
               <tbody>
