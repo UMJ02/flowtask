@@ -2,7 +2,7 @@
 
 import type { ChangeEvent as ReactChangeEvent, PointerEvent as ReactPointerEvent, WheelEvent as ReactWheelEvent } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Minus, Plus, RotateCcw } from "lucide-react";
+import { AlertTriangle, Eraser, Minus, Plus, RotateCcw, X } from "lucide-react";
 import { BoardMiniMap } from "@/components/boards/board-minimap";
 import { BoardRealtimeCursors } from "@/components/boards/board-realtime-cursors";
 import { BoardCommentPins } from "@/components/boards/board-comment-pins";
@@ -150,6 +150,8 @@ export function BoardPage({ boardId }: BoardPageProps) {
   const [uploadingFile, setUploadingFile] = useState(false);
   const [viewport, setViewport] = useState({ x: 0, y: 0, zoom: 1 });
   const [error, setError] = useState<string | null>(null);
+  const [clearDialogOpen, setClearDialogOpen] = useState(false);
+  const [clearingBoard, setClearingBoard] = useState(false);
 
   const selected = selectedIds.length === 1 ? elements.find((item) => item.id === selectedIds[0]) ?? null : null;
   const connectors = elements.filter((element): element is ConnectorElement => element.type === "connector");
@@ -1048,6 +1050,42 @@ export function BoardPage({ boardId }: BoardPageProps) {
   }, [selectedIds, selected, userId, pendingConnector]);
 
 
+
+  async function clearBoardElements() {
+    if (!elements.length || !userId) {
+      setClearDialogOpen(false);
+      return;
+    }
+    const ids = elements.map((item) => item.id);
+    const previous = elements;
+    setClearingBoard(true);
+    setSavingState("saving");
+    setElements([]);
+    setSelectedIds([]);
+    setPendingConnector(null);
+    setHistoryPast([]);
+    setHistoryFuture([]);
+    setDirtyMap({});
+    setDeletedIds([]);
+    const now = new Date().toISOString();
+    const { error: clearError } = await supabase
+      .from("visual_board_elements")
+      .update({ deleted_at: now, updated_at: now })
+      .eq("board_id", boardId)
+      .in("id", ids)
+      .select("id");
+    if (clearError) {
+      setElements(previous);
+      setSavingState("error");
+      setClearingBoard(false);
+      return;
+    }
+    await logBoardActivity("board_cleared", { count: ids.length });
+    setSavingState("saved");
+    setClearingBoard(false);
+    setClearDialogOpen(false);
+  }
+
   function handleCanvasWheel(event: ReactWheelEvent<HTMLDivElement>) {
     if (!event.ctrlKey && !event.metaKey) return;
     event.preventDefault();
@@ -1108,7 +1146,7 @@ export function BoardPage({ boardId }: BoardPageProps) {
               <BoardRealtimeCursors presence={activePresence} />
             </div>
           </div>
-          <BoardToolbox activeTool={activeTool} activeShape={activeShape} onShapeChange={setActiveShape} onToolChange={(tool) => { setActiveTool(tool); setPendingConnector(null); }} />
+          <BoardToolbox activeTool={activeTool} activeShape={activeShape} onShapeChange={setActiveShape} onToolChange={(tool) => { setActiveTool(tool); setPendingConnector(null); }} onRequestClearBoard={() => setClearDialogOpen(true)} />
           {activeTool === "connector" && pendingConnector ? (
             <div className="ft-popover-surface absolute left-1/2 top-[76px] z-50 -translate-x-1/2 px-3 py-2 text-xs font-bold text-emerald-700">
               Selecciona el destino del conector o haz clic en el lienzo. Esc cancela.
@@ -1136,8 +1174,6 @@ export function BoardPage({ boardId }: BoardPageProps) {
             selected={selected}
             onPatch={(patch) => selected ? patchElement(selected.id, patch) : undefined}
             onDelete={deleteSelected}
-            onAddTableRow={() => selected?.type === "table" ? addTableRow(selected.id) : undefined}
-            onAddTableColumn={() => selected?.type === "table" ? addTableColumn(selected.id) : undefined}
             onSetTableRowCount={(count) => selected?.type === "table" ? setTableRowCount(selected.id, count) : undefined}
             onSetTableColumnCount={(count) => selected?.type === "table" ? setTableColumnCount(selected.id, count) : undefined}
             onRemoveTableColumn={(columnId) => selected?.type === "table" ? removeTableColumn(selected.id, columnId) : undefined}
@@ -1168,6 +1204,38 @@ export function BoardPage({ boardId }: BoardPageProps) {
             viewport={viewport}
             onViewportChange={setViewport}
           />
+          {clearDialogOpen ? (
+            <div className="board-clear-backdrop animate-board-pop" role="dialog" aria-modal="true" aria-labelledby="clear-board-title">
+              <section className="board-clear-dialog p-5">
+                <div className="flex items-start gap-3">
+                  <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-rose-50 text-rose-600">
+                    <AlertTriangle className="h-5 w-5" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-rose-500">Acción irreversible</p>
+                        <h2 id="clear-board-title" className="mt-1 text-lg font-extrabold tracking-[-0.03em] text-slate-950">¿Limpiar pizarra?</h2>
+                      </div>
+                      <button type="button" onClick={() => setClearDialogOpen(false)} className="grid h-9 w-9 place-items-center rounded-xl text-slate-500 hover:bg-slate-100" aria-label="Cerrar">
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
+                    <p className="mt-3 text-sm font-medium leading-6 text-slate-600">
+                      Estás a punto de borrar todos los elementos del lienzo. Esta acción no se puede deshacer.
+                    </p>
+                    <div className="mt-5 flex justify-end gap-2">
+                      <button type="button" onClick={() => setClearDialogOpen(false)} disabled={clearingBoard} className="ft-btn-secondary">Cancelar</button>
+                      <button type="button" onClick={() => void clearBoardElements()} disabled={clearingBoard || !elements.length} className="ft-btn-danger gap-2">
+                        <Eraser className="h-4 w-4" />
+                        {clearingBoard ? "Borrando..." : "Borrar todo"}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </div>
+          ) : null}
         </main>
       </section>
     </div>

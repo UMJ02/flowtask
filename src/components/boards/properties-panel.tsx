@@ -26,15 +26,13 @@ type Props = {
   selected: BoardElement | null;
   onPatch: (patch: Partial<BoardElement>) => void;
   onDelete: () => void;
-  onAddTableRow: () => void;
-  onAddTableColumn: () => void;
   onSetTableRowCount: (count: number) => void;
   onSetTableColumnCount: (count: number) => void;
   onRemoveTableColumn: (columnId: string) => void;
   onRenameTableColumn: (columnId: string, label: string) => void;
 };
 
-export function PropertiesPanel({ selected, onPatch, onDelete, onAddTableRow, onAddTableColumn, onSetTableRowCount, onSetTableColumnCount, onRemoveTableColumn, onRenameTableColumn }: Props) {
+export function PropertiesPanel({ selected, onPatch, onDelete, onSetTableRowCount, onSetTableColumnCount, onRemoveTableColumn, onRenameTableColumn }: Props) {
   const connector = selected?.type === "connector" ? selected : null;
   const table = selected?.type === "table" ? selected : null;
   const shape = selected?.type === "shape" ? selected : null;
@@ -119,7 +117,7 @@ export function PropertiesPanel({ selected, onPatch, onDelete, onAddTableRow, on
                 </section>
               ) : null}
 
-              {table ? <TableControls table={table} onAddTableRow={onAddTableRow} onAddTableColumn={onAddTableColumn} onSetTableRowCount={onSetTableRowCount} onSetTableColumnCount={onSetTableColumnCount} onRemoveTableColumn={onRemoveTableColumn} onRenameTableColumn={onRenameTableColumn} /> : null}
+              {table ? <TableControls table={table} onSetTableRowCount={onSetTableRowCount} onSetTableColumnCount={onSetTableColumnCount} onRemoveTableColumn={onRemoveTableColumn} onRenameTableColumn={onRenameTableColumn} /> : null}
 
               {!table && !media ? (
                 <>
@@ -153,7 +151,7 @@ function Stepper({ label, value, min, onChange }: { label: string; value: number
   );
 }
 
-function TableControls({ table, onAddTableRow, onAddTableColumn, onSetTableRowCount, onSetTableColumnCount, onRemoveTableColumn, onRenameTableColumn }: { table: TableElement; onAddTableRow: () => void; onAddTableColumn: () => void; onSetTableRowCount: (count: number) => void; onSetTableColumnCount: (count: number) => void; onRemoveTableColumn: (columnId: string) => void; onRenameTableColumn: (columnId: string, label: string) => void }) {
+function TableControls({ table, onSetTableRowCount, onSetTableColumnCount, onRemoveTableColumn, onRenameTableColumn }: { table: TableElement; onSetTableRowCount: (count: number) => void; onSetTableColumnCount: (count: number) => void; onRemoveTableColumn: (columnId: string) => void; onRenameTableColumn: (columnId: string, label: string) => void }) {
   return (
     <>
       <section className="rounded-2xl border border-violet-100 bg-violet-50/50 p-3">
@@ -162,10 +160,6 @@ function TableControls({ table, onAddTableRow, onAddTableColumn, onSetTableRowCo
         <div className="mt-3 grid gap-2">
           <Stepper label="Filas" value={table.rows.length} min={1} onChange={onSetTableRowCount} />
           <Stepper label="Columnas" value={table.columns.length} min={1} onChange={onSetTableColumnCount} />
-        </div>
-        <div className="mt-3 grid grid-cols-2 gap-2">
-          <button type="button" onClick={onAddTableRow} className="ft-btn-secondary h-9 justify-center gap-2 text-xs"><Plus className="h-3.5 w-3.5" /> Fila</button>
-          <button type="button" onClick={onAddTableColumn} className="ft-btn-secondary h-9 justify-center gap-2 text-xs"><Plus className="h-3.5 w-3.5" /> Columna</button>
         </div>
       </section>
       <section>
