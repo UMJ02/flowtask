@@ -204,9 +204,9 @@ export function ProjectForm({ projectId, initialData, submitLabel, successMessag
     if (isEdit) {
       const updateValues: Record<string, unknown> = { ...payload };
       updateValues.share_token = values.isCollaborative ? initialData?.shareToken ?? generateShareToken() : null;
-      const { error } = await supabase.from("projects").update(updateValues).eq("id", projectId!);
-      if (error) {
-        setServerError(error.message);
+      const { data: confirmedProject, error } = await supabase.from("projects").update(updateValues).eq("id", projectId!).select("id,title,status,updated_at").maybeSingle();
+      if (error || !confirmedProject) {
+        setServerError(error?.message ?? "No pudimos confirmar los cambios del proyecto.");
         setMessage(null);
         return;
       }
@@ -264,7 +264,7 @@ export function ProjectForm({ projectId, initialData, submitLabel, successMessag
             })));
           }
 
-          await supabase.from("tasks").update({ status: "concluido", completed_at: new Date().toISOString() }).eq("id", sourceTaskId);
+          await supabase.from("tasks").update({ status: "concluido", completed_at: new Date().toISOString() }).eq("id", sourceTaskId).select("id,status,updated_at").maybeSingle();
         }
 
         await logActivity(supabase as any, {

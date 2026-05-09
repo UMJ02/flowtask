@@ -783,12 +783,13 @@ function InteractiveDashboardBoardComponent() {
     setDataError(null);
     setBoardTasks((current) => sortTasksByDueDate(current.map((item) => (item.id === taskId ? { ...item, status: nextStatus, due_date: nextStatus === 'en_proceso' || nextStatus === 'concluido' ? todayIsoDate() : item.due_date } : item))));
 
-    const { error } = await supabase.from('tasks').update(getTaskStatusUpdatePayload(nextStatus, previousTasks.find((item) => item.id === taskId)?.due_date ?? null)).eq('id', taskId);
+    const { data: confirmedTask, error } = await supabase.from('tasks').update(getTaskStatusUpdatePayload(nextStatus, previousTasks.find((item) => item.id === taskId)?.due_date ?? null)).eq('id', taskId).select('id,status,due_date,updated_at').maybeSingle();
 
-    if (error) {
+    if (error || !confirmedTask) {
       setBoardTasks(previousTasks);
-      setDataError(error.message || 'No se pudo actualizar el estado de la tarea.');
+      setDataError(error?.message || 'No pudimos confirmar el cambio en Supabase.');
     } else {
+      setBoardTasks((current) => sortTasksByDueDate(current.map((item) => (item.id === taskId ? { ...item, status: confirmedTask.status, due_date: confirmedTask.due_date ?? item.due_date, updated_at: confirmedTask.updated_at ?? item.updated_at } : item))));
       setLastSyncedAt(new Date().toISOString());
     }
 

@@ -298,7 +298,7 @@ export function TaskForm({
     };
 
     const result = isEdit
-      ? await supabase.from("tasks").update(payload).eq("id", taskId!)
+      ? await supabase.from("tasks").update(payload).eq("id", taskId!).select("id,title,status,priority,due_date,department_id,updated_at").maybeSingle()
       : await supabase
           .from("tasks")
           .insert({ owner_id: user.id, organization_id: formOrganizationId, ...payload })
@@ -307,8 +307,8 @@ export function TaskForm({
 
     const error = result.error;
 
-    if (error) {
-      setServerError(error.message);
+    if (error || (isEdit && !(result as { data?: unknown | null }).data)) {
+      setServerError(error?.message ?? "No pudimos confirmar los cambios de la tarea.");
       setMessage(null);
       return;
     }

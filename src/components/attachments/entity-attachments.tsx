@@ -134,9 +134,9 @@ export function EntityAttachments({
     setError(null);
     setDeletingId(attachment.id);
 
-    const removeDb = await supabase.from("attachments").delete().eq("id", attachment.id);
-    if (removeDb.error) {
-      setError(removeDb.error.message);
+    const removeDb = await supabase.from("attachments").delete().eq("id", attachment.id).select("id,storage_path");
+    if (removeDb.error || !removeDb.data || removeDb.data.length === 0) {
+      setError(removeDb.error?.message ?? "No pudimos confirmar la eliminación del adjunto.");
       setDeletingId(null);
       return;
     }

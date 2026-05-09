@@ -58,17 +58,19 @@ export function TaskStatusForm({ taskId, status, dueDate, shareEnabled, shareTok
     const nextDueDate = currentDate || null;
     const nextShareToken = currentShare ? shareToken ?? generateShareToken() : null;
 
-    const { error: updateError } = await supabase
+    const { data: confirmedTask, error: updateError } = await supabase
       .from("tasks")
       .update({
         ...getTaskStatusUpdatePayload(currentStatus, nextDueDate),
         share_enabled: currentShare,
         share_token: nextShareToken,
       })
-      .eq("id", taskId);
+      .eq("id", taskId)
+      .select("id,status,due_date,share_enabled,share_token,updated_at")
+      .maybeSingle();
 
-    if (updateError) {
-      setError(updateError.message);
+    if (updateError || !confirmedTask) {
+      setError(updateError?.message ?? "No pudimos confirmar el cambio en Supabase. Revisa permisos o intenta de nuevo.");
       setMessage(null);
       setIsSaving(false);
       return;
@@ -79,20 +81,22 @@ export function TaskStatusForm({ taskId, status, dueDate, shareEnabled, shareTok
         entityType: "task",
         entityId: taskId,
         action: "task_status_changed",
-        metadata: { status: currentStatus, due_date: nextDueDate, share_enabled: currentShare },
+        metadata: { status: confirmedTask.status, due_date: confirmedTask.due_date, share_enabled: confirmedTask.share_enabled, confirmed_at: confirmedTask.updated_at },
       });
       await createClientNotification(supabase, {
         userId: user.id,
         title: "Estado de tarea actualizado",
-        body: `La tarea cambió a ${currentStatus}.`,
+        body: `La tarea cambió a ${confirmedTask.status}.`,
         kind: "info",
         entityType: "task",
         entityId: taskId,
       });
     }
 
-    setCurrentDate(nextDueDate ?? "");
-    onSaved?.({ status: currentStatus, dueDate: nextDueDate, shareEnabled: currentShare, shareToken: nextShareToken });
+    setCurrentStatus(confirmedTask.status ?? currentStatus);
+    setCurrentDate(confirmedTask.due_date ?? "");
+    setCurrentShare(Boolean(confirmedTask.share_enabled));
+    onSaved?.({ status: confirmedTask.status ?? currentStatus, dueDate: confirmedTask.due_date ?? null, shareEnabled: Boolean(confirmedTask.share_enabled), shareToken: confirmedTask.share_token ?? null });
     setMessage("Cambios aplicados. La fecha límite se conserva salvo que la cambies manualmente.");
     setIsSaving(false);
     startRefresh(() => router.refresh());

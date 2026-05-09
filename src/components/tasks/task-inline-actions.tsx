@@ -42,20 +42,20 @@ export function TaskInlineActions({ taskId, status }: { taskId: string; status: 
     setCurrentStatus(nextStatus);
 
     const supabase = createClient();
-    const { error } = await supabase.from('tasks').update(getTaskStatusUpdatePayload(nextStatus)).eq('id', taskId);
+    const { data: confirmedTask, error } = await supabase.from('tasks').update(getTaskStatusUpdatePayload(nextStatus)).eq('id', taskId).select('id,status,updated_at').maybeSingle();
 
-    if (error) {
+    if (error || !confirmedTask) {
       setCurrentStatus(previousStatus);
       setFeedback({
         tone: 'error',
-        message: 'No pudimos actualizar el estado. Inténtalo de nuevo.',
+        message: error?.message ?? 'No pudimos confirmar el cambio de estado. Inténtalo de nuevo.',
       });
       return;
     }
 
     setFeedback({
       tone: 'success',
-      message: getMessageForStatus(nextStatus),
+      message: getMessageForStatus(confirmedTask?.status ?? nextStatus),
     });
 
     startTransition(() => router.refresh());

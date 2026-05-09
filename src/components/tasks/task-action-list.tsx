@@ -337,12 +337,12 @@ function TaskActionListComponent({
     const nextItems = items.map((item) => (item.id === taskId ? { ...item, status: "concluido", due_date: todayIsoDate() } : item));
     setItems(nextItems);
 
-    const { error } = await supabase.from("tasks").update(getTaskStatusUpdatePayload("concluido")).eq("id", taskId);
+    const { data: confirmedTask, error } = await supabase.from("tasks").update(getTaskStatusUpdatePayload("concluido")).eq("id", taskId).select("id,status,updated_at").maybeSingle();
     setBusyId(null);
 
-    if (error) {
+    if (error || !confirmedTask) {
       setItems(previousItems);
-      window.alert("No se pudo finalizar la tarea.");
+      window.alert(error?.message ?? "No se pudo confirmar la finalización de la tarea.");
       return;
     }
 
@@ -357,12 +357,12 @@ function TaskActionListComponent({
     setItems((list) => list.filter((item) => item.id !== taskId));
     setBusyId(taskId);
 
-    const { error } = await supabase.from("tasks").delete().eq("id", taskId);
+    const { data: deletedRows, error } = await supabase.from("tasks").delete().eq("id", taskId).select("id");
     setBusyId(null);
 
-    if (error) {
+    if (error || !deletedRows || deletedRows.length === 0) {
       setItems(current);
-      window.alert("No se pudo eliminar la tarea.");
+      window.alert(error?.message ?? "No se pudo confirmar la eliminación de la tarea.");
       return;
     }
 
@@ -375,11 +375,11 @@ function TaskActionListComponent({
     const previousItems = items;
     const payload = getTaskStatusUpdatePayload("concluido");
     setItems((list) => list.map((item) => (selectedIds.includes(item.id) ? { ...item, status: "concluido", due_date: todayIsoDate() } : item)));
-    const { error } = await supabase.from("tasks").update(payload).in("id", selectedIds);
+    const { data: confirmedTasks, error } = await supabase.from("tasks").update(payload).in("id", selectedIds).select("id,status,updated_at");
     setBusyId(null);
-    if (error) {
+    if (error || !confirmedTasks || confirmedTasks.length !== selectedIds.length) {
       setItems(previousItems);
-      window.alert("No se pudieron finalizar las tareas seleccionadas.");
+      window.alert(error?.message ?? "No se pudo confirmar la finalización de todas las tareas seleccionadas.");
       return;
     }
     setSelectedIds([]);
@@ -393,11 +393,11 @@ function TaskActionListComponent({
     const previousItems = items;
     setItems((list) => list.filter((item) => !selectedIds.includes(item.id)));
     setBusyId("bulk");
-    const { error } = await supabase.from("tasks").delete().in("id", selectedIds);
+    const { data: deletedRows, error } = await supabase.from("tasks").delete().in("id", selectedIds).select("id");
     setBusyId(null);
-    if (error) {
+    if (error || !deletedRows || deletedRows.length !== selectedIds.length) {
       setItems(previousItems);
-      window.alert("No se pudieron eliminar las tareas seleccionadas.");
+      window.alert(error?.message ?? "No se pudo confirmar la eliminación de todas las tareas seleccionadas.");
       return;
     }
     setSelectedIds([]);

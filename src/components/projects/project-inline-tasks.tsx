@@ -127,7 +127,7 @@ export function ProjectInlineTasks({ project, initialTasks, members, canManage =
       due_date: draft.dueDate || project.due_date || null,
     };
 
-    const { data, error } = await supabase.from("tasks").insert(payload).select("id,title,status,client_name,due_date,priority,completed_at,client_id,project_id,created_at").single();
+    const { data, error } = await supabase.from("tasks").insert(payload).select("id,title,status,client_name,due_date,priority,completed_at,client_id,project_id,created_at,updated_at").single();
     if (error || !data) {
       setMessage(error?.message ?? "No se pudo crear la tarea vinculada.");
       setBusyId(null);
@@ -164,9 +164,9 @@ export function ProjectInlineTasks({ project, initialTasks, members, canManage =
       due_date: editDraft.dueDate || null,
       completed_at: completedAt,
     };
-    const { error } = await supabase.from("tasks").update(payload).eq("id", taskId).eq("project_id", project.id);
-    if (error) {
-      setMessage(error.message);
+    const { data: confirmedTask, error } = await supabase.from("tasks").update(payload).eq("id", taskId).eq("project_id", project.id).select("id,title,status,priority,due_date,completed_at,project_id,updated_at").maybeSingle();
+    if (error || !confirmedTask) {
+      setMessage(error?.message ?? "No pudimos confirmar los cambios de la tarea.");
       setBusyId(null);
       return;
     }
@@ -179,7 +179,7 @@ export function ProjectInlineTasks({ project, initialTasks, members, canManage =
       action: editDraft.status === "concluido" ? "project_task_completed" : "project_task_updated",
       metadata: { title, task_id: taskId, project_id: project.id },
     });
-    setTasks((current) => current.map((task) => task.id === taskId ? { ...task, ...payload, assignee_id: editDraft.assigneeId } : task));
+    setTasks((current) => current.map((task) => task.id === taskId ? { ...task, ...confirmedTask, assignee_id: editDraft.assigneeId } : task));
     setEditingId(null);
     setBusyId(null);
     router.refresh();
@@ -190,9 +190,9 @@ export function ProjectInlineTasks({ project, initialTasks, members, canManage =
     const nextStatus = task.status === "concluido" ? "en_proceso" : "concluido";
     setBusyId(task.id);
     const payload = { status: nextStatus, completed_at: nextStatus === "concluido" ? new Date().toISOString() : null };
-    const { error } = await supabase.from("tasks").update(payload).eq("id", task.id).eq("project_id", project.id);
-    if (!error) {
-      setTasks((current) => current.map((item) => item.id === task.id ? { ...item, ...payload } : item));
+    const { data: confirmedTask, error } = await supabase.from("tasks").update(payload).eq("id", task.id).eq("project_id", project.id).select("id,status,completed_at,updated_at").maybeSingle();
+    if (!error && confirmedTask) {
+      setTasks((current) => current.map((item) => item.id === task.id ? { ...item, ...confirmedTask } : item));
       await logActivity(supabase as any, {
         entityType: "project",
         entityId: project.id,
@@ -201,7 +201,7 @@ export function ProjectInlineTasks({ project, initialTasks, members, canManage =
       });
       router.refresh();
     } else {
-      setMessage(error.message);
+      setMessage(error?.message ?? "No pudimos confirmar el cambio en Supabase.");
     }
     setBusyId(null);
   }
@@ -211,8 +211,8 @@ export function ProjectInlineTasks({ project, initialTasks, members, canManage =
     const ok = window.confirm(`¿Eliminar la tarea "${task.title}" de este proyecto?`);
     if (!ok) return;
     setBusyId(task.id);
-    const { error } = await supabase.from("tasks").delete().eq("id", task.id).eq("project_id", project.id);
-    if (!error) {
+    const { data: deletedRows, error } = await supabase.from("tasks").delete().eq("id", task.id).eq("project_id", project.id).select("id");
+    if (!error && deletedRows && deletedRows.length > 0) {
       setTasks((current) => current.filter((item) => item.id !== task.id));
       await logActivity(supabase as any, {
         entityType: "project",
@@ -222,7 +222,7 @@ export function ProjectInlineTasks({ project, initialTasks, members, canManage =
       });
       router.refresh();
     } else {
-      setMessage(error.message);
+      setMessage(error?.message ?? "No pudimos confirmar la eliminación en Supabase.");
     }
     setBusyId(null);
   }

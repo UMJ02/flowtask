@@ -373,8 +373,8 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery, work
 
     try {
       if (currentTask.status !== nextStatus) {
-        const { error: updateError } = await supabase.from("tasks").update(getTaskStatusUpdatePayload(nextStatus, currentTask.due_date ?? null)).eq("id", taskId);
-        if (updateError) throw updateError;
+        const { data: confirmedTask, error: updateError } = await supabase.from("tasks").update(getTaskStatusUpdatePayload(nextStatus, currentTask.due_date ?? null)).eq("id", taskId).select("id,status,due_date,updated_at").maybeSingle();
+        if (updateError || !confirmedTask) throw updateError ?? new Error("No pudimos confirmar el movimiento de la tarea en Supabase.");
       }
 
       await persistLayout(nextStatusOverrides, nextOrderOverrides);

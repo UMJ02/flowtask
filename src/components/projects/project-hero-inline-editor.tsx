@@ -186,9 +186,9 @@ export function ProjectHeroInlineEditor({ project, progress, currentQuery = "" }
       share_token: form.isCollaborative ? project.share_token ?? generateShareToken() : null,
     };
 
-    const { error } = await supabase.from("projects").update(payload).eq("id", project.id);
-    if (error) {
-      setServerError(error.message);
+    const { data: confirmedProject, error } = await supabase.from("projects").update(payload).eq("id", project.id).select("id,title,status,client_id,client_name,department_id,due_date,country,is_collaborative,updated_at").maybeSingle();
+    if (error || !confirmedProject) {
+      setServerError(error?.message ?? "No pudimos confirmar el cambio en Supabase. Revisa permisos o intenta de nuevo.");
       setMessage(null);
       return;
     }
@@ -197,7 +197,7 @@ export function ProjectHeroInlineEditor({ project, progress, currentQuery = "" }
       entityType: "project",
       entityId: project.id,
       action: "project_updated",
-      metadata: { project_id: project.id, title: payload.title, status: payload.status, client_id: clientId ?? undefined, client_name: clientName ?? undefined, organization_id: organizationId, country: payload.country ?? undefined },
+      metadata: { project_id: project.id, title: confirmedProject.title, status: confirmedProject.status, client_id: confirmedProject.client_id ?? undefined, client_name: confirmedProject.client_name ?? undefined, organization_id: organizationId, country: confirmedProject.country ?? undefined, confirmed_at: confirmedProject.updated_at },
     });
 
     void trackEvent({ eventName: "update_project_inline", organizationId, metadata: { project_id: project.id, client_id: clientId, country: payload.country, collaborative: payload.is_collaborative } });
