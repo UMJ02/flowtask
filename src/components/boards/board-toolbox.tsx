@@ -42,7 +42,7 @@ const shapeOptions: Array<{ id: ShapeKind; label: string; icon: typeof Rectangle
   { id: "pill", label: "Píldora", icon: Pill },
 ];
 
-const STORAGE_KEY = "flowtask.board.toolbar.v58.24.2";
+const STORAGE_KEY = "flowtask.board.toolbar.v58.24.3";
 const DEFAULT_POSITION = { x: 22, y: 22 };
 
 function toolById(id: BoardTool) {
@@ -182,17 +182,19 @@ export function BoardToolbox({ activeTool, activeShape, onToolChange, onShapeCha
 
   return (
     <aside className={`board-tool-palette board-tool-palette-${mode} animate-board-pop`} style={containerStyle}>
-      <div className="mb-2 flex items-center justify-between gap-1">
-        <button type="button" onPointerDown={startDrag} className="board-tool-mini-btn cursor-grab active:cursor-grabbing" title="Mover paleta" aria-label="Mover paleta">
+      <div className="board-tool-palette-header">
+        <button type="button" onPointerDown={startDrag} className="board-tool-drag-handle cursor-grab active:cursor-grabbing" title="Mover paleta" aria-label="Mover paleta">
           <GripVertical className="h-4 w-4" />
         </button>
-        {!isCollapsed ? <p className="flex-1 text-center text-[10px] font-extrabold uppercase tracking-[0.16em] text-slate-400">Herramientas</p> : null}
-        <button type="button" onClick={() => setMode(isCollapsed ? "expanded" : "collapsed")} className="board-tool-mini-btn" title={isCollapsed ? "Expandir" : "Contraer"} aria-label={isCollapsed ? "Expandir paleta" : "Contraer paleta"}>
-          {isCollapsed ? <Maximize2 className="h-3.5 w-3.5" /> : <Minimize2 className="h-3.5 w-3.5" />}
-        </button>
-        <button type="button" onClick={() => setMode("hidden")} className="board-tool-mini-btn" title="Ocultar" aria-label="Ocultar paleta">
-          <X className="h-3.5 w-3.5" />
-        </button>
+        {!isCollapsed ? <p className="board-tool-palette-title">Herramientas</p> : null}
+        <div className="ml-auto flex items-center gap-1">
+          <button type="button" onClick={() => setMode(isCollapsed ? "expanded" : "collapsed")} className="board-tool-mini-btn" title={isCollapsed ? "Expandir" : "Contraer"} aria-label={isCollapsed ? "Expandir paleta" : "Contraer paleta"}>
+            {isCollapsed ? <Maximize2 className="h-3.5 w-3.5" /> : <Minimize2 className="h-3.5 w-3.5" />}
+          </button>
+          <button type="button" onClick={() => setMode("hidden")} className="board-tool-mini-btn" title="Ocultar" aria-label="Ocultar paleta">
+            <X className="h-3.5 w-3.5" />
+          </button>
+        </div>
       </div>
       <div className="grid gap-1.5">
         {primaryTools.map(toolButton)}

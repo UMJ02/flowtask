@@ -1206,7 +1206,7 @@ export function BoardPage({ boardId }: BoardPageProps) {
           />
           {clearDialogOpen ? (
             <div className="board-clear-backdrop animate-board-pop" role="dialog" aria-modal="true" aria-labelledby="clear-board-title">
-              <section className="board-clear-dialog p-5">
+              <section className="board-clear-dialog">
                 <div className="flex items-start gap-3">
                   <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-rose-50 text-rose-600">
                     <AlertTriangle className="h-5 w-5" />
@@ -1217,16 +1217,16 @@ export function BoardPage({ boardId }: BoardPageProps) {
                         <p className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-rose-500">Acción irreversible</p>
                         <h2 id="clear-board-title" className="mt-1 text-lg font-extrabold tracking-[-0.03em] text-slate-950">¿Limpiar pizarra?</h2>
                       </div>
-                      <button type="button" onClick={() => setClearDialogOpen(false)} className="grid h-9 w-9 place-items-center rounded-xl text-slate-500 hover:bg-slate-100" aria-label="Cerrar">
+                      <button type="button" onClick={() => setClearDialogOpen(false)} className="board-clear-close" aria-label="Cerrar">
                         <X className="h-4 w-4" />
                       </button>
                     </div>
                     <p className="mt-3 text-sm font-medium leading-6 text-slate-600">
-                      Estás a punto de borrar todos los elementos del lienzo. Esta acción no se puede deshacer.
+                      Se eliminarán todos los elementos del lienzo. Esta acción no se puede deshacer.
                     </p>
-                    <div className="mt-5 flex justify-end gap-2">
-                      <button type="button" onClick={() => setClearDialogOpen(false)} disabled={clearingBoard} className="ft-btn-secondary">Cancelar</button>
-                      <button type="button" onClick={() => void clearBoardElements()} disabled={clearingBoard || !elements.length} className="ft-btn-danger gap-2">
+                    <div className="board-clear-actions">
+                      <button type="button" onClick={() => setClearDialogOpen(false)} disabled={clearingBoard} className="board-clear-cancel">Cancelar</button>
+                      <button type="button" onClick={() => void clearBoardElements()} disabled={clearingBoard || !elements.length} className="board-clear-danger">
                         <Eraser className="h-4 w-4" />
                         {clearingBoard ? "Borrando..." : "Borrar todo"}
                       </button>
