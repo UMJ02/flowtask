@@ -72,7 +72,7 @@ export function createFileBoardElement(
   } as ImageElement | FileElement;
 }
 
-export function createDefaultBoardElement(type: BoardTool, boardId: string, point: { x: number; y: number }, userId: string): BoardElement {
+export function createDefaultBoardElement(type: BoardTool, boardId: string, point: { x: number; y: number }, userId: string, shapeKind: ShapeElement["shape"] = "rounded"): BoardElement {
   const createdAt = nowIso();
   const base = {
     id: crypto.randomUUID(),
@@ -133,9 +133,9 @@ export function createDefaultBoardElement(type: BoardTool, boardId: string, poin
   return {
     ...base,
     type: "shape",
-    shape: "rounded",
-    width: 180,
-    height: 72,
+    shape: shapeKind,
+    width: shapeKind === "circle" ? 112 : shapeKind === "diamond" ? 132 : shapeKind === "pill" ? 184 : 180,
+    height: shapeKind === "circle" ? 112 : shapeKind === "diamond" ? 132 : shapeKind === "pill" ? 64 : 72,
     content: "Nuevo paso",
     style: { fill: "#ECFDF5", stroke: "#16C784", strokeWidth: 2, radius: 16, shadow: "none", fontSize: 14, textColor: "#065F46", fontWeight: 700 },
   } as ShapeElement;

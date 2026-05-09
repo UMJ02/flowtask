@@ -6,24 +6,47 @@ import { Minus, Plus, RotateCcw } from "lucide-react";
 import { BoardMiniMap } from "@/components/boards/board-minimap";
 import { BoardRealtimeCursors } from "@/components/boards/board-realtime-cursors";
 import { BoardCommentPins } from "@/components/boards/board-comment-pins";
-import { BoardElementView } from "@/components/boards/board-element";
+import { BoardElementView, type ResizeHandle } from "@/components/boards/board-element";
 import { BoardToolbox } from "@/components/boards/board-toolbox";
 import { BoardSharingPanel } from "@/components/boards/board-sharing-panel";
 import { BoardCommentsActivity } from "@/components/boards/board-comments-activity";
 import { BoardTopbar } from "@/components/boards/board-topbar";
-import { BoardWorkspaceRail } from "@/components/boards/board-workspace-rail";
 import { ConnectorLayer } from "@/components/boards/connector-layer";
 import { FloatingFormatToolbar } from "@/components/boards/floating-format-toolbar";
 import { PropertiesPanel } from "@/components/boards/properties-panel";
 import { createDefaultBoardElement, createDefaultConnector, createFileBoardElement } from "@/lib/boards/board-defaults";
 import { mapBoardActivityRow, mapBoardCollaboratorRow, mapBoardCommentRow, mapBoardRow, mapElementRow, serializeElementForUpsert } from "@/lib/boards/board-serialization";
-import type { BoardElement, BoardPoint, BoardTool, ConnectorElement, VisualBoard, VisualBoardActivity, VisualBoardActivityRow, VisualBoardCollaborator, VisualBoardCollaboratorRow, VisualBoardComment, VisualBoardCommentRow, VisualBoardElementRow, VisualBoardPresence, VisualBoardRow } from "@/lib/boards/board-types";
+import type { BoardElement, BoardPoint, BoardTool, ConnectorElement, ShapeElement, TableElement, VisualBoard, VisualBoardActivity, VisualBoardActivityRow, VisualBoardCollaborator, VisualBoardCollaboratorRow, VisualBoardComment, VisualBoardCommentRow, VisualBoardElementRow, VisualBoardPresence, VisualBoardRow } from "@/lib/boards/board-types";
 import { createClient } from "@/lib/supabase/client";
 import { getClientWorkspaceContext } from "@/lib/supabase/workspace-client";
 
 type BoardPageProps = { boardId: string };
 
 type DragState = {
+  id: string;
+  startX: number;
+  startY: number;
+  originX: number;
+  originY: number;
+};
+
+type ResizeState = {
+  id: string;
+  handle: ResizeHandle;
+  startX: number;
+  startY: number;
+  originX: number;
+  originY: number;
+  originWidth: number;
+  originHeight: number;
+};
+
+type ConnectorPointDragState = {
+  id: string;
+  point: "from" | "to";
+};
+
+type CommentDragState = {
   id: string;
   startX: number;
   startY: number;
@@ -90,6 +113,7 @@ export function BoardPage({ boardId }: BoardPageProps) {
   const cursorThrottleRef = useRef(0);
   const dirtyMapRef = useRef<Record<string, BoardElement>>({});
   const dragStateRef = useRef<DragState | null>(null);
+  const resizeStateRef = useRef<ResizeState | null>(null);
   const canvasRef = useRef<HTMLDivElement | null>(null);
   const imageInputRef = useRef<HTMLInputElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -105,6 +129,7 @@ export function BoardPage({ boardId }: BoardPageProps) {
   const [savingComment, setSavingComment] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [activeTool, setActiveTool] = useState<BoardTool>("select");
+  const [activeShape, setActiveShape] = useState<ShapeElement["shape"]>("rounded");
   const [userId, setUserId] = useState<string | null>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [activePresence, setActivePresence] = useState<VisualBoardPresence[]>([]);
@@ -113,6 +138,9 @@ export function BoardPage({ boardId }: BoardPageProps) {
   const [dirtyMap, setDirtyMap] = useState<Record<string, BoardElement>>({});
   const [deletedIds, setDeletedIds] = useState<string[]>([]);
   const [dragState, setDragState] = useState<DragState | null>(null);
+  const [resizeState, setResizeState] = useState<ResizeState | null>(null);
+  const [connectorPointDrag, setConnectorPointDrag] = useState<ConnectorPointDragState | null>(null);
+  const [commentDrag, setCommentDrag] = useState<CommentDragState | null>(null);
   const [panState, setPanState] = useState<PanState | null>(null);
   const [historyPast, setHistoryPast] = useState<BoardSnapshot[]>([]);
   const [historyFuture, setHistoryFuture] = useState<BoardSnapshot[]>([]);
@@ -197,6 +225,10 @@ export function BoardPage({ boardId }: BoardPageProps) {
   useEffect(() => {
     dragStateRef.current = dragState;
   }, [dragState]);
+
+  useEffect(() => {
+    resizeStateRef.current = resizeState;
+  }, [resizeState]);
 
   useEffect(() => {
     if (!userId) return;
@@ -491,11 +523,21 @@ export function BoardPage({ boardId }: BoardPageProps) {
     return true;
   }
 
+  function normalizeConnectorPosition(element: BoardElement): BoardElement {
+    if (element.type !== "connector") return element;
+    const next = { ...element } as ConnectorElement;
+    next.x = Math.min(next.from.x, next.to.x);
+    next.y = Math.min(next.from.y, next.to.y);
+    next.width = Math.max(1, Math.abs(next.to.x - next.from.x));
+    next.height = Math.max(1, Math.abs(next.to.y - next.from.y));
+    return next;
+  }
+
   function patchElement(id: string, patch: Partial<BoardElement>) {
     pushHistorySnapshot();
     setElements((current) => current.map((item) => {
       if (item.id !== id) return item;
-      const next = { ...item, ...patch, updatedAt: new Date().toISOString() } as BoardElement;
+      const next = normalizeConnectorPosition({ ...item, ...patch, updatedAt: new Date().toISOString() } as BoardElement);
       markDirty(next);
       return next;
     }));
@@ -616,7 +658,7 @@ export function BoardPage({ boardId }: BoardPageProps) {
       return;
     }
     pushHistorySnapshot();
-    const next = createDefaultBoardElement(activeTool, boardId, point, userId);
+    const next = createDefaultBoardElement(activeTool, boardId, point, userId, activeShape);
     setElements((current) => [...current, next]);
     setSelectedIds([next.id]);
     markDirty(next);
@@ -651,6 +693,30 @@ export function BoardPage({ boardId }: BoardPageProps) {
     setSelectedIds([id]);
     setDragState({ id, startX: event.clientX, startY: event.clientY, originX: element.x, originY: element.y });
   }
+  function handleResizeStart(id: string, handle: ResizeHandle, event: ReactPointerEvent<HTMLButtonElement>) {
+    const element = elements.find((item) => item.id === id);
+    if (!element || element.locked || activeTool !== "select") return;
+    event.stopPropagation();
+    event.currentTarget.setPointerCapture(event.pointerId);
+    pushHistorySnapshot();
+    setSelectedIds([id]);
+    setResizeState({ id, handle, startX: event.clientX, startY: event.clientY, originX: element.x, originY: element.y, originWidth: element.width, originHeight: element.height });
+  }
+
+  function handleConnectorPointDragStart(id: string, point: "from" | "to", event: ReactPointerEvent<SVGCircleElement>) {
+    event.stopPropagation();
+    pushHistorySnapshot();
+    setSelectedIds([id]);
+    setConnectorPointDrag({ id, point });
+  }
+
+  function handleCommentDragStart(comment: VisualBoardComment, point: BoardPoint, event: ReactPointerEvent<HTMLButtonElement>) {
+    event.stopPropagation();
+    pushHistorySnapshot();
+    setCommentFocusId(comment.id);
+    setCommentDrag({ id: comment.id, startX: event.clientX, startY: event.clientY, originX: point.x, originY: point.y });
+  }
+
 
   function updateAttachedConnectors(moved: BoardElement) {
     return (item: BoardElement): BoardElement => {
@@ -678,9 +744,46 @@ export function BoardPage({ boardId }: BoardPageProps) {
   }
 
   function handlePointerMove(event: ReactPointerEvent<HTMLDivElement>) {
-    void publishRealtimeCursor(screenToCanvas(event.clientX, event.clientY));
+    const canvasPoint = screenToCanvas(event.clientX, event.clientY);
+    void publishRealtimeCursor(canvasPoint);
     if (panState) {
       setViewport((current) => ({ ...current, x: panState.originX + event.clientX - panState.startX, y: panState.originY + event.clientY - panState.startY }));
+      return;
+    }
+    if (connectorPointDrag) {
+      setElements((current) => current.map((item) => {
+        if (item.id !== connectorPointDrag.id || item.type !== "connector") return item;
+        const next = normalizeConnectorPosition({ ...item, [connectorPointDrag.point]: canvasPoint, fromElementId: connectorPointDrag.point === "from" ? null : item.fromElementId, toElementId: connectorPointDrag.point === "to" ? null : item.toElementId, updatedAt: new Date().toISOString() } as BoardElement);
+        return next;
+      }));
+      return;
+    }
+    if (commentDrag) {
+      const dx = (event.clientX - commentDrag.startX) / viewport.zoom;
+      const dy = (event.clientY - commentDrag.startY) / viewport.zoom;
+      const nextX = Math.round(commentDrag.originX + dx);
+      const nextY = Math.round(commentDrag.originY + dy);
+      setComments((current) => current.map((comment) => comment.id === commentDrag.id ? { ...comment, x: nextX, y: nextY, elementId: null } : comment));
+      return;
+    }
+    if (resizeState) {
+      const dx = (event.clientX - resizeState.startX) / viewport.zoom;
+      const dy = (event.clientY - resizeState.startY) / viewport.zoom;
+      const left = resizeState.handle.includes("w");
+      const right = resizeState.handle.includes("e");
+      const top = resizeState.handle.includes("n");
+      const bottom = resizeState.handle.includes("s");
+      let nextX = resizeState.originX;
+      let nextY = resizeState.originY;
+      let nextWidth = resizeState.originWidth;
+      let nextHeight = resizeState.originHeight;
+      if (right) nextWidth = resizeState.originWidth + dx;
+      if (bottom) nextHeight = resizeState.originHeight + dy;
+      if (left) { nextWidth = resizeState.originWidth - dx; nextX = resizeState.originX + dx; }
+      if (top) { nextHeight = resizeState.originHeight - dy; nextY = resizeState.originY + dy; }
+      nextWidth = Math.max(48, Math.round(nextWidth));
+      nextHeight = Math.max(40, Math.round(nextHeight));
+      setElements((current) => current.map((item) => item.id === resizeState.id ? { ...item, x: Math.round(nextX), y: Math.round(nextY), width: nextWidth, height: nextHeight, updatedAt: new Date().toISOString() } as BoardElement : item));
       return;
     }
     if (!dragState) return;
@@ -699,9 +802,38 @@ export function BoardPage({ boardId }: BoardPageProps) {
     });
   }
 
+  async function persistCommentPosition(commentId: string) {
+    const comment = comments.find((item) => item.id === commentId);
+    if (!comment) return;
+    const { error: updateError } = await supabase
+      .from("visual_board_comments")
+      .update({ x: comment.x, y: comment.y, element_id: null })
+      .eq("id", commentId)
+      .select("id")
+      .maybeSingle();
+    if (updateError) setSavingState("error");
+  }
+
   function handlePointerUp() {
     if (panState) {
       setPanState(null);
+      return;
+    }
+    if (connectorPointDrag) {
+      const moved = elements.find((item) => item.id === connectorPointDrag.id);
+      if (moved) markDirty(moved);
+      setConnectorPointDrag(null);
+      return;
+    }
+    if (commentDrag) {
+      void persistCommentPosition(commentDrag.id);
+      setCommentDrag(null);
+      return;
+    }
+    if (resizeState) {
+      const resized = elements.find((item) => item.id === resizeState.id);
+      if (resized) markDirty(resized);
+      setResizeState(null);
       return;
     }
     if (!dragState) return;
@@ -782,6 +914,68 @@ export function BoardPage({ boardId }: BoardPageProps) {
         }),
       };
     });
+  }
+
+  function setTableRowCount(elementId: string, count: number) {
+    patchTable(elementId, (table) => {
+      const target = Math.max(1, Math.round(count));
+      if (target === table.rows.length) return table;
+      if (target < table.rows.length) return { ...table, rows: table.rows.slice(0, target) };
+      const extra = Array.from({ length: target - table.rows.length }, () => ({ id: crypto.randomUUID(), cells: Object.fromEntries(table.columns.map((column) => [column.id, ""])) }));
+      return { ...table, rows: [...table.rows, ...extra] };
+    });
+  }
+
+  function setTableColumnCount(elementId: string, count: number) {
+    patchTable(elementId, (table) => {
+      const target = Math.max(1, Math.round(count));
+      if (target === table.columns.length) return table;
+      if (target < table.columns.length) {
+        const keep = table.columns.slice(0, target);
+        const keepIds = new Set(keep.map((column) => column.id));
+        return { ...table, columns: keep, rows: table.rows.map((row) => ({ ...row, cells: Object.fromEntries(Object.entries(row.cells).filter(([key]) => keepIds.has(key))) })) };
+      }
+      const extra = Array.from({ length: target - table.columns.length }, (_, index) => ({ id: `col_${crypto.randomUUID().slice(0, 8)}`, label: `Columna ${table.columns.length + index + 1}`, width: 140 }));
+      return { ...table, width: table.width + extra.length * 120, columns: [...table.columns, ...extra], rows: table.rows.map((row) => ({ ...row, cells: { ...row.cells, ...Object.fromEntries(extra.map((column) => [column.id, ""])) } })) };
+    });
+  }
+
+  async function updateBoardComment(commentId: string, body: string) {
+    const clean = body.trim();
+    if (!clean) return;
+    const previous = comments;
+    setComments((current) => current.map((comment) => comment.id === commentId ? { ...comment, body: clean } : comment));
+    const { error: updateError } = await supabase.from("visual_board_comments").update({ body: clean }).eq("id", commentId).select("id").maybeSingle();
+    if (updateError) {
+      setComments(previous);
+      setSavingState("error");
+      return;
+    }
+    await logBoardActivity("comment_updated", { commentId });
+  }
+
+  async function resolveBoardComment(commentId: string, resolved: boolean) {
+    const previous = comments;
+    setComments((current) => current.map((comment) => comment.id === commentId ? { ...comment, resolved } : comment));
+    const { error: updateError } = await supabase.from("visual_board_comments").update({ resolved }).eq("id", commentId).select("id").maybeSingle();
+    if (updateError) {
+      setComments(previous);
+      setSavingState("error");
+      return;
+    }
+    await logBoardActivity(resolved ? "comment_resolved" : "comment_reopened", { commentId });
+  }
+
+  async function deleteBoardComment(commentId: string) {
+    const previous = comments;
+    setComments((current) => current.filter((comment) => comment.id !== commentId));
+    const { error: deleteError } = await supabase.from("visual_board_comments").delete().eq("id", commentId).select("id").maybeSingle();
+    if (deleteError) {
+      setComments(previous);
+      setSavingState("error");
+      return;
+    }
+    await logBoardActivity("comment_deleted", { commentId });
   }
 
   function deleteSelected() {
@@ -865,8 +1059,7 @@ export function BoardPage({ boardId }: BoardPageProps) {
   if (error || !board) return <div className="ft-governed-screen"><div className="ft-section-card border-rose-200 bg-rose-50 text-rose-700">{error ?? "No pudimos cargar la pizarra."}</div></div>;
 
   return (
-    <div className="fixed inset-0 z-50 grid grid-cols-1 bg-[#F7F9FC] text-[#0F172A] lg:grid-cols-[76px_1fr]">
-      <BoardWorkspaceRail />
+    <div className="fixed inset-0 z-50 bg-[#F7F9FC] text-[#0F172A]">
       <section className="grid min-h-screen grid-rows-[72px_1fr] overflow-hidden">
         <BoardTopbar board={board} savingState={savingState} collaborators={collaborators} onTitleChange={(title) => setBoard((current) => current ? { ...current, title } : current)} onOpenShare={() => setShareOpen(true)} />
         <input ref={imageInputRef} type="file" accept="image/*" className="hidden" onChange={(event) => void handleBoardFileSelected(event, "image")} />
@@ -883,7 +1076,7 @@ export function BoardPage({ boardId }: BoardPageProps) {
             onPointerLeave={() => void publishRealtimeCursor(null)}
           >
             <div style={{ transform: `translate(${viewport.x}px, ${viewport.y}px) scale(${viewport.zoom})`, transformOrigin: "0 0" }} className="absolute inset-0">
-              <ConnectorLayer connectors={connectors} selectedIds={selectedIds} pendingPoint={pendingConnector?.point ?? null} onSelect={(id) => setSelectedIds([id])} />
+              <ConnectorLayer connectors={connectors} selectedIds={selectedIds} pendingPoint={pendingConnector?.point ?? null} onSelect={(id) => setSelectedIds([id])} onConnectorPointDragStart={handleConnectorPointDragStart} />
               {elements.filter((element) => element.type !== "connector").map((element) => (
                 <BoardElementView
                   key={element.id}
@@ -892,6 +1085,7 @@ export function BoardPage({ boardId }: BoardPageProps) {
                   activeTool={activeTool}
                   onSelect={(id) => setSelectedIds([id])}
                   onDragStart={handleDragStart}
+                  onResizeStart={handleResizeStart}
                   onUpdateContent={updateContent}
                   onConnectorTarget={handleConnectorTarget}
                   onCommentTarget={handleCommentElementTarget}
@@ -909,11 +1103,12 @@ export function BoardPage({ boardId }: BoardPageProps) {
                   setCommentFocusId(comment.id);
                   if (comment.elementId) setSelectedIds([comment.elementId]);
                 }}
+                onDragCommentStart={handleCommentDragStart}
               />
               <BoardRealtimeCursors presence={activePresence} />
             </div>
           </div>
-          <BoardToolbox activeTool={activeTool} onToolChange={(tool) => { setActiveTool(tool); setPendingConnector(null); }} />
+          <BoardToolbox activeTool={activeTool} activeShape={activeShape} onShapeChange={setActiveShape} onToolChange={(tool) => { setActiveTool(tool); setPendingConnector(null); }} />
           {activeTool === "connector" && pendingConnector ? (
             <div className="ft-popover-surface absolute left-1/2 top-[76px] z-50 -translate-x-1/2 px-3 py-2 text-xs font-bold text-emerald-700">
               Selecciona el destino del conector o haz clic en el lienzo. Esc cancela.
@@ -943,6 +1138,8 @@ export function BoardPage({ boardId }: BoardPageProps) {
             onDelete={deleteSelected}
             onAddTableRow={() => selected?.type === "table" ? addTableRow(selected.id) : undefined}
             onAddTableColumn={() => selected?.type === "table" ? addTableColumn(selected.id) : undefined}
+            onSetTableRowCount={(count) => selected?.type === "table" ? setTableRowCount(selected.id, count) : undefined}
+            onSetTableColumnCount={(count) => selected?.type === "table" ? setTableColumnCount(selected.id, count) : undefined}
             onRemoveTableColumn={(columnId) => selected?.type === "table" ? removeTableColumn(selected.id, columnId) : undefined}
             onRenameTableColumn={(columnId, label) => selected?.type === "table" ? updateTableColumnLabel(selected.id, columnId, label) : undefined}
           />
@@ -956,6 +1153,9 @@ export function BoardPage({ boardId }: BoardPageProps) {
             savingComment={savingComment}
             onDraftChange={setCommentDraft}
             onSubmitComment={submitComment}
+            onUpdateComment={updateBoardComment}
+            onResolveComment={resolveBoardComment}
+            onDeleteComment={deleteBoardComment}
           />
           <div className="ft-popover-surface absolute bottom-5 left-1/2 z-40 flex -translate-x-1/2 items-center gap-2 px-3 py-2">
             <button className="ft-pressable grid h-9 w-9 place-items-center rounded-xl hover:bg-slate-100" onClick={() => setViewport((current) => ({ ...current, zoom: Math.max(0.5, current.zoom - 0.1) }))}><Minus className="h-4 w-4" /></button>

@@ -93,7 +93,7 @@ export function BoardShareView({ token }: BoardShareViewProps) {
       <main className="relative overflow-hidden bg-[#FBFCFE]">
         <div className="board-canvas h-full w-full">
           <div className="absolute inset-0">
-            <ConnectorLayer connectors={connectors} selectedIds={selectedIds} onSelect={(id) => setSelectedIds([id])} />
+            <ConnectorLayer connectors={connectors} selectedIds={selectedIds} onSelect={(id) => setSelectedIds([id])} onConnectorPointDragStart={() => undefined} />
             {elements.filter((element) => element.type !== "connector").map((element) => (
               <BoardElementView
                 key={element.id}
@@ -102,6 +102,7 @@ export function BoardShareView({ token }: BoardShareViewProps) {
                 activeTool="select"
                 onSelect={(id) => setSelectedIds([id])}
                 onDragStart={() => undefined}
+                onResizeStart={() => undefined}
                 onUpdateContent={() => undefined}
                 onConnectorTarget={() => undefined}
                 onUpdateTableCell={() => undefined}

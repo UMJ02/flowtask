@@ -8,6 +8,7 @@ type ConnectorLayerProps = {
   selectedIds: string[];
   pendingPoint?: { x: number; y: number } | null;
   onSelect: (id: string) => void;
+  onConnectorPointDragStart: (id: string, point: "from" | "to", event: ReactPointerEvent<SVGCircleElement>) => void;
 };
 
 function pathFor(connector: ConnectorElement) {
@@ -27,7 +28,7 @@ function pathFor(connector: ConnectorElement) {
   return `M ${from.x} ${from.y} L ${to.x} ${to.y}`;
 }
 
-export function ConnectorLayer({ connectors, selectedIds, pendingPoint, onSelect }: ConnectorLayerProps) {
+export function ConnectorLayer({ connectors, selectedIds, pendingPoint, onSelect, onConnectorPointDragStart }: ConnectorLayerProps) {
   return (
     <svg className="absolute left-0 top-0 z-[4] h-[6000px] w-[6000px] overflow-visible" aria-hidden="true">
       <defs>
@@ -58,6 +59,12 @@ export function ConnectorLayer({ connectors, selectedIds, pendingPoint, onSelect
                 onSelect(connector.id);
               }}
             />
+            {selected ? (
+              <>
+                <circle cx={connector.from.x} cy={connector.from.y} r="7" className="cursor-move fill-white stroke-emerald-500 stroke-2" onPointerDown={(event) => onConnectorPointDragStart(connector.id, "from", event)} />
+                <circle cx={connector.to.x} cy={connector.to.y} r="7" className="cursor-move fill-white stroke-emerald-500 stroke-2" onPointerDown={(event) => onConnectorPointDragStart(connector.id, "to", event)} />
+              </>
+            ) : null}
             {connector.label ? (
               <foreignObject x={midX - 70} y={midY - 18} width="140" height="36" className="pointer-events-none overflow-visible">
                 <div className="mx-auto w-fit max-w-[132px] rounded-full border border-slate-200 bg-white/90 px-2 py-1 text-[11px] font-bold text-slate-600 shadow-sm backdrop-blur">
