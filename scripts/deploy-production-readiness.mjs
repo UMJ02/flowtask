@@ -3,8 +3,8 @@ import fs from "node:fs";
 import path from "node:path";
 const root = process.cwd();
 const failures = [];
-const expectedVersion = "58.22.1-full-semantic-migration-motion-experience-layer";
-const expectedVerifyCurrent = "npm run verify:v58.22.1";
+const expectedVersion = "58.22.2-task-status-production-attachment-list-inline-department-edit";
+const expectedVerifyCurrent = "npm run verify:v58.22.2";
 function readJson(rel) { return JSON.parse(fs.readFileSync(path.join(root, rel), "utf8")); }
 function fileExists(rel) { return fs.existsSync(path.join(root, rel)); }
 function fileIncludes(rel, text) { return fileExists(rel) && fs.readFileSync(path.join(root, rel), "utf8").includes(text); }
@@ -13,35 +13,29 @@ function fail(label) { failures.push(label); }
 const pkg = readJson("package.json");
 const scripts = pkg.scripts ?? {};
 pkg.version === expectedVersion ? pass("package version aligned") : fail(`package version must be ${expectedVersion}`);
-scripts["verify:current"] === expectedVerifyCurrent ? pass("verify current aligned") : fail("verify:current must target verify:v58.22.1");
-scripts["verify:v58.22.1"] === "node scripts/verify-v58.22.1.mjs" ? pass("version verifier available") : fail("verify:v58.22.1 script missing or incorrect");
-fileExists("scripts/verify-v58.22.1.mjs") ? pass("verify-v58.22.1 script exists") : fail("scripts/verify-v58.22.1.mjs missing");
-fileIncludes("src/lib/release/version.ts", expectedVersion) ? pass("runtime version export aligned") : fail("src/lib/release/version.ts must export v58.22.1");
+scripts["verify:current"] === expectedVerifyCurrent ? pass("verify current aligned") : fail("verify:current must target verify:v58.22.2");
+scripts["verify:v58.22.2"] === "node scripts/verify-v58.22.2.mjs" ? pass("version verifier available") : fail("verify:v58.22.2 script missing or incorrect");
+fileExists("scripts/verify-v58.22.2.mjs") ? pass("verify-v58.22.2 script exists") : fail("scripts/verify-v58.22.2.mjs missing");
+fileIncludes("src/lib/release/version.ts", expectedVersion) ? pass("runtime version export aligned") : fail("src/lib/release/version.ts must export v58.22.2");
 fileIncludes("src/lib/release/version.ts", "production-candidate") ? pass("release stage aligned") : fail("src/lib/release/version.ts must include production-candidate");
-fileExists("docs/release/V58_22_1_FULL_SEMANTIC_MIGRATION_MOTION_EXPERIENCE_LAYER.md") ? pass("release notes available") : fail("v58.22.1 release notes missing");
-fileExists("docs/qa/FLOWTASK_V58_22_1_FULL_SEMANTIC_MOTION_QA.md") ? pass("QA document available") : fail("v58.22.1 QA doc missing");
-fileExists("docs/design-system/FLOWTASK_FULL_SEMANTIC_MOTION_LAYER.md") ? pass("motion design system document available") : fail("semantic motion design system document missing");
+fileExists("docs/release/V58_22_2_TASK_STATUS_PRODUCTION_ATTACHMENT_LIST_INLINE_DEPARTMENT_EDIT.md") ? pass("release notes available") : fail("v58.22.2 release notes missing");
+fileExists("docs/qa/FLOWTASK_V58_22_2_TASK_STATUS_ATTACHMENTS_DEPARTMENT_QA.md") ? pass("QA document available") : fail("v58.22.2 QA doc missing");
+fileExists("docs/design-system/FLOWTASK_TASK_ATTACHMENT_LIST_PATTERN.md") ? pass("task attachment list pattern documented") : fail("task attachment list pattern doc missing");
 for (const [label, rel, text] of [
-  ["glass panel utility available", "src/app/globals.css", "ft-glass-panel"],
-  ["motion tab utility available", "src/app/globals.css", "ft-motion-tab"],
-  ["skeleton utility available", "src/app/globals.css", "ft-skeleton"],
-  ["feedback states available", "src/app/globals.css", "ft-feedback-success"],
-  ["liquid hover available", "src/app/globals.css", "ft-liquid-hover"],
-  ["motion tokens exported", "src/lib/design-system/tokens.ts", "motionExperienceLayer"],
-  ["semantic migration layer exported", "src/lib/design-system/tokens.ts", "semanticMigrationLayer"],
-  ["AppMotion available", "src/components/ui/app-motion.tsx", "AppMotion"],
-  ["AppSkeleton available", "src/components/ui/app-skeleton.tsx", "AppSkeleton"],
-  ["AppFeedback available", "src/components/ui/app-feedback.tsx", "AppFeedback"],
-  ["AppGlassPanel available", "src/components/ui/app-glass-panel.tsx", "AppGlassPanel"],
-  ["AppAnimatedTabs available", "src/components/ui/app-animated-tabs.tsx", "AppAnimatedTabs"],
-  ["AppTabs migrated to animated tabs", "src/components/ui/app-tabs.tsx", "ft-motion-tab"],
+  ["production status constant available", "src/lib/constants/task-status.ts", "produccion"],
+  ["production status validation available", "src/lib/validations/task.ts", "produccion"],
+  ["production task status type available", "src/types/task.ts", "produccion"],
+  ["production status helper available", "src/lib/tasks/status.ts", "PRODUCTION"],
+  ["production DB migration available", "supabase/migrations/0044_v58_22_2_task_status_production.sql", "'produccion'"],
+  ["task attachment list variant available", "src/components/attachments/entity-attachments.tsx", "variant?: \"cards\" | \"list\""],
+  ["task workspace uses attachment list", "src/components/tasks/task-workspace-inline.tsx", "variant=\"list\""],
+  ["inline department options available", "src/components/tasks/task-workspace-inline.tsx", "setDepartmentOptions"],
+  ["inline department payload available", "src/components/tasks/task-workspace-inline.tsx", "department_id: form.departmentId"],
 ]) fileIncludes(rel, text) ? pass(label) : fail(`${label} missing`);
 fileIncludes(".env.example", "NEXT_PUBLIC_SUPABASE_URL") ? pass("Supabase URL env documented") : fail(".env.example missing NEXT_PUBLIC_SUPABASE_URL");
 fileIncludes(".env.example", "NEXT_PUBLIC_SUPABASE_ANON_KEY") ? pass("Supabase anon env documented") : fail(".env.example missing NEXT_PUBLIC_SUPABASE_ANON_KEY");
 fileIncludes(".env.example", "SUPABASE_SERVICE_ROLE_KEY") ? pass("Supabase service role env documented") : fail(".env.example missing SUPABASE_SERVICE_ROLE_KEY");
 if (fileExists("vercel.json")) { const vercel = readJson("vercel.json"); vercel.framework === "nextjs" ? pass("Vercel framework aligned") : fail("vercel.json framework must be nextjs"); vercel.buildCommand === "npm run vercel:build" ? pass("Vercel build command aligned") : fail("vercel.json buildCommand must be npm run vercel:build"); } else fail("vercel.json missing");
-fileIncludes("package-lock.json", expectedVersion) ? pass("package-lock version aligned") : fail("package-lock.json must include v58.22.1 package version");
-const migrations = fileExists("supabase/migrations") ? fs.readdirSync(path.join(root, "supabase/migrations")) : [];
-if (migrations.some((file) => file.includes("58_22_1") || file.includes("v58_22_1"))) fail("v58.22.1 must not add Supabase migrations"); else pass("no Supabase migration added");
+fileIncludes("package-lock.json", expectedVersion) ? pass("package-lock version aligned") : fail("package-lock.json must include v58.22.2 package version");
 if (failures.length) { console.error("[deploy-production-readiness] Failed checks:"); for (const failure of failures) console.error(`- ${failure}`); process.exit(1); }
-console.log("[deploy-production-readiness] OK — v58.22.1 production readiness aligned.");
+console.log("[deploy-production-readiness] OK — v58.22.2 production readiness aligned.");

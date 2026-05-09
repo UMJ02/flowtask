@@ -49,11 +49,13 @@ export function EntityAttachments({
   entityId,
   attachments,
   canManage = true,
+  variant = "cards",
 }: {
   entityType: "task" | "project";
   entityId: string;
   attachments: AttachmentRow[];
   canManage?: boolean;
+  variant?: "cards" | "list";
 }) {
   const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
@@ -178,6 +180,38 @@ export function EntityAttachments({
       {!canManage ? <p className="mt-3 text-sm text-slate-500">Tu acceso actual permite ver adjuntos existentes, pero no subir ni eliminar archivos.</p> : null}
       {error ? <p className="mt-3 text-sm text-red-600">{error}</p> : null}
 
+      {variant === "list" ? (
+        <div className="mt-4 divide-y divide-[#E5EAF1] overflow-hidden rounded-[18px] border border-[#E5EAF1] bg-white">
+          {attachments.length ? attachments.map((attachment) => (
+            <div key={attachment.id} className="ft-motion-list-item flex flex-col gap-3 px-3.5 py-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex min-w-0 items-center gap-3">
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-[14px] border border-[#E5EAF1] bg-[#F8FAFC] text-[#64748B]">
+                  <AttachmentTypeIcon attachment={attachment} />
+                </span>
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-semibold text-slate-950">{attachment.file_name}</p>
+                  <p className="mt-0.5 truncate text-xs text-slate-500">{formatBytes(attachment.file_size)} · {attachment.created_at ? formatDate(attachment.created_at) : "Sin fecha"}</p>
+                </div>
+              </div>
+              <div className="flex shrink-0 flex-wrap gap-2 sm:justify-end">
+                {attachment.public_url ? (
+                  <a href={attachment.public_url} target="_blank" rel="noreferrer">
+                    <Button type="button" variant="secondary" size="sm">
+                      <FileText className="mr-2 h-4 w-4" /> Abrir
+                    </Button>
+                  </a>
+                ) : null}
+                <Button type="button" variant="secondary" size="sm" onClick={() => handleDelete(attachment)} disabled={!canManage || deletingId === attachment.id}>
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  {deletingId === attachment.id ? "Quitando..." : "Eliminar"}
+                </Button>
+              </div>
+            </div>
+          )) : (
+            <div className="px-4 py-5 text-center text-sm font-semibold text-[#64748B]">Todavía no hay archivos. Puedes subir briefs, facturas, capturas o documentos de soporte.</div>
+          )}
+        </div>
+      ) : (
       <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
         {attachments.length ? attachments.map((attachment) => {
           const image = isImageAttachment(attachment);
@@ -230,6 +264,7 @@ export function EntityAttachments({
           </div>
         )}
       </div>
+      )}
     </Card>
   );
 }

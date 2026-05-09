@@ -3,7 +3,7 @@
 import { memo, useEffect, useMemo, useState } from "react";
 
 import Link from "next/link";
-import { AlertCircle, CheckCircle2, ChevronDown, ChevronUp, Clock3, FolderOpen, GripVertical, Loader2 } from "lucide-react";
+import { AlertCircle, CheckCircle2, ChevronDown, ChevronUp, Clock3, Flag, FolderOpen, GripVertical, Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { Card } from "@/components/ui/card";
 import { taskDetailRoute } from "@/lib/navigation/routes";
@@ -37,6 +37,7 @@ function getScopedLayoutKey(base: keyof LayoutConfigShape, workspaceKey: string)
 
 const columns = [
   { value: "en_proceso", label: "En progreso", icon: Clock3 },
+  { value: "produccion", label: "Producción", icon: Flag },
   { value: "en_espera", label: "En espera", icon: AlertCircle },
   { value: "concluido", label: "Hecho", icon: CheckCircle2 },
 ] as const;
@@ -422,7 +423,7 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery, work
             <section
               key={column.value}
               className={`rounded-[18px] border p-3 transition ${
-                isActiveDropzone || isRecentDrop ? "border-emerald-300 bg-emerald-50/60" : column.value === "en_proceso" ? "border-[#BFDBFE] bg-[linear-gradient(180deg,#F8FBFF,#FFFFFF)]" : column.value === "en_espera" ? "border-[#FDE68A] bg-[linear-gradient(180deg,#FFFDF5,#FFFFFF)]" : "border-[#BBF7D0] bg-[linear-gradient(180deg,#F7FFFB,#FFFFFF)]"
+                isActiveDropzone || isRecentDrop ? "border-emerald-300 bg-emerald-50/60" : column.value === "en_proceso" ? "border-[#BFDBFE] bg-[linear-gradient(180deg,#F8FBFF,#FFFFFF)]" : column.value === "produccion" ? "border-violet-200 bg-[linear-gradient(180deg,#FBF8FF,#FFFFFF)]" : column.value === "en_espera" ? "border-[#FDE68A] bg-[linear-gradient(180deg,#FFFDF5,#FFFFFF)]" : "border-[#BBF7D0] bg-[linear-gradient(180deg,#F7FFFB,#FFFFFF)]"
               }`}
               onDragOver={(event) => {
                 event.preventDefault();
@@ -438,7 +439,7 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery, work
             >
               <div className="mb-3 flex items-center justify-between gap-3 pb-1.5">
                 <div className="flex min-w-0 items-center gap-3">
-                  <span className={`inline-flex h-2.5 w-2.5 rounded-full ${column.value === "en_proceso" ? "bg-[#2F80ED]" : column.value === "en_espera" ? "bg-[#F59E0B]" : "bg-[#16C784]"}`} />
+                  <span className={`inline-flex h-2.5 w-2.5 rounded-full ${column.value === "en_proceso" ? "bg-[#2F80ED]" : column.value === "produccion" ? "bg-violet-500" : column.value === "en_espera" ? "bg-[#F59E0B]" : "bg-[#16C784]"}`} />
                   <p className="text-base font-bold tracking-tight text-slate-900">{column.label}</p>
                 </div>
                 <span className="inline-flex h-9 min-w-9 items-center justify-center rounded-xl bg-white px-3 text-sm font-semibold text-slate-700 ring-1 ring-slate-200 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]">

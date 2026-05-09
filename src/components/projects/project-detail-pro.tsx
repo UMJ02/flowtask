@@ -51,6 +51,7 @@ function statusLabel(value?: string | null) {
     completado: "Completado",
     vencido: "Vencido",
     en_proceso: "En progreso",
+    produccion: "Producción",
     en_espera: "En espera",
     concluido: "Completada",
   };
@@ -59,6 +60,7 @@ function statusLabel(value?: string | null) {
 
 function statusClass(value?: string | null) {
   if (value === "concluido" || value === "completado") return "bg-[#ECFDF5] text-[#087A4B] ring-[#BBF7D0]";
+  if (value === "produccion") return "bg-violet-50 text-violet-700 ring-violet-200";
   if (value === "en_espera" || value === "en_pausa") return "bg-[#FFF8E8] text-[#B45309] ring-[#FDECC8]";
   if (value === "vencido") return "bg-[#FFF1F2] text-[#E11D48] ring-[#FFE4E6]";
   if (value === "activo" || value === "en_proceso") return "bg-[#EFF6FF] text-[#2563EB] ring-[#BFDBFE]";
@@ -165,7 +167,7 @@ function AvatarStack({ members }: { members: any[] }) {
 function ProjectStatsRow({ tasks }: { tasks: any[] }) {
   const total = tasks.length;
   const completed = tasks.filter((task) => task.status === "concluido" || task.status === "completado").length;
-  const progress = tasks.filter((task) => task.status === "en_proceso").length;
+  const progress = tasks.filter((task) => task.status === "en_proceso" || task.status === "produccion").length;
   const waiting = tasks.filter((task) => task.status === "en_espera").length;
   const overdue = tasks.filter((task) => task.due_date && new Date(`${task.due_date}T23:59:59`) < new Date() && task.status !== "concluido" && task.status !== "completado").length;
   const items = [

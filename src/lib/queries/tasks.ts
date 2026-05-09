@@ -141,6 +141,7 @@ export async function getTaskById(taskId: string) {
           title,
           description,
           status,
+          department_id,
           client_id,
           client_name,
           due_date,

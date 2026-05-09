@@ -10,6 +10,7 @@ import { formatDate } from "@/lib/utils/dates";
 function statusLabel(value?: string | null) {
   const map: Record<string, string> = {
     en_proceso: "En proceso",
+    produccion: "Producción",
     en_espera: "En espera",
     concluido: "Completada",
     completado: "Completada",
@@ -19,6 +20,7 @@ function statusLabel(value?: string | null) {
 
 function statusClass(value?: string | null) {
   if (value === "concluido" || value === "completado") return "bg-emerald-50 text-emerald-700 ring-emerald-200";
+  if (value === "produccion") return "bg-violet-50 text-violet-700 ring-violet-200";
   if (value === "en_espera") return "bg-amber-50 text-amber-700 ring-amber-200";
   return "bg-blue-50 text-blue-700 ring-blue-200";
 }
@@ -265,7 +267,7 @@ export function ProjectInlineTasks({ project, initialTasks, members, canManage =
                 <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-[minmax(220px,1fr)_150px_140px_minmax(180px,230px)_auto] xl:items-center">
                   <input value={editDraft.title} onChange={(e) => setEditDraft((current) => ({ ...current, title: e.target.value }))} className="h-11 rounded-[14px] border border-[#E7EDF5] px-3 text-sm font-bold outline-none" />
                   <input type="date" value={editDraft.dueDate} onChange={(e) => setEditDraft((current) => ({ ...current, dueDate: e.target.value }))} className="h-11 rounded-[14px] border border-[#E7EDF5] px-3 text-sm font-bold outline-none" />
-                  <select value={editDraft.status} onChange={(e) => setEditDraft((current) => ({ ...current, status: e.target.value }))} className="h-11 rounded-[14px] border border-[#E7EDF5] px-3 text-sm font-bold outline-none"><option value="en_proceso">En proceso</option><option value="en_espera">En espera</option><option value="concluido">Completada</option></select>
+                  <select value={editDraft.status} onChange={(e) => setEditDraft((current) => ({ ...current, status: e.target.value }))} className="h-11 rounded-[14px] border border-[#E7EDF5] px-3 text-sm font-bold outline-none"><option value="en_proceso">En proceso</option><option value="produccion">Producción</option><option value="en_espera">En espera</option><option value="concluido">Completada</option></select>
                   <select value={editDraft.assigneeId} onChange={(e) => setEditDraft((current) => ({ ...current, assigneeId: e.target.value }))} className="h-11 rounded-[14px] border border-[#E7EDF5] px-3 text-sm font-bold outline-none"><option value="">Sin responsable</option>{members.map((member) => <option key={member.user_id} value={member.user_id}>{memberName(member)}</option>)}</select>
                   <div className="flex gap-2">
                     <button type="button" onClick={() => saveProjectTask(task.id)} disabled={busyId === task.id} className="grid h-11 w-11 place-items-center rounded-[14px] bg-[#050B18] text-white"><Save className="h-4 w-4" /></button>

@@ -7,6 +7,7 @@ const STATUS_STYLES: Record<string, string> = {
   completed: 'bg-slate-100 text-slate-700 ring-1 ring-slate-200',
   concluido: 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100',
   en_progreso: 'bg-blue-50 text-blue-700 ring-1 ring-blue-100',
+  produccion: 'bg-violet-50 text-violet-700 ring-1 ring-violet-100',
   in_progress: 'bg-blue-50 text-blue-700 ring-1 ring-blue-100',
   pendiente: 'bg-amber-50 text-amber-700 ring-1 ring-amber-100',
   por_hacer: 'bg-amber-50 text-amber-700 ring-1 ring-amber-100',
@@ -20,6 +21,7 @@ const STATUS_STYLES: Record<string, string> = {
 
 function toLabel(value?: string | null) {
   if (!value) return 'Sin estado';
+  if (value === 'produccion') return 'Producción';
   return value.replaceAll('_', ' ').replace(/\b\w/g, (char) => char.toUpperCase());
 }
 

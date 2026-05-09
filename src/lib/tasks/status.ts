@@ -1,5 +1,6 @@
 export const TASK_STATUS = {
   IN_PROGRESS: "en_proceso",
+  PRODUCTION: "produccion",
   WAITING: "en_espera",
   DONE: "concluido",
 } as const;
@@ -14,6 +15,7 @@ export function todayIsoDate() {
 export function normalizeTaskStatus(status?: string | null) {
   if (status === TASK_STATUS.DONE) return TASK_STATUS.DONE;
   if (status === TASK_STATUS.WAITING) return TASK_STATUS.WAITING;
+  if (status === TASK_STATUS.PRODUCTION) return TASK_STATUS.PRODUCTION;
   return TASK_STATUS.IN_PROGRESS;
 }
 
@@ -26,7 +28,8 @@ export function isTaskWaiting(status?: string | null) {
 }
 
 export function isTaskOperationallyActive(status?: string | null) {
-  return normalizeTaskStatus(status) === TASK_STATUS.IN_PROGRESS;
+  const normalized = normalizeTaskStatus(status);
+  return normalized === TASK_STATUS.IN_PROGRESS || normalized === TASK_STATUS.PRODUCTION;
 }
 
 export function shouldHideTaskByDefault(status?: string | null) {
@@ -54,6 +57,7 @@ export function getTaskStandbyDays(task: { updated_at?: string | null; created_a
 export function getTaskStatusLabel(status?: string | null) {
   const normalized = normalizeTaskStatus(status);
   if (normalized === TASK_STATUS.DONE) return "Concluido";
+  if (normalized === TASK_STATUS.PRODUCTION) return "Producción";
   if (normalized === TASK_STATUS.WAITING) return "En espera";
   return "En proceso";
 }
@@ -61,6 +65,7 @@ export function getTaskStatusLabel(status?: string | null) {
 export function getTaskStatusColor(status?: string | null) {
   const normalized = normalizeTaskStatus(status);
   if (normalized === TASK_STATUS.DONE) return "emerald";
+  if (normalized === TASK_STATUS.PRODUCTION) return "violet";
   if (normalized === TASK_STATUS.WAITING) return "amber";
   return "blue";
 }

@@ -117,12 +117,14 @@ function priorityLabel(priority?: string | null) {
 
 function statusTone(status?: string | null) {
   if (status === "concluido") return "border-emerald-200 bg-emerald-50 text-emerald-700";
+  if (status === "produccion") return "border-violet-200 bg-violet-50 text-violet-700";
   if (status === "en_espera") return "border-amber-200 bg-amber-50 text-amber-700";
   return "border-sky-200 bg-sky-50 text-sky-700";
 }
 
 function statusDot(status?: string | null) {
   if (status === "concluido") return "bg-emerald-500";
+  if (status === "produccion") return "bg-violet-500";
   if (status === "en_espera") return "bg-amber-500";
   return "bg-sky-500";
 }
@@ -134,6 +136,7 @@ function statusLabel(status?: string | null) {
 function barColor(task: TaskRow, mode: GanttColorMode = "priority") {
   if (mode === "status") {
     if (task.status === "concluido") return "bg-emerald-500";
+    if (task.status === "produccion") return "bg-violet-500";
     if (task.status === "en_espera") return "bg-amber-400";
     return "bg-blue-500";
   }
@@ -142,6 +145,7 @@ function barColor(task: TaskRow, mode: GanttColorMode = "priority") {
     return ["bg-emerald-500", "bg-blue-500", "bg-violet-400", "bg-amber-400"][bucket] ?? "bg-emerald-500";
   }
   if (task.status === "concluido") return "bg-emerald-500";
+  if (task.status === "produccion") return "bg-violet-500";
   if (task.status === "en_espera") return "bg-amber-400";
   if (task.priority === "alta") return "bg-rose-400";
   if (task.priority === "baja") return "bg-emerald-400";
@@ -150,6 +154,7 @@ function barColor(task: TaskRow, mode: GanttColorMode = "priority") {
 
 function getProgress(task: TaskRow) {
   if (task.status === "concluido") return 100;
+  if (task.status === "produccion") return 75;
   if (task.status === "en_espera") return 20;
   if (task.priority === "alta") return 70;
   if (task.priority === "baja") return 40;
@@ -612,7 +617,7 @@ function TaskActionListComponent({
     const done = items.filter((task) => task.status === "concluido").length;
     const urgent = operationalItems.filter((task) => task.priority === "alta").length;
     const today = todayIsoDate();
-    const dueToday = operationalItems.filter((task) => task.status === "en_proceso" && task.due_date?.slice(0, 10) === today).length;
+    const dueToday = operationalItems.filter((task) => (task.status === "en_proceso" || task.status === "produccion") && task.due_date?.slice(0, 10) === today).length;
     const percent = items.length ? Math.round((done / items.length) * 100) : 0;
 
     return (

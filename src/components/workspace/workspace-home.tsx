@@ -170,7 +170,7 @@ export function WorkspaceHome() {
   const [demoError, setDemoError] = useState<string | null>(null);
   const [flowFiltersOpen, setFlowFiltersOpen] = useState(false);
   const [flowSearch, setFlowSearch] = useState('');
-  const [flowStatusFilter, setFlowStatusFilter] = useState<'all' | 'en_proceso' | 'en_espera' | 'concluido'>('all');
+  const [flowStatusFilter, setFlowStatusFilter] = useState<'all' | 'en_proceso' | 'produccion' | 'en_espera' | 'concluido'>('all');
   const [flowPriorityFilter, setFlowPriorityFilter] = useState<'all' | 'alta' | 'media' | 'baja'>('all');
   const [flowGroupBy, setFlowGroupBy] = useState<'status' | 'priority' | 'client'>('status');
   const deferredFlowSearch = useDeferredValue(flowSearch);
@@ -435,6 +435,7 @@ export function WorkspaceHome() {
             <select value={flowStatusFilter} onChange={(event) => setFlowStatusFilter(event.target.value as typeof flowStatusFilter)} className="h-11 rounded-[14px] border border-[#E5EAF1] bg-white px-3 text-sm font-semibold text-slate-700 outline-none">
               <option value="all">Todos los estados</option>
               <option value="en_proceso">En progreso</option>
+              <option value="produccion">Producción</option>
               <option value="en_espera">En espera</option>
               <option value="concluido">Hecho</option>
             </select>

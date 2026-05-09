@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState, useTransition } from 'react';
-import { AlertTriangle, CheckCircle2, CircleDot, PauseCircle } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, CircleDot, Flag, PauseCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -10,6 +10,7 @@ import { getTaskStatusUpdatePayload } from '@/lib/tasks/status';
 
 const OPTIONS = [
   { value: 'en_proceso', label: 'En proceso', icon: CircleDot },
+  { value: 'produccion', label: 'Producción', icon: Flag },
   { value: 'en_espera', label: 'En espera', icon: PauseCircle },
   { value: 'concluido', label: 'Concluida', icon: CheckCircle2 },
 ] as const;

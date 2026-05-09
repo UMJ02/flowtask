@@ -43,7 +43,7 @@ export type AnalyticsTimeSeriesPoint = {
 };
 
 export type AnalyticsStatusItem = {
-  status: 'en_proceso' | 'en_espera' | 'concluido';
+  status: 'en_proceso' | 'produccion' | 'en_espera' | 'concluido';
   label: string;
   count: number;
   color: string;

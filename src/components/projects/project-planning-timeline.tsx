@@ -73,6 +73,7 @@ function progressFor(task: any) {
 
 function statusLabel(status?: string | null) {
   if (status === "concluido") return "Concluido";
+  if (status === "produccion") return "Producción";
   if (status === "en_espera") return "En espera";
   return "En proceso";
 }
@@ -86,6 +87,7 @@ function priorityLabel(priority?: string | null) {
 function colorClass(task: any, mode: ColorMode) {
   if (mode === "status") {
     if (task.status === "concluido") return "bg-emerald-500";
+    if (task.status === "produccion") return "bg-violet-500";
     if (task.status === "en_espera") return "bg-amber-400";
     return "bg-blue-500";
   }

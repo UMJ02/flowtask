@@ -169,6 +169,8 @@ function formatStatus(status: string | null | undefined) {
   switch (status) {
     case 'en_proceso':
       return 'En proceso';
+    case 'produccion':
+      return 'Producción';
     case 'en_espera':
       return 'En espera';
     case 'concluido':
@@ -775,7 +777,7 @@ function InteractiveDashboardBoardComponent() {
     setFavoriteTaskIds(favoriteTaskSet());
   }
 
-  async function updateTaskStatus(taskId: string, nextStatus: 'en_proceso' | 'en_espera' | 'concluido') {
+  async function updateTaskStatus(taskId: string, nextStatus: 'en_proceso' | 'produccion' | 'en_espera' | 'concluido') {
     const previousTasks = boardTasks;
     setStatusUpdatingTaskId(taskId);
     setDataError(null);
