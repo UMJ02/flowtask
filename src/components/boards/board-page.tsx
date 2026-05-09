@@ -6,11 +6,12 @@ import { Minus, Plus, RotateCcw } from "lucide-react";
 import { BoardElementView } from "@/components/boards/board-element";
 import { BoardToolbox } from "@/components/boards/board-toolbox";
 import { BoardTopbar } from "@/components/boards/board-topbar";
+import { ConnectorLayer } from "@/components/boards/connector-layer";
 import { FloatingFormatToolbar } from "@/components/boards/floating-format-toolbar";
 import { PropertiesPanel } from "@/components/boards/properties-panel";
-import { createDefaultBoardElement } from "@/lib/boards/board-defaults";
+import { createDefaultBoardElement, createDefaultConnector } from "@/lib/boards/board-defaults";
 import { mapBoardRow, mapElementRow, serializeElementForUpsert } from "@/lib/boards/board-serialization";
-import type { BoardElement, BoardTool, VisualBoard, VisualBoardElementRow, VisualBoardRow } from "@/lib/boards/board-types";
+import type { BoardElement, BoardPoint, BoardTool, ConnectorElement, VisualBoard, VisualBoardElementRow, VisualBoardRow } from "@/lib/boards/board-types";
 import { createClient } from "@/lib/supabase/client";
 import { getClientWorkspaceContext } from "@/lib/supabase/workspace-client";
 
@@ -22,6 +23,11 @@ type DragState = {
   startY: number;
   originX: number;
   originY: number;
+};
+
+type PendingConnector = {
+  point: BoardPoint;
+  elementId?: string | null;
 };
 
 export function BoardPage({ boardId }: BoardPageProps) {
@@ -37,10 +43,12 @@ export function BoardPage({ boardId }: BoardPageProps) {
   const [dirtyMap, setDirtyMap] = useState<Record<string, BoardElement>>({});
   const [deletedIds, setDeletedIds] = useState<string[]>([]);
   const [dragState, setDragState] = useState<DragState | null>(null);
+  const [pendingConnector, setPendingConnector] = useState<PendingConnector | null>(null);
   const [viewport, setViewport] = useState({ x: 0, y: 0, zoom: 1 });
   const [error, setError] = useState<string | null>(null);
 
   const selected = selectedIds.length === 1 ? elements.find((item) => item.id === selectedIds[0]) ?? null : null;
+  const connectors = elements.filter((element): element is ConnectorElement => element.type === "connector");
 
   const loadBoard = useCallback(async () => {
     setLoading(true);
@@ -153,6 +161,28 @@ export function BoardPage({ boardId }: BoardPageProps) {
     };
   }
 
+  function getElementCenter(id: string) {
+    const element = elements.find((item) => item.id === id);
+    if (!element) return null;
+    return { x: element.x + element.width / 2, y: element.y + element.height / 2 };
+  }
+
+  function createConnectorFromPending(to: PendingConnector) {
+    if (!pendingConnector || !userId) return;
+    const connector = createDefaultConnector(
+      boardId,
+      pendingConnector.point,
+      to.point,
+      userId,
+      pendingConnector.elementId ?? null,
+      to.elementId ?? null,
+    );
+    setElements((current) => [...current, connector]);
+    setSelectedIds([connector.id]);
+    markDirty(connector);
+    setPendingConnector(null);
+  }
+
   function handleCanvasClick(event: ReactPointerEvent<HTMLDivElement>) {
     if (!userId) return;
     if (activeTool === "select") {
@@ -161,11 +191,28 @@ export function BoardPage({ boardId }: BoardPageProps) {
     }
     if (activeTool === "hand") return;
     const point = screenToCanvas(event.clientX, event.clientY);
+    if (activeTool === "connector") {
+      if (pendingConnector) createConnectorFromPending({ point, elementId: null });
+      else setPendingConnector({ point, elementId: null });
+      return;
+    }
     const next = createDefaultBoardElement(activeTool, boardId, point, userId);
     setElements((current) => [...current, next]);
     setSelectedIds([next.id]);
     markDirty(next);
     setActiveTool("select");
+  }
+
+  function handleConnectorTarget(id: string) {
+    if (!userId) return;
+    const point = getElementCenter(id);
+    if (!point) return;
+    if (pendingConnector && pendingConnector.elementId !== id) {
+      createConnectorFromPending({ point, elementId: id });
+      return;
+    }
+    setPendingConnector({ point, elementId: id });
+    setSelectedIds([id]);
   }
 
   function handleDragStart(id: string, event: ReactPointerEvent<HTMLDivElement>) {
@@ -177,13 +224,46 @@ export function BoardPage({ boardId }: BoardPageProps) {
     setDragState({ id, startX: event.clientX, startY: event.clientY, originX: element.x, originY: element.y });
   }
 
+  function updateAttachedConnectors(moved: BoardElement) {
+    return (item: BoardElement): BoardElement => {
+      if (item.type !== "connector") return item;
+      let changed = false;
+      const next = { ...item } as ConnectorElement;
+      const center = { x: moved.x + moved.width / 2, y: moved.y + moved.height / 2 };
+      if (item.fromElementId === moved.id) {
+        next.from = center;
+        changed = true;
+      }
+      if (item.toElementId === moved.id) {
+        next.to = center;
+        changed = true;
+      }
+      if (!changed) return item;
+      next.x = Math.min(next.from.x, next.to.x);
+      next.y = Math.min(next.from.y, next.to.y);
+      next.width = Math.max(1, Math.abs(next.to.x - next.from.x));
+      next.height = Math.max(1, Math.abs(next.to.y - next.from.y));
+      next.updatedAt = new Date().toISOString();
+      markDirty(next);
+      return next;
+    };
+  }
+
   function handlePointerMove(event: ReactPointerEvent<HTMLDivElement>) {
     if (!dragState) return;
     const dx = (event.clientX - dragState.startX) / viewport.zoom;
     const dy = (event.clientY - dragState.startY) / viewport.zoom;
     const nextX = Math.round(dragState.originX + dx);
     const nextY = Math.round(dragState.originY + dy);
-    setElements((current) => current.map((item) => item.id === dragState.id ? { ...item, x: nextX, y: nextY, updatedAt: new Date().toISOString() } : item));
+    setElements((current) => {
+      let moved: BoardElement | null = null;
+      const withMoved = current.map((item) => {
+        if (item.id !== dragState.id) return item;
+        moved = { ...item, x: nextX, y: nextY, updatedAt: new Date().toISOString() } as BoardElement;
+        return moved;
+      });
+      return moved ? withMoved.map(updateAttachedConnectors(moved)) : withMoved;
+    });
   }
 
   function handlePointerUp() {
@@ -207,6 +287,7 @@ export function BoardPage({ boardId }: BoardPageProps) {
     setElements((current) => current.filter((item) => !selectedIds.includes(item.id)));
     setDeletedIds((current) => Array.from(new Set([...current, ...selectedIds])));
     setSelectedIds([]);
+    setPendingConnector(null);
   }
 
   function duplicateSelected() {
@@ -229,10 +310,11 @@ export function BoardPage({ boardId }: BoardPageProps) {
         event.preventDefault();
         duplicateSelected();
       }
+      if (event.key === "Escape") setPendingConnector(null);
     }
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [selectedIds, selected, userId]);
+  }, [selectedIds, selected, userId, pendingConnector]);
 
   if (loading) return <div className="grid min-h-[70vh] place-items-center text-sm font-semibold text-slate-500">Cargando pizarra...</div>;
   if (error || !board) return <div className="ft-governed-screen"><div className="ft-section-card border-rose-200 bg-rose-50 text-rose-700">{error ?? "No pudimos cargar la pizarra."}</div></div>;
@@ -250,24 +332,32 @@ export function BoardPage({ boardId }: BoardPageProps) {
             onPointerUp={handlePointerUp}
           >
             <div style={{ transform: `translate(${viewport.x}px, ${viewport.y}px) scale(${viewport.zoom})`, transformOrigin: "0 0" }} className="absolute inset-0">
-              {elements.map((element) => (
+              <ConnectorLayer connectors={connectors} selectedIds={selectedIds} pendingPoint={pendingConnector?.point ?? null} onSelect={(id) => setSelectedIds([id])} />
+              {elements.filter((element) => element.type !== "connector").map((element) => (
                 <BoardElementView
                   key={element.id}
                   element={element}
                   selected={selectedIds.includes(element.id)}
+                  activeTool={activeTool}
                   onSelect={(id) => setSelectedIds([id])}
                   onDragStart={handleDragStart}
                   onUpdateContent={updateContent}
+                  onConnectorTarget={handleConnectorTarget}
                 />
               ))}
             </div>
           </div>
-          <BoardToolbox activeTool={activeTool} onToolChange={setActiveTool} />
+          <BoardToolbox activeTool={activeTool} onToolChange={(tool) => { setActiveTool(tool); setPendingConnector(null); }} />
+          {activeTool === "connector" && pendingConnector ? (
+            <div className="ft-popover-surface absolute left-1/2 top-[76px] z-50 -translate-x-1/2 px-3 py-2 text-xs font-bold text-emerald-700">
+              Selecciona el destino del conector o haz clic en el lienzo. Esc cancela.
+            </div>
+          ) : null}
           <FloatingFormatToolbar
             selected={selected}
             onDuplicate={duplicateSelected}
             onDelete={deleteSelected}
-            onChangeFill={(fill) => selected ? patchElement(selected.id, { style: { ...selected.style, fill } } as Partial<BoardElement>) : undefined}
+            onChangeColor={(color) => selected ? patchElement(selected.id, { style: selected.type === "connector" ? { ...selected.style, stroke: color } : { ...selected.style, fill: color } } as Partial<BoardElement>) : undefined}
           />
           <PropertiesPanel selected={selected} onPatch={(patch) => selected ? patchElement(selected.id, patch) : undefined} onDelete={deleteSelected} />
           <div className="ft-popover-surface absolute bottom-5 left-1/2 z-40 flex -translate-x-1/2 items-center gap-2 px-3 py-2">
@@ -278,7 +368,7 @@ export function BoardPage({ boardId }: BoardPageProps) {
           </div>
           <div className="ft-glass-panel absolute bottom-5 right-5 z-20 hidden h-[120px] w-[164px] p-3 lg:block">
             <p className="ft-text-label text-slate-500">Minimap</p>
-            <div className="mt-2 h-[74px] rounded-xl border border-slate-200 bg-white/70 p-2">
+            <div className="relative mt-2 h-[74px] rounded-xl border border-slate-200 bg-white/70 p-2">
               {elements.slice(0, 10).map((item) => <span key={item.id} className="absolute h-2 w-4 rounded-sm bg-emerald-300" style={{ transform: `translate(${Math.max(4, item.x / 14)}px, ${Math.max(24, item.y / 14)}px)` }} />)}
             </div>
           </div>

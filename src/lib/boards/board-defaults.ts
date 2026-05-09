@@ -1,7 +1,45 @@
-import type { BoardElement, BoardTool, ShapeElement } from "@/lib/boards/board-types";
+import type { BoardElement, BoardTool, ConnectorElement, ShapeElement } from "@/lib/boards/board-types";
 
 function nowIso() {
   return new Date().toISOString();
+}
+
+export function createDefaultConnector(
+  boardId: string,
+  from: { x: number; y: number },
+  to: { x: number; y: number },
+  userId: string,
+  fromElementId?: string | null,
+  toElementId?: string | null,
+): ConnectorElement {
+  const createdAt = nowIso();
+  const minX = Math.min(from.x, to.x);
+  const minY = Math.min(from.y, to.y);
+  const width = Math.max(1, Math.abs(to.x - from.x));
+  const height = Math.max(1, Math.abs(to.y - from.y));
+
+  return {
+    id: crypto.randomUUID(),
+    boardId,
+    type: "connector",
+    x: minX,
+    y: minY,
+    width,
+    height,
+    rotation: 0,
+    zIndex: 5,
+    locked: false,
+    hidden: false,
+    fromElementId: fromElementId ?? null,
+    toElementId: toElementId ?? null,
+    from,
+    to,
+    label: "",
+    style: { stroke: "#334155", strokeWidth: 2, arrowEnd: true, lineType: "straight", shadow: "none" },
+    createdBy: userId,
+    createdAt,
+    updatedAt: createdAt,
+  };
 }
 
 export function createDefaultBoardElement(type: BoardTool, boardId: string, point: { x: number; y: number }, userId: string): BoardElement {

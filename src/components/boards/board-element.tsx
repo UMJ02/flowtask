@@ -1,14 +1,16 @@
 "use client";
 
 import type { CSSProperties, PointerEvent as ReactPointerEvent } from "react";
-import type { BoardElement } from "@/lib/boards/board-types";
+import type { BoardElement, BoardTool } from "@/lib/boards/board-types";
 
 type BoardElementViewProps = {
   element: BoardElement;
   selected: boolean;
+  activeTool: BoardTool;
   onSelect: (id: string) => void;
   onDragStart: (id: string, event: ReactPointerEvent<HTMLDivElement>) => void;
   onUpdateContent: (id: string, content: string) => void;
+  onConnectorTarget: (id: string) => void;
 };
 
 function getStyle(element: BoardElement): CSSProperties {
@@ -24,13 +26,29 @@ function getStyle(element: BoardElement): CSSProperties {
   };
 }
 
-export function BoardElementView({ element, selected, onSelect, onDragStart, onUpdateContent }: BoardElementViewProps) {
+export function BoardElementView({ element, selected, activeTool, onSelect, onDragStart, onUpdateContent, onConnectorTarget }: BoardElementViewProps) {
+  if (element.type === "connector") return null;
+
   const common = "group absolute touch-none select-none transition duration-150";
   const selection = selected ? "ring-2 ring-emerald-400 ring-offset-2 ring-offset-[#FBFCFE]" : "hover:ring-1 hover:ring-slate-300";
+  const connectorMode = activeTool === "connector";
+
+  function handlePointerDown(event: ReactPointerEvent<HTMLDivElement>) {
+    if (connectorMode) return;
+    onDragStart(element.id, event);
+  }
+
+  function handleClick() {
+    if (connectorMode) {
+      onConnectorTarget(element.id);
+      return;
+    }
+    onSelect(element.id);
+  }
 
   if (element.type === "table") {
     return (
-      <div style={getStyle(element)} className={`${common} overflow-hidden rounded-[16px] border border-violet-200 bg-white ${selection}`} onPointerDown={(event) => onDragStart(element.id, event)} onClick={() => onSelect(element.id)}>
+      <div style={getStyle(element)} className={`${common} overflow-hidden rounded-[16px] border border-violet-200 bg-white ${selection} ${connectorMode ? "cursor-crosshair hover:border-emerald-300" : ""}`} onPointerDown={handlePointerDown} onClick={handleClick}>
         <table className="h-full w-full border-collapse text-[12px]">
           <thead className="bg-violet-50 text-slate-700">
             <tr>{element.columns.map((column) => <th key={column.id} className="border border-violet-100 px-2 py-2 text-left font-bold">{column.label}</th>)}</tr>
@@ -54,12 +72,13 @@ export function BoardElementView({ element, selected, onSelect, onDragStart, onU
   return (
     <div
       style={{ ...getStyle(element), background: fill === "transparent" ? "transparent" : fill, borderColor: stroke, borderRadius: radius, color: textColor }}
-      className={`${common} ${selection} flex items-center justify-center border p-3`}
-      onPointerDown={(event) => onDragStart(element.id, event)}
-      onClick={() => onSelect(element.id)}
+      className={`${common} ${selection} ${connectorMode ? "cursor-crosshair hover:border-emerald-300 hover:bg-emerald-50/50" : ""} flex items-center justify-center border p-3`}
+      onPointerDown={handlePointerDown}
+      onClick={handleClick}
     >
       <textarea
         value={content}
+        readOnly={connectorMode || element.locked}
         onPointerDown={(event) => event.stopPropagation()}
         onChange={(event) => onUpdateContent(element.id, event.target.value)}
         className="h-full w-full resize-none border-none bg-transparent text-center text-[14px] font-semibold leading-5 outline-none placeholder:text-slate-400"

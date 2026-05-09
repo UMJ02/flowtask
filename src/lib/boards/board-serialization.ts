@@ -1,4 +1,4 @@
-import type { BoardElement, BoardElementType, BoardStyle, TableElement, VisualBoard, VisualBoardElementRow, VisualBoardRow } from "@/lib/boards/board-types";
+import type { BoardElement, BoardElementType, BoardStyle, ConnectorElement, TableElement, VisualBoard, VisualBoardElementRow, VisualBoardRow } from "@/lib/boards/board-types";
 
 export function mapBoardRow(row: VisualBoardRow): VisualBoard {
   return {
@@ -19,6 +19,12 @@ export function mapBoardRow(row: VisualBoardRow): VisualBoard {
 function numberValue(value: number | string | null | undefined, fallback: number) {
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+function pointValue(value: unknown, fallback: { x: number; y: number }) {
+  if (!value || typeof value !== "object") return fallback;
+  const maybe = value as { x?: unknown; y?: unknown };
+  return { x: numberValue(maybe.x as number | string | null | undefined, fallback.x), y: numberValue(maybe.y as number | string | null | undefined, fallback.y) };
 }
 
 export function mapElementRow(row: VisualBoardElementRow): BoardElement {
@@ -50,6 +56,20 @@ export function mapElementRow(row: VisualBoardElementRow): BoardElement {
     } as TableElement;
   }
 
+  if (row.type === "connector") {
+    const from = pointValue((data as any).from, { x: common.x, y: common.y });
+    const to = pointValue((data as any).to, { x: common.x + common.width, y: common.y + common.height });
+    return {
+      ...common,
+      type: "connector",
+      fromElementId: typeof (data as any).fromElementId === "string" ? (data as any).fromElementId : null,
+      toElementId: typeof (data as any).toElementId === "string" ? (data as any).toElementId : null,
+      from,
+      to,
+      label: typeof (data as any).label === "string" ? (data as any).label : "",
+    } as ConnectorElement;
+  }
+
   if (row.type === "shape") {
     return { ...common, type: "shape", shape: String((data as any).shape ?? "rounded") as any, content: String((data as any).content ?? "") } as BoardElement;
   }
@@ -60,9 +80,11 @@ export function mapElementRow(row: VisualBoardElementRow): BoardElement {
 export function serializeElementForUpsert(element: BoardElement) {
   const data = element.type === "table"
     ? { columns: element.columns, rows: element.rows }
-    : element.type === "shape"
-      ? { shape: element.shape, content: element.content }
-      : { content: (element as any).content ?? "" };
+    : element.type === "connector"
+      ? { fromElementId: element.fromElementId ?? null, toElementId: element.toElementId ?? null, from: element.from, to: element.to, label: element.label ?? "" }
+      : element.type === "shape"
+        ? { shape: element.shape, content: element.content }
+        : { content: (element as any).content ?? "" };
 
   return {
     id: element.id,

@@ -85,3 +85,7 @@ Semantic UI classes and density contracts now govern typography, layout rhythm, 
 ## v58.22.3 Workspace Board Column Visibility + Production Migration Hotfix
 
 Adds task status Producción, compact task attachment list mode, and inline department editing for task detail.
+
+
+## v58.23.1 Board Connectors + Properties Panel
+Adds visual connectors, connector layer and richer properties panel for the Boards MVP.

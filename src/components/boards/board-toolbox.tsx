@@ -8,6 +8,7 @@ type BoardToolboxProps = { activeTool: BoardTool; onToolChange: (tool: BoardTool
 export function BoardToolbox({ activeTool, onToolChange }: BoardToolboxProps) {
   const groups = [
     { id: "basics", label: "Básicos" },
+    { id: "diagrams", label: "Diagramas" },
     { id: "tables", label: "Tablas" },
   ] as const;
 
@@ -27,7 +28,7 @@ export function BoardToolbox({ activeTool, onToolChange }: BoardToolboxProps) {
                     key={tool.id}
                     type="button"
                     onClick={() => onToolChange(tool.id)}
-                    className={`ft-pressable flex min-h-[74px] flex-col items-center justify-center gap-2 rounded-[16px] border px-2 text-center transition ${active ? "border-emerald-300 bg-emerald-50 text-emerald-700" : "border-slate-200 bg-white text-slate-600 hover:border-emerald-200 hover:bg-emerald-50/70"}`}
+                    className={`ft-pressable flex min-h-[70px] flex-col items-center justify-center gap-2 rounded-[16px] border px-2 text-center transition ${active ? "border-emerald-300 bg-emerald-50 text-emerald-700" : "border-slate-200 bg-white text-slate-600 hover:border-emerald-200 hover:bg-emerald-50/70"}`}
                     title={tool.hint}
                   >
                     <Icon className="h-4 w-4" />

@@ -1,6 +1,6 @@
-export type BoardTool = "select" | "hand" | "sticky" | "text" | "shape" | "table";
+export type BoardTool = "select" | "hand" | "sticky" | "text" | "shape" | "connector" | "table";
 
-export type BoardElementType = "sticky" | "text" | "shape" | "table";
+export type BoardElementType = "sticky" | "text" | "shape" | "connector" | "table";
 
 export type BoardPoint = { x: number; y: number };
 
@@ -15,6 +15,8 @@ export type BoardStyle = {
   fontWeight?: number;
   textColor?: string;
   textAlign?: "left" | "center" | "right";
+  arrowEnd?: boolean;
+  lineType?: "straight" | "elbow" | "curve";
 };
 
 export type BoardElementBase = {
@@ -53,6 +55,16 @@ export type ShapeElement = BoardElementBase & {
   style: BoardStyle;
 };
 
+export type ConnectorElement = BoardElementBase & {
+  type: "connector";
+  fromElementId?: string | null;
+  toElementId?: string | null;
+  from: BoardPoint;
+  to: BoardPoint;
+  label?: string;
+  style: BoardStyle;
+};
+
 export type TableElement = BoardElementBase & {
   type: "table";
   columns: Array<{ id: string; label: string; width: number }>;
@@ -60,7 +72,7 @@ export type TableElement = BoardElementBase & {
   style: BoardStyle;
 };
 
-export type BoardElement = StickyElement | TextElement | ShapeElement | TableElement;
+export type BoardElement = StickyElement | TextElement | ShapeElement | ConnectorElement | TableElement;
 
 export type VisualBoard = {
   id: string;
