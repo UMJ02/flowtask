@@ -56,7 +56,7 @@ export function BoardOverview({
               </span>
             </div>
             <div className="mt-5 flex items-end justify-between gap-3">
-              <p className="text-4xl font-bold tracking-tight text-slate-900">{item.value}</p>
+              <p className="text-[32px] font-bold tracking-tight text-slate-900">{item.value}</p>
               <span className="inline-flex items-center gap-1 text-xs font-semibold text-slate-500">
                 visión rápida
                 <ArrowUpRight className="h-3.5 w-3.5" />

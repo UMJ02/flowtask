@@ -7,7 +7,7 @@ function FlowtaskLogo() {
   return (
     <Link href="/" className="inline-flex items-center gap-3" aria-label="FlowTask inicio">
       <Image src="/icons/icon.png" alt="FlowTask" width={34} height={34} className="h-9 w-9 object-contain" priority />
-      <span className="text-[1.08rem] font-black uppercase tracking-[0.16em] text-white/90">FlowTask</span>
+      <span className="text-[1.08rem] font-semibold uppercase tracking-[0.16em] text-white/90">FlowTask</span>
     </Link>
   );
 }
@@ -62,7 +62,7 @@ function HeroGlassCard() {
           FlowTask · Tu espacio de trabajo
         </div>
 
-        <h1 className="mt-7 max-w-[480px] text-[2.35rem] font-black leading-[1.08] tracking-[-0.045em] text-white md:text-[3.15rem]">
+        <h1 className="mt-7 max-w-[480px] text-[2.35rem] font-semibold leading-[1.08] tracking-[-0.045em] text-white md:text-[3.15rem]">
           Gestiona tareas, proyectos y seguimiento <span className="text-[#16C784]">sin complicarte.</span>
         </h1>
 
@@ -73,7 +73,7 @@ function HeroGlassCard() {
         <div className="mt-7 space-y-3">
           <PublicTransitionLink
             href="/register"
-            className="group inline-flex h-[54px] w-full items-center justify-center gap-3 rounded-[15px] bg-[#16C784] px-5 text-[0.98rem] font-black text-white shadow-[0_22px_42px_rgba(22,199,132,0.24)] transition hover:-translate-y-0.5 hover:bg-[#12b877]"
+            className="group inline-flex h-[54px] w-full items-center justify-center gap-3 rounded-[15px] bg-[#16C784] px-5 text-[0.98rem] font-semibold text-white shadow-[0_22px_42px_rgba(22,199,132,0.24)] transition hover:-translate-y-0.5 hover:bg-[#12b877]"
             title="Cargando registro…"
           >
             Crear cuenta gratis
@@ -104,11 +104,11 @@ function HeroGlassCard() {
 function SideValueCard() {
   return (
     <aside className="hidden w-full max-w-[420px] rounded-[22px] border border-white/10 bg-[#050B18]/48 p-6 shadow-[0_26px_70px_rgba(0,0,0,0.34)] backdrop-blur-[14px] lg:block">
-      <div className="flex items-center gap-2 text-sm font-black text-[#16C784]">
+      <div className="flex items-center gap-2 text-sm font-semibold text-[#16C784]">
         <Sparkles className="h-4 w-4" />
         Planea, organiza y ejecuta
       </div>
-      <p className="mt-4 max-w-[340px] text-[2rem] font-black leading-tight tracking-[-0.04em] text-white">
+      <p className="mt-4 max-w-[340px] text-[2rem] font-semibold leading-tight tracking-[-0.04em] text-white">
         con una vista moderna y clara.
       </p>
       <div className="mt-5 h-px w-full bg-gradient-to-r from-[#16C784]/70 via-white/10 to-transparent" />
@@ -126,9 +126,9 @@ function LandingFooter() {
         </div>
         <p className="text-center">© 2026 FlowTask. Todos los derechos reservados.</p>
         <div className="flex justify-end gap-4">
-          <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 text-xs font-black text-white/70 ring-1 ring-white/10">in</span>
-          <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 text-xs font-black text-white/70 ring-1 ring-white/10">ig</span>
-          <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 text-xs font-black text-white/70 ring-1 ring-white/10">f</span>
+          <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 text-xs font-semibold text-white/70 ring-1 ring-white/10">in</span>
+          <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 text-xs font-semibold text-white/70 ring-1 ring-white/10">ig</span>
+          <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 text-xs font-semibold text-white/70 ring-1 ring-white/10">f</span>
         </div>
       </div>
     </footer>

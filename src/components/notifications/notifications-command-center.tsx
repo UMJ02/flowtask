@@ -35,7 +35,7 @@ export function NotificationsCommandCenter({
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div className="max-w-3xl">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">Notification command</p>
-          <h1 className="mt-2 text-2xl font-bold md:text-3xl">Centro claro para revisar avisos</h1>
+          <h1 className="mt-2 text-2xl font-bold md:text-[28px]">Centro claro para revisar avisos</h1>
           <p className="mt-2 max-w-2xl text-sm text-slate-300 md:text-base">
             Busca, filtra y resuelve notificaciones con una cabecera compacta y sin elementos repetidos.
           </p>

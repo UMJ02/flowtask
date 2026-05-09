@@ -21,7 +21,7 @@ export function BillingCommandCenter({ summary, usage }: { summary?: Organizatio
         </div>
         <div className="rounded-2xl bg-slate-950 px-5 py-4 text-white">
           <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400">Readiness</p>
-          <p className="mt-1 text-3xl font-bold">{readiness}%</p>
+          <p className="mt-1 text-[28px] font-bold">{readiness}%</p>
           <p className="mt-2 text-sm text-slate-300">{summary ? `${summary.planName} · ${summary.billingCycle === "annual" ? "anual" : "mensual"}` : "Sin suscripción activa"}</p>
         </div>
       </div>

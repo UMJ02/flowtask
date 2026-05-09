@@ -1,4 +1,4 @@
-# FlowTask — v58.21.2 Layout Cleanup + Feed & Attachment Refinement
+# FlowTask — v58.21.3 Design System Foundation + Visual Consistency
 
 # FlowTask — v58.20 Task Workspace Inline Redesign
 
@@ -66,6 +66,11 @@ npm run vercel:build
 
 Patch de calidad UX sobre v58.21.0. Mejora textos, mensajes de error, tabs de proyecto y elimina elementos visibles que podían confundirse como funcionalidad real sin respaldo de datos. No agrega migraciones ni cambia contratos Supabase.
 
+
+
+## v58.21.3 Design System Foundation + Visual Consistency
+
+Base visual global sobre v58.21.2. Normaliza tokens de diseño, tipografía, botones, inputs, cards, chips, espaciados y estados visuales principales para que la app se sienta más consistente y lista para usuario final. No agrega migraciones ni cambia contratos Supabase.
 
 ## v58.21.2 Layout Cleanup + Feed & Attachment Refinement
 

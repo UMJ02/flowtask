@@ -19,7 +19,7 @@ export default function ConfirmedPage() {
           </div>
 
           <p className="text-xs font-bold uppercase tracking-[0.28em] text-emerald-700">Confirmación completada</p>
-          <h1 className="mt-3 text-3xl font-bold text-slate-950 md:text-4xl">Cuenta confirmada</h1>
+          <h1 className="mt-3 text-[28px] font-bold text-slate-950 md:text-[32px]">Cuenta confirmada</h1>
           <p className="mx-auto mt-3 max-w-[390px] text-sm leading-6 text-slate-600 md:text-base">
             Tu correo fue validado correctamente. Ya podés iniciar sesión y continuar con tu workspace de FlowTask.
           </p>

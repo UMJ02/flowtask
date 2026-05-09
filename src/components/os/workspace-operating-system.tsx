@@ -60,7 +60,7 @@ export function WorkspaceOperatingSystem({
         <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-3xl">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-fuchsia-200">Workspace operating system</p>
-            <h2 className="mt-2 text-3xl font-bold">Una sola capa para leer, decidir y ejecutar sin saltar entre módulos</h2>
+            <h2 className="mt-2 text-[28px] font-bold">Una sola capa para leer, decidir y ejecutar sin saltar entre módulos</h2>
             <p className="mt-2 text-sm text-fuchsia-100/90">Este frente amarra la base del workspace, el ritmo de la operación y la presión de riesgo para ayudarte a decidir mejor cada semana.</p>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
@@ -71,7 +71,7 @@ export function WorkspaceOperatingSystem({
             </div>
             <div className="rounded-[26px] bg-white/10 px-4 py-3 ring-1 ring-white/10">
               <p className="text-xs uppercase tracking-[0.16em] text-fuchsia-100/80">Prioridades activas</p>
-              <p className="mt-2 text-3xl font-bold">{summary.kpis.priorities}</p>
+              <p className="mt-2 text-[28px] font-bold">{summary.kpis.priorities}</p>
               <p className="mt-1 text-sm text-fuchsia-100/80">Señales listas para mover.</p>
             </div>
           </div>
@@ -82,7 +82,7 @@ export function WorkspaceOperatingSystem({
         {scoreCards.map((card) => (
           <Card key={card.label} className="bg-gradient-to-br from-white to-fuchsia-50/60">
             <p className="text-sm text-slate-500">{card.label}</p>
-            <p className="mt-3 text-3xl font-bold text-slate-900">{card.value}</p>
+            <p className="mt-3 text-[28px] font-bold text-slate-900">{card.value}</p>
           </Card>
         ))}
       </div>

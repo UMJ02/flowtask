@@ -319,8 +319,8 @@ export function ProjectForm({ projectId, initialData, submitLabel, successMessag
                 <ArrowLeft className="h-5 w-5" />
               </Link>
               <div className="min-w-0">
-                <p className="text-xs font-black uppercase tracking-[0.20em] text-[#16A36C]">FlowTask · Crear proyecto</p>
-                <h1 className="truncate text-2xl font-black tracking-[-0.035em] text-[#0F172A] sm:text-3xl">{isEdit ? "Editar proyecto" : "Nuevo proyecto"}</h1>
+                <p className="text-xs font-semibold uppercase tracking-[0.20em] text-[#16A36C]">FlowTask · Crear proyecto</p>
+                <h1 className="truncate text-2xl font-semibold tracking-[-0.035em] text-[#0F172A] sm:text-[28px]">{isEdit ? "Editar proyecto" : "Nuevo proyecto"}</h1>
                 <p className="mt-1 line-clamp-1 text-sm font-medium text-[#64748B]">Define el frente de trabajo sin cambiar el contrato actual de Supabase.</p>
               </div>
             </div>
@@ -338,16 +338,16 @@ export function ProjectForm({ projectId, initialData, submitLabel, successMessag
           <section className="rounded-[24px] border border-[#E5EAF1] bg-white p-4 shadow-[0_12px_30px_rgba(15,23,42,0.04)] sm:p-5">
             <div className="rounded-[20px] border border-[#E5EAF1] bg-white p-5 transition focus-within:border-emerald-200 focus-within:ring-4 focus-within:ring-emerald-50">
               <div className="mb-3 flex items-center justify-between gap-3">
-                <label className="text-xs font-black uppercase tracking-[0.18em] text-slate-500">Nombre del proyecto</label>
+                <label className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Nombre del proyecto</label>
                 <span className="text-xs font-bold text-slate-400">{watchedTitle.length} / 120</span>
               </div>
-              <Input {...register("title")} placeholder="Ej. Lanzamiento de campaña Q3" className="min-h-[64px] w-full rounded-[18px] border border-[#E5EAF1] bg-white px-5 py-3 text-[28px] font-black leading-[1.15] tracking-[-0.035em] text-[#0F172A] shadow-none outline-none transition placeholder:text-slate-400 focus:border-[#16C784] focus:ring-4 focus:ring-emerald-500/10 sm:text-[34px]" />
+              <Input {...register("title")} placeholder="Ej. Lanzamiento de campaña Q3" className="min-h-[64px] w-full rounded-[18px] border border-[#E5EAF1] bg-white px-5 py-3 text-[28px] font-semibold leading-[1.15] tracking-[-0.035em] text-[#0F172A] shadow-none outline-none transition placeholder:text-slate-400 focus:border-[#16C784] focus:ring-4 focus:ring-emerald-500/10 sm:text-[32px]" />
               {errors.title ? <p className="mt-3 text-sm font-semibold text-red-600">{errors.title.message}</p> : null}
             </div>
 
             <div className="mt-5 overflow-hidden rounded-[20px] border border-[#E5EAF1] bg-white">
               <div className="flex items-center justify-between border-b border-[#E5EAF1] px-5 py-4">
-                <label className="text-xs font-black uppercase tracking-[0.18em] text-slate-500">Descripción</label>
+                <label className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Descripción</label>
                 <span className="text-xs font-bold text-slate-400">{watchedDescription.length} caracteres</span>
               </div>
               <Textarea {...register("description")} placeholder="Objetivo, alcance, entregables y contexto del proyecto." className="min-h-[180px] resize-y rounded-none border-0 bg-white px-5 py-4 text-base leading-7 text-slate-700 shadow-none focus:ring-0" />
@@ -408,7 +408,7 @@ export function ProjectForm({ projectId, initialData, submitLabel, successMessag
             <label className="md:col-span-2 flex cursor-pointer items-center justify-between gap-4 rounded-[22px] border border-[#BBF7D0] bg-[#ECFDF5] p-5 shadow-[0_12px_30px_rgba(15,23,42,0.035)]">
               <span className="flex min-w-0 items-start gap-3">
                 <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-white text-[#16A36C] ring-1 ring-[#BBF7D0]"><Link2 className="h-5 w-5" /></span>
-                <span className="min-w-0"><span className="block text-sm font-black text-[#0F172A]">Proyecto colaborativo y con enlace compartible</span><span className="mt-1 block text-sm font-medium leading-6 text-[#64748B]">Activa la visibilidad compartida usando los mismos campos reales: is_collaborative, share_enabled y share_token.</span></span>
+                <span className="min-w-0"><span className="block text-sm font-semibold text-[#0F172A]">Proyecto colaborativo y con enlace compartible</span><span className="mt-1 block text-sm font-medium leading-6 text-[#64748B]">Activa la visibilidad compartida usando los mismos campos reales: is_collaborative, share_enabled y share_token.</span></span>
               </span>
               <input type="checkbox" {...register("isCollaborative")} className="h-5 w-5 shrink-0 accent-[#16C784]" />
             </label>
@@ -420,11 +420,11 @@ export function ProjectForm({ projectId, initialData, submitLabel, successMessag
 
         <aside className="space-y-5 xl:sticky xl:top-[104px] xl:self-start">
           <SideCard tone="green">
-            <p className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.18em] text-slate-600"><Sparkles className="h-4 w-4" /> ¿Qué es este proyecto?</p>
+            <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-600"><Sparkles className="h-4 w-4" /> ¿Qué es este proyecto?</p>
             <p className="mt-3 text-sm font-medium leading-6 text-[#64748B]">Un proyecto reúne tareas, equipo, archivos y fechas en un solo lugar. Después de crearlo podrás trabajar desde su detalle.</p>
           </SideCard>
           <SideCard tone="blue">
-            <p className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.18em] text-slate-600"><Users className="h-4 w-4" /> Siguiente paso</p>
+            <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-600"><Users className="h-4 w-4" /> Siguiente paso</p>
             <div className="mt-4 space-y-3 text-sm font-semibold leading-6 text-[#64748B]">
               <p>1. Crea el proyecto.</p>
               <p>2. Entra al detalle para agregar tareas internas.</p>
@@ -432,9 +432,9 @@ export function ProjectForm({ projectId, initialData, submitLabel, successMessag
             </div>
           </SideCard>
           <SideCard tone="amber">
-            <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-600">Información que se guardará</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-600">Información que se guardará</p>
             <p className="mt-3 text-sm font-medium leading-6 text-[#64748B]">Este formulario guarda solo la información necesaria: nombre, descripción, imagen, estado, departamento, registro, país, fecha límite y colaboración.</p>
-            <span className="mt-4 inline-flex rounded-full bg-white px-3 py-1 text-xs font-black text-slate-700 ring-1 ring-[#E5EAF1]">{watchedCollaborative ? "Modo colaborativo" : "Modo individual"}</span>
+            <span className="mt-4 inline-flex rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-700 ring-1 ring-[#E5EAF1]">{watchedCollaborative ? "Modo colaborativo" : "Modo individual"}</span>
           </SideCard>
         </aside>
       </div>
@@ -445,7 +445,7 @@ export function ProjectForm({ projectId, initialData, submitLabel, successMessag
 function FieldCard({ label, icon, helper, children }: { label: string; icon: ReactNode; helper?: string; children: ReactNode }) {
   return (
     <div className="rounded-[20px] border border-[#E5EAF1] bg-white p-4 shadow-[0_12px_30px_rgba(15,23,42,0.035)] md:col-span-1">
-      <label className="mb-3 flex items-center gap-2 text-xs font-black uppercase tracking-[0.16em] text-slate-500">
+      <label className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
         <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-slate-50 text-slate-500">{icon}</span>
         {label}
       </label>

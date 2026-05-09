@@ -152,7 +152,7 @@ function KpiCard({ item }: { item: KpiItem }) {
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-[13px] font-semibold text-[#334155]">{item.label}</p>
-          <p className="mt-4 text-[30px] font-bold leading-none tracking-[-0.04em] text-[#0F172A]">{item.value}</p>
+          <p className="mt-4 text-[28px] font-bold leading-none tracking-[-0.04em] text-[#0F172A]">{item.value}</p>
           <p className="mt-3 text-[12px] font-medium text-[#64748B]">{item.helper}</p>
         </div>
         <span className={`inline-flex h-10 w-10 items-center justify-center rounded-2xl ${tone.bg} ${tone.text} ring-1 ${tone.ring}`}>
@@ -488,7 +488,7 @@ export function AnalyticsOverview({ summary, compact = false }: { summary: Works
       <section className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <p className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-emerald-700"><RefreshCcw className="h-3.5 w-3.5" /> Realtime Intelligence</p>
-          <h1 className="mt-3 text-[30px] font-bold leading-tight tracking-[-0.04em] text-[#0F172A]">Analytics operativo</h1>
+          <h1 className="mt-3 text-[28px] font-bold leading-tight tracking-[-0.04em] text-[#0F172A]">Analytics operativo</h1>
           <p className="mt-2 text-[15px] font-medium text-[#64748B]">Gráficas calculadas desde tareas, proyectos, comentarios y adjuntos reales. Concluidas y en espera no contaminan vencidos.</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">

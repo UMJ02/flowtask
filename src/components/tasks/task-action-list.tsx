@@ -538,8 +538,8 @@ function TaskActionListComponent({
     <Card className="overflow-hidden rounded-[24px] border border-[#E5EAF1] bg-white p-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
       <div className="mb-5 flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
         <div>
-          <p className="text-xs font-black uppercase tracking-[0.18em] text-[#16C784]">Planificación inteligente</p>
-          <h3 className="mt-1 text-xl font-black text-[#0F172A]">Vista híbrida Calendario + Gantt</h3>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#16C784]">Planificación inteligente</p>
+          <h3 className="mt-1 text-xl font-semibold text-[#0F172A]">Vista híbrida Calendario + Gantt</h3>
           <p className="mt-1 text-sm font-medium text-[#64748B]">Planifica campañas, producción y duración visual usando las tareas actuales.</p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -553,7 +553,7 @@ function TaskActionListComponent({
       <div className="mb-4 flex flex-col gap-3 rounded-[18px] border border-[#E5EAF1] bg-slate-50/70 p-3 md:flex-row md:items-center md:justify-between">
         <div className="flex items-center gap-2">
           <button type="button" onClick={() => setTimelineOffsetDays((value) => value - 7)} className="inline-flex h-9 w-9 items-center justify-center rounded-[12px] border border-[#E5EAF1] bg-white"><ArrowLeft className="h-4 w-4" /></button>
-          <span className="rounded-full bg-white px-4 py-2 text-sm font-black text-[#0F172A] ring-1 ring-[#E5EAF1]">{formatHumanDate(toIsoDate(timelineBounds.start))} — {formatHumanDate(toIsoDate(timelineBounds.end))}</span>
+          <span className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-[#0F172A] ring-1 ring-[#E5EAF1]">{formatHumanDate(toIsoDate(timelineBounds.start))} — {formatHumanDate(toIsoDate(timelineBounds.end))}</span>
           <button type="button" onClick={() => setTimelineOffsetDays((value) => value + 7)} className="inline-flex h-9 w-9 items-center justify-center rounded-[12px] border border-[#E5EAF1] bg-white"><ArrowRight className="h-4 w-4" /></button>
         </div>
         <p className="text-xs font-bold text-[#64748B]">Click en una barra abre el detalle. Usa guardar vista para sincronizar configuración y exportar CSV.</p>
@@ -562,12 +562,12 @@ function TaskActionListComponent({
       <div className="overflow-x-auto rounded-[18px] border border-[#E5EAF1]">
         <div className="min-w-[960px] grid grid-cols-[300px_1fr]">
           <div className="border-r border-[#E5EAF1] bg-white">
-            <div className="h-12 border-b border-[#E5EAF1] px-4 py-4 text-[11px] font-black uppercase tracking-[0.14em] text-[#64748B]">Tarea / responsable</div>
+            <div className="h-12 border-b border-[#E5EAF1] px-4 py-4 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#64748B]">Tarea / responsable</div>
             {timelineItems.map((task) => (
               <div key={task.id} className="flex h-[58px] items-center gap-3 border-b border-[#EEF2F7] px-4 last:border-b-0">
-                <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-100 text-xs font-black text-slate-700">{(task.client_name || task.title).slice(0, 1).toUpperCase()}</span>
+                <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-100 text-xs font-semibold text-slate-700">{(task.client_name || task.title).slice(0, 1).toUpperCase()}</span>
                 <div className="min-w-0">
-                  <Link href={taskDetailRoute(task.id, currentQuery)} className="block truncate text-sm font-black text-[#0F172A] hover:text-emerald-700">{task.title}</Link>
+                  <Link href={taskDetailRoute(task.id, currentQuery)} className="block truncate text-sm font-semibold text-[#0F172A] hover:text-emerald-700">{task.title}</Link>
                   <p className="truncate text-xs font-semibold text-[#64748B]">{task.client_name || "Equipo FlowTask"}</p>
                 </div>
               </div>
@@ -576,7 +576,7 @@ function TaskActionListComponent({
           <div className="relative bg-white">
             <div className="grid h-12 border-b border-[#E5EAF1]" style={{ gridTemplateColumns: `repeat(${timelineDays.length}, minmax(42px, 1fr))` }}>
               {timelineDays.map((day) => (
-                <div key={day.toISOString()} className="border-r border-[#EEF2F7] px-2 py-3 text-center text-[11px] font-black uppercase text-[#64748B] last:border-r-0">{day.getDate()}</div>
+                <div key={day.toISOString()} className="border-r border-[#EEF2F7] px-2 py-3 text-center text-[11px] font-semibold uppercase text-[#64748B] last:border-r-0">{day.getDate()}</div>
               ))}
             </div>
             {timelineItems.map((task) => (
@@ -619,8 +619,8 @@ function TaskActionListComponent({
       <Card className="rounded-[24px] border border-[#E5EAF1] bg-white p-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
         <div className="mb-5 flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
           <div>
-            <p className="text-xs font-black uppercase tracking-[0.18em] text-[#16C784]">Operations Calendar Pro</p>
-            <h3 className="mt-1 text-xl font-black text-[#0F172A]">Calendario premium de ejecución diaria</h3>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#16C784]">Operations Calendar Pro</p>
+            <h3 className="mt-1 text-xl font-semibold text-[#0F172A]">Calendario premium de ejecución diaria</h3>
             <p className="mt-1 text-sm font-medium text-[#64748B]">Deadlines, agenda operativa y carga de trabajo por día.</p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -633,13 +633,13 @@ function TaskActionListComponent({
 
         <div className={cn("grid gap-5", showCalendarSummary ? "xl:grid-cols-[minmax(0,1fr)_280px]" : "xl:grid-cols-1")}>
           <div className="overflow-hidden rounded-[20px] border border-[#E5EAF1]">
-            <div className={cn("grid border-b border-[#E5EAF1] bg-[#F8FAFC] text-center text-[11px] font-black uppercase tracking-[0.12em] text-[#64748B]", calendarColumnsClass)}>
+            <div className={cn("grid border-b border-[#E5EAF1] bg-[#F8FAFC] text-center text-[11px] font-semibold uppercase tracking-[0.12em] text-[#64748B]", calendarColumnsClass)}>
               {calendarLabels.map((day) => <div key={day} className="px-2 py-3">{day}</div>)}
             </div>
             <div className={cn("grid", calendarColumnsClass)}>
               {calendarDays.map((day) => (
                 <div key={day.iso} className={cn("min-h-[145px] border-r border-b border-[#E5EAF1] bg-white p-3 last:border-r-0", day.isToday && "bg-emerald-50/40")}>
-                  <div className={cn("mb-3 inline-flex h-7 min-w-7 items-center justify-center rounded-full px-2 text-xs font-black", day.isToday ? "bg-[#16C784] text-white" : "text-[#0F172A]")}>{day.label}</div>
+                  <div className={cn("mb-3 inline-flex h-7 min-w-7 items-center justify-center rounded-full px-2 text-xs font-semibold", day.isToday ? "bg-[#16C784] text-white" : "text-[#0F172A]")}>{day.label}</div>
                   <div className="space-y-2">
                     {day.tasks.slice(0, 4).map((task) => (
                       <Link key={task.id} href={taskDetailRoute(task.id, currentQuery)} className={cn("block w-full truncate rounded-full border px-3 py-2 text-left text-xs font-bold shadow-[0_4px_12px_rgba(15,23,42,0.03)] transition hover:-translate-y-0.5 hover:border-[#16C784]/40", priorityTone(task.priority))}>{task.title}</Link>
@@ -653,7 +653,7 @@ function TaskActionListComponent({
 
           <aside className="space-y-4">
             <div className="rounded-[20px] border border-[#E5EAF1] bg-white p-5">
-              <h4 className="text-sm font-black text-[#0F172A]">Resumen semanal</h4>
+              <h4 className="text-sm font-semibold text-[#0F172A]">Resumen semanal</h4>
               <div className="mt-4 space-y-3">
                 <CalendarMetric icon={<Layers3 className="h-4 w-4" />} label="Total tareas" value={total} tone="violet" />
                 <CalendarMetric icon={<Flag className="h-4 w-4" />} label="Urgentes" value={urgent} tone="rose" />
@@ -662,7 +662,7 @@ function TaskActionListComponent({
               </div>
             </div>
             <div className="rounded-[20px] border border-[#E5EAF1] bg-white p-5 text-center">
-              <div className="mx-auto grid h-32 w-32 place-items-center rounded-full border-[12px] border-emerald-100 text-2xl font-black text-[#0F172A]" style={{ background: `conic-gradient(#16C784 ${percent * 3.6}deg, #ECFDF5 0deg)` }}>
+              <div className="mx-auto grid h-32 w-32 place-items-center rounded-full border-[12px] border-emerald-100 text-2xl font-semibold text-[#0F172A]" style={{ background: `conic-gradient(#16C784 ${percent * 3.6}deg, #ECFDF5 0deg)` }}>
                 <span className="grid h-24 w-24 place-items-center rounded-full bg-white">{percent}%</span>
               </div>
               <p className="mt-3 text-sm font-bold text-[#64748B]">Completado</p>
@@ -678,8 +678,8 @@ function TaskActionListComponent({
     <Card className="rounded-[24px] border border-[#E5EAF1] bg-white p-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
       <div className="mb-5 flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
         <div>
-          <p className="text-xs font-black uppercase tracking-[0.18em] text-[#16C784]">Vista personalizada</p>
-          <h3 className="mt-1 text-xl font-black text-[#0F172A]">Gantt personalizable y potente</h3>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#16C784]">Vista personalizada</p>
+          <h3 className="mt-1 text-xl font-semibold text-[#0F172A]">Gantt personalizable y potente</h3>
           <p className="mt-1 text-sm font-medium text-[#64748B]">Control avanzado de planificación, progreso y vistas guardadas.</p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -692,7 +692,7 @@ function TaskActionListComponent({
 
       <div className={cn("grid gap-5", showGanttSettings ? "xl:grid-cols-[minmax(0,1fr)_300px]" : "xl:grid-cols-1")}>
         <div className="overflow-hidden rounded-[20px] border border-[#E5EAF1] bg-white">
-          <div className="grid grid-cols-[minmax(240px,1.2fr)_110px_110px_90px_90px_minmax(260px,1.4fr)] border-b border-[#E5EAF1] bg-[#F8FAFC] px-4 py-3 text-[11px] font-black uppercase tracking-[0.12em] text-[#64748B]">
+          <div className="grid grid-cols-[minmax(240px,1.2fr)_110px_110px_90px_90px_minmax(260px,1.4fr)] border-b border-[#E5EAF1] bg-[#F8FAFC] px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#64748B]">
             <div>Tarea</div><div>Inicio</div><div>Fin</div><div>Duración</div><div>Progreso</div><div>Timeline</div>
           </div>
           {timelineItems.map((task) => {
@@ -700,13 +700,13 @@ function TaskActionListComponent({
             return (
               <div key={task.id} className={cn("grid grid-cols-[minmax(240px,1.2fr)_110px_110px_90px_90px_minmax(260px,1.4fr)] items-center border-b border-[#EEF2F7] px-4 last:border-b-0 hover:bg-[#F8FAFC]", compactGantt ? "py-3" : "py-5")}>
                 <div className="min-w-0">
-                  <Link href={taskDetailRoute(task.id, currentQuery)} className="block truncate text-sm font-black text-[#0F172A] hover:text-emerald-700">{task.title}</Link>
+                  <Link href={taskDetailRoute(task.id, currentQuery)} className="block truncate text-sm font-semibold text-[#0F172A] hover:text-emerald-700">{task.title}</Link>
                   <p className="truncate text-xs font-semibold text-[#64748B]">{task.client_name || "Sin cliente"}</p>
                 </div>
                 <div className="text-xs font-bold text-[#64748B]">{showDates ? formatHumanDate(toIsoDate(range.start)) : "—"}</div>
                 <div className="text-xs font-bold text-[#64748B]">{showDates ? formatHumanDate(toIsoDate(range.end)) : "—"}</div>
                 <div className="text-xs font-bold text-[#64748B]">{range.duration} días</div>
-                <div className="text-xs font-black text-[#0F172A]">{showProgress ? `${getProgress(task)}%` : "—"}</div>
+                <div className="text-xs font-semibold text-[#0F172A]">{showProgress ? `${getProgress(task)}%` : "—"}</div>
                 <div className="h-8 rounded-2xl bg-slate-100 p-1">
                   <div className={cn("h-6 rounded-xl", barColor(task, ganttColorMode))} style={getBarStyle(task, timelineBounds.start, timelineBounds.end)} />
                 </div>
@@ -717,14 +717,14 @@ function TaskActionListComponent({
 
         {showGanttSettings ? (
           <aside className="rounded-[20px] border border-[#E5EAF1] bg-white p-5">
-            <h4 className="text-sm font-black uppercase tracking-[0.14em] text-[#0F172A]">Personalizar vista</h4>
+            <h4 className="text-sm font-semibold uppercase tracking-[0.14em] text-[#0F172A]">Personalizar vista</h4>
             <div className="mt-5 space-y-4">
               <SettingsCheckbox label="Mostrar % progreso" checked={showProgress} onChange={setShowProgress} />
               <SettingsCheckbox label="Mostrar fechas" checked={showDates} onChange={setShowDates} />
               <SettingsCheckbox label="Mostrar prioridad" checked={showPriority} onChange={setShowPriority} />
               <SettingsCheckbox label="Modo compacto" checked={compactGantt} onChange={setCompactGantt} />
               <label className="block space-y-2">
-                <span className="text-xs font-black uppercase tracking-[0.12em] text-[#64748B]">Colores</span>
+                <span className="text-xs font-semibold uppercase tracking-[0.12em] text-[#64748B]">Colores</span>
                 <Select value={ganttColorMode} onChange={(event) => setGanttColorMode(event.target.value as GanttColorMode)} className="h-11 w-full rounded-[14px] border-[#E5EAF1] text-sm font-bold">
                   <option value="priority">Por prioridad</option>
                   <option value="status">Por estado</option>
@@ -732,7 +732,7 @@ function TaskActionListComponent({
                 </Select>
               </label>
               <label className="block space-y-2">
-                <span className="text-xs font-black uppercase tracking-[0.12em] text-[#64748B]">Agrupar por</span>
+                <span className="text-xs font-semibold uppercase tracking-[0.12em] text-[#64748B]">Agrupar por</span>
                 <Select className="h-11 w-full rounded-[14px] border-[#E5EAF1] text-sm font-bold" defaultValue="project">
                   <option value="none">Ninguno</option>
                   <option value="project">Proyecto</option>
@@ -740,7 +740,7 @@ function TaskActionListComponent({
                   <option value="department">Departamento</option>
                 </Select>
               </label>
-              <button type="button" onClick={saveGanttView} className="mt-2 h-11 w-full rounded-[14px] bg-[#050B18] text-sm font-black text-white hover:bg-slate-900">Guardar vista</button>
+              <button type="button" onClick={saveGanttView} className="mt-2 h-11 w-full rounded-[14px] bg-[#050B18] text-sm font-semibold text-white hover:bg-slate-900">Guardar vista</button>
             </div>
           </aside>
         ) : null}
@@ -861,7 +861,7 @@ function CalendarMetric({ icon, label, value, tone }: { icon: ReactNode; label: 
     <div className="flex items-center justify-between gap-3 rounded-[16px] border border-[#E5EAF1] bg-white p-3">
       <span className={cn("inline-flex h-9 w-9 items-center justify-center rounded-[12px]", tones[tone])}>{icon}</span>
       <span className="mr-auto text-sm font-bold text-[#64748B]">{label}</span>
-      <span className="text-lg font-black text-[#0F172A]">{value}</span>
+      <span className="text-lg font-semibold text-[#0F172A]">{value}</span>
     </div>
   );
 }

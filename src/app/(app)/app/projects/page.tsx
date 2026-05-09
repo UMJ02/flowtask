@@ -170,7 +170,7 @@ function ProjectsStatCard({ icon, label, value, helper, tone }: { icon: ReactNod
         <span className={`inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-full ${tone}`}>{icon}</span>
         <div>
           <p className="text-sm font-bold text-[#64748B]">{label}</p>
-          <p className="mt-1 text-2xl font-black tracking-tight text-[#0F172A]">{value}</p>
+          <p className="mt-1 text-2xl font-semibold tracking-tight text-[#0F172A]">{value}</p>
           <p className="mt-1 text-sm text-[#64748B]">{helper}</p>
         </div>
       </div>
@@ -210,7 +210,7 @@ function ProjectRow({ project, index, queryString }: { project: ProjectSummary; 
             )}
           </span>
           <span>
-            <span className="block text-base font-black text-[#0F172A] transition group-hover:text-[#16C784]">{project.title}</span>
+            <span className="block text-base font-semibold text-[#0F172A] transition group-hover:text-[#16C784]">{project.title}</span>
             <span className="mt-1 line-clamp-2 block max-w-[330px] text-sm leading-6 text-[#64748B]">{getProjectDescription(project)}</span>
           </span>
         </Link>
@@ -264,7 +264,7 @@ export default async function ProjectsPage({ searchParams }: { searchParams?: Pr
       <Card className="rounded-[24px] border-[#E5EAF1] bg-white p-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)] md:p-5">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
           <div>
-            <h1 className="text-3xl font-black tracking-tight text-[#0F172A]">Proyectos</h1>
+            <h1 className="text-[28px] font-semibold tracking-tight text-[#0F172A]">Proyectos</h1>
             <p className="mt-2 text-base text-[#64748B]">Todos los proyectos de tu espacio de trabajo.</p>
           </div>
           <div className="flex flex-wrap gap-3">
@@ -307,17 +307,17 @@ export default async function ProjectsPage({ searchParams }: { searchParams?: Pr
                 Más filtros <ChevronDown className="h-4 w-4 transition group-open:rotate-180" />
               </summary>
               <div className="absolute right-0 z-20 mt-2 w-[280px] space-y-3 rounded-[20px] border border-[#E5EAF1] bg-white p-4 shadow-[0_18px_40px_rgba(15,23,42,0.12)]">
-                <label className="block text-xs font-black uppercase tracking-[0.12em] text-[#64748B]">Tipo</label>
+                <label className="block text-xs font-semibold uppercase tracking-[0.12em] text-[#64748B]">Tipo</label>
                 <select name="mode" defaultValue={filters.mode} className="h-11 w-full rounded-[14px] border border-[#E5EAF1] bg-white px-3 text-sm font-bold text-[#334155] outline-none focus:border-[#16C784]">
                   <option value="">Todos</option>
                   <option value="solo">Individuales</option>
                   <option value="collaborative">Colaborativos</option>
                 </select>
-                <label className="block text-xs font-black uppercase tracking-[0.12em] text-[#64748B]">Cliente</label>
+                <label className="block text-xs font-semibold uppercase tracking-[0.12em] text-[#64748B]">Cliente</label>
                 <input name="client" defaultValue={filters.client} placeholder="Nombre del cliente" className="h-11 w-full rounded-[14px] border border-[#E5EAF1] bg-white px-3 text-sm font-bold text-[#334155] outline-none placeholder:text-slate-400 focus:border-[#16C784]" />
               </div>
             </details>
-            <button type="submit" className="inline-flex h-12 items-center justify-center gap-2 rounded-[16px] bg-[#050B18] px-5 text-sm font-black text-white shadow-[0_12px_26px_rgba(5,11,24,0.14)] transition hover:-translate-y-0.5"><Filter className="h-4 w-4" /> Aplicar</button>
+            <button type="submit" className="inline-flex h-12 items-center justify-center gap-2 rounded-[16px] bg-[#050B18] px-5 text-sm font-semibold text-white shadow-[0_12px_26px_rgba(5,11,24,0.14)] transition hover:-translate-y-0.5"><Filter className="h-4 w-4" /> Aplicar</button>
             <Link href="/app/projects" className="inline-flex h-12 items-center justify-center rounded-[16px] border border-[#E5EAF1] bg-white px-5 text-sm font-bold text-[#334155] transition hover:bg-slate-50">Limpiar</Link>
           </div>
         </form>
@@ -326,7 +326,7 @@ export default async function ProjectsPage({ searchParams }: { searchParams?: Pr
           <div className="overflow-x-auto">
             <table className="w-full min-w-[880px] border-separate border-spacing-0">
               <thead>
-                <tr className="text-left text-[11px] font-black uppercase tracking-[0.16em] text-[#64748B]">
+                <tr className="text-left text-[11px] font-semibold uppercase tracking-[0.16em] text-[#64748B]">
                   <th className="px-5 py-4">Proyecto</th>
                   <th className="px-5 py-4">Estado</th>
                   <th className="px-5 py-4">Progreso</th>
@@ -365,7 +365,7 @@ export default async function ProjectsPage({ searchParams }: { searchParams?: Pr
           <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#16C784] ring-1 ring-emerald-100">
             <ShieldCheck className="h-4 w-4" />
           </span>
-          <p><span className="font-black text-[#0F172A]">Consejo:</span> organiza tus proyectos por estado y fecha límite para mantener el enfoque en lo más importante.</p>
+          <p><span className="font-semibold text-[#0F172A]">Consejo:</span> organiza tus proyectos por estado y fecha límite para mantener el enfoque en lo más importante.</p>
         </div>
         <Clock3 className="hidden h-4 w-4 text-emerald-500 md:block" />
       </div>

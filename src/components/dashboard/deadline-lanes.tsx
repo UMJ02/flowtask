@@ -45,7 +45,7 @@ export function DeadlineLanes({
                     <Icon className="h-5 w-5" />
                   </div>
                 </div>
-                <p className="mt-3 text-4xl font-bold tracking-tight text-slate-900">{item.value}</p>
+                <p className="mt-3 text-[32px] font-bold tracking-tight text-slate-900">{item.value}</p>
                 <p className="mt-2 max-w-[22ch] text-sm leading-6 text-slate-600">{item.description}</p>
               </div>
             </div>

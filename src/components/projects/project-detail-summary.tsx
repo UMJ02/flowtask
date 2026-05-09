@@ -21,7 +21,7 @@ export function ProjectDetailSummary({ project, currentQuery = "" }: { project: 
             <Link href={projectListRoute(currentQuery)} className="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 transition hover:text-slate-900" aria-label="Volver al listado">
               <span aria-hidden>←</span> Volver al listado
             </Link>
-            <h1 className="mt-5 text-3xl font-bold tracking-tight text-slate-900 md:text-4xl">{project.title}</h1>
+            <h1 className="mt-5 text-[28px] font-bold tracking-tight text-slate-900 md:text-[32px]">{project.title}</h1>
             <p className="mt-4 max-w-3xl text-base leading-7 text-slate-600">{project.description || "Sin descripción todavía."}</p>
           </div>
 

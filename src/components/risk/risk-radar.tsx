@@ -60,7 +60,7 @@ export function RiskRadar({ summary, compact = false }: { summary: RiskRadarSumm
             <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="text-sm text-slate-500">{card.label}</p>
-                <p className="mt-3 text-3xl font-bold text-slate-900">{card.value}</p>
+                <p className="mt-3 text-[28px] font-bold text-slate-900">{card.value}</p>
               </div>
               <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-50 text-rose-700 ring-1 ring-rose-100">{card.icon}</span>
             </div>
@@ -73,19 +73,19 @@ export function RiskRadar({ summary, compact = false }: { summary: RiskRadarSumm
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-2xl">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-rose-200">Operational exposure</p>
-              <h2 className="mt-2 text-3xl font-bold">Una vista directa del riesgo que sí puede detener la operación</h2>
+              <h2 className="mt-2 text-[28px] font-bold">Una vista directa del riesgo que sí puede detener la operación</h2>
               <p className="mt-2 text-sm text-rose-100/90">Combina vencimientos, espera, presión por cliente y carga por departamento para decidir dónde intervenir primero.</p>
             </div>
             <div className="rounded-[26px] bg-white/10 px-4 py-3 ring-1 ring-white/10">
               <p className="text-xs uppercase tracking-[0.16em] text-rose-100/80">Riesgo global</p>
-              <p className="mt-2 text-4xl font-bold">{summary.kpis.riskScore}%</p>
+              <p className="mt-2 text-[32px] font-bold">{summary.kpis.riskScore}%</p>
             </div>
           </div>
           <div className="mt-5 grid gap-3 sm:grid-cols-3">
             {summary.riskBuckets.map((bucket) => (
               <div key={bucket.label} className="rounded-[24px] bg-white/10 px-4 py-3 ring-1 ring-white/10">
                 <p className="text-xs uppercase tracking-[0.16em] text-rose-100/80">{bucket.label}</p>
-                <p className="mt-2 text-3xl font-bold">{bucket.count}</p>
+                <p className="mt-2 text-[28px] font-bold">{bucket.count}</p>
               </div>
             ))}
           </div>

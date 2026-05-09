@@ -54,7 +54,7 @@ export function ControlTower({ summary, compact = false }: { summary: ControlTow
             <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="text-sm text-slate-500">{card.label}</p>
-                <p className="mt-3 text-3xl font-bold text-slate-900">{card.value}</p>
+                <p className="mt-3 text-[28px] font-bold text-slate-900">{card.value}</p>
               </div>
               <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-700 ring-1 ring-cyan-100">
                 {card.icon}
@@ -69,17 +69,17 @@ export function ControlTower({ summary, compact = false }: { summary: ControlTow
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-2xl">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-200">Execution view</p>
-              <h2 className="mt-2 text-3xl font-bold">La cabina central para decidir qué mover primero</h2>
+              <h2 className="mt-2 text-[28px] font-bold">La cabina central para decidir qué mover primero</h2>
               <p className="mt-2 text-sm text-cyan-100/90">Te junta foco inmediato, clientes con más presión y una lectura operativa antes de entrar a tareas, proyectos o reportes.</p>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="rounded-[26px] bg-white/10 px-4 py-3 ring-1 ring-white/10">
                 <p className="text-xs uppercase tracking-[0.16em] text-cyan-100/80">Clientes activos</p>
-                <p className="mt-2 text-3xl font-bold">{summary.kpis.activeClients}</p>
+                <p className="mt-2 text-[28px] font-bold">{summary.kpis.activeClients}</p>
               </div>
               <div className="rounded-[26px] bg-white/10 px-4 py-3 ring-1 ring-white/10">
                 <p className="text-xs uppercase tracking-[0.16em] text-cyan-100/80">Proyectos en riesgo</p>
-                <p className="mt-2 text-3xl font-bold">{summary.kpis.atRiskProjects}</p>
+                <p className="mt-2 text-[28px] font-bold">{summary.kpis.atRiskProjects}</p>
               </div>
             </div>
           </div>

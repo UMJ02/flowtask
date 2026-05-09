@@ -33,10 +33,10 @@ export function TaskDetailSummary({ task, currentQuery = "" }: { task: any; curr
         <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-3">
-              <h1 className="max-w-[980px] text-[30px] font-bold leading-[1.08] tracking-[-0.03em] text-[#0F172A] sm:text-[34px]">
+              <h1 className="max-w-[980px] text-[28px] font-bold leading-[1.08] tracking-[-0.03em] text-[#0F172A] sm:text-[32px]">
                 {task.title}
               </h1>
-              <span className={`inline-flex h-7 shrink-0 items-center rounded-full border px-3 text-xs font-black ${statusTone(task.status)}`}>
+              <span className={`inline-flex h-7 shrink-0 items-center rounded-full border px-3 text-xs font-semibold ${statusTone(task.status)}`}>
                 {statusLabel(task.status)}
               </span>
             </div>
@@ -51,7 +51,7 @@ export function TaskDetailSummary({ task, currentQuery = "" }: { task: any; curr
           <div className="flex shrink-0 flex-wrap items-center gap-2 xl:justify-end">
             <EntityMemoryActions entity={{ id: task.id, type: 'task', title: task.title, subtitle: task.client_name || "Tarea", href: taskDetailRoute(task.id, currentQuery), updatedAt: task.updated_at ?? task.created_at ?? task.due_date ?? '1970-01-01T00:00:00.000Z' }} />
             <button type="button" aria-label="Más acciones" className="inline-flex h-11 w-11 items-center justify-center rounded-[14px] border border-[#E5EAF1] bg-white text-[#0F172A] transition hover:bg-[#F8FAFC]"><MoreHorizontal className="h-4 w-4" /></button>
-            <Link href={taskEditRoute(task.id, currentQuery)} className="inline-flex h-12 items-center justify-center gap-2 rounded-[16px] bg-[#050B18] px-6 text-sm font-black text-white shadow-[0_14px_28px_rgba(5,11,24,0.18)] transition hover:-translate-y-0.5 hover:bg-[#111827]">
+            <Link href={taskEditRoute(task.id, currentQuery)} className="inline-flex h-12 items-center justify-center gap-2 rounded-[16px] bg-[#050B18] px-6 text-sm font-semibold text-white shadow-[0_14px_28px_rgba(5,11,24,0.18)] transition hover:-translate-y-0.5 hover:bg-[#111827]">
               <PencilLine className="h-4 w-4" /> Editar tarea
             </Link>
           </div>

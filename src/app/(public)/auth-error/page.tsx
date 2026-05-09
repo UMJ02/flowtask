@@ -38,7 +38,7 @@ export default async function AuthErrorPage({
           </div>
 
           <p className="text-xs font-bold uppercase tracking-[0.28em] text-rose-600">Confirmación pendiente</p>
-          <h1 className="mt-3 text-3xl font-bold text-slate-950 md:text-4xl">No pudimos confirmar tu cuenta</h1>
+          <h1 className="mt-3 text-[28px] font-bold text-slate-950 md:text-[32px]">No pudimos confirmar tu cuenta</h1>
           <p className="mx-auto mt-3 max-w-[420px] text-sm leading-6 text-slate-600 md:text-base">{getErrorCopy(reason)}</p>
 
           <div className="mt-7 grid gap-3 sm:grid-cols-2">

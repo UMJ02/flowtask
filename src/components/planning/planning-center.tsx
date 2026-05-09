@@ -256,11 +256,11 @@ export function PlanningCenter({ summary, compact = false }: { summary: Planning
           <div className="grid gap-3 sm:grid-cols-2 xl:min-w-[320px]">
             <div className="rounded-[16px] bg-white/10 px-3 py-2.5 ring-1 ring-white/10">
               <p className="text-xs uppercase tracking-[0.16em] text-violet-100/80">Clientes activos</p>
-              <p className="mt-2 text-3xl font-bold">{summary.kpis.activeClients}</p>
+              <p className="mt-2 text-[28px] font-bold">{summary.kpis.activeClients}</p>
             </div>
             <div className="rounded-[16px] bg-white/10 px-3 py-2.5 ring-1 ring-white/10">
               <p className="text-xs uppercase tracking-[0.16em] text-violet-100/80">Colaborativos</p>
-              <p className="mt-2 text-3xl font-bold">{summary.kpis.collaborativeProjects}</p>
+              <p className="mt-2 text-[28px] font-bold">{summary.kpis.collaborativeProjects}</p>
             </div>
           </div>
         </div>

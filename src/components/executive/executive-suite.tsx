@@ -64,11 +64,11 @@ export function ExecutiveSuite({ summary, compact = false }: { summary: Executiv
           <div className="grid gap-3 sm:grid-cols-2 xl:min-w-[320px] xl:max-w-[360px]">
             <div className="rounded-[12px] border border-white/10 bg-white/10 px-4 py-3">
               <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-violet-100/80">Decisiones activas</p>
-              <p className="mt-2 text-3xl font-bold leading-none tracking-tight">{summary.kpis.activeDecisions}</p>
+              <p className="mt-2 text-[28px] font-bold leading-none tracking-tight">{summary.kpis.activeDecisions}</p>
             </div>
             <div className="rounded-[12px] border border-white/10 bg-white/10 px-4 py-3">
               <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-violet-100/80">Watchlist</p>
-              <p className="mt-2 text-3xl font-bold leading-none tracking-tight">{summary.kpis.watchlistSize}</p>
+              <p className="mt-2 text-[28px] font-bold leading-none tracking-tight">{summary.kpis.watchlistSize}</p>
             </div>
           </div>
         </div>

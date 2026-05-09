@@ -79,10 +79,10 @@ export function TaskChecklistCard({ taskId, initialItems = [], canManage = true 
     <section id="checklist" className="space-y-3">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-wrap items-center gap-3">
-          <h2 className="text-lg font-black text-[#0F172A]">Checklist</h2>
+          <h2 className="text-lg font-semibold text-[#0F172A]">Checklist</h2>
           <div className="flex min-w-[220px] overflow-hidden rounded-[14px] border border-[#E5EAF1] bg-white">
             <input value={draft} onChange={(event) => setDraft(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter") { event.preventDefault(); addItem(); } }} disabled={!canManage || busyId === "new"} placeholder="Nueva tarea..." className="h-10 min-w-0 flex-1 px-3 text-sm font-semibold outline-none placeholder:text-[#94A3B8] disabled:bg-slate-50" />
-            <button type="button" onClick={addItem} disabled={!canManage || busyId === "new" || !draft.trim()} className="inline-flex h-10 items-center gap-2 border-l border-[#E5EAF1] px-3 text-sm font-black text-[#0F172A] transition hover:bg-[#F8FAFC] disabled:cursor-not-allowed disabled:opacity-50"><Plus className="h-4 w-4" /> {busyId === "new" ? "Guardando..." : "Agregar"}</button>
+            <button type="button" onClick={addItem} disabled={!canManage || busyId === "new" || !draft.trim()} className="inline-flex h-10 items-center gap-2 border-l border-[#E5EAF1] px-3 text-sm font-semibold text-[#0F172A] transition hover:bg-[#F8FAFC] disabled:cursor-not-allowed disabled:opacity-50"><Plus className="h-4 w-4" /> {busyId === "new" ? "Guardando..." : "Agregar"}</button>
           </div>
         </div>
         <span className="text-sm font-bold text-[#64748B]">{done}/{items.length} completadas ({pct}%)</span>
@@ -92,7 +92,7 @@ export function TaskChecklistCard({ taskId, initialItems = [], canManage = true 
       <div className="mt-5 divide-y divide-[#E5EAF1]">
         {items.length ? items.map((item) => (
           <div key={item.id} className="grid grid-cols-[auto_1fr_auto_auto_auto] items-center gap-3 py-3 text-sm transition hover:bg-[#F8FAFC] sm:px-2">
-            <button type="button" onClick={() => toggle(item.id)} disabled={!canManage || busyId === item.id || !item.persisted} className={`grid h-5 w-5 place-items-center rounded-[6px] border text-xs font-black disabled:opacity-60 ${item.done ? "border-[#16C784] bg-[#16C784] text-white" : "border-[#CBD5E1] bg-white text-transparent"}`} aria-label={item.done ? "Marcar pendiente" : "Marcar completada"}>✓</button>
+            <button type="button" onClick={() => toggle(item.id)} disabled={!canManage || busyId === item.id || !item.persisted} className={`grid h-5 w-5 place-items-center rounded-[6px] border text-xs font-semibold disabled:opacity-60 ${item.done ? "border-[#16C784] bg-[#16C784] text-white" : "border-[#CBD5E1] bg-white text-transparent"}`} aria-label={item.done ? "Marcar pendiente" : "Marcar completada"}>✓</button>
             <span className={`min-w-0 font-semibold ${item.done ? "text-[#64748B] line-through" : "text-[#334155]"}`}>{item.title}</span>
             <span className="hidden text-xs font-bold text-[#64748B] sm:inline">{item.done ? (item.updatedAt ? `Completada ${formatDate(item.updatedAt)}` : "Completada") : "Pendiente"}</span>
             <button type="button" onClick={() => deleteItem(item.id)} disabled={!canManage || busyId === item.id || !item.persisted} className="grid h-8 w-8 place-items-center rounded-[10px] text-[#94A3B8] transition hover:bg-rose-50 hover:text-rose-600 disabled:opacity-50" aria-label="Eliminar punto del checklist"><Trash2 className="h-4 w-4" /></button>

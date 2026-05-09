@@ -45,7 +45,7 @@ export function OperationsOverview({ summary }: { summary: ReportsOverview }) {
             <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="text-sm text-slate-500">{card.label}</p>
-                <p className="mt-3 text-3xl font-bold text-slate-900">{card.value}</p>
+                <p className="mt-3 text-[28px] font-bold text-slate-900">{card.value}</p>
               </div>
               <span className="inline-flex h-12 w-12 items-center justify-center rounded-[16px] bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100">
                 {card.icon}
@@ -60,18 +60,18 @@ export function OperationsOverview({ summary }: { summary: ReportsOverview }) {
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-2xl">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">Operations center</p>
-              <h2 className="mt-2 text-3xl font-bold">Tu lectura ejecutiva del workspace</h2>
+              <h2 className="mt-2 text-[28px] font-bold">Tu lectura ejecutiva del workspace</h2>
               <p className="prose-balance mt-2 max-w-2xl text-sm leading-6 text-slate-300">Con esta vista puedes decidir rápido qué atender, qué imprimir y qué bloque necesita seguimiento con el equipo.</p>
             </div>
             <div className="grid gap-3 sm:grid-cols-2 lg:min-w-[340px]">
               <div className="rounded-[16px] border border-white/10 bg-white/10 px-4 py-3">
                 <p className="text-xs uppercase tracking-[0.16em] text-slate-300">Ritmo de cierre</p>
-                <p className="mt-2 text-3xl font-bold">{summary.kpis.completionRate}%</p>
+                <p className="mt-2 text-[28px] font-bold">{summary.kpis.completionRate}%</p>
                 <p className="mt-1 text-sm text-slate-300">Tareas cerradas sobre el total registrado.</p>
               </div>
               <div className="rounded-[16px] border border-white/10 bg-white/10 px-4 py-3">
                 <p className="text-xs uppercase tracking-[0.16em] text-slate-300">Proyectos activos</p>
-                <p className="mt-2 text-3xl font-bold">{summary.kpis.activeProjects}</p>
+                <p className="mt-2 text-[28px] font-bold">{summary.kpis.activeProjects}</p>
                 <p className="mt-1 text-sm text-slate-300">Carga operativa vigente en el workspace.</p>
               </div>
             </div>

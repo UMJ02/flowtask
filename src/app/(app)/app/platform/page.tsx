@@ -33,7 +33,7 @@ export default async function PlatformPage() {
           </div>
           <div className="rounded-2xl bg-slate-950 px-5 py-4 text-white">
             <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400">Platform readiness</p>
-            <p className="mt-1 text-3xl font-bold">{Math.max(0, 100 - metrics.openSupportTickets * 3)}%</p>
+            <p className="mt-1 text-[28px] font-bold">{Math.max(0, 100 - metrics.openSupportTickets * 3)}%</p>
             <p className="mt-2 text-sm text-slate-300">{metrics.activeSubscriptions} suscripciones bajo observación</p>
           </div>
         </div>

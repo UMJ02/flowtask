@@ -42,9 +42,9 @@ export function ClientDetailPanels({ client }: { client: ClientDetailSummary }) 
       </Card>
 
       <div className="grid gap-4 md:grid-cols-3">
-        <Card><p className="text-xs uppercase tracking-[0.18em] text-slate-500">Proyectos activos</p><p className="mt-3 text-3xl font-bold text-slate-900">{client.projectsCount}</p></Card>
-        <Card><p className="text-xs uppercase tracking-[0.18em] text-slate-500">Tareas abiertas</p><p className="mt-3 text-3xl font-bold text-slate-900">{client.openTasksCount}</p></Card>
-        <Card><p className="text-xs uppercase tracking-[0.18em] text-slate-500">Tareas cerradas</p><p className="mt-3 text-3xl font-bold text-slate-900">{client.completedTasksCount}</p></Card>
+        <Card><p className="text-xs uppercase tracking-[0.18em] text-slate-500">Proyectos activos</p><p className="mt-3 text-[28px] font-bold text-slate-900">{client.projectsCount}</p></Card>
+        <Card><p className="text-xs uppercase tracking-[0.18em] text-slate-500">Tareas abiertas</p><p className="mt-3 text-[28px] font-bold text-slate-900">{client.openTasksCount}</p></Card>
+        <Card><p className="text-xs uppercase tracking-[0.18em] text-slate-500">Tareas cerradas</p><p className="mt-3 text-[28px] font-bold text-slate-900">{client.completedTasksCount}</p></Card>
       </div>
 
       <div className="grid gap-4 xl:grid-cols-2">

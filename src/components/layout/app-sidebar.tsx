@@ -22,7 +22,7 @@ export function AppSidebar({ organizations = [], activeOrganization = null, user
           <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-[14px] bg-[#16C784]/10 ring-1 ring-[#16C784]/20 transition group-hover:scale-[1.03]">
             <Image src="/icons/icon.png" alt="FlowTask" width={30} height={30} className="h-7 w-7 object-contain" priority />
           </span>
-          {!collapsed ? <span className="truncate text-[18px] font-black uppercase tracking-[0.06em] text-white">FlowTask</span> : null}
+          {!collapsed ? <span className="truncate text-[18px] font-semibold uppercase tracking-[0.06em] text-white">FlowTask</span> : null}
         </Link>
         {!collapsed ? (
           <button type="button" onClick={toggle} aria-label="Colapsar menú" className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-[12px] border border-white/10 bg-white/[0.04] text-slate-400 transition-colors hover:bg-white/[0.08] hover:text-white">

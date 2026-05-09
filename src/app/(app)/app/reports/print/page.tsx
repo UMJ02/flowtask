@@ -13,7 +13,7 @@ export default async function ReportsPrintPage({ searchParams }: { searchParams?
     <div className="mx-auto max-w-5xl space-y-4 p-4 print:p-0">
       <Card>
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Reporte imprimible</p>
-        <h1 className="mt-2 text-3xl font-bold text-slate-900">Vista {type}</h1>
+        <h1 className="mt-2 text-[28px] font-bold text-slate-900">Vista {type}</h1>
         <p className="mt-2 text-sm text-slate-500">Versión simple para impresión o exportación rápida desde el navegador.</p>
       </Card>
       <Card>
@@ -32,7 +32,7 @@ function Metric({ label, value }: { label: string; value: number }) {
   return (
     <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4">
       <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">{label}</p>
-      <p className="mt-2 text-3xl font-bold text-slate-900">{value}</p>
+      <p className="mt-2 text-[28px] font-bold text-slate-900">{value}</p>
     </div>
   );
 }

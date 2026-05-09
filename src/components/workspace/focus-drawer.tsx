@@ -164,7 +164,7 @@ export function FocusDrawer({
                     <span className={`inline-flex shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${metricTone(item.value, item.tone)}`}>{item.value > 0 ? 'Activo' : 'Estable'}</span>
                   </div>
                   <div className="mt-4 space-y-1.5">
-                    <p className="text-3xl font-bold leading-none text-slate-950 tabular-nums">{item.value}</p>
+                    <p className="text-[28px] font-bold leading-none text-slate-950 tabular-nums">{item.value}</p>
                     <p className="text-sm leading-6 text-slate-500">{item.helper}</p>
                   </div>
                 </div>

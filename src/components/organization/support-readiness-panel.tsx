@@ -14,7 +14,7 @@ export function SupportReadinessPanel({ summary, tickets, organizationName }: { 
         </div>
         <div className="rounded-2xl bg-emerald-950 px-5 py-4 text-white">
           <p className="text-[11px] uppercase tracking-[0.18em] text-emerald-200">Support readiness</p>
-          <p className="mt-1 text-3xl font-bold">{readiness}%</p>
+          <p className="mt-1 text-[28px] font-bold">{readiness}%</p>
           <p className="mt-2 text-sm text-emerald-100">{organizationName ?? "Sin organización activa"}</p>
         </div>
       </div>
@@ -50,7 +50,7 @@ function Metric({ label, value, hint }: { label: string; value: number; hint: st
   return (
     <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4">
       <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">{label}</p>
-      <p className="mt-2 text-3xl font-bold text-slate-900">{value}</p>
+      <p className="mt-2 text-[28px] font-bold text-slate-900">{value}</p>
       <p className="mt-1 text-sm text-slate-600">{hint}</p>
     </div>
   );

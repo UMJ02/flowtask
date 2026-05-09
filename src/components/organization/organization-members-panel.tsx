@@ -39,7 +39,7 @@ function StatCard({ title, value, helper, tone }: { title: string; value: number
   return (
     <div className={`rounded-[20px] px-4 py-4 shadow-[0_8px_20px_rgba(15,23,42,0.04)] ${tone}`}>
       <p className="text-[11px] font-semibold uppercase tracking-[0.22em] opacity-80">{title}</p>
-      <p className="mt-2 text-3xl font-bold leading-none">{value}</p>
+      <p className="mt-2 text-[28px] font-bold leading-none">{value}</p>
       <p className="mt-2 text-sm opacity-85">{helper}</p>
     </div>
   );

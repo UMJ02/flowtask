@@ -229,12 +229,12 @@ export function ProjectInlineTasks({ project, initialTasks, members, canManage =
     <section id="tareas" className="scroll-mt-28 rounded-[24px] border border-[#E7EDF5] bg-white p-6 shadow-[0_12px_35px_rgba(15,23,42,0.05)]">
       <div className="mb-5 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
-          <p className="text-xs font-black uppercase tracking-[0.18em] text-[#16A36C]">Tareas internas</p>
-          <h2 className="mt-1 text-xl font-black text-[#0F172A]">Tareas del proyecto</h2>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#16A36C]">Tareas internas</p>
+          <h2 className="mt-1 text-xl font-semibold text-[#0F172A]">Tareas del proyecto</h2>
           <p className="mt-1 max-w-2xl text-sm font-medium text-[#64748B]">Estas tareas viven dentro del proyecto y ayudan a medir su avance real.</p>
         </div>
         <div className="min-w-[180px]">
-          <div className="flex items-center justify-between text-sm font-black text-[#0F172A]"><span>Avance</span><span>{progress}%</span></div>
+          <div className="flex items-center justify-between text-sm font-semibold text-[#0F172A]"><span>Avance</span><span>{progress}%</span></div>
           <div className="mt-2 h-2 rounded-full bg-[#EEF2F7]"><span className="block h-2 rounded-full bg-[#16C784]" style={{ width: `${progress}%` }} /></div>
           <p className="mt-2 text-xs font-bold text-[#64748B]">{completed}/{tasks.length} completadas</p>
         </div>
@@ -250,7 +250,7 @@ export function ProjectInlineTasks({ project, initialTasks, members, canManage =
           <option value="">Sin responsable</option>
           {members.map((member) => <option key={member.user_id} value={member.user_id}>{memberName(member)}</option>)}
         </select>
-        <button type="button" onClick={createProjectTask} disabled={!canManage || !draft.title.trim() || busyId === "new"} className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-[16px] bg-[#16C784] px-5 text-sm font-black text-white shadow-[0_12px_24px_rgba(22,199,132,0.22)] disabled:opacity-50"><Plus className="h-4 w-4" />Agregar</button>
+        <button type="button" onClick={createProjectTask} disabled={!canManage || !draft.title.trim() || busyId === "new"} className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-[16px] bg-[#16C784] px-5 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(22,199,132,0.22)] disabled:opacity-50"><Plus className="h-4 w-4" />Agregar</button>
       </div>
 
       <div className="divide-y divide-[#EEF2F7] overflow-hidden rounded-[22px] border border-[#E7EDF5] bg-white">
@@ -276,11 +276,11 @@ export function ProjectInlineTasks({ project, initialTasks, members, canManage =
                 <div className="grid gap-3 text-sm md:grid-cols-[32px_minmax(0,1fr)_130px_150px] xl:grid-cols-[32px_minmax(220px,1.5fr)_120px_150px_130px_110px] md:items-center">
                   <button type="button" onClick={() => toggleDone(task)} disabled={!canManage || busyId === task.id} className={`grid h-6 w-6 place-items-center rounded-md border ${task.status === "concluido" ? "border-[#16C784] bg-[#16C784]" : "border-slate-300 bg-white"}`}>{task.status === "concluido" ? <CheckCircle2 className="h-4 w-4 text-white" /> : null}</button>
                   <div className="min-w-0">
-                    <p className="truncate font-black text-[#0F172A]">{task.title}</p>
+                    <p className="truncate font-semibold text-[#0F172A]">{task.title}</p>
                     <p className="mt-1 truncate text-xs font-medium text-[#64748B]">Hija de {project.title}</p>
                   </div>
                   <span className={`w-fit rounded-full px-3 py-1 text-xs font-bold ring-1 ${statusClass(task.status)}`}>{statusLabel(task.status)}</span>
-                  <div className="flex items-center gap-2 text-xs font-semibold text-[#475569]"><span className="grid h-7 w-7 place-items-center rounded-full bg-[#ECFDF5] text-[10px] font-black text-[#16A36C]">{initials(assigneeLabel)}</span><span className="truncate">{assigneeLabel}</span></div>
+                  <div className="flex items-center gap-2 text-xs font-semibold text-[#475569]"><span className="grid h-7 w-7 place-items-center rounded-full bg-[#ECFDF5] text-[10px] font-semibold text-[#16A36C]">{initials(assigneeLabel)}</span><span className="truncate">{assigneeLabel}</span></div>
                   <span className="inline-flex items-center gap-1 text-xs font-bold text-[#64748B]"><CalendarDays className="h-3.5 w-3.5" />{task.due_date ? formatDate(task.due_date) : "Sin fecha"}</span>
                   <div className="flex items-center justify-end gap-2">
                     <span className={`hidden w-fit rounded-full px-2.5 py-1 text-xs font-bold ring-1 lg:inline-flex ${priorityClass(task.priority)}`}>{priorityLabel(task.priority)}</span>
@@ -294,7 +294,7 @@ export function ProjectInlineTasks({ project, initialTasks, members, canManage =
         }) : (
           <div className="px-6 py-10 text-center">
             <UserRound className="mx-auto h-10 w-10 text-[#94A3B8]" />
-            <p className="mt-3 text-base font-black text-[#0F172A]">Todavía no hay tareas internas.</p>
+            <p className="mt-3 text-base font-semibold text-[#0F172A]">Todavía no hay tareas internas.</p>
             <p className="mt-1 text-sm font-medium text-[#64748B]">Agrega la primera tarea para empezar a medir el avance del proyecto.</p>
           </div>
         )}

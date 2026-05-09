@@ -21,14 +21,14 @@ export function TaskOperationalFeed({ taskId, comments, activity, canComment = t
   return (
     <section className="space-y-5 border-t border-[#E2E8F0] pt-6">
       <div>
-        <h2 className="text-[20px] font-black leading-tight text-[#0F172A]">Feed operativo</h2>
+        <h2 className="text-[20px] font-semibold leading-tight text-[#0F172A]">Feed operativo</h2>
         <p className="mt-1 text-sm font-semibold text-[#64748B]">Comentarios del equipo y cambios importantes de esta tarea.</p>
       </div>
 
       <div className="grid gap-4 xl:grid-cols-2">
         <div className="rounded-[22px] border border-[#E2E8F0] bg-white p-4 shadow-[0_8px_24px_rgba(15,23,42,0.035)]">
           <div className="mb-4">
-            <h3 className="text-sm font-black text-[#0F172A]">Comentarios</h3>
+            <h3 className="text-sm font-semibold text-[#0F172A]">Comentarios</h3>
             <p className="mt-1 text-xs font-semibold text-[#64748B]">Conversaciones del equipo sobre esta tarea.</p>
           </div>
           <TaskQuickCommentsCard taskId={taskId} comments={comments as any[]} canComment={canComment} />
@@ -37,10 +37,10 @@ export function TaskOperationalFeed({ taskId, comments, activity, canComment = t
         <div className="rounded-[22px] border border-[#E2E8F0] bg-white p-4 shadow-[0_8px_24px_rgba(15,23,42,0.035)]">
           <div className="mb-4 flex items-start justify-between gap-3">
             <div>
-              <h3 className="text-sm font-black text-[#0F172A]">Actividad del sistema</h3>
+              <h3 className="text-sm font-semibold text-[#0F172A]">Actividad del sistema</h3>
               <p className="mt-1 text-xs font-semibold text-[#64748B]">Cambios registrados automáticamente.</p>
             </div>
-            <span className="rounded-full bg-[#ECFDF5] px-2.5 py-1 text-[11px] font-black text-[#087A4B]">{activity.length}</span>
+            <span className="rounded-full bg-[#ECFDF5] px-2.5 py-1 text-[11px] font-semibold text-[#087A4B]">{activity.length}</span>
           </div>
 
           <div className="space-y-3">
@@ -50,7 +50,7 @@ export function TaskOperationalFeed({ taskId, comments, activity, canComment = t
                   <Clock3 className="h-4 w-4" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-black text-[#0F172A]">{activityLabel(item)}</p>
+                  <p className="text-sm font-semibold text-[#0F172A]">{activityLabel(item)}</p>
                   <p className="mt-1 text-xs font-semibold text-[#64748B]">{item.created_at ? formatDate(item.created_at) : "Sin fecha"}</p>
                 </div>
               </article>
@@ -61,7 +61,7 @@ export function TaskOperationalFeed({ taskId, comments, activity, canComment = t
           </div>
 
           {hasMoreActivity ? (
-            <button type="button" onClick={() => setShowAllActivity((value) => !value)} className="mt-4 inline-flex h-9 items-center rounded-[12px] border border-[#E2E8F0] bg-white px-3 text-xs font-black text-[#475569] transition hover:bg-[#F8FAFC]">
+            <button type="button" onClick={() => setShowAllActivity((value) => !value)} className="mt-4 inline-flex h-9 items-center rounded-[12px] border border-[#E2E8F0] bg-white px-3 text-xs font-semibold text-[#475569] transition hover:bg-[#F8FAFC]">
               {showAllActivity ? "Ver menos movimientos" : `Ver ${activity.length - 4} movimientos más`}
             </button>
           ) : null}

@@ -49,12 +49,12 @@ export function AutomationControlCenter({ preferences }: { preferences: Notifica
           <div className="grid gap-3 md:grid-cols-3">
             <div className="rounded-[26px] bg-white/10 px-4 py-3 ring-1 ring-white/10">
               <p className="text-xs uppercase tracking-[0.16em] text-slate-300">Cobertura</p>
-              <p className="mt-2 text-3xl font-bold">{automationScore}/9</p>
+              <p className="mt-2 text-[28px] font-bold">{automationScore}/9</p>
               <p className="mt-1 text-sm text-slate-300">Bloques de automatización activos.</p>
             </div>
             <div className="rounded-[26px] bg-white/10 px-4 py-3 ring-1 ring-white/10">
               <p className="text-xs uppercase tracking-[0.16em] text-slate-300">Canales</p>
-              <p className="mt-2 text-3xl font-bold">{activeChannels.length}</p>
+              <p className="mt-2 text-[28px] font-bold">{activeChannels.length}</p>
               <p className="mt-1 text-sm text-slate-300">{activeChannels.length ? activeChannels.join(" · ") : "Sin canales externos activos"}</p>
             </div>
             <div className="rounded-[26px] bg-white/10 px-4 py-3 ring-1 ring-white/10">

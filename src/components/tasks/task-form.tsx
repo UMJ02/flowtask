@@ -387,7 +387,7 @@ export function TaskForm({
               <ArrowLeft className="h-5 w-5" />
             </Link>
             <div className="min-w-0">
-              <h1 className="truncate text-2xl font-black tracking-[-0.035em] text-[#0F172A] sm:text-3xl">{editorTitle}</h1>
+              <h1 className="truncate text-2xl font-semibold tracking-[-0.035em] text-[#0F172A] sm:text-[28px]">{editorTitle}</h1>
               <p className="mt-1 line-clamp-1 text-sm font-medium text-[#64748B]">Crea una tarea clara para que tu equipo sepa qué hacer y cuándo entregarlo.</p>
             </div>
           </div>
@@ -411,16 +411,16 @@ export function TaskForm({
           <section className="rounded-[24px] border border-[#E5EAF1] bg-white p-4 shadow-[0_12px_30px_rgba(15,23,42,0.04)] sm:p-5">
             <div className="rounded-[20px] border border-[#E5EAF1] bg-white p-5 transition focus-within:border-emerald-200 focus-within:ring-4 focus-within:ring-emerald-50">
               <div className="mb-3 flex items-center justify-between gap-3">
-                <label className="text-xs font-black uppercase tracking-[0.18em] text-slate-500">Título</label>
+                <label className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Título</label>
                 <span className="text-xs font-bold text-slate-400">{watchedTitle.length} / 120</span>
               </div>
-              <Input {...register("title")} placeholder="Ej. Diseñar propuesta cliente" className="min-h-[64px] w-full rounded-[18px] border border-[#E5EAF1] bg-white px-5 py-3 text-[28px] font-black leading-[1.15] tracking-[-0.035em] text-[#0F172A] shadow-none outline-none transition placeholder:text-slate-400 focus:border-[#16C784] focus:ring-4 focus:ring-emerald-500/10 sm:text-[34px]" />
+              <Input {...register("title")} placeholder="Ej. Diseñar propuesta cliente" className="min-h-[64px] w-full rounded-[18px] border border-[#E5EAF1] bg-white px-5 py-3 text-[28px] font-semibold leading-[1.15] tracking-[-0.035em] text-[#0F172A] shadow-none outline-none transition placeholder:text-slate-400 focus:border-[#16C784] focus:ring-4 focus:ring-emerald-500/10 sm:text-[32px]" />
               {errors.title ? <p className="mt-3 text-sm font-semibold text-red-600">{errors.title.message}</p> : null}
             </div>
 
             <div className="mt-5 overflow-hidden rounded-[20px] border border-[#E5EAF1] bg-white">
               <div className="flex items-center justify-between border-b border-[#E5EAF1] px-5 py-4">
-                <label className="text-xs font-black uppercase tracking-[0.18em] text-slate-500">Descripción</label>
+                <label className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Descripción</label>
                 <span className="text-xs font-bold text-slate-400">{watchedDescription.length} / 2000</span>
               </div>
               <div className="flex flex-wrap items-center gap-2 border-b border-[#E5EAF1] bg-slate-50/60 px-4 py-3 text-xs font-semibold text-slate-500">
@@ -443,7 +443,7 @@ export function TaskForm({
             </FieldCard>
             {isProjectTask ? (
               <div className="rounded-[20px] border border-emerald-200 bg-emerald-50/80 p-4 shadow-[0_12px_30px_rgba(15,23,42,0.035)] md:col-span-2">
-                <p className="text-xs font-black uppercase tracking-[0.16em] text-emerald-700">Tarea de proyecto</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-700">Tarea de proyecto</p>
                 <p className="mt-2 text-sm font-semibold text-slate-700">Esta tarea quedará dentro del proyecto y usará su misma información base.</p>
               </div>
             ) : null}
@@ -481,7 +481,7 @@ export function TaskForm({
 
           <details className="group overflow-hidden rounded-[24px] border border-[#E5EAF1] bg-white shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
             <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-5 py-4">
-              <span className="text-xs font-black uppercase tracking-[0.18em] text-slate-500">Datos relacionados</span>
+              <span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Datos relacionados</span>
               <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-50 text-slate-500 transition group-open:rotate-180"><ChevronDown className="h-4 w-4" /></span>
             </summary>
             <div className="border-t border-[#E5EAF1] p-5">
@@ -497,15 +497,15 @@ export function TaskForm({
           <SideCard tone="green">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.18em] text-slate-600"><ShieldCheck className="h-4 w-4" /> Acceso</p>
+                <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-600"><ShieldCheck className="h-4 w-4" /> Acceso</p>
                 <p className="mt-3 text-sm font-medium leading-6 text-[#64748B]">Los permisos se gestionan desde Ajustes. Aquí solo verás las opciones que puedes usar.</p>
               </div>
-              <span className="shrink-0 rounded-full bg-emerald-50 px-3 py-1 text-xs font-black text-emerald-700">Acceso completo</span>
+              <span className="shrink-0 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">Acceso completo</span>
             </div>
           </SideCard>
 
           <SideCard tone="amber">
-            <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-600">Seguimiento</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-600">Seguimiento</p>
             <p className="mt-2 text-sm font-medium text-[#64748B]">Revisa el estado, la prioridad y el avance antes de guardar.</p>
             <div className="mt-5 space-y-4">
               <FieldMini label="Estado de seguimiento">
@@ -514,12 +514,12 @@ export function TaskForm({
                 </Select>
               </FieldMini>
               <div>
-                <div className="mb-2 flex items-center justify-between text-xs font-black uppercase tracking-[0.16em] text-slate-500"><span>Avance</span><span className="text-base tracking-normal text-slate-800">{statusProgress}%</span></div>
+                <div className="mb-2 flex items-center justify-between text-xs font-semibold uppercase tracking-[0.16em] text-slate-500"><span>Avance</span><span className="text-base tracking-normal text-slate-800">{statusProgress}%</span></div>
                 <div className="h-2 rounded-full bg-slate-200"><div className="h-2 rounded-full bg-[#16C784] transition-all" style={{ width: `${statusProgress}%` }} /></div>
                 <p className="mt-2 text-xs font-semibold text-[#64748B]">Se sincroniza con el checklist: {checklistStats.total ? `${checklistStats.done}/${checklistStats.total} puntos completados.` : 'sin checklist todavía.'}</p>
               </div>
               <FieldMini label="Prioridad actual">
-                <div className="flex h-12 items-center rounded-2xl border border-[#E5EAF1] bg-white px-4 text-sm font-black text-slate-800">{priorityLabel(selectedPriority)}</div>
+                <div className="flex h-12 items-center rounded-2xl border border-[#E5EAF1] bg-white px-4 text-sm font-semibold text-slate-800">{priorityLabel(selectedPriority)}</div>
               </FieldMini>
               <div className="rounded-[18px] border border-amber-200 bg-white/70 p-4 text-sm font-semibold leading-6 text-amber-900">
                 Próximo seguimiento: podrás definirlo después de crear la tarea, usando comentarios, recordatorios o checklist.
@@ -530,7 +530,7 @@ export function TaskForm({
                     <ClipboardCheck className="h-5 w-5" />
                   </span>
                   <span className="min-w-0">
-                    <span className="block text-sm font-black text-amber-950">Agrega un checklist para medir el avance</span>
+                    <span className="block text-sm font-semibold text-amber-950">Agrega un checklist para medir el avance</span>
                     <span className="mt-1 block text-xs font-semibold leading-5 text-amber-800">Divide el trabajo en pasos pequeños para que el avance sea más fácil de seguir.</span>
                   </span>
                 </Link>
@@ -539,7 +539,7 @@ export function TaskForm({
           </SideCard>
 
           <SideCard tone="purple">
-            <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-600">Comentarios y archivos</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-600">Comentarios y archivos</p>
             <p className="mt-3 text-sm font-medium leading-6 text-[#64748B]">Después de crear la tarea podrás agregar comentarios, archivos y revisar la actividad en un solo lugar.</p>
             {isEdit && taskId ? (
               <Link href={taskDetailRoute(taskId)} className="mt-5 inline-flex h-11 w-full items-center justify-center rounded-2xl bg-[#050B18] px-4 text-sm font-bold text-white shadow-[0_14px_28px_rgba(5,11,24,0.18)] transition hover:-translate-y-0.5">
@@ -549,9 +549,9 @@ export function TaskForm({
           </SideCard>
 
           <SideCard tone="blue">
-            <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-600">Consejos rápidos</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-600">Consejos rápidos</p>
             <div className="mt-4 rounded-[18px] bg-white/70 p-4">
-              <p className="text-sm font-black text-[#0F172A]">{QUICK_TIPS[quickTipIndex].title}</p>
+              <p className="text-sm font-semibold text-[#0F172A]">{QUICK_TIPS[quickTipIndex].title}</p>
               <p className="mt-2 text-sm leading-6 text-[#64748B]">{QUICK_TIPS[quickTipIndex].text}</p>
             </div>
             <div className="mt-4 flex gap-2">
@@ -570,7 +570,7 @@ export function TaskForm({
 function FieldCard({ label, icon, helper, children }: { label: string; icon: ReactNode; helper?: string; children: ReactNode }) {
   return (
     <div className="rounded-[20px] border border-[#E5EAF1] bg-white p-4 shadow-[0_12px_30px_rgba(15,23,42,0.035)]">
-      <label className="mb-3 flex items-center gap-2 text-xs font-black uppercase tracking-[0.16em] text-slate-500">
+      <label className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
         <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-slate-50 text-slate-500">{icon}</span>
         {label}
       </label>
@@ -583,7 +583,7 @@ function FieldCard({ label, icon, helper, children }: { label: string; icon: Rea
 function FieldMini({ label, children }: { label: string; children: ReactNode }) {
   return (
     <label className="block space-y-2">
-      <span className="text-xs font-black uppercase tracking-[0.16em] text-slate-500">{label}</span>
+      <span className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">{label}</span>
       {children}
     </label>
   );
@@ -598,7 +598,7 @@ function CommentBubble({ name, meta, text }: { name: string; meta: string; text:
   return (
     <div className="rounded-2xl bg-slate-50/90 p-3">
       <div className="flex items-center justify-between gap-3">
-        <p className="text-sm font-black text-slate-800">{name}</p>
+        <p className="text-sm font-semibold text-slate-800">{name}</p>
         <p className="text-xs font-semibold text-slate-500">{meta}</p>
       </div>
       <p className="mt-2 text-sm font-medium leading-6 text-slate-600">{text}</p>

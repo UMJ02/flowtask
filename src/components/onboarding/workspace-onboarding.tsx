@@ -67,7 +67,7 @@ export function WorkspaceOnboarding({ summary, compact = false }: { summary: Wor
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">v58.18 Client Ready</p>
-            <h2 className="mt-2 text-3xl font-bold">Centro de arranque para cliente final</h2>
+            <h2 className="mt-2 text-[28px] font-bold">Centro de arranque para cliente final</h2>
             <p className="mt-2 text-sm text-slate-300">
               Flowtask arranca desde la cuenta individual. El modo organización solo aparece cuando el usuario lo crea y lo selecciona explícitamente.
             </p>
@@ -75,7 +75,7 @@ export function WorkspaceOnboarding({ summary, compact = false }: { summary: Wor
           <div className="grid gap-3 sm:grid-cols-3">
             <div className="rounded-[26px] bg-white/10 px-4 py-3 ring-1 ring-white/10">
               <p className="text-xs uppercase tracking-[0.16em] text-slate-300">Readiness</p>
-              <p className="mt-2 text-3xl font-bold">{summary.score}%</p>
+              <p className="mt-2 text-[28px] font-bold">{summary.score}%</p>
               <p className="mt-1 text-sm text-slate-300">Nivel de cierre del workspace.</p>
             </div>
             <div className="rounded-[26px] bg-white/10 px-4 py-3 ring-1 ring-white/10">
@@ -85,7 +85,7 @@ export function WorkspaceOnboarding({ summary, compact = false }: { summary: Wor
             </div>
             <div className="rounded-[26px] bg-white/10 px-4 py-3 ring-1 ring-white/10">
               <p className="text-xs uppercase tracking-[0.16em] text-slate-300">Bloques cerrados</p>
-              <p className="mt-2 text-3xl font-bold">{summary.completed}/{summary.total}</p>
+              <p className="mt-2 text-[28px] font-bold">{summary.completed}/{summary.total}</p>
               <p className="mt-1 text-sm text-slate-300">Pasos completados hasta ahora.</p>
             </div>
           </div>

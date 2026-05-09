@@ -102,7 +102,7 @@ function WorkspaceKpiCard({
         </span>
         <div className="min-w-0">
           <p className="text-[13px] font-semibold text-slate-500">{label}</p>
-          <p className="mt-0.5 text-3xl font-bold leading-none tracking-[-0.04em] text-[#0F172A]">{value}</p>
+          <p className="mt-0.5 text-[28px] font-bold leading-none tracking-[-0.04em] text-[#0F172A]">{value}</p>
           <p className="mt-2 truncate text-xs font-medium text-slate-400">{helper}</p>
         </div>
       </div>
@@ -373,7 +373,7 @@ export function WorkspaceHome() {
                 {overdueTasks.length ? 'Prioridad alta' : 'En control'}
               </span>
             </div>
-            <h2 className="mt-4 max-w-4xl text-2xl font-black tracking-[-0.035em] text-[#0F172A] md:text-[1.7rem]">{radarTitle}</h2>
+            <h2 className="mt-4 max-w-4xl text-2xl font-semibold tracking-[-0.035em] text-[#0F172A] md:text-[1.7rem]">{radarTitle}</h2>
             <p className="mt-3 max-w-3xl text-[15px] leading-6 text-slate-500">{radarCopy}</p>
           </div>
           <div className="flex flex-wrap items-center gap-3 lg:justify-end">
@@ -411,14 +411,14 @@ export function WorkspaceHome() {
               <LayoutGrid className="h-5 w-5" />
             </span>
             <div>
-              <h2 className="text-lg font-black tracking-[-0.02em] text-[#0F172A]">Mi flujo de trabajo</h2>
+              <h2 className="text-lg font-semibold tracking-[-0.02em] text-[#0F172A]">Mi flujo de trabajo</h2>
               <p className="text-sm text-slate-500">Gestiona tus tareas con enfoque. Arrastra y suelta para organizar.</p>
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-3">
             <button type="button" onClick={() => setFlowFiltersOpen((value) => !value)} className={cn("inline-flex h-10 items-center gap-2 rounded-[14px] border px-4 text-sm font-semibold transition", flowFiltersOpen || activeFlowFilters ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-[#E5EAF1] bg-white text-slate-600 hover:bg-slate-50")} aria-expanded={flowFiltersOpen}>
               <SlidersHorizontal className="h-4 w-4" /> Filtros
-              {activeFlowFilters ? <span className="ml-0.5 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[#16C784] px-1.5 text-[11px] font-black text-white">{activeFlowFilters}</span> : null}
+              {activeFlowFilters ? <span className="ml-0.5 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[#16C784] px-1.5 text-[11px] font-semibold text-white">{activeFlowFilters}</span> : null}
             </button>
             <button type="button" onClick={cycleFlowGroup} className="inline-flex h-10 items-center gap-2 rounded-[14px] border border-[#E5EAF1] bg-white px-4 text-sm font-semibold text-slate-600 transition hover:bg-slate-50" title="Cambiar agrupamiento">
               Agrupar: {groupLabel} <ChevronDown className="h-4 w-4" />
@@ -458,8 +458,8 @@ export function WorkspaceHome() {
                   <Sparkles className="h-5 w-5" />
                 </span>
                 <div className="min-w-0">
-                  <p className="text-xs font-black uppercase tracking-[0.18em] text-emerald-700">Workspace nuevo</p>
-                  <h3 className="mt-1 text-xl font-black tracking-[-0.03em] text-[#0F172A]">Tu workspace está listo para empezar</h3>
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-700">Workspace nuevo</p>
+                  <h3 className="mt-1 text-xl font-semibold tracking-[-0.03em] text-[#0F172A]">Tu workspace está listo para empezar</h3>
                   <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
                     Podés cargar un ejemplo seguro para ver proyectos, tareas y checklist sin tocar datos reales. Solo se activa cuando este workspace tiene 0 tareas y 0 proyectos.
                   </p>

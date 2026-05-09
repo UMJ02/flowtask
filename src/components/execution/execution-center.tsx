@@ -76,11 +76,11 @@ export function ExecutionCenter({ summary, compact = false }: { summary: Executi
             <div className="grid gap-3 sm:grid-cols-2 xl:min-w-[320px] xl:max-w-[360px]">
               <div className="rounded-[12px] border border-white/10 bg-white/10 px-4 py-3">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-fuchsia-100/80">Departamentos bajo presión</p>
-                <p className="mt-2 text-3xl font-bold leading-none tracking-tight">{summary.kpis.departmentsUnderPressure}</p>
+                <p className="mt-2 text-[28px] font-bold leading-none tracking-tight">{summary.kpis.departmentsUnderPressure}</p>
               </div>
               <div className="rounded-[12px] border border-white/10 bg-white/10 px-4 py-3">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-fuchsia-100/80">Carga vencida</p>
-                <p className="mt-2 text-3xl font-bold leading-none tracking-tight">{summary.kpis.overdueLoad}</p>
+                <p className="mt-2 text-[28px] font-bold leading-none tracking-tight">{summary.kpis.overdueLoad}</p>
               </div>
             </div>
           </div>
