@@ -29,6 +29,7 @@ type TaskKanbanBoardProps = {
   showHeader?: boolean;
   currentQuery?: string;
   workspaceKey?: string;
+  visibleStatuses?: string[];
 };
 
 function getScopedLayoutKey(base: keyof LayoutConfigShape, workspaceKey: string) {
@@ -215,7 +216,7 @@ async function persistBoardLayoutConfig(
   await supabase.from("boards").update({ layout_config: nextLayoutConfig }).eq("id", board.id);
 }
 
-function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery, workspaceKey = "personal" }: TaskKanbanBoardProps) {
+function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery, workspaceKey = "personal", visibleStatuses }: TaskKanbanBoardProps) {
   const supabase = useMemo(() => createClient(), []);
   const serverSignature = useMemo(() => tasks.map((task) => `${task.id}:${task.status}:${task.priority ?? ''}:${task.due_date ?? ''}:${task.title}`).join('|'), [tasks]);
   const [hydrated, setHydrated] = useState(false);
@@ -230,6 +231,12 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery, work
   const [error, setError] = useState<string | null>(null);
   const [recentDropColumn, setRecentDropColumn] = useState<string | null>(null);
   const [expandedColumns, setExpandedColumns] = useState<Record<string, boolean>>({});
+  const activeColumns = useMemo(() => {
+    if (!visibleStatuses?.length) return columns;
+    const allowed = new Set(visibleStatuses);
+    const nextColumns = columns.filter((column) => allowed.has(column.value));
+    return nextColumns.length ? nextColumns : columns;
+  }, [visibleStatuses]);
 
   useEffect(() => {
     setHydrated(true);
@@ -295,13 +302,13 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery, work
 
   const normalizedTasks = useMemo(() => {
     return boardTasks.map((task) => {
-      if (columns.some((column) => column.value === task.status)) return task;
-      return { ...task, status: "en_espera" };
+      if (activeColumns.some((column) => column.value === task.status)) return task;
+      return { ...task, status: activeColumns[0]?.value ?? "en_espera" };
     });
-  }, [boardTasks]);
+  }, [activeColumns, boardTasks]);
 
   const grouped = useMemo(() => {
-    return columns.map((column) => {
+    return activeColumns.map((column) => {
       const orderedItems = sortItems(normalizedTasks.filter((task) => task.status === column.value), orderOverrides[column.value] ?? []);
       const expanded = expandedColumns[column.value] ?? false;
       return {
@@ -312,12 +319,12 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery, work
         expanded,
       };
     });
-  }, [expandedColumns, normalizedTasks, orderOverrides]);
+  }, [activeColumns, expandedColumns, normalizedTasks, orderOverrides]);
 
   if (!hydrated) {
     return (
       <div className="grid gap-3 xl:grid-cols-3">
-        {columns.map((column) => {
+        {activeColumns.map((column) => {
           const Icon = column.icon;
           return (
             <Card key={column.value} className="rounded-[20px] border border-slate-200/85 bg-white p-4">
@@ -510,7 +517,7 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery, work
                                 {formatDate(task.due_date)}
                               </span>
                               <div className="flex items-center gap-1.5">
-                                {columns
+                                {activeColumns
                                   .filter((option) => option.value !== task.status)
                                   .map((option) => (
                                     <button

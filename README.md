@@ -77,11 +77,11 @@ Base visual global sobre v58.21.2. Normaliza tokens de diseño, tipografía, bot
 Pulido visual y de interacción sobre v58.21.1: feed operativo dividido, límites con “Ver más”, filtros de proyectos simplificados, thumbnails reales en adjuntos y tareas internas con layout responsive. No incluye migraciones ni cambios de RLS.
 
 
-## v58.22.2 Task Status Production + Attachment List + Inline Department Edit
+## v58.22.3 Workspace Board Column Visibility + Production Migration Hotfix
 
 Semantic UI classes and density contracts now govern typography, layout rhythm, surfaces, controls and spacing across the core FlowTask app without Supabase/RLS changes.
 
 
-## v58.22.2 Task Status Production + Attachment List + Inline Department Edit
+## v58.22.3 Workspace Board Column Visibility + Production Migration Hotfix
 
 Adds task status Producción, compact task attachment list mode, and inline department editing for task detail.

@@ -30,6 +30,15 @@ import { cn } from '@/lib/utils/classnames';
 import { projectListRoute, taskNewRoute } from '@/lib/navigation/routes';
 
 const NOTE_STORAGE_KEY = 'flowtask.workspace.quick-notes.v58.13.1';
+const WORKSPACE_VISIBLE_COLUMNS_KEY = 'flowtask.workspace.visible-status-columns.v58.22.3';
+const WORKSPACE_STATUS_COLUMNS = [
+  { value: 'en_proceso', label: 'En progreso' },
+  { value: 'produccion', label: 'Producción' },
+  { value: 'en_espera', label: 'En espera' },
+  { value: 'concluido', label: 'Hecho' },
+] as const;
+const DEFAULT_WORKSPACE_VISIBLE_COLUMNS = WORKSPACE_STATUS_COLUMNS.map((column) => column.value);
+type WorkspaceStatusColumnValue = (typeof WORKSPACE_STATUS_COLUMNS)[number]['value'];
 
 const todayIso = () => new Date().toISOString().slice(0, 10);
 
@@ -71,6 +80,27 @@ function writeNotes(workspaceKey: string, notes: QuickNote[]) {
   if (typeof window === 'undefined') return;
   try {
     window.localStorage.setItem(`${NOTE_STORAGE_KEY}:${workspaceKey}`, JSON.stringify(notes.slice(0, 8)));
+  } catch {}
+}
+
+function readVisibleWorkspaceColumns(workspaceKey: string) {
+  if (typeof window === 'undefined') return DEFAULT_WORKSPACE_VISIBLE_COLUMNS;
+  try {
+    const raw = window.localStorage.getItem(`${WORKSPACE_VISIBLE_COLUMNS_KEY}:${workspaceKey}`);
+    const parsed = raw ? JSON.parse(raw) : null;
+    if (!Array.isArray(parsed)) return DEFAULT_WORKSPACE_VISIBLE_COLUMNS;
+    const allowed = new Set(DEFAULT_WORKSPACE_VISIBLE_COLUMNS);
+    const next = parsed.filter((value): value is WorkspaceStatusColumnValue => typeof value === 'string' && allowed.has(value as WorkspaceStatusColumnValue));
+    return next.length ? next : DEFAULT_WORKSPACE_VISIBLE_COLUMNS;
+  } catch {
+    return DEFAULT_WORKSPACE_VISIBLE_COLUMNS;
+  }
+}
+
+function writeVisibleWorkspaceColumns(workspaceKey: string, columns: WorkspaceStatusColumnValue[]) {
+  if (typeof window === 'undefined') return;
+  try {
+    window.localStorage.setItem(`${WORKSPACE_VISIBLE_COLUMNS_KEY}:${workspaceKey}`, JSON.stringify(columns));
   } catch {}
 }
 
@@ -173,6 +203,8 @@ export function WorkspaceHome() {
   const [flowStatusFilter, setFlowStatusFilter] = useState<'all' | 'en_proceso' | 'produccion' | 'en_espera' | 'concluido'>('all');
   const [flowPriorityFilter, setFlowPriorityFilter] = useState<'all' | 'alta' | 'media' | 'baja'>('all');
   const [flowGroupBy, setFlowGroupBy] = useState<'status' | 'priority' | 'client'>('status');
+  const [columnsMenuOpen, setColumnsMenuOpen] = useState(false);
+  const [visibleStatusColumns, setVisibleStatusColumns] = useState<WorkspaceStatusColumnValue[]>(DEFAULT_WORKSPACE_VISIBLE_COLUMNS);
   const deferredFlowSearch = useDeferredValue(flowSearch);
 
   useEffect(() => {
@@ -180,6 +212,25 @@ export function WorkspaceHome() {
     router.prefetch(taskNewRoute());
     router.prefetch(projectListRoute());
   }, [router]);
+
+  useEffect(() => {
+    setVisibleStatusColumns(readVisibleWorkspaceColumns(workspaceKey));
+  }, [workspaceKey]);
+
+  useEffect(() => {
+    writeVisibleWorkspaceColumns(workspaceKey, visibleStatusColumns);
+  }, [visibleStatusColumns, workspaceKey]);
+
+  useEffect(() => {
+    if (!columnsMenuOpen) return;
+    const closeOnPointerDown = (event: PointerEvent) => {
+      const target = event.target instanceof Element ? event.target : null;
+      if (target?.closest('[data-workspace-columns-menu]')) return;
+      setColumnsMenuOpen(false);
+    };
+    window.addEventListener('pointerdown', closeOnPointerDown);
+    return () => window.removeEventListener('pointerdown', closeOnPointerDown);
+  }, [columnsMenuOpen]);
 
   useEffect(() => {
     let cancelled = false;
@@ -304,6 +355,32 @@ export function WorkspaceHome() {
 
   const activeFlowFilters = Number(Boolean(flowSearch.trim())) + Number(flowStatusFilter !== 'all') + Number(flowPriorityFilter !== 'all');
   const groupLabel = flowGroupBy === 'priority' ? 'Prioridad' : flowGroupBy === 'client' ? 'Registro' : 'Estado';
+  const visibleColumnCountLabel = `${visibleStatusColumns.length}/${WORKSPACE_STATUS_COLUMNS.length}`;
+  const visibleColumnCounts = useMemo(() => {
+    return WORKSPACE_STATUS_COLUMNS.reduce<Record<WorkspaceStatusColumnValue, number>>((acc, column) => {
+      acc[column.value] = filteredFlowTasks.filter((task) => task.status === column.value).length;
+      return acc;
+    }, {
+      en_proceso: 0,
+      produccion: 0,
+      en_espera: 0,
+      concluido: 0,
+    });
+  }, [filteredFlowTasks]);
+
+  function toggleVisibleColumn(status: WorkspaceStatusColumnValue) {
+    setVisibleStatusColumns((current) => {
+      if (current.includes(status)) {
+        if (current.length <= 1) return current;
+        return current.filter((value) => value !== status);
+      }
+      return DEFAULT_WORKSPACE_VISIBLE_COLUMNS.filter((value) => value === status || current.includes(value));
+    });
+  }
+
+  function showAllWorkspaceColumns() {
+    setVisibleStatusColumns(DEFAULT_WORKSPACE_VISIBLE_COLUMNS);
+  }
 
   function cycleFlowGroup() {
     setFlowGroupBy((current) => current === 'status' ? 'priority' : current === 'priority' ? 'client' : 'status');
@@ -423,6 +500,67 @@ export function WorkspaceHome() {
             <button type="button" onClick={cycleFlowGroup} className="inline-flex h-10 items-center gap-2 rounded-[14px] border border-[#E5EAF1] bg-white px-4 text-sm font-semibold text-slate-600 transition hover:bg-slate-50" title="Cambiar agrupamiento">
               Agrupar: {groupLabel} <ChevronDown className="h-4 w-4" />
             </button>
+            <div className="relative" data-workspace-columns-menu>
+              <button
+                type="button"
+                onClick={() => setColumnsMenuOpen((value) => !value)}
+                className={cn(
+                  'inline-flex h-10 items-center gap-2 rounded-[14px] border px-4 text-sm font-semibold transition',
+                  columnsMenuOpen || visibleStatusColumns.length < WORKSPACE_STATUS_COLUMNS.length
+                    ? 'border-violet-200 bg-violet-50 text-violet-700'
+                    : 'border-[#E5EAF1] bg-white text-slate-600 hover:bg-slate-50',
+                )}
+                aria-expanded={columnsMenuOpen}
+                aria-haspopup="menu"
+              >
+                <LayoutGrid className="h-4 w-4" /> Columnas
+                <span className="rounded-full bg-white/80 px-1.5 py-0.5 text-[11px] font-bold text-slate-500 ring-1 ring-slate-200">{visibleColumnCountLabel}</span>
+              </button>
+              {columnsMenuOpen ? (
+                <div className="absolute right-0 z-30 mt-2 w-[260px] rounded-[18px] border border-[#E5EAF1] bg-white p-3 shadow-[0_18px_48px_rgba(15,23,42,0.14)]" role="menu">
+                  <div className="mb-2 flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-bold text-slate-900">Mostrar columnas</p>
+                      <p className="text-xs text-slate-500">Elige qué estados aparecen en este workspace.</p>
+                    </div>
+                    <button type="button" onClick={() => setColumnsMenuOpen(false)} className="inline-flex h-7 w-7 items-center justify-center rounded-xl text-slate-400 transition hover:bg-slate-100 hover:text-slate-700" aria-label="Cerrar selector de columnas">
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                  <div className="space-y-1">
+                    {WORKSPACE_STATUS_COLUMNS.map((column) => {
+                      const checked = visibleStatusColumns.includes(column.value);
+                      const disabled = checked && visibleStatusColumns.length === 1;
+                      return (
+                        <button
+                          key={column.value}
+                          type="button"
+                          onClick={() => toggleVisibleColumn(column.value)}
+                          disabled={disabled}
+                          className={cn(
+                            'flex w-full items-center justify-between gap-3 rounded-[14px] px-3 py-2 text-left text-sm font-semibold transition',
+                            checked ? 'bg-slate-50 text-slate-900' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900',
+                            disabled && 'cursor-not-allowed opacity-60',
+                          )}
+                          role="menuitemcheckbox"
+                          aria-checked={checked}
+                        >
+                          <span className="flex min-w-0 items-center gap-2">
+                            <span className={cn('inline-flex h-4 w-4 items-center justify-center rounded-md border text-[11px]', checked ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-slate-200 bg-white text-transparent')}>✓</span>
+                            <span className="truncate">{column.label}</span>
+                          </span>
+                          <span className="rounded-full bg-white px-2 py-0.5 text-[11px] font-bold text-slate-500 ring-1 ring-slate-200">{visibleColumnCounts[column.value]}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-3">
+                    <button type="button" onClick={showAllWorkspaceColumns} className="text-xs font-bold text-emerald-700 transition hover:text-emerald-800">Mostrar todas</button>
+                    <span className="text-[11px] font-medium text-slate-400">Mínimo 1 visible</span>
+                  </div>
+                </div>
+              ) : null}
+            </div>
             <Link href={taskNewRoute()} className="inline-flex h-10 items-center justify-center rounded-[14px] bg-[#16C784] px-5 text-sm font-bold text-white transition hover:bg-emerald-600"><Plus className="mr-2 h-4 w-4" /> Nueva tarea</Link>
           </div>
         </div>
@@ -485,7 +623,7 @@ export function WorkspaceHome() {
             </div>
           </div>
         ) : null}
-        <TaskKanbanBoard tasks={filteredFlowTasks} showHeader={false} workspaceKey={`${workspaceKey}:${flowGroupBy}`} />
+        <TaskKanbanBoard tasks={filteredFlowTasks} showHeader={false} workspaceKey={`${workspaceKey}:${flowGroupBy}`} visibleStatuses={visibleStatusColumns} />
       </section>
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
