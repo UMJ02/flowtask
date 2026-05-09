@@ -24,10 +24,10 @@ import { ProjectInlineTasks } from "@/components/projects/project-inline-tasks";
 import { ProjectHeroInlineEditor } from "@/components/projects/project-hero-inline-editor";
 
 const projectUi = {
-  card: "rounded-[24px] border border-[#E7EDF5] bg-white",
-  smallCard: "rounded-[22px] border border-[#E7EDF5] bg-white p-5",
-  buttonDark: "inline-flex h-10 items-center justify-center gap-2 rounded-[16px] bg-[#050B18] px-5 text-sm font-bold text-white transition hover:-translate-y-0.5 hover:bg-[#111827]",
-  buttonGhost: "inline-flex h-10 items-center justify-center gap-2 rounded-[16px] border border-[#E7EDF5] bg-white px-5 text-sm font-bold text-[#0F172A] transition hover:bg-[#F8FAFC]",
+  card: "rounded-[20px] border border-[#E7EDF5] bg-white",
+  smallCard: "rounded-[20px] border border-[#E7EDF5] bg-white p-5",
+  buttonDark: "inline-flex h-10 items-center justify-center gap-2 rounded-[16px] bg-[#050B18] px-4 text-[13px] font-bold text-white transition hover:-translate-y-0.5 hover:bg-[#111827]",
+  buttonGhost: "inline-flex h-10 items-center justify-center gap-2 rounded-[16px] border border-[#E7EDF5] bg-white px-4 text-[13px] font-bold text-[#0F172A] transition hover:bg-[#F8FAFC]",
   eyebrow: "text-xs font-semibold uppercase tracking-[0.22em] text-[#16A36C]",
 };
 
@@ -181,7 +181,7 @@ function ProjectStatsRow({ tasks }: { tasks: any[] }) {
       {items.map((item) => {
         const Icon = item.icon;
         return (
-          <article key={item.label} className="rounded-[22px] border border-[#E7EDF5] bg-white p-5 transition hover:-translate-y-0.5">
+          <article key={item.label} className="rounded-[20px] border border-[#E7EDF5] bg-white p-5 transition hover:-translate-y-0.5">
             <div className="flex items-center gap-4">
               <span className={`grid h-10 w-10 place-items-center rounded-full ${item.tone}`}><Icon className="h-5 w-5" /></span>
               <div>
@@ -203,9 +203,9 @@ function ProjectHeroCard({ project, tasks, members, currentQuery }: { project: a
   const cover = project.image_url || "/imagenes/organization-team-hero.png";
 
   return (
-    <section className="relative overflow-hidden rounded-[24px] border border-[#E7EDF5] bg-white p-5">
+    <section className="relative overflow-hidden rounded-[20px] border border-[#E7EDF5] bg-white p-5">
       <div className="pointer-events-none absolute right-0 top-0 h-full w-1/2 bg-gradient-to-l from-[#ECFDF5] via-[#EFF6FF]/50 to-transparent" />
-      <div className="pointer-events-none absolute right-6 top-5 h-[78%] w-[34%] rounded-[24px] bg-[radial-gradient(circle_at_1px_1px,rgba(22,199,132,0.13)_1px,transparent_0)] [background-size:14px_14px] opacity-70" />
+      <div className="pointer-events-none absolute right-6 top-5 h-[78%] w-[34%] rounded-[20px] bg-[radial-gradient(circle_at_1px_1px,rgba(22,199,132,0.13)_1px,transparent_0)] [background-size:14px_14px] opacity-70" />
       <div className="relative grid gap-5 lg:grid-cols-[230px_minmax(0,1fr)_360px]">
         <div className="relative h-[190px] overflow-hidden rounded-[20px] bg-slate-100">
           <Image src={cover} alt={project.title || "Proyecto FlowTask"} fill className="object-cover" sizes="230px" priority={false} unoptimized={Boolean(project.image_url)} />
@@ -218,7 +218,7 @@ function ProjectHeroCard({ project, tasks, members, currentQuery }: { project: a
             <span className="rounded-full bg-[#F6F0FF] px-3 py-1 text-xs font-semibold text-[#7C3AED] ring-1 ring-[#E9D5FF]">{department?.name || project.country || "Proyecto"}</span>
           </div>
           <div className="mt-4 flex flex-wrap items-center gap-2">
-            <h1 className="text-[32px] font-semibold leading-tight tracking-[-0.035em] text-[#0F172A]">{project.title}</h1>
+            <h1 className="text-[26px] font-semibold leading-tight tracking-[-0.035em] text-[#0F172A]">{project.title}</h1>
             <Star className="h-5 w-5 text-slate-400" />
           </div>
           <p className="mt-2 text-sm font-semibold text-[#64748B]">Creado el {project.created_at ? formatDate(project.created_at) : "—"}</p>
@@ -258,7 +258,7 @@ function ProjectTabs() {
     { label: "Actividad", href: "#actividad" },
   ];
   return (
-    <nav className="flex h-10 items-center gap-8 overflow-x-auto border-b border-[#E7EDF5]">
+    <nav className="flex h-10 items-center gap-5 overflow-x-auto border-b border-[#E7EDF5]">
       {tabs.map((tab, index) => (
         <a key={tab.label} href={tab.href} data-active={index === 0} className="relative h-10 shrink-0 text-sm font-semibold text-[#64748B] transition hover:text-[#0F172A] data-[active=true]:text-[#16A36C] after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full after:rounded-full after:bg-[#16C784] after:opacity-0 data-[active=true]:after:opacity-100">
           {tab.label}
@@ -345,7 +345,7 @@ export function ProjectDetailPro({ project, tasks, members, attachments, activit
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
         <section className="space-y-5"><ProjectInlineTasks project={project} initialTasks={tasks} members={members} canManage={canCreateTask} /><ProjectActivityCard activity={activity} /></section>
         <aside className="space-y-5 xl:sticky xl:top-5 xl:self-start">
-          <section className="rounded-[24px] border border-[#BBF7D0] bg-[#ECFDF5] p-5">
+          <section className="rounded-[20px] border border-[#BBF7D0] bg-[#ECFDF5] p-5">
             <p className="text-xs font-semibold uppercase tracking-[0.20em] text-[#087A4B]">Acción rápida</p>
             <h3 className="mt-2 text-xl font-semibold text-[#0F172A]">Crear tarea interna</h3>
             <p className="mt-2 text-sm leading-6 text-[#64748B]">Agrega tareas dentro de este proyecto sin salir de esta vista.</p>

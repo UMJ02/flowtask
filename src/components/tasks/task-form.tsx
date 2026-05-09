@@ -380,10 +380,10 @@ export function TaskForm({
   return (
     <form className="-mx-4 min-h-screen bg-[#F6F8FC] pb-8 md:-mx-6" onSubmit={handleSubmit(onSubmit)}>
       <div className="sticky top-0 z-40 mb-6 px-3 py-2 sm:px-4 lg:px-5">
-        <div className="rounded-[24px] border border-[#E5EAF1] bg-white/95 px-4 py-4 backdrop-blur-xl sm:px-5 lg:px-5">
+        <div className="rounded-[20px] border border-[#E5EAF1] bg-white/95 px-4 py-4 backdrop-blur-xl sm:px-5 lg:px-5">
           <div className="flex min-h-[72px] w-full flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex min-w-0 items-center gap-3">
-            <Link href={cancelHref} className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#050B18] text-white transition hover:-translate-y-0.5" aria-label="Volver">
+            <Link href={cancelHref} className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#050B18] text-white transition hover:-translate-y-0.5" aria-label="Volver">
               <ArrowLeft className="h-5 w-5" />
             </Link>
             <div className="min-w-0">
@@ -392,13 +392,13 @@ export function TaskForm({
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2 lg:justify-end">
-            <button type="button" onClick={() => reset(resetValues)} className="inline-flex h-11 items-center gap-2 rounded-2xl border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-slate-800 transition hover:bg-slate-50">
+            <button type="button" onClick={() => reset(resetValues)} className="inline-flex h-10 items-center gap-2 rounded-2xl border border-[#E5EAF1] bg-white px-3.5 text-[13px] font-bold text-slate-800 transition hover:bg-slate-50">
               Limpiar <ChevronDown className="h-4 w-4 rotate-90" />
             </button>
-            <Link href={cancelHref} className="inline-flex h-11 items-center justify-center rounded-2xl border border-[#E5EAF1] bg-white px-5 text-sm font-bold text-slate-800 transition hover:bg-slate-50">
+            <Link href={cancelHref} className="inline-flex h-10 items-center justify-center rounded-2xl border border-[#E5EAF1] bg-white px-4 text-[13px] font-bold text-slate-800 transition hover:bg-slate-50">
               Cancelar
             </Link>
-            <Button loading={isBusy} type="submit" className="h-11 rounded-2xl bg-[#16C784] px-5 text-white hover:bg-[#12b777]">
+            <Button loading={isBusy} type="submit" className="h-10 rounded-xl bg-[#16C784] px-5 text-white hover:bg-[#12b777]">
               {submitLabel ?? (isEdit ? "Guardar cambios" : "Crear tarea")}
             </Button>
           </div>
@@ -408,13 +408,13 @@ export function TaskForm({
       </div>
       <div className="grid w-full gap-4 px-3 sm:px-4 lg:px-5 xl:grid-cols-[minmax(0,1fr)_380px] 2xl:gap-5">
         <div className="space-y-5">
-          <section className="rounded-[24px] border border-[#E5EAF1] bg-white p-4 sm:p-5">
+          <section className="rounded-[20px] border border-[#E5EAF1] bg-white p-4 sm:p-5">
             <div className="rounded-[20px] border border-[#E5EAF1] bg-white p-5 transition focus-within:border-emerald-200 focus-within:ring-4 focus-within:ring-emerald-50">
               <div className="mb-3 flex items-center justify-between gap-3">
                 <label className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Título</label>
                 <span className="text-xs font-bold text-slate-400">{watchedTitle.length} / 120</span>
               </div>
-              <Input {...register("title")} placeholder="Ej. Diseñar propuesta cliente" className="min-h-[64px] w-full rounded-[18px] border border-[#E5EAF1] bg-white px-5 py-3 text-[28px] font-semibold leading-[1.15] tracking-[-0.035em] text-[#0F172A] shadow-none outline-none transition placeholder:text-slate-400 focus:border-[#16C784] focus:ring-4 focus:ring-emerald-500/10 sm:text-[32px]" />
+              <Input {...register("title")} placeholder="Ej. Diseñar propuesta cliente" className="min-h-[52px] w-full rounded-xl border border-[#E5EAF1] bg-white px-4 py-2.5 text-[22px] font-semibold leading-[1.15] tracking-[-0.028em] text-[#0F172A] shadow-none outline-none transition placeholder:text-slate-400 focus:border-[#16C784] focus:ring-4 focus:ring-emerald-500/10 sm:text-[26px]" />
               {errors.title ? <p className="mt-3 text-sm font-semibold text-red-600">{errors.title.message}</p> : null}
             </div>
 
@@ -479,7 +479,7 @@ export function TaskForm({
             ) : null}
           </section>
 
-          <details className="group overflow-hidden rounded-[24px] border border-[#E5EAF1] bg-white">
+          <details className="group overflow-hidden rounded-[20px] border border-[#E5EAF1] bg-white">
             <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-5 py-4">
               <span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Datos relacionados</span>
               <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-50 text-slate-500 transition group-open:rotate-180"><ChevronDown className="h-4 w-4" /></span>
@@ -519,7 +519,7 @@ export function TaskForm({
                 <p className="mt-2 text-xs font-semibold text-[#64748B]">Se sincroniza con el checklist: {checklistStats.total ? `${checklistStats.done}/${checklistStats.total} puntos completados.` : 'sin checklist todavía.'}</p>
               </div>
               <FieldMini label="Prioridad actual">
-                <div className="flex h-10 items-center rounded-2xl border border-[#E5EAF1] bg-white px-4 text-sm font-semibold text-slate-800">{priorityLabel(selectedPriority)}</div>
+                <div className="flex h-10 items-center rounded-2xl border border-[#E5EAF1] bg-white px-3.5 text-[13px] font-semibold text-slate-800">{priorityLabel(selectedPriority)}</div>
               </FieldMini>
               <div className="rounded-[18px] border border-amber-200 bg-white/70 p-4 text-sm font-semibold leading-6 text-amber-900">
                 Próximo seguimiento: podrás definirlo después de crear la tarea, usando comentarios, recordatorios o checklist.
@@ -542,7 +542,7 @@ export function TaskForm({
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-600">Comentarios y archivos</p>
             <p className="mt-3 text-sm font-medium leading-6 text-[#64748B]">Después de crear la tarea podrás agregar comentarios, archivos y revisar la actividad en un solo lugar.</p>
             {isEdit && taskId ? (
-              <Link href={taskDetailRoute(taskId)} className="mt-5 inline-flex h-11 w-full items-center justify-center rounded-2xl bg-[#050B18] px-4 text-sm font-bold text-white transition hover:-translate-y-0.5">
+              <Link href={taskDetailRoute(taskId)} className="mt-5 inline-flex h-11 w-full items-center justify-center rounded-2xl bg-[#050B18] px-3.5 text-[13px] font-bold text-white transition hover:-translate-y-0.5">
                 Abrir detalle de la tarea
               </Link>
             ) : null}
@@ -591,7 +591,7 @@ function FieldMini({ label, children }: { label: string; children: ReactNode }) 
 
 function SideCard({ children, tone = "white" }: { children: ReactNode; tone?: "white" | "green" | "amber" | "purple" | "blue" }) {
   const toneClass = tone === "green" ? "border-[#BBF7D0] bg-[#ECFDF5]" : tone === "amber" ? "border-[#FDECC8] bg-[#FFF8E8]" : tone === "purple" ? "border-[#E9D5FF] bg-[#FAF5FF]" : tone === "blue" ? "border-[#BFDBFE] bg-[#EFF6FF]" : "border-[#E5EAF1] bg-white";
-  return <section className={`rounded-[24px] border p-5 ${toneClass}`}>{children}</section>;
+  return <section className={`rounded-[20px] border p-5 ${toneClass}`}>{children}</section>;
 }
 
 function CommentBubble({ name, meta, text }: { name: string; meta: string; text: string }) {

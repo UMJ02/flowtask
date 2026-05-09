@@ -87,7 +87,7 @@ export function SettingsAccountOverview({
       <div className="flex flex-col gap-5">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">Settings hub</p>
-          <h1 className="mt-2 max-w-4xl text-[28px] font-bold md:text-[32px]">Cuenta, notificaciones y contexto de trabajo</h1>
+          <h1 className="mt-2 max-w-4xl text-[24px] font-semibold md:text-[28px]">Cuenta, notificaciones y contexto de trabajo</h1>
           <p className="mt-2 max-w-3xl text-sm text-slate-300 md:text-base">
             Reordena cómo recibes avisos y revisa el contexto operativo activo sin duplicar información con el perfil.
           </p>
@@ -105,7 +105,7 @@ export function SettingsAccountOverview({
             return (
               <div
                 key={item.key}
-                className="group relative min-h-[138px] min-w-0 rounded-[22px] bg-white/10 px-3.5 py-3.5 ring-1 ring-white/10 transition duration-200 hover:-translate-y-0.5 hover:bg-white/12 sm:min-h-[152px] sm:px-4 sm:py-4"
+                className="group relative min-h-[138px] min-w-0 rounded-[20px] bg-white/10 px-3.5 py-3.5 ring-1 ring-white/10 transition duration-200 hover:-translate-y-0.5 hover:bg-white/12 sm:min-h-[152px] sm:px-4 sm:py-4"
                 title={item.helper}
               >
                 <div className="flex items-center gap-2 text-emerald-300">

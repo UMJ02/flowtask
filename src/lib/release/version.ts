@@ -1,3 +1,3 @@
-export const APP_VERSION = "58.21.5-modern-density-motion-system";
-export const APP_RELEASE_NAME = "v58.21.5 Modern Density + Motion System";
+export const APP_VERSION = "58.21.6-visual-rhythm-legacy-style-cleanup";
+export const APP_RELEASE_NAME = "v58.21.6 Visual Rhythm + Legacy Style Cleanup";
 export const APP_RELEASE_STAGE = "production-candidate";

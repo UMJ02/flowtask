@@ -12,11 +12,11 @@ export function AppCard({ children, className, variant = "section", interactive 
   return (
     <section
       className={cn(
-        variant === "hero" && "rounded-[24px] border border-slate-200/80 bg-white p-5 md:p-5",
+        variant === "hero" && "rounded-[20px] border border-slate-200/80 bg-white p-4 md:p-4",
         variant === "main" && "ft-main-card",
         variant === "section" && "ft-section-card",
         variant === "compact" && "ft-mini-card",
-        variant === "plain" && "rounded-[22px] border border-slate-200/80 bg-white",
+        variant === "plain" && "rounded-[20px] border border-slate-200/80 bg-white",
         variant === "floating" && "ft-floating-card p-4",
         interactive && "ft-hover-lift",
         className,
