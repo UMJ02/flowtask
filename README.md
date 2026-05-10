@@ -1,34 +1,22 @@
-# FlowTask — v58.24.8.1 Boards Hero Asset Integration + Template Preview Cleanup
+# FlowTask — v58.24.8.2 Boards Hero Toolbar Size Polish
 
-Base: **v58.24.8 — Boards Hero Diagram Visual Refresh**
+Base: **v58.24.8.1 — Boards Hero Asset Integration + Template Preview Cleanup**
 
-## Cambios clave v58.24.8.1
+## Cambios clave v58.24.8.2
 
-- Se integra `hero.png` como visual principal del hero en `/app/boards`.
-- Se integran los assets reales de toolbar (`icon-flecha`, `icon-frame`, `icon-text`, `icon-puntos`).
-- Se limpian las previews de plantillas para usar assets reales por plantilla.
-- La plantilla `Reunión con cliente` usa una preview wide basada en `hero.png` como fallback visual controlado.
+- Se hizo polish visual del toolbar del hero en `/app/boards`.
+- El toolbar quedó más pequeño y con mejor respiración dentro del contenedor del hero.
+- Los íconos se redujeron para que no peguen en los bordes del hero ni del toolbar.
+- Se ajustó el padding general del hero y del frame visual derecho para dar más aire.
+- Se mantienen los assets reales integrados en v58.24.8.1.
 - No se tocan Supabase, RLS, Realtime, Storage ni el editor `/app/boards/[boardId]`.
-- `verify:current` apunta a `verify:v58.24.8.1`.
-
-## Assets integrados
-
-- `public/boards-home/hero.png`
-- `public/boards-home/diagrama_fujo.png`
-- `public/boards-home/plan_proyecto.png`
-- `public/boards-home/mapa_ideas.png`
-- `public/boards-home/pizarra_blanco.png`
-- `public/boards-home/wireframe.png`
-- `public/boards-home/icon-flecha.png`
-- `public/boards-home/icon-frame.png`
-- `public/boards-home/icon-text.png`
-- `public/boards-home/icon-puntos.png`
+- `verify:current` apunta a `verify:v58.24.8.2`.
 
 ## Validación recomendada
 
 ```bash
 npm install
-npm run verify:v58.24.8.1
+npm run verify:v58.24.8.2
 npm run typecheck
 npm run build:preflight
 npm run build
