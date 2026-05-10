@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -24,50 +25,42 @@ import { BOARD_TEMPLATES, createTemplateElements, type BoardTemplate, type Board
 
 type DeleteTarget = Pick<VisualBoard, "id" | "title"> | null;
 
-const TEMPLATE_ACCENTS: Record<BoardTemplateId, { className: string; preview: "blank" | "flow" | "table" | "ideas" | "wireframe" | "meeting" }> = {
-  blank: { className: "board-home-template-mint", preview: "blank" },
-  flow: { className: "board-home-template-blue", preview: "flow" },
-  project: { className: "board-home-template-amber", preview: "table" },
-  meeting: { className: "board-home-template-mint", preview: "meeting" },
-  ideas: { className: "board-home-template-violet", preview: "ideas" },
-  wireframe: { className: "board-home-template-rose", preview: "wireframe" },
+type TemplateVisual = {
+  className: string;
+  previewSrc: string;
+  previewWidth: number;
+  previewHeight: number;
+  variant?: "default" | "wide";
 };
 
-function TemplatePreview({ type }: { type: "blank" | "flow" | "table" | "ideas" | "wireframe" | "meeting" }) {
-  if (type === "blank") {
-    return <div className="board-home-preview-blank"><Plus className="h-5 w-5" /></div>;
-  }
-  if (type === "flow") {
-    return (
-      <div className="board-home-preview-flow" aria-hidden="true">
-        <span className="node node-a" /><span className="line line-a" /><span className="diamond" /><span className="line line-b" /><span className="node node-b" /><span className="line line-c" /><span className="node node-c" />
-      </div>
-    );
-  }
-  if (type === "table") {
-    return (
-      <div className="board-home-preview-table" aria-hidden="true">
-        {Array.from({ length: 12 }).map((_, index) => <span key={index} />)}
-      </div>
-    );
-  }
-  if (type === "wireframe") {
-    return (
-      <div className="board-home-preview-wireframe" aria-hidden="true">
-        <span className="hero" /><span className="line a" /><span className="line b" /><span className="card a" /><span className="card b" />
-      </div>
-    );
-  }
-  if (type === "meeting") {
-    return (
-      <div className="board-home-preview-ideas" aria-hidden="true">
-        <span className="note yellow" /><span className="note green" /><span className="note rose" /><span className="note blue" />
-      </div>
-    );
-  }
+const TEMPLATE_VISUALS: Record<BoardTemplateId, TemplateVisual> = {
+  blank: { className: "board-home-template-mint", previewSrc: "/boards-home/pizarra_blanco.png", previewWidth: 100, previewHeight: 78 },
+  flow: { className: "board-home-template-blue", previewSrc: "/boards-home/diagrama_fujo.png", previewWidth: 100, previewHeight: 78 },
+  project: { className: "board-home-template-amber", previewSrc: "/boards-home/plan_proyecto.png", previewWidth: 100, previewHeight: 78 },
+  meeting: { className: "board-home-template-mint", previewSrc: "/boards-home/hero.png", previewWidth: 645, previewHeight: 192, variant: "wide" },
+  ideas: { className: "board-home-template-violet", previewSrc: "/boards-home/mapa_ideas.png", previewWidth: 100, previewHeight: 78 },
+  wireframe: { className: "board-home-template-rose", previewSrc: "/boards-home/wireframe.png", previewWidth: 100, previewHeight: 78 },
+};
+
+const HERO_TOOL_ICONS = [
+  { src: "/boards-home/icon-flecha.png", width: 50, height: 47 },
+  { src: "/boards-home/icon-frame.png", width: 50, height: 47 },
+  { src: "/boards-home/icon-text.png", width: 50, height: 47 },
+  { src: "/boards-home/icon-puntos.png", width: 50, height: 47 },
+] as const;
+
+function TemplatePreview({ templateId }: { templateId: BoardTemplateId }) {
+  const visual = TEMPLATE_VISUALS[templateId];
+
   return (
-    <div className="board-home-preview-ideas" aria-hidden="true">
-      <span className="note yellow" /><span className="note violet" /><span className="note rose" /><span className="note blue" />
+    <div className={`board-home-template-preview-asset ${visual.variant === "wide" ? "is-wide" : ""}`} aria-hidden="true">
+      <Image
+        src={visual.previewSrc}
+        alt=""
+        width={visual.previewWidth}
+        height={visual.previewHeight}
+        className="board-home-template-image"
+      />
     </div>
   );
 }
@@ -76,33 +69,16 @@ function HeroIllustration() {
   return (
     <div className="board-home-hero-visual" aria-hidden="true">
       <div className="board-home-hero-toolbar">
-        <span className="tool active" /><span className="tool" /><span className="tool text" /><span className="tool note" /><span className="tool connector" />
+        {HERO_TOOL_ICONS.map((icon, index) => (
+          <span key={icon.src} className={`board-home-hero-tool ${index === 0 ? "is-active" : ""}`}>
+            <Image src={icon.src} alt="" width={icon.width} height={icon.height} className="board-home-hero-tool-image" priority={index === 0} />
+          </span>
+        ))}
       </div>
-      <div className="board-home-hero-diagram">
-        <Sparkles className="diagram-sparkle sparkle-a h-4 w-4" />
-        <Sparkles className="diagram-sparkle sparkle-b h-4 w-4" />
-        <span className="diagram-card note-card note-top">
-          <i className="icon list" /><b /><b className="short" />
-        </span>
-        <span className="diagram-card note-card note-bottom">
-          <i className="icon bulb" /><b /><b className="short" />
-        </span>
-        <span className="diagram-card media-card">
-          <i className="icon play" />
-        </span>
-        <span className="diagram-card checklist-card">
-          <i className="icon checks" /><b /><b /><b className="short" />
-        </span>
-        <span className="diagram-card table-card">
-          <i className="icon grid" />
-          <em>{Array.from({ length: 12 }).map((_, index) => <u key={index} />)}</em>
-        </span>
-        <span className="diagram-diamond" />
-        <span className="diagram-line line-top" />
-        <span className="diagram-line line-left-a" />
-        <span className="diagram-line line-left-b" />
-        <span className="diagram-line line-right-a" />
-        <span className="diagram-line line-right-b" />
+      <div className="board-home-hero-stage">
+        <div className="board-home-hero-stage-frame">
+          <Image src="/boards-home/hero.png" alt="" width={645} height={192} className="board-home-hero-image" priority />
+        </div>
       </div>
     </div>
   );
@@ -137,15 +113,15 @@ function BoardAccessBadge({ board }: { board: VisualBoard }) {
 }
 
 function TemplateCard({ template, creating, onCreate }: { template: BoardTemplate; creating: boolean; onCreate: (id: BoardTemplateId) => void }) {
-  const accent = TEMPLATE_ACCENTS[template.id];
+  const visual = TEMPLATE_VISUALS[template.id];
   return (
     <button
       type="button"
       disabled={creating}
       onClick={() => onCreate(template.id)}
-      className={`board-home-template-card ${accent.className}`}
+      className={`board-home-template-card ${visual.className}`}
     >
-      <div className="board-home-template-preview"><TemplatePreview type={accent.preview} /></div>
+      <div className="board-home-template-preview"><TemplatePreview templateId={template.id} /></div>
       <div className="mt-4 flex items-end justify-between gap-3">
         <div className="min-w-0 text-left">
           <h3>{template.title}</h3>
@@ -156,7 +132,6 @@ function TemplateCard({ template, creating, onCreate }: { template: BoardTemplat
     </button>
   );
 }
-
 export function BoardsHome() {
   const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
