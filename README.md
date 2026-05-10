@@ -1,3 +1,32 @@
+# FlowTask — v58.24.7 Boards Home Action Alignment + Handoff Cleanup
+
+Base oficial actual: `v58.24.6 Boards Home UI Redesign + Saved Board Delete`.
+
+Esta versión alinea la pantalla `/app/boards` para que sus botones, textos y estados visibles representen acciones reales. No agrega migraciones, no cambia RLS, no toca Storage, no cambia Realtime y no rediseña el editor de pizarra.
+
+## Cambios clave v58.24.7
+
+- `Importar` fue reemplazado por `Ver plantillas` porque todavía no existe flujo real de importación.
+- `Ver todas las plantillas` ahora despliega/oculta plantillas reales.
+- `Ver todas mis pizarras` fue reemplazado por `Actualizar` para recargar datos reales.
+- Se quitaron avatares simulados en pizarras recientes.
+- Se agregaron badges de acceso reales: `Privada`, `Compartida`, `Enlace activo`, `Enlace editable`.
+- El modal de quitar pizarra ya no usa copy de acción irreversible.
+- `verify:current` apunta a `verify:v58.24.7`.
+
+## Validación recomendada
+
+```bash
+npm install
+npm run verify:v58.24.7
+npm run typecheck
+npm run build:preflight
+npm run build
+npm run dev
+```
+
+---
+
 # FlowTask — v58.23.3 Board Templates + Comments Activity
 
 Módulo Pizarras actualizado con plantillas rápidas, comentarios y actividad básica sobre el canvas visual. Base: v58.23.2 Board Tables + Inline Editing.

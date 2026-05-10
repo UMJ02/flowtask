@@ -1003,7 +1003,7 @@
   }
 }
 
-/* v58.24.6 — Boards Home UI Redesign + Saved Board Delete */
+/* v58.24.7 — Boards Home Action Alignment + Handoff Cleanup */
 .board-home-shell {
   min-height: 100%;
   padding: 4px 0 28px;
@@ -1054,7 +1054,11 @@
 }
 .board-home-primary-btn,
 .board-home-secondary-btn {
+  display: inline-flex !important;
   height: 46px !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
   border-radius: 16px !important;
   padding-inline: 20px !important;
   font-size: 14px !important;
@@ -1301,6 +1305,20 @@
 .board-home-avatars span:nth-child(2) { background: linear-gradient(135deg,#1D4ED8,#93C5FD); }
 .board-home-avatars span:nth-child(3) { background: linear-gradient(135deg,#7C2D12,#FDBA74); }
 .board-home-avatars em { background: #F8FAFC; color: #64748B; }
+.board-home-access-badge {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid #DDEFE7;
+  border-radius: 999px;
+  background: #F0FDF4;
+  padding: 7px 10px;
+  color: #047857;
+  font-size: 11px;
+  font-weight: 900;
+  white-space: nowrap;
+}
 .board-home-delete-btn {
   display: inline-flex;
   align-items: center;

@@ -5,17 +5,14 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   ArrowRight,
-  CalendarDays,
   Clock3,
-  FileUp,
-  Grid2X2,
   Loader2,
   MoreVertical,
   Plus,
+  RefreshCw,
+  ShieldCheck,
   Sparkles,
   Trash2,
-  Users,
-  Workflow,
   X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -110,6 +107,21 @@ function RecentBoardPreview({ board }: { board: VisualBoard }) {
   );
 }
 
+function BoardAccessBadge({ board }: { board: VisualBoard }) {
+  const label = board.visibility === "public_link"
+    ? board.publicCanEdit ? "Enlace editable" : "Enlace activo"
+    : board.visibility === "workspace" || board.organizationId
+      ? "Compartida"
+      : "Privada";
+
+  return (
+    <span className="board-home-access-badge">
+      <ShieldCheck className="h-3.5 w-3.5" />
+      {label}
+    </span>
+  );
+}
+
 function TemplateCard({ template, creating, onCreate }: { template: BoardTemplate; creating: boolean; onCreate: (id: BoardTemplateId) => void }) {
   const accent = TEMPLATE_ACCENTS[template.id];
   return (
@@ -140,6 +152,7 @@ export function BoardsHome() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<DeleteTarget>(null);
   const [error, setError] = useState<string | null>(null);
+  const [showAllTemplates, setShowAllTemplates] = useState(false);
 
   async function loadBoards() {
     setLoading(true);
@@ -247,7 +260,7 @@ export function BoardsHome() {
       .maybeSingle();
 
     if (deleteError || !data?.id) {
-      setError("No pudimos eliminar la pizarra. Revisa permisos o intenta de nuevo.");
+      setError("No pudimos quitar la pizarra. Revisa permisos o intenta de nuevo.");
       setDeletingId(null);
       return;
     }
@@ -269,9 +282,13 @@ export function BoardsHome() {
               {creating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
               Nueva pizarra
             </Button>
-            <Button type="button" disabled={creating} onClick={() => createBoard("blank")} className="board-home-secondary-btn">
-              <FileUp className="h-4 w-4" /> Importar
-            </Button>
+            <button
+              type="button"
+              onClick={() => document.getElementById("board-templates")?.scrollIntoView({ behavior: "smooth", block: "start" })}
+              className="board-home-secondary-btn"
+            >
+              <Sparkles className="h-4 w-4" /> Ver plantillas
+            </button>
           </div>
         </div>
         <HeroIllustration />
@@ -279,16 +296,18 @@ export function BoardsHome() {
 
       {error ? <div className="board-home-alert">{error}</div> : null}
 
-      <section className="board-home-section">
+      <section id="board-templates" className="board-home-section">
         <div className="board-home-section-head">
           <div>
             <h2>Empieza rápido</h2>
             <p>Elige una plantilla o comienza desde cero.</p>
           </div>
-          <button type="button" className="board-home-link-btn">Ver todas las plantillas <ArrowRight className="h-4 w-4" /></button>
+          <button type="button" className="board-home-link-btn" onClick={() => setShowAllTemplates((value) => !value)}>
+            {showAllTemplates ? "Ver menos plantillas" : "Ver todas las plantillas"} <ArrowRight className="h-4 w-4" />
+          </button>
         </div>
         <div className="board-home-template-grid">
-          {BOARD_TEMPLATES.filter((template) => template.id !== "meeting").map((template) => (
+          {(showAllTemplates ? BOARD_TEMPLATES : BOARD_TEMPLATES.filter((template) => template.id !== "meeting")).map((template) => (
             <TemplateCard key={template.id} template={template} creating={creating} onCreate={createBoard} />
           ))}
         </div>
@@ -303,7 +322,9 @@ export function BoardsHome() {
               <p>Accede rápido a tus últimos trabajos.</p>
             </div>
           </div>
-          <button type="button" className="board-home-link-btn">Ver todas mis pizarras <ArrowRight className="h-4 w-4" /></button>
+          <button type="button" className="board-home-link-btn" onClick={() => void loadBoards()} disabled={loading}>
+            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />} Actualizar
+          </button>
         </div>
         <div className="board-home-recent-grid">
           {loading ? Array.from({ length: 4 }).map((_, index) => (
@@ -330,8 +351,8 @@ export function BoardsHome() {
                 <RecentBoardPreview board={board} />
               </Link>
               <div className="mt-4 flex items-center justify-between gap-3">
-                <div className="board-home-avatars" aria-hidden="true"><span /><span /><span /><em>+{Math.max(1, Math.min(3, board.title.length % 4))}</em></div>
-                <button type="button" onClick={() => setDeleteTarget({ id: board.id, title: board.title })} className="board-home-delete-btn"><Trash2 className="h-4 w-4" /> Eliminar</button>
+                <BoardAccessBadge board={board} />
+                <button type="button" onClick={() => setDeleteTarget({ id: board.id, title: board.title })} className="board-home-delete-btn"><Trash2 className="h-4 w-4" /> Quitar</button>
               </div>
             </article>
           ))}
@@ -351,12 +372,12 @@ export function BoardsHome() {
           <div className="board-home-delete-dialog">
             <button type="button" className="board-home-delete-close" onClick={() => setDeleteTarget(null)} aria-label="Cerrar"><X className="h-4 w-4" /></button>
             <div className="board-home-delete-icon"><Trash2 className="h-5 w-5" /></div>
-            <p className="board-home-delete-kicker">Acción irreversible</p>
-            <h2 id="delete-board-title">¿Eliminar pizarra?</h2>
-            <p className="board-home-delete-copy">Vas a eliminar “{deleteTarget.title}”. La pizarra dejará de aparecer en tus recientes.</p>
+            <p className="board-home-delete-kicker">Quitar de tus pizarras</p>
+            <h2 id="delete-board-title">¿Quitar esta pizarra?</h2>
+            <p className="board-home-delete-copy">“{deleteTarget.title}” dejará de aparecer en esta vista. No se eliminarán otras pizarras ni se afectarán tus permisos.</p>
             <div className="board-home-delete-actions">
               <button type="button" className="board-home-delete-cancel" onClick={() => setDeleteTarget(null)} disabled={!!deletingId}>Cancelar</button>
-              <button type="button" className="board-home-delete-danger" onClick={deleteBoard} disabled={!!deletingId}>{deletingId ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />} Eliminar</button>
+              <button type="button" className="board-home-delete-danger" onClick={deleteBoard} disabled={!!deletingId}>{deletingId ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />} Quitar</button>
             </div>
           </div>
         </div>
