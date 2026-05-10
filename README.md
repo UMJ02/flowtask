@@ -1,22 +1,22 @@
-# FlowTask — v58.24.8.2 Boards Hero Toolbar Size Polish
+# FlowTask — v58.24.8.3 Boards Home Style Polish
 
-Base: **v58.24.8.1 — Boards Hero Asset Integration + Template Preview Cleanup**
+Base: **v58.24.8.2 — Boards Hero Toolbar Size Polish**
 
-## Cambios clave v58.24.8.2
+## Cambios clave v58.24.8.3
 
-- Se hizo polish visual del toolbar del hero en `/app/boards`.
-- El toolbar quedó más pequeño y con mejor respiración dentro del contenedor del hero.
-- Los íconos se redujeron para que no peguen en los bordes del hero ni del toolbar.
-- Se ajustó el padding general del hero y del frame visual derecho para dar más aire.
-- Se mantienen los assets reales integrados en v58.24.8.1.
+- Polish visual general de `/app/boards`.
+- Superficies del hero más limpias, suaves y premium.
+- Botones principales y secundarios más consistentes.
+- Cards de plantillas y pizarras recientes con mejor borde, sombra y hover.
+- Badges, links y estados visuales más alineados.
 - No se tocan Supabase, RLS, Realtime, Storage ni el editor `/app/boards/[boardId]`.
-- `verify:current` apunta a `verify:v58.24.8.2`.
+- `verify:current` apunta a `verify:v58.24.8.3`.
 
 ## Validación recomendada
 
 ```bash
 npm install
-npm run verify:v58.24.8.2
+npm run verify:v58.24.8.3
 npm run typecheck
 npm run build:preflight
 npm run build
