@@ -75,20 +75,34 @@ function TemplatePreview({ type }: { type: "blank" | "flow" | "table" | "ideas" 
 function HeroIllustration() {
   return (
     <div className="board-home-hero-visual" aria-hidden="true">
-      <div className="board-home-hero-mini-toolbar">
-        <span className="active" /><span /><span /><span />
+      <div className="board-home-hero-toolbar">
+        <span className="tool active" /><span className="tool" /><span className="tool text" /><span className="tool note" /><span className="tool connector" />
       </div>
-      <div className="board-home-hero-canvas">
-        <Sparkles className="sparkle sparkle-a h-4 w-4" />
-        <Sparkles className="sparkle sparkle-b h-4 w-4" />
-        <span className="sticky yellow"><i /></span>
-        <span className="sticky violet"><i /></span>
-        <span className="shape start" />
-        <span className="shape decision" />
-        <span className="connector one" />
-        <span className="connector two" />
-        <span className="table">{Array.from({ length: 8 }).map((_, index) => <i key={index} />)}</span>
-        <span className="cursor" />
+      <div className="board-home-hero-diagram">
+        <Sparkles className="diagram-sparkle sparkle-a h-4 w-4" />
+        <Sparkles className="diagram-sparkle sparkle-b h-4 w-4" />
+        <span className="diagram-card note-card note-top">
+          <i className="icon list" /><b /><b className="short" />
+        </span>
+        <span className="diagram-card note-card note-bottom">
+          <i className="icon bulb" /><b /><b className="short" />
+        </span>
+        <span className="diagram-card media-card">
+          <i className="icon play" />
+        </span>
+        <span className="diagram-card checklist-card">
+          <i className="icon checks" /><b /><b /><b className="short" />
+        </span>
+        <span className="diagram-card table-card">
+          <i className="icon grid" />
+          <em>{Array.from({ length: 12 }).map((_, index) => <u key={index} />)}</em>
+        </span>
+        <span className="diagram-diamond" />
+        <span className="diagram-line line-top" />
+        <span className="diagram-line line-left-a" />
+        <span className="diagram-line line-left-b" />
+        <span className="diagram-line line-right-a" />
+        <span className="diagram-line line-right-b" />
       </div>
     </div>
   );
