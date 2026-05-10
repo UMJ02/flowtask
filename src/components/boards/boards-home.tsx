@@ -2,20 +2,143 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { ArrowRight, LayoutTemplate, Loader2, Plus, Sparkles, Workflow } from "lucide-react";
+import { useRouter } from "next/navigation";
+import {
+  ArrowRight,
+  CalendarDays,
+  Clock3,
+  FileUp,
+  Grid2X2,
+  Loader2,
+  MoreVertical,
+  Plus,
+  Sparkles,
+  Trash2,
+  Users,
+  Workflow,
+  X,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { createClient } from "@/lib/supabase/client";
 import { getClientWorkspaceContext } from "@/lib/supabase/workspace-client";
 import type { VisualBoard, VisualBoardRow } from "@/lib/boards/board-types";
 import { mapBoardRow, serializeElementForUpsert } from "@/lib/boards/board-serialization";
-import { BOARD_TEMPLATES, createTemplateElements, type BoardTemplateId } from "@/lib/boards/board-templates";
+import { BOARD_TEMPLATES, createTemplateElements, type BoardTemplate, type BoardTemplateId } from "@/lib/boards/board-templates";
+
+type DeleteTarget = Pick<VisualBoard, "id" | "title"> | null;
+
+const TEMPLATE_ACCENTS: Record<BoardTemplateId, { className: string; preview: "blank" | "flow" | "table" | "ideas" | "wireframe" | "meeting" }> = {
+  blank: { className: "board-home-template-mint", preview: "blank" },
+  flow: { className: "board-home-template-blue", preview: "flow" },
+  project: { className: "board-home-template-amber", preview: "table" },
+  meeting: { className: "board-home-template-mint", preview: "meeting" },
+  ideas: { className: "board-home-template-violet", preview: "ideas" },
+  wireframe: { className: "board-home-template-rose", preview: "wireframe" },
+};
+
+function TemplatePreview({ type }: { type: "blank" | "flow" | "table" | "ideas" | "wireframe" | "meeting" }) {
+  if (type === "blank") {
+    return <div className="board-home-preview-blank"><Plus className="h-5 w-5" /></div>;
+  }
+  if (type === "flow") {
+    return (
+      <div className="board-home-preview-flow" aria-hidden="true">
+        <span className="node node-a" /><span className="line line-a" /><span className="diamond" /><span className="line line-b" /><span className="node node-b" /><span className="line line-c" /><span className="node node-c" />
+      </div>
+    );
+  }
+  if (type === "table") {
+    return (
+      <div className="board-home-preview-table" aria-hidden="true">
+        {Array.from({ length: 12 }).map((_, index) => <span key={index} />)}
+      </div>
+    );
+  }
+  if (type === "wireframe") {
+    return (
+      <div className="board-home-preview-wireframe" aria-hidden="true">
+        <span className="hero" /><span className="line a" /><span className="line b" /><span className="card a" /><span className="card b" />
+      </div>
+    );
+  }
+  if (type === "meeting") {
+    return (
+      <div className="board-home-preview-ideas" aria-hidden="true">
+        <span className="note yellow" /><span className="note green" /><span className="note rose" /><span className="note blue" />
+      </div>
+    );
+  }
+  return (
+    <div className="board-home-preview-ideas" aria-hidden="true">
+      <span className="note yellow" /><span className="note violet" /><span className="note rose" /><span className="note blue" />
+    </div>
+  );
+}
+
+function HeroIllustration() {
+  return (
+    <div className="board-home-hero-visual" aria-hidden="true">
+      <div className="board-home-hero-mini-toolbar">
+        <span className="active" /><span /><span /><span />
+      </div>
+      <div className="board-home-hero-canvas">
+        <Sparkles className="sparkle sparkle-a h-4 w-4" />
+        <Sparkles className="sparkle sparkle-b h-4 w-4" />
+        <span className="sticky yellow"><i /></span>
+        <span className="sticky violet"><i /></span>
+        <span className="shape start" />
+        <span className="shape decision" />
+        <span className="connector one" />
+        <span className="connector two" />
+        <span className="table">{Array.from({ length: 8 }).map((_, index) => <i key={index} />)}</span>
+        <span className="cursor" />
+      </div>
+    </div>
+  );
+}
+
+function RecentBoardPreview({ board }: { board: VisualBoard }) {
+  if (board.thumbnailUrl) {
+    return <img src={board.thumbnailUrl} alt="" className="h-full w-full rounded-[18px] object-cover" />;
+  }
+  return (
+    <div className="board-home-recent-preview" aria-hidden="true">
+      <span className="tile a" /><span className="tile b" /><span className="tile c" />
+      <span className="line a" /><span className="line b" />
+      <span className="table">{Array.from({ length: 6 }).map((_, index) => <i key={index} />)}</span>
+    </div>
+  );
+}
+
+function TemplateCard({ template, creating, onCreate }: { template: BoardTemplate; creating: boolean; onCreate: (id: BoardTemplateId) => void }) {
+  const accent = TEMPLATE_ACCENTS[template.id];
+  return (
+    <button
+      type="button"
+      disabled={creating}
+      onClick={() => onCreate(template.id)}
+      className={`board-home-template-card ${accent.className}`}
+    >
+      <div className="board-home-template-preview"><TemplatePreview type={accent.preview} /></div>
+      <div className="mt-4 flex items-end justify-between gap-3">
+        <div className="min-w-0 text-left">
+          <h3>{template.title}</h3>
+          <p>{template.description}</p>
+        </div>
+        <span className="board-home-plus"><Plus className="h-4 w-4" /></span>
+      </div>
+    </button>
+  );
+}
 
 export function BoardsHome() {
+  const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
   const [boards, setBoards] = useState<VisualBoard[]>([]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<DeleteTarget>(null);
   const [error, setError] = useState<string | null>(null);
 
   async function loadBoards() {
@@ -62,13 +185,14 @@ export function BoardsHome() {
       return;
     }
 
+    const template = BOARD_TEMPLATES.find((item) => item.id === templateId);
     const { data, error: insertError } = await supabase
       .from("visual_boards")
       .insert({
         owner_id: context.user.id,
         organization_id: context.activeOrganizationId,
-        title: "Nueva pizarra",
-        description: "Espacio visual para organizar ideas, diagramas y notas.",
+        title: templateId === "blank" ? "Nueva pizarra" : template?.title ?? "Nueva pizarra",
+        description: template?.description ?? "Espacio visual para organizar ideas, diagramas y notas.",
         visibility: "private",
       })
       .select("id")
@@ -107,92 +231,136 @@ export function BoardsHome() {
     }
 
     setCreating(false);
-    window.location.href = `/app/boards/${data.id}`;
+    router.push(`/app/boards/${data.id}`);
+  }
+
+  async function deleteBoard() {
+    if (!deleteTarget) return;
+    setDeletingId(deleteTarget.id);
+    setError(null);
+    const timestamp = new Date().toISOString();
+    const { data, error: deleteError } = await supabase
+      .from("visual_boards")
+      .update({ deleted_at: timestamp, updated_at: timestamp })
+      .eq("id", deleteTarget.id)
+      .select("id")
+      .maybeSingle();
+
+    if (deleteError || !data?.id) {
+      setError("No pudimos eliminar la pizarra. Revisa permisos o intenta de nuevo.");
+      setDeletingId(null);
+      return;
+    }
+
+    setBoards((current) => current.filter((board) => board.id !== deleteTarget.id));
+    setDeleteTarget(null);
+    setDeletingId(null);
   }
 
   return (
-    <div className="ft-governed-screen ft-density-dashboard">
-      <Card className="ft-main-card overflow-hidden">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div className="flex items-start gap-4">
-            <span className="grid h-12 w-12 shrink-0 place-items-center rounded-[18px] border border-emerald-200 bg-emerald-50 text-emerald-700">
-              <Workflow className="h-5 w-5" />
-            </span>
-            <div>
-              <p className="ft-text-label text-emerald-700">Pizarras visuales</p>
-              <h1 className="ft-title-page mt-1">Crea diagramas, notas y mapas visuales</h1>
-              <p className="ft-text-muted mt-2 max-w-3xl">Organiza ideas en un lienzo flexible: notas, textos, formas y tablas visuales con guardado real en Supabase.</p>
-            </div>
+    <div className="board-home-shell">
+      <section className="board-home-hero">
+        <div className="board-home-hero-copy">
+          <p className="board-home-kicker">Pizarras visuales</p>
+          <h1>Crea, organiza y visualiza tus ideas</h1>
+          <p>Todo tu pensamiento en un solo espacio visual con sincronización, plantillas y colaboración en tiempo real.</p>
+          <div className="board-home-hero-actions">
+            <Button onClick={() => createBoard()} disabled={creating} className="board-home-primary-btn">
+              {creating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+              Nueva pizarra
+            </Button>
+            <Button type="button" disabled={creating} onClick={() => createBoard("blank")} className="board-home-secondary-btn">
+              <FileUp className="h-4 w-4" /> Importar
+            </Button>
           </div>
-          <Button onClick={() => createBoard()} disabled={creating} className="ft-btn-primary">
-            {creating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
-            Nueva pizarra
-          </Button>
         </div>
-      </Card>
+        <HeroIllustration />
+      </section>
 
-      {error ? <Card className="ft-mini-card border-rose-200 bg-rose-50 text-sm font-semibold text-rose-700">{error}</Card> : null}
+      {error ? <div className="board-home-alert">{error}</div> : null}
 
-      <section className="ft-section-card">
-        <div className="flex items-center justify-between gap-3">
+      <section className="board-home-section">
+        <div className="board-home-section-head">
           <div>
-            <p className="ft-text-label text-emerald-700">Plantillas rápidas</p>
-            <h2 className="ft-title-section mt-1">Empieza con una estructura visual</h2>
-            <p className="ft-text-muted mt-1">Elige una plantilla para cargar notas, tablas y diagramas iniciales en segundos.</p>
+            <h2>Empieza rápido</h2>
+            <p>Elige una plantilla o comienza desde cero.</p>
           </div>
-          <LayoutTemplate className="hidden h-5 w-5 text-emerald-600 md:block" />
+          <button type="button" className="board-home-link-btn">Ver todas las plantillas <ArrowRight className="h-4 w-4" /></button>
         </div>
-        <div className="mt-4 grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
-          {BOARD_TEMPLATES.map((template) => (
-            <button
-              key={template.id}
-              type="button"
-              disabled={creating}
-              onClick={() => createBoard(template.id)}
-              className="ft-motion-list-item rounded-2xl border border-slate-200 bg-white/85 p-3 text-left transition hover:border-emerald-200 hover:bg-emerald-50/50 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              <span className="inline-flex rounded-full bg-emerald-50 px-2 py-1 text-[11px] font-bold text-emerald-700">{template.badge}</span>
-              <h3 className="ft-title-card mt-2">{template.title}</h3>
-              <p className="ft-text-muted mt-1 line-clamp-2 text-sm">{template.description}</p>
-            </button>
+        <div className="board-home-template-grid">
+          {BOARD_TEMPLATES.filter((template) => template.id !== "meeting").map((template) => (
+            <TemplateCard key={template.id} template={template} creating={creating} onCreate={createBoard} />
           ))}
         </div>
       </section>
 
-      <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-        {loading ? Array.from({ length: 3 }).map((_, index) => <Card key={index} className="ft-section-card h-40 animate-pulse bg-slate-100"><span className="sr-only">Cargando pizarra</span></Card>) : null}
-        {!loading && boards.length === 0 ? (
-          <Card className="ft-section-card sm:col-span-2 xl:col-span-3">
-            <div className="flex flex-col items-center justify-center py-12 text-center">
-              <span className="grid h-14 w-14 place-items-center rounded-2xl bg-emerald-50 text-emerald-700"><Sparkles className="h-6 w-6" /></span>
-              <h2 className="ft-title-section mt-4">Todavía no tienes pizarras</h2>
-              <p className="ft-text-muted mt-2 max-w-xl">Crea la primera para diseñar un flujo, ordenar ideas o preparar una propuesta visual.</p>
-              <Button onClick={() => createBoard()} disabled={creating} className="ft-btn-primary mt-5"><Plus className="h-4 w-4" /> Crear pizarra</Button>
+      <section className="board-home-section">
+        <div className="board-home-section-head">
+          <div className="flex items-start gap-2">
+            <Clock3 className="mt-1 h-5 w-5 text-slate-500" />
+            <div>
+              <h2>Mis pizarras recientes</h2>
+              <p>Accede rápido a tus últimos trabajos.</p>
             </div>
-          </Card>
-        ) : null}
-        {!loading && boards.map((board) => (
-          <Link key={board.id} href={`/app/boards/${board.id}`} className="group block">
-            <Card className="ft-section-card ft-liquid-hover h-full">
+          </div>
+          <button type="button" className="board-home-link-btn">Ver todas mis pizarras <ArrowRight className="h-4 w-4" /></button>
+        </div>
+        <div className="board-home-recent-grid">
+          {loading ? Array.from({ length: 4 }).map((_, index) => (
+            <div key={index} className="board-home-recent-card board-home-skeleton"><span className="sr-only">Cargando pizarra</span></div>
+          )) : null}
+
+          {!loading && boards.map((board) => (
+            <article key={board.id} className="board-home-recent-card group">
               <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <h2 className="ft-title-card truncate">{board.title}</h2>
-                  <p className="ft-text-muted mt-2 line-clamp-2">{board.description || "Pizarra visual para ideas y diagramas."}</p>
-                </div>
-                <span className="ft-arrow-action grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-slate-200 bg-white text-slate-500 group-hover:text-emerald-700"><ArrowRight className="h-4 w-4" /></span>
+                <Link href={`/app/boards/${board.id}`} className="min-w-0 flex-1">
+                  <h3>{board.title}</h3>
+                  <p>Editada {new Date(board.updatedAt).toLocaleDateString("es-CR")}</p>
+                </Link>
+                <button
+                  type="button"
+                  className="board-home-card-menu"
+                  aria-label={`Eliminar ${board.title}`}
+                  onClick={() => setDeleteTarget({ id: board.id, title: board.title })}
+                >
+                  <MoreVertical className="h-4 w-4" />
+                </button>
               </div>
-              <div className="mt-6 rounded-2xl border border-dashed border-slate-200 bg-[#FBFCFE] p-4">
-                <div className="grid grid-cols-3 gap-2 opacity-80">
-                  <span className="h-10 rounded-xl bg-amber-100" />
-                  <span className="h-10 rounded-xl bg-emerald-100" />
-                  <span className="h-10 rounded-xl bg-violet-100" />
-                </div>
+              <Link href={`/app/boards/${board.id}`} className="mt-4 block h-[138px] overflow-hidden rounded-[20px] border border-[#E8EDF5] bg-white/80 p-3 transition group-hover:border-emerald-200">
+                <RecentBoardPreview board={board} />
+              </Link>
+              <div className="mt-4 flex items-center justify-between gap-3">
+                <div className="board-home-avatars" aria-hidden="true"><span /><span /><span /><em>+{Math.max(1, Math.min(3, board.title.length % 4))}</em></div>
+                <button type="button" onClick={() => setDeleteTarget({ id: board.id, title: board.title })} className="board-home-delete-btn"><Trash2 className="h-4 w-4" /> Eliminar</button>
               </div>
-              <p className="ft-text-meta mt-4">Actualizada {new Date(board.updatedAt).toLocaleDateString("es-CR")}</p>
-            </Card>
-          </Link>
-        ))}
+            </article>
+          ))}
+
+          {!loading ? (
+            <button type="button" disabled={creating} onClick={() => createBoard()} className="board-home-create-card">
+              <span><Plus className="h-6 w-6" /></span>
+              <strong>Crear nueva pizarra</strong>
+              <small>Lienzo en blanco</small>
+            </button>
+          ) : null}
+        </div>
       </section>
+
+      {deleteTarget ? (
+        <div className="board-home-delete-backdrop" role="dialog" aria-modal="true" aria-labelledby="delete-board-title">
+          <div className="board-home-delete-dialog">
+            <button type="button" className="board-home-delete-close" onClick={() => setDeleteTarget(null)} aria-label="Cerrar"><X className="h-4 w-4" /></button>
+            <div className="board-home-delete-icon"><Trash2 className="h-5 w-5" /></div>
+            <p className="board-home-delete-kicker">Acción irreversible</p>
+            <h2 id="delete-board-title">¿Eliminar pizarra?</h2>
+            <p className="board-home-delete-copy">Vas a eliminar “{deleteTarget.title}”. La pizarra dejará de aparecer en tus recientes.</p>
+            <div className="board-home-delete-actions">
+              <button type="button" className="board-home-delete-cancel" onClick={() => setDeleteTarget(null)} disabled={!!deletingId}>Cancelar</button>
+              <button type="button" className="board-home-delete-danger" onClick={deleteBoard} disabled={!!deletingId}>{deletingId ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />} Eliminar</button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
