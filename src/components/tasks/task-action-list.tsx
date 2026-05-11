@@ -645,7 +645,7 @@ function TaskActionListComponent({
           {(["Día", "Semana", "Mes", "Mis tareas", "Equipo"] as const).map((label) => (
             <button key={label} type="button" onClick={() => setTimelineScale(label)} className={cn("h-10 rounded-[14px] border px-4 text-sm font-bold transition", timelineScale === label ? "border-[#050B18] bg-[#050B18] text-white" : "border-[#E5EAF1] bg-white text-slate-700 hover:bg-slate-50")}>{label}</button>
           ))}
-          <button type="button" onClick={() => changeView("list")} className="inline-flex h-10 items-center gap-2 rounded-[14px] border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-slate-700 hover:bg-slate-50"><SlidersHorizontal className="h-4 w-4" />Filtros</button>
+          <button type="button" onClick={() => changeView("list")} className="ft-apple-button ft-apple-button-secondary"><SlidersHorizontal className="h-4 w-4" />Filtros</button>
         </div>
       </div>
 
@@ -726,7 +726,7 @@ function TaskActionListComponent({
             {(["Hoy", "Día", "Semana", "Mes"] as const).map((label) => (
               <button key={label} type="button" onClick={() => setCalendarScale(label)} className={cn("h-10 rounded-[14px] border px-4 text-sm font-bold transition", calendarScale === label ? "border-[#16C784] bg-[#16C784] text-white" : "border-[#E5EAF1] bg-white text-slate-700 hover:bg-slate-50")}>{label}</button>
             ))}
-            <button type="button" onClick={() => setShowCalendarSummary((value) => !value)} className="inline-flex h-10 items-center gap-2 rounded-[14px] border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-slate-700 hover:bg-slate-50"><Settings2 className="h-4 w-4" />Ajustes</button>
+            <button type="button" onClick={() => setShowCalendarSummary((value) => !value)} className="ft-apple-button ft-apple-button-secondary"><Settings2 className="h-4 w-4" />Ajustes</button>
           </div>
         </div>
 
@@ -782,9 +782,9 @@ function TaskActionListComponent({
           <p className="mt-1 text-sm font-medium text-[#64748B]">Control avanzado de planificación, progreso y vistas guardadas.</p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <button type="button" onClick={saveGanttView} className="inline-flex h-10 items-center gap-2 rounded-[14px] border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-slate-700 hover:bg-slate-50"><Save className="h-4 w-4" />Guardar vista</button>
+          <button type="button" onClick={saveGanttView} className="ft-apple-button ft-apple-button-secondary"><Save className="h-4 w-4" />Guardar vista</button>
           <button type="button" onClick={openNewSavedViewModal} className="h-10 rounded-[14px] border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-slate-700 hover:bg-slate-50">Nueva vista</button>
-          <button type="button" onClick={exportTasks} className="inline-flex h-10 items-center gap-2 rounded-[14px] border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-slate-700 hover:bg-slate-50"><Download className="h-4 w-4" />Exportar</button>
+          <button type="button" onClick={exportTasks} className="ft-apple-button ft-apple-button-secondary"><Download className="h-4 w-4" />Exportar</button>
           <button
             type="button"
             onClick={() => setImportantOnly((value) => !value)}
@@ -796,7 +796,7 @@ function TaskActionListComponent({
             <Star className={cn("h-4 w-4", importantOnly && "fill-current")} />
             Solo importantes
           </button>
-          <button type="button" onClick={() => setShowGanttSettings((value) => !value)} className="inline-flex h-10 items-center gap-2 rounded-[14px] bg-[#050B18] px-4 text-sm font-bold text-white"><Settings2 className="h-4 w-4" />Personalizar</button>
+          <button type="button" onClick={() => setShowGanttSettings((value) => !value)} className="ft-apple-button ft-apple-button-primary"><Settings2 className="h-4 w-4" />Personalizar</button>
         </div>
       </div>
 
@@ -915,7 +915,7 @@ function TaskActionListComponent({
         </div>
       ) : null}
 
-      <Card className="relative z-20 rounded-[24px] border border-[#E5EAF1] bg-white p-5">
+      <Card className="relative z-20 ft-apple-panel p-5">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <h2 className="text-base font-bold text-[#0F172A]">Vistas de tareas</h2>

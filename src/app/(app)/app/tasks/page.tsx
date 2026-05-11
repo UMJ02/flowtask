@@ -32,7 +32,7 @@ function StatCard({
   } as const;
 
   return (
-    <Card className="rounded-[20px] border border-[#E5EAF1] bg-white p-4 md:p-5">
+    <Card className="ft-apple-card p-4 md:p-5">
       <div className="flex items-center gap-4">
         <span className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl ring-1 ${tones[tone]}`}>
           <Icon className="h-5 w-5" />
@@ -74,8 +74,8 @@ export default async function TasksPage({ searchParams }: { searchParams?: Promi
   };
 
   return (
-    <div className="ft-governed-screen">
-      <Card className="ft-main-card">
+    <div className="ft-governed-screen ft-app-bg rounded-[28px] p-1">
+      <Card className="ft-apple-panel p-5 md:p-6">
         <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div>
             <h1 className="ft-page-title">Tareas</h1>
@@ -84,14 +84,14 @@ export default async function TasksPage({ searchParams }: { searchParams?: Promi
           <div className="flex flex-wrap gap-2">
             <Link
               href="/app/tasks/trash"
-              className="ft-button border border-[#E5EAF1] bg-white text-slate-700 hover:bg-slate-50"
+              className="ft-apple-button ft-apple-button-secondary"
             >
               <Archive className="h-4 w-4" />
               Papelera
             </Link>
             <Link
               href={taskNewRoute(queryString)}
-              className="ft-button bg-slate-950 text-white hover:bg-slate-900"
+              className="ft-apple-button ft-apple-button-primary"
             >
               <Plus className="h-4 w-4" />
               Nueva tarea

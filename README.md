@@ -1,79 +1,79 @@
-# FlowTask — v58.24.9.8 Client Final Readiness + Global Modal System + Trash Recovery
+# FlowTask — v58.24.9.9 Visual System Cleanup + Apple Workspace UI Polish
 
-Base: **v58.24.9.7.1 — Important Filter + No Auto Reorder + Selection Stability**
+Base: **v58.24.9.8 — Client Final Readiness + Global Modal System + Trash Recovery**
 
 ## Objetivo
 
-Avanzar la app hacia cliente final con recuperación real de tareas, componentes reutilizables de feedback y validación de base de datos.
+Unificar la dirección visual de la app para que se sienta como un producto único, limpio y premium:
+
+- Apple-like workspace surfaces.
+- Claridad tipo Google Workspace.
+- Dashboards operativos tipo monday.
+- Tableros legibles tipo Trello.
+- Menos estilos repetidos.
+- Menos animaciones decorativas.
+- Motion solo funcional.
 
 ## Cambios principales
 
-### Trash recovery
+### Visual system global
 
-- Nueva ruta: `/app/tasks/trash`
-- Nueva vista: `TaskTrashRecovery`
-- Permite:
-  - ver tareas eliminadas
-  - restaurar tareas
-  - eliminar definitivamente
-
-### RPCs de recuperación
-
-Nueva migración:
+Se agregan tokens y clases en:
 
 ```txt
-supabase/migrations/0053_v58_24_9_8_task_trash_recovery_rpc.sql
+src/app/globals.css
 ```
 
-Incluye:
+Nuevas clases:
 
 ```txt
-restore_deleted_task(task_id)
-purge_deleted_task(task_id)
+ft-app-bg
+ft-surface
+ft-surface-flat
+ft-apple-card
+ft-apple-panel
+ft-apple-toolbar
+ft-apple-button
+ft-apple-button-primary
+ft-apple-button-secondary
+ft-apple-chip
+ft-state-chip-progress
+ft-state-chip-production
+ft-state-chip-waiting
+ft-state-chip-done
+ft-motion-functional
+ft-hover-lift
+ft-skeleton-line
 ```
 
-### Global modal system
+### Pantallas pulidas
 
-Nuevo archivo:
+Se aplicó el nuevo sistema en:
 
 ```txt
-src/components/ui/action-modal.tsx
+/app/tasks
+/app/tasks/trash
+TaskActionList
+TaskKanbanBoard
+WorkspaceHome
+TaskWorkspaceInline
 ```
 
-Incluye:
+### Guía visual
+
+Se agrega:
 
 ```txt
-ActionNotice
-ConfirmDialog
-PromptModal
+docs/design/FLOWTASK_VISUAL_SYSTEM_V58_24_9_9.md
 ```
-
-Sirve como base reutilizable para ir eliminando alert/confirm/prompt nativos restantes.
-
-### DB Doctor
-
-Nuevo script:
-
-```bash
-npm run db:doctor
-```
-
-Valida de forma básica que `tasks.deleted_at` sea consultable y recuerda validar RPCs críticas.
-
-### Cliente final
-
-- `/app/tasks` agrega link a Papelera.
-- Las tareas eliminadas no aparecen en listado ni Kanban.
-- La recuperación de tareas ya tiene UI propia.
 
 ## Validación recomendada
 
 ```bash
 npm install
-npm run verify:v58.24.9.8
+npm run verify:v58.24.9.9
 npm run typecheck
 npm run build:preflight
 npm run build
-npm run db:doctor
 npm run dev
 ```

@@ -1828,3 +1828,161 @@
   .board-home-hero-actions{ gap:10px; }
   .board-home-primary-btn,.board-home-secondary-btn{ width:100%; }
 }
+
+
+/* v58.24.9.9 Visual System Cleanup + Apple Workspace UI Polish
+   Centralized product tokens and reusable UI primitives for a cleaner Apple-like workspace. */
+@layer base {
+  :root {
+    --ft-apple-bg: #f5f7fb;
+    --ft-apple-bg-elevated: #ffffff;
+    --ft-apple-surface: rgba(255, 255, 255, 0.92);
+    --ft-apple-surface-muted: #f8fafc;
+    --ft-apple-border: rgba(226, 232, 240, 0.92);
+    --ft-apple-border-strong: rgba(203, 213, 225, 0.9);
+    --ft-apple-text: #0f172a;
+    --ft-apple-muted: #64748b;
+    --ft-apple-faint: #94a3b8;
+    --ft-apple-accent: #16c784;
+    --ft-apple-accent-strong: #10a76f;
+    --ft-apple-accent-soft: #e9fff5;
+    --ft-state-progress: #2563eb;
+    --ft-state-production: #7c3aed;
+    --ft-state-waiting: #d97706;
+    --ft-state-done: #059669;
+    --ft-state-danger: #e11d48;
+    --ft-radius-xs: 10px;
+    --ft-radius-sm: 14px;
+    --ft-radius-md: 18px;
+    --ft-radius-lg: 22px;
+    --ft-radius-xl: 28px;
+    --ft-shadow-card: 0 1px 2px rgba(15, 23, 42, 0.04), 0 12px 28px rgba(15, 23, 42, 0.05);
+    --ft-shadow-float: 0 18px 50px rgba(15, 23, 42, 0.12);
+    --ft-motion-micro: 140ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    --ft-motion-soft: 220ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+}
+
+@layer components {
+  .ft-app-bg {
+    background:
+      radial-gradient(circle at 12% 0%, rgba(22, 199, 132, 0.08), transparent 28%),
+      radial-gradient(circle at 90% 12%, rgba(59, 130, 246, 0.08), transparent 28%),
+      var(--ft-apple-bg);
+  }
+
+  .ft-surface {
+    border: 1px solid var(--ft-apple-border);
+    background: var(--ft-apple-surface);
+    box-shadow: var(--ft-shadow-card);
+    backdrop-filter: blur(14px);
+  }
+
+  .ft-surface-flat {
+    border: 1px solid var(--ft-apple-border);
+    background: var(--ft-apple-bg-elevated);
+  }
+
+  .ft-apple-card {
+    border-radius: var(--ft-radius-lg);
+    border: 1px solid var(--ft-apple-border);
+    background: var(--ft-apple-bg-elevated);
+    box-shadow: var(--ft-shadow-card);
+  }
+
+  .ft-apple-panel {
+    border-radius: var(--ft-radius-xl);
+    border: 1px solid var(--ft-apple-border);
+    background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(248,250,252,0.88));
+    box-shadow: var(--ft-shadow-card);
+  }
+
+  .ft-apple-toolbar {
+    border-radius: 18px;
+    border: 1px solid var(--ft-apple-border);
+    background: rgba(255, 255, 255, 0.86);
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+    backdrop-filter: blur(16px);
+  }
+
+  .ft-apple-button {
+    display: inline-flex;
+    min-height: 40px;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border-radius: 14px;
+    padding: 0 14px;
+    font-size: 13px;
+    font-weight: 700;
+    transition: transform var(--ft-motion-micro), background-color var(--ft-motion-micro), border-color var(--ft-motion-micro), box-shadow var(--ft-motion-micro);
+  }
+
+  .ft-apple-button:hover { transform: translateY(-1px); }
+  .ft-apple-button:active { transform: translateY(0); }
+
+  .ft-apple-button-primary {
+    background: #0f172a;
+    color: #ffffff;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.14);
+  }
+
+  .ft-apple-button-primary:hover { background: #020617; }
+
+  .ft-apple-button-secondary {
+    border: 1px solid var(--ft-apple-border);
+    background: #ffffff;
+    color: var(--ft-apple-text);
+  }
+
+  .ft-apple-chip {
+    display: inline-flex;
+    min-height: 28px;
+    align-items: center;
+    gap: 6px;
+    border-radius: 999px;
+    border: 1px solid var(--ft-apple-border);
+    background: var(--ft-apple-surface-muted);
+    padding: 0 10px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ft-apple-muted);
+  }
+
+  .ft-state-chip-progress { border-color: rgba(37, 99, 235, 0.18); background: rgba(37, 99, 235, 0.08); color: #1d4ed8; }
+  .ft-state-chip-production { border-color: rgba(124, 58, 237, 0.18); background: rgba(124, 58, 237, 0.08); color: #6d28d9; }
+  .ft-state-chip-waiting { border-color: rgba(217, 119, 6, 0.2); background: rgba(217, 119, 6, 0.08); color: #b45309; }
+  .ft-state-chip-done { border-color: rgba(5, 150, 105, 0.18); background: rgba(5, 150, 105, 0.08); color: #047857; }
+
+  .ft-motion-functional {
+    transition: transform var(--ft-motion-soft), opacity var(--ft-motion-soft), border-color var(--ft-motion-micro), background-color var(--ft-motion-micro), box-shadow var(--ft-motion-micro);
+  }
+
+  .ft-hover-lift:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--ft-shadow-card);
+  }
+
+  .ft-skeleton-line {
+    border-radius: 999px;
+    background: linear-gradient(90deg, #eef2f7 0%, #f8fafc 45%, #eef2f7 100%);
+    background-size: 200% 100%;
+    animation: ftSkeleton 1.15s ease-in-out infinite;
+  }
+
+  @keyframes ftSkeleton {
+    0% { background-position: 100% 0; }
+    100% { background-position: -100% 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ft-motion-functional,
+    .ft-hover-lift:hover,
+    .ft-apple-button:hover,
+    .ft-skeleton-line {
+      animation: none !important;
+      transform: none !important;
+      transition: none !important;
+    }
+  }
+}

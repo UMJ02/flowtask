@@ -1,3 +1,3 @@
-export const APP_VERSION = "58.24.9.8-client-final-readiness-global-modal-system-trash-recovery";
-export const APP_RELEASE_NAME = "v58.24.9.8 Client Final Readiness + Global Modal System + Trash Recovery";
+export const APP_VERSION = "58.24.9.9-visual-system-cleanup-apple-workspace-ui-polish";
+export const APP_RELEASE_NAME = "v58.24.9.9 Visual System Cleanup + Apple Workspace UI Polish";
 export const APP_RELEASE_STAGE = "production-candidate";

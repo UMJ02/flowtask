@@ -88,8 +88,8 @@ export function TaskTrashRecovery({ tasks }: { tasks: TaskSummary[] }) {
   };
 
   return (
-    <div className="ft-governed-screen">
-      <Card className="ft-main-card">
+    <div className="ft-governed-screen ft-app-bg rounded-[28px] p-1">
+      <Card className="ft-apple-panel p-5 md:p-6">
         <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div>
             <Link href="/app/tasks" className="mb-4 inline-flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-slate-900">
@@ -99,7 +99,7 @@ export function TaskTrashRecovery({ tasks }: { tasks: TaskSummary[] }) {
             <h1 className="ft-page-title">Papelera de tareas</h1>
             <p className="ft-page-subtitle">Restaura tareas eliminadas o elimínalas definitivamente cuando ya no se necesitan.</p>
           </div>
-          <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-bold text-slate-600">
+          <div className="ft-apple-chip">
             {items.length} eliminada{items.length === 1 ? '' : 's'}
           </div>
         </div>

@@ -434,7 +434,7 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery, work
   return (
     <div className="space-y-4">
       {showHeader ? (
-        <Card className="rounded-[18px] border border-slate-200/85 p-4 md:p-4.5">
+        <Card className="ft-apple-panel p-4 md:p-4.5">
           <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
             <div className="max-w-2xl">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Pizarra</p>
@@ -530,7 +530,7 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery, work
                         }}
                         className={draggingId === task.id ? "opacity-60" : "opacity-100"}
                       >
-                        <Card className={`rounded-[14px] border p-3 transition hover:-translate-y-0.5 hover: ${
+                        <Card className={`ft-apple-card p-3 transition hover:-translate-y-0.5 hover: ${
                           task.priority === "alta" ? "bg-amber-50/50 border-amber-100 ring-1 ring-amber-100 animate-[importantPulse_420ms_ease-out]" : "bg-white"
                         } ${
                           isHoverCard ? "border-emerald-300 ring-2 ring-emerald-100" : "border-white/70 hover:border-slate-200"
