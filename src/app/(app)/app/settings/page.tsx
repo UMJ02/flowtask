@@ -1,6 +1,7 @@
 export const dynamic = 'force-dynamic';
 
 import { Card } from '@/components/ui/card';
+import { SettingsFooter } from '@/components/settings/settings-footer';
 import { NotificationPreferencesForm } from '@/components/notifications/notification-preferences-form';
 import { SettingsAccountOverview } from '@/components/settings/settings-account-overview';
 import { getNotificationPreferences } from '@/lib/queries/notification-preferences';
@@ -26,7 +27,7 @@ export default async function SettingsPage() {
     : null;
 
   return (
-    <div className="space-y-4 md:space-y-5">
+    <div className="ft-settings-shell">
       <SettingsAccountOverview
         profile={profile}
         preferences={preferences}
@@ -39,17 +40,20 @@ export default async function SettingsPage() {
         billingSummary={resolvedBillingSummary}
       />
 
-      <Card className="rounded-[22px]">
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Settings</p>
-        <h2 className="mt-2 text-xl font-bold text-slate-900 md:text-[28px]">Preferencias operativas</h2>
-        <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
+      <Card className="ft-settings-card p-5 md:p-6">
+        <p className="ft-settings-eyebrow text-[#64748B]">Settings</p>
+        <h2 className="mt-2 ft-settings-title">Preferencias operativas</h2>
+        <p className="mt-2 max-w-3xl ft-settings-muted">
           Aquí decides qué avisos quieres ver, cómo se entregan y qué ventanas prefieres mantener en silencio.
         </p>
+        <div className="mt-5">
+          {preferences ? <NotificationPreferencesForm initialPreferences={preferences} /> : null}
+        </div>
       </Card>
 
-      {preferences ? <NotificationPreferencesForm initialPreferences={preferences} /> : null}
       <IntelligentAttentionSettingsCard />
       <AccountDangerZone />
+      <SettingsFooter />
     </div>
   );
 }

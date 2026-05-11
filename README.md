@@ -1,93 +1,73 @@
-# FlowTask — v58.24.9.10 Session Security + Interaction Performance + Account Danger Zone + Auth Asset Fix
+# FlowTask — v58.25 Settings Hub Redesign
 
-Base: **v58.24.9.9.1 — Visual Style Deduplication + Motion Cleanup Pass**
+Base: **v58.24.9.10 — Session Security + Interaction Performance + Account Danger Zone + Auth Asset Fix**
 
 ## Objetivo
 
-Corregir puntos visibles de UX/performance y agregar seguridad de sesión:
+Rediseñar Settings como un hub premium blanco, moderno y más claro, manteniendo las funcionalidades actuales.
 
-- Auto logout por inactividad de 15 minutos.
-- Skeleton shimmer más pro.
-- Opción de eliminar cuenta en Settings.
-- API server-side para solicitar eliminación de cuenta.
-- Fix de imagen en página de cuenta confirmada.
-- Mejoras de scroll/performance.
-- Menú colapsado del sidebar se mantiene compacto y sin dropdown roto.
+## Referencia aplicada
+
+Se tomó como guía el PDF **FlowTask - Settings Hub Redesign**:
+
+- Hero blanco premium.
+- Métricas internas limpias.
+- Acceso y plan con botones visibles.
+- Preferencias operativas agrupadas.
+- Canales y automatización dentro de una card madre.
+- Asistente inteligente avanzado en grid responsive.
+- Zona de peligro abajo, en rojo suave.
+- Footer simple y limpio.
 
 ## Cambios principales
 
-### Session security
+### Settings Hero
+
+`SettingsAccountOverview` se reescribió para reemplazar el hero oscuro por un card blanco premium con:
+
+- Settings Hub
+- Cuenta, notificaciones y contexto de trabajo
+- chips de usuario/contexto
+- 4 metric cards:
+  - Workspace activo
+  - Espacios vinculados
+  - Clientes editables
+  - Canales activos
+
+### Acceso y plan
+
+`AccessControlSettingsCard` se rediseñó como card blanca independiente con:
+
+- Permisos organización
+- Permisos en tu plan
+- Ver detalle
+- chips inferiores de plan/cobertura
+
+### Preferencias operativas
+
+La página agrupa `NotificationPreferencesForm` dentro de una card madre con jerarquía clara.
+
+### Asistente inteligente avanzado
+
+Se mantuvo la lógica actual de localStorage, sensibilidad, alertas, sliders/toggles, pero se aplicó un look más cercano al PDF.
+
+### Zona de peligro
+
+Se conserva `AccountDangerZone`, con visual rojo suave y botón rojo sólido.
+
+### Footer
 
 Nuevo componente:
 
 ```txt
-src/components/auth/idle-session-guard.tsx
-```
-
-Se monta en `AppShell`. Si el usuario queda inactivo 15 minutos:
-
-```txt
-signOut
-redirect /login?reason=idle
-mensaje de seguridad en login
-```
-
-### Account danger zone
-
-Nuevo componente:
-
-```txt
-src/components/settings/account-danger-zone.tsx
-```
-
-Nuevo endpoint:
-
-```txt
-src/app/api/account/delete/route.ts
-```
-
-Nueva migración:
-
-```txt
-supabase/migrations/0054_v58_24_9_10_account_deletion_status.sql
-```
-
-La acción requiere escribir:
-
-```txt
-ELIMINAR
-```
-
-### Auth asset fix
-
-Se agrega:
-
-```txt
-public/check/confirmacion.png
-src/app/(public)/confirmed/page.tsx
-```
-
-La imagen se referencia como:
-
-```txt
-/check/confirmacion.png
-```
-
-### Skeleton / performance
-
-Se agregan:
-
-```txt
-ft-skeleton-card
-ft-skeleton-line shimmer
-ft-scroll-stable
+src/components/settings/settings-footer.tsx
 ```
 
 ## Validación recomendada
 
 ```bash
 npm install
-npm run verify:v58.24.9.10
+npm run verify:v58.25
 npm run typecheck
 npm run build:preflight
 npm run build

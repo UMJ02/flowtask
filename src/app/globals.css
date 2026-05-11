@@ -2066,3 +2066,92 @@
     }
   }
 }
+
+
+/* v58.25 — Settings Hub Redesign */
+@layer components {
+  .ft-settings-shell {
+    max-width: 1440px;
+    margin-inline: auto;
+    display: grid;
+    gap: 20px;
+  }
+
+  .ft-settings-card {
+    border-radius: 24px;
+    border: 1px solid #E5EAF1;
+    background: #FFFFFF;
+    box-shadow: 0 10px 30px rgba(15,23,42,.04);
+  }
+
+  .ft-settings-eyebrow {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+  }
+
+  .ft-settings-title {
+    font-size: clamp(22px, 2vw, 28px);
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -.03em;
+    color: #0F172A;
+  }
+
+  .ft-settings-muted {
+    color: #64748B;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .ft-settings-pill {
+    display: inline-flex;
+    min-height: 30px;
+    align-items: center;
+    border-radius: 999px;
+    background: #F1F5F9;
+    padding: 0 12px;
+    font-size: 12px;
+    font-weight: 800;
+    color: #475569;
+  }
+
+  .ft-settings-button-green {
+    min-height: 42px;
+    border-radius: 14px;
+    background: #047857;
+    padding: 0 18px;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 800;
+    box-shadow: 0 12px 24px rgba(4,120,87,.18);
+  }
+
+  .ft-settings-button-ghost {
+    min-height: 42px;
+    border-radius: 14px;
+    border: 1px solid #E5EAF1;
+    background: #fff;
+    padding: 0 18px;
+    color: #334155;
+    font-size: 13px;
+    font-weight: 800;
+  }
+
+  .ft-settings-subcard {
+    border-radius: 20px;
+    border: 1px solid #E5EAF1;
+    background: #FFFFFF;
+  }
+
+  .ft-settings-soft {
+    border-radius: 20px;
+    border: 1px solid #E5EAF1;
+    background: #F8FAFC;
+  }
+
+  .ft-settings-toggle {
+    accent-color: #16C784;
+  }
+}

@@ -24,10 +24,10 @@ function ToggleRow({
   onChange: (value: boolean) => void;
 }) {
   return (
-    <label className="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 transition hover:border-slate-300 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+    <label className="flex flex-col gap-3 rounded-2xl border border-[#E5EAF1] bg-white px-4 py-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
       <div className="min-w-0">
-        <p className="text-sm font-semibold text-slate-900">{label}</p>
-        <p className="mt-1 text-sm text-slate-500">{description}</p>
+        <p className="text-sm font-semibold text-[#0F172A]">{label}</p>
+        <p className="mt-1 text-sm text-[#64748B]">{description}</p>
       </div>
       <input
         type="checkbox"
@@ -84,8 +84,8 @@ export function NotificationPreferencesForm({ initialPreferences }: Props) {
         type="button"
         onClick={() => setActiveTab(value)}
         className={active
-          ? "rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-none"
-          : "rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50"}
+          ? "rounded-[14px] bg-[#ECFDF5] px-4 py-2 text-sm font-extrabold text-[#047857] ring-1 ring-[#16C784]/25"
+          : "rounded-full border border-[#E5EAF1] bg-white px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-[#F8FAFC]"}
       >
         {label}
       </button>
@@ -94,18 +94,18 @@ export function NotificationPreferencesForm({ initialPreferences }: Props) {
 
   return (
     <div className="space-y-4 md:space-y-5">
-      <Card className="overflow-hidden rounded-[22px]">
+      <Card className="overflow-hidden rounded-[20px] border border-[#E5EAF1] bg-white shadow-none">
         <div className="flex flex-col gap-4 md:gap-5 lg:flex-row lg:items-start lg:justify-between">
           <div>
-            <h2 className="text-base font-semibold text-slate-900">Preferencias de notificaciones</h2>
-            <p className="mt-1 max-w-2xl text-sm leading-6 text-slate-500">Elige qué avisos quieres ver y cuándo prefieres recibirlos, con una vista más clara y compacta.</p>
+            <h2 className="text-base font-semibold text-[#0F172A]">Preferencias de notificaciones</h2>
+            <p className="mt-1 max-w-2xl text-sm leading-6 text-[#64748B]">Elige qué avisos quieres ver y cuándo prefieres recibirlos, con una vista más clara y compacta.</p>
           </div>
           <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
-            <Button type="button" variant="secondary" onClick={() => setTypesExpanded((value) => !value)} aria-expanded={typesExpanded} className="w-full sm:w-auto">
+            <Button type="button" variant="secondary" onClick={() => setTypesExpanded((value) => !value)} aria-expanded={typesExpanded} className="w-full rounded-[14px] sm:w-auto">
               {typesExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
               Seleccionar
             </Button>
-            <Button type="button" onClick={handleSave} disabled={isPending} className="w-full rounded-full sm:w-auto">
+            <Button type="button" onClick={handleSave} disabled={isPending} className="w-full rounded-[14px] bg-[#047857] text-white hover:bg-[#065F46] sm:w-auto">
               {isPending ? "Guardando..." : "Guardar preferencias"}
             </Button>
           </div>
@@ -115,10 +115,10 @@ export function NotificationPreferencesForm({ initialPreferences }: Props) {
         {error ? <p className="mt-3 text-sm font-medium text-rose-700">{error}</p> : null}
 
         {typesExpanded ? (
-          <div className="mt-4 rounded-[24px] border border-slate-200 bg-slate-50 p-4 md:p-5">
-            <div className="flex items-center gap-2 text-slate-900">
+          <div className="mt-4 rounded-[20px] border border-[#E5EAF1] bg-[#F8FAFC] p-4 md:p-5">
+            <div className="flex items-center gap-2 text-[#0F172A]">
               <Layers3 className="h-4 w-4" />
-              <h3 className="text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">Tipos de notificación</h3>
+              <h3 className="text-sm font-semibold uppercase tracking-[0.16em] text-[#64748B]">Tipos de notificación</h3>
             </div>
             <div className="mt-4 space-y-3">
               <ToggleRow label="Tareas" description="Avisos cuando te asignan algo o cambia una tarea importante." checked={state.enable_task} onChange={(value) => updateField("enable_task", value)} />
@@ -130,11 +130,11 @@ export function NotificationPreferencesForm({ initialPreferences }: Props) {
         ) : null}
       </Card>
 
-      <Card className="overflow-hidden rounded-[22px]">
+      <Card className="overflow-hidden rounded-[20px] border border-[#E5EAF1] bg-white shadow-none">
         <div className="flex flex-col gap-3 md:gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <h3 className="text-base font-semibold text-slate-900">Canales y automatización</h3>
-            <p className="mt-1 max-w-2xl text-sm leading-6 text-slate-500">Agrupamos la configuración en una sola vista con cejillas para reducir ruido visual y mantener una lectura más limpia.</p>
+            <h3 className="text-base font-semibold text-[#0F172A]">Canales y automatización</h3>
+            <p className="mt-1 max-w-2xl text-sm leading-6 text-[#64748B]">Agrupamos la configuración en una sola vista con cejillas para reducir ruido visual y mantener una lectura más limpia.</p>
           </div>
           <div className="flex flex-wrap gap-2 md:gap-3">
             {tabButton("delivery", "Entrega y frecuencia")}
@@ -143,11 +143,11 @@ export function NotificationPreferencesForm({ initialPreferences }: Props) {
           </div>
         </div>
 
-        <div className="mt-4 rounded-[24px] border border-slate-200 bg-slate-50 p-4 md:p-5">
+        <div className="mt-4 rounded-[20px] border border-[#E5EAF1] bg-[#F8FAFC] p-4 md:p-5">
           {activeTab === "delivery" ? (
             <div className="space-y-4">
               <div>
-                <p className="text-sm font-semibold text-slate-900">Frecuencia</p>
+                <p className="text-sm font-semibold text-[#0F172A]">Frecuencia</p>
                 <div className="mt-2 flex flex-wrap gap-2">
                   {[
                     { value: "immediate", label: "Inmediato" },
@@ -161,14 +161,14 @@ export function NotificationPreferencesForm({ initialPreferences }: Props) {
                         onClick={() => updateField("delivery_frequency", option.value as NotificationPreferences["delivery_frequency"])}
                         className={active
                           ? "rounded-full bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white"
-                          : "rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50"}
+                          : "rounded-full border border-[#E5EAF1] bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-[#F8FAFC]"}
                       >
                         {option.label}
                       </button>
                     );
                   })}
                 </div>
-                <p className="mt-2 text-sm text-slate-500">
+                <p className="mt-2 text-sm text-[#64748B]">
                   {disabledByDigest
                     ? `Recibirás un resumen diario a las ${hourLabel(state.daily_digest_hour)}.`
                     : "Verás los avisos al momento mientras trabajas dentro de la app."}
@@ -176,9 +176,9 @@ export function NotificationPreferencesForm({ initialPreferences }: Props) {
               </div>
 
               <label className="block">
-                <p className="text-sm font-semibold text-slate-900">Hora del resumen diario</p>
+                <p className="text-sm font-semibold text-[#0F172A]">Hora del resumen diario</p>
                 <select
-                  className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700"
+                  className="mt-2 w-full rounded-2xl border border-[#E5EAF1] bg-white px-4 py-2 text-sm text-slate-700"
                   value={state.daily_digest_hour}
                   onChange={(event) => updateField("daily_digest_hour", Number(event.target.value))}
                 >
@@ -214,7 +214,7 @@ export function NotificationPreferencesForm({ initialPreferences }: Props) {
                 onChange={(value) => updateField("enable_whatsapp", value)}
               />
               <div className="rounded-2xl bg-white p-4 text-sm text-slate-600 ring-1 ring-slate-200">
-                <p className="font-semibold text-slate-900">Cómo funciona</p>
+                <p className="font-semibold text-[#0F172A]">Cómo funciona</p>
                 <ul className="mt-2 space-y-1">
                   <li>• Inmediato: ves los avisos en el momento dentro de la app.</li>
                   <li>• Resumen diario: concentra cambios clave en un solo envío.</li>
@@ -234,9 +234,9 @@ export function NotificationPreferencesForm({ initialPreferences }: Props) {
               />
               <div className="grid gap-3 sm:grid-cols-2">
                 <label className="block">
-                  <p className="text-sm font-semibold text-slate-900">Inicio</p>
+                  <p className="text-sm font-semibold text-[#0F172A]">Inicio</p>
                   <select
-                    className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700"
+                    className="mt-2 w-full rounded-2xl border border-[#E5EAF1] bg-white px-4 py-2 text-sm text-slate-700"
                     value={state.quiet_hours_start}
                     onChange={(event) => updateField("quiet_hours_start", Number(event.target.value))}
                     disabled={!state.quiet_hours_enabled}
@@ -247,9 +247,9 @@ export function NotificationPreferencesForm({ initialPreferences }: Props) {
                   </select>
                 </label>
                 <label className="block">
-                  <p className="text-sm font-semibold text-slate-900">Fin</p>
+                  <p className="text-sm font-semibold text-[#0F172A]">Fin</p>
                   <select
-                    className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700"
+                    className="mt-2 w-full rounded-2xl border border-[#E5EAF1] bg-white px-4 py-2 text-sm text-slate-700"
                     value={state.quiet_hours_end}
                     onChange={(event) => updateField("quiet_hours_end", Number(event.target.value))}
                     disabled={!state.quiet_hours_enabled}
@@ -261,7 +261,7 @@ export function NotificationPreferencesForm({ initialPreferences }: Props) {
                 </label>
               </div>
               <div className="rounded-2xl bg-white p-4 text-sm text-slate-600 ring-1 ring-slate-200">
-                <p className="font-semibold text-slate-900">Vista previa</p>
+                <p className="font-semibold text-[#0F172A]">Vista previa</p>
                 <p className="mt-1">
                   {state.quiet_hours_enabled
                     ? `Las alertas visuales se pausarán de ${hourLabel(state.quiet_hours_start)} a ${hourLabel(state.quiet_hours_end)}.`

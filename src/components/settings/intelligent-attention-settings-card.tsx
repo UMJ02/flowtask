@@ -52,19 +52,19 @@ export function IntelligentAttentionSettingsCard() {
   };
 
   return (
-    <Card className="rounded-[24px] border border-slate-200/85 bg-[linear-gradient(135deg,rgba(255,255,255,0.99),rgba(247,249,252,0.98))]">
+    <Card className="ft-settings-card p-5 md:p-6">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div className="max-w-3xl">
-          <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-700 ring-1 ring-emerald-100">
+          <div className="inline-flex items-center gap-2 rounded-full bg-[#ECFDF5] px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.16em] text-[#047857] ring-1 ring-[#16C784]/20">
             <BrainCircuit className="h-3.5 w-3.5" />
             Asistente inteligente avanzado
           </div>
-          <h3 className="mt-3 text-xl font-semibold text-slate-900">Ayuda más inteligente, menos ruido y memoria real por workspace</h3>
-          <p className="mt-2 text-sm leading-6 text-slate-600">
+          <h3 className="mt-3 text-[24px] font-extrabold tracking-[-0.03em] text-[#0F172A]">Ayuda más inteligente, menos ruido y memoria real por workspace</h3>
+          <p className="mt-2 text-sm leading-6 text-[#64748B]">
             Ajusta el motor de prioridad, el nivel de detalle y cómo quieres que el asistente se comporte entre tu espacio personal y tus organizaciones.
           </p>
         </div>
-        <Button type="button" variant="secondary" className="rounded-full" onClick={() => persist({ ...settings, enabled: !settings.enabled })}>
+        <Button type="button" variant="secondary" className="rounded-[14px]" onClick={() => persist({ ...settings, enabled: !settings.enabled })}>
           <BellRing className="h-4 w-4" />
           {settings.enabled ? "Pausar asistente" : "Activar asistente"}
         </Button>
@@ -74,8 +74,8 @@ export function IntelligentAttentionSettingsCard() {
 
       <div className="mt-5 grid gap-4 xl:grid-cols-[minmax(0,1.1fr)_minmax(360px,0.9fr)]">
         <div className="space-y-4">
-          <div className="rounded-[24px] border border-slate-200 bg-white p-4">
-            <div className="flex items-center gap-2 text-slate-900">
+          <div className="rounded-[18px] border border-[#E5EAF1] bg-white p-4">
+            <div className="flex items-center gap-2 text-[#0F172A]">
               <Sparkles className="h-4 w-4 text-emerald-600" />
               <p className="text-sm font-semibold">Motor de prioridad</p>
             </div>
@@ -88,19 +88,19 @@ export function IntelligentAttentionSettingsCard() {
                     type="button"
                     onClick={() => persist({ ...settings, sensitivity: key })}
                     className={active
-                      ? "rounded-[20px] border border-emerald-200 bg-emerald-50 px-4 py-4 text-left shadow-none"
-                      : "rounded-[20px] border border-slate-200 bg-slate-50 px-4 py-4 text-left hover:border-slate-300 hover:bg-white"}
+                      ? "rounded-[18px] border border-[#16C784]/25 bg-[#ECFDF5] px-4 py-4 text-left shadow-none"
+                      : "rounded-[18px] border border-[#E5EAF1] bg-[#F8FAFC] px-4 py-4 text-left hover:border-[#CBD5E1] hover:bg-white"}
                   >
-                    <p className="text-sm font-semibold text-slate-900">{SENSITIVITY_LABELS[key].title}</p>
-                    <p className="mt-2 text-sm leading-6 text-slate-600">{SENSITIVITY_LABELS[key].body}</p>
+                    <p className="text-sm font-semibold text-[#0F172A]">{SENSITIVITY_LABELS[key].title}</p>
+                    <p className="mt-2 text-sm leading-6 text-[#64748B]">{SENSITIVITY_LABELS[key].body}</p>
                   </button>
                 );
               })}
             </div>
           </div>
 
-          <div className="rounded-[24px] border border-slate-200 bg-white p-4">
-            <div className="flex items-center gap-2 text-slate-900">
+          <div className="rounded-[18px] border border-[#E5EAF1] bg-white p-4">
+            <div className="flex items-center gap-2 text-[#0F172A]">
               <Layers3 className="h-4 w-4 text-slate-700" />
               <p className="text-sm font-semibold">Qué tipo de alertas quieres ver</p>
             </div>
@@ -111,10 +111,10 @@ export function IntelligentAttentionSettingsCard() {
                 ["dueSoon", "Próximas"],
                 ["waitingReview", "En espera"],
               ].map(([key, label]) => (
-                <label key={key} className="flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                <label key={key} className="flex items-center justify-between rounded-[18px] border border-[#E5EAF1] bg-[#F8FAFC] px-4 py-3">
                   <div>
-                    <p className="text-sm font-semibold text-slate-900">{label}</p>
-                    <p className="mt-1 text-sm text-slate-500">Puedes reducir ruido quitando esta familia de avisos.</p>
+                    <p className="text-sm font-semibold text-[#0F172A]">{label}</p>
+                    <p className="mt-1 text-sm text-[#64748B]">Puedes reducir ruido quitando esta familia de avisos.</p>
                   </div>
                   <input
                     type="checkbox"
@@ -129,8 +129,8 @@ export function IntelligentAttentionSettingsCard() {
         </div>
 
         <div className="space-y-4">
-          <div className="rounded-[24px] border border-slate-200 bg-white p-4">
-            <div className="flex items-center gap-2 text-slate-900">
+          <div className="rounded-[18px] border border-[#E5EAF1] bg-white p-4">
+            <div className="flex items-center gap-2 text-[#0F172A]">
               <Gauge className="h-4 w-4 text-slate-700" />
               <p className="text-sm font-semibold">Frecuencia y presencia visual</p>
             </div>
@@ -160,44 +160,44 @@ export function IntelligentAttentionSettingsCard() {
             </label>
           </div>
 
-          <div className="rounded-[24px] border border-slate-200 bg-white p-4">
-            <div className="flex items-center gap-2 text-slate-900">
+          <div className="rounded-[18px] border border-[#E5EAF1] bg-white p-4">
+            <div className="flex items-center gap-2 text-[#0F172A]">
               <Settings2 className="h-4 w-4 text-slate-700" />
               <p className="text-sm font-semibold">Personalización fina</p>
             </div>
             <div className="mt-4 space-y-3">
-              <label className="flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+              <label className="flex items-center justify-between rounded-[18px] border border-[#E5EAF1] bg-[#F8FAFC] px-4 py-3">
                 <div>
-                  <p className="text-sm font-semibold text-slate-900">Texto más corto</p>
-                  <p className="mt-1 text-sm text-slate-500">Muestra mensajes más directos y menos explicativos.</p>
+                  <p className="text-sm font-semibold text-[#0F172A]">Texto más corto</p>
+                  <p className="mt-1 text-sm text-[#64748B]">Muestra mensajes más directos y menos explicativos.</p>
                 </div>
                 <input type="checkbox" checked={settings.verbosity === "minimal"} onChange={(event) => persist({ ...settings, verbosity: event.target.checked ? "minimal" : "guided" })} className="h-4 w-4" />
               </label>
-              <label className="flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+              <label className="flex items-center justify-between rounded-[18px] border border-[#E5EAF1] bg-[#F8FAFC] px-4 py-3">
                 <div>
-                  <p className="text-sm font-semibold text-slate-900">Mostrar personaje guía</p>
-                  <p className="mt-1 text-sm text-slate-500">Úsalo para darle más calidez visual a las alertas.</p>
+                  <p className="text-sm font-semibold text-[#0F172A]">Mostrar personaje guía</p>
+                  <p className="mt-1 text-sm text-[#64748B]">Úsalo para darle más calidez visual a las alertas.</p>
                 </div>
                 <input type="checkbox" checked={settings.showMascot} onChange={(event) => persist({ ...settings, showMascot: event.target.checked })} className="h-4 w-4" />
               </label>
-              <label className="flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+              <label className="flex items-center justify-between rounded-[18px] border border-[#E5EAF1] bg-[#F8FAFC] px-4 py-3">
                 <div>
-                  <p className="text-sm font-semibold text-slate-900">Memoria aislada por workspace</p>
-                  <p className="mt-1 text-sm text-slate-500">Cada espacio recuerda sus propios silencios y descartes.</p>
+                  <p className="text-sm font-semibold text-[#0F172A]">Memoria aislada por workspace</p>
+                  <p className="mt-1 text-sm text-[#64748B]">Cada espacio recuerda sus propios silencios y descartes.</p>
                 </div>
                 <input type="checkbox" checked={settings.allowWorkspaceSpecificHistory} onChange={(event) => persist({ ...settings, allowWorkspaceSpecificHistory: event.target.checked })} className="h-4 w-4" />
               </label>
-              <label className="flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+              <label className="flex items-center justify-between rounded-[18px] border border-[#E5EAF1] bg-[#F8FAFC] px-4 py-3">
                 <div>
-                  <p className="text-sm font-semibold text-slate-900">Mostrar también en organizaciones</p>
-                  <p className="mt-1 text-sm text-slate-500">Permite que el asistente también te oriente en workspaces de equipo.</p>
+                  <p className="text-sm font-semibold text-[#0F172A]">Mostrar también en organizaciones</p>
+                  <p className="mt-1 text-sm text-[#64748B]">Permite que el asistente también te oriente en workspaces de equipo.</p>
                 </div>
                 <input type="checkbox" checked={settings.showWorkspaceAlertsInOrganizations} onChange={(event) => persist({ ...settings, showWorkspaceAlertsInOrganizations: event.target.checked })} className="h-4 w-4" />
               </label>
-              <label className="flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+              <label className="flex items-center justify-between rounded-[18px] border border-[#E5EAF1] bg-[#F8FAFC] px-4 py-3">
                 <div>
-                  <p className="text-sm font-semibold text-slate-900">Solo en dashboard</p>
-                  <p className="mt-1 text-sm text-slate-500">Mantiene la guía principal al entrar, sin invadir otras vistas.</p>
+                  <p className="text-sm font-semibold text-[#0F172A]">Solo en dashboard</p>
+                  <p className="mt-1 text-sm text-[#64748B]">Mantiene la guía principal al entrar, sin invadir otras vistas.</p>
                 </div>
                 <input type="checkbox" checked={settings.showOnDashboardOnly} onChange={(event) => persist({ ...settings, showOnDashboardOnly: event.target.checked })} className="h-4 w-4" />
               </label>

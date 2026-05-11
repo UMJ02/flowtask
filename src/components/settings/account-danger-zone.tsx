@@ -37,19 +37,19 @@ export function AccountDangerZone() {
   };
 
   return (
-    <Card className="ft-apple-panel border-rose-200/80 p-5">
+    <Card className="rounded-[24px] border border-[#FECDD3] bg-[#FFF1F2] p-5 md:p-6 shadow-none">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <p className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-rose-600">
             <AlertTriangle className="h-4 w-4" />
             Zona de peligro
           </p>
-          <h2 className="mt-2 text-xl font-bold ft-text-main md:text-[24px]">Eliminar cuenta</h2>
-          <p className="mt-2 max-w-3xl text-sm leading-6 ft-text-muted">
+          <h2 className="mt-2 text-[22px] font-extrabold text-[#0F172A]">Eliminar cuenta</h2>
+          <p className="mt-2 max-w-3xl text-sm leading-6 text-[#64748B]">
             Eliminar tu cuenta individual también programa la eliminación de tus datos personales y organizaciones asociadas. Esta acción requiere confirmación explícita.
           </p>
         </div>
-        <Button type="button" onClick={() => setOpen((value) => !value)} className="h-11 rounded-xl bg-rose-600 px-4 text-white hover:bg-rose-700">
+        <Button type="button" onClick={() => setOpen((value) => !value)} className="h-11 rounded-xl bg-[#E11D48] px-5 text-white shadow-[0_12px_26px_rgba(225,29,72,.20)] hover:bg-[#BE123C]">
           <Trash2 className="h-4 w-4" />
           Eliminar cuenta
         </Button>
@@ -69,7 +69,7 @@ export function AccountDangerZone() {
             <Button type="button" variant="secondary" onClick={() => { setOpen(false); setConfirmation(''); }} className="h-10 rounded-xl px-4">
               Cancelar
             </Button>
-            <Button type="button" disabled={!canDelete || busy} onClick={() => void requestDelete()} className="h-10 rounded-xl bg-rose-600 px-4 text-white hover:bg-rose-700 disabled:opacity-50">
+            <Button type="button" disabled={!canDelete || busy} onClick={() => void requestDelete()} className="h-10 rounded-xl bg-[#E11D48] px-5 text-white shadow-[0_12px_26px_rgba(225,29,72,.20)] hover:bg-[#BE123C] disabled:opacity-50">
               {busy ? 'Procesando…' : 'Confirmar eliminación'}
             </Button>
           </div>
