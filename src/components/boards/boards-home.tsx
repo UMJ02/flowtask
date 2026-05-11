@@ -25,6 +25,47 @@ import { BOARD_TEMPLATES, createTemplateElements, type BoardTemplate, type Board
 
 type DeleteTarget = Pick<VisualBoard, "id" | "title"> | null;
 
+type SupabaseLikeError = {
+  code?: string;
+  message?: string;
+  details?: string | null;
+  hint?: string | null;
+};
+
+function shouldLogBoardDiagnostics() {
+  return process.env.NODE_ENV !== "production";
+}
+
+function logBoardDiagnostic(label: string, payload: Record<string, unknown>) {
+  if (!shouldLogBoardDiagnostics()) return;
+  console.error(`[boards:${label}]`, payload);
+}
+
+function getBoardLoadErrorMessage(error?: SupabaseLikeError | null) {
+  if (!error) return "No pudimos cargar tus pizarras. Intenta de nuevo.";
+  if (error.code === "42501") return "No pudimos cargar tus pizarras. Revisa sesión, permisos RLS o el workspace activo.";
+  if (error.message?.toLowerCase().includes("relation") || error.message?.toLowerCase().includes("does not exist")) {
+    return "No pudimos cargar tus pizarras. Confirma que la migración de Boards esté aplicada.";
+  }
+  return "No pudimos cargar tus pizarras. Revisa tu conexión o intenta de nuevo.";
+}
+
+function getBoardCreateErrorMessage(error?: SupabaseLikeError | null) {
+  if (!error) return "No pudimos crear la pizarra. Intenta de nuevo.";
+  if (error.code === "42501") return "No pudimos crear la pizarra. Revisa sesión, permisos RLS o el workspace activo.";
+  if (error.code === "23503") return "No pudimos crear la pizarra. El workspace activo no coincide con tu cuenta u organización.";
+  if (error.code === "23502") return "No pudimos crear la pizarra. Falta un dato obligatorio de Boards.";
+  if (error.message?.toLowerCase().includes("relation") || error.message?.toLowerCase().includes("does not exist")) {
+    return "No pudimos crear la pizarra. Confirma que la migración de Boards esté aplicada.";
+  }
+  return "No pudimos crear la pizarra. Intenta de nuevo.";
+}
+
+function getWorkspaceModeLabel(organizationId?: string | null) {
+  return organizationId ? "organization" : "personal";
+}
+
+
 type TemplateVisual = {
   className: string;
   previewSrc: string;
@@ -165,7 +206,17 @@ export function BoardsHome() {
 
     const { data, error: queryError } = await query;
     if (queryError) {
-      setError("No pudimos cargar tus pizarras. Revisa la migración de Boards o intenta de nuevo.");
+      logBoardDiagnostic("load:error", {
+        code: queryError.code,
+        message: queryError.message,
+        details: queryError.details,
+        hint: queryError.hint,
+        workspaceMode: getWorkspaceModeLabel(context.activeOrganizationId),
+        workspaceKey: context.workspaceKey,
+        userId: context.user.id,
+        activeOrganizationId: context.activeOrganizationId,
+      });
+      setError(getBoardLoadErrorMessage(queryError));
       setBoards([]);
     } else {
       setBoards(((data ?? []) as VisualBoardRow[]).map(mapBoardRow));
@@ -182,27 +233,57 @@ export function BoardsHome() {
     setError(null);
     const context = await getClientWorkspaceContext();
     if (!context.user) {
-      setError("Tu sesión expiró. Vuelve a iniciar sesión para crear una pizarra.");
+      logBoardDiagnostic("create:no-session", {
+        workspaceMode: getWorkspaceModeLabel(context.activeOrganizationId),
+        workspaceKey: context.workspaceKey,
+      });
+      setError("Tu sesión no está activa. Vuelve a iniciar sesión para crear una pizarra.");
       setCreating(false);
       return;
     }
 
     const template = BOARD_TEMPLATES.find((item) => item.id === templateId);
+    const boardPayload = {
+      owner_id: context.user.id,
+      organization_id: context.activeOrganizationId,
+      title: templateId === "blank" ? "Nueva pizarra" : template?.title ?? "Nueva pizarra",
+      description: template?.description ?? "Espacio visual para organizar ideas, diagramas y notas.",
+      visibility: "private",
+      public_can_edit: false,
+    };
+
+    if (shouldLogBoardDiagnostics()) {
+      console.info("[boards:create] payload", {
+        templateId,
+        workspaceMode: getWorkspaceModeLabel(context.activeOrganizationId),
+        workspaceKey: context.workspaceKey,
+        userId: context.user.id,
+        activeOrganizationId: context.activeOrganizationId,
+        payload: boardPayload,
+      });
+    }
+
     const { data, error: insertError } = await supabase
       .from("visual_boards")
-      .insert({
-        owner_id: context.user.id,
-        organization_id: context.activeOrganizationId,
-        title: templateId === "blank" ? "Nueva pizarra" : template?.title ?? "Nueva pizarra",
-        description: template?.description ?? "Espacio visual para organizar ideas, diagramas y notas.",
-        visibility: "private",
-      })
-      .select("id")
+      .insert(boardPayload)
+      .select("id,owner_id,organization_id,visibility,public_can_edit")
       .single();
 
     if (insertError || !data?.id) {
+      logBoardDiagnostic("create:insert-error", {
+        code: insertError?.code,
+        message: insertError?.message,
+        details: insertError?.details,
+        hint: insertError?.hint,
+        templateId,
+        workspaceMode: getWorkspaceModeLabel(context.activeOrganizationId),
+        workspaceKey: context.workspaceKey,
+        userId: context.user.id,
+        activeOrganizationId: context.activeOrganizationId,
+        payload: boardPayload,
+      });
       setCreating(false);
-      setError("No pudimos crear la pizarra. Confirma que la migración de Boards esté aplicada.");
+      setError(getBoardCreateErrorMessage(insertError));
       return;
     }
 
@@ -213,23 +294,55 @@ export function BoardsHome() {
         .upsert(templateElements.map(serializeElementForUpsert), { onConflict: "id" })
         .select("id");
       if (templateError) {
+        logBoardDiagnostic("create:template-error", {
+          code: templateError.code,
+          message: templateError.message,
+          details: templateError.details,
+          hint: templateError.hint,
+          boardId: data.id,
+          templateId,
+          workspaceMode: getWorkspaceModeLabel(context.activeOrganizationId),
+          workspaceKey: context.workspaceKey,
+        });
         setCreating(false);
         setError("Creamos la pizarra, pero no pudimos cargar la plantilla. Abre la pizarra e intenta agregar elementos manualmente.");
         return;
       }
-      await supabase.from("visual_board_activity").insert({
+      const { error: activityError } = await supabase.from("visual_board_activity").insert({
         board_id: data.id,
         actor_id: context.user.id,
         type: "template_applied",
         payload: { templateId, elements: templateElements.length },
       });
+      if (activityError) {
+        logBoardDiagnostic("create:activity-warning", {
+          code: activityError.code,
+          message: activityError.message,
+          details: activityError.details,
+          hint: activityError.hint,
+          boardId: data.id,
+          templateId,
+          activityType: "template_applied",
+        });
+      }
     } else {
-      await supabase.from("visual_board_activity").insert({
+      const { error: activityError } = await supabase.from("visual_board_activity").insert({
         board_id: data.id,
         actor_id: context.user.id,
         type: "board_created",
         payload: { templateId },
       });
+      if (activityError) {
+        logBoardDiagnostic("create:activity-warning", {
+          code: activityError.code,
+          message: activityError.message,
+          details: activityError.details,
+          hint: activityError.hint,
+          boardId: data.id,
+          templateId,
+          activityType: "board_created",
+        });
+      }
     }
 
     setCreating(false);
