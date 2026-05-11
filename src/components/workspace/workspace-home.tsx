@@ -261,7 +261,7 @@ export function WorkspaceHome() {
           .select('id,title,status,priority,client_name,due_date,project_id,organization_id,owner_id,created_at,updated_at')
           .order('due_date', { ascending: true, nullsFirst: false })
           .order('updated_at', { ascending: false })
-          .limit(120),
+          .limit(500),
         context.user.id,
         context.activeOrganizationId,
       );

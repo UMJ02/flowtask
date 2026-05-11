@@ -79,7 +79,7 @@ export default async function TasksPage({ searchParams }: { searchParams?: Promi
         <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div>
             <h1 className="ft-page-title">Tareas</h1>
-            <p className="ft-page-subtitle">Gestiona tus tareas simples del día a día. Las tareas internas de proyectos viven dentro de cada proyecto.</p>
+            <p className="ft-page-subtitle">Gestiona todas las tareas del workspace. Las concluidas se ocultan por defecto para no ensuciar la operación diaria.</p>
           </div>
           <Link
             href={taskNewRoute(queryString)}
@@ -91,7 +91,7 @@ export default async function TasksPage({ searchParams }: { searchParams?: Promi
         </div>
 
         <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
-          <StatCard label="Tareas simples" value={stats.total} helper="Sin tareas de proyecto" tone="violet" icon={ClipboardList} />
+          <StatCard label="Tareas visibles" value={stats.total} helper="Sin concluidas por defecto" tone="violet" icon={ClipboardList} />
           <StatCard label="En progreso" value={stats.inProgress} helper="Trabajo activo" tone="sky" icon={PlayCircle} />
           <StatCard label="En espera" value={stats.waiting} helper="Standby sin vencimiento" tone="amber" icon={Hourglass} />
           <StatCard label="Concluidas ocultas" value={stats.hiddenDone} helper="No impactan atraso" tone="emerald" icon={CheckCircle2} />
@@ -119,7 +119,7 @@ export default async function TasksPage({ searchParams }: { searchParams?: Promi
       <Card className="ft-mini-card border-emerald-200 bg-emerald-50/80 shadow-none">
         <div className="flex items-center gap-3 text-sm font-medium text-emerald-900">
           <Clock3 className="h-4 w-4 shrink-0" />
-          Consejo: usa Tareas para trabajo simple. Cuando una tarea crece, conviértela en proyecto; las tareas internas se gestionan desde Proyectos.
+          Consejo: esta vista muestra todas las tareas del workspace y oculta concluidas por defecto. Usa el botón de concluidas si necesitás revisar o reactivar historial.
         </div>
       </Card>
     </div>

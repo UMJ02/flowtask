@@ -95,9 +95,8 @@ export async function getTasks(filters: TaskFiltersInput = {}): Promise<TaskSumm
     activeOrganizationId,
   );
 
-  // Project Task Architecture: the main Tasks module only shows standalone tasks.
-  // Project-scoped tasks live inside their project detail/timeline views.
-  query = query.is("project_id", null);
+  // Main Tasks module shows all workspace tasks by default.
+  // Completed tasks remain hidden unless includeCompleted/status=concluido is requested.
 
   if (filters.q) query = query.or(`title.ilike.%${filters.q}%,client_name.ilike.%${filters.q}%`);
   const includeCompleted = filters.includeCompleted === true || filters.includeCompleted === "true" || filters.status === "concluido";

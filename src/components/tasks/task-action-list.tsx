@@ -5,6 +5,7 @@ import Link from "next/link";
 import {
   ArrowLeft,
   ArrowRight,
+  AlertCircle,
   CalendarCheck2,
   CalendarDays,
   CheckCircle2,
@@ -49,6 +50,10 @@ type TaskRow = {
 type PageAnimationState = "idle" | "out-next" | "out-prev" | "in-next" | "in-prev";
 type ViewMode = "list" | "calendar";
 type GanttColorMode = "priority" | "status" | "client";
+type NoticeState = { tone: "success" | "error" | "info"; message: string } | null;
+type ConfirmAction =
+  | { type: "delete-one"; taskId: string; title: string }
+  | { type: "delete-bulk"; count: number };
 
 const TASK_VIEW_KEY = "flowtask.tasks.view-mode.v58150";
 const GANTT_CONFIG_KEY = "flowtask.tasks.gantt-config.v58143";
@@ -275,6 +280,8 @@ function TaskActionListComponent({
   const [compactGantt, setCompactGantt] = useState(true);
   const [ganttColorMode, setGanttColorMode] = useState<GanttColorMode>("priority");
   const [importantOnly, setImportantOnly] = useState(false);
+  const [notice, setNotice] = useState<NoticeState>(null);
+  const [confirmAction, setConfirmAction] = useState<ConfirmAction | null>(null);
   const [, startRefresh] = useTransition();
 
   useEffect(() => {
@@ -319,6 +326,11 @@ function TaskActionListComponent({
 
   const allCurrentSelected = currentItems.length > 0 && currentItems.every((item) => selectedIds.includes(item.id));
   const timelineActive = false;
+
+  const showNotice = (message: string, tone: "success" | "error" | "info" = "info") => {
+    setNotice({ message, tone });
+    window.setTimeout(() => setNotice(null), 3600);
+  };
 
   const changeView = (nextView: ViewMode) => {
     setViewMode(nextView);
@@ -370,7 +382,7 @@ function TaskActionListComponent({
 
     if (error || !data) {
       setItems(previousItems);
-      window.alert(error?.message ?? "No se pudo actualizar la prioridad de la tarea.");
+      showNotice(error?.message ?? "No se pudo actualizar la prioridad de la tarea.", "error");
       return;
     }
 
@@ -388,17 +400,15 @@ function TaskActionListComponent({
 
     if (error || !confirmedTask) {
       setItems(previousItems);
-      window.alert(error?.message ?? "No se pudo confirmar la finalización de la tarea.");
+      showNotice(error?.message ?? "No se pudo confirmar la finalización de la tarea.", "error");
       return;
     }
 
+    showNotice("Tarea finalizada.", "success");
     startRefresh(() => router.refresh());
   };
 
-  const deleteTask = async (taskId: string) => {
-    const ok = window.confirm("¿Deseas eliminar esta tarea? Esta acción no se puede deshacer.");
-    if (!ok) return;
-
+  const executeDeleteTask = async (taskId: string) => {
     const current = items;
     setItems((list) => list.filter((item) => item.id !== taskId));
     setBusyId(taskId);
@@ -408,11 +418,17 @@ function TaskActionListComponent({
 
     if (error || !deletedRows || deletedRows.length === 0) {
       setItems(current);
-      window.alert(error?.message ?? "No se pudo confirmar la eliminación de la tarea.");
+      showNotice(error?.message ?? "No se pudo confirmar la eliminación de la tarea.", "error");
       return;
     }
 
+    showNotice("Tarea eliminada.", "success");
     startRefresh(() => router.refresh());
+  };
+
+  const requestDeleteTask = (taskId: string) => {
+    const task = items.find((item) => item.id === taskId);
+    setConfirmAction({ type: "delete-one", taskId, title: task?.title ?? "esta tarea" });
   };
 
   const bulkCompleteSelected = async () => {
@@ -425,29 +441,43 @@ function TaskActionListComponent({
     setBusyId(null);
     if (error || !confirmedTasks || confirmedTasks.length !== selectedIds.length) {
       setItems(previousItems);
-      window.alert(error?.message ?? "No se pudo confirmar la finalización de todas las tareas seleccionadas.");
+      showNotice(error?.message ?? "No se pudo confirmar la finalización de todas las tareas seleccionadas.", "error");
       return;
     }
     setSelectedIds([]);
+    showNotice("Tareas finalizadas.", "success");
     startRefresh(() => router.refresh());
   };
 
-  const bulkDeleteSelected = async () => {
+  const executeBulkDeleteSelected = async () => {
     if (!selectedIds.length) return;
-    const ok = window.confirm(`¿Deseas eliminar ${selectedIds.length} tarea(s)? Esta acción no se puede deshacer.`);
-    if (!ok) return;
+    const idsToDelete = [...selectedIds];
     const previousItems = items;
-    setItems((list) => list.filter((item) => !selectedIds.includes(item.id)));
+    setItems((list) => list.filter((item) => !idsToDelete.includes(item.id)));
     setBusyId("bulk");
-    const { data: deletedRows, error } = await supabase.from("tasks").delete().in("id", selectedIds).select("id");
+    const { data: deletedRows, error } = await supabase.from("tasks").delete().in("id", idsToDelete).select("id");
     setBusyId(null);
-    if (error || !deletedRows || deletedRows.length !== selectedIds.length) {
+    if (error || !deletedRows || deletedRows.length !== idsToDelete.length) {
       setItems(previousItems);
-      window.alert(error?.message ?? "No se pudo confirmar la eliminación de todas las tareas seleccionadas.");
+      showNotice(error?.message ?? "No se pudo confirmar la eliminación de todas las tareas seleccionadas.", "error");
       return;
     }
     setSelectedIds([]);
+    showNotice("Tareas eliminadas.", "success");
     startRefresh(() => router.refresh());
+  };
+
+  const requestBulkDeleteSelected = () => {
+    if (!selectedIds.length) return;
+    setConfirmAction({ type: "delete-bulk", count: selectedIds.length });
+  };
+
+  const confirmPendingAction = async () => {
+    const action = confirmAction;
+    setConfirmAction(null);
+    if (!action) return;
+    if (action.type === "delete-one") await executeDeleteTask(action.taskId);
+    if (action.type === "delete-bulk") await executeBulkDeleteSelected();
   };
 
   const saveGanttView = async () => {
@@ -456,14 +486,14 @@ function TaskActionListComponent({
     const { data: authData } = await supabase.auth.getUser();
     const user = authData.user;
     if (!user) {
-      window.alert("Vista guardada localmente. Iniciá sesión para sincronizarla.");
+      showNotice("Vista guardada localmente. Iniciá sesión para sincronizarla.", "info");
       return;
     }
     const { error } = await supabase.from("task_view_preferences").upsert(
       { user_id: user.id, organization_id: null, scope: "tasks", name: "Vista personal", view_mode: viewMode, config },
       { onConflict: "user_id,organization_id,scope,name" },
     );
-    window.alert(error ? `Vista guardada localmente, pero no se pudo sincronizar: ${error.message}` : "Vista guardada y sincronizada con tu cuenta.");
+    showNotice(error ? `Vista guardada localmente, pero no se pudo sincronizar: ${error.message}` : "Vista guardada y sincronizada con tu cuenta.", error ? "error" : "success");
   };
 
   const createNewSavedView = async () => {
@@ -471,13 +501,13 @@ function TaskActionListComponent({
     if (!name?.trim()) return;
     const { data: authData } = await supabase.auth.getUser();
     const user = authData.user;
-    if (!user) { window.alert("Iniciá sesión para crear vistas sincronizadas."); return; }
+    if (!user) { showNotice("Iniciá sesión para crear vistas sincronizadas.", "info"); return; }
     const config = { showProgress, showDates, showPriority, compactGantt, ganttColorMode, savedAt: new Date().toISOString() };
     const { error } = await supabase.from("task_view_preferences").upsert(
       { user_id: user.id, organization_id: null, scope: "tasks", name: name.trim(), view_mode: viewMode, config },
       { onConflict: "user_id,organization_id,scope,name" },
     );
-    window.alert(error ? `No se pudo guardar la vista: ${error.message}` : "Nueva vista guardada.");
+    showNotice(error ? `No se pudo guardar la vista: ${error.message}` : "Nueva vista guardada.", error ? "error" : "success");
   };
 
   const exportTasks = () => {
@@ -588,7 +618,7 @@ function TaskActionListComponent({
                     <CheckCircle2 className="h-4 w-4" />
                   </button>
                 ) : null}
-                <button type="button" onClick={() => deleteTask(task.id)} className="inline-flex h-9 w-9 items-center justify-center rounded-[12px] border border-[#E5EAF1] bg-white text-slate-500 transition hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600" aria-label="Eliminar tarea">
+                <button type="button" onClick={() => requestDeleteTask(task.id)} className="inline-flex h-9 w-9 items-center justify-center rounded-[12px] border border-[#E5EAF1] bg-white text-slate-500 transition hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600" aria-label="Eliminar tarea">
                   <Trash2 className="h-4 w-4" />
                 </button>
               </div>
@@ -828,6 +858,41 @@ function TaskActionListComponent({
 
   return (
     <div className="space-y-4">
+      {notice ? (
+        <div className={`rounded-[16px] border px-4 py-3 text-sm font-semibold ${
+          notice.tone === "error"
+            ? "border-rose-200 bg-rose-50 text-rose-700"
+            : notice.tone === "success"
+              ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+              : "border-slate-200 bg-slate-50 text-slate-700"
+        }`}>
+          <span className="inline-flex items-center gap-2">
+            {notice.tone === "error" ? <AlertCircle className="h-4 w-4" /> : <CheckCircle2 className="h-4 w-4" />}
+            {notice.message}
+          </span>
+        </div>
+      ) : null}
+
+      {confirmAction ? (
+        <div className="rounded-[20px] border border-rose-200 bg-rose-50 p-4 text-rose-900 shadow-sm">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p className="text-sm font-bold">
+                {confirmAction.type === "delete-one" ? `¿Deseas eliminar “${confirmAction.title}”?` : `¿Deseas eliminar ${confirmAction.count} tarea(s)?`}
+              </p>
+              <p className="mt-1 text-xs font-semibold text-rose-700">Esta acción no se puede deshacer.</p>
+            </div>
+            <div className="flex gap-2">
+              <Button type="button" variant="secondary" onClick={() => setConfirmAction(null)} className="h-10 rounded-[12px] px-4">Cancelar</Button>
+              <Button type="button" onClick={() => void confirmPendingAction()} className="h-10 rounded-[12px] bg-rose-600 px-4 text-white hover:bg-rose-700">
+                <Trash2 className="h-4 w-4" />
+                Eliminar
+              </Button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
       <Card className="relative z-20 rounded-[24px] border border-[#E5EAF1] bg-white p-5">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
@@ -851,7 +916,7 @@ function TaskActionListComponent({
                 <CheckCircle2 className="h-4 w-4" />
                 Finalizar
               </Button>
-              <Button type="button" variant="secondary" onClick={bulkDeleteSelected} disabled={busyId === "bulk"} className="h-10 rounded-[12px] px-4">
+              <Button type="button" variant="secondary" onClick={requestBulkDeleteSelected} disabled={busyId === "bulk"} className="h-10 rounded-[12px] px-4">
                 <Trash2 className="h-4 w-4" />
                 Eliminar
               </Button>

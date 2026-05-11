@@ -1,47 +1,42 @@
-# FlowTask — v58.24.9.5 Important Tasks UX + Analytics Separation
+# FlowTask — v58.24.9.6 Task Visibility Rules + Professional Actions Feedback
 
-Base: **v58.24.9.4.1 — Kanban Important Tasks Typecheck Fix**
+Base: **v58.24.9.5 — Important Tasks UX + Analytics Separation**
 
 ## Objetivo
 
-Dejar la función de estrellas como una herramienta profesional de foco operativo, sin contaminar la analítica principal.
+Dejar el flujo de tareas más profesional y consistente:
 
-## Reglas de producto
+- La vista `/app/tasks` muestra todas las tareas del workspace, no solo tareas independientes.
+- Las tareas concluidas se ocultan por defecto para no ensuciar la lista.
+- El botón `Incluir concluidas` o el filtro `status=concluido` permite verlas.
+- El Kanban del workspace conserva columna `Hecho` y carga más tareas para evitar que falten registros.
+- La vista de detalle de tarea incluye acción de eliminar.
+- Se reemplazan `window.alert` / `window.confirm` en tareas por feedback interno y confirmación visual.
 
-- La estrella NO significa “favorita”.
-- La estrella significa “Importante”.
-- Importante se guarda como `priority = alta`.
-- Quitar estrella devuelve la tarea a `priority = media`.
-- Importante afecta el orden visual y el foco del usuario.
-- Importante NO cambia estado, avance, productividad ni métricas duras.
+## Cambios principales
 
-## Cambios
+### Visibilidad
 
-### Kanban
+- `getTasks()` ya no fuerza `project_id is null`.
+- `/app/tasks` pasa a ser centro operativo de todas las tareas del workspace.
+- Concluidas siguen ocultas por default salvo `includeCompleted=true` o `status=concluido`.
+- Workspace Kanban aumenta carga de tareas de 120 a 500.
 
-- La estrella del Kanban confirma el update con Supabase usando `.select("id,priority,updated_at")`.
-- Si Supabase confirma, actualiza el estado local y notifica al dashboard.
-- Si falla, revierte el cambio.
-- Las tareas importantes siguen apareciendo arriba dentro de su columna.
+### Acciones profesionales
 
-### Dashboard / Analítica
-
-- El KPI `Importantes` se define como señal de foco.
-- Helper: `Foco, no avance`.
-- El contador se actualiza al marcar/quitar estrella desde Kanban sin esperar refresh manual.
-
-### Listado de tareas
-
-- Se mantiene estrella en listado.
-- Se agrega estado `importantOnly`.
-- Se agrega botón `Solo importantes`.
-- El listado sigue ordenando `priority = alta` primero.
+- `TaskActionList` elimina avisos del navegador:
+  - no `window.alert`
+  - no `window.confirm`
+- Se agrega `notice` interno para éxito/error.
+- Se agrega confirmación visual para eliminar una o varias tareas.
+- `TaskWorkspaceInline` agrega botón eliminar en detalle de tarea.
+- Eliminar desde detalle muestra confirmación visual y redirige a `/app/tasks`.
 
 ## Validación recomendada
 
 ```bash
 npm install
-npm run verify:v58.24.9.5
+npm run verify:v58.24.9.6
 npm run typecheck
 npm run build:preflight
 npm run build
