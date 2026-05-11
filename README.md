@@ -1,59 +1,43 @@
-# FlowTask — v58.24.9.7 Task Action Modal Polish + Safe Delete + Kanban Scale Hardening
+# FlowTask — v58.24.9.7.1 Important Filter + No Auto Reorder + Selection Stability
 
-Base: **v58.24.9.6 — Task Visibility Rules + Professional Actions Feedback**
+Base: **v58.24.9.7 — Task Action Modal Polish + Safe Delete + Kanban Scale Hardening**
 
 ## Objetivo
 
-Subir el flujo de tareas a un nivel más profesional:
+Corregir el comportamiento raro del listado donde al seleccionar un checkbox parecía marcarse otra tarea o la lista hacía un movimiento visual.
 
-- Reemplazar el último `window.prompt` por modal interno.
-- Mover eliminación de tareas hacia safe delete / soft delete.
-- Agregar migración de papelera segura.
-- Evitar hard delete directo desde los componentes.
-- Filtrar tareas eliminadas en queries principales.
-- Mantener el Kanban más escalable con mayor carga y exclusión de eliminadas.
-- Agregar índices de performance para tareas.
+## Decisión UX
+
+Se elimina el reordenamiento automático por tareas importantes.
+
+- Marcar una estrella ya no mueve automáticamente la tarea.
+- Una tarea importante se resalta visualmente.
+- El usuario puede filtrar con `Solo importantes`.
+- La lista mantiene su orden estable, especialmente durante selección masiva.
+- El Kanban también mantiene el orden manual/actual y solo resalta importantes.
 
 ## Cambios principales
 
-### Safe delete
+### Listado de tareas
 
-Se agrega:
+- Se remueve `importantFirstTasks()` del pipeline visual.
+- `visibleItems` respeta el orden original recibido.
+- `Solo importantes` se conserva como filtro.
+- Tareas importantes se resaltan con fondo suave ámbar y animación ligera.
+- Los checkboxes ya no deberían saltar a otra fila por reordenamiento.
 
-```txt
-supabase/migrations/0052_v58_24_9_7_task_safe_delete_indexes.sql
-src/lib/tasks/safe-delete-client.ts
-```
+### Kanban
 
-La migración agrega:
-
-```txt
-tasks.deleted_at
-tasks.deleted_by
-tasks.delete_reason
-safe_delete_task(task_id)
-índices por workspace/status/fecha/prioridad/proyecto
-```
-
-### Tareas
-
-- `getTasks()` filtra `deleted_at is null`.
-- `getTaskById()` filtra `deleted_at is null`.
-- El listado y detalle usan `safeDeleteTaskClient`.
-- Bulk delete usa `safeDeleteTasksClient`.
-- Si la RPC no existe todavía, hay fallback temporal de hard delete para no bloquear QA, pero lo correcto es aplicar la migración 0052.
-
-### Modal polish
-
-- Se reemplaza `window.prompt` de “Nueva vista” por modal interno.
-- Se conserva confirmación visual para eliminar.
-- No quedan `window.alert`, `window.confirm` ni `window.prompt` en el flujo principal de tareas.
+- Se remueve el reordenamiento automático por prioridad alta.
+- Se conserva el orden de columna/manual.
+- Las tareas importantes se resaltan visualmente.
+- La estrella sigue funcionando para marcar/quitar importante.
 
 ## Validación recomendada
 
 ```bash
 npm install
-npm run verify:v58.24.9.7
+npm run verify:v58.24.9.7.1
 npm run typecheck
 npm run build:preflight
 npm run build

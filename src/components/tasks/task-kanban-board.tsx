@@ -114,17 +114,6 @@ function sortItems(items: TaskItem[], orderedIds: string[] = []) {
 }
 
 
-function importantFirstTasks(items: TaskItem[]) {
-  return [...items].sort((a, b) => {
-    const importantDelta = Number(b.priority === "alta") - Number(a.priority === "alta");
-    if (importantDelta !== 0) return importantDelta;
-    const aDate = a.due_date ?? "9999-12-31";
-    const bDate = b.due_date ?? "9999-12-31";
-    if (aDate !== bDate) return aDate.localeCompare(bDate);
-    return a.title.localeCompare(b.title);
-  });
-}
-
 function formatDate(value?: string | null) {
   if (!value) return "Sin fecha";
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
@@ -322,7 +311,7 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery, work
 
   const grouped = useMemo(() => {
     return activeColumns.map((column) => {
-      const orderedItems = importantFirstTasks(sortItems(normalizedTasks.filter((task) => task.status === column.value), orderOverrides[column.value] ?? []));
+      const orderedItems = sortItems(normalizedTasks.filter((task) => task.status === column.value), orderOverrides[column.value] ?? []);
       const expanded = expandedColumns[column.value] ?? false;
       return {
         ...column,
@@ -541,7 +530,9 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery, work
                         }}
                         className={draggingId === task.id ? "opacity-60" : "opacity-100"}
                       >
-                        <Card className={`rounded-[14px] border bg-white p-3 transition hover:-translate-y-0.5 hover: ${
+                        <Card className={`rounded-[14px] border p-3 transition hover:-translate-y-0.5 hover: ${
+                          task.priority === "alta" ? "bg-amber-50/50 border-amber-100 ring-1 ring-amber-100 animate-[importantPulse_420ms_ease-out]" : "bg-white"
+                        } ${
                           isHoverCard ? "border-emerald-300 ring-2 ring-emerald-100" : "border-white/70 hover:border-slate-200"
                         }`}>
                           <div className="space-y-3">
@@ -630,6 +621,9 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery, work
           );
         })}
       </div>
+      <style>{`
+        @keyframes importantPulse { 0% { background-color: rgba(251, 191, 36, 0.28); } 100% { background-color: rgba(255, 251, 235, 0.5); } }
+      `}</style>
     </div>
   );
 }

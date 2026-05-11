@@ -123,17 +123,6 @@ function priorityLabel(priority?: string | null) {
 }
 
 
-function importantFirstTasks(tasks: TaskRow[]) {
-  return [...tasks].sort((a, b) => {
-    const importantDelta = Number(b.priority === "alta") - Number(a.priority === "alta");
-    if (importantDelta !== 0) return importantDelta;
-    const aDate = a.due_date ?? "9999-12-31";
-    const bDate = b.due_date ?? "9999-12-31";
-    if (aDate !== bDate) return aDate.localeCompare(bDate);
-    return a.title.localeCompare(b.title);
-  });
-}
-
 function statusTone(status?: string | null) {
   if (status === "concluido") return "border-emerald-200 bg-emerald-50 text-emerald-700";
   if (status === "produccion") return "border-violet-200 bg-violet-50 text-violet-700";
@@ -302,8 +291,7 @@ function TaskActionListComponent({
   }, [viewMode]);
 
   const visibleItems = useMemo(() => (importantOnly ? items.filter((task) => task.priority === "alta") : items), [importantOnly, items]);
-  const sortedItems = useMemo(() => importantFirstTasks(visibleItems), [visibleItems]);
-  const totalPages = Math.max(1, Math.ceil(sortedItems.length / pageSize));
+  const totalPages = Math.max(1, Math.ceil(visibleItems.length / pageSize));
 
   useEffect(() => {
     setCurrentPage((value) => Math.min(value, totalPages));
@@ -315,17 +303,17 @@ function TaskActionListComponent({
 
   const currentItems = useMemo(() => {
     const start = (currentPage - 1) * pageSize;
-    return sortedItems.slice(start, start + pageSize);
-  }, [currentPage, pageSize, sortedItems]);
+    return visibleItems.slice(start, start + pageSize);
+  }, [currentPage, pageSize, visibleItems]);
 
-  const timelineItems = useMemo(() => sortedItems.slice(0, 18), [sortedItems]);
+  const timelineItems = useMemo(() => visibleItems.slice(0, 18), [visibleItems]);
   const baseTimelineBounds = useMemo(() => getTimelineBounds(timelineItems), [timelineItems]);
   const timelineBounds = useMemo(() => ({ start: addDays(baseTimelineBounds.start, timelineOffsetDays), end: addDays(baseTimelineBounds.end, timelineOffsetDays) }), [baseTimelineBounds.end, baseTimelineBounds.start, timelineOffsetDays]);
   const timelineDays = useMemo(() => {
     const days = Math.min(21, Math.max(7, diffDays(timelineBounds.end, timelineBounds.start) + 1));
     return Array.from({ length: days }, (_, index) => addDays(timelineBounds.start, index));
   }, [timelineBounds.end, timelineBounds.start]);
-  const calendarDays = useMemo(() => buildCalendarDays(sortedItems, calendarScale), [sortedItems, calendarScale]);
+  const calendarDays = useMemo(() => buildCalendarDays(visibleItems, calendarScale), [visibleItems, calendarScale]);
 
   const allCurrentSelected = currentItems.length > 0 && currentItems.every((item) => selectedIds.includes(item.id));
   const timelineActive = false;
@@ -524,7 +512,7 @@ function TaskActionListComponent({
   };
 
   const exportTasks = () => {
-    startDownload(`flowtask-tareas-${viewMode}.csv`, tasksToCsv(sortedItems));
+    startDownload(`flowtask-tareas-${viewMode}.csv`, tasksToCsv(visibleItems));
   };
 
   const renderTable = () => (
@@ -557,6 +545,7 @@ function TaskActionListComponent({
               key={task.id}
               className={cn(
                 "grid gap-3 border-b border-[#EEF2F7] px-5 py-4 transition last:border-b-0 hover:bg-slate-50/70 xl:grid-cols-[42px_minmax(260px,1.5fr)_minmax(120px,0.7fr)_minmax(130px,0.7fr)_minmax(130px,0.7fr)_minmax(120px,0.65fr)_minmax(130px,0.7fr)_120px] xl:items-center",
+                task.priority === "alta" && "bg-amber-50/40 ring-1 ring-inset ring-amber-100 animate-[importantPulse_420ms_ease-out]",
                 isBusy && "opacity-60",
               )}
             >
@@ -968,7 +957,7 @@ function TaskActionListComponent({
         <Card className="rounded-[24px] border border-[#E5EAF1] bg-white px-4 py-4">
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <p className="text-sm font-medium text-[#64748B]">
-              Mostrando {items.length ? (currentPage - 1) * pageSize + 1 : 0} a {Math.min(currentPage * pageSize, items.length)} de {items.length} tareas
+              Mostrando {visibleItems.length ? (currentPage - 1) * pageSize + 1 : 0} a {Math.min(currentPage * pageSize, visibleItems.length)} de {visibleItems.length} tareas
             </p>
 
             <div className="flex flex-wrap items-center gap-2 md:justify-end">
@@ -996,6 +985,7 @@ function TaskActionListComponent({
         @keyframes slideInFromRight { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
         @keyframes slideInFromLeft { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
         @keyframes viewFadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes importantPulse { 0% { background-color: rgba(251, 191, 36, 0.28); } 100% { background-color: rgba(255, 251, 235, 0.4); } }
       `}</style>
     </div>
   );
