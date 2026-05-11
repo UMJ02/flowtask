@@ -274,6 +274,7 @@ function TaskActionListComponent({
   const [showPriority, setShowPriority] = useState(true);
   const [compactGantt, setCompactGantt] = useState(true);
   const [ganttColorMode, setGanttColorMode] = useState<GanttColorMode>("priority");
+  const [importantOnly, setImportantOnly] = useState(false);
   const [, startRefresh] = useTransition();
 
   useEffect(() => {
@@ -290,7 +291,8 @@ function TaskActionListComponent({
     window.localStorage.setItem(TASK_VIEW_KEY, viewMode);
   }, [viewMode]);
 
-  const sortedItems = useMemo(() => importantFirstTasks(items), [items]);
+  const visibleItems = useMemo(() => (importantOnly ? items.filter((task) => task.priority === "alta") : items), [importantOnly, items]);
+  const sortedItems = useMemo(() => importantFirstTasks(visibleItems), [visibleItems]);
   const totalPages = Math.max(1, Math.ceil(sortedItems.length / pageSize));
 
   useEffect(() => {
@@ -299,7 +301,7 @@ function TaskActionListComponent({
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [pageSize, viewMode]);
+  }, [importantOnly, pageSize, viewMode]);
 
   const currentItems = useMemo(() => {
     const start = (currentPage - 1) * pageSize;
@@ -751,6 +753,17 @@ function TaskActionListComponent({
           <button type="button" onClick={saveGanttView} className="inline-flex h-10 items-center gap-2 rounded-[14px] border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-slate-700 hover:bg-slate-50"><Save className="h-4 w-4" />Guardar vista</button>
           <button type="button" onClick={createNewSavedView} className="h-10 rounded-[14px] border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-slate-700 hover:bg-slate-50">Nueva vista</button>
           <button type="button" onClick={exportTasks} className="inline-flex h-10 items-center gap-2 rounded-[14px] border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-slate-700 hover:bg-slate-50"><Download className="h-4 w-4" />Exportar</button>
+          <button
+            type="button"
+            onClick={() => setImportantOnly((value) => !value)}
+            className={cn(
+              "inline-flex h-10 items-center gap-2 rounded-[14px] border px-4 text-sm font-bold transition",
+              importantOnly ? "border-amber-200 bg-amber-50 text-amber-700" : "border-[#E5EAF1] bg-white text-slate-700 hover:bg-slate-50",
+            )}
+          >
+            <Star className={cn("h-4 w-4", importantOnly && "fill-current")} />
+            Solo importantes
+          </button>
           <button type="button" onClick={() => setShowGanttSettings((value) => !value)} className="inline-flex h-10 items-center gap-2 rounded-[14px] bg-[#050B18] px-4 text-sm font-bold text-white"><Settings2 className="h-4 w-4" />Personalizar</button>
         </div>
       </div>

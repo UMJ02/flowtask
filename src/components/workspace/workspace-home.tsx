@@ -304,6 +304,10 @@ export function WorkspaceHome() {
   const waiting = useMemo(() => openTasks.filter((task) => task.status === 'en_espera'), [openTasks]);
   const activeProjects = useMemo(() => projects.filter((project) => project.status !== 'completado'), [projects]);
   const importantCount = useMemo(() => tasks.filter((task) => task.priority === 'alta').length, [tasks]);
+  const handleTaskPriorityChange = (taskId: string, priority: string) => {
+    setTasks((current) => current.map((task) => (task.id === taskId ? { ...task, priority } : task)));
+  };
+
 
   const radarTitle = overdueTasks.length
     ? `Hay ${overdueTasks.length} tarea${overdueTasks.length === 1 ? '' : 's'} vencida${overdueTasks.length === 1 ? '' : 's'} empujando el día`
@@ -456,7 +460,7 @@ export function WorkspaceHome() {
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-[repeat(4,minmax(0,1fr))_220px]">
         <WorkspaceKpiCard label="Vence hoy" value={dueToday.length} helper="Tareas abiertas" icon={CalendarDays} tone="rose" />
-        <WorkspaceKpiCard label="Importantes" value={importantCount} helper="Prioridad alta" icon={Star} tone="amber" />
+        <WorkspaceKpiCard label="Importantes" value={importantCount} helper="Foco, no avance" icon={Star} tone="amber" />
         <WorkspaceKpiCard label="Pendientes" value={openTasks.length} helper="Fecha definida" icon={Timer} tone="violet" />
         <WorkspaceKpiCard label="Proyectos activos" value={activeProjects.length} helper="En curso" icon={FolderKanban} tone="sky" />
         <Card className="flex items-center justify-center gap-3 rounded-[20px] border-[#E5EAF1] bg-white p-4 ring-0">
@@ -614,7 +618,7 @@ export function WorkspaceHome() {
             </div>
           </div>
         ) : null}
-        <TaskKanbanBoard tasks={filteredFlowTasks} showHeader={false} workspaceKey={`${workspaceKey}:${flowGroupBy}`} visibleStatuses={visibleStatusColumns} />
+        <TaskKanbanBoard tasks={filteredFlowTasks} showHeader={false} workspaceKey={`${workspaceKey}:${flowGroupBy}`} visibleStatuses={visibleStatusColumns} onTaskPriorityChange={handleTaskPriorityChange} />
       </section>
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">

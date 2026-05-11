@@ -30,6 +30,7 @@ type TaskKanbanBoardProps = {
   currentQuery?: string;
   workspaceKey?: string;
   visibleStatuses?: string[];
+  onTaskPriorityChange?: (taskId: string, priority: string) => void;
 };
 
 function getScopedLayoutKey(base: keyof LayoutConfigShape, workspaceKey: string) {
@@ -228,7 +229,7 @@ async function persistBoardLayoutConfig(
   await supabase.from("boards").update({ layout_config: nextLayoutConfig }).eq("id", board.id);
 }
 
-function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery, workspaceKey = "personal", visibleStatuses }: TaskKanbanBoardProps) {
+function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery, workspaceKey = "personal", visibleStatuses, onTaskPriorityChange }: TaskKanbanBoardProps) {
   const supabase = useMemo(() => createClient(), []);
   const serverSignature = useMemo(() => tasks.map((task) => `${task.id}:${task.status}:${task.priority ?? ''}:${task.due_date ?? ''}:${task.title}`).join('|'), [tasks]);
   const [hydrated, setHydrated] = useState(false);
@@ -419,13 +420,20 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery, work
     setBoardTasks(nextTasks);
 
     try {
-      const { error: updateError } = await supabase
+      const { data: confirmedTask, error: updateError } = await supabase
         .from("tasks")
         .update({ priority: nextPriority })
-        .eq("id", taskId);
+        .eq("id", taskId)
+        .select("id,priority,updated_at")
+        .maybeSingle();
 
-      if (updateError) throw updateError;
-      setLastServerSignature(nextTasks.map((task) => `${task.id}:${task.status}:${task.priority ?? ""}:${task.due_date ?? ""}:${task.title}`).join("|"));
+      if (updateError || !confirmedTask) throw updateError ?? new Error("No pudimos confirmar la prioridad de la tarea en Supabase.");
+
+      const confirmedPriority = confirmedTask.priority ?? nextPriority;
+      const confirmedTasks = boardTasks.map((item) => (item.id === taskId ? { ...item, priority: confirmedPriority } : item));
+      setBoardTasks(confirmedTasks);
+      onTaskPriorityChange?.(taskId, confirmedPriority);
+      setLastServerSignature(confirmedTasks.map((task) => `${task.id}:${task.status}:${task.priority ?? ""}:${task.due_date ?? ""}:${task.title}`).join("|"));
     } catch {
       setBoardTasks(previousTasks);
       setError("No pudimos actualizar la prioridad de la tarea. Revisa permisos o intenta de nuevo.");
