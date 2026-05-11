@@ -4,8 +4,8 @@ import path from "node:path";
 
 const root = process.cwd();
 const failures = [];
-const expectedVersion = "58.24.9.6-task-visibility-rules-professional-actions-feedback";
-const expectedReleaseLabel = "v58.24.9.6 Task Visibility Rules + Professional Actions Feedback";
+const expectedVersion = "58.24.9.7-task-action-modal-polish-safe-delete-kanban-scale-hardening";
+const expectedReleaseLabel = "v58.24.9.7 Task Action Modal Polish + Safe Delete + Kanban Scale Hardening";
 
 function exists(rel){ return fs.existsSync(path.join(root, rel)); }
 function read(rel){ return exists(rel) ? fs.readFileSync(path.join(root, rel), "utf8") : ""; }
@@ -15,9 +15,11 @@ function requireNotIncludes(rel, text){ if(read(rel).includes(text)) failures.pu
 
 for (const rel of [
   "package.json","package-lock.json","vercel.json","next.config.ts",".nvmrc",".env.example",
-  "scripts/runtime-check.mjs","scripts/validate-env.mjs","scripts/verify-v58.24.9.6.mjs",
-  "docs/release/V58_24_9_6_TASK_VISIBILITY_RULES_PROFESSIONAL_ACTIONS_FEEDBACK.md",
-  "docs/qa/FLOWTASK_V58_24_9_6_TASK_VISIBILITY_RULES_PROFESSIONAL_ACTIONS_FEEDBACK_QA.md",
+  "scripts/runtime-check.mjs","scripts/validate-env.mjs","scripts/verify-v58.24.9.7.mjs",
+  "docs/release/V58_24_9_7_TASK_ACTION_MODAL_POLISH_SAFE_DELETE_KANBAN_SCALE_HARDENING.md",
+  "docs/qa/FLOWTASK_V58_24_9_7_TASK_ACTION_MODAL_POLISH_SAFE_DELETE_KANBAN_SCALE_HARDENING_QA.md",
+  "supabase/migrations/0052_v58_24_9_7_task_safe_delete_indexes.sql",
+  "src/lib/tasks/safe-delete-client.ts",
   "src/lib/queries/tasks.ts",
   "src/components/tasks/task-action-list.tsx",
   "src/components/tasks/task-workspace-inline.tsx",
@@ -26,13 +28,13 @@ for (const rel of [
 
 const pkg = JSON.parse(read("package.json"));
 const scripts = pkg.scripts ?? {};
-for (const scriptName of ["build","vercel:build","deploy:readiness","build:preflight","verify:current","deploy:production:ready","verify:v58.24.9.6"]) {
+for (const scriptName of ["build","vercel:build","deploy:readiness","build:preflight","verify:current","deploy:production:ready","verify:v58.24.9.7"]) {
   if (!scripts[scriptName]) failures.push(`Missing package script: ${scriptName}`);
 }
 
 if (pkg.version !== expectedVersion) failures.push(`Unexpected package version: ${pkg.version}`);
-if (scripts["verify:current"] !== "npm run verify:v58.24.9.6") failures.push("verify:current must target verify:v58.24.9.6");
-if (scripts["verify:v58.24.9.6"] !== "node scripts/verify-v58.24.9.6.mjs") failures.push("verify:v58.24.9.6 must target scripts/verify-v58.24.9.6.mjs");
+if (scripts["verify:current"] !== "npm run verify:v58.24.9.7") failures.push("verify:current must target verify:v58.24.9.7");
+if (scripts["verify:v58.24.9.7"] !== "node scripts/verify-v58.24.9.7.mjs") failures.push("verify:v58.24.9.7 must target scripts/verify-v58.24.9.7.mjs");
 
 const vercel = JSON.parse(read("vercel.json"));
 if (vercel.framework !== "nextjs") failures.push("vercel.json framework must be nextjs");
@@ -41,16 +43,16 @@ if (vercel.buildCommand !== "npm run vercel:build") failures.push("vercel.json b
 requireIncludes("src/lib/release/version.ts", expectedVersion);
 requireIncludes("src/lib/release/version.ts", expectedReleaseLabel);
 requireIncludes("package-lock.json", expectedVersion);
-requireIncludes("src/lib/queries/tasks.ts", "Main Tasks module shows all workspace tasks by default.");
-requireNotIncludes("src/lib/queries/tasks.ts", "query = query.is(\"project_id\", null)");
-requireIncludes("src/components/workspace/workspace-home.tsx", ".limit(500)");
-requireIncludes("src/components/tasks/task-action-list.tsx", "ConfirmAction");
+requireIncludes("supabase/migrations/0052_v58_24_9_7_task_safe_delete_indexes.sql", "safe_delete_task");
+requireIncludes("src/lib/tasks/safe-delete-client.ts", "safeDeleteTaskClient");
+requireIncludes("src/lib/queries/tasks.ts", "query = query.is(\"deleted_at\", null)");
+requireIncludes("src/components/workspace/workspace-home.tsx", ".is('deleted_at', null)");
+requireIncludes("src/components/tasks/task-action-list.tsx", "newViewModalOpen");
+requireIncludes("src/components/tasks/task-action-list.tsx", "safeDeleteTasksClient");
+requireIncludes("src/components/tasks/task-workspace-inline.tsx", "safeDeleteTaskClient");
+requireNotIncludes("src/components/tasks/task-action-list.tsx", "window.prompt");
 requireNotIncludes("src/components/tasks/task-action-list.tsx", "window.alert");
 requireNotIncludes("src/components/tasks/task-action-list.tsx", "window.confirm");
-requireIncludes("src/components/tasks/task-workspace-inline.tsx", "confirmDeleteOpen");
-requireIncludes("src/components/tasks/task-workspace-inline.tsx", "deleteCurrentTask");
-requireNotIncludes("src/components/tasks/task-workspace-inline.tsx", "window.alert");
-requireNotIncludes("src/components/tasks/task-workspace-inline.tsx", "window.confirm");
 
 if (failures.length) {
   console.error("[build-deploy-readiness] Failed checks:");
@@ -58,4 +60,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log("[build-deploy-readiness] OK — v58.24.9.6 task visibility and professional actions readiness aligned.");
+console.log("[build-deploy-readiness] OK — v58.24.9.7 task safe delete and modal polish readiness aligned.");

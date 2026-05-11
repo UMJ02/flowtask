@@ -31,6 +31,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Select } from "@/components/ui/select";
 import { TaskKanbanBoard } from "@/components/tasks/task-kanban-board";
+import { safeDeleteTaskClient, safeDeleteTasksClient } from "@/lib/tasks/safe-delete-client";
 import { taskDetailRoute, taskEditRoute } from "@/lib/navigation/routes";
 import { getTaskStandbyDays, getTaskStatusLabel, getTaskStatusUpdatePayload, isTaskOverdue, isTaskWaiting, todayIsoDate } from "@/lib/tasks/status";
 import { cn } from "@/lib/utils/classnames";
@@ -282,6 +283,8 @@ function TaskActionListComponent({
   const [importantOnly, setImportantOnly] = useState(false);
   const [notice, setNotice] = useState<NoticeState>(null);
   const [confirmAction, setConfirmAction] = useState<ConfirmAction | null>(null);
+  const [newViewModalOpen, setNewViewModalOpen] = useState(false);
+  const [newViewName, setNewViewName] = useState("Vista de tareas");
   const [, startRefresh] = useTransition();
 
   useEffect(() => {
@@ -413,16 +416,16 @@ function TaskActionListComponent({
     setItems((list) => list.filter((item) => item.id !== taskId));
     setBusyId(taskId);
 
-    const { data: deletedRows, error } = await supabase.from("tasks").delete().eq("id", taskId).select("id");
+    const result = await safeDeleteTaskClient(supabase as any, taskId);
     setBusyId(null);
 
-    if (error || !deletedRows || deletedRows.length === 0) {
+    if (!result.ok) {
       setItems(current);
-      showNotice(error?.message ?? "No se pudo confirmar la eliminación de la tarea.", "error");
+      showNotice(result.error ?? "No se pudo confirmar la eliminación de la tarea.", "error");
       return;
     }
 
-    showNotice("Tarea eliminada.", "success");
+    showNotice(result.fallback ? "Tarea eliminada. Aplica la migración 0052 para activar papelera segura." : "Tarea enviada a papelera.", "success");
     startRefresh(() => router.refresh());
   };
 
@@ -455,15 +458,16 @@ function TaskActionListComponent({
     const previousItems = items;
     setItems((list) => list.filter((item) => !idsToDelete.includes(item.id)));
     setBusyId("bulk");
-    const { data: deletedRows, error } = await supabase.from("tasks").delete().in("id", idsToDelete).select("id");
+    const results = await safeDeleteTasksClient(supabase as any, idsToDelete);
     setBusyId(null);
-    if (error || !deletedRows || deletedRows.length !== idsToDelete.length) {
+    const failed = results.filter((item) => !item.ok);
+    if (failed.length) {
       setItems(previousItems);
-      showNotice(error?.message ?? "No se pudo confirmar la eliminación de todas las tareas seleccionadas.", "error");
+      showNotice(failed[0]?.error ?? "No se pudo confirmar la eliminación de todas las tareas seleccionadas.", "error");
       return;
     }
     setSelectedIds([]);
-    showNotice("Tareas eliminadas.", "success");
+    showNotice(results.some((item) => item.fallback) ? "Tareas eliminadas. Aplica la migración 0052 para activar papelera segura." : "Tareas enviadas a papelera.", "success");
     startRefresh(() => router.refresh());
   };
 
@@ -496,17 +500,26 @@ function TaskActionListComponent({
     showNotice(error ? `Vista guardada localmente, pero no se pudo sincronizar: ${error.message}` : "Vista guardada y sincronizada con tu cuenta.", error ? "error" : "success");
   };
 
+  const openNewSavedViewModal = () => {
+    setNewViewName("Vista de tareas");
+    setNewViewModalOpen(true);
+  };
+
   const createNewSavedView = async () => {
-    const name = window.prompt("Nombre de la nueva vista", "Vista de tareas");
-    if (!name?.trim()) return;
+    const name = newViewName.trim();
+    if (!name) {
+      showNotice("Escribí un nombre para la nueva vista.", "error");
+      return;
+    }
     const { data: authData } = await supabase.auth.getUser();
     const user = authData.user;
     if (!user) { showNotice("Iniciá sesión para crear vistas sincronizadas.", "info"); return; }
     const config = { showProgress, showDates, showPriority, compactGantt, ganttColorMode, savedAt: new Date().toISOString() };
     const { error } = await supabase.from("task_view_preferences").upsert(
-      { user_id: user.id, organization_id: null, scope: "tasks", name: name.trim(), view_mode: viewMode, config },
+      { user_id: user.id, organization_id: null, scope: "tasks", name, view_mode: viewMode, config },
       { onConflict: "user_id,organization_id,scope,name" },
     );
+    if (!error) setNewViewModalOpen(false);
     showNotice(error ? `No se pudo guardar la vista: ${error.message}` : "Nueva vista guardada.", error ? "error" : "success");
   };
 
@@ -781,7 +794,7 @@ function TaskActionListComponent({
         </div>
         <div className="flex flex-wrap gap-2">
           <button type="button" onClick={saveGanttView} className="inline-flex h-10 items-center gap-2 rounded-[14px] border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-slate-700 hover:bg-slate-50"><Save className="h-4 w-4" />Guardar vista</button>
-          <button type="button" onClick={createNewSavedView} className="h-10 rounded-[14px] border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-slate-700 hover:bg-slate-50">Nueva vista</button>
+          <button type="button" onClick={openNewSavedViewModal} className="h-10 rounded-[14px] border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-slate-700 hover:bg-slate-50">Nueva vista</button>
           <button type="button" onClick={exportTasks} className="inline-flex h-10 items-center gap-2 rounded-[14px] border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-slate-700 hover:bg-slate-50"><Download className="h-4 w-4" />Exportar</button>
           <button
             type="button"
@@ -888,6 +901,26 @@ function TaskActionListComponent({
                 <Trash2 className="h-4 w-4" />
                 Eliminar
               </Button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {newViewModalOpen ? (
+        <div className="rounded-[20px] border border-slate-200 bg-white p-4 shadow-sm">
+          <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+            <label className="block flex-1 space-y-2">
+              <span className="text-sm font-bold text-[#0F172A]">Nombre de la nueva vista</span>
+              <input
+                value={newViewName}
+                onChange={(event) => setNewViewName(event.target.value)}
+                className="h-11 w-full rounded-[14px] border border-[#E5EAF1] bg-white px-3 text-sm font-semibold text-[#0F172A] outline-none focus:border-[#16C784]"
+                placeholder="Vista de tareas"
+              />
+            </label>
+            <div className="flex gap-2">
+              <Button type="button" variant="secondary" onClick={() => setNewViewModalOpen(false)} className="h-11 rounded-[12px] px-4">Cancelar</Button>
+              <Button type="button" onClick={() => void createNewSavedView()} className="h-11 rounded-[12px] bg-[#050B18] px-4 text-white">Guardar vista</Button>
             </div>
           </div>
         </div>

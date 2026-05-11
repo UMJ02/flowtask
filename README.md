@@ -1,42 +1,59 @@
-# FlowTask — v58.24.9.6 Task Visibility Rules + Professional Actions Feedback
+# FlowTask — v58.24.9.7 Task Action Modal Polish + Safe Delete + Kanban Scale Hardening
 
-Base: **v58.24.9.5 — Important Tasks UX + Analytics Separation**
+Base: **v58.24.9.6 — Task Visibility Rules + Professional Actions Feedback**
 
 ## Objetivo
 
-Dejar el flujo de tareas más profesional y consistente:
+Subir el flujo de tareas a un nivel más profesional:
 
-- La vista `/app/tasks` muestra todas las tareas del workspace, no solo tareas independientes.
-- Las tareas concluidas se ocultan por defecto para no ensuciar la lista.
-- El botón `Incluir concluidas` o el filtro `status=concluido` permite verlas.
-- El Kanban del workspace conserva columna `Hecho` y carga más tareas para evitar que falten registros.
-- La vista de detalle de tarea incluye acción de eliminar.
-- Se reemplazan `window.alert` / `window.confirm` en tareas por feedback interno y confirmación visual.
+- Reemplazar el último `window.prompt` por modal interno.
+- Mover eliminación de tareas hacia safe delete / soft delete.
+- Agregar migración de papelera segura.
+- Evitar hard delete directo desde los componentes.
+- Filtrar tareas eliminadas en queries principales.
+- Mantener el Kanban más escalable con mayor carga y exclusión de eliminadas.
+- Agregar índices de performance para tareas.
 
 ## Cambios principales
 
-### Visibilidad
+### Safe delete
 
-- `getTasks()` ya no fuerza `project_id is null`.
-- `/app/tasks` pasa a ser centro operativo de todas las tareas del workspace.
-- Concluidas siguen ocultas por default salvo `includeCompleted=true` o `status=concluido`.
-- Workspace Kanban aumenta carga de tareas de 120 a 500.
+Se agrega:
 
-### Acciones profesionales
+```txt
+supabase/migrations/0052_v58_24_9_7_task_safe_delete_indexes.sql
+src/lib/tasks/safe-delete-client.ts
+```
 
-- `TaskActionList` elimina avisos del navegador:
-  - no `window.alert`
-  - no `window.confirm`
-- Se agrega `notice` interno para éxito/error.
-- Se agrega confirmación visual para eliminar una o varias tareas.
-- `TaskWorkspaceInline` agrega botón eliminar en detalle de tarea.
-- Eliminar desde detalle muestra confirmación visual y redirige a `/app/tasks`.
+La migración agrega:
+
+```txt
+tasks.deleted_at
+tasks.deleted_by
+tasks.delete_reason
+safe_delete_task(task_id)
+índices por workspace/status/fecha/prioridad/proyecto
+```
+
+### Tareas
+
+- `getTasks()` filtra `deleted_at is null`.
+- `getTaskById()` filtra `deleted_at is null`.
+- El listado y detalle usan `safeDeleteTaskClient`.
+- Bulk delete usa `safeDeleteTasksClient`.
+- Si la RPC no existe todavía, hay fallback temporal de hard delete para no bloquear QA, pero lo correcto es aplicar la migración 0052.
+
+### Modal polish
+
+- Se reemplaza `window.prompt` de “Nueva vista” por modal interno.
+- Se conserva confirmación visual para eliminar.
+- No quedan `window.alert`, `window.confirm` ni `window.prompt` en el flujo principal de tareas.
 
 ## Validación recomendada
 
 ```bash
 npm install
-npm run verify:v58.24.9.6
+npm run verify:v58.24.9.7
 npm run typecheck
 npm run build:preflight
 npm run build

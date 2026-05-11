@@ -258,9 +258,10 @@ export function WorkspaceHome() {
       const scopedTasks = applyClientWorkspaceScope(
         context.supabase
           .from('tasks')
-          .select('id,title,status,priority,client_name,due_date,project_id,organization_id,owner_id,created_at,updated_at')
+          .select('id,title,status,priority,client_name,due_date,project_id,organization_id,owner_id,created_at,updated_at,deleted_at')
           .order('due_date', { ascending: true, nullsFirst: false })
           .order('updated_at', { ascending: false })
+          .is('deleted_at', null)
           .limit(500),
         context.user.id,
         context.activeOrganizationId,

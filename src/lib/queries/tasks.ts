@@ -87,6 +87,7 @@ export async function getTasks(filters: TaskFiltersInput = {}): Promise<TaskSumm
           country,
           created_at,
           updated_at,
+          deleted_at,
           departments ( code, name )
         `,
       )
@@ -94,6 +95,8 @@ export async function getTasks(filters: TaskFiltersInput = {}): Promise<TaskSumm
     user.id,
     activeOrganizationId,
   );
+
+  query = query.is("deleted_at", null);
 
   // Main Tasks module shows all workspace tasks by default.
   // Completed tasks remain hidden unless includeCompleted/status=concluido is requested.
@@ -151,11 +154,13 @@ export async function getTaskById(taskId: string) {
           created_at,
           updated_at,
           completed_at,
+          deleted_at,
           departments ( id, code, name ),
           projects ( id, title )
         `,
       )
-      .eq("id", taskId),
+      .eq("id", taskId)
+      .is("deleted_at", null),
     user.id,
     activeOrganizationId,
   );
