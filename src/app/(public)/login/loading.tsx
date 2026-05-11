@@ -1,5 +1,3 @@
-import { AuthPremiumLoader } from '@/components/ui/auth-premium-loader';
-
-export default function LoginLoading() {
-  return <AuthPremiumLoader title="Cargando ingreso…" />;
+export default function Loading() {
+  return null;
 }

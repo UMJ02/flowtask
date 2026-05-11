@@ -112,6 +112,18 @@ function sortItems(items: TaskItem[], orderedIds: string[] = []) {
   });
 }
 
+
+function importantFirstTasks(items: TaskItem[]) {
+  return [...items].sort((a, b) => {
+    const importantDelta = Number(b.priority === "alta") - Number(a.priority === "alta");
+    if (importantDelta !== 0) return importantDelta;
+    const aDate = a.due_date ?? "9999-12-31";
+    const bDate = b.due_date ?? "9999-12-31";
+    if (aDate !== bDate) return aDate.localeCompare(bDate);
+    return a.title.localeCompare(b.title);
+  });
+}
+
 function formatDate(value?: string | null) {
   if (!value) return "Sin fecha";
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
@@ -309,7 +321,7 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery, work
 
   const grouped = useMemo(() => {
     return activeColumns.map((column) => {
-      const orderedItems = sortItems(normalizedTasks.filter((task) => task.status === column.value), orderOverrides[column.value] ?? []);
+      const orderedItems = importantFirstTasks(sortItems(normalizedTasks.filter((task) => task.status === column.value), orderOverrides[column.value] ?? []));
       const expanded = expandedColumns[column.value] ?? false;
       return {
         ...column,
@@ -484,7 +496,7 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery, work
 
               <div className="space-y-2.5">
                 {column.items.length ? (
-                  column.items.map((task) => {
+                  column.items.map((task: TaskItem) => {
                     const saving = busyStatus?.startsWith(`${task.id}:`);
                     const isHoverCard = hoverTaskId === task.id;
                     return (

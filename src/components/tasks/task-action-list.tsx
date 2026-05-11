@@ -20,6 +20,7 @@ import {
   Save,
   Settings2,
   SlidersHorizontal,
+  Star,
   Trash2,
   Workflow,
 } from "lucide-react";
@@ -113,6 +114,18 @@ function priorityLabel(priority?: string | null) {
   if (priority === "alta") return "Alta";
   if (priority === "baja") return "Baja";
   return "Media";
+}
+
+
+function importantFirstTasks(tasks: TaskRow[]) {
+  return [...tasks].sort((a, b) => {
+    const importantDelta = Number(b.priority === "alta") - Number(a.priority === "alta");
+    if (importantDelta !== 0) return importantDelta;
+    const aDate = a.due_date ?? "9999-12-31";
+    const bDate = b.due_date ?? "9999-12-31";
+    if (aDate !== bDate) return aDate.localeCompare(bDate);
+    return a.title.localeCompare(b.title);
+  });
 }
 
 function statusTone(status?: string | null) {
@@ -244,6 +257,7 @@ function TaskActionListComponent({
   const supabase = useMemo(() => createClient(), []);
   const [items, setItems] = useState(tasks);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [busyPriorityId, setBusyPriorityId] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [pageSize, setPageSize] = useState<10 | 20>(10);
   const [currentPage, setCurrentPage] = useState(1);
@@ -276,7 +290,8 @@ function TaskActionListComponent({
     window.localStorage.setItem(TASK_VIEW_KEY, viewMode);
   }, [viewMode]);
 
-  const totalPages = Math.max(1, Math.ceil(items.length / pageSize));
+  const sortedItems = useMemo(() => importantFirstTasks(items), [items]);
+  const totalPages = Math.max(1, Math.ceil(sortedItems.length / pageSize));
 
   useEffect(() => {
     setCurrentPage((value) => Math.min(value, totalPages));
@@ -288,17 +303,17 @@ function TaskActionListComponent({
 
   const currentItems = useMemo(() => {
     const start = (currentPage - 1) * pageSize;
-    return items.slice(start, start + pageSize);
-  }, [currentPage, items, pageSize]);
+    return sortedItems.slice(start, start + pageSize);
+  }, [currentPage, pageSize, sortedItems]);
 
-  const timelineItems = useMemo(() => items.slice(0, 18), [items]);
+  const timelineItems = useMemo(() => sortedItems.slice(0, 18), [sortedItems]);
   const baseTimelineBounds = useMemo(() => getTimelineBounds(timelineItems), [timelineItems]);
   const timelineBounds = useMemo(() => ({ start: addDays(baseTimelineBounds.start, timelineOffsetDays), end: addDays(baseTimelineBounds.end, timelineOffsetDays) }), [baseTimelineBounds.end, baseTimelineBounds.start, timelineOffsetDays]);
   const timelineDays = useMemo(() => {
     const days = Math.min(21, Math.max(7, diffDays(timelineBounds.end, timelineBounds.start) + 1));
     return Array.from({ length: days }, (_, index) => addDays(timelineBounds.start, index));
   }, [timelineBounds.end, timelineBounds.start]);
-  const calendarDays = useMemo(() => buildCalendarDays(items, calendarScale), [items, calendarScale]);
+  const calendarDays = useMemo(() => buildCalendarDays(sortedItems, calendarScale), [sortedItems, calendarScale]);
 
   const allCurrentSelected = currentItems.length > 0 && currentItems.every((item) => selectedIds.includes(item.id));
   const timelineActive = false;
@@ -329,6 +344,35 @@ function TaskActionListComponent({
       setPageAnimation(direction === "next" ? "in-next" : "in-prev");
       window.setTimeout(() => setPageAnimation("idle"), 220);
     }, 120);
+  };
+
+  const toggleImportant = async (taskId: string) => {
+    const currentTask = items.find((item) => item.id === taskId);
+    if (!currentTask || busyPriorityId === taskId) return;
+
+    const previousItems = items;
+    const nextPriority = currentTask.priority === "alta" ? "media" : "alta";
+    const nextItems = items.map((item) => (item.id === taskId ? { ...item, priority: nextPriority } : item));
+
+    setItems(nextItems);
+    setBusyPriorityId(taskId);
+
+    const { data, error } = await supabase
+      .from("tasks")
+      .update({ priority: nextPriority })
+      .eq("id", taskId)
+      .select("id,priority,updated_at")
+      .maybeSingle();
+
+    setBusyPriorityId(null);
+
+    if (error || !data) {
+      setItems(previousItems);
+      window.alert(error?.message ?? "No se pudo actualizar la prioridad de la tarea.");
+      return;
+    }
+
+    startRefresh(() => router.refresh());
   };
 
   const markComplete = async (taskId: string) => {
@@ -435,7 +479,7 @@ function TaskActionListComponent({
   };
 
   const exportTasks = () => {
-    startDownload(`flowtask-tareas-${viewMode}.csv`, tasksToCsv(items));
+    startDownload(`flowtask-tareas-${viewMode}.csv`, tasksToCsv(sortedItems));
   };
 
   const renderTable = () => (
@@ -476,9 +520,25 @@ function TaskActionListComponent({
               </div>
 
               <div className="min-w-0">
-                <Link href={taskDetailRoute(task.id, currentQuery)} className="block truncate text-sm font-bold text-[#0F172A] transition hover:text-emerald-700">
-                  {task.title}
-                </Link>
+                <div className="flex min-w-0 items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => void toggleImportant(task.id)}
+                    disabled={busyPriorityId === task.id}
+                    title={task.priority === "alta" ? "Quitar de importantes" : "Marcar como importante"}
+                    aria-label={task.priority === "alta" ? "Quitar de importantes" : "Marcar como importante"}
+                    className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl ring-1 transition disabled:opacity-60 ${
+                      task.priority === "alta"
+                        ? "bg-amber-50 text-amber-600 ring-amber-100 hover:bg-amber-100"
+                        : "bg-white text-slate-500 ring-slate-200 hover:bg-slate-100"
+                    }`}
+                  >
+                    <Star className={`h-3.5 w-3.5 ${task.priority === "alta" ? "fill-current" : ""}`} />
+                  </button>
+                  <Link href={taskDetailRoute(task.id, currentQuery)} className="block min-w-0 truncate text-sm font-bold text-[#0F172A] transition hover:text-emerald-700">
+                    {task.title}
+                  </Link>
+                </div>
                 <p className="mt-1 truncate text-xs font-medium text-[#64748B]">{task.client_name || "Tarea sin cliente asignado"}</p>
               </div>
 

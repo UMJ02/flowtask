@@ -1,36 +1,30 @@
-# FlowTask — v58.24.9.3 Workspace Kanban Status Isolation + Important Tasks Performance
+# FlowTask — v58.24.9.4.1 Kanban Important Tasks Typecheck Fix
 
-Base: **v58.24.9.2 — Organization Delete RPC Schema + Workspace Switch Fix**
+Base: **v58.24.9.4 — Task Priority Sync + Fresh Detail State + Attachment Icons + Loader Cleanup**
 
 ## Objetivo
 
-Corregir el comportamiento del flujo de trabajo/Kanban en `/app/dashboard`:
+Corregir los errores reales de TypeScript reportados en `src/components/tasks/task-kanban-board.tsx`.
 
-1. Las tareas deben quedarse en su columna real según `tasks.status`.
-2. Ocultar una columna no debe mover ni mezclar tareas en otra columna visible.
-3. Las tareas importantes se gestionan con `priority = 'alta'`.
-4. El contador del dashboard ahora muestra `Importantes` en vez de leer favoritas desde localStorage.
-5. Desde el Kanban se puede marcar/quitar una tarea como importante con el botón de estrella.
+## Errores corregidos
 
-## Cambios principales
+```txt
+TS2304: Cannot find name 'importantFirstTasks'
+TS7006: Parameter 'task' implicitly has an 'any' type
+```
 
-- `TaskKanbanBoard` ya no remapea tareas de columnas ocultas hacia la primera columna visible.
-- `TaskKanbanBoard` mantiene cada tarea en su estado persistido:
-  - `en_proceso`
-  - `produccion`
-  - `en_espera`
-  - `concluido`
-- Se agregó acción rápida de estrella en cada card:
-  - estrella activa = `priority: alta`
-  - estrella inactiva = `priority: media`
-- El KPI del dashboard cambió de `Favoritas` a `Importantes`.
-- El conteo de importantes se calcula desde tareas reales con `priority === 'alta'`.
+## Cambios
+
+- Se declara `importantFirstTasks(items: TaskItem[])` dentro de `task-kanban-board.tsx`.
+- Se tipa explícitamente `column.items.map((task: TaskItem) => ...)`.
+- Se conserva el orden de importantes primero dentro del Kanban.
+- Se conserva todo el alcance funcional de v58.24.9.4.
 
 ## Validación recomendada
 
 ```bash
 npm install
-npm run verify:v58.24.9.3
+npm run verify:v58.24.9.4.1
 npm run typecheck
 npm run build:preflight
 npm run build
