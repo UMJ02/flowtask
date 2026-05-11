@@ -47,6 +47,18 @@ async function reactivateWorkspace(organizationId: string) {
   }
 }
 
+
+function persistWorkspaceCookie(workspace: string) {
+  if (typeof document === 'undefined') return;
+  const secure = window.location.protocol === 'https:' ? '; Secure' : '';
+  document.cookie = `flowtask-active-workspace=${encodeURIComponent(workspace)}; Path=/; Max-Age=31536000; SameSite=Lax${secure}`;
+}
+
+function navigateAfterWorkspaceSwitch(target: string) {
+  if (typeof window === 'undefined') return;
+  window.location.assign(target);
+}
+
 export function OrganizationSwitcher({
   organizations,
   activeOrganization,
@@ -85,11 +97,13 @@ export function OrganizationSwitcher({
     startTransition(async () => {
       try {
         setOptimisticWorkspace(workspace);
+        persistWorkspaceCookie(workspace);
         await updateActiveWorkspace(workspace);
         setOpen(false);
         const target = workspace === 'personal' ? '/app/dashboard' : (pathname?.startsWith('/app/organization') ? '/app/organization' : pathname || '/app/dashboard');
         router.replace(target);
         router.refresh();
+        navigateAfterWorkspaceSwitch(target);
       } catch (err) {
         setOptimisticWorkspace(null);
         setError(err instanceof Error ? err.message : 'No fue posible cambiar el workspace activo.');
@@ -105,9 +119,11 @@ export function OrganizationSwitcher({
     startTransition(async () => {
       try {
         await reactivateWorkspace(workspace);
+        persistWorkspaceCookie(workspace);
         setOpen(false);
         router.replace('/app/organization?reactivated=1');
         router.refresh();
+        navigateAfterWorkspaceSwitch('/app/organization?reactivated=1');
       } catch (err) {
         setError(err instanceof Error ? err.message : 'No fue posible reactivar el workspace.');
       } finally {

@@ -1,26 +1,39 @@
-# FlowTask — v58.24.9.1 Organization Manage RPC Alignment + Service Role Guard
+# FlowTask — v58.24.9.2 Organization Delete RPC Schema + Workspace Switch Fix
 
-Base: **v58.24.9 — Workspace Data Isolation + Organization Lifecycle Hardening**
+Base: **v58.24.9.1 — Organization Manage RPC Alignment + Service Role Guard**
 
 ## Objetivo
 
-Alinear `/api/organization/manage` con las funciones RPC de ciclo de vida creadas en v58.24.9 y reducir la dependencia de `SUPABASE_SERVICE_ROLE_KEY` para acciones normales de owner/admin autenticado.
+Corregir dos problemas funcionales reales:
+
+1. El borrado de organización fallaba si Supabase todavía no tenía en cache o no tenía aplicada la función `schedule_organization_deletion`.
+2. El cambio entre workspace personal y organización podía mostrar datos del workspace anterior hasta refrescar manualmente.
 
 ## Cambios clave
 
-- `DELETE /api/organization/manage` usa RPC:
+### API de organización
+
+`/api/organization/manage` ahora:
+
+- intenta usar RPC:
   - `schedule_organization_deletion`
-  - `purge_organization_data`
-- `PATCH /api/organization/manage` usa RPC:
   - `restore_organization`
-- El flujo normal de borrar/restaurar organización ya no usa `createAdminClient()`.
-- `createAdminClient()` ahora valida mejor `SUPABASE_SERVICE_ROLE_KEY`.
-- `runtime-check` avisa/falla si la service role key parece incorrecta o pertenece a otro proyecto.
-- `purgeExpiredOrganizations()` usa `purge_expired_organizations()` para el cron.
+  - `purge_organization_data`
+- si Supabase responde que `schedule_organization_deletion` o `restore_organization` no existen en schema cache, usa fallback directo seguro sobre `organizations`
+- mantiene mensaje claro cuando falta la función de purga para force delete
 
-## Requisito importante
+### Workspace switch
 
-Antes de probar borrar/restaurar organización, la migración v58.24.9 debe estar aplicada en Supabase:
+`OrganizationSwitcher` ahora:
+
+- escribe la cookie del workspace activo en cliente inmediatamente
+- llama `/api/workspace/active`
+- hace navegación programática con `window.location.assign()`
+- evita que el usuario tenga que refrescar manualmente para ver los datos correctos
+
+## Requisito recomendado
+
+Aun con fallback, la BD debe tener la migración v58.24.9 aplicada para dejar el lifecycle completo:
 
 ```sql
 select
@@ -45,7 +58,7 @@ Debe devolver 5 filas.
 
 ```bash
 npm install
-npm run verify:v58.24.9.1
+npm run verify:v58.24.9.2
 npm run typecheck
 npm run build:preflight
 npm run build

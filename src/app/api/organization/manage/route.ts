@@ -13,6 +13,81 @@ type RpcResult = {
 
 const DEFAULT_DELETE_RETENTION_DAYS = 10;
 
+function isMissingRpcError(error?: { code?: string; message?: string } | null) {
+  const normalized = `${error?.code ?? ''} ${error?.message ?? ''}`.toLowerCase();
+  return (
+    error?.code === '42883' ||
+    error?.code === 'PGRST202' ||
+    normalized.includes('schema cache') ||
+    (normalized.includes('function') && normalized.includes('does not exist')) ||
+    normalized.includes('could not find the function')
+  );
+}
+
+async function fallbackScheduleOrganizationDeletion(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  organizationId: string,
+  retentionDays = DEFAULT_DELETE_RETENTION_DAYS,
+) {
+  const now = new Date();
+  const purgeAt = new Date(now.getTime() + 1000 * 60 * 60 * 24 * retentionDays).toISOString();
+
+  const { error } = await supabase
+    .from('organizations')
+    .update({
+      deleted_at: now.toISOString(),
+      purge_scheduled_at: purgeAt,
+      purge_after: purgeAt,
+      reactivated_at: null,
+    })
+    .eq('id', organizationId);
+
+  if (error) return { data: null, error };
+
+  return {
+    data: {
+      ok: true,
+      fallback: true,
+      organization_id: organizationId,
+      deleted_at: now.toISOString(),
+      purge_after: purgeAt,
+      purge_scheduled_at: purgeAt,
+    },
+    error: null,
+  };
+}
+
+async function fallbackRestoreOrganization(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  organizationId: string,
+) {
+  const now = new Date().toISOString();
+
+  const { error } = await supabase
+    .from('organizations')
+    .update({
+      deleted_at: null,
+      purge_scheduled_at: null,
+      purge_after: null,
+      reactivated_at: now,
+    })
+    .eq('id', organizationId);
+
+  if (error) return { data: null, error };
+
+  return {
+    data: {
+      ok: true,
+      fallback: true,
+      organization_id: organizationId,
+      restored: true,
+      reactivated_at: now,
+    },
+    error: null,
+  };
+}
+
+
 function withPersonalWorkspaceCookie(response: NextResponse) {
   response.cookies.set(ACTIVE_WORKSPACE_COOKIE, PERSONAL_WORKSPACE_VALUE, { path: '/', sameSite: 'lax' });
   return response;
@@ -26,7 +101,7 @@ function withOrganizationWorkspaceCookie(response: NextResponse, organizationId:
 function getSupabaseStatus(code?: string, message?: string) {
   const normalized = `${code ?? ''} ${message ?? ''}`.toLowerCase();
 
-  if (code === '42883' || normalized.includes('function') && normalized.includes('does not exist')) {
+  if (code === '42883' || code === 'PGRST202' || normalized.includes('schema cache') || normalized.includes('could not find the function') || normalized.includes('function') && normalized.includes('does not exist')) {
     return {
       status: 501,
       message: 'La función RPC de organización no existe en Supabase. Aplica la migración v58.24.9 antes de continuar.',
@@ -135,9 +210,15 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ error: 'Solo el owner/admin puede reactivar esta organización.' }, { status: 403 });
     }
 
-    const { data, error } = await supabase.rpc('restore_organization', {
+    let { data, error } = await supabase.rpc('restore_organization', {
       p_organization_id: organizationId,
     });
+
+    if (error && isMissingRpcError(error)) {
+      const fallback = await fallbackRestoreOrganization(supabase, organizationId);
+      data = fallback.data;
+      error = fallback.error;
+    }
 
     if (error) return rpcJsonError(error);
 
@@ -242,10 +323,16 @@ export async function DELETE(request: Request) {
     );
   }
 
-  const { data, error } = await supabase.rpc('schedule_organization_deletion', {
+  let { data, error } = await supabase.rpc('schedule_organization_deletion', {
     p_organization_id: organizationId,
     p_retention_days: DEFAULT_DELETE_RETENTION_DAYS,
   });
+
+  if (error && isMissingRpcError(error)) {
+    const fallback = await fallbackScheduleOrganizationDeletion(supabase, organizationId, DEFAULT_DELETE_RETENTION_DAYS);
+    data = fallback.data;
+    error = fallback.error;
+  }
 
   if (error) return rpcJsonError(error);
 
