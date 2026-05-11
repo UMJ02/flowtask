@@ -303,16 +303,7 @@ export function WorkspaceHome() {
   const dueToday = useMemo(() => openTasks.filter((task) => task.due_date === today), [openTasks, today]);
   const waiting = useMemo(() => openTasks.filter((task) => task.status === 'en_espera'), [openTasks]);
   const activeProjects = useMemo(() => projects.filter((project) => project.status !== 'completado'), [projects]);
-  const favoriteCount = useMemo(() => {
-    if (typeof window === 'undefined') return 0;
-    try {
-      const raw = window.localStorage.getItem('flowtask.memory.v1');
-      const parsed = raw ? JSON.parse(raw) : null;
-      return Array.isArray(parsed?.favorites) ? parsed.favorites.filter((item: { type?: string }) => item.type === 'task').length : 0;
-    } catch {
-      return 0;
-    }
-  }, [tasks.length]);
+  const importantCount = useMemo(() => tasks.filter((task) => task.priority === 'alta').length, [tasks]);
 
   const radarTitle = overdueTasks.length
     ? `Hay ${overdueTasks.length} tarea${overdueTasks.length === 1 ? '' : 's'} vencida${overdueTasks.length === 1 ? '' : 's'} empujando el día`
@@ -465,7 +456,7 @@ export function WorkspaceHome() {
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-[repeat(4,minmax(0,1fr))_220px]">
         <WorkspaceKpiCard label="Vence hoy" value={dueToday.length} helper="Tareas abiertas" icon={CalendarDays} tone="rose" />
-        <WorkspaceKpiCard label="Favoritas" value={favoriteCount} helper="Tareas" icon={Star} tone="amber" />
+        <WorkspaceKpiCard label="Importantes" value={importantCount} helper="Prioridad alta" icon={Star} tone="amber" />
         <WorkspaceKpiCard label="Pendientes" value={openTasks.length} helper="Fecha definida" icon={Timer} tone="violet" />
         <WorkspaceKpiCard label="Proyectos activos" value={activeProjects.length} helper="En curso" icon={FolderKanban} tone="sky" />
         <Card className="flex items-center justify-center gap-3 rounded-[20px] border-[#E5EAF1] bg-white p-4 ring-0">

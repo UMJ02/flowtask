@@ -1,64 +1,36 @@
-# FlowTask — v58.24.9.2 Organization Delete RPC Schema + Workspace Switch Fix
+# FlowTask — v58.24.9.3 Workspace Kanban Status Isolation + Important Tasks Performance
 
-Base: **v58.24.9.1 — Organization Manage RPC Alignment + Service Role Guard**
+Base: **v58.24.9.2 — Organization Delete RPC Schema + Workspace Switch Fix**
 
 ## Objetivo
 
-Corregir dos problemas funcionales reales:
+Corregir el comportamiento del flujo de trabajo/Kanban en `/app/dashboard`:
 
-1. El borrado de organización fallaba si Supabase todavía no tenía en cache o no tenía aplicada la función `schedule_organization_deletion`.
-2. El cambio entre workspace personal y organización podía mostrar datos del workspace anterior hasta refrescar manualmente.
+1. Las tareas deben quedarse en su columna real según `tasks.status`.
+2. Ocultar una columna no debe mover ni mezclar tareas en otra columna visible.
+3. Las tareas importantes se gestionan con `priority = 'alta'`.
+4. El contador del dashboard ahora muestra `Importantes` en vez de leer favoritas desde localStorage.
+5. Desde el Kanban se puede marcar/quitar una tarea como importante con el botón de estrella.
 
-## Cambios clave
+## Cambios principales
 
-### API de organización
-
-`/api/organization/manage` ahora:
-
-- intenta usar RPC:
-  - `schedule_organization_deletion`
-  - `restore_organization`
-  - `purge_organization_data`
-- si Supabase responde que `schedule_organization_deletion` o `restore_organization` no existen en schema cache, usa fallback directo seguro sobre `organizations`
-- mantiene mensaje claro cuando falta la función de purga para force delete
-
-### Workspace switch
-
-`OrganizationSwitcher` ahora:
-
-- escribe la cookie del workspace activo en cliente inmediatamente
-- llama `/api/workspace/active`
-- hace navegación programática con `window.location.assign()`
-- evita que el usuario tenga que refrescar manualmente para ver los datos correctos
-
-## Requisito recomendado
-
-Aun con fallback, la BD debe tener la migración v58.24.9 aplicada para dejar el lifecycle completo:
-
-```sql
-select
-  p.proname as function_name,
-  pg_get_function_arguments(p.oid) as arguments
-from pg_proc p
-join pg_namespace n on n.oid = p.pronamespace
-where n.nspname = 'public'
-  and p.proname in (
-    'schedule_organization_deletion',
-    'restore_organization',
-    'purge_organization_data',
-    'purge_expired_organizations',
-    'move_personal_project_to_organization'
-  )
-order by p.proname;
-```
-
-Debe devolver 5 filas.
+- `TaskKanbanBoard` ya no remapea tareas de columnas ocultas hacia la primera columna visible.
+- `TaskKanbanBoard` mantiene cada tarea en su estado persistido:
+  - `en_proceso`
+  - `produccion`
+  - `en_espera`
+  - `concluido`
+- Se agregó acción rápida de estrella en cada card:
+  - estrella activa = `priority: alta`
+  - estrella inactiva = `priority: media`
+- El KPI del dashboard cambió de `Favoritas` a `Importantes`.
+- El conteo de importantes se calcula desde tareas reales con `priority === 'alta'`.
 
 ## Validación recomendada
 
 ```bash
 npm install
-npm run verify:v58.24.9.2
+npm run verify:v58.24.9.3
 npm run typecheck
 npm run build:preflight
 npm run build

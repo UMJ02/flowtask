@@ -3,7 +3,7 @@
 import { memo, useEffect, useMemo, useState } from "react";
 
 import Link from "next/link";
-import { AlertCircle, CheckCircle2, ChevronDown, ChevronUp, Clock3, Flag, FolderOpen, GripVertical, Loader2 } from "lucide-react";
+import { AlertCircle, CheckCircle2, ChevronDown, ChevronUp, Clock3, Flag, FolderOpen, GripVertical, Loader2, Star } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { Card } from "@/components/ui/card";
 import { taskDetailRoute } from "@/lib/navigation/routes";
@@ -228,6 +228,7 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery, work
   const [hoverColumn, setHoverColumn] = useState<string | null>(null);
   const [hoverTaskId, setHoverTaskId] = useState<string | null>(null);
   const [busyStatus, setBusyStatus] = useState<string | null>(null);
+  const [busyPriority, setBusyPriority] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [recentDropColumn, setRecentDropColumn] = useState<string | null>(null);
   const [expandedColumns, setExpandedColumns] = useState<Record<string, boolean>>({});
@@ -301,11 +302,10 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery, work
   }, [hydrated, lastServerSignature, serverSignature, statusOverrides, tasks]);
 
   const normalizedTasks = useMemo(() => {
-    return boardTasks.map((task) => {
-      if (activeColumns.some((column) => column.value === task.status)) return task;
-      return { ...task, status: activeColumns[0]?.value ?? "en_espera" };
-    });
-  }, [activeColumns, boardTasks]);
+    // Keep each task in its real persisted status.
+    // Hidden columns must hide their tasks, not remap them into the first visible column.
+    return boardTasks;
+  }, [boardTasks]);
 
   const grouped = useMemo(() => {
     return activeColumns.map((column) => {
@@ -378,7 +378,7 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery, work
       }
 
       await persistLayout(nextStatusOverrides, nextOrderOverrides);
-      setLastServerSignature(nextTasks.map((task) => `${task.id}:${task.status}:${task.due_date ?? ""}:${task.title}`).join("|"));
+      setLastServerSignature(nextTasks.map((task) => `${task.id}:${task.status}:${task.priority ?? ""}:${task.due_date ?? ""}:${task.title}`).join("|"));
     } catch {
       setBoardTasks(previousTasks);
       setStatusOverrides(previousStatusOverrides);
@@ -392,6 +392,34 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery, work
     setDraggingId(null);
     setHoverColumn(null);
     setHoverTaskId(null);
+  };
+
+  const toggleImportant = async (taskId: string) => {
+    const currentTask = boardTasks.find((item) => item.id === taskId);
+    if (!currentTask || busyPriority === taskId) return;
+
+    const previousTasks = boardTasks;
+    const nextPriority = currentTask.priority === "alta" ? "media" : "alta";
+    const nextTasks = boardTasks.map((item) => (item.id === taskId ? { ...item, priority: nextPriority } : item));
+
+    setError(null);
+    setBusyPriority(taskId);
+    setBoardTasks(nextTasks);
+
+    try {
+      const { error: updateError } = await supabase
+        .from("tasks")
+        .update({ priority: nextPriority })
+        .eq("id", taskId);
+
+      if (updateError) throw updateError;
+      setLastServerSignature(nextTasks.map((task) => `${task.id}:${task.status}:${task.priority ?? ""}:${task.due_date ?? ""}:${task.title}`).join("|"));
+    } catch {
+      setBoardTasks(previousTasks);
+      setError("No pudimos actualizar la prioridad de la tarea. Revisa permisos o intenta de nuevo.");
+    } finally {
+      setBusyPriority(null);
+    }
   };
 
   return (
@@ -517,6 +545,20 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery, work
                                 {formatDate(task.due_date)}
                               </span>
                               <div className="flex items-center gap-1.5">
+                                <button
+                                  type="button"
+                                  onClick={() => void toggleImportant(task.id)}
+                                  disabled={busyPriority === task.id}
+                                  title={task.priority === "alta" ? "Quitar de importantes" : "Marcar como importante"}
+                                  aria-label={task.priority === "alta" ? "Quitar de importantes" : "Marcar como importante"}
+                                  className={`inline-flex h-8 w-8 items-center justify-center rounded-xl ring-1 transition disabled:opacity-60 ${
+                                    task.priority === "alta"
+                                      ? "bg-amber-50 text-amber-600 ring-amber-100 hover:bg-amber-100"
+                                      : "bg-white text-slate-500 ring-slate-200 hover:bg-slate-100"
+                                  }`}
+                                >
+                                  {busyPriority === task.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Star className={`h-3.5 w-3.5 ${task.priority === "alta" ? "fill-current" : ""}`} />}
+                                </button>
                                 {activeColumns
                                   .filter((option) => option.value !== task.status)
                                   .map((option) => (

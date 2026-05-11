@@ -4,7 +4,7 @@ import path from "node:path";
 
 const root = process.cwd();
 const failures = [];
-const expectedVersion = "58.24.9.2-organization-delete-rpc-schema-and-workspace-switch-fix";
+const expectedVersion = "58.24.9.3-workspace-kanban-status-isolation-important-tasks-performance";
 
 function exists(rel){ return fs.existsSync(path.join(root, rel)); }
 function read(rel){ return exists(rel) ? fs.readFileSync(path.join(root, rel), "utf8") : ""; }
@@ -15,24 +15,23 @@ const pkg = JSON.parse(read("package.json"));
 const scripts = pkg.scripts ?? {};
 
 pkg.version === expectedVersion ? pass("package version aligned") : fail(`package version must be ${expectedVersion}`);
-scripts["verify:current"] === "npm run verify:v58.24.9.2" ? pass("verify current aligned") : fail("verify:current must target verify:v58.24.9.2");
-scripts["verify:v58.24.9.2"] === "node scripts/verify-v58.24.9.2.mjs" ? pass("version verifier available") : fail("verify:v58.24.9.2 script missing or incorrect");
+scripts["verify:current"] === "npm run verify:v58.24.9.3" ? pass("verify current aligned") : fail("verify:current must target verify:v58.24.9.3");
+scripts["verify:v58.24.9.3"] === "node scripts/verify-v58.24.9.3.mjs" ? pass("version verifier available") : fail("verify:v58.24.9.3 script missing or incorrect");
 
 for (const [label, rel] of [
-  ["verify-v58.24.9.2 script exists", "scripts/verify-v58.24.9.2.mjs"],
-  ["release notes available", "docs/release/V58_24_9_2_ORGANIZATION_DELETE_RPC_SCHEMA_AND_WORKSPACE_SWITCH_FIX.md"],
-  ["QA document available", "docs/qa/FLOWTASK_V58_24_9_2_ORGANIZATION_DELETE_RPC_SCHEMA_AND_WORKSPACE_SWITCH_FIX_QA.md"],
-  ["organization manage API available", "src/app/api/organization/manage/route.ts"],
-  ["workspace switcher available", "src/components/layout/organization-switcher.tsx"]
+  ["verify-v58.24.9.3 script exists", "scripts/verify-v58.24.9.3.mjs"],
+  ["release notes available", "docs/release/V58_24_9_3_WORKSPACE_KANBAN_STATUS_ISOLATION_IMPORTANT_TASKS_PERFORMANCE.md"],
+  ["QA document available", "docs/qa/FLOWTASK_V58_24_9_3_WORKSPACE_KANBAN_STATUS_ISOLATION_IMPORTANT_TASKS_PERFORMANCE_QA.md"],
+  ["Kanban component available", "src/components/tasks/task-kanban-board.tsx"],
+  ["Workspace home available", "src/components/workspace/workspace-home.tsx"]
 ]) exists(rel) ? pass(label) : fail(`${label}: missing ${rel}`);
 
-read("src/lib/release/version.ts").includes(expectedVersion) ? pass("runtime version export aligned") : fail("src/lib/release/version.ts must export v58.24.9.2");
-read("src/app/api/organization/manage/route.ts").includes("fallbackScheduleOrganizationDeletion") ? pass("schedule fallback available") : fail("schedule fallback missing");
-read("src/app/api/organization/manage/route.ts").includes("fallbackRestoreOrganization") ? pass("restore fallback available") : fail("restore fallback missing");
-read("src/app/api/organization/manage/route.ts").includes("isMissingRpcError") ? pass("missing RPC detection available") : fail("missing RPC detection missing");
-read("src/components/layout/organization-switcher.tsx").includes("persistWorkspaceCookie") ? pass("client workspace cookie update available") : fail("client workspace cookie update missing");
-read("src/components/layout/organization-switcher.tsx").includes("window.location.assign") ? pass("workspace switch hard navigation available") : fail("workspace switch hard navigation missing");
-read("package-lock.json").includes(expectedVersion) ? pass("package-lock version aligned") : fail("package-lock.json must include v58.24.9.2 package version");
+read("src/lib/release/version.ts").includes(expectedVersion) ? pass("runtime version export aligned") : fail("src/lib/release/version.ts must export v58.24.9.3");
+read("src/components/tasks/task-kanban-board.tsx").includes("Keep each task in its real persisted status.") ? pass("hidden status remap removed") : fail("hidden status remap fix missing");
+read("src/components/tasks/task-kanban-board.tsx").includes("toggleImportant") ? pass("Kanban important toggle available") : fail("Kanban important toggle missing");
+read("src/components/workspace/workspace-home.tsx").includes("importantCount") ? pass("Important KPI available") : fail("Important KPI missing");
+!read("src/components/workspace/workspace-home.tsx").includes("flowtask.memory.v1") ? pass("localStorage favorite KPI removed") : fail("localStorage favorite KPI should not be used");
+read("package-lock.json").includes(expectedVersion) ? pass("package-lock version aligned") : fail("package-lock.json must include v58.24.9.3 package version");
 
 const vercel = JSON.parse(read("vercel.json"));
 vercel.framework === "nextjs" ? pass("Vercel framework aligned") : fail("vercel.json framework must be nextjs");
@@ -44,4 +43,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log("[deploy-production-readiness] OK — v58.24.9.2 production readiness aligned.");
+console.log("[deploy-production-readiness] OK — v58.24.9.3 production readiness aligned.");
