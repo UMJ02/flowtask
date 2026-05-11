@@ -4,33 +4,34 @@ import path from "node:path";
 
 const root = process.cwd();
 const failures = [];
-const expectedVersion = "58.24.9.7.1-important-filter-no-auto-reorder-selection-stability";
-const expectedReleaseLabel = "v58.24.9.7.1 Important Filter + No Auto Reorder + Selection Stability";
+const expectedVersion = "58.24.9.8-client-final-readiness-global-modal-system-trash-recovery";
+const expectedReleaseLabel = "v58.24.9.8 Client Final Readiness + Global Modal System + Trash Recovery";
 
 function exists(rel){ return fs.existsSync(path.join(root, rel)); }
 function read(rel){ return exists(rel) ? fs.readFileSync(path.join(root, rel), "utf8") : ""; }
 function requireFile(rel){ if(!exists(rel)) failures.push(`Missing required file: ${rel}`); }
 function requireIncludes(rel, text){ if(!read(rel).includes(text)) failures.push(`Expected '${text}' in ${rel}`); }
-function requireNotIncludes(rel, text){ if(read(rel).includes(text)) failures.push(`Did not expect '${text}' in ${rel}`); }
 
 for (const rel of [
   "package.json","package-lock.json","vercel.json","next.config.ts",".nvmrc",".env.example",
-  "scripts/runtime-check.mjs","scripts/validate-env.mjs","scripts/verify-v58.24.9.7.1.mjs",
-  "docs/release/V58_24_9_7_1_IMPORTANT_FILTER_NO_AUTO_REORDER_SELECTION_STABILITY.md",
-  "docs/qa/FLOWTASK_V58_24_9_7_1_IMPORTANT_FILTER_NO_AUTO_REORDER_SELECTION_STABILITY_QA.md",
-  "src/components/tasks/task-action-list.tsx",
-  "src/components/tasks/task-kanban-board.tsx"
+  "scripts/runtime-check.mjs","scripts/validate-env.mjs","scripts/verify-v58.24.9.8.mjs","scripts/db-doctor.mjs",
+  "docs/release/V58_24_9_8_CLIENT_FINAL_READINESS_GLOBAL_MODAL_SYSTEM_TRASH_RECOVERY.md",
+  "docs/qa/FLOWTASK_V58_24_9_8_CLIENT_FINAL_READINESS_GLOBAL_MODAL_SYSTEM_TRASH_RECOVERY_QA.md",
+  "supabase/migrations/0053_v58_24_9_8_task_trash_recovery_rpc.sql",
+  "src/components/ui/action-modal.tsx",
+  "src/components/tasks/task-trash-recovery.tsx",
+  "src/app/(app)/app/tasks/trash/page.tsx",
+  "src/lib/queries/tasks.ts"
 ]) requireFile(rel);
 
 const pkg = JSON.parse(read("package.json"));
 const scripts = pkg.scripts ?? {};
-for (const scriptName of ["build","vercel:build","deploy:readiness","build:preflight","verify:current","deploy:production:ready","verify:v58.24.9.7.1"]) {
+for (const scriptName of ["build","vercel:build","deploy:readiness","build:preflight","verify:current","deploy:production:ready","verify:v58.24.9.8","db:doctor"]) {
   if (!scripts[scriptName]) failures.push(`Missing package script: ${scriptName}`);
 }
 
 if (pkg.version !== expectedVersion) failures.push(`Unexpected package version: ${pkg.version}`);
-if (scripts["verify:current"] !== "npm run verify:v58.24.9.7.1") failures.push("verify:current must target verify:v58.24.9.7.1");
-if (scripts["verify:v58.24.9.7.1"] !== "node scripts/verify-v58.24.9.7.1.mjs") failures.push("verify:v58.24.9.7.1 must target scripts/verify-v58.24.9.7.1.mjs");
+if (scripts["verify:current"] !== "npm run verify:v58.24.9.8") failures.push("verify:current must target verify:v58.24.9.8");
 
 const vercel = JSON.parse(read("vercel.json"));
 if (vercel.framework !== "nextjs") failures.push("vercel.json framework must be nextjs");
@@ -39,13 +40,14 @@ if (vercel.buildCommand !== "npm run vercel:build") failures.push("vercel.json b
 requireIncludes("src/lib/release/version.ts", expectedVersion);
 requireIncludes("src/lib/release/version.ts", expectedReleaseLabel);
 requireIncludes("package-lock.json", expectedVersion);
-requireIncludes("src/components/tasks/task-action-list.tsx", "Solo importantes");
-requireIncludes("src/components/tasks/task-action-list.tsx", "visibleItems.slice");
-requireIncludes("src/components/tasks/task-action-list.tsx", "importantPulse");
-requireNotIncludes("src/components/tasks/task-action-list.tsx", "importantFirstTasks");
-requireNotIncludes("src/components/tasks/task-action-list.tsx", "sortedItems");
-requireIncludes("src/components/tasks/task-kanban-board.tsx", "importantPulse");
-requireNotIncludes("src/components/tasks/task-kanban-board.tsx", "importantFirstTasks");
+requireIncludes("supabase/migrations/0053_v58_24_9_8_task_trash_recovery_rpc.sql", "restore_deleted_task");
+requireIncludes("supabase/migrations/0053_v58_24_9_8_task_trash_recovery_rpc.sql", "purge_deleted_task");
+requireIncludes("src/components/ui/action-modal.tsx", "ConfirmDialog");
+requireIncludes("src/components/ui/action-modal.tsx", "PromptModal");
+requireIncludes("src/lib/queries/tasks.ts", "getDeletedTasks");
+requireIncludes("src/components/tasks/task-trash-recovery.tsx", "TaskTrashRecovery");
+requireIncludes("src/app/(app)/app/tasks/page.tsx", "/app/tasks/trash");
+requireIncludes("scripts/db-doctor.mjs", "tasks.deleted_at is queryable");
 
 if (failures.length) {
   console.error("[build-deploy-readiness] Failed checks:");
@@ -53,4 +55,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log("[build-deploy-readiness] OK — v58.24.9.7.1 important filter and selection stability readiness aligned.");
+console.log("[build-deploy-readiness] OK — v58.24.9.8 client final readiness and trash recovery aligned.");

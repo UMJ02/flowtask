@@ -51,6 +51,8 @@ function normalizeTaskRow(row: any): TaskSummary {
     status: (row.status as TaskSummary["status"]) ?? "en_proceso",
     created_at: (row.created_at as string | null | undefined) ?? null,
     updated_at: (row.updated_at as string | null | undefined) ?? null,
+    deleted_at: (row.deleted_at as string | null | undefined) ?? null,
+    deleted_by: (row.deleted_by as string | null | undefined) ?? null,
     clientName: (row.client_name as string | null | undefined) ?? null,
     client_name: (row.client_name as string | null | undefined) ?? null,
     priority: (row.priority as string | null | undefined) ?? "media",
@@ -251,4 +253,49 @@ export async function getTaskAssignees(taskId: string) {
   }
 
   return data ?? [];
+}
+
+
+export async function getDeletedTasks(): Promise<TaskSummary[]> {
+  const { supabase, user, activeOrganizationId } = await getWorkspaceContext();
+
+  if (!user) return [];
+
+  let query = applyWorkspaceScope(
+    supabase
+      .from("tasks")
+      .select(
+        `
+          id,
+          title,
+          status,
+          priority,
+          project_id,
+          client_id,
+          client_name,
+          due_date,
+          country,
+          created_at,
+          updated_at,
+          deleted_at,
+          deleted_by,
+          departments ( code, name )
+        `,
+      )
+      .not("deleted_at", "is", null)
+      .order("deleted_at", { ascending: false }),
+    user.id,
+    activeOrganizationId,
+  );
+
+  const { data, error } = await query.limit(300);
+  if (error) {
+    console.warn("[tasks:getDeletedTasks]", error.message);
+    return [];
+  }
+
+  const access = await getClientAccessSummaryCached(user.id, activeOrganizationId);
+  const rows = filterRowsByClientAccess(data ?? [], access);
+
+  return rows.map(normalizeTaskRow);
 }

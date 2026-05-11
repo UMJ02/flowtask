@@ -6,6 +6,8 @@ export interface TaskBase {
   status: TaskStatus;
   created_at?: string | null;
   updated_at?: string | null;
+  deleted_at?: string | null;
+  deleted_by?: string | null;
 }
 
 export interface TaskSummary extends TaskBase {

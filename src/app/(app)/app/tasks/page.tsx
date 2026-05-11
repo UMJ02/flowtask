@@ -1,7 +1,7 @@
 export const dynamic = 'force-dynamic';
 
 import Link from 'next/link';
-import { CheckCircle2, ClipboardList, Clock3, Flag, Hourglass, PlayCircle, Plus } from 'lucide-react';
+import { Archive, CheckCircle2, ClipboardList, Clock3, Flag, Hourglass, PlayCircle, Plus } from 'lucide-react';
 import type { ComponentType } from 'react';
 import { TaskSearchPanel } from '@/components/tasks/task-search-panel';
 import { TaskWorkspace } from '@/components/tasks/task-workspace';
@@ -81,13 +81,22 @@ export default async function TasksPage({ searchParams }: { searchParams?: Promi
             <h1 className="ft-page-title">Tareas</h1>
             <p className="ft-page-subtitle">Gestiona todas las tareas del workspace. Las concluidas se ocultan por defecto para no ensuciar la operación diaria.</p>
           </div>
-          <Link
-            href={taskNewRoute(queryString)}
-            className="ft-button bg-slate-950 text-white hover:bg-slate-900"
-          >
-            <Plus className="h-4 w-4" />
-            Nueva tarea
-          </Link>
+          <div className="flex flex-wrap gap-2">
+            <Link
+              href="/app/tasks/trash"
+              className="ft-button border border-[#E5EAF1] bg-white text-slate-700 hover:bg-slate-50"
+            >
+              <Archive className="h-4 w-4" />
+              Papelera
+            </Link>
+            <Link
+              href={taskNewRoute(queryString)}
+              className="ft-button bg-slate-950 text-white hover:bg-slate-900"
+            >
+              <Plus className="h-4 w-4" />
+              Nueva tarea
+            </Link>
+          </div>
         </div>
 
         <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
