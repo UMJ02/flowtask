@@ -4,39 +4,45 @@ export type PurgeOrganizationsResult = {
   scanned: number;
   purged: number;
   purgedIds: string[];
+  results?: unknown[];
 };
 
-export async function purgeExpiredOrganizations(nowIso = new Date().toISOString()): Promise<PurgeOrganizationsResult> {
+type PurgeRpcResult = {
+  ok?: boolean;
+  results?: Array<{
+    ok?: boolean;
+    organization_id?: string;
+    [key: string]: unknown;
+  }>;
+  error?: string;
+};
+
+export async function purgeExpiredOrganizations(): Promise<PurgeOrganizationsResult> {
   const supabase = createAdminClient();
 
-  const { data: expiredOrganizations, error } = await supabase
-    .from('organizations')
-    .select('id')
-    .not('deleted_at', 'is', null)
-    .lte('purge_scheduled_at', nowIso)
-    .limit(100);
+  const { data, error } = await supabase.rpc('purge_expired_organizations');
 
   if (error) {
+    if (error.code === '42883' || /function .* does not exist/i.test(error.message)) {
+      throw new Error('La función purge_expired_organizations no existe. Aplica la migración v58.24.9 antes de ejecutar el cron.');
+    }
     throw new Error(error.message);
   }
 
-  const ids = (expiredOrganizations ?? []).map((row: { id: string }) => row.id).filter(Boolean);
-  if (!ids.length) {
-    return { scanned: 0, purged: 0, purgedIds: [] };
+  const result = data as PurgeRpcResult | null;
+  if (result?.ok === false) {
+    throw new Error(result.error ?? 'No fue posible ejecutar la purga automática.');
   }
 
-  const { error: deleteError } = await supabase
-    .from('organizations')
-    .delete()
-    .in('id', ids);
-
-  if (deleteError) {
-    throw new Error(deleteError.message);
-  }
+  const results = Array.isArray(result?.results) ? result.results : [];
+  const purgedIds = results
+    .filter((item) => item?.ok !== false && typeof item?.organization_id === 'string')
+    .map((item) => item.organization_id as string);
 
   return {
-    scanned: ids.length,
-    purged: ids.length,
-    purgedIds: ids,
+    scanned: results.length,
+    purged: purgedIds.length,
+    purgedIds,
+    results,
   };
 }

@@ -1,15 +1,112 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { createAdminClient } from '@/lib/supabase/admin';
 import { ACTIVE_WORKSPACE_COOKIE, PERSONAL_WORKSPACE_VALUE } from '@/lib/workspace/active-workspace';
 
 export const dynamic = 'force-dynamic';
 
-const TEN_DAYS_MS = 1000 * 60 * 60 * 24 * 10;
+type RpcResult = {
+  ok?: boolean;
+  error?: string;
+  message?: string;
+  [key: string]: unknown;
+};
+
+const DEFAULT_DELETE_RETENTION_DAYS = 10;
 
 function withPersonalWorkspaceCookie(response: NextResponse) {
   response.cookies.set(ACTIVE_WORKSPACE_COOKIE, PERSONAL_WORKSPACE_VALUE, { path: '/', sameSite: 'lax' });
   return response;
+}
+
+function withOrganizationWorkspaceCookie(response: NextResponse, organizationId: string) {
+  response.cookies.set(ACTIVE_WORKSPACE_COOKIE, organizationId, { path: '/', sameSite: 'lax' });
+  return response;
+}
+
+function getSupabaseStatus(code?: string, message?: string) {
+  const normalized = `${code ?? ''} ${message ?? ''}`.toLowerCase();
+
+  if (code === '42883' || normalized.includes('function') && normalized.includes('does not exist')) {
+    return {
+      status: 501,
+      message: 'La función RPC de organización no existe en Supabase. Aplica la migración v58.24.9 antes de continuar.',
+    };
+  }
+
+  if (code === '42501' || normalized.includes('permission denied') || normalized.includes('permisos')) {
+    return {
+      status: 403,
+      message: 'No tienes permisos para ejecutar esta acción sobre la organización.',
+    };
+  }
+
+  if (normalized.includes('invalid api key')) {
+    return {
+      status: 500,
+      message: 'La configuración de Supabase en el servidor tiene una API key inválida.',
+    };
+  }
+
+  return {
+    status: 400,
+    message: message || 'No fue posible completar la acción de organización.',
+  };
+}
+
+function rpcJsonError(error: { code?: string; message?: string; details?: string | null; hint?: string | null }) {
+  const mapped = getSupabaseStatus(error.code, error.message);
+  if (process.env.NODE_ENV !== 'production') {
+    console.error('[organization:manage:rpc-error]', {
+      code: error.code,
+      message: error.message,
+      details: error.details,
+      hint: error.hint,
+      mapped,
+    });
+  }
+  return NextResponse.json(
+    {
+      error: mapped.message,
+      code: error.code,
+      details: error.details,
+      hint: error.hint,
+    },
+    { status: mapped.status },
+  );
+}
+
+function rpcBusinessError(result: RpcResult | null | undefined, fallback: string, status = 400) {
+  return NextResponse.json({ error: result?.error ?? result?.message ?? fallback, result }, { status });
+}
+
+async function clearOrganizationDefaultForUser(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  organizationId: string,
+  userId: string,
+) {
+  const { error: memberError } = await supabase
+    .from('organization_members')
+    .update({ is_default: false })
+    .eq('organization_id', organizationId)
+    .eq('user_id', userId);
+
+  if (memberError && process.env.NODE_ENV !== 'production') {
+    console.warn('[organization:manage:clear-default-member]', memberError);
+  }
+
+  const { error: modeError } = await supabase
+    .from('user_account_modes')
+    .update({ default_organization_id: null })
+    .eq('default_organization_id', organizationId)
+    .eq('user_id', userId);
+
+  if (
+    modeError &&
+    !/relation .* does not exist/i.test(modeError.message) &&
+    process.env.NODE_ENV !== 'production'
+  ) {
+    console.warn('[organization:manage:clear-default-mode]', modeError);
+  }
 }
 
 export async function PATCH(request: Request) {
@@ -38,19 +135,27 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ error: 'Solo el owner/admin puede reactivar esta organización.' }, { status: 403 });
     }
 
-    const { error } = await supabase
-      .from('organizations')
-      .update({ deleted_at: null, purge_scheduled_at: null, purge_after: null, reactivated_at: new Date().toISOString() })
-      .eq('id', organizationId);
+    const { data, error } = await supabase.rpc('restore_organization', {
+      p_organization_id: organizationId,
+    });
 
-    if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+    if (error) return rpcJsonError(error);
+
+    const result = data as RpcResult | null;
+    if (result?.ok === false) {
+      return rpcBusinessError(result, 'No fue posible reactivar esta organización.');
+    }
 
     await supabase.from('organization_members').update({ is_default: false }).eq('user_id', user.id);
     await supabase.from('organization_members').update({ is_default: true }).eq('organization_id', organizationId).eq('user_id', user.id);
 
-    const response = NextResponse.json({ ok: true, message: 'Tu organización volvió a estar activa.', reactivate: true });
-    response.cookies.set(ACTIVE_WORKSPACE_COOKIE, organizationId, { path: '/', sameSite: 'lax' });
-    return response;
+    const response = NextResponse.json({
+      ok: true,
+      message: result?.message ?? 'Tu organización volvió a estar activa.',
+      reactivate: true,
+      result,
+    });
+    return withOrganizationWorkspaceCookie(response, organizationId);
   }
 
   if (action !== 'rename' || !name) {
@@ -62,6 +167,7 @@ export async function PATCH(request: Request) {
   }
 
   const { error } = await supabase.from('organizations').update({ name }).eq('id', organizationId);
+  if (error) return NextResponse.json({ error: error.message }, { status: 400 });
 
   return NextResponse.json({ ok: true, message: 'Nombre de la organización actualizado.' });
 }
@@ -83,6 +189,8 @@ export async function POST(request: Request) {
   await supabase.from('organization_members').update({ is_default: false }).eq('organization_id', organizationId).eq('user_id', user.id);
   const { error } = await supabase.from('organization_members').delete().eq('organization_id', organizationId).eq('user_id', user.id);
 
+  if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+
   return withPersonalWorkspaceCookie(NextResponse.json({ ok: true, message: 'Saliste de la organización.' }));
 }
 
@@ -96,71 +204,66 @@ export async function DELETE(request: Request) {
   const force = body?.force === true;
   if (!organizationId) return NextResponse.json({ error: 'No encontramos la organización indicada.' }, { status: 400 });
 
-  const admin = createAdminClient();
-
-  const { data: organization, error: organizationError } = await admin
-    .from('organizations')
-    .select('owner_id, deleted_at')
-    .eq('id', organizationId)
+  const { data: membership } = await supabase
+    .from('organization_members')
+    .select('role')
+    .eq('organization_id', organizationId)
+    .eq('user_id', user.id)
     .maybeSingle();
 
-  if (organizationError) return NextResponse.json({ error: organizationError.message }, { status: 400 });
-  if (!organization) return NextResponse.json({ error: 'No encontramos la organización indicada.' }, { status: 404 });
-  if ((organization.owner_id as string | undefined) !== user.id) {
-    return NextResponse.json({ error: 'Solo el owner principal puede eliminar la organización.' }, { status: 403 });
+  const actorRole = (membership?.role as string | undefined) ?? null;
+  if (actorRole !== 'admin_global') {
+    return NextResponse.json({ error: 'Solo el owner/admin puede eliminar esta organización.' }, { status: 403 });
   }
 
   if (force) {
-    const updates = [
-      admin.from('organization_members').update({ is_default: false }).eq('organization_id', organizationId),
-      admin.from('user_account_modes').update({ default_organization_id: null }).eq('default_organization_id', organizationId),
-    ];
-    const [resetDefaultResult, resetModesResult] = await Promise.all(updates);
-    if (resetDefaultResult.error) return NextResponse.json({ error: resetDefaultResult.error.message }, { status: 400 });
-    if (resetModesResult.error && !/relation .* does not exist/i.test(resetModesResult.error.message)) {
-      return NextResponse.json({ error: resetModesResult.error.message }, { status: 400 });
+    const { data, error } = await supabase.rpc('purge_organization_data', {
+      p_organization_id: organizationId,
+      p_force: true,
+    });
+
+    if (error) return rpcJsonError(error);
+
+    const result = data as RpcResult | null;
+    if (result?.ok === false) {
+      return rpcBusinessError(result, 'No fue posible eliminar la organización de forma permanente.');
     }
 
-    const cleanupResults = await Promise.all([
-      admin.from('tasks').delete().eq('organization_id', organizationId),
-      admin.from('projects').delete().eq('organization_id', organizationId),
-      admin.from('activity_logs').delete().eq('organization_id', organizationId),
-    ]);
-    const cleanupError = cleanupResults.find((result) => result.error)?.error;
-    if (cleanupError) return NextResponse.json({ error: cleanupError.message }, { status: 400 });
-
-    const { error } = await admin.from('organizations').delete().eq('id', organizationId);
-    if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+    await clearOrganizationDefaultForUser(supabase, organizationId, user.id);
 
     return withPersonalWorkspaceCookie(
       NextResponse.json({
         ok: true,
         deleted: true,
-        message: 'La organización se eliminó de forma permanente.',
+        message: result?.message ?? 'La organización se eliminó de forma permanente.',
+        result,
         redirectTo: '/app/organization?deleted=1',
       }),
     );
   }
 
-  const now = new Date();
-  const purgeAt = new Date(now.getTime() + TEN_DAYS_MS).toISOString();
-  const [resetDefaultResult, scheduleResult, resetModesResult] = await Promise.all([
-    admin.from('organization_members').update({ is_default: false }).eq('organization_id', organizationId),
-    admin.from('organizations').update({ deleted_at: now.toISOString(), purge_scheduled_at: purgeAt, purge_after: purgeAt, reactivated_at: null }).eq('id', organizationId),
-    admin.from('user_account_modes').update({ default_organization_id: null }).eq('default_organization_id', organizationId),
-  ]);
-  if (resetDefaultResult.error) return NextResponse.json({ error: resetDefaultResult.error.message }, { status: 400 });
-  if (scheduleResult.error) return NextResponse.json({ error: scheduleResult.error.message }, { status: 400 });
-  if (resetModesResult.error && !/relation .* does not exist/i.test(resetModesResult.error.message)) {
-    return NextResponse.json({ error: resetModesResult.error.message }, { status: 400 });
+  const { data, error } = await supabase.rpc('schedule_organization_deletion', {
+    p_organization_id: organizationId,
+    p_retention_days: DEFAULT_DELETE_RETENTION_DAYS,
+  });
+
+  if (error) return rpcJsonError(error);
+
+  const result = data as RpcResult | null;
+  if (result?.ok === false) {
+    return rpcBusinessError(result, 'No fue posible programar la eliminación de la organización.');
   }
 
+  await clearOrganizationDefaultForUser(supabase, organizationId, user.id);
 
-  return withPersonalWorkspaceCookie(NextResponse.json({
-    ok: true,
-    scheduled: true,
-    purgeScheduledAt: purgeAt,
-    daysRemaining: 10,
-    message: 'La organización quedó programada para eliminarse en 10 días. Puedes reactivarla desde el switch de workspaces o borrarla definitivamente desde la bandeja de reactivación.',
-  }));
+  return withPersonalWorkspaceCookie(
+    NextResponse.json({
+      ok: true,
+      scheduled: true,
+      purgeScheduledAt: result?.purge_after ?? result?.purge_scheduled_at ?? null,
+      daysRemaining: DEFAULT_DELETE_RETENTION_DAYS,
+      message: 'La organización quedó programada para eliminarse en 10 días. Puedes reactivarla desde el switch de workspaces o borrarla definitivamente desde la bandeja de reactivación.',
+      result,
+    }),
+  );
 }

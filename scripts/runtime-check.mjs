@@ -45,8 +45,18 @@ function looksLikeUrl(value) {
   }
 }
 
+function getSupabaseProjectRef(value) {
+  try {
+    const host = new URL(value).host;
+    return host.endsWith(".supabase.co") ? host.split(".")[0] : null;
+  } catch {
+    return null;
+  }
+}
+
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() || "";
 const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim() || "";
+const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim() || "";
 
 if (!looksLikeUrl(url)) {
   fail([
@@ -56,24 +66,51 @@ if (!looksLikeUrl(url)) {
   ]);
 }
 
-if (!url.includes('.supabase.co')) {
-  console.warn('[runtime-check] Warning: NEXT_PUBLIC_SUPABASE_URL does not contain .supabase.co');
-  console.warn('[runtime-check] If this is intentional (self-hosted Supabase), you can ignore this warning.');
+if (!url.includes(".supabase.co")) {
+  console.warn("[runtime-check] Warning: NEXT_PUBLIC_SUPABASE_URL does not contain .supabase.co");
+  console.warn("[runtime-check] If this is intentional (self-hosted Supabase), you can ignore this warning.");
 }
 
+const projectRef = getSupabaseProjectRef(url);
 const anonPayload = decodeJwtPayload(anonKey);
 if (!anonPayload) {
-  console.warn('[runtime-check] Warning: NEXT_PUBLIC_SUPABASE_ANON_KEY could not be decoded as a JWT.');
-  console.warn('[runtime-check] If you are using the new opaque publishable key format, this warning is expected.');
+  console.warn("[runtime-check] Warning: NEXT_PUBLIC_SUPABASE_ANON_KEY could not be decoded as a JWT.");
+  console.warn("[runtime-check] If you are using the new opaque publishable key format, this warning is expected.");
 }
 
-if (anonPayload?.role === 'service_role') {
-  console.warn('[runtime-check] Warning: NEXT_PUBLIC_SUPABASE_ANON_KEY looks like a service_role key.');
-  console.warn('[runtime-check] Do not expose service_role keys in the browser; use the public anon/publishable key from Supabase Settings > API.');
+if (anonPayload?.role === "service_role") {
+  console.warn("[runtime-check] Warning: NEXT_PUBLIC_SUPABASE_ANON_KEY looks like a service_role key.");
+  console.warn("[runtime-check] Do not expose service_role keys in the browser; use the public anon/publishable key from Supabase Settings > API.");
 }
 
-console.log('[runtime-check] OK');
-console.log(`[runtime-check] Loaded env files: ${loadedFrom.length > 0 ? loadedFrom.join(', ') : 'none'}`);
+if (serviceRoleKey) {
+  const servicePayload = decodeJwtPayload(serviceRoleKey);
+
+  if (!servicePayload) {
+    console.warn("[runtime-check] Warning: SUPABASE_SERVICE_ROLE_KEY could not be decoded as a JWT.");
+    console.warn("[runtime-check] If your Supabase project uses a non-JWT secret format, confirm it manually in Project Settings > API.");
+  } else {
+    if (servicePayload.role !== "service_role") {
+      fail([
+        "[runtime-check] SUPABASE_SERVICE_ROLE_KEY is not a service_role key.",
+        `- Detected role: ${servicePayload.role || "<missing>"}`,
+        "- Use the service_role key from the same Supabase project as NEXT_PUBLIC_SUPABASE_URL.",
+      ]);
+    }
+
+    if (projectRef && servicePayload.ref && servicePayload.ref !== projectRef) {
+      fail([
+        "[runtime-check] SUPABASE_SERVICE_ROLE_KEY project ref does not match NEXT_PUBLIC_SUPABASE_URL.",
+        `- URL project ref: ${projectRef}`,
+        `- Key project ref: ${servicePayload.ref}`,
+      ]);
+    }
+  }
+}
+
+console.log("[runtime-check] OK");
+console.log(`[runtime-check] Loaded env files: ${loadedFrom.length > 0 ? loadedFrom.join(", ") : "none"}`);
 for (const key of requiredKeys) {
   console.log(`- ${key}: present`);
 }
+console.log(`- SUPABASE_SERVICE_ROLE_KEY: ${serviceRoleKey ? "present" : "not set"}`);
