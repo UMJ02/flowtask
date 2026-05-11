@@ -105,7 +105,7 @@ export function SettingsAccountOverview({
             return (
               <div
                 key={item.key}
-                className="group relative min-h-[138px] min-w-0 rounded-[20px] bg-white/10 px-3.5 py-3.5 ring-1 ring-white/10 transition duration-200 hover:-translate-y-0.5 hover:bg-white/12 sm:min-h-[152px] sm:px-4 sm:py-4"
+                className="group relative min-h-[138px] min-w-0 rounded-[20px] bg-white/10 px-3.5 py-3.5 ring-1 ring-white/10 transition duration-200 hover:translate-y-0 hover:bg-white/12 sm:min-h-[152px] sm:px-4 sm:py-4"
                 title={item.helper}
               >
                 <div className="flex items-center gap-2 text-emerald-300">

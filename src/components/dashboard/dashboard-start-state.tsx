@@ -42,7 +42,7 @@ export function DashboardStartState() {
               <Link
                 key={step.title}
                 href={step.href}
-                className="group rounded-[22px] border border-slate-200 bg-white px-4 py-4 shadow-none transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-none"
+                className="group rounded-[22px] border border-slate-200 bg-white px-4 py-4 shadow-none transition hover:translate-y-0 hover:border-slate-300 hover:shadow-none"
               >
                 <div className="flex items-start gap-3">
                   <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-slate-900 text-white">

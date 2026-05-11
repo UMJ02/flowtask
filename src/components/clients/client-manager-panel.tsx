@@ -538,7 +538,7 @@ export function ClientManagerPanel({ items, initialQuery = '' }: { items: Client
               </h2>
               <p className="mt-1 text-sm text-slate-500">{activeTab === 'clients' ? 'Listado de todos los clientes de la organización.' : activeTab === 'departments' ? 'Se usan luego en formularios de tareas y proyectos.' : 'Se mostrarán como lista desplegable en proyectos y tareas.'}</p>
             </div>
-            <button type="button" onClick={() => openCreate(activeTab)} className="inline-flex h-10 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-4 text-[13px] font-bold text-white transition hover:-translate-y-0.5 hover:bg-slate-900">
+            <button type="button" onClick={() => openCreate(activeTab)} className="inline-flex h-10 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-4 text-[13px] font-bold text-white transition hover:translate-y-0 hover:bg-slate-900">
               <Plus className="h-4 w-4" />{activeTab === 'clients' ? 'Nuevo cliente' : activeTab === 'departments' ? 'Nuevo departamento' : 'Nuevo país'}
             </button>
           </div>

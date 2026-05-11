@@ -57,7 +57,7 @@ function downloadCsv(filename: string, rows: string[][]) {
 
 function ActionTooltip({ title }: { title: string }) {
   return (
-    <span className="pointer-events-none absolute -bottom-9 left-1/2 z-20 -translate-x-1/2 whitespace-nowrap rounded-full border border-[#E5EAF1] bg-white px-3 py-1.5 text-xs font-bold text-[#334155] opacity-0 transition group-hover:-translate-y-1 group-hover:opacity-100">
+    <span className="pointer-events-none absolute -bottom-9 left-1/2 z-20 -translate-x-1/2 whitespace-nowrap rounded-full border ft-border bg-white px-3 py-1.5 text-xs font-bold text-[#334155] opacity-0 transition group-hover:translate-y-0 group-hover:opacity-100">
       {title}
     </span>
   );
@@ -70,7 +70,7 @@ function ActionIconButton({ title, onClick, children }: { title: string; onClick
       aria-label={title}
       title={title}
       onClick={onClick}
-      className="group relative inline-flex h-10 w-10 items-center justify-center rounded-[16px] border border-[#E5EAF1] bg-white text-[#334155] transition hover:border-[#16C784]/40 hover:text-[#0F172A]"
+      className="group relative inline-flex h-10 w-10 items-center justify-center rounded-[16px] border ft-border bg-white text-[#334155] transition hover:border-[#16C784]/40 hover:ft-text-main"
     >
       {children}
       <ActionTooltip title={title} />
@@ -86,7 +86,7 @@ function ActionIconLink({ title, href, children, dark = false }: { title: string
       title={title}
       className={dark
         ? 'group relative inline-flex h-10 w-10 items-center justify-center rounded-[16px] bg-[#050B18] text-white transition hover:bg-[#111827]'
-        : 'group relative inline-flex h-10 w-10 items-center justify-center rounded-[16px] border border-[#E5EAF1] bg-white text-[#334155] transition hover:border-[#16C784]/40 hover:text-[#0F172A]'}
+        : 'group relative inline-flex h-10 w-10 items-center justify-center rounded-[16px] border ft-border bg-white text-[#334155] transition hover:border-[#16C784]/40 hover:ft-text-main'}
     >
       {children}
       <ActionTooltip title={title} />
@@ -148,12 +148,12 @@ function KpiCard({ item }: { item: KpiItem }) {
   const tone = palette[item.tone];
 
   return (
-    <Card className="group rounded-[20px] border-[#E5EAF1] bg-white p-5 transition-all duration-200 hover:-translate-y-0.5 hover:">
+    <Card className="group rounded-[20px] ft-border bg-white p-5 transition-all duration-200 hover:translate-y-0 hover:">
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-[13px] font-semibold text-[#334155]">{item.label}</p>
-          <p className="mt-4 text-[28px] font-bold leading-none tracking-[-0.04em] text-[#0F172A]">{item.value}</p>
-          <p className="mt-3 text-[12px] font-medium text-[#64748B]">{item.helper}</p>
+          <p className="mt-4 text-[28px] font-bold leading-none tracking-[-0.04em] ft-text-main">{item.value}</p>
+          <p className="mt-3 text-[12px] font-medium ft-text-muted">{item.helper}</p>
         </div>
         <span className={`inline-flex h-10 w-10 items-center justify-center rounded-2xl ${tone.bg} ${tone.text} ring-1 ${tone.ring}`}>
           <Icon className="h-5 w-5" />
@@ -197,28 +197,28 @@ function TeamActivityChart({ summary }: { summary: WorkspaceAnalyticsSummary }) 
   const grid = [0, Math.round(maxValue * 0.25), Math.round(maxValue * 0.5), Math.round(maxValue * 0.75), maxValue];
 
   return (
-    <Card className="rounded-[20px] border-[#E5EAF1] bg-white p-5 xl:col-span-2">
+    <Card className="rounded-[20px] ft-border bg-white p-5 xl:col-span-2">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h2 className="text-[17px] font-bold text-[#0F172A]">Actividad real del workspace</h2>
+          <h2 className="text-[17px] font-bold ft-text-main">Actividad real del workspace</h2>
           <div className="mt-4 flex flex-wrap items-center gap-4 text-sm font-medium text-[#334155]">
             <span className="inline-flex items-center gap-2"><span className="h-3 w-3 rounded-full bg-[#16C784]" /> Concluidas</span>
             <span className="inline-flex items-center gap-2"><span className="h-3 w-3 rounded-full bg-[#94A3B8]" /> Creadas</span>
             <span className="inline-flex items-center gap-2"><span className="h-3 w-3 rounded-full bg-[#F59E0B]" /> Vencen activas</span>
           </div>
         </div>
-        <button type="button" onClick={() => setRange((value) => value === '30d' ? '7d' : '30d')} className="inline-flex items-center gap-2 rounded-2xl border border-[#E5EAF1] bg-white px-4 py-2 text-sm font-semibold text-[#334155] transition hover:border-[#16C784]/40 hover:text-[#0F172A]">
+        <button type="button" onClick={() => setRange((value) => value === '30d' ? '7d' : '30d')} className="inline-flex items-center gap-2 rounded-2xl border ft-border bg-white px-4 py-2 text-sm font-semibold text-[#334155] transition hover:border-[#16C784]/40 hover:ft-text-main">
           {range === '30d' ? 'Últimos 30 días' : 'Últimos 7 días'} <ChevronDown className="h-4 w-4" />
         </button>
       </div>
       <div className="relative mt-4 overflow-hidden">
         {hovered ? (
           <div
-            className="pointer-events-none absolute z-10 -translate-x-1/2 -translate-y-full rounded-2xl border border-[#E5EAF1] bg-white px-3 py-2 text-xs"
+            className="pointer-events-none absolute z-10 -translate-x-1/2 -translate-y-full rounded-2xl border ft-border bg-white px-3 py-2 text-xs"
             style={{ left: `${(hovered.x / width) * 100}%`, top: `${(hovered.y / height) * 100}%` }}
           >
-            <p className="font-bold text-[#0F172A]">{hovered.day}</p>
-            <p className="mt-1 inline-flex items-center gap-2 font-semibold text-[#64748B]"><span className="h-2 w-2 rounded-full" style={{ backgroundColor: hovered.color }} /> {hovered.label}: {hovered.value}</p>
+            <p className="font-bold ft-text-main">{hovered.day}</p>
+            <p className="mt-1 inline-flex items-center gap-2 font-semibold ft-text-muted"><span className="h-2 w-2 rounded-full" style={{ backgroundColor: hovered.color }} /> {hovered.label}: {hovered.value}</p>
           </div>
         ) : null}
         <svg viewBox={`0 0 ${width} ${height}`} className="h-[260px] w-full" role="img" aria-label="Gráfica real de actividad del workspace" onMouseLeave={() => setHovered(null)}>
@@ -293,12 +293,12 @@ function DonutChart({ summary }: { summary: WorkspaceAnalyticsSummary }) {
           })}
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-          <span className="text-[28px] font-bold tracking-[-0.04em] text-[#0F172A]">{total}</span>
-          <span className="text-sm font-semibold text-[#64748B]">Tareas</span>
+          <span className="text-[28px] font-bold tracking-[-0.04em] ft-text-main">{total}</span>
+          <span className="text-sm font-semibold ft-text-muted">Tareas</span>
         </div>
         {activeItem ? (
-          <div className="absolute left-1/2 top-3 -translate-x-1/2 rounded-2xl border border-[#E5EAF1] bg-white px-3 py-2 text-center text-xs">
-            <p className="inline-flex items-center justify-center gap-2 whitespace-nowrap font-bold text-[#0F172A]"><span className="h-2 w-2 rounded-full" style={{ backgroundColor: activeItem.color }} /> {activeItem.label}</p>
+          <div className="absolute left-1/2 top-3 -translate-x-1/2 rounded-2xl border ft-border bg-white px-3 py-2 text-center text-xs">
+            <p className="inline-flex items-center justify-center gap-2 whitespace-nowrap font-bold ft-text-main"><span className="h-2 w-2 rounded-full" style={{ backgroundColor: activeItem.color }} /> {activeItem.label}</p>
             <p className="mt-1 font-semibold" style={{ color: activeItem.color }}>{activeItem.count} · {Math.round((activeItem.count / total) * 100)}%</p>
           </div>
         ) : null}
@@ -320,9 +320,9 @@ function DonutChart({ summary }: { summary: WorkspaceAnalyticsSummary }) {
 
 function TaskStatusDonut({ summary }: { summary: WorkspaceAnalyticsSummary }) {
   return (
-    <Card className="rounded-[20px] border-[#E5EAF1] bg-white p-5">
-      <h2 className="text-[17px] font-bold text-[#0F172A]">Distribución real por estado</h2>
-      <p className="mt-2 text-sm font-medium text-[#64748B]">Concluidas se muestran como cierre histórico, no como atraso.</p>
+    <Card className="rounded-[20px] ft-border bg-white p-5">
+      <h2 className="text-[17px] font-bold ft-text-main">Distribución real por estado</h2>
+      <p className="mt-2 text-sm font-medium ft-text-muted">Concluidas se muestran como cierre histórico, no como atraso.</p>
       <div className="mt-5">
         <DonutChart summary={summary} />
       </div>
@@ -335,12 +335,12 @@ function ProgressBar({ label, percent, meta }: { label: string; percent: number;
     <div className="grid grid-cols-[1fr_150px_42px] items-center gap-4 text-sm max-sm:grid-cols-1 max-sm:gap-2">
       <span>
         <span className="block font-semibold text-[#334155]">{label}</span>
-        {meta ? <span className="mt-1 block text-xs font-medium text-[#64748B]">{meta}</span> : null}
+        {meta ? <span className="mt-1 block text-xs font-medium ft-text-muted">{meta}</span> : null}
       </span>
       <span className="h-1.5 overflow-hidden rounded-full bg-slate-100">
         <span className="block h-full rounded-full bg-[#16C784] transition-all duration-700" style={{ width: `${clamp(percent)}%` }} />
       </span>
-      <span className="text-right font-semibold text-[#64748B] max-sm:text-left">{percent}%</span>
+      <span className="text-right font-semibold ft-text-muted max-sm:text-left">{percent}%</span>
     </div>
   );
 }
@@ -348,14 +348,14 @@ function ProgressBar({ label, percent, meta }: { label: string; percent: number;
 function ProjectsProgressCard({ summary }: { summary: WorkspaceAnalyticsSummary }) {
   const rows = summary.projectProgress;
   return (
-    <Card className="rounded-[20px] border-[#E5EAF1] bg-white p-5">
-      <h2 className="text-[17px] font-bold text-[#0F172A]">Progreso real por proyecto</h2>
+    <Card className="rounded-[20px] ft-border bg-white p-5">
+      <h2 className="text-[17px] font-bold ft-text-main">Progreso real por proyecto</h2>
       <div className="mt-5 space-y-4">
         {rows.length ? rows.map((item) => (
           <ProgressBar key={item.id} label={item.title} percent={item.percent} meta={`${item.completed}/${item.total} concluidas · ${item.active} activas · ${item.waiting} en espera`} />
-        )) : <p className="rounded-2xl border border-dashed border-[#E5EAF1] p-5 text-sm font-medium text-[#64748B]">No hay proyectos con tareas para calcular progreso.</p>}
+        )) : <p className="rounded-2xl border border-dashed ft-border p-5 text-sm font-medium ft-text-muted">No hay proyectos con tareas para calcular progreso.</p>}
       </div>
-      <Link href="/app/projects" className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-[#E5EAF1] bg-white px-4 py-3 text-sm font-bold text-[#334155] transition hover:border-[#16C784]/40 hover:text-[#0F172A]">
+      <Link href="/app/projects" className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-2xl border ft-border bg-white px-4 py-3 text-sm font-bold text-[#334155] transition hover:border-[#16C784]/40 hover:ft-text-main">
         Ver todos los proyectos <ChevronDown className="h-4 w-4 -rotate-90" />
       </Link>
     </Card>
@@ -366,23 +366,23 @@ function WorkloadCard({ summary }: { summary: WorkspaceAnalyticsSummary }) {
   const rows = summary.workload;
   const max = Math.max(1, ...rows.map((item) => item.total));
   return (
-    <Card className="rounded-[20px] border-[#E5EAF1] bg-white p-5">
-      <h2 className="text-[17px] font-bold text-[#0F172A]">Carga operativa real</h2>
-      <p className="mt-2 text-xs font-semibold text-[#64748B]">Tareas activas y en espera por cliente/departamento.</p>
+    <Card className="rounded-[20px] ft-border bg-white p-5">
+      <h2 className="text-[17px] font-bold ft-text-main">Carga operativa real</h2>
+      <p className="mt-2 text-xs font-semibold ft-text-muted">Tareas activas y en espera por cliente/departamento.</p>
       <div className="mt-5 space-y-4">
         {rows.length ? rows.map((item) => (
           <div key={item.label} className="grid grid-cols-[auto_1fr_auto] items-center gap-3">
-            <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-xs font-bold text-[#0F172A] ring-2 ring-white">{item.label.slice(0, 2).toUpperCase()}</span>
+            <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-xs font-bold ft-text-main ring-2 ring-white">{item.label.slice(0, 2).toUpperCase()}</span>
             <div>
               <div className="flex items-center justify-between gap-3 text-sm"><span className="font-semibold text-[#334155]">{item.label}</span></div>
               <span className="mt-2 block h-1.5 overflow-hidden rounded-full bg-slate-100"><span className="block h-full rounded-full bg-[#3B82F6] transition-all duration-700" style={{ width: `${Math.round((item.total / max) * 100)}%` }} /></span>
-              <span className="mt-1 block text-[11px] font-medium text-[#64748B]">{item.active} en proceso · {item.waiting} en espera · {item.overdue} vencidas activas</span>
+              <span className="mt-1 block text-[11px] font-medium ft-text-muted">{item.active} en proceso · {item.waiting} en espera · {item.overdue} vencidas activas</span>
             </div>
-            <span className="text-sm font-bold text-[#64748B]">{item.total}</span>
+            <span className="text-sm font-bold ft-text-muted">{item.total}</span>
           </div>
-        )) : <p className="rounded-2xl border border-dashed border-[#E5EAF1] p-5 text-sm font-medium text-[#64748B]">Sin carga operativa activa.</p>}
+        )) : <p className="rounded-2xl border border-dashed ft-border p-5 text-sm font-medium ft-text-muted">Sin carga operativa activa.</p>}
       </div>
-      <button type="button" onClick={() => downloadCsv('flowtask-carga-operativa.csv', [['area', 'en_proceso', 'en_espera', 'vencidas_activas', 'total'], ...rows.map((item) => [item.label, String(item.active), String(item.waiting), String(item.overdue), String(item.total)])])} className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-[#E5EAF1] bg-white px-4 py-3 text-sm font-bold text-[#334155] transition hover:border-[#16C784]/40 hover:text-[#0F172A]">
+      <button type="button" onClick={() => downloadCsv('flowtask-carga-operativa.csv', [['area', 'en_proceso', 'en_espera', 'vencidas_activas', 'total'], ...rows.map((item) => [item.label, String(item.active), String(item.waiting), String(item.overdue), String(item.total)])])} className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-2xl border ft-border bg-white px-4 py-3 text-sm font-bold text-[#334155] transition hover:border-[#16C784]/40 hover:ft-text-main">
         Exportar carga real <Download className="h-4 w-4" />
       </button>
     </Card>
@@ -402,10 +402,10 @@ function RecentActivityCard({ summary }: { summary: WorkspaceAnalyticsSummary })
     stable: 'bg-emerald-50 text-emerald-600',
   };
   return (
-    <Card className="rounded-[20px] border-[#E5EAF1] bg-white p-5">
+    <Card className="rounded-[20px] ft-border bg-white p-5">
       <div className="flex items-center justify-between gap-4">
-        <h2 className="text-[17px] font-bold text-[#0F172A]">Foco operativo</h2>
-        <Link href="/app/tasks" className="rounded-2xl border border-[#E5EAF1] px-4 py-2 text-sm font-bold text-[#334155] transition hover:border-[#16C784]/40">Ver tareas</Link>
+        <h2 className="text-[17px] font-bold ft-text-main">Foco operativo</h2>
+        <Link href="/app/tasks" className="rounded-2xl border ft-border px-4 py-2 text-sm font-bold text-[#334155] transition hover:border-[#16C784]/40">Ver tareas</Link>
       </div>
       <div className="mt-5 space-y-4">
         {items.length ? items.map((item) => {
@@ -415,11 +415,11 @@ function RecentActivityCard({ summary }: { summary: WorkspaceAnalyticsSummary })
               <span className={`inline-flex h-9 w-9 items-center justify-center rounded-2xl ${paletteForTone[item.tone]}`}><Icon className="h-4 w-4" /></span>
               <div>
                 <p className="text-sm font-semibold leading-5 text-[#334155]">{item.title}</p>
-                <p className="mt-1 text-xs font-medium text-[#64748B]">{item.meta} · {item.statusLabel}</p>
+                <p className="mt-1 text-xs font-medium ft-text-muted">{item.meta} · {item.statusLabel}</p>
               </div>
             </div>
           );
-        }) : <p className="rounded-2xl border border-dashed border-[#E5EAF1] p-5 text-sm font-medium text-[#64748B]">Sin foco operativo urgente.</p>}
+        }) : <p className="rounded-2xl border border-dashed ft-border p-5 text-sm font-medium ft-text-muted">Sin foco operativo urgente.</p>}
       </div>
     </Card>
   );
@@ -427,17 +427,17 @@ function RecentActivityCard({ summary }: { summary: WorkspaceAnalyticsSummary })
 
 function RecommendationsCard({ summary }: { summary: WorkspaceAnalyticsSummary }) {
   return (
-    <Card className="rounded-[20px] border-[#E5EAF1] bg-white p-5 xl:col-span-3">
+    <Card className="rounded-[20px] ft-border bg-white p-5 xl:col-span-3">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="text-[17px] font-bold text-[#0F172A]">Inteligencia operativa</h2>
-          <p className="mt-1 text-sm font-medium text-[#64748B]">Lectura generada con tareas, proyectos, comentarios y adjuntos reales.</p>
+          <h2 className="text-[17px] font-bold ft-text-main">Inteligencia operativa</h2>
+          <p className="mt-1 text-sm font-medium ft-text-muted">Lectura generada con tareas, proyectos, comentarios y adjuntos reales.</p>
         </div>
         <span className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-700"><Zap className="h-3.5 w-3.5" /> Datos reales</span>
       </div>
       <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-5">
         {summary.recommendations.map((item) => (
-          <div key={item} className="rounded-2xl border border-[#E5EAF1] bg-[#F8FAFC] p-4 text-sm font-semibold leading-6 text-[#334155]">{item}</div>
+          <div key={item} className="rounded-2xl border ft-border bg-[#F8FAFC] p-4 text-sm font-semibold leading-6 text-[#334155]">{item}</div>
         ))}
       </div>
     </Card>
@@ -462,9 +462,9 @@ export function AnalyticsOverview({ summary, compact = false }: { summary: Works
 
   if (compact) {
     return (
-      <Card className="rounded-[20px] border-[#E5EAF1] bg-white p-5">
-        <h2 className="text-xl font-bold text-[#0F172A]">Analytics</h2>
-        <p className="mt-2 text-sm text-[#64748B]">Lectura rápida del workspace con datos reales.</p>
+      <Card className="rounded-[20px] ft-border bg-white p-5">
+        <h2 className="text-xl font-bold ft-text-main">Analytics</h2>
+        <p className="mt-2 text-sm ft-text-muted">Lectura rápida del workspace con datos reales.</p>
         <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
           {kpis.map((item) => <KpiCard key={item.label} item={item} />)}
         </div>
@@ -488,8 +488,8 @@ export function AnalyticsOverview({ summary, compact = false }: { summary: Works
       <section className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <p className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-emerald-700"><RefreshCcw className="h-3.5 w-3.5" /> Realtime Intelligence</p>
-          <h1 className="mt-3 text-[28px] font-bold leading-tight tracking-[-0.04em] text-[#0F172A]">Analytics operativo</h1>
-          <p className="mt-2 text-[15px] font-medium text-[#64748B]">Gráficas calculadas desde tareas, proyectos, comentarios y adjuntos reales. Concluidas y en espera no contaminan vencidos.</p>
+          <h1 className="mt-3 text-[28px] font-bold leading-tight tracking-[-0.04em] ft-text-main">Analytics operativo</h1>
+          <p className="mt-2 text-[15px] font-medium ft-text-muted">Gráficas calculadas desde tareas, proyectos, comentarios y adjuntos reales. Concluidas y en espera no contaminan vencidos.</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <ActionIconButton title="Exportar datos reales" onClick={() => downloadAnalyticsCsv(sharePayload)}>

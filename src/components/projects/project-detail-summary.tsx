@@ -28,7 +28,7 @@ export function ProjectDetailSummary({ project, currentQuery = "" }: { project: 
           <div className="flex flex-wrap items-center gap-2 lg:max-w-[520px] lg:justify-end">
             <EntityMemoryActions entity={{ id: project.id, type: 'project', title: project.title, subtitle: project.client_name || "Proyecto", href: projectDetailRoute(project.id, currentQuery), updatedAt: project.updated_at ?? project.created_at ?? project.due_date ?? '1970-01-01T00:00:00.000Z' }} />
             <ProjectDeleteButton projectId={project.id} />
-            <Link href={projectEditRoute(project.id, currentQuery)} className="inline-flex h-10 items-center justify-center rounded-[20px] border border-slate-200 bg-white px-7 text-sm font-semibold text-slate-900 transition hover:-translate-y-0.5 hover:bg-slate-50">
+            <Link href={projectEditRoute(project.id, currentQuery)} className="inline-flex h-10 items-center justify-center rounded-[20px] border border-slate-200 bg-white px-7 text-sm font-semibold text-slate-900 transition hover:translate-y-0 hover:bg-slate-50">
               Editar proyecto
             </Link>
             <button

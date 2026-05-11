@@ -125,14 +125,14 @@ function WorkspaceKpiCard({
   }[tone];
 
   return (
-    <Card className="rounded-[20px] border-[#E5EAF1] bg-white p-5 ring-0 md:p-5">
+    <Card className="rounded-2xl ft-border bg-white p-5 ring-0 md:p-5">
       <div className="flex items-center gap-4">
         <span className={cn('inline-flex h-10 w-14 shrink-0 items-center justify-center rounded-full ring-1', toneClasses)}>
           <Icon className="h-6 w-6" />
         </span>
         <div className="min-w-0">
           <p className="text-[13px] font-semibold text-slate-500">{label}</p>
-          <p className="mt-0.5 text-[28px] font-bold leading-none tracking-[-0.04em] text-[#0F172A]">{value}</p>
+          <p className="mt-0.5 text-[28px] font-bold leading-none tracking-[-0.04em] ft-text-main">{value}</p>
           <p className="mt-2 truncate text-xs font-medium text-slate-400">{helper}</p>
         </div>
       </div>
@@ -164,7 +164,7 @@ function WorkspaceQuickWidget({
     <Link
       href={href as any}
       className={cn(
-        'group flex min-h-[112px] items-center justify-between rounded-[20px] border px-5 py-5 transition hover:-translate-y-0.5 hover:',
+        'group flex min-h-[112px] items-center justify-between rounded-2xl border px-5 py-5 transition hover:translate-y-0 hover:',
         toneClasses,
       )}
     >
@@ -429,12 +429,12 @@ export function WorkspaceHome() {
 
   return (
     <div className="space-y-5 pb-3">
-      <section className="relative overflow-hidden rounded-[24px] border border-[#F6C7CD] bg-[linear-gradient(90deg,#FFF7F8_0%,#FFF9FB_100%)] px-5 py-5 md:px-9 md:py-7">
+      <section className="relative overflow-hidden rounded-2xl border border-[#F6C7CD] bg-[linear-gradient(90deg,#FFF7F8_0%,#FFF9FB_100%)] px-5 py-5 md:px-9 md:py-7">
         <button type="button" aria-label="Cerrar radar" className="absolute right-5 top-5 hidden h-8 w-8 items-center justify-center rounded-full text-slate-500 transition hover:bg-white/75 hover:text-slate-900 md:inline-flex">
           ×
         </button>
         <div className="grid gap-5 lg:grid-cols-[150px_minmax(0,1fr)_auto] lg:items-center">
-          <div className="hidden h-[132px] w-[132px] items-end justify-center overflow-hidden rounded-[24px] bg-white/35 md:flex">
+          <div className="hidden h-[132px] w-[132px] items-end justify-center overflow-hidden rounded-2xl bg-white/35 md:flex">
             <Image src="/assistant/guide-male.png" alt="Radar inteligente" width={132} height={132} className="h-[132px] w-[132px] object-contain object-bottom" priority />
           </div>
           <div className="min-w-0">
@@ -446,15 +446,15 @@ export function WorkspaceHome() {
                 {overdueTasks.length ? 'Prioridad alta' : 'En control'}
               </span>
             </div>
-            <h2 className="mt-4 max-w-4xl text-xl font-semibold tracking-[-0.035em] text-[#0F172A] md:text-[1.7rem]">{radarTitle}</h2>
+            <h2 className="mt-4 max-w-4xl text-xl font-semibold tracking-[-0.035em] ft-text-main md:text-[1.7rem]">{radarTitle}</h2>
             <p className="mt-3 max-w-3xl text-[15px] leading-6 text-slate-500">{radarCopy}</p>
           </div>
           <div className="flex flex-wrap items-center gap-3 lg:justify-end">
             <span className="inline-flex h-9 items-center rounded-full bg-emerald-50 px-4 text-sm font-semibold text-emerald-700 ring-1 ring-emerald-100">Score {radarScore}</span>
-            <Link href="/app/tasks" className="inline-flex h-10 items-center justify-center rounded-[14px] bg-[#050B18] px-5 text-sm font-bold text-white transition hover:bg-slate-800">
+            <Link href="/app/tasks" className="inline-flex h-10 items-center justify-center rounded-xl bg-[#050B18] px-5 text-sm font-bold text-white transition hover:bg-slate-800">
               Revisar ahora <ChevronRight className="ml-2 h-4 w-4" />
             </Link>
-            <Link href="#workspace-flow" className="inline-flex h-10 items-center justify-center rounded-[14px] border border-[#E5EAF1] bg-white px-5 text-sm font-bold text-[#0F172A] transition hover:bg-slate-50">Ver tablero</Link>
+            <Link href="#workspace-flow" className="inline-flex h-10 items-center justify-center rounded-xl border ft-border bg-white px-5 text-sm font-bold ft-text-main transition hover:bg-slate-50">Ver tablero</Link>
           </div>
         </div>
       </section>
@@ -464,36 +464,36 @@ export function WorkspaceHome() {
         <WorkspaceKpiCard label="Importantes" value={importantCount} helper="Foco, no avance" icon={Star} tone="amber" />
         <WorkspaceKpiCard label="Pendientes" value={openTasks.length} helper="Fecha definida" icon={Timer} tone="violet" />
         <WorkspaceKpiCard label="Proyectos activos" value={activeProjects.length} helper="En curso" icon={FolderKanban} tone="sky" />
-        <Card className="flex items-center justify-center gap-3 rounded-[20px] border-[#E5EAF1] bg-white p-4 ring-0">
-          <button type="button" onClick={() => setRefreshTick((value) => value + 1)} className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-[#E5EAF1] bg-white text-slate-600 transition hover:bg-slate-50" aria-label="Actualizar workspace">
+        <Card className="flex items-center justify-center gap-3 rounded-2xl ft-border bg-white p-4 ring-0">
+          <button type="button" onClick={() => setRefreshTick((value) => value + 1)} className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border ft-border bg-white text-slate-600 transition hover:bg-slate-50" aria-label="Actualizar workspace">
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCcw className="h-4 w-4" />}
           </button>
-          <Link href="/app/tasks" className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-[#E5EAF1] bg-white text-slate-600 transition hover:bg-slate-50" aria-label="Tareas">
+          <Link href="/app/tasks" className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border ft-border bg-white text-slate-600 transition hover:bg-slate-50" aria-label="Tareas">
             <LayoutGrid className="h-4 w-4" />
           </Link>
-          <Link href="/app/settings" className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-[#E5EAF1] bg-white text-slate-600 transition hover:bg-slate-50" aria-label="Ajustes rápidos">
+          <Link href="/app/settings" className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border ft-border bg-white text-slate-600 transition hover:bg-slate-50" aria-label="Ajustes rápidos">
             <SlidersHorizontal className="h-4 w-4" />
           </Link>
         </Card>
       </div>
 
-      <section id="workspace-flow" className="rounded-[24px] border border-[#E5EAF1] bg-white p-4 md:p-5">
+      <section id="workspace-flow" className="rounded-2xl border ft-border bg-white p-4 md:p-5">
         <div className="mb-5 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-3">
             <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-50 text-slate-600 ring-1 ring-[#E5EAF1]">
               <LayoutGrid className="h-5 w-5" />
             </span>
             <div>
-              <h2 className="text-base font-semibold tracking-[-0.02em] text-[#0F172A]">Mi flujo de trabajo</h2>
+              <h2 className="text-base font-semibold tracking-[-0.02em] ft-text-main">Mi flujo de trabajo</h2>
               <p className="text-sm text-slate-500">Gestiona tus tareas con enfoque. Arrastra y suelta para organizar.</p>
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-3">
-            <button type="button" onClick={() => setFlowFiltersOpen((value) => !value)} className={cn("inline-flex h-10 items-center gap-2 rounded-[14px] border px-4 text-sm font-semibold transition", flowFiltersOpen || activeFlowFilters ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-[#E5EAF1] bg-white text-slate-600 hover:bg-slate-50")} aria-expanded={flowFiltersOpen}>
+            <button type="button" onClick={() => setFlowFiltersOpen((value) => !value)} className={cn("inline-flex h-10 items-center gap-2 rounded-xl border px-4 text-sm font-semibold transition", flowFiltersOpen || activeFlowFilters ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "ft-border bg-white text-slate-600 hover:bg-slate-50")} aria-expanded={flowFiltersOpen}>
               <SlidersHorizontal className="h-4 w-4" /> Filtros
               {activeFlowFilters ? <span className="ml-0.5 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[#16C784] px-1.5 text-[11px] font-semibold text-white">{activeFlowFilters}</span> : null}
             </button>
-            <button type="button" onClick={cycleFlowGroup} className="inline-flex h-10 items-center gap-2 rounded-[14px] border border-[#E5EAF1] bg-white px-4 text-sm font-semibold text-slate-600 transition hover:bg-slate-50" title="Cambiar agrupamiento">
+            <button type="button" onClick={cycleFlowGroup} className="inline-flex h-10 items-center gap-2 rounded-xl border ft-border bg-white px-4 text-sm font-semibold text-slate-600 transition hover:bg-slate-50" title="Cambiar agrupamiento">
               Agrupar: {groupLabel} <ChevronDown className="h-4 w-4" />
             </button>
             <div className="relative" data-workspace-columns-menu>
@@ -501,10 +501,10 @@ export function WorkspaceHome() {
                 type="button"
                 onClick={() => setColumnsMenuOpen((value) => !value)}
                 className={cn(
-                  'inline-flex h-10 items-center gap-2 rounded-[14px] border px-4 text-sm font-semibold transition',
+                  'inline-flex h-10 items-center gap-2 rounded-xl border px-4 text-sm font-semibold transition',
                   columnsMenuOpen || visibleStatusColumns.length < WORKSPACE_STATUS_COLUMNS.length
                     ? 'border-violet-200 bg-violet-50 text-violet-700'
-                    : 'border-[#E5EAF1] bg-white text-slate-600 hover:bg-slate-50',
+                    : 'ft-border bg-white text-slate-600 hover:bg-slate-50',
                 )}
                 aria-expanded={columnsMenuOpen}
                 aria-haspopup="menu"
@@ -513,7 +513,7 @@ export function WorkspaceHome() {
                 <span className="rounded-full bg-white/80 px-1.5 py-0.5 text-[11px] font-bold text-slate-500 ring-1 ring-slate-200">{visibleColumnCountLabel}</span>
               </button>
               {columnsMenuOpen ? (
-                <div className="absolute right-0 z-30 mt-2 w-[260px] rounded-[18px] border border-[#E5EAF1] bg-white p-3 shadow-[0_18px_48px_rgba(15,23,42,0.14)]" role="menu">
+                <div className="absolute right-0 z-30 mt-2 w-[260px] rounded-2xl border ft-border bg-white p-3 shadow-[0_18px_48px_rgba(15,23,42,0.14)]" role="menu">
                   <div className="mb-2 flex items-start justify-between gap-3">
                     <div>
                       <p className="text-sm font-bold text-slate-900">Mostrar columnas</p>
@@ -534,7 +534,7 @@ export function WorkspaceHome() {
                           onClick={() => toggleVisibleColumn(column.value)}
                           disabled={disabled}
                           className={cn(
-                            'flex w-full items-center justify-between gap-3 rounded-[14px] px-3 py-2 text-left text-sm font-semibold transition',
+                            'flex w-full items-center justify-between gap-3 rounded-xl px-3 py-2 text-left text-sm font-semibold transition',
                             checked ? 'bg-slate-50 text-slate-900' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900',
                             disabled && 'cursor-not-allowed opacity-60',
                           )}
@@ -557,36 +557,36 @@ export function WorkspaceHome() {
                 </div>
               ) : null}
             </div>
-            <Link href={taskNewRoute()} className="inline-flex h-10 items-center justify-center rounded-[14px] bg-[#16C784] px-5 text-sm font-bold text-white transition hover:bg-emerald-600"><Plus className="mr-2 h-4 w-4" /> Nueva tarea</Link>
+            <Link href={taskNewRoute()} className="inline-flex h-10 items-center justify-center rounded-xl bg-[#16C784] px-5 text-sm font-bold text-white transition hover:bg-emerald-600"><Plus className="mr-2 h-4 w-4" /> Nueva tarea</Link>
           </div>
         </div>
         {flowFiltersOpen ? (
-          <div className="mb-4 grid gap-3 rounded-[20px] border border-[#E5EAF1] bg-slate-50/70 p-3 shadow-inner md:grid-cols-[minmax(240px,1fr)_170px_170px_auto]">
+          <div className="mb-4 grid gap-3 rounded-2xl border ft-border bg-slate-50/70 p-3 shadow-inner md:grid-cols-[minmax(240px,1fr)_170px_170px_auto]">
             <label className="relative block">
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-              <input value={flowSearch} onChange={(event) => setFlowSearch(event.target.value)} placeholder="Buscar en mi flujo..." className="h-11 w-full rounded-[14px] border border-[#E5EAF1] bg-white pl-9 pr-3 text-sm font-semibold text-slate-700 outline-none transition focus:border-emerald-200 focus:ring-4 focus:ring-emerald-50" />
+              <input value={flowSearch} onChange={(event) => setFlowSearch(event.target.value)} placeholder="Buscar en mi flujo..." className="h-11 w-full rounded-xl border ft-border bg-white pl-9 pr-3 text-sm font-semibold text-slate-700 outline-none transition focus:border-emerald-200 focus:ring-4 focus:ring-emerald-50" />
             </label>
-            <select value={flowStatusFilter} onChange={(event) => setFlowStatusFilter(event.target.value as typeof flowStatusFilter)} className="h-11 rounded-[14px] border border-[#E5EAF1] bg-white px-3 text-sm font-semibold text-slate-700 outline-none">
+            <select value={flowStatusFilter} onChange={(event) => setFlowStatusFilter(event.target.value as typeof flowStatusFilter)} className="h-11 rounded-xl border ft-border bg-white px-3 text-sm font-semibold text-slate-700 outline-none">
               <option value="all">Todos los estados</option>
               <option value="en_proceso">En progreso</option>
               <option value="produccion">Producción</option>
               <option value="en_espera">En espera</option>
               <option value="concluido">Hecho</option>
             </select>
-            <select value={flowPriorityFilter} onChange={(event) => setFlowPriorityFilter(event.target.value as typeof flowPriorityFilter)} className="h-11 rounded-[14px] border border-[#E5EAF1] bg-white px-3 text-sm font-semibold text-slate-700 outline-none">
+            <select value={flowPriorityFilter} onChange={(event) => setFlowPriorityFilter(event.target.value as typeof flowPriorityFilter)} className="h-11 rounded-xl border ft-border bg-white px-3 text-sm font-semibold text-slate-700 outline-none">
               <option value="all">Todas las prioridades</option>
               <option value="alta">Alta</option>
               <option value="media">Media</option>
               <option value="baja">Baja</option>
             </select>
-            <button type="button" onClick={clearFlowFilters} className="inline-flex h-11 items-center justify-center gap-2 rounded-[14px] border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-slate-600 transition hover:bg-white">
+            <button type="button" onClick={clearFlowFilters} className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border ft-border bg-white px-4 text-sm font-bold text-slate-600 transition hover:bg-white">
               <X className="h-4 w-4" /> Limpiar
             </button>
           </div>
         ) : null}
         {error ? <div className="mb-4 rounded-2xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div> : null}
         {!loading && !error && tasks.length === 0 && projects.length === 0 ? (
-          <div className="mb-5 overflow-hidden rounded-[22px] border border-emerald-100 bg-[linear-gradient(135deg,#F0FDF4_0%,#FFFFFF_58%,#F8FAFC_100%)] p-5">
+          <div className="mb-5 overflow-hidden rounded-2xl border border-emerald-100 bg-[linear-gradient(135deg,#F0FDF4_0%,#FFFFFF_58%,#F8FAFC_100%)] p-5">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
               <div className="flex min-w-0 gap-4">
                 <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-700 ring-1 ring-emerald-200">
@@ -594,7 +594,7 @@ export function WorkspaceHome() {
                 </span>
                 <div className="min-w-0">
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-700">Workspace nuevo</p>
-                  <h3 className="mt-1 text-xl font-semibold tracking-[-0.03em] text-[#0F172A]">Tu workspace está listo para empezar</h3>
+                  <h3 className="mt-1 text-xl font-semibold tracking-[-0.03em] ft-text-main">Tu workspace está listo para empezar</h3>
                   <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
                     Podés cargar un ejemplo seguro para ver proyectos, tareas y checklist sin tocar datos reales. Solo se activa cuando este workspace tiene 0 tareas y 0 proyectos.
                   </p>
@@ -607,12 +607,12 @@ export function WorkspaceHome() {
                   type="button"
                   onClick={loadSafeDemoData}
                   disabled={demoLoading}
-                  className="inline-flex h-11 items-center justify-center rounded-[14px] bg-[#16C784] px-5 text-sm font-bold text-white transition hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-70"
+                  className="inline-flex h-11 items-center justify-center rounded-xl bg-[#16C784] px-5 text-sm font-bold text-white transition hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-70"
                 >
                   {demoLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
                   Cargar ejemplo seguro
                 </button>
-                <Link href={taskNewRoute()} className="inline-flex h-11 items-center justify-center rounded-[14px] border border-[#E5EAF1] bg-white px-5 text-sm font-bold text-[#0F172A] transition hover:bg-slate-50">
+                <Link href={taskNewRoute()} className="inline-flex h-11 items-center justify-center rounded-xl border ft-border bg-white px-5 text-sm font-bold ft-text-main transition hover:bg-slate-50">
                   Crear primera tarea
                 </Link>
               </div>
@@ -626,7 +626,7 @@ export function WorkspaceHome() {
         <WorkspaceQuickWidget title="Tarea rápida" helper="Crea una tarea en segundos" href={taskNewRoute()} icon={ClipboardList} tone="green" />
         <WorkspaceQuickWidget title="Proyectos" helper="Ver todos los proyectos" href={projectListRoute()} icon={FolderKanban} tone="blue" />
         <WorkspaceQuickWidget title="Calendario" helper="Ver tu agenda" href="/app/tasks" icon={CalendarDays} tone="violet" />
-        <div className="rounded-[20px] border border-amber-200 bg-amber-50/70 p-5 text-amber-600">
+        <div className="rounded-2xl border border-amber-200 bg-amber-50/70 p-5 text-amber-600">
           <div className="flex items-center justify-between gap-3">
             <div className="flex min-w-0 items-center gap-4">
               <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-white/80 ring-1 ring-white/80">

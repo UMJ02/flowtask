@@ -380,22 +380,22 @@ export function TaskForm({
   return (
     <form className="-mx-4 min-h-screen bg-[#F6F8FC] pb-8 md:-mx-6" onSubmit={handleSubmit(onSubmit)}>
       <div className="sticky top-0 z-40 mb-6 px-3 py-2 sm:px-4 lg:px-5">
-        <div className="rounded-[20px] border border-[#E5EAF1] bg-white/95 px-4 py-4 backdrop-blur-xl sm:px-5 lg:px-5">
+        <div className="rounded-[20px] border ft-border bg-white/95 px-4 py-4 backdrop-blur-xl sm:px-5 lg:px-5">
           <div className="flex min-h-[72px] w-full flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex min-w-0 items-center gap-3">
-            <Link href={cancelHref} className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#050B18] text-white transition hover:-translate-y-0.5" aria-label="Volver">
+            <Link href={cancelHref} className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#050B18] text-white transition hover:translate-y-0" aria-label="Volver">
               <ArrowLeft className="h-5 w-5" />
             </Link>
             <div className="min-w-0">
-              <h1 className="truncate text-xl font-semibold tracking-[-0.035em] text-[#0F172A] sm:text-[28px]">{editorTitle}</h1>
-              <p className="mt-1 line-clamp-1 text-sm font-medium text-[#64748B]">Crea una tarea clara para que tu equipo sepa qué hacer y cuándo entregarlo.</p>
+              <h1 className="truncate text-xl font-semibold tracking-[-0.035em] ft-text-main sm:text-[28px]">{editorTitle}</h1>
+              <p className="mt-1 line-clamp-1 text-sm font-medium ft-text-muted">Crea una tarea clara para que tu equipo sepa qué hacer y cuándo entregarlo.</p>
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2 lg:justify-end">
-            <button type="button" onClick={() => reset(resetValues)} className="inline-flex h-10 items-center gap-2 rounded-2xl border border-[#E5EAF1] bg-white px-3.5 text-[13px] font-bold text-slate-800 transition hover:bg-slate-50">
+            <button type="button" onClick={() => reset(resetValues)} className="inline-flex h-10 items-center gap-2 rounded-2xl border ft-border bg-white px-3.5 text-[13px] font-bold text-slate-800 transition hover:bg-slate-50">
               Limpiar <ChevronDown className="h-4 w-4 rotate-90" />
             </button>
-            <Link href={cancelHref} className="inline-flex h-10 items-center justify-center rounded-2xl border border-[#E5EAF1] bg-white px-4 text-[13px] font-bold text-slate-800 transition hover:bg-slate-50">
+            <Link href={cancelHref} className="inline-flex h-10 items-center justify-center rounded-2xl border ft-border bg-white px-4 text-[13px] font-bold text-slate-800 transition hover:bg-slate-50">
               Cancelar
             </Link>
             <Button loading={isBusy} type="submit" className="h-10 rounded-xl bg-[#16C784] px-5 text-white hover:bg-[#12b777]">
@@ -408,22 +408,22 @@ export function TaskForm({
       </div>
       <div className="grid w-full gap-4 px-3 sm:px-4 lg:px-5 xl:grid-cols-[minmax(0,1fr)_380px] 2xl:gap-5">
         <div className="space-y-5">
-          <section className="rounded-[20px] border border-[#E5EAF1] bg-white p-4 sm:p-5">
-            <div className="rounded-[20px] border border-[#E5EAF1] bg-white p-5 transition focus-within:border-emerald-200 focus-within:ring-4 focus-within:ring-emerald-50">
+          <section className="rounded-[20px] border ft-border bg-white p-4 sm:p-5">
+            <div className="rounded-[20px] border ft-border bg-white p-5 transition focus-within:border-emerald-200 focus-within:ring-4 focus-within:ring-emerald-50">
               <div className="mb-3 flex items-center justify-between gap-3">
                 <label className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Título</label>
                 <span className="text-xs font-bold text-slate-400">{watchedTitle.length} / 120</span>
               </div>
-              <Input {...register("title")} placeholder="Ej. Diseñar propuesta cliente" className="min-h-[52px] w-full rounded-xl border border-[#E5EAF1] bg-white px-4 py-2.5 text-[22px] font-semibold leading-[1.15] tracking-[-0.028em] text-[#0F172A] shadow-none outline-none transition placeholder:text-slate-400 focus:border-[#16C784] focus:ring-4 focus:ring-emerald-500/10 sm:text-[26px]" />
+              <Input {...register("title")} placeholder="Ej. Diseñar propuesta cliente" className="min-h-[52px] w-full rounded-xl border ft-border bg-white px-4 py-2.5 text-[22px] font-semibold leading-[1.15] tracking-[-0.028em] ft-text-main shadow-none outline-none transition placeholder:text-slate-400 focus:border-[#16C784] focus:ring-4 focus:ring-emerald-500/10 sm:text-[26px]" />
               {errors.title ? <p className="mt-3 text-sm font-semibold text-red-600">{errors.title.message}</p> : null}
             </div>
 
-            <div className="mt-5 overflow-hidden rounded-[20px] border border-[#E5EAF1] bg-white">
-              <div className="flex items-center justify-between border-b border-[#E5EAF1] px-5 py-4">
+            <div className="mt-5 overflow-hidden rounded-[20px] border ft-border bg-white">
+              <div className="flex items-center justify-between border-b ft-border px-5 py-4">
                 <label className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Descripción</label>
                 <span className="text-xs font-bold text-slate-400">{watchedDescription.length} / 2000</span>
               </div>
-              <div className="flex flex-wrap items-center gap-2 border-b border-[#E5EAF1] bg-slate-50/60 px-4 py-3 text-xs font-semibold text-slate-500">
+              <div className="flex flex-wrap items-center gap-2 border-b ft-border bg-slate-50/60 px-4 py-3 text-xs font-semibold text-slate-500">
                 Agrega detalles, entregables o notas que ayuden a completar esta tarea.
               </div>
               <Textarea {...register("description")} placeholder="Describe el contexto, entregables o notas importantes…" className="min-h-[130px] rounded-none border-0 bg-white px-5 py-4 text-base leading-7 shadow-none focus:border-0 focus:ring-0" />
@@ -432,12 +432,12 @@ export function TaskForm({
 
           <section className="grid gap-4 md:grid-cols-2">
             <FieldCard label="Estado" icon={<Clock3 className="h-4 w-4" />}>
-              <Select {...register("status")} className="h-10 rounded-2xl border-[#E5EAF1] bg-white font-semibold">
+              <Select {...register("status")} className="h-10 rounded-2xl ft-border bg-white font-semibold">
                 {TASK_STATUSES.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
               </Select>
             </FieldCard>
             <FieldCard label="Prioridad" icon={<Flag className="h-4 w-4" />}>
-              <Select {...register("priority")} className="h-10 rounded-2xl border-[#E5EAF1] bg-white font-semibold">
+              <Select {...register("priority")} className="h-10 rounded-2xl ft-border bg-white font-semibold">
                 {TASK_PRIORITIES.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
               </Select>
             </FieldCard>
@@ -448,18 +448,18 @@ export function TaskForm({
               </div>
             ) : null}
             <FieldCard label="Responsable" icon={<UserRound className="h-4 w-4" />}>
-              <Input value={workspaceOwnerLabel} readOnly className="h-10 rounded-2xl border-[#E5EAF1] bg-slate-50 font-semibold text-slate-500" />
+              <Input value={workspaceOwnerLabel} readOnly className="h-10 rounded-2xl ft-border bg-slate-50 font-semibold text-slate-500" />
             </FieldCard>
 {!isProjectTask ? (
               <>
                 <FieldCard label="Departamento" icon={<FileText className="h-4 w-4" />}>
-                  <Select {...register("department")} className="h-10 rounded-2xl border-[#E5EAF1] bg-white font-semibold">
+                  <Select {...register("department")} className="h-10 rounded-2xl ft-border bg-white font-semibold">
                     <option value="">Seleccionar</option>
                     {departmentOptions.map((item) => <option key={item.id} value={item.code}>{item.name}</option>)}
                   </Select>
                 </FieldCard>
                 <FieldCard label="País" icon={<Flag className="h-4 w-4" />}>
-                  <Select {...register("country")} className="h-10 rounded-2xl border-[#E5EAF1] bg-white font-semibold">
+                  <Select {...register("country")} className="h-10 rounded-2xl ft-border bg-white font-semibold">
                     <option value="">Seleccionar país</option>
                     {countryOptions.map((item) => <option key={item.id} value={item.name}>{item.name}</option>)}
                   </Select>
@@ -467,11 +467,11 @@ export function TaskForm({
               </>
             ) : null}
             <FieldCard label="Deadline" icon={<CalendarDays className="h-4 w-4" />}>
-              <Input {...register("dueDate")} type="date" className="h-10 rounded-2xl border-[#E5EAF1] bg-white font-semibold" />
+              <Input {...register("dueDate")} type="date" className="h-10 rounded-2xl ft-border bg-white font-semibold" />
             </FieldCard>
 {!isProjectTask ? (
               <FieldCard label="Registro" icon={<Tag className="h-4 w-4" />}>
-                <Input {...register("clientName")} placeholder="Nombre del registro" list="registry-client-options" className="h-10 rounded-2xl border-[#E5EAF1] bg-white font-semibold" />
+                <Input {...register("clientName")} placeholder="Nombre del registro" list="registry-client-options" className="h-10 rounded-2xl ft-border bg-white font-semibold" />
                 <datalist id="registry-client-options">
                   {clientOptions.map((item) => <option key={item.id} value={item.name} />)}
                 </datalist>
@@ -479,13 +479,13 @@ export function TaskForm({
             ) : null}
           </section>
 
-          <details className="group overflow-hidden rounded-[20px] border border-[#E5EAF1] bg-white">
+          <details className="group overflow-hidden rounded-[20px] border ft-border bg-white">
             <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-5 py-4">
               <span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Datos relacionados</span>
               <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-50 text-slate-500 transition group-open:rotate-180"><ChevronDown className="h-4 w-4" /></span>
             </summary>
-            <div className="border-t border-[#E5EAF1] p-5">
-              <p className="text-sm font-medium leading-6 text-[#64748B]">Aquí aparecerá información útil según el país, registro o proyecto que selecciones. Solo mostramos datos que la app puede guardar correctamente.</p>
+            <div className="border-t ft-border p-5">
+              <p className="text-sm font-medium leading-6 ft-text-muted">Aquí aparecerá información útil según el país, registro o proyecto que selecciones. Solo mostramos datos que la app puede guardar correctamente.</p>
             </div>
           </details>
 
@@ -498,7 +498,7 @@ export function TaskForm({
             <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-600"><ShieldCheck className="h-4 w-4" /> Acceso</p>
-                <p className="mt-3 text-sm font-medium leading-6 text-[#64748B]">Los permisos se gestionan desde Ajustes. Aquí solo verás las opciones que puedes usar.</p>
+                <p className="mt-3 text-sm font-medium leading-6 ft-text-muted">Los permisos se gestionan desde Ajustes. Aquí solo verás las opciones que puedes usar.</p>
               </div>
               <span className="shrink-0 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">Acceso completo</span>
             </div>
@@ -506,7 +506,7 @@ export function TaskForm({
 
           <SideCard tone="amber">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-600">Seguimiento</p>
-            <p className="mt-2 text-sm font-medium text-[#64748B]">Revisa el estado, la prioridad y el avance antes de guardar.</p>
+            <p className="mt-2 text-sm font-medium ft-text-muted">Revisa el estado, la prioridad y el avance antes de guardar.</p>
             <div className="mt-5 space-y-4">
               <FieldMini label="Estado de seguimiento">
                 <Select className="h-10 rounded-2xl border-amber-100 bg-amber-50/70 font-semibold" value={selectedStatus ?? "en_proceso"} onChange={(event) => setValue("status", event.target.value as TaskValues["status"], { shouldDirty: true })}>
@@ -516,16 +516,16 @@ export function TaskForm({
               <div>
                 <div className="mb-2 flex items-center justify-between text-xs font-semibold uppercase tracking-[0.16em] text-slate-500"><span>Avance</span><span className="text-base tracking-normal text-slate-800">{statusProgress}%</span></div>
                 <div className="h-2 rounded-full bg-slate-200"><div className="h-2 rounded-full bg-[#16C784] transition-all" style={{ width: `${statusProgress}%` }} /></div>
-                <p className="mt-2 text-xs font-semibold text-[#64748B]">Se sincroniza con el checklist: {checklistStats.total ? `${checklistStats.done}/${checklistStats.total} puntos completados.` : 'sin checklist todavía.'}</p>
+                <p className="mt-2 text-xs font-semibold ft-text-muted">Se sincroniza con el checklist: {checklistStats.total ? `${checklistStats.done}/${checklistStats.total} puntos completados.` : 'sin checklist todavía.'}</p>
               </div>
               <FieldMini label="Prioridad actual">
-                <div className="flex h-10 items-center rounded-2xl border border-[#E5EAF1] bg-white px-3.5 text-[13px] font-semibold text-slate-800">{priorityLabel(selectedPriority)}</div>
+                <div className="flex h-10 items-center rounded-2xl border ft-border bg-white px-3.5 text-[13px] font-semibold text-slate-800">{priorityLabel(selectedPriority)}</div>
               </FieldMini>
               <div className="rounded-[18px] border border-amber-200 bg-white/70 p-4 text-sm font-semibold leading-6 text-amber-900">
                 Próximo seguimiento: podrás definirlo después de crear la tarea, usando comentarios, recordatorios o checklist.
               </div>
               {isEdit && checklistStats.loaded && checklistStats.total === 0 ? (
-                <Link href={taskId ? `${taskDetailRoute(taskId)}#checklist` : taskListRoute()} className="group flex items-start gap-3 rounded-[18px] border border-amber-200 bg-amber-100/80 p-4 text-left transition hover:-translate-y-0.5 hover:bg-amber-100">
+                <Link href={taskId ? `${taskDetailRoute(taskId)}#checklist` : taskListRoute()} className="group flex items-start gap-3 rounded-[18px] border border-amber-200 bg-amber-100/80 p-4 text-left transition hover:translate-y-0 hover:bg-amber-100">
                   <span className="mt-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-white text-amber-600 ring-1 ring-amber-200">
                     <ClipboardCheck className="h-5 w-5" />
                   </span>
@@ -540,9 +540,9 @@ export function TaskForm({
 
           <SideCard tone="purple">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-600">Comentarios y archivos</p>
-            <p className="mt-3 text-sm font-medium leading-6 text-[#64748B]">Después de crear la tarea podrás agregar comentarios, archivos y revisar la actividad en un solo lugar.</p>
+            <p className="mt-3 text-sm font-medium leading-6 ft-text-muted">Después de crear la tarea podrás agregar comentarios, archivos y revisar la actividad en un solo lugar.</p>
             {isEdit && taskId ? (
-              <Link href={taskDetailRoute(taskId)} className="mt-5 inline-flex h-11 w-full items-center justify-center rounded-2xl bg-[#050B18] px-3.5 text-[13px] font-bold text-white transition hover:-translate-y-0.5">
+              <Link href={taskDetailRoute(taskId)} className="mt-5 inline-flex h-11 w-full items-center justify-center rounded-2xl bg-[#050B18] px-3.5 text-[13px] font-bold text-white transition hover:translate-y-0">
                 Abrir detalle de la tarea
               </Link>
             ) : null}
@@ -551,8 +551,8 @@ export function TaskForm({
           <SideCard tone="blue">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-600">Consejos rápidos</p>
             <div className="mt-4 rounded-[18px] bg-white/70 p-4">
-              <p className="text-sm font-semibold text-[#0F172A]">{QUICK_TIPS[quickTipIndex].title}</p>
-              <p className="mt-2 text-sm leading-6 text-[#64748B]">{QUICK_TIPS[quickTipIndex].text}</p>
+              <p className="text-sm font-semibold ft-text-main">{QUICK_TIPS[quickTipIndex].title}</p>
+              <p className="mt-2 text-sm leading-6 ft-text-muted">{QUICK_TIPS[quickTipIndex].text}</p>
             </div>
             <div className="mt-4 flex gap-2">
               {QUICK_TIPS.map((tip, index) => (
@@ -569,7 +569,7 @@ export function TaskForm({
 
 function FieldCard({ label, icon, helper, children }: { label: string; icon: ReactNode; helper?: string; children: ReactNode }) {
   return (
-    <div className="rounded-[20px] border border-[#E5EAF1] bg-white p-4">
+    <div className="rounded-[20px] border ft-border bg-white p-4">
       <label className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
         <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-slate-50 text-slate-500">{icon}</span>
         {label}
@@ -590,7 +590,7 @@ function FieldMini({ label, children }: { label: string; children: ReactNode }) 
 }
 
 function SideCard({ children, tone = "white" }: { children: ReactNode; tone?: "white" | "green" | "amber" | "purple" | "blue" }) {
-  const toneClass = tone === "green" ? "border-[#BBF7D0] bg-[#ECFDF5]" : tone === "amber" ? "border-[#FDECC8] bg-[#FFF8E8]" : tone === "purple" ? "border-[#E9D5FF] bg-[#FAF5FF]" : tone === "blue" ? "border-[#BFDBFE] bg-[#EFF6FF]" : "border-[#E5EAF1] bg-white";
+  const toneClass = tone === "green" ? "border-[#BBF7D0] bg-[#ECFDF5]" : tone === "amber" ? "border-[#FDECC8] bg-[#FFF8E8]" : tone === "purple" ? "border-[#E9D5FF] bg-[#FAF5FF]" : tone === "blue" ? "border-[#BFDBFE] bg-[#EFF6FF]" : "ft-border bg-white";
   return <section className={`rounded-[20px] border p-5 ${toneClass}`}>{children}</section>;
 }
 

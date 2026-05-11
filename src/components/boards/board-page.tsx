@@ -1097,7 +1097,7 @@ export function BoardPage({ boardId }: BoardPageProps) {
   if (error || !board) return <div className="ft-governed-screen"><div className="ft-section-card border-rose-200 bg-rose-50 text-rose-700">{error ?? "No pudimos cargar la pizarra."}</div></div>;
 
   return (
-    <div className="board-shell fixed inset-0 z-50 text-[#0F172A]">
+    <div className="board-shell fixed inset-0 z-50 ft-text-main">
       <section className="grid min-h-screen grid-rows-[92px_1fr] overflow-hidden">
         <BoardTopbar board={board} savingState={savingState} collaborators={collaborators} onTitleChange={(title) => setBoard((current) => current ? { ...current, title } : current)} onOpenShare={() => setShareOpen(true)} />
         <input ref={imageInputRef} type="file" accept="image/*" className="hidden" onChange={(event) => void handleBoardFileSelected(event, "image")} />

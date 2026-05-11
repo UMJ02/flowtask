@@ -329,7 +329,7 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery, work
         {activeColumns.map((column) => {
           const Icon = column.icon;
           return (
-            <Card key={column.value} className="rounded-[20px] border border-slate-200/85 bg-white p-4">
+            <Card key={column.value} className="rounded-2xl border border-slate-200/85 bg-white p-4">
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
                   <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200/90 text-slate-500 bg-slate-50"><Icon className="h-7 w-7" /></span>
@@ -444,7 +444,7 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery, work
               {grouped.map((column) => {
                 const Icon = column.icon;
                 return (
-                  <span key={column.value} className="inline-flex min-h-[60px] items-center justify-center gap-2 rounded-[16px] border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm font-semibold text-slate-700 shadow-[inset_0_1px_0_rgba(255,255,255,0.75)]">
+                  <span key={column.value} className="inline-flex min-h-[60px] items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm font-semibold text-slate-700 shadow-[inset_0_1px_0_rgba(255,255,255,0.75)]">
                     <Icon className="h-4 w-4 shrink-0" />
                     <span>{column.label}: {column.allItems.length}</span>
                   </span>
@@ -466,7 +466,7 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery, work
           return (
             <section
               key={column.value}
-              className={`rounded-[18px] border p-3 transition ${
+              className={`rounded-2xl border p-3 transition ${
                 isActiveDropzone || isRecentDrop ? "border-emerald-300 bg-emerald-50/60" : column.value === "en_proceso" ? "border-[#BFDBFE] bg-[linear-gradient(180deg,#F8FBFF,#FFFFFF)]" : column.value === "produccion" ? "border-violet-200 bg-[linear-gradient(180deg,#FBF8FF,#FFFFFF)]" : column.value === "en_espera" ? "border-[#FDE68A] bg-[linear-gradient(180deg,#FFFDF5,#FFFFFF)]" : "border-[#BBF7D0] bg-[linear-gradient(180deg,#F7FFFB,#FFFFFF)]"
               }`}
               onDragOver={(event) => {
@@ -530,7 +530,7 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery, work
                         }}
                         className={draggingId === task.id ? "opacity-60" : "opacity-100"}
                       >
-                        <Card className={`ft-apple-card p-3 transition hover:-translate-y-0.5 hover: ${
+                        <Card className={`ft-apple-card p-3 transition hover:translate-y-0 hover: ${
                           task.priority === "alta" ? "bg-amber-50/50 border-amber-100 ring-1 ring-amber-100 animate-[importantPulse_420ms_ease-out]" : "bg-white"
                         } ${
                           isHoverCard ? "border-emerald-300 ring-2 ring-emerald-100" : "border-white/70 hover:border-slate-200"

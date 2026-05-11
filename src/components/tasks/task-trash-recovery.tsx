@@ -88,7 +88,7 @@ export function TaskTrashRecovery({ tasks }: { tasks: TaskSummary[] }) {
   };
 
   return (
-    <div className="ft-governed-screen ft-app-bg rounded-[28px] p-1">
+    <div className="ft-governed-screen ft-app-bg rounded-3xl p-1">
       <Card className="ft-apple-panel p-5 md:p-6">
         <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div>
@@ -105,7 +105,7 @@ export function TaskTrashRecovery({ tasks }: { tasks: TaskSummary[] }) {
         </div>
 
         {notice ? (
-          <div className={`mt-5 rounded-[16px] border px-4 py-3 text-sm font-semibold ${
+          <div className={`mt-5 rounded-2xl border px-4 py-3 text-sm font-semibold ${
             notice.tone === 'error'
               ? 'border-rose-200 bg-rose-50 text-rose-700'
               : notice.tone === 'success'
@@ -120,7 +120,7 @@ export function TaskTrashRecovery({ tasks }: { tasks: TaskSummary[] }) {
         ) : null}
 
         {pending ? (
-          <div className="mt-5 rounded-[20px] border border-rose-200 bg-rose-50 p-4 text-rose-900">
+          <div className="mt-5 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-rose-900">
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
               <div>
                 <p className="text-sm font-bold">
@@ -131,8 +131,8 @@ export function TaskTrashRecovery({ tasks }: { tasks: TaskSummary[] }) {
                 </p>
               </div>
               <div className="flex gap-2">
-                <Button type="button" variant="secondary" onClick={() => setPending(null)} className="h-10 rounded-[12px] px-4">Cancelar</Button>
-                <Button type="button" onClick={() => void confirmPending()} className="h-10 rounded-[12px] bg-rose-600 px-4 text-white hover:bg-rose-700">
+                <Button type="button" variant="secondary" onClick={() => setPending(null)} className="h-10 rounded-xl px-4">Cancelar</Button>
+                <Button type="button" onClick={() => void confirmPending()} className="h-10 rounded-xl bg-rose-600 px-4 text-white hover:bg-rose-700">
                   Confirmar
                 </Button>
               </div>
@@ -140,29 +140,29 @@ export function TaskTrashRecovery({ tasks }: { tasks: TaskSummary[] }) {
           </div>
         ) : null}
 
-        <div className="mt-6 overflow-hidden rounded-[22px] border border-[#E5EAF1] bg-white">
+        <div className="mt-6 overflow-hidden rounded-2xl border ft-border bg-white">
           {items.length === 0 ? (
             <div className="p-8 text-center">
-              <p className="text-base font-bold text-[#0F172A]">No hay tareas eliminadas.</p>
-              <p className="mt-2 text-sm text-[#64748B]">Cuando elimines una tarea, aparecerá aquí para recuperación.</p>
+              <p className="text-base font-bold ft-text-main">No hay tareas eliminadas.</p>
+              <p className="mt-2 text-sm ft-text-muted">Cuando elimines una tarea, aparecerá aquí para recuperación.</p>
             </div>
           ) : (
             <div className="divide-y divide-slate-100">
               {items.map((task) => (
                 <div key={task.id} className="grid gap-3 px-5 py-4 md:grid-cols-[minmax(240px,1fr)_160px_220px] md:items-center">
                   <div>
-                    <p className="text-sm font-bold text-[#0F172A]">{task.title}</p>
-                    <p className="mt-1 text-xs font-semibold text-[#64748B]">{task.client_name || 'Sin cliente'} · {task.status}</p>
+                    <p className="text-sm font-bold ft-text-main">{task.title}</p>
+                    <p className="mt-1 text-xs font-semibold ft-text-muted">{task.client_name || 'Sin cliente'} · {task.status}</p>
                   </div>
                   <div className="text-xs font-semibold text-slate-500">
                     Eliminada: {task.deleted_at ? formatDate(task.deleted_at) : 'Sin fecha'}
                   </div>
                   <div className="flex justify-start gap-2 md:justify-end">
-                    <Button type="button" disabled={busyId === task.id} onClick={() => setPending({ type: 'restore', taskId: task.id, title: task.title })} className="h-10 rounded-[12px] bg-emerald-600 px-3 text-white hover:bg-emerald-700">
+                    <Button type="button" disabled={busyId === task.id} onClick={() => setPending({ type: 'restore', taskId: task.id, title: task.title })} className="h-10 rounded-xl bg-emerald-600 px-3 text-white hover:bg-emerald-700">
                       <ArchiveRestore className="h-4 w-4" />
                       Restaurar
                     </Button>
-                    <Button type="button" disabled={busyId === task.id} onClick={() => setPending({ type: 'purge', taskId: task.id, title: task.title })} className="h-10 rounded-[12px] bg-rose-600 px-3 text-white hover:bg-rose-700">
+                    <Button type="button" disabled={busyId === task.id} onClick={() => setPending({ type: 'purge', taskId: task.id, title: task.title })} className="h-10 rounded-xl bg-rose-600 px-3 text-white hover:bg-rose-700">
                       <Trash2 className="h-4 w-4" />
                       Definitivo
                     </Button>

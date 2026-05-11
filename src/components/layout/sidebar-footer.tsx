@@ -24,7 +24,7 @@ export function SidebarFooter({ organizations, activeOrganization, userEmail, us
           </div>
           <div className="min-w-0">
             <p className="mb-2 px-1 text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">Perfil</p>
-            <Link href="/app/profile" className="group flex min-w-0 items-center gap-3 rounded-[18px] border border-white/10 bg-white/[0.04] px-3 py-3 transition hover:-translate-y-px hover:border-[#16C784]/25 hover:bg-white/[0.07]">
+            <Link href="/app/profile" className="group flex min-w-0 items-center gap-3 rounded-[18px] border border-white/10 bg-white/[0.04] px-3 py-3 transition hover:translate-y-0 hover:border-[#16C784]/25 hover:bg-white/[0.07]">
               <span className="relative inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white text-sm font-bold text-slate-950 ring-1 ring-white/15">
                 {initials}
                 <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-[#071120] bg-[#16C784]" />

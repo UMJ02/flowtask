@@ -30,7 +30,7 @@ function Sticky({ title, body, href, meta }: { title: string; body: string; href
   return (
     <Link
       href={href}
-      className="block rounded-[24px] border border-slate-200 bg-gradient-to-br from-amber-50 to-white p-4 shadow-soft transition hover:-translate-y-0.5"
+      className="block rounded-[24px] border border-slate-200 bg-gradient-to-br from-amber-50 to-white p-4 shadow-soft transition hover:translate-y-0"
     >
       <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-500">Nota rápida</p>
       <h3 className="mt-2 text-base font-semibold text-slate-900">{title}</h3>

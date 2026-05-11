@@ -129,7 +129,7 @@ export function AccessSummaryCard({
               type="button"
               aria-expanded={isExpanded}
               onClick={() => setIsExpanded((current) => !current)}
-              className="inline-flex h-11 items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-5 text-sm font-semibold text-slate-700 transition hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-50"
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-5 text-sm font-semibold text-slate-700 transition hover:translate-y-0 hover:border-slate-300 hover:bg-slate-50"
             >
               Ver permisos activos
               {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}

@@ -337,10 +337,10 @@ const CalendarPanel = memo(function CalendarPanel({
               </button>
             ))}
           </div>
-          <button type="button" onClick={() => onStep(-1)} className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-700 transition hover:-translate-y-0.5 hover:bg-slate-50">
+          <button type="button" onClick={() => onStep(-1)} className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-700 transition hover:translate-y-0 hover:bg-slate-50">
             <ChevronLeft className="h-4 w-4" />
           </button>
-          <button type="button" onClick={() => onStep(1)} className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-700 transition hover:-translate-y-0.5 hover:bg-slate-50">
+          <button type="button" onClick={() => onStep(1)} className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-700 transition hover:translate-y-0 hover:bg-slate-50">
             <ChevronRight className="h-4 w-4" />
           </button>
         </div>
@@ -406,7 +406,7 @@ const CalendarPanel = memo(function CalendarPanel({
                 return (
                   <div
                     key={item.id}
-                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-3 text-left shadow-none transition hover:-translate-y-0.5 hover:border-emerald-200 hover:shadow"
+                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-3 text-left shadow-none transition hover:translate-y-0 hover:border-emerald-200 hover:shadow"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
@@ -966,16 +966,16 @@ function InteractiveDashboardBoardComponent() {
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <button type="button" onClick={() => setAsideOpen((v) => !v)} className="inline-flex h-11 items-center gap-2 rounded-lg border border-sky-200 bg-sky-50/70 px-4 text-sm font-semibold text-sky-800 transition hover:-translate-y-0.5 hover:bg-sky-100/70">
+            <button type="button" onClick={() => setAsideOpen((v) => !v)} className="inline-flex h-11 items-center gap-2 rounded-lg border border-sky-200 bg-sky-50/70 px-4 text-sm font-semibold text-sky-800 transition hover:translate-y-0 hover:bg-sky-100/70">
               <Menu className="h-4 w-4" /> {asideOpen ? 'Ocultar paneles' : 'Mostrar paneles'}
             </button>
-            <button type="button" onClick={refreshBoard} className="inline-flex h-11 items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:-translate-y-0.5 hover:bg-slate-50">
+            <button type="button" onClick={refreshBoard} className="inline-flex h-11 items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:translate-y-0 hover:bg-slate-50">
               <RefreshCcw className="h-4 w-4" /> Refrescar datos
             </button>
-            <button type="button" onClick={resetBoardView} className="inline-flex h-11 items-center gap-2 rounded-lg border border-rose-200 bg-rose-50 px-4 text-sm font-semibold text-rose-700 transition hover:-translate-y-0.5 hover:bg-rose-100/70">
+            <button type="button" onClick={resetBoardView} className="inline-flex h-11 items-center gap-2 rounded-lg border border-rose-200 bg-rose-50 px-4 text-sm font-semibold text-rose-700 transition hover:translate-y-0 hover:bg-rose-100/70">
               <RotateCcw className="h-4 w-4" /> Resetear vista
             </button>
-            <Link href="/app/dashboard" className="inline-flex h-11 items-center rounded-lg border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:-translate-y-0.5 hover:bg-slate-50">
+            <Link href="/app/dashboard" className="inline-flex h-11 items-center rounded-lg border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:translate-y-0 hover:bg-slate-50">
               Volver al dashboard
             </Link>
           </div>
@@ -1011,7 +1011,7 @@ function InteractiveDashboardBoardComponent() {
                     type="button"
                     onClick={() => (active ? removePanel(key) : restorePanel(key))}
                     className={cn(
-                      'flex w-full min-w-0 items-start gap-3 rounded-2xl border px-3 py-3 text-left transition duration-200 hover:-translate-y-0.5',
+                      'flex w-full min-w-0 items-start gap-3 rounded-2xl border px-3 py-3 text-left transition duration-200 hover:translate-y-0',
                       active ? 'border-emerald-200 bg-white ring-2 ring-emerald-100' : 'border-sky-100 bg-white/95 hover:border-sky-200 hover:bg-sky-50/60 hover:'
                     )}
                   >
@@ -1052,11 +1052,11 @@ function InteractiveDashboardBoardComponent() {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <button type="button" onClick={() => toggleExpanded('kanban')} className="inline-flex h-11 items-center gap-2 rounded-full bg-emerald-500 px-4 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-emerald-400">
+                    <button type="button" onClick={() => toggleExpanded('kanban')} className="inline-flex h-11 items-center gap-2 rounded-full bg-emerald-500 px-4 text-sm font-semibold text-white transition hover:translate-y-0 hover:bg-emerald-400">
                       <Plus className={cn('h-4 w-4 transition-transform', expanded.kanban ? 'rotate-45' : '')} />
                       {expanded.kanban ? 'Ocultar flujo' : 'Desplegar flujo'}
                     </button>
-                    <button type="button" onClick={() => removePanel('kanban')} className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition hover:-translate-y-0.5 hover:bg-slate-50"><X className="h-4 w-4" /></button>
+                    <button type="button" onClick={() => removePanel('kanban')} className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition hover:translate-y-0 hover:bg-slate-50"><X className="h-4 w-4" /></button>
                   </div>
                 </div>
                 {expanded.kanban ? (
@@ -1088,9 +1088,9 @@ function InteractiveDashboardBoardComponent() {
                       <h3 className="mt-1 text-xl font-bold text-slate-950">Tarea</h3>
                     </div>
                     <div className="flex items-center gap-2">
-                      <button type="button" onClick={() => removePanel('task')} className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition hover:-translate-y-0.5 hover:bg-slate-50"><X className="h-4 w-4" /></button>
-                      <button type="button" className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-emerald-200 bg-white text-emerald-600 transition hover:-translate-y-0.5 hover:bg-emerald-50"><Grip className="h-4 w-4" /></button>
-                      <button type="button" onClick={() => toggleExpanded('task')} className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500 text-white transition hover:-translate-y-0.5 hover:bg-emerald-400"><Plus className={cn('h-4 w-4 transition-transform', expanded.task ? 'rotate-45' : '')} /></button>
+                      <button type="button" onClick={() => removePanel('task')} className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition hover:translate-y-0 hover:bg-slate-50"><X className="h-4 w-4" /></button>
+                      <button type="button" className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-emerald-200 bg-white text-emerald-600 transition hover:translate-y-0 hover:bg-emerald-50"><Grip className="h-4 w-4" /></button>
+                      <button type="button" onClick={() => toggleExpanded('task')} className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500 text-white transition hover:translate-y-0 hover:bg-emerald-400"><Plus className={cn('h-4 w-4 transition-transform', expanded.task ? 'rotate-45' : '')} /></button>
                     </div>
                   </div>
                   <p className="mt-3 text-sm leading-6 text-slate-500">Crea una tarea real en la BD y luego ábrela para completar el resto del CRUD.</p>
@@ -1131,7 +1131,7 @@ function InteractiveDashboardBoardComponent() {
                         {(nextTasks.length ? nextTasks : openTasks.slice(0, 4)).map((task) => {
                           const favorite = favoriteTaskIds.has(task.id);
                           return (
-                            <div key={task.id} className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-3 text-left transition hover:-translate-y-0.5 hover:bg-white hover:shadow-none">
+                            <div key={task.id} className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-3 text-left transition hover:translate-y-0 hover:bg-white hover:shadow-none">
                             <div className="flex items-start justify-between gap-3">
                               <button type="button" onClick={() => openTask(task.id)} className="min-w-0 flex-1 text-left">
                                 <p className="text-sm font-semibold text-slate-900">{task.title}</p>
@@ -1165,16 +1165,16 @@ function InteractiveDashboardBoardComponent() {
                       <h3 className="mt-1 text-xl font-bold text-slate-950">Proyectos</h3>
                     </div>
                     <div className="flex items-center gap-2">
-                      <button type="button" onClick={() => removePanel('projects')} className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition hover:-translate-y-0.5 hover:bg-slate-50"><X className="h-4 w-4" /></button>
+                      <button type="button" onClick={() => removePanel('projects')} className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition hover:translate-y-0 hover:bg-slate-50"><X className="h-4 w-4" /></button>
                       <span className="inline-flex h-10 items-center rounded-full border border-slate-200 bg-slate-50 px-3 text-xs font-semibold text-slate-500">CRUD rápido</span>
-                      <Link href="/app/projects/new" className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500 text-white transition hover:-translate-y-0.5 hover:bg-emerald-400"><Plus className="h-4 w-4" /></Link>
+                      <Link href="/app/projects/new" className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500 text-white transition hover:translate-y-0 hover:bg-emerald-400"><Plus className="h-4 w-4" /></Link>
                     </div>
                   </div>
                   <p className="mt-3 text-sm leading-6 text-slate-500">Ten a mano los frentes que quieres mover primero.</p>
                   {expanded.projects ? (
                     <div className="mt-4 grid gap-3 sm:grid-cols-2">
                       {activeProjects.map((project) => (
-                        <Link key={project.id} href={projectDetailRoute(project.id)} className="rounded-lg border border-slate-200 bg-white px-4 py-3 transition hover:-translate-y-0.5 hover:shadow-none">
+                        <Link key={project.id} href={projectDetailRoute(project.id)} className="rounded-lg border border-slate-200 bg-white px-4 py-3 transition hover:translate-y-0 hover:shadow-none">
                           <p className="text-sm font-semibold text-slate-900">{project.title}</p>
                           <p className="mt-1 text-xs text-slate-500">{project.client_name?.trim() || 'Sin cliente'} · {formatStatus(project.status)}</p>
                           <p className="mt-2 text-[11px] font-medium uppercase tracking-[0.14em] text-emerald-700">{project.due_date || 'Sin fecha'}</p>
@@ -1199,7 +1199,7 @@ function InteractiveDashboardBoardComponent() {
                     <h3 className="mt-1 text-xl font-bold text-slate-950">Calendario</h3>
                   </div>
                   <div className="flex items-center gap-2">
-                    <button type="button" onClick={() => removePanel('calendar')} className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition hover:-translate-y-0.5 hover:bg-slate-50"><X className="h-4 w-4" /></button>
+                    <button type="button" onClick={() => removePanel('calendar')} className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition hover:translate-y-0 hover:bg-slate-50"><X className="h-4 w-4" /></button>
                     <span className="inline-flex h-10 items-center rounded-full border border-slate-200 bg-slate-50 px-3 text-xs font-semibold text-slate-500">CRUD rápido</span>
                   </div>
                 </div>

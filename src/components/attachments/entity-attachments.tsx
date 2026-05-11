@@ -164,11 +164,11 @@ export function EntityAttachments({
   };
 
   return (
-    <Card className="rounded-[22px] border border-[#E5EAF1] bg-white p-4 shadow-none md:p-5">
+    <Card className="rounded-[22px] border ft-border bg-white p-4 shadow-none md:p-5">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h3 className="text-base font-bold text-[#0F172A]">Adjuntos</h3>
-          <p className="mt-1 text-sm text-[#64748B]">Sube archivos de respaldo para esta {entityType === "task" ? "tarea" : "proyecto"}.</p>
+          <h3 className="text-base font-bold ft-text-main">Adjuntos</h3>
+          <p className="mt-1 text-sm ft-text-muted">Sube archivos de respaldo para esta {entityType === "task" ? "tarea" : "proyecto"}.</p>
         </div>
         <label className={`inline-flex items-center gap-2 h-10 rounded-[16px] px-5 text-sm font-bold ${canManage ? "cursor-pointer bg-[#050B18] text-white hover:bg-[#111827]" : "cursor-not-allowed bg-slate-200 text-slate-500"}`}>
           <Upload className="h-4 w-4" />
@@ -181,11 +181,11 @@ export function EntityAttachments({
       {error ? <p className="mt-3 text-sm text-red-600">{error}</p> : null}
 
       {variant === "list" ? (
-        <div className="mt-4 divide-y divide-[#E5EAF1] overflow-hidden rounded-[18px] border border-[#E5EAF1] bg-white">
+        <div className="mt-4 divide-y divide-[#E5EAF1] overflow-hidden rounded-[18px] border ft-border bg-white">
           {attachments.length ? attachments.map((attachment) => (
             <div key={attachment.id} className="ft-motion-list-item flex flex-col gap-3 px-3.5 py-3 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex min-w-0 items-center gap-3">
-                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-[14px] border border-[#E5EAF1] bg-[#F8FAFC] text-[#64748B]">
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-[14px] border ft-border bg-[#F8FAFC] ft-text-muted">
                   <AttachmentTypeIcon attachment={attachment} />
                 </span>
                 <div className="min-w-0">
@@ -208,7 +208,7 @@ export function EntityAttachments({
               </div>
             </div>
           )) : (
-            <div className="px-4 py-5 text-center text-sm font-semibold text-[#64748B]">Todavía no hay archivos. Puedes subir briefs, facturas, capturas o documentos de soporte.</div>
+            <div className="px-4 py-5 text-center text-sm font-semibold ft-text-muted">Todavía no hay archivos. Puedes subir briefs, facturas, capturas o documentos de soporte.</div>
           )}
         </div>
       ) : (
@@ -216,15 +216,15 @@ export function EntityAttachments({
         {attachments.length ? attachments.map((attachment) => {
           const image = isImageAttachment(attachment);
           return (
-            <div key={attachment.id} className="overflow-hidden rounded-[18px] border border-[#E5EAF1] bg-white">
+            <div key={attachment.id} className="overflow-hidden rounded-[18px] border ft-border bg-white">
               {attachment.public_url ? (
                 <a href={attachment.public_url} target="_blank" rel="noreferrer" className="block">
-                  <div className="grid aspect-[4/3] place-items-center overflow-hidden bg-[#F8FAFC] text-[#64748B]">
+                  <div className="grid aspect-[4/3] place-items-center overflow-hidden bg-[#F8FAFC] ft-text-muted">
                     {image ? <img src={attachment.public_url} alt={attachment.file_name} className="h-full w-full object-cover" /> : <AttachmentTypeIcon attachment={attachment} />}
                   </div>
                 </a>
               ) : (
-                <div className="grid aspect-[4/3] place-items-center bg-[#F8FAFC] text-[#64748B]"><AttachmentTypeIcon attachment={attachment} /></div>
+                <div className="grid aspect-[4/3] place-items-center bg-[#F8FAFC] ft-text-muted"><AttachmentTypeIcon attachment={attachment} /></div>
               )}
               <div className="space-y-3 p-3">
                 <div className="min-w-0">
@@ -259,7 +259,7 @@ export function EntityAttachments({
             </div>
           );
         }) : (
-          <div className="rounded-[18px] border border-dashed border-[#BFDBFE] bg-[#F8FBFF] px-4 py-5 text-center text-sm font-semibold text-[#64748B] sm:col-span-2 xl:col-span-3">
+          <div className="rounded-[18px] border border-dashed border-[#BFDBFE] bg-[#F8FBFF] px-4 py-5 text-center text-sm font-semibold ft-text-muted sm:col-span-2 xl:col-span-3">
             Todavía no hay archivos. Puedes subir briefs, facturas, capturas o documentos de soporte.
           </div>
         )}

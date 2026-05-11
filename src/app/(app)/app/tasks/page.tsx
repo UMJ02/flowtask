@@ -38,9 +38,9 @@ function StatCard({
           <Icon className="h-5 w-5" />
         </span>
         <div className="min-w-0">
-          <p className="text-xs font-semibold text-[#64748B]">{label}</p>
-          <p className="mt-1 text-xl font-bold tracking-tight text-[#0F172A]">{value}</p>
-          <p className="mt-1 text-xs font-medium text-[#64748B]">{helper}</p>
+          <p className="text-xs font-semibold ft-text-muted">{label}</p>
+          <p className="mt-1 text-xl font-bold tracking-tight ft-text-main">{value}</p>
+          <p className="mt-1 text-xs font-medium ft-text-muted">{helper}</p>
         </div>
       </div>
     </Card>
@@ -74,7 +74,7 @@ export default async function TasksPage({ searchParams }: { searchParams?: Promi
   };
 
   return (
-    <div className="ft-governed-screen ft-app-bg rounded-[28px] p-1">
+    <div className="ft-governed-screen ft-app-bg rounded-3xl p-1">
       <Card className="ft-apple-panel p-5 md:p-6">
         <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div>
@@ -109,8 +109,8 @@ export default async function TasksPage({ searchParams }: { searchParams?: Promi
       </Card>
 
       <div className="flex flex-wrap gap-2">
-        <Link href="/app/tasks?status=concluido" className="inline-flex h-10 items-center justify-center rounded-[14px] border border-emerald-200 bg-emerald-50 px-4 text-sm font-bold text-emerald-800 transition hover:bg-emerald-100">Ver concluidas / reactivar</Link>
-        {filters.status === 'concluido' ? <Link href="/app/tasks" className="inline-flex h-10 items-center justify-center rounded-[14px] border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-[#334155] transition hover:bg-slate-50">Volver a operativas</Link> : null}
+        <Link href="/app/tasks?status=concluido" className="inline-flex h-10 items-center justify-center rounded-xl border border-emerald-200 bg-emerald-50 px-4 text-sm font-bold text-emerald-800 transition hover:bg-emerald-100">Ver concluidas / reactivar</Link>
+        {filters.status === 'concluido' ? <Link href="/app/tasks" className="inline-flex h-10 items-center justify-center rounded-xl border ft-border bg-white px-4 text-sm font-bold text-[#334155] transition hover:bg-slate-50">Volver a operativas</Link> : null}
       </div>
 
       <TaskWorkspace searchPanel={<TaskSearchPanel filters={filters} />} tasks={tasks.map((task) => ({

@@ -82,7 +82,7 @@ export function WorkspaceFloatingActions() {
                     key={action.title}
                     href={action.href}
                     onClick={() => setOpen(false)}
-                    className="group flex items-start gap-3 rounded-[20px] border border-slate-200 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,250,252,0.98))] px-4 py-3 transition duration-200 hover:-translate-y-0.5 hover:border-emerald-200 hover:bg-emerald-50/50 hover:"
+                    className="group flex items-start gap-3 rounded-[20px] border border-slate-200 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,250,252,0.98))] px-4 py-3 transition duration-200 hover:translate-y-0 hover:border-emerald-200 hover:bg-emerald-50/50 hover:"
                   >
                     <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100 transition group-hover:bg-white">
                       <Icon className="h-5 w-5" />
@@ -106,7 +106,7 @@ export function WorkspaceFloatingActions() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="inline-flex items-center gap-2 rounded-2xl border border-sky-200 bg-sky-50 px-4 py-2.5 text-sm font-semibold text-sky-800 transition hover:-translate-y-0.5 hover:bg-sky-100"
+        className="inline-flex items-center gap-2 rounded-2xl border border-sky-200 bg-sky-50 px-4 py-2.5 text-sm font-semibold text-sky-800 transition hover:translate-y-0 hover:bg-sky-100"
         aria-label="Mostrar acciones rápidas"
       >
         <Sparkles className="h-4 w-4" />

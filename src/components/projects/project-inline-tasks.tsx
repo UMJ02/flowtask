@@ -232,23 +232,23 @@ export function ProjectInlineTasks({ project, initialTasks, members, canManage =
       <div className="mb-5 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#16A36C]">Tareas internas</p>
-          <h2 className="mt-1 text-xl font-semibold text-[#0F172A]">Tareas del proyecto</h2>
-          <p className="mt-1 max-w-2xl text-sm font-medium text-[#64748B]">Estas tareas viven dentro del proyecto y ayudan a medir su avance real.</p>
+          <h2 className="mt-1 text-xl font-semibold ft-text-main">Tareas del proyecto</h2>
+          <p className="mt-1 max-w-2xl text-sm font-medium ft-text-muted">Estas tareas viven dentro del proyecto y ayudan a medir su avance real.</p>
         </div>
         <div className="min-w-[180px]">
-          <div className="flex items-center justify-between text-sm font-semibold text-[#0F172A]"><span>Avance</span><span>{progress}%</span></div>
+          <div className="flex items-center justify-between text-sm font-semibold ft-text-main"><span>Avance</span><span>{progress}%</span></div>
           <div className="mt-2 h-2 rounded-full bg-[#EEF2F7]"><span className="block h-2 rounded-full bg-[#16C784]" style={{ width: `${progress}%` }} /></div>
-          <p className="mt-2 text-xs font-bold text-[#64748B]">{completed}/{tasks.length} completadas</p>
+          <p className="mt-2 text-xs font-bold ft-text-muted">{completed}/{tasks.length} completadas</p>
         </div>
       </div>
 
       <div className="mb-5 grid gap-3 rounded-[22px] border border-[#E7EDF5] bg-[#FBFCFE] p-3 md:grid-cols-2 xl:grid-cols-[minmax(220px,1fr)_170px_150px_minmax(190px,240px)_130px] xl:items-center">
-        <input value={draft.title} onChange={(e) => setDraft((current) => ({ ...current, title: e.target.value }))} disabled={!canManage} className="h-10 rounded-[16px] border border-[#E7EDF5] bg-white px-4 text-sm font-bold text-[#0F172A] outline-none focus:border-[#16C784] focus:ring-4 focus:ring-[#16C784]/10" placeholder="Nueva tarea del proyecto..." />
-        <input type="date" value={draft.dueDate} onChange={(e) => setDraft((current) => ({ ...current, dueDate: e.target.value }))} disabled={!canManage} className="h-10 rounded-[16px] border border-[#E7EDF5] bg-white px-3 text-sm font-bold text-[#0F172A] outline-none" />
-        <select value={draft.priority} onChange={(e) => setDraft((current) => ({ ...current, priority: e.target.value }))} disabled={!canManage} className="h-10 rounded-[16px] border border-[#E7EDF5] bg-white px-3 text-sm font-bold text-[#0F172A] outline-none">
+        <input value={draft.title} onChange={(e) => setDraft((current) => ({ ...current, title: e.target.value }))} disabled={!canManage} className="h-10 rounded-[16px] border border-[#E7EDF5] bg-white px-4 text-sm font-bold ft-text-main outline-none focus:border-[#16C784] focus:ring-4 focus:ring-[#16C784]/10" placeholder="Nueva tarea del proyecto..." />
+        <input type="date" value={draft.dueDate} onChange={(e) => setDraft((current) => ({ ...current, dueDate: e.target.value }))} disabled={!canManage} className="h-10 rounded-[16px] border border-[#E7EDF5] bg-white px-3 text-sm font-bold ft-text-main outline-none" />
+        <select value={draft.priority} onChange={(e) => setDraft((current) => ({ ...current, priority: e.target.value }))} disabled={!canManage} className="h-10 rounded-[16px] border border-[#E7EDF5] bg-white px-3 text-sm font-bold ft-text-main outline-none">
           <option value="media">Media</option><option value="alta">Alta</option><option value="baja">Baja</option>
         </select>
-        <select value={draft.assigneeId || firstMemberId} onChange={(e) => setDraft((current) => ({ ...current, assigneeId: e.target.value }))} disabled={!canManage || !members.length} className="h-10 rounded-[16px] border border-[#E7EDF5] bg-white px-3 text-sm font-bold text-[#0F172A] outline-none">
+        <select value={draft.assigneeId || firstMemberId} onChange={(e) => setDraft((current) => ({ ...current, assigneeId: e.target.value }))} disabled={!canManage || !members.length} className="h-10 rounded-[16px] border border-[#E7EDF5] bg-white px-3 text-sm font-bold ft-text-main outline-none">
           <option value="">Sin responsable</option>
           {members.map((member) => <option key={member.user_id} value={member.user_id}>{memberName(member)}</option>)}
         </select>
@@ -271,23 +271,23 @@ export function ProjectInlineTasks({ project, initialTasks, members, canManage =
                   <select value={editDraft.assigneeId} onChange={(e) => setEditDraft((current) => ({ ...current, assigneeId: e.target.value }))} className="h-11 rounded-[14px] border border-[#E7EDF5] px-3 text-sm font-bold outline-none"><option value="">Sin responsable</option>{members.map((member) => <option key={member.user_id} value={member.user_id}>{memberName(member)}</option>)}</select>
                   <div className="flex gap-2">
                     <button type="button" onClick={() => saveProjectTask(task.id)} disabled={busyId === task.id} className="grid h-11 w-11 place-items-center rounded-[14px] bg-[#050B18] text-white"><Save className="h-4 w-4" /></button>
-                    <button type="button" onClick={() => setEditingId(null)} className="grid h-11 w-11 place-items-center rounded-[14px] border border-[#E7EDF5] bg-white text-[#64748B]"><X className="h-4 w-4" /></button>
+                    <button type="button" onClick={() => setEditingId(null)} className="grid h-11 w-11 place-items-center rounded-[14px] border border-[#E7EDF5] bg-white ft-text-muted"><X className="h-4 w-4" /></button>
                   </div>
                 </div>
               ) : (
                 <div className="grid gap-3 text-sm md:grid-cols-[32px_minmax(0,1fr)_130px_150px] xl:grid-cols-[32px_minmax(220px,1.5fr)_120px_150px_130px_110px] md:items-center">
                   <button type="button" onClick={() => toggleDone(task)} disabled={!canManage || busyId === task.id} className={`grid h-6 w-6 place-items-center rounded-md border ${task.status === "concluido" ? "border-[#16C784] bg-[#16C784]" : "border-slate-300 bg-white"}`}>{task.status === "concluido" ? <CheckCircle2 className="h-4 w-4 text-white" /> : null}</button>
                   <div className="min-w-0">
-                    <p className="truncate font-semibold text-[#0F172A]">{task.title}</p>
-                    <p className="mt-1 truncate text-xs font-medium text-[#64748B]">Hija de {project.title}</p>
+                    <p className="truncate font-semibold ft-text-main">{task.title}</p>
+                    <p className="mt-1 truncate text-xs font-medium ft-text-muted">Hija de {project.title}</p>
                   </div>
                   <span className={`w-fit rounded-full px-3 py-1 text-xs font-bold ring-1 ${statusClass(task.status)}`}>{statusLabel(task.status)}</span>
                   <div className="flex items-center gap-2 text-xs font-semibold text-[#475569]"><span className="grid h-7 w-7 place-items-center rounded-full bg-[#ECFDF5] text-[10px] font-semibold text-[#16A36C]">{initials(assigneeLabel)}</span><span className="truncate">{assigneeLabel}</span></div>
-                  <span className="inline-flex items-center gap-1 text-xs font-bold text-[#64748B]"><CalendarDays className="h-3.5 w-3.5" />{task.due_date ? formatDate(task.due_date) : "Sin fecha"}</span>
+                  <span className="inline-flex items-center gap-1 text-xs font-bold ft-text-muted"><CalendarDays className="h-3.5 w-3.5" />{task.due_date ? formatDate(task.due_date) : "Sin fecha"}</span>
                   <div className="flex items-center justify-end gap-2">
                     <span className={`hidden w-fit rounded-full px-2.5 py-1 text-xs font-bold ring-1 lg:inline-flex ${priorityClass(task.priority)}`}>{priorityLabel(task.priority)}</span>
-                    <button type="button" onClick={() => openEdit(task)} disabled={!canManage} className="grid h-9 w-9 place-items-center rounded-[12px] border border-[#E7EDF5] bg-white text-[#64748B] hover:bg-slate-50"><Edit3 className="h-4 w-4" /></button>
-                    <button type="button" onClick={() => deleteProjectTask(task)} disabled={!canManage || busyId === task.id} className="grid h-9 w-9 place-items-center rounded-[12px] border border-[#E7EDF5] bg-white text-[#64748B] hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600"><Trash2 className="h-4 w-4" /></button>
+                    <button type="button" onClick={() => openEdit(task)} disabled={!canManage} className="grid h-9 w-9 place-items-center rounded-[12px] border border-[#E7EDF5] bg-white ft-text-muted hover:bg-slate-50"><Edit3 className="h-4 w-4" /></button>
+                    <button type="button" onClick={() => deleteProjectTask(task)} disabled={!canManage || busyId === task.id} className="grid h-9 w-9 place-items-center rounded-[12px] border border-[#E7EDF5] bg-white ft-text-muted hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600"><Trash2 className="h-4 w-4" /></button>
                   </div>
                 </div>
               )}
@@ -296,8 +296,8 @@ export function ProjectInlineTasks({ project, initialTasks, members, canManage =
         }) : (
           <div className="px-5 py-10 text-center">
             <UserRound className="mx-auto h-10 w-10 text-[#94A3B8]" />
-            <p className="mt-3 text-base font-semibold text-[#0F172A]">Todavía no hay tareas internas.</p>
-            <p className="mt-1 text-sm font-medium text-[#64748B]">Agrega la primera tarea para empezar a medir el avance del proyecto.</p>
+            <p className="mt-3 text-base font-semibold ft-text-main">Todavía no hay tareas internas.</p>
+            <p className="mt-1 text-sm font-medium ft-text-muted">Agrega la primera tarea para empezar a medir el avance del proyecto.</p>
           </div>
         )}
       </div>

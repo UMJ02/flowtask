@@ -312,21 +312,21 @@ export function ProjectForm({ projectId, initialData, submitLabel, successMessag
   return (
     <form className="-mx-4 min-h-screen bg-[#F6F8FC] pb-8 md:-mx-6" onSubmit={handleSubmit(onSubmit)}>
       <div className="sticky top-0 z-40 mb-6 px-3 py-2 sm:px-4 lg:px-5">
-        <div className="rounded-[20px] border border-[#E5EAF1] bg-white/95 px-4 py-4 backdrop-blur-xl sm:px-5 lg:px-5">
+        <div className="rounded-[20px] border ft-border bg-white/95 px-4 py-4 backdrop-blur-xl sm:px-5 lg:px-5">
           <div className="flex min-h-[72px] w-full flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex min-w-0 items-center gap-3">
-              <Link href={cancelHref} className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#050B18] text-white transition hover:-translate-y-0.5" aria-label="Volver">
+              <Link href={cancelHref} className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#050B18] text-white transition hover:translate-y-0" aria-label="Volver">
                 <ArrowLeft className="h-5 w-5" />
               </Link>
               <div className="min-w-0">
                 <p className="text-xs font-semibold uppercase tracking-[0.20em] text-[#16A36C]">FlowTask · Crear proyecto</p>
-                <h1 className="truncate text-xl font-semibold tracking-[-0.035em] text-[#0F172A] sm:text-[28px]">{isEdit ? "Editar proyecto" : "Nuevo proyecto"}</h1>
-                <p className="mt-1 line-clamp-1 text-sm font-medium text-[#64748B]">Define el frente de trabajo sin cambiar el contrato actual de Supabase.</p>
+                <h1 className="truncate text-xl font-semibold tracking-[-0.035em] ft-text-main sm:text-[28px]">{isEdit ? "Editar proyecto" : "Nuevo proyecto"}</h1>
+                <p className="mt-1 line-clamp-1 text-sm font-medium ft-text-muted">Define el frente de trabajo sin cambiar el contrato actual de Supabase.</p>
               </div>
             </div>
             <div className="flex flex-wrap items-center gap-2 lg:justify-end">
-              <button type="button" onClick={() => { reset(resetValues); setProjectImagePreview(initialData?.imageUrl ?? ""); setProjectImageFile(null); }} className="inline-flex h-10 items-center rounded-2xl border border-[#E5EAF1] bg-white px-3.5 text-[13px] font-bold text-slate-800 transition hover:bg-slate-50">Restablecer</button>
-              <Link href={cancelHref} className="inline-flex h-10 items-center justify-center rounded-2xl border border-[#E5EAF1] bg-white px-4 text-[13px] font-bold text-slate-800 transition hover:bg-slate-50">Cancelar</Link>
+              <button type="button" onClick={() => { reset(resetValues); setProjectImagePreview(initialData?.imageUrl ?? ""); setProjectImageFile(null); }} className="inline-flex h-10 items-center rounded-2xl border ft-border bg-white px-3.5 text-[13px] font-bold text-slate-800 transition hover:bg-slate-50">Restablecer</button>
+              <Link href={cancelHref} className="inline-flex h-10 items-center justify-center rounded-2xl border ft-border bg-white px-4 text-[13px] font-bold text-slate-800 transition hover:bg-slate-50">Cancelar</Link>
               <Button loading={isBusy} type="submit" className="h-10 rounded-xl bg-[#16C784] px-5 text-white hover:bg-[#12b777]">{submitLabel ?? (isEdit ? "Guardar cambios" : "Crear proyecto")}</Button>
             </div>
           </div>
@@ -335,18 +335,18 @@ export function ProjectForm({ projectId, initialData, submitLabel, successMessag
 
       <div className="grid w-full gap-4 px-3 sm:px-4 lg:px-5 xl:grid-cols-[minmax(0,1fr)_380px] 2xl:gap-5">
         <div className="space-y-5">
-          <section className="rounded-[20px] border border-[#E5EAF1] bg-white p-4 sm:p-5">
-            <div className="rounded-[20px] border border-[#E5EAF1] bg-white p-5 transition focus-within:border-emerald-200 focus-within:ring-4 focus-within:ring-emerald-50">
+          <section className="rounded-[20px] border ft-border bg-white p-4 sm:p-5">
+            <div className="rounded-[20px] border ft-border bg-white p-5 transition focus-within:border-emerald-200 focus-within:ring-4 focus-within:ring-emerald-50">
               <div className="mb-3 flex items-center justify-between gap-3">
                 <label className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Nombre del proyecto</label>
                 <span className="text-xs font-bold text-slate-400">{watchedTitle.length} / 120</span>
               </div>
-              <Input {...register("title")} placeholder="Ej. Lanzamiento de campaña Q3" className="min-h-[52px] w-full rounded-xl border border-[#E5EAF1] bg-white px-4 py-2.5 text-[22px] font-semibold leading-[1.15] tracking-[-0.028em] text-[#0F172A] shadow-none outline-none transition placeholder:text-slate-400 focus:border-[#16C784] focus:ring-4 focus:ring-emerald-500/10 sm:text-[26px]" />
+              <Input {...register("title")} placeholder="Ej. Lanzamiento de campaña Q3" className="min-h-[52px] w-full rounded-xl border ft-border bg-white px-4 py-2.5 text-[22px] font-semibold leading-[1.15] tracking-[-0.028em] ft-text-main shadow-none outline-none transition placeholder:text-slate-400 focus:border-[#16C784] focus:ring-4 focus:ring-emerald-500/10 sm:text-[26px]" />
               {errors.title ? <p className="mt-3 text-sm font-semibold text-red-600">{errors.title.message}</p> : null}
             </div>
 
-            <div className="mt-5 overflow-hidden rounded-[20px] border border-[#E5EAF1] bg-white">
-              <div className="flex items-center justify-between border-b border-[#E5EAF1] px-5 py-4">
+            <div className="mt-5 overflow-hidden rounded-[20px] border ft-border bg-white">
+              <div className="flex items-center justify-between border-b ft-border px-5 py-4">
                 <label className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Descripción</label>
                 <span className="text-xs font-bold text-slate-400">{watchedDescription.length} caracteres</span>
               </div>
@@ -362,7 +362,7 @@ export function ProjectForm({ projectId, initialData, submitLabel, successMessag
                 </div>
                 <div className="space-y-3">
                   <input type="hidden" {...register("imageUrl")} />
-                  <Input type="file" accept="image/*" className="h-10 rounded-2xl border-[#E5EAF1] bg-white font-semibold" onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                  <Input type="file" accept="image/*" className="h-10 rounded-2xl ft-border bg-white font-semibold" onChange={(event: ChangeEvent<HTMLInputElement>) => {
                     const file = event.target.files?.[0] ?? null;
                     setProjectImageFile(file);
                     if (file) {
@@ -377,38 +377,38 @@ export function ProjectForm({ projectId, initialData, submitLabel, successMessag
             </FieldCard>
 
             <FieldCard label="Estado" icon={<CheckCircle2 className="h-4 w-4" />}>
-              <Select {...register("status")} className="h-10 rounded-2xl border-[#E5EAF1] bg-white font-semibold">
+              <Select {...register("status")} className="h-10 rounded-2xl ft-border bg-white font-semibold">
                 {PROJECT_STATUSES.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
               </Select>
             </FieldCard>
 
             <FieldCard label="Departamento" icon={<FolderKanban className="h-4 w-4" />}>
-              <Select {...register("department")} className="h-10 rounded-2xl border-[#E5EAF1] bg-white font-semibold">
+              <Select {...register("department")} className="h-10 rounded-2xl ft-border bg-white font-semibold">
                 <option value="">Seleccionar</option>
                 {departmentOptions.map((item) => <option key={item.id} value={item.code}>{item.name}</option>)}
               </Select>
             </FieldCard>
 
             <FieldCard label="Registro" icon={<Tag className="h-4 w-4" />} helper="Asocia este proyecto con el registro correcto para mantener todo organizado.">
-              <Input {...register("clientName")} placeholder="Nombre del registro" list="project-registry-client-options" className="h-10 rounded-2xl border-[#E5EAF1] bg-white font-semibold" />
+              <Input {...register("clientName")} placeholder="Nombre del registro" list="project-registry-client-options" className="h-10 rounded-2xl ft-border bg-white font-semibold" />
               <datalist id="project-registry-client-options">{clientOptions.map((item) => <option key={item.id} value={item.name} />)}</datalist>
             </FieldCard>
 
             <FieldCard label="País" icon={<Globe2 className="h-4 w-4" />}>
-              <Select {...register("country")} className="h-10 rounded-2xl border-[#E5EAF1] bg-white font-semibold">
+              <Select {...register("country")} className="h-10 rounded-2xl ft-border bg-white font-semibold">
                 <option value="">Seleccionar país</option>
                 {countryOptions.map((item) => <option key={item.id} value={item.name}>{item.name}</option>)}
               </Select>
             </FieldCard>
 
             <FieldCard label="Deadline" icon={<CalendarDays className="h-4 w-4" />}>
-              <Input {...register("dueDate")} type="date" className="h-10 rounded-2xl border-[#E5EAF1] bg-white font-semibold" />
+              <Input {...register("dueDate")} type="date" className="h-10 rounded-2xl ft-border bg-white font-semibold" />
             </FieldCard>
 
             <label className="md:col-span-2 flex cursor-pointer items-center justify-between gap-4 rounded-[20px] border border-[#BBF7D0] bg-[#ECFDF5] p-5">
               <span className="flex min-w-0 items-start gap-3">
                 <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-white text-[#16A36C] ring-1 ring-[#BBF7D0]"><Link2 className="h-5 w-5" /></span>
-                <span className="min-w-0"><span className="block text-sm font-semibold text-[#0F172A]">Proyecto colaborativo y con enlace compartible</span><span className="mt-1 block text-sm font-medium leading-6 text-[#64748B]">Activa la visibilidad compartida usando los mismos campos reales: is_collaborative, share_enabled y share_token.</span></span>
+                <span className="min-w-0"><span className="block text-sm font-semibold ft-text-main">Proyecto colaborativo y con enlace compartible</span><span className="mt-1 block text-sm font-medium leading-6 ft-text-muted">Activa la visibilidad compartida usando los mismos campos reales: is_collaborative, share_enabled y share_token.</span></span>
               </span>
               <input type="checkbox" {...register("isCollaborative")} className="h-5 w-5 shrink-0 accent-[#16C784]" />
             </label>
@@ -421,11 +421,11 @@ export function ProjectForm({ projectId, initialData, submitLabel, successMessag
         <aside className="space-y-5 xl:sticky xl:top-[104px] xl:self-start">
           <SideCard tone="green">
             <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-600"><Sparkles className="h-4 w-4" /> ¿Qué es este proyecto?</p>
-            <p className="mt-3 text-sm font-medium leading-6 text-[#64748B]">Un proyecto reúne tareas, equipo, archivos y fechas en un solo lugar. Después de crearlo podrás trabajar desde su detalle.</p>
+            <p className="mt-3 text-sm font-medium leading-6 ft-text-muted">Un proyecto reúne tareas, equipo, archivos y fechas en un solo lugar. Después de crearlo podrás trabajar desde su detalle.</p>
           </SideCard>
           <SideCard tone="blue">
             <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-600"><Users className="h-4 w-4" /> Siguiente paso</p>
-            <div className="mt-4 space-y-3 text-sm font-semibold leading-6 text-[#64748B]">
+            <div className="mt-4 space-y-3 text-sm font-semibold leading-6 ft-text-muted">
               <p>1. Crea el proyecto.</p>
               <p>2. Entra al detalle para agregar tareas internas.</p>
               <p>3. Usa editar aquí mismo para ajustes rápidos sin salir de la vista.</p>
@@ -433,7 +433,7 @@ export function ProjectForm({ projectId, initialData, submitLabel, successMessag
           </SideCard>
           <SideCard tone="amber">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-600">Información que se guardará</p>
-            <p className="mt-3 text-sm font-medium leading-6 text-[#64748B]">Este formulario guarda solo la información necesaria: nombre, descripción, imagen, estado, departamento, registro, país, fecha límite y colaboración.</p>
+            <p className="mt-3 text-sm font-medium leading-6 ft-text-muted">Este formulario guarda solo la información necesaria: nombre, descripción, imagen, estado, departamento, registro, país, fecha límite y colaboración.</p>
             <span className="mt-4 inline-flex rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-700 ring-1 ring-[#E5EAF1]">{watchedCollaborative ? "Modo colaborativo" : "Modo individual"}</span>
           </SideCard>
         </aside>
@@ -444,7 +444,7 @@ export function ProjectForm({ projectId, initialData, submitLabel, successMessag
 
 function FieldCard({ label, icon, helper, children }: { label: string; icon: ReactNode; helper?: string; children: ReactNode }) {
   return (
-    <div className="rounded-[20px] border border-[#E5EAF1] bg-white p-4 md:col-span-1">
+    <div className="rounded-[20px] border ft-border bg-white p-4 md:col-span-1">
       <label className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
         <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-slate-50 text-slate-500">{icon}</span>
         {label}
@@ -456,6 +456,6 @@ function FieldCard({ label, icon, helper, children }: { label: string; icon: Rea
 }
 
 function SideCard({ children, tone = "white" }: { children: ReactNode; tone?: "white" | "green" | "amber" | "blue" }) {
-  const toneClass = tone === "green" ? "border-[#BBF7D0] bg-[#ECFDF5]" : tone === "amber" ? "border-[#FDECC8] bg-[#FFF8E8]" : tone === "blue" ? "border-[#BFDBFE] bg-[#EFF6FF]" : "border-[#E5EAF1] bg-white";
+  const toneClass = tone === "green" ? "border-[#BBF7D0] bg-[#ECFDF5]" : tone === "amber" ? "border-[#FDECC8] bg-[#FFF8E8]" : tone === "blue" ? "border-[#BFDBFE] bg-[#EFF6FF]" : "ft-border bg-white";
   return <section className={`rounded-[20px] border p-5 ${toneClass}`}>{children}</section>;
 }

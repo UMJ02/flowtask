@@ -138,14 +138,14 @@ export function DashboardHero({
           <div className="mt-3 flex flex-wrap items-center gap-2 lg:flex-nowrap">
             <Link
               href={asRoute('/app/board')}
-              className="inline-flex items-center gap-2 rounded-2xl bg-slate-950 px-4 py-2.5 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-slate-900"
+              className="inline-flex items-center gap-2 rounded-2xl bg-slate-950 px-4 py-2.5 text-sm font-semibold text-white transition hover:translate-y-0 hover:bg-slate-900"
             >
               Abrir pizarra
               <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
               href={taskListRoute('view=list')}
-              className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:-translate-y-0.5 hover:border-emerald-200 hover:text-emerald-700"
+              className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:translate-y-0 hover:border-emerald-200 hover:text-emerald-700"
             >
               Ver tareas
             </Link>
@@ -161,7 +161,7 @@ export function DashboardHero({
                 key={metric.label}
                 href={metric.href}
                 className={[
-                  'group relative overflow-hidden rounded-[16px] border border-slate-200 bg-white/96 p-3 ring-1 ring-white transition-all duration-300 hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-200',
+                  'group relative overflow-hidden rounded-[16px] border border-slate-200 bg-white/96 p-3 ring-1 ring-white transition-all duration-300 hover:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-200',
                   theme.border,
                   theme.shadow,
                   theme.surface,

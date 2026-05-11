@@ -1,54 +1,47 @@
-# FlowTask — v58.24.9.9 Visual System Cleanup + Apple Workspace UI Polish
+# FlowTask — v58.24.9.9.1 Visual Style Deduplication + Motion Cleanup Pass
 
-Base: **v58.24.9.8 — Client Final Readiness + Global Modal System + Trash Recovery**
+Base: **v58.24.9.9 — Visual System Cleanup + Apple Workspace UI Polish**
 
 ## Objetivo
 
-Unificar la dirección visual de la app para que se sienta como un producto único, limpio y premium:
-
-- Apple-like workspace surfaces.
-- Claridad tipo Google Workspace.
-- Dashboards operativos tipo monday.
-- Tableros legibles tipo Trello.
-- Menos estilos repetidos.
-- Menos animaciones decorativas.
-- Motion solo funcional.
+Hacer que el sistema visual nuevo realmente gobierne más la app, reduciendo estilos viejos repetidos que estaban empujando sobre la dirección Apple Workspace.
 
 ## Cambios principales
 
-### Visual system global
+### Deduplicación visual
 
-Se agregan tokens y clases en:
-
-```txt
-src/app/globals.css
-```
-
-Nuevas clases:
+Se reducen estilos directos repetidos en `src/**/*.tsx`:
 
 ```txt
-ft-app-bg
-ft-surface
-ft-surface-flat
-ft-apple-card
-ft-apple-panel
-ft-apple-toolbar
-ft-apple-button
-ft-apple-button-primary
-ft-apple-button-secondary
-ft-apple-chip
-ft-state-chip-progress
-ft-state-chip-production
-ft-state-chip-waiting
-ft-state-chip-done
-ft-motion-functional
-ft-hover-lift
-ft-skeleton-line
+border-[#E5EAF1] → 0 usos
+text-[#0F172A] → 0 usos
+text-[#64748B] → 0 usos
+hover:-translate → 0 usos
 ```
 
-### Pantallas pulidas
+Se agregan aliases globales:
 
-Se aplicó el nuevo sistema en:
+```txt
+ft-border
+ft-border-strong
+ft-text-main
+ft-text-muted
+ft-text-faint
+ft-bg-surface
+ft-bg-muted
+ft-control
+ft-control-muted
+```
+
+### Cleanup de motion
+
+- Se elimina `hover:-translate` en componentes de app.
+- En pantallas principales se remueve `animate-pulse` directo y se usa `ft-skeleton-line`.
+- Se mantiene motion funcional: skeleton, feedback de importante, drag feedback y estados de acción.
+
+### Pantallas priorizadas
+
+Se depuró con más fuerza:
 
 ```txt
 /app/tasks
@@ -59,19 +52,11 @@ WorkspaceHome
 TaskWorkspaceInline
 ```
 
-### Guía visual
-
-Se agrega:
-
-```txt
-docs/design/FLOWTASK_VISUAL_SYSTEM_V58_24_9_9.md
-```
-
 ## Validación recomendada
 
 ```bash
 npm install
-npm run verify:v58.24.9.9
+npm run verify:v58.24.9.9.1
 npm run typecheck
 npm run build:preflight
 npm run build

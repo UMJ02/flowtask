@@ -10,7 +10,7 @@ export function NotificationBell() {
   return (
     <Link
       href="/app/notifications"
-      className="relative inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[#E5EAF1] bg-white text-[#0F172A] transition-all duration-150 hover:-translate-y-0.5 hover:scale-[1.03] hover:bg-[#F7F9FC]"
+      className="relative inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border ft-border bg-white ft-text-main transition-all duration-150 hover:translate-y-0 hover:scale-[1.03] hover:bg-[#F7F9FC]"
       aria-label="Abrir notificaciones"
     >
       <Bell className="h-5 w-5" />

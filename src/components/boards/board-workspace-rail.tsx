@@ -14,7 +14,7 @@ const railItems = [
 
 export function BoardWorkspaceRail() {
   return (
-    <aside className="z-40 hidden h-screen w-[76px] flex-col items-center border-r border-[#E5EAF1] bg-white/95 py-4 backdrop-blur-xl lg:flex">
+    <aside className="z-40 hidden h-screen w-[76px] flex-col items-center border-r ft-border bg-white/95 py-4 backdrop-blur-xl lg:flex">
       <div className="grid h-11 w-11 place-items-center rounded-2xl bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200">
         <LayoutDashboard className="h-5 w-5" />
       </div>

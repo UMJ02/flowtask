@@ -82,11 +82,11 @@ export function PromptModal({
     <div className="rounded-[20px] border border-slate-200 bg-white p-4 shadow-sm">
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <label className="block flex-1 space-y-2">
-          <span className="text-sm font-bold text-[#0F172A]">{title}</span>
+          <span className="text-sm font-bold ft-text-main">{title}</span>
           <input
             value={value}
             onChange={(event) => onChange(event.target.value)}
-            className="h-11 w-full rounded-[14px] border border-[#E5EAF1] bg-white px-3 text-sm font-semibold text-[#0F172A] outline-none focus:border-[#16C784]"
+            className="h-11 w-full rounded-[14px] border ft-border bg-white px-3 text-sm font-semibold ft-text-main outline-none focus:border-[#16C784]"
             placeholder={placeholder}
           />
         </label>

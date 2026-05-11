@@ -37,7 +37,7 @@ export function BoardCommentPins({ comments, elements, selectedElementId, onSele
               event.stopPropagation();
               onSelectComment(comment);
             }}
-            className={`pointer-events-auto absolute grid h-8 w-8 place-items-center rounded-full border bg-white text-emerald-700 shadow-sm transition hover:-translate-y-0.5 hover:border-emerald-300 hover:bg-emerald-50 ${active ? "border-emerald-400 ring-4 ring-emerald-500/10" : "border-slate-200"}`}
+            className={`pointer-events-auto absolute grid h-8 w-8 place-items-center rounded-full border bg-white text-emerald-700 shadow-sm transition hover:translate-y-0 hover:border-emerald-300 hover:bg-emerald-50 ${active ? "border-emerald-400 ring-4 ring-emerald-500/10" : "border-slate-200"}`}
             style={{ left: point.x, top: point.y }}
             title="Arrastra para mover · clic para editar"
           >

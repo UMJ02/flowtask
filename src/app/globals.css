@@ -1986,3 +1986,30 @@
     }
   }
 }
+
+
+/* v58.24.9.9.1 — Style deduplication aliases.
+   These aliases replace repeated one-off Tailwind color utilities and keep the visual system centralized. */
+@layer components {
+  .ft-border { border-color: var(--ft-apple-border); }
+  .ft-border-strong { border-color: var(--ft-apple-border-strong); }
+  .ft-text-main { color: var(--ft-apple-text); }
+  .ft-text-muted { color: var(--ft-apple-muted); }
+  .ft-text-faint { color: var(--ft-apple-faint); }
+  .ft-bg-surface { background: var(--ft-apple-bg-elevated); }
+  .ft-bg-muted { background: var(--ft-apple-surface-muted); }
+  .ft-control {
+    min-height: 40px;
+    border-radius: var(--ft-radius-sm);
+    border: 1px solid var(--ft-apple-border);
+    background: #fff;
+    color: var(--ft-apple-text);
+  }
+  .ft-control-muted {
+    min-height: 40px;
+    border-radius: var(--ft-radius-sm);
+    border: 1px solid var(--ft-apple-border);
+    background: var(--ft-apple-surface-muted);
+    color: var(--ft-apple-muted);
+  }
+}

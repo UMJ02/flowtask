@@ -312,11 +312,11 @@ export function CommandPalette() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="hidden h-10 w-full min-w-0 items-center gap-3 rounded-[16px] border border-[#E5EAF1] bg-white/90 px-4 text-left text-sm font-medium text-[#94A3B8] shadow-[inset_0_1px_0_rgba(255,255,255,0.70),0_4px_16px_rgba(15,23,42,0.03)] transition-all duration-150 hover:-translate-y-px hover:border-[#16C784]/35 hover:bg-white hover: focus:outline-none focus:ring-4 focus:ring-[#16C784]/10 lg:inline-flex"
+        className="hidden h-10 w-full min-w-0 items-center gap-3 rounded-[16px] border ft-border bg-white/90 px-4 text-left text-sm font-medium text-[#94A3B8] shadow-[inset_0_1px_0_rgba(255,255,255,0.70),0_4px_16px_rgba(15,23,42,0.03)] transition-all duration-150 hover:translate-y-0 hover:border-[#16C784]/35 hover:bg-white hover: focus:outline-none focus:ring-4 focus:ring-[#16C784]/10 lg:inline-flex"
       >
-        <Search className="h-[18px] w-[18px] shrink-0 text-[#64748B]" />
+        <Search className="h-[18px] w-[18px] shrink-0 ft-text-muted" />
         <span className="min-w-0 flex-1 truncate">Buscar proyectos, tareas, clientes...</span>
-        <span className="inline-flex h-8 shrink-0 items-center gap-1 rounded-[10px] border border-[#E5EAF1] bg-[#F8FAFC] px-2.5 text-xs font-bold text-[#64748B] shadow-none"><Command className="h-3.5 w-3.5" /> K</span>
+        <span className="inline-flex h-8 shrink-0 items-center gap-1 rounded-[10px] border ft-border bg-[#F8FAFC] px-2.5 text-xs font-bold ft-text-muted shadow-none"><Command className="h-3.5 w-3.5" /> K</span>
       </button>
 
       {open ? (
@@ -327,17 +327,17 @@ export function CommandPalette() {
             onClick={() => setOpen(false)}
             type="button"
           />
-          <div className="absolute left-1/2 top-[calc(100%+14px)] z-50 w-[min(760px,calc(100vw-32px))] -translate-x-1/2 overflow-hidden rounded-[24px] border border-[#E5EAF1] bg-white shadow-[0_18px_44px_rgba(15,23,42,0.12)]">
-            <div className="flex items-center gap-3 border-b border-[#E5EAF1] bg-white px-4 py-4">
-              <Search className="h-5 w-5 text-[#64748B]" />
+          <div className="absolute left-1/2 top-[calc(100%+14px)] z-50 w-[min(760px,calc(100vw-32px))] -translate-x-1/2 overflow-hidden rounded-[24px] border ft-border bg-white shadow-[0_18px_44px_rgba(15,23,42,0.12)]">
+            <div className="flex items-center gap-3 border-b ft-border bg-white px-4 py-4">
+              <Search className="h-5 w-5 ft-text-muted" />
               <input
                 autoFocus
-                className="w-full bg-transparent text-sm text-[#0F172A] outline-none placeholder:text-[#94A3B8]"
+                className="w-full bg-transparent text-sm ft-text-main outline-none placeholder:text-[#94A3B8]"
                 onChange={(event) => setQuery(event.target.value)}
                 placeholder="Busca tareas, proyectos, clientes o pantallas"
                 value={query}
               />
-              <button type="button" className="inline-flex h-10 w-10 items-center justify-center rounded-full text-[#64748B] transition hover:bg-[#F7F9FC] hover:text-[#0F172A]" onClick={() => setOpen(false)}>
+              <button type="button" className="inline-flex h-10 w-10 items-center justify-center rounded-full ft-text-muted transition hover:bg-[#F7F9FC] hover:ft-text-main" onClick={() => setOpen(false)}>
                 <X className="h-5 w-5" />
               </button>
             </div>

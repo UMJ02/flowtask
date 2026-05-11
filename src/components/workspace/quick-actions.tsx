@@ -67,7 +67,7 @@ export function WorkspaceQuickActions() {
             <Link
               key={action.title}
               href={action.href}
-              className={`group rounded-[20px] border border-slate-200 bg-gradient-to-br ${action.accent} px-4 py-4 transition duration-200 hover:-translate-y-1 hover:border-emerald-200 hover:`}
+              className={`group rounded-[20px] border border-slate-200 bg-gradient-to-br ${action.accent} px-4 py-4 transition duration-200 hover:translate-y-0 hover:border-emerald-200 hover:`}
             >
               <div className="flex items-start gap-3">
                 <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] bg-white text-emerald-700 ring-1 ring-slate-200 shadow-none transition group-hover:ring-emerald-200">

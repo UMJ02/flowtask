@@ -26,10 +26,10 @@ export function SharedAnalyticsLanding({ token, autoPrint = false }: { token: st
   if (!payload) {
     return (
       <main className="min-h-screen bg-[#F7F9FC] px-4 py-5 text-[#071333]">
-        <section className="mx-auto max-w-[760px] rounded-[18px] border border-[#E5EAF1] bg-white p-5 shadow-none">
+        <section className="mx-auto max-w-[760px] rounded-[18px] border ft-border bg-white p-5 shadow-none">
           <p className="text-xs font-extrabold uppercase tracking-[0.22em] text-[#16A878]">FlowTask</p>
           <h1 className="mt-3 text-[2rem] font-extrabold tracking-[-0.04em]">No se pudo abrir este reporte</h1>
-          <p className="mt-3 text-sm leading-6 text-[#64748B]">El enlace compartido es inválido, quedó incompleto o ya no contiene la información necesaria.</p>
+          <p className="mt-3 text-sm leading-6 ft-text-muted">El enlace compartido es inválido, quedó incompleto o ya no contiene la información necesaria.</p>
           <Link href="/" className="mt-6 inline-flex h-11 items-center justify-center rounded-2xl bg-[#16C784] px-5 text-sm font-extrabold text-white">Ir a FlowTask</Link>
         </section>
       </main>
@@ -66,7 +66,7 @@ export function SharedAnalyticsLanding({ token, autoPrint = false }: { token: st
   return (
     <main className="min-h-screen bg-[#F7F9FC] text-[#071333] print:bg-white">
       <div className="mx-auto w-full max-w-[1180px] px-4 py-5 print:block print:max-w-none print:px-0 print:py-0">
-        <section className="overflow-hidden rounded-[18px] border border-[#E5EAF1] bg-white shadow-none print:border-none print:shadow-none">
+        <section className="overflow-hidden rounded-[18px] border ft-border bg-white shadow-none print:border-none print:shadow-none">
           <header className="flex items-center justify-between gap-4 px-7 py-5 print:px-4">
             <div className="flex items-center gap-3">
               <img src="/icons/icon.png" alt="FlowTask" className="h-8 w-8 rounded-xl" />
@@ -82,7 +82,7 @@ export function SharedAnalyticsLanding({ token, autoPrint = false }: { token: st
               <p className="mt-5 text-[1.35rem] leading-tight text-[#071333]">Hola, esta es la carga de trabajo de:</p>
               <h1 className="mt-1 text-[2.35rem] font-extrabold leading-none tracking-[-0.05em] text-[#071333]">{payload.workspaceName}</h1>
               <div className="mx-auto mt-4 h-1 w-16 rounded-full bg-[#16C784]" />
-              <p className="mt-5 text-sm font-medium text-[#64748B]">Última actualización: {payload.generatedAtLabel}</p>
+              <p className="mt-5 text-sm font-medium ft-text-muted">Última actualización: {payload.generatedAtLabel}</p>
             </div>
           </section>
 
@@ -90,11 +90,11 @@ export function SharedAnalyticsLanding({ token, autoPrint = false }: { token: st
             {cards.map((card) => <MetricCard key={card.label} {...card} />)}
           </section>
 
-          <section className="mx-7 mb-7 overflow-hidden rounded-[22px] border border-[#E5EAF1] bg-white print:mx-4">
-            <div className="flex flex-col gap-4 border-b border-[#E5EAF1] px-5 py-4 md:flex-row md:items-center md:justify-between">
+          <section className="mx-7 mb-7 overflow-hidden rounded-[22px] border ft-border bg-white print:mx-4">
+            <div className="flex flex-col gap-4 border-b ft-border px-5 py-4 md:flex-row md:items-center md:justify-between">
               <div>
                 <h2 className="text-[1.25rem] font-extrabold tracking-[-0.03em]">Todas las tareas</h2>
-                <p className="mt-1 text-sm text-[#64748B]">Reporte público de solo lectura con estado, prioridad, deadline y último comentario.</p>
+                <p className="mt-1 text-sm ft-text-muted">Reporte público de solo lectura con estado, prioridad, deadline y último comentario.</p>
               </div>
               <div className="flex flex-wrap items-center gap-2 print:hidden">
                 {(['all', 'En proceso', 'En espera', 'Concluido'] as StatusFilter[]).map((status) => (
@@ -102,7 +102,7 @@ export function SharedAnalyticsLanding({ token, autoPrint = false }: { token: st
                     key={status}
                     type="button"
                     onClick={() => setStatusFilter(status)}
-                    className={statusFilter === status ? 'rounded-2xl bg-[#071333] px-4 py-2 text-xs font-extrabold text-white' : 'rounded-2xl border border-[#E5EAF1] bg-white px-4 py-2 text-xs font-extrabold text-[#52617A] transition hover:border-[#16C784]/40'}
+                    className={statusFilter === status ? 'rounded-2xl bg-[#071333] px-4 py-2 text-xs font-extrabold text-white' : 'rounded-2xl border ft-border bg-white px-4 py-2 text-xs font-extrabold text-[#52617A] transition hover:border-[#16C784]/40'}
                   >
                     {status === 'all' ? 'Todas' : status}
                   </button>
@@ -135,18 +135,18 @@ export function SharedAnalyticsLanding({ token, autoPrint = false }: { token: st
                       <td className="max-w-[260px] px-4 py-3 text-[#52617A]">{task.lastComment || '—'}</td>
                     </tr>
                   )) : (
-                    <tr><td colSpan={7} className="px-4 py-5 text-center text-sm font-semibold text-[#64748B]">No hay tareas para este filtro.</td></tr>
+                    <tr><td colSpan={7} className="px-4 py-5 text-center text-sm font-semibold ft-text-muted">No hay tareas para este filtro.</td></tr>
                   )}
                 </tbody>
               </table>
             </div>
 
-            <div className="flex flex-col gap-3 border-t border-[#E5EAF1] px-5 py-4 text-sm text-[#52617A] md:flex-row md:items-center md:justify-between print:hidden">
+            <div className="flex flex-col gap-3 border-t ft-border px-5 py-4 text-sm text-[#52617A] md:flex-row md:items-center md:justify-between print:hidden">
               <span>Mostrando {visibleTasks.length ? (currentPage - 1) * PAGE_SIZE + 1 : 0} a {Math.min(currentPage * PAGE_SIZE, filteredTasks.length)} de {filteredTasks.length} tareas</span>
               <div className="flex items-center gap-2">
-                <button type="button" disabled={currentPage <= 1} onClick={() => setPage((value) => Math.max(1, value - 1))} className="h-10 rounded-xl border border-[#E5EAF1] px-3 font-extrabold disabled:opacity-40">‹</button>
+                <button type="button" disabled={currentPage <= 1} onClick={() => setPage((value) => Math.max(1, value - 1))} className="h-10 rounded-xl border ft-border px-3 font-extrabold disabled:opacity-40">‹</button>
                 <span className="rounded-xl bg-[#16C784] px-4 py-2 font-extrabold text-white">{currentPage}</span>
-                <button type="button" disabled={currentPage >= totalPages} onClick={() => setPage((value) => Math.min(totalPages, value + 1))} className="h-10 rounded-xl border border-[#E5EAF1] px-3 font-extrabold disabled:opacity-40">›</button>
+                <button type="button" disabled={currentPage >= totalPages} onClick={() => setPage((value) => Math.min(totalPages, value + 1))} className="h-10 rounded-xl border ft-border px-3 font-extrabold disabled:opacity-40">›</button>
               </div>
             </div>
           </section>
@@ -155,7 +155,7 @@ export function SharedAnalyticsLanding({ token, autoPrint = false }: { token: st
             Este es un enlace público de solo lectura. Los datos se actualizan cuando se genera un nuevo enlace desde FlowTask.
           </section>
 
-          <section className="mx-7 mb-9 flex flex-col gap-3 rounded-[24px] border border-[#E5EAF1] bg-white p-4 sm:flex-row sm:items-center sm:justify-center print:hidden">
+          <section className="mx-7 mb-9 flex flex-col gap-3 rounded-[24px] border ft-border bg-white p-4 sm:flex-row sm:items-center sm:justify-center print:hidden">
             <Button onClick={handleShare} variant="secondary"><Share2 className="h-4 w-4" /> Compartir</Button>
             <Button onClick={() => window.print()} variant="secondary"><Printer className="h-4 w-4" /> Descargar PDF</Button>
             <Button onClick={() => downloadAnalyticsCsv(payload)}><Download className="h-4 w-4" /> Exportar reporte</Button>
@@ -180,11 +180,11 @@ function moduleLabel(payload: NonNullable<ReturnType<typeof decodeAnalyticsShare
 function MetricCard({ label, value, helper, icon: Icon, tone }: { label: string; value: number; helper: string; icon: ComponentType<{ className?: string }>; tone: string }) {
   const toneClass = tone === 'amber' ? 'bg-amber-50 text-amber-600' : tone === 'blue' ? 'bg-blue-50 text-blue-600' : tone === 'orange' ? 'bg-orange-50 text-orange-600' : 'bg-emerald-50 text-emerald-600';
   return (
-    <article className="rounded-[18px] border border-[#E5EAF1] bg-white p-4">
+    <article className="rounded-[18px] border ft-border bg-white p-4">
       <div className={`inline-flex h-11 w-11 items-center justify-center rounded-2xl ${toneClass}`}><Icon className="h-5 w-5" /></div>
       <div className="mt-3 text-[1.65rem] font-extrabold tracking-[-0.04em]">{value}</div>
       <p className="text-sm font-extrabold text-[#071333]">{label}</p>
-      <p className="mt-1 text-xs font-semibold text-[#64748B]">{helper}</p>
+      <p className="mt-1 text-xs font-semibold ft-text-muted">{helper}</p>
     </article>
   );
 }

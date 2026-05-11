@@ -60,7 +60,7 @@ export function BoardCommentsActivity({ comments, activities, selectedElementId,
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="board-panel absolute bottom-5 left-[116px] z-40 hidden h-11 items-center gap-2 px-3 text-xs font-bold text-slate-700 transition hover:-translate-y-0.5 hover:border-emerald-200 hover:text-emerald-700 lg:flex"
+        className="board-panel absolute bottom-5 left-[116px] z-40 hidden h-11 items-center gap-2 px-3 text-xs font-bold text-slate-700 transition hover:translate-y-0 hover:border-emerald-200 hover:text-emerald-700 lg:flex"
         title="Abrir comentarios y actividad"
       >
         <MessageCircle className="h-4 w-4" />
@@ -72,17 +72,17 @@ export function BoardCommentsActivity({ comments, activities, selectedElementId,
 
   return (
     <aside className="board-panel absolute bottom-5 left-[116px] top-5 z-40 hidden w-[300px] flex-col overflow-hidden p-0 lg:flex">
-      <div className="flex items-center justify-between border-b border-[#E5EAF1] px-3 py-3">
+      <div className="flex items-center justify-between border-b ft-border px-3 py-3">
         <div className="min-w-0">
           <p className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-emerald-700">Seguimiento</p>
-          <h2 className="truncate text-sm font-bold text-[#0F172A]">Comentarios y actividad</h2>
+          <h2 className="truncate text-sm font-bold ft-text-main">Comentarios y actividad</h2>
         </div>
         <button type="button" onClick={() => setOpen(false)} className="grid h-8 w-8 place-items-center rounded-xl text-slate-500 hover:bg-slate-100" title="Ocultar seguimiento">
           <PanelLeftClose className="h-4 w-4" />
         </button>
       </div>
 
-      <div className="grid grid-cols-2 gap-1 border-b border-[#E5EAF1] bg-slate-50/70 p-1.5">
+      <div className="grid grid-cols-2 gap-1 border-b ft-border bg-slate-50/70 p-1.5">
         <button type="button" onClick={() => setTab("comments")} className={`rounded-xl px-2 py-2 text-xs font-bold transition ${tab === "comments" ? "bg-white text-emerald-700 shadow-sm" : "text-slate-500 hover:bg-white/70"}`}>Comentarios <span className="text-[10px]">{comments.length}</span></button>
         <button type="button" onClick={() => setTab("activity")} className={`rounded-xl px-2 py-2 text-xs font-bold transition ${tab === "activity" ? "bg-white text-emerald-700 shadow-sm" : "text-slate-500 hover:bg-white/70"}`}>Actividad <span className="text-[10px]">{activities.length}</span></button>
       </div>
@@ -142,7 +142,7 @@ export function BoardCommentsActivity({ comments, activities, selectedElementId,
         )}
       </div>
 
-      <div className="border-t border-[#E5EAF1] bg-slate-50/70 px-3 py-2 text-[11px] font-semibold text-slate-500"><Sparkles className="mr-1 inline h-3.5 w-3.5 text-emerald-600" /> Panel compacto para no saturar el lienzo.</div>
+      <div className="border-t ft-border bg-slate-50/70 px-3 py-2 text-[11px] font-semibold text-slate-500"><Sparkles className="mr-1 inline h-3.5 w-3.5 text-emerald-600" /> Panel compacto para no saturar el lienzo.</div>
     </aside>
   );
 }

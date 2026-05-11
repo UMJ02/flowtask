@@ -516,8 +516,8 @@ function TaskActionListComponent({
   };
 
   const renderTable = () => (
-    <div className="overflow-hidden rounded-[24px] border border-[#E5EAF1] bg-white">
-      <div className="hidden grid-cols-[42px_minmax(260px,1.5fr)_minmax(120px,0.7fr)_minmax(130px,0.7fr)_minmax(130px,0.7fr)_minmax(120px,0.65fr)_minmax(130px,0.7fr)_120px] border-b border-[#E5EAF1] bg-slate-50/70 px-5 py-4 text-[11px] font-bold uppercase tracking-[0.12em] text-slate-500 xl:grid">
+    <div className="overflow-hidden rounded-2xl border ft-border bg-white">
+      <div className="hidden grid-cols-[42px_minmax(260px,1.5fr)_minmax(120px,0.7fr)_minmax(130px,0.7fr)_minmax(130px,0.7fr)_minmax(120px,0.65fr)_minmax(130px,0.7fr)_120px] border-b ft-border bg-slate-50/70 px-5 py-4 text-[11px] font-bold uppercase tracking-[0.12em] text-slate-500 xl:grid">
         <div><input aria-label="Seleccionar tareas de esta página" type="checkbox" checked={allCurrentSelected} onChange={toggleCurrentPage} className="h-4 w-4 rounded border-slate-300" /></div>
         <div>Tarea</div>
         <div>Proyecto</div>
@@ -569,11 +569,11 @@ function TaskActionListComponent({
                   >
                     <Star className={`h-3.5 w-3.5 ${task.priority === "alta" ? "fill-current" : ""}`} />
                   </button>
-                  <Link href={taskDetailRoute(task.id, currentQuery)} className="block min-w-0 truncate text-sm font-bold text-[#0F172A] transition hover:text-emerald-700">
+                  <Link href={taskDetailRoute(task.id, currentQuery)} className="block min-w-0 truncate text-sm font-bold ft-text-main transition hover:text-emerald-700">
                     {task.title}
                   </Link>
                 </div>
-                <p className="mt-1 truncate text-xs font-medium text-[#64748B]">{task.client_name || "Tarea sin cliente asignado"}</p>
+                <p className="mt-1 truncate text-xs font-medium ft-text-muted">{task.client_name || "Tarea sin cliente asignado"}</p>
               </div>
 
               <div>
@@ -604,23 +604,23 @@ function TaskActionListComponent({
               </div>
 
               <div>
-                <p className={cn("text-sm font-bold", deadline.overdue ? "text-rose-600" : deadline.today ? "text-orange-600" : "text-[#0F172A]")}>{deadline.label}</p>
-                <p className={cn("mt-1 text-xs font-semibold", deadline.overdue ? "text-rose-500" : deadline.today ? "text-orange-500" : "text-[#64748B]")}>{deadline.helper}</p>
+                <p className={cn("text-sm font-bold", deadline.overdue ? "text-rose-600" : deadline.today ? "text-orange-600" : "ft-text-main")}>{deadline.label}</p>
+                <p className={cn("mt-1 text-xs font-semibold", deadline.overdue ? "text-rose-500" : deadline.today ? "text-orange-500" : "ft-text-muted")}>{deadline.helper}</p>
               </div>
 
               <div className="flex items-center gap-2 xl:justify-end">
-                <Link href={taskDetailRoute(task.id, currentQuery)} className="inline-flex h-9 w-9 items-center justify-center rounded-[12px] border border-[#E5EAF1] bg-white text-slate-600 transition hover:bg-slate-50 hover:text-slate-900" aria-label="Ver tarea">
+                <Link href={taskDetailRoute(task.id, currentQuery)} className="inline-flex h-9 w-9 items-center justify-center rounded-xl border ft-border bg-white text-slate-600 transition hover:bg-slate-50 hover:text-slate-900" aria-label="Ver tarea">
                   <Eye className="h-4 w-4" />
                 </Link>
-                <Link href={taskEditRoute(task.id, currentQuery)} className="inline-flex h-9 w-9 items-center justify-center rounded-[12px] border border-[#E5EAF1] bg-white text-slate-600 transition hover:bg-slate-50 hover:text-slate-900" aria-label="Editar tarea">
+                <Link href={taskEditRoute(task.id, currentQuery)} className="inline-flex h-9 w-9 items-center justify-center rounded-xl border ft-border bg-white text-slate-600 transition hover:bg-slate-50 hover:text-slate-900" aria-label="Editar tarea">
                   <Pencil className="h-4 w-4" />
                 </Link>
                 {task.status !== "concluido" ? (
-                  <button type="button" onClick={() => markComplete(task.id)} className="inline-flex h-9 w-9 items-center justify-center rounded-[12px] border border-emerald-200 bg-emerald-50 text-emerald-700 transition hover:bg-emerald-100" aria-label="Finalizar tarea">
+                  <button type="button" onClick={() => markComplete(task.id)} className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-700 transition hover:bg-emerald-100" aria-label="Finalizar tarea">
                     <CheckCircle2 className="h-4 w-4" />
                   </button>
                 ) : null}
-                <button type="button" onClick={() => requestDeleteTask(task.id)} className="inline-flex h-9 w-9 items-center justify-center rounded-[12px] border border-[#E5EAF1] bg-white text-slate-500 transition hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600" aria-label="Eliminar tarea">
+                <button type="button" onClick={() => requestDeleteTask(task.id)} className="inline-flex h-9 w-9 items-center justify-center rounded-xl border ft-border bg-white text-slate-500 transition hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600" aria-label="Eliminar tarea">
                   <Trash2 className="h-4 w-4" />
                 </button>
               </div>
@@ -634,48 +634,48 @@ function TaskActionListComponent({
   );
 
   const renderSmartTimeline = () => (
-    <Card className="overflow-hidden rounded-[24px] border border-[#E5EAF1] bg-white p-5">
+    <Card className="overflow-hidden rounded-2xl border ft-border bg-white p-5">
       <div className="mb-5 flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#16C784]">Planificación inteligente</p>
-          <h3 className="mt-1 text-xl font-semibold text-[#0F172A]">Vista híbrida Calendario + Gantt</h3>
-          <p className="mt-1 text-sm font-medium text-[#64748B]">Planifica campañas, producción y duración visual usando las tareas actuales.</p>
+          <h3 className="mt-1 text-xl font-semibold ft-text-main">Vista híbrida Calendario + Gantt</h3>
+          <p className="mt-1 text-sm font-medium ft-text-muted">Planifica campañas, producción y duración visual usando las tareas actuales.</p>
         </div>
         <div className="flex flex-wrap gap-2">
           {(["Día", "Semana", "Mes", "Mis tareas", "Equipo"] as const).map((label) => (
-            <button key={label} type="button" onClick={() => setTimelineScale(label)} className={cn("h-10 rounded-[14px] border px-4 text-sm font-bold transition", timelineScale === label ? "border-[#050B18] bg-[#050B18] text-white" : "border-[#E5EAF1] bg-white text-slate-700 hover:bg-slate-50")}>{label}</button>
+            <button key={label} type="button" onClick={() => setTimelineScale(label)} className={cn("h-10 rounded-xl border px-4 text-sm font-bold transition", timelineScale === label ? "border-[#050B18] bg-[#050B18] text-white" : "ft-border bg-white text-slate-700 hover:bg-slate-50")}>{label}</button>
           ))}
           <button type="button" onClick={() => changeView("list")} className="ft-apple-button ft-apple-button-secondary"><SlidersHorizontal className="h-4 w-4" />Filtros</button>
         </div>
       </div>
 
-      <div className="mb-4 flex flex-col gap-3 rounded-[18px] border border-[#E5EAF1] bg-slate-50/70 p-3 md:flex-row md:items-center md:justify-between">
+      <div className="mb-4 flex flex-col gap-3 rounded-2xl border ft-border bg-slate-50/70 p-3 md:flex-row md:items-center md:justify-between">
         <div className="flex items-center gap-2">
-          <button type="button" onClick={() => setTimelineOffsetDays((value) => value - 7)} className="inline-flex h-9 w-9 items-center justify-center rounded-[12px] border border-[#E5EAF1] bg-white"><ArrowLeft className="h-4 w-4" /></button>
-          <span className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-[#0F172A] ring-1 ring-[#E5EAF1]">{formatHumanDate(toIsoDate(timelineBounds.start))} — {formatHumanDate(toIsoDate(timelineBounds.end))}</span>
-          <button type="button" onClick={() => setTimelineOffsetDays((value) => value + 7)} className="inline-flex h-9 w-9 items-center justify-center rounded-[12px] border border-[#E5EAF1] bg-white"><ArrowRight className="h-4 w-4" /></button>
+          <button type="button" onClick={() => setTimelineOffsetDays((value) => value - 7)} className="inline-flex h-9 w-9 items-center justify-center rounded-xl border ft-border bg-white"><ArrowLeft className="h-4 w-4" /></button>
+          <span className="rounded-full bg-white px-4 py-2 text-sm font-semibold ft-text-main ring-1 ring-[#E5EAF1]">{formatHumanDate(toIsoDate(timelineBounds.start))} — {formatHumanDate(toIsoDate(timelineBounds.end))}</span>
+          <button type="button" onClick={() => setTimelineOffsetDays((value) => value + 7)} className="inline-flex h-9 w-9 items-center justify-center rounded-xl border ft-border bg-white"><ArrowRight className="h-4 w-4" /></button>
         </div>
-        <p className="text-xs font-bold text-[#64748B]">Click en una barra abre el detalle. Usa guardar vista para sincronizar configuración y exportar CSV.</p>
+        <p className="text-xs font-bold ft-text-muted">Click en una barra abre el detalle. Usa guardar vista para sincronizar configuración y exportar CSV.</p>
       </div>
 
-      <div className="overflow-x-auto rounded-[18px] border border-[#E5EAF1]">
+      <div className="overflow-x-auto rounded-2xl border ft-border">
         <div className="min-w-[960px] grid grid-cols-[300px_1fr]">
-          <div className="border-r border-[#E5EAF1] bg-white">
-            <div className="h-10 border-b border-[#E5EAF1] px-4 py-4 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#64748B]">Tarea / responsable</div>
+          <div className="border-r ft-border bg-white">
+            <div className="h-10 border-b ft-border px-4 py-4 text-[11px] font-semibold uppercase tracking-[0.14em] ft-text-muted">Tarea / responsable</div>
             {timelineItems.map((task) => (
               <div key={task.id} className="flex h-[58px] items-center gap-3 border-b border-[#EEF2F7] px-4 last:border-b-0">
                 <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-100 text-xs font-semibold text-slate-700">{(task.client_name || task.title).slice(0, 1).toUpperCase()}</span>
                 <div className="min-w-0">
-                  <Link href={taskDetailRoute(task.id, currentQuery)} className="block truncate text-sm font-semibold text-[#0F172A] hover:text-emerald-700">{task.title}</Link>
-                  <p className="truncate text-xs font-semibold text-[#64748B]">{task.client_name || "Equipo FlowTask"}</p>
+                  <Link href={taskDetailRoute(task.id, currentQuery)} className="block truncate text-sm font-semibold ft-text-main hover:text-emerald-700">{task.title}</Link>
+                  <p className="truncate text-xs font-semibold ft-text-muted">{task.client_name || "Equipo FlowTask"}</p>
                 </div>
               </div>
             ))}
           </div>
           <div className="relative bg-white">
-            <div className="grid h-10 border-b border-[#E5EAF1]" style={{ gridTemplateColumns: `repeat(${timelineDays.length}, minmax(42px, 1fr))` }}>
+            <div className="grid h-10 border-b ft-border" style={{ gridTemplateColumns: `repeat(${timelineDays.length}, minmax(42px, 1fr))` }}>
               {timelineDays.map((day) => (
-                <div key={day.toISOString()} className="border-r border-[#EEF2F7] px-2 py-3 text-center text-[11px] font-semibold uppercase text-[#64748B] last:border-r-0">{day.getDate()}</div>
+                <div key={day.toISOString()} className="border-r border-[#EEF2F7] px-2 py-3 text-center text-[11px] font-semibold uppercase ft-text-muted last:border-r-0">{day.getDate()}</div>
               ))}
             </div>
             {timelineItems.map((task) => (
@@ -694,7 +694,7 @@ function TaskActionListComponent({
           </div>
         </div>
       </div>
-      <div className="mt-4 flex flex-wrap gap-3 text-xs font-bold text-[#64748B]">
+      <div className="mt-4 flex flex-wrap gap-3 text-xs font-bold ft-text-muted">
         <span className="inline-flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full bg-rose-400" />Alta prioridad</span>
         <span className="inline-flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full bg-amber-400" />Media</span>
         <span className="inline-flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full bg-emerald-400" />Baja</span>
@@ -715,35 +715,35 @@ function TaskActionListComponent({
     const percent = items.length ? Math.round((done / items.length) * 100) : 0;
 
     return (
-      <Card className="rounded-[24px] border border-[#E5EAF1] bg-white p-5">
+      <Card className="rounded-2xl border ft-border bg-white p-5">
         <div className="mb-5 flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#16C784]">Operations Calendar Pro</p>
-            <h3 className="mt-1 text-xl font-semibold text-[#0F172A]">Calendario premium de ejecución diaria</h3>
-            <p className="mt-1 text-sm font-medium text-[#64748B]">Deadlines, agenda operativa y carga de trabajo por día.</p>
+            <h3 className="mt-1 text-xl font-semibold ft-text-main">Calendario premium de ejecución diaria</h3>
+            <p className="mt-1 text-sm font-medium ft-text-muted">Deadlines, agenda operativa y carga de trabajo por día.</p>
           </div>
           <div className="flex flex-wrap gap-2">
             {(["Hoy", "Día", "Semana", "Mes"] as const).map((label) => (
-              <button key={label} type="button" onClick={() => setCalendarScale(label)} className={cn("h-10 rounded-[14px] border px-4 text-sm font-bold transition", calendarScale === label ? "border-[#16C784] bg-[#16C784] text-white" : "border-[#E5EAF1] bg-white text-slate-700 hover:bg-slate-50")}>{label}</button>
+              <button key={label} type="button" onClick={() => setCalendarScale(label)} className={cn("h-10 rounded-xl border px-4 text-sm font-bold transition", calendarScale === label ? "border-[#16C784] bg-[#16C784] text-white" : "ft-border bg-white text-slate-700 hover:bg-slate-50")}>{label}</button>
             ))}
             <button type="button" onClick={() => setShowCalendarSummary((value) => !value)} className="ft-apple-button ft-apple-button-secondary"><Settings2 className="h-4 w-4" />Ajustes</button>
           </div>
         </div>
 
         <div className={cn("grid gap-5", showCalendarSummary ? "xl:grid-cols-[minmax(0,1fr)_280px]" : "xl:grid-cols-1")}>
-          <div className="overflow-hidden rounded-[20px] border border-[#E5EAF1]">
-            <div className={cn("grid border-b border-[#E5EAF1] bg-[#F8FAFC] text-center text-[11px] font-semibold uppercase tracking-[0.12em] text-[#64748B]", calendarColumnsClass)}>
+          <div className="overflow-hidden rounded-2xl border ft-border">
+            <div className={cn("grid border-b ft-border bg-[#F8FAFC] text-center text-[11px] font-semibold uppercase tracking-[0.12em] ft-text-muted", calendarColumnsClass)}>
               {calendarLabels.map((day) => <div key={day} className="px-2 py-3">{day}</div>)}
             </div>
             <div className={cn("grid", calendarColumnsClass)}>
               {calendarDays.map((day) => (
-                <div key={day.iso} className={cn("min-h-[145px] border-r border-b border-[#E5EAF1] bg-white p-3 last:border-r-0", day.isToday && "bg-emerald-50/40")}>
-                  <div className={cn("mb-3 inline-flex h-7 min-w-7 items-center justify-center rounded-full px-2 text-xs font-semibold", day.isToday ? "bg-[#16C784] text-white" : "text-[#0F172A]")}>{day.label}</div>
+                <div key={day.iso} className={cn("min-h-[145px] border-r border-b ft-border bg-white p-3 last:border-r-0", day.isToday && "bg-emerald-50/40")}>
+                  <div className={cn("mb-3 inline-flex h-7 min-w-7 items-center justify-center rounded-full px-2 text-xs font-semibold", day.isToday ? "bg-[#16C784] text-white" : "ft-text-main")}>{day.label}</div>
                   <div className="space-y-2">
                     {day.tasks.slice(0, 4).map((task) => (
-                      <Link key={task.id} href={taskDetailRoute(task.id, currentQuery)} className={cn("block w-full truncate rounded-full border px-3 py-2 text-left text-xs font-bold transition hover:-translate-y-0.5 hover:border-[#16C784]/40", priorityTone(task.priority))}>{task.title}</Link>
+                      <Link key={task.id} href={taskDetailRoute(task.id, currentQuery)} className={cn("block w-full truncate rounded-full border px-3 py-2 text-left text-xs font-bold transition hover:translate-y-0 hover:border-[#16C784]/40", priorityTone(task.priority))}>{task.title}</Link>
                     ))}
-                    {day.tasks.length > 4 ? <button type="button" onClick={() => changeView("list")} className="text-xs font-bold text-[#64748B]">+{day.tasks.length - 4} más</button> : null}
+                    {day.tasks.length > 4 ? <button type="button" onClick={() => changeView("list")} className="text-xs font-bold ft-text-muted">+{day.tasks.length - 4} más</button> : null}
                   </div>
                 </div>
               ))}
@@ -751,8 +751,8 @@ function TaskActionListComponent({
           </div>
 
           <aside className="space-y-4">
-            <div className="rounded-[20px] border border-[#E5EAF1] bg-white p-5">
-              <h4 className="text-sm font-semibold text-[#0F172A]">Resumen semanal</h4>
+            <div className="rounded-2xl border ft-border bg-white p-5">
+              <h4 className="text-sm font-semibold ft-text-main">Resumen semanal</h4>
               <div className="mt-4 space-y-3">
                 <CalendarMetric icon={<Layers3 className="h-4 w-4" />} label="Total tareas" value={total} tone="violet" />
                 <CalendarMetric icon={<Flag className="h-4 w-4" />} label="Urgentes" value={urgent} tone="rose" />
@@ -760,37 +760,37 @@ function TaskActionListComponent({
                 <CalendarMetric icon={<CheckCircle2 className="h-4 w-4" />} label="Completadas" value={done} tone="emerald" />
               </div>
             </div>
-            <div className="rounded-[20px] border border-[#E5EAF1] bg-white p-5 text-center">
-              <div className="mx-auto grid h-32 w-32 place-items-center rounded-full border-[12px] border-emerald-100 text-xl font-semibold text-[#0F172A]" style={{ background: `conic-gradient(#16C784 ${percent * 3.6}deg, #ECFDF5 0deg)` }}>
+            <div className="rounded-2xl border ft-border bg-white p-5 text-center">
+              <div className="mx-auto grid h-32 w-32 place-items-center rounded-full border-[12px] border-emerald-100 text-xl font-semibold ft-text-main" style={{ background: `conic-gradient(#16C784 ${percent * 3.6}deg, #ECFDF5 0deg)` }}>
                 <span className="grid h-24 w-24 place-items-center rounded-full bg-white">{percent}%</span>
               </div>
-              <p className="mt-3 text-sm font-bold text-[#64748B]">Completado</p>
+              <p className="mt-3 text-sm font-bold ft-text-muted">Completado</p>
             </div>
           </aside>
         </div>
-        <div className="mt-4 rounded-[16px] border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-900">Consejo: arrastra y suelta tareas para reprogramar en otra fase cuando conectemos el adapter de fechas.</div>
+        <div className="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-900">Consejo: arrastra y suelta tareas para reprogramar en otra fase cuando conectemos el adapter de fechas.</div>
       </Card>
     );
   };
 
   const renderGanttBuilder = () => (
-    <Card className="rounded-[24px] border border-[#E5EAF1] bg-white p-5">
+    <Card className="rounded-2xl border ft-border bg-white p-5">
       <div className="mb-5 flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#16C784]">Vista personalizada</p>
-          <h3 className="mt-1 text-xl font-semibold text-[#0F172A]">Gantt personalizable y potente</h3>
-          <p className="mt-1 text-sm font-medium text-[#64748B]">Control avanzado de planificación, progreso y vistas guardadas.</p>
+          <h3 className="mt-1 text-xl font-semibold ft-text-main">Gantt personalizable y potente</h3>
+          <p className="mt-1 text-sm font-medium ft-text-muted">Control avanzado de planificación, progreso y vistas guardadas.</p>
         </div>
         <div className="flex flex-wrap gap-2">
           <button type="button" onClick={saveGanttView} className="ft-apple-button ft-apple-button-secondary"><Save className="h-4 w-4" />Guardar vista</button>
-          <button type="button" onClick={openNewSavedViewModal} className="h-10 rounded-[14px] border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-slate-700 hover:bg-slate-50">Nueva vista</button>
+          <button type="button" onClick={openNewSavedViewModal} className="h-10 rounded-xl border ft-border bg-white px-4 text-sm font-bold text-slate-700 hover:bg-slate-50">Nueva vista</button>
           <button type="button" onClick={exportTasks} className="ft-apple-button ft-apple-button-secondary"><Download className="h-4 w-4" />Exportar</button>
           <button
             type="button"
             onClick={() => setImportantOnly((value) => !value)}
             className={cn(
-              "inline-flex h-10 items-center gap-2 rounded-[14px] border px-4 text-sm font-bold transition",
-              importantOnly ? "border-amber-200 bg-amber-50 text-amber-700" : "border-[#E5EAF1] bg-white text-slate-700 hover:bg-slate-50",
+              "inline-flex h-10 items-center gap-2 rounded-xl border px-4 text-sm font-bold transition",
+              importantOnly ? "border-amber-200 bg-amber-50 text-amber-700" : "ft-border bg-white text-slate-700 hover:bg-slate-50",
             )}
           >
             <Star className={cn("h-4 w-4", importantOnly && "fill-current")} />
@@ -801,8 +801,8 @@ function TaskActionListComponent({
       </div>
 
       <div className={cn("grid gap-5", showGanttSettings ? "xl:grid-cols-[minmax(0,1fr)_300px]" : "xl:grid-cols-1")}>
-        <div className="overflow-hidden rounded-[20px] border border-[#E5EAF1] bg-white">
-          <div className="grid grid-cols-[minmax(240px,1.2fr)_110px_110px_90px_90px_minmax(260px,1.4fr)] border-b border-[#E5EAF1] bg-[#F8FAFC] px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#64748B]">
+        <div className="overflow-hidden rounded-2xl border ft-border bg-white">
+          <div className="grid grid-cols-[minmax(240px,1.2fr)_110px_110px_90px_90px_minmax(260px,1.4fr)] border-b ft-border bg-[#F8FAFC] px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.12em] ft-text-muted">
             <div>Tarea</div><div>Inicio</div><div>Fin</div><div>Duración</div><div>Progreso</div><div>Timeline</div>
           </div>
           {timelineItems.map((task) => {
@@ -810,13 +810,13 @@ function TaskActionListComponent({
             return (
               <div key={task.id} className={cn("grid grid-cols-[minmax(240px,1.2fr)_110px_110px_90px_90px_minmax(260px,1.4fr)] items-center border-b border-[#EEF2F7] px-4 last:border-b-0 hover:bg-[#F8FAFC]", compactGantt ? "py-3" : "py-5")}>
                 <div className="min-w-0">
-                  <Link href={taskDetailRoute(task.id, currentQuery)} className="block truncate text-sm font-semibold text-[#0F172A] hover:text-emerald-700">{task.title}</Link>
-                  <p className="truncate text-xs font-semibold text-[#64748B]">{task.client_name || "Sin cliente"}</p>
+                  <Link href={taskDetailRoute(task.id, currentQuery)} className="block truncate text-sm font-semibold ft-text-main hover:text-emerald-700">{task.title}</Link>
+                  <p className="truncate text-xs font-semibold ft-text-muted">{task.client_name || "Sin cliente"}</p>
                 </div>
-                <div className="text-xs font-bold text-[#64748B]">{showDates ? formatHumanDate(toIsoDate(range.start)) : "—"}</div>
-                <div className="text-xs font-bold text-[#64748B]">{showDates ? formatHumanDate(toIsoDate(range.end)) : "—"}</div>
-                <div className="text-xs font-bold text-[#64748B]">{range.duration} días</div>
-                <div className="text-xs font-semibold text-[#0F172A]">{showProgress ? `${getProgress(task)}%` : "—"}</div>
+                <div className="text-xs font-bold ft-text-muted">{showDates ? formatHumanDate(toIsoDate(range.start)) : "—"}</div>
+                <div className="text-xs font-bold ft-text-muted">{showDates ? formatHumanDate(toIsoDate(range.end)) : "—"}</div>
+                <div className="text-xs font-bold ft-text-muted">{range.duration} días</div>
+                <div className="text-xs font-semibold ft-text-main">{showProgress ? `${getProgress(task)}%` : "—"}</div>
                 <div className="h-8 rounded-2xl bg-slate-100 p-1">
                   <div className={cn("h-6 rounded-xl", barColor(task, ganttColorMode))} style={getBarStyle(task, timelineBounds.start, timelineBounds.end)} />
                 </div>
@@ -826,31 +826,31 @@ function TaskActionListComponent({
         </div>
 
         {showGanttSettings ? (
-          <aside className="rounded-[20px] border border-[#E5EAF1] bg-white p-5">
-            <h4 className="text-sm font-semibold uppercase tracking-[0.14em] text-[#0F172A]">Personalizar vista</h4>
+          <aside className="rounded-2xl border ft-border bg-white p-5">
+            <h4 className="text-sm font-semibold uppercase tracking-[0.14em] ft-text-main">Personalizar vista</h4>
             <div className="mt-5 space-y-4">
               <SettingsCheckbox label="Mostrar % progreso" checked={showProgress} onChange={setShowProgress} />
               <SettingsCheckbox label="Mostrar fechas" checked={showDates} onChange={setShowDates} />
               <SettingsCheckbox label="Mostrar prioridad" checked={showPriority} onChange={setShowPriority} />
               <SettingsCheckbox label="Modo compacto" checked={compactGantt} onChange={setCompactGantt} />
               <label className="block space-y-2">
-                <span className="text-xs font-semibold uppercase tracking-[0.12em] text-[#64748B]">Colores</span>
-                <Select value={ganttColorMode} onChange={(event) => setGanttColorMode(event.target.value as GanttColorMode)} className="h-11 w-full rounded-[14px] border-[#E5EAF1] text-sm font-bold">
+                <span className="text-xs font-semibold uppercase tracking-[0.12em] ft-text-muted">Colores</span>
+                <Select value={ganttColorMode} onChange={(event) => setGanttColorMode(event.target.value as GanttColorMode)} className="h-11 w-full rounded-xl ft-border text-sm font-bold">
                   <option value="priority">Por prioridad</option>
                   <option value="status">Por estado</option>
                   <option value="client">Por cliente</option>
                 </Select>
               </label>
               <label className="block space-y-2">
-                <span className="text-xs font-semibold uppercase tracking-[0.12em] text-[#64748B]">Agrupar por</span>
-                <Select className="h-11 w-full rounded-[14px] border-[#E5EAF1] text-sm font-bold" defaultValue="project">
+                <span className="text-xs font-semibold uppercase tracking-[0.12em] ft-text-muted">Agrupar por</span>
+                <Select className="h-11 w-full rounded-xl ft-border text-sm font-bold" defaultValue="project">
                   <option value="none">Ninguno</option>
                   <option value="project">Proyecto</option>
                   <option value="client">Cliente</option>
                   <option value="department">Departamento</option>
                 </Select>
               </label>
-              <button type="button" onClick={saveGanttView} className="mt-2 h-11 w-full rounded-[14px] bg-[#050B18] text-sm font-semibold text-white hover:bg-slate-900">Guardar vista</button>
+              <button type="button" onClick={saveGanttView} className="mt-2 h-11 w-full rounded-xl bg-[#050B18] text-sm font-semibold text-white hover:bg-slate-900">Guardar vista</button>
             </div>
           </aside>
         ) : null}
@@ -861,7 +861,7 @@ function TaskActionListComponent({
   return (
     <div className="space-y-4">
       {notice ? (
-        <div className={`rounded-[16px] border px-4 py-3 text-sm font-semibold ${
+        <div className={`rounded-2xl border px-4 py-3 text-sm font-semibold ${
           notice.tone === "error"
             ? "border-rose-200 bg-rose-50 text-rose-700"
             : notice.tone === "success"
@@ -876,7 +876,7 @@ function TaskActionListComponent({
       ) : null}
 
       {confirmAction ? (
-        <div className="rounded-[20px] border border-rose-200 bg-rose-50 p-4 text-rose-900 shadow-sm">
+        <div className="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-rose-900 shadow-sm">
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div>
               <p className="text-sm font-bold">
@@ -885,8 +885,8 @@ function TaskActionListComponent({
               <p className="mt-1 text-xs font-semibold text-rose-700">Esta acción no se puede deshacer.</p>
             </div>
             <div className="flex gap-2">
-              <Button type="button" variant="secondary" onClick={() => setConfirmAction(null)} className="h-10 rounded-[12px] px-4">Cancelar</Button>
-              <Button type="button" onClick={() => void confirmPendingAction()} className="h-10 rounded-[12px] bg-rose-600 px-4 text-white hover:bg-rose-700">
+              <Button type="button" variant="secondary" onClick={() => setConfirmAction(null)} className="h-10 rounded-xl px-4">Cancelar</Button>
+              <Button type="button" onClick={() => void confirmPendingAction()} className="h-10 rounded-xl bg-rose-600 px-4 text-white hover:bg-rose-700">
                 <Trash2 className="h-4 w-4" />
                 Eliminar
               </Button>
@@ -896,20 +896,20 @@ function TaskActionListComponent({
       ) : null}
 
       {newViewModalOpen ? (
-        <div className="rounded-[20px] border border-slate-200 bg-white p-4 shadow-sm">
+        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
           <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <label className="block flex-1 space-y-2">
-              <span className="text-sm font-bold text-[#0F172A]">Nombre de la nueva vista</span>
+              <span className="text-sm font-bold ft-text-main">Nombre de la nueva vista</span>
               <input
                 value={newViewName}
                 onChange={(event) => setNewViewName(event.target.value)}
-                className="h-11 w-full rounded-[14px] border border-[#E5EAF1] bg-white px-3 text-sm font-semibold text-[#0F172A] outline-none focus:border-[#16C784]"
+                className="h-11 w-full rounded-xl border ft-border bg-white px-3 text-sm font-semibold ft-text-main outline-none focus:border-[#16C784]"
                 placeholder="Vista de tareas"
               />
             </label>
             <div className="flex gap-2">
-              <Button type="button" variant="secondary" onClick={() => setNewViewModalOpen(false)} className="h-11 rounded-[12px] px-4">Cancelar</Button>
-              <Button type="button" onClick={() => void createNewSavedView()} className="h-11 rounded-[12px] bg-[#050B18] px-4 text-white">Guardar vista</Button>
+              <Button type="button" variant="secondary" onClick={() => setNewViewModalOpen(false)} className="h-11 rounded-xl px-4">Cancelar</Button>
+              <Button type="button" onClick={() => void createNewSavedView()} className="h-11 rounded-xl bg-[#050B18] px-4 text-white">Guardar vista</Button>
             </div>
           </div>
         </div>
@@ -918,8 +918,8 @@ function TaskActionListComponent({
       <Card className="relative z-20 ft-apple-panel p-5">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <h2 className="text-base font-bold text-[#0F172A]">Vistas de tareas</h2>
-            <p className="mt-1 text-sm font-medium text-[#64748B]">Tareas queda simple: lista para ejecución diaria y calendario para fechas. La planificación avanzada vive en Proyectos.</p>
+            <h2 className="text-base font-bold ft-text-main">Vistas de tareas</h2>
+            <p className="mt-1 text-sm font-medium ft-text-muted">Tareas queda simple: lista para ejecución diaria y calendario para fechas. La planificación avanzada vive en Proyectos.</p>
           </div>
           <div className="flex flex-wrap gap-3">
             <ViewButton active={viewMode === "list"} icon={<List className="h-4 w-4" />} label="Lista" onClick={() => changeView("list")} />
@@ -930,19 +930,19 @@ function TaskActionListComponent({
       {searchPanel ? <div className="relative z-10">{searchPanel}</div> : null}
 
       {selectedIds.length ? (
-        <Card className="rounded-[20px] border border-emerald-100 bg-emerald-50/80 px-4 py-3 shadow-none">
+        <Card className="rounded-2xl border border-emerald-100 bg-emerald-50/80 px-4 py-3 shadow-none">
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <p className="text-sm font-bold text-emerald-900">{selectedIds.length} tarea(s) seleccionada(s)</p>
             <div className="flex flex-wrap gap-2">
-              <Button type="button" onClick={bulkCompleteSelected} loading={busyId === "bulk"} className="h-10 rounded-[12px] bg-[#16C784] px-4 text-white hover:bg-[#12b777]">
+              <Button type="button" onClick={bulkCompleteSelected} loading={busyId === "bulk"} className="h-10 rounded-xl bg-[#16C784] px-4 text-white hover:bg-[#12b777]">
                 <CheckCircle2 className="h-4 w-4" />
                 Finalizar
               </Button>
-              <Button type="button" variant="secondary" onClick={requestBulkDeleteSelected} disabled={busyId === "bulk"} className="h-10 rounded-[12px] px-4">
+              <Button type="button" variant="secondary" onClick={requestBulkDeleteSelected} disabled={busyId === "bulk"} className="h-10 rounded-xl px-4">
                 <Trash2 className="h-4 w-4" />
                 Eliminar
               </Button>
-              <Button type="button" variant="ghost" onClick={() => setSelectedIds([])} className="h-10 rounded-[12px] px-4">Limpiar selección</Button>
+              <Button type="button" variant="ghost" onClick={() => setSelectedIds([])} className="h-10 rounded-xl px-4">Limpiar selección</Button>
             </div>
           </div>
         </Card>
@@ -954,24 +954,24 @@ function TaskActionListComponent({
       </div>
 
       {viewMode === "list" ? (
-        <Card className="rounded-[24px] border border-[#E5EAF1] bg-white px-4 py-4">
+        <Card className="rounded-2xl border ft-border bg-white px-4 py-4">
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            <p className="text-sm font-medium text-[#64748B]">
+            <p className="text-sm font-medium ft-text-muted">
               Mostrando {visibleItems.length ? (currentPage - 1) * pageSize + 1 : 0} a {Math.min(currentPage * pageSize, visibleItems.length)} de {visibleItems.length} tareas
             </p>
 
             <div className="flex flex-wrap items-center gap-2 md:justify-end">
-              <Button type="button" variant="secondary" className="h-10 rounded-[12px] px-3" disabled={currentPage <= 1 || pageAnimation !== "idle"} onClick={() => animatePage("prev", currentPage - 1)}>
+              <Button type="button" variant="secondary" className="h-10 rounded-xl px-3" disabled={currentPage <= 1 || pageAnimation !== "idle"} onClick={() => animatePage("prev", currentPage - 1)}>
                 <ArrowLeft className="h-4 w-4" />Anterior
               </Button>
-              <span className="inline-flex h-10 min-w-10 items-center justify-center rounded-[12px] bg-[#050B18] px-3 text-sm font-bold text-white">{currentPage}</span>
-              {totalPages > 1 ? <span className="inline-flex h-10 min-w-10 items-center justify-center rounded-[12px] border border-[#E5EAF1] bg-white px-3 text-sm font-bold text-slate-700">{Math.min(currentPage + 1, totalPages)}</span> : null}
-              <Button type="button" variant="secondary" className="h-10 rounded-[12px] px-3" disabled={currentPage >= totalPages || pageAnimation !== "idle"} onClick={() => animatePage("next", currentPage + 1)}>
+              <span className="inline-flex h-10 min-w-10 items-center justify-center rounded-xl bg-[#050B18] px-3 text-sm font-bold text-white">{currentPage}</span>
+              {totalPages > 1 ? <span className="inline-flex h-10 min-w-10 items-center justify-center rounded-xl border ft-border bg-white px-3 text-sm font-bold text-slate-700">{Math.min(currentPage + 1, totalPages)}</span> : null}
+              <Button type="button" variant="secondary" className="h-10 rounded-xl px-3" disabled={currentPage >= totalPages || pageAnimation !== "idle"} onClick={() => animatePage("next", currentPage + 1)}>
                 Siguiente<ArrowRight className="h-4 w-4" />
               </Button>
-              <div className="ml-0 flex items-center gap-2 rounded-[12px] border border-[#E5EAF1] bg-white px-3 py-1.5 md:ml-3">
+              <div className="ml-0 flex items-center gap-2 rounded-xl border ft-border bg-white px-3 py-1.5 md:ml-3">
                 <span className="text-sm font-medium text-slate-500">Mostrar</span>
-                <Select aria-label="Cantidad de tareas por página" className="h-8 min-w-[72px] border-none bg-transparent px-1 py-0 text-sm font-semibold text-[#0F172A] focus:border-none" value={String(pageSize)} onChange={(event) => { setPageSize(Number(event.target.value) as 10 | 20); setCurrentPage(1); }}>
+                <Select aria-label="Cantidad de tareas por página" className="h-8 min-w-[72px] border-none bg-transparent px-1 py-0 text-sm font-semibold ft-text-main focus:border-none" value={String(pageSize)} onChange={(event) => { setPageSize(Number(event.target.value) as 10 | 20); setCurrentPage(1); }}>
                   <option value="10">10</option>
                   <option value="20">20</option>
                 </Select>
@@ -997,8 +997,8 @@ function ViewButton({ active, icon, label, onClick }: { active: boolean; icon: R
       type="button"
       onClick={onClick}
       className={cn(
-        "inline-flex h-11 items-center gap-2 rounded-[14px] border px-4 text-sm font-semibold transition",
-        active ? "border-[#050B18] bg-[#050B18] text-white" : "border-[#E5EAF1] bg-white text-slate-700 hover:bg-slate-50",
+        "inline-flex h-11 items-center gap-2 rounded-xl border px-4 text-sm font-semibold transition",
+        active ? "border-[#050B18] bg-[#050B18] text-white" : "ft-border bg-white text-slate-700 hover:bg-slate-50",
       )}
     >
       {icon}
@@ -1009,7 +1009,7 @@ function ViewButton({ active, icon, label, onClick }: { active: boolean; icon: R
 
 function SettingsCheckbox({ label, checked, onChange }: { label: string; checked: boolean; onChange: (value: boolean) => void }) {
   return (
-    <label className="flex items-center justify-between gap-3 rounded-[14px] border border-[#E5EAF1] bg-[#F8FAFC] px-3 py-3 text-sm font-bold text-[#0F172A]">
+    <label className="flex items-center justify-between gap-3 rounded-xl border ft-border bg-[#F8FAFC] px-3 py-3 text-sm font-bold ft-text-main">
       {label}
       <input type="checkbox" checked={checked} onChange={(event) => onChange(event.target.checked)} className="h-4 w-4 rounded border-[#CBD5E1] text-[#16C784]" />
     </label>
@@ -1024,10 +1024,10 @@ function CalendarMetric({ icon, label, value, tone }: { icon: ReactNode; label: 
     emerald: "bg-emerald-50 text-emerald-700",
   } as const;
   return (
-    <div className="flex items-center justify-between gap-3 rounded-[16px] border border-[#E5EAF1] bg-white p-3">
-      <span className={cn("inline-flex h-9 w-9 items-center justify-center rounded-[12px]", tones[tone])}>{icon}</span>
-      <span className="mr-auto text-sm font-bold text-[#64748B]">{label}</span>
-      <span className="text-base font-semibold text-[#0F172A]">{value}</span>
+    <div className="flex items-center justify-between gap-3 rounded-2xl border ft-border bg-white p-3">
+      <span className={cn("inline-flex h-9 w-9 items-center justify-center rounded-xl", tones[tone])}>{icon}</span>
+      <span className="mr-auto text-sm font-bold ft-text-muted">{label}</span>
+      <span className="text-base font-semibold ft-text-main">{value}</span>
     </div>
   );
 }

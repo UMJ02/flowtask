@@ -73,7 +73,7 @@ export const ds = {
     raised: "rounded-[16px] border border-slate-200/80 bg-white shadow-[var(--ft-shadow-raised)]",
     floating: "rounded-[16px] border border-slate-200/80 bg-white shadow-[var(--ft-shadow-floating)]",
     overlay: "rounded-[18px] border border-slate-200/80 bg-white shadow-[var(--ft-shadow-overlay)]",
-    interactive: "transition-[transform,background-color,border-color,box-shadow] duration-150 ease-out hover:-translate-y-[1px] hover:border-slate-300 hover:bg-white active:scale-[0.995]",
+    interactive: "transition-[transform,background-color,border-color,box-shadow] duration-150 ease-out hover:translate-y-0 hover:border-slate-300 hover:bg-white active:scale-[0.995]",
   },
   control: {
     input: "h-9 rounded-[10px] border border-slate-200 bg-white px-3 text-[13px] text-slate-900 outline-none transition-[border-color,box-shadow,background-color] duration-150 placeholder:text-slate-400 focus:border-emerald-300 focus:ring-[3px] focus:ring-emerald-500/10",
@@ -93,7 +93,7 @@ export const ds = {
     normal: "180ms cubic-bezier(0.2, 0.8, 0.2, 1)",
     enter: "220ms cubic-bezier(0.16, 1, 0.3, 1)",
     subtle: "transition duration-150 ease-out",
-    hoverLift: "transition-[transform,background-color,border-color,box-shadow] duration-150 ease-out hover:-translate-y-[1px]",
+    hoverLift: "transition-[transform,background-color,border-color,box-shadow] duration-150 ease-out hover:translate-y-0",
     press: "active:scale-[0.98]",
     reveal: "animate-ft-reveal",
     slideFade: "animate-ft-slide-fade",

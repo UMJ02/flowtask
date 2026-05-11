@@ -130,7 +130,7 @@ function PriorityBadge({ priority }: { priority: string }) {
 function ProjectProgressBar({ value }: { value: number }) {
   return (
     <div className="min-w-[120px]">
-      <div className="mb-2 flex items-center justify-between gap-3 text-xs font-bold text-[#0F172A]">
+      <div className="mb-2 flex items-center justify-between gap-3 text-xs font-bold ft-text-main">
         <span>{value}%</span>
       </div>
       <div className="h-1.5 overflow-hidden rounded-full bg-slate-100">
@@ -180,10 +180,10 @@ function ProjectsStatCard({ icon, label, value, helper, tone }: { icon: ReactNod
 
 function ProjectsPagination({ total }: { total: number }) {
   return (
-    <div className="flex flex-col gap-3 border-t border-[#E5EAF1] px-5 py-4 text-sm text-[#64748B] md:flex-row md:items-center md:justify-between">
+    <div className="flex flex-col gap-3 border-t ft-border px-5 py-4 text-sm ft-text-muted md:flex-row md:items-center md:justify-between">
       <p>Mostrando {total ? 1 : 0} a {Math.min(total, 10)} de {total} proyectos</p>
       <div className="flex flex-wrap items-center gap-2">
-        <span className="inline-flex h-9 items-center rounded-xl border border-[#E5EAF1] bg-slate-50 px-4 font-semibold text-slate-500">Página 1</span>
+        <span className="inline-flex h-9 items-center rounded-xl border ft-border bg-slate-50 px-4 font-semibold text-slate-500">Página 1</span>
         <span className="inline-flex h-9 items-center rounded-xl border border-emerald-100 bg-emerald-50 px-4 font-semibold text-emerald-700">10 por página</span>
       </div>
     </div>
@@ -196,7 +196,7 @@ function ProjectRow({ project, index, queryString }: { project: ProjectSummary; 
   const detailHref = projectDetailRoute(project.id, queryString);
 
   return (
-    <tr className="group border-t border-[#E5EAF1] transition hover:bg-slate-50/70">
+    <tr className="group border-t ft-border transition hover:bg-slate-50/70">
       <td className="px-5 py-4 align-middle">
         <Link href={detailHref} className="flex min-w-[290px] items-center gap-4">
           <span className={`relative inline-flex h-16 w-16 shrink-0 overflow-hidden rounded-2xl bg-gradient-to-br ${coverTone} ring-1 ring-slate-200`}>
@@ -210,8 +210,8 @@ function ProjectRow({ project, index, queryString }: { project: ProjectSummary; 
             )}
           </span>
           <span>
-            <span className="block text-base font-semibold text-[#0F172A] transition group-hover:text-[#16C784]">{project.title}</span>
-            <span className="mt-1 line-clamp-2 block max-w-[330px] text-sm leading-6 text-[#64748B]">{getProjectDescription(project)}</span>
+            <span className="block text-base font-semibold ft-text-main transition group-hover:text-[#16C784]">{project.title}</span>
+            <span className="mt-1 line-clamp-2 block max-w-[330px] text-sm leading-6 ft-text-muted">{getProjectDescription(project)}</span>
           </span>
         </Link>
       </td>
@@ -228,10 +228,10 @@ function ProjectRow({ project, index, queryString }: { project: ProjectSummary; 
       </td>
       <td className="px-5 py-4 align-middle">
         <div className="flex items-center justify-center gap-2">
-          <Link href={detailHref} aria-label={`Abrir proyecto ${project.title}`} className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-[#E5EAF1] bg-white text-slate-600 transition hover:-translate-y-0.5 hover:border-slate-300 hover:text-[#0F172A] hover:">
+          <Link href={detailHref} aria-label={`Abrir proyecto ${project.title}`} className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border ft-border bg-white text-slate-600 transition hover:translate-y-0 hover:border-slate-300 hover:ft-text-main hover:">
             <Eye className="h-4 w-4" />
           </Link>
-          <Link href={projectEditRoute(project.id, queryString)} aria-label={`Editar proyecto ${project.title}`} className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-[#E5EAF1] bg-white text-slate-600 transition hover:-translate-y-0.5 hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700">
+          <Link href={projectEditRoute(project.id, queryString)} aria-label={`Editar proyecto ${project.title}`} className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border ft-border bg-white text-slate-600 transition hover:translate-y-0 hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700">
             <Pencil className="h-4 w-4" />
           </Link>
         </div>
@@ -306,15 +306,15 @@ export default async function ProjectsPage({ searchParams }: { searchParams?: Pr
               <summary className="ft-button w-full cursor-pointer list-none border border-[#E7ECF3] bg-white text-slate-700 hover:bg-slate-50">
                 Más filtros <ChevronDown className="h-4 w-4 transition group-open:rotate-180" />
               </summary>
-              <div className="absolute right-0 z-20 mt-2 w-[280px] space-y-3 rounded-[20px] border border-[#E5EAF1] bg-white p-4">
-                <label className="block text-xs font-semibold uppercase tracking-[0.12em] text-[#64748B]">Tipo</label>
-                <select name="mode" defaultValue={filters.mode} className="h-11 w-full rounded-[14px] border border-[#E5EAF1] bg-white px-3 text-sm font-bold text-[#334155] outline-none focus:border-[#16C784]">
+              <div className="absolute right-0 z-20 mt-2 w-[280px] space-y-3 rounded-[20px] border ft-border bg-white p-4">
+                <label className="block text-xs font-semibold uppercase tracking-[0.12em] ft-text-muted">Tipo</label>
+                <select name="mode" defaultValue={filters.mode} className="h-11 w-full rounded-[14px] border ft-border bg-white px-3 text-sm font-bold text-[#334155] outline-none focus:border-[#16C784]">
                   <option value="">Todos</option>
                   <option value="solo">Individuales</option>
                   <option value="collaborative">Colaborativos</option>
                 </select>
-                <label className="block text-xs font-semibold uppercase tracking-[0.12em] text-[#64748B]">Cliente</label>
-                <input name="client" defaultValue={filters.client} placeholder="Nombre del cliente" className="h-11 w-full rounded-[14px] border border-[#E5EAF1] bg-white px-3 text-sm font-bold text-[#334155] outline-none placeholder:text-slate-400 focus:border-[#16C784]" />
+                <label className="block text-xs font-semibold uppercase tracking-[0.12em] ft-text-muted">Cliente</label>
+                <input name="client" defaultValue={filters.client} placeholder="Nombre del cliente" className="h-11 w-full rounded-[14px] border ft-border bg-white px-3 text-sm font-bold text-[#334155] outline-none placeholder:text-slate-400 focus:border-[#16C784]" />
               </div>
             </details>
             <button type="submit" className="ft-button bg-slate-950 text-white hover:bg-slate-900"><Filter className="h-4 w-4" /> Aplicar</button>
@@ -351,7 +351,7 @@ export default async function ProjectsPage({ searchParams }: { searchParams?: Pr
               description="Puedes limpiar los filtros o crear un proyecto nuevo para empezar a ordenar el trabajo del equipo."
               action={
                 <div className="flex flex-wrap justify-center gap-2">
-                  <Link href="/app/projects" className="inline-flex h-11 items-center rounded-2xl border border-[#E5EAF1] bg-white px-4 text-sm font-bold text-[#0F172A]">Limpiar filtros</Link>
+                  <Link href="/app/projects" className="inline-flex h-11 items-center rounded-2xl border ft-border bg-white px-4 text-sm font-bold ft-text-main">Limpiar filtros</Link>
                   <Link href={projectNewRoute(queryString)} className="inline-flex h-11 items-center rounded-2xl bg-[#050B18] px-4 text-sm font-bold text-white">Nuevo proyecto</Link>
                 </div>
               }
@@ -365,7 +365,7 @@ export default async function ProjectsPage({ searchParams }: { searchParams?: Pr
           <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#16C784] ring-1 ring-emerald-100">
             <ShieldCheck className="h-4 w-4" />
           </span>
-          <p><span className="font-semibold text-[#0F172A]">Consejo:</span> organiza tus proyectos por estado y fecha límite para mantener el enfoque en lo más importante.</p>
+          <p><span className="font-semibold ft-text-main">Consejo:</span> organiza tus proyectos por estado y fecha límite para mantener el enfoque en lo más importante.</p>
         </div>
         <Clock3 className="hidden h-4 w-4 text-emerald-500 md:block" />
       </div>

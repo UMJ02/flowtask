@@ -77,15 +77,15 @@ export function BoardShareView({ token }: BoardShareViewProps) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 grid bg-[#F7F9FC] text-[#0F172A]">
-      <header className="z-30 flex h-[64px] items-center justify-between border-b border-[#E5EAF1] bg-white/90 px-4 backdrop-blur-xl md:px-6">
+    <div className="fixed inset-0 z-50 grid bg-[#F7F9FC] ft-text-main">
+      <header className="z-30 flex h-[64px] items-center justify-between border-b ft-border bg-white/90 px-4 backdrop-blur-xl md:px-6">
         <div className="flex min-w-0 items-center gap-3">
           <Link href="/" className="ft-pressable grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50" aria-label="Volver">
             <ArrowLeft className="h-4 w-4" />
           </Link>
           <div className="min-w-0">
             <p className="ft-text-meta hidden md:block">Pizarra compartida · solo lectura</p>
-            <h1 className="truncate text-[17px] font-semibold tracking-[-0.02em] text-[#0F172A] md:min-w-[360px]">{board.title}</h1>
+            <h1 className="truncate text-[17px] font-semibold tracking-[-0.02em] ft-text-main md:min-w-[360px]">{board.title}</h1>
           </div>
         </div>
         <span className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-700"><Eye className="h-3.5 w-3.5" /> Vista pública</span>

@@ -26,8 +26,8 @@ import { ProjectHeroInlineEditor } from "@/components/projects/project-hero-inli
 const projectUi = {
   card: "rounded-[20px] border border-[#E7EDF5] bg-white",
   smallCard: "rounded-[20px] border border-[#E7EDF5] bg-white p-5",
-  buttonDark: "inline-flex h-10 items-center justify-center gap-2 rounded-[16px] bg-[#050B18] px-4 text-[13px] font-bold text-white transition hover:-translate-y-0.5 hover:bg-[#111827]",
-  buttonGhost: "inline-flex h-10 items-center justify-center gap-2 rounded-[16px] border border-[#E7EDF5] bg-white px-4 text-[13px] font-bold text-[#0F172A] transition hover:bg-[#F8FAFC]",
+  buttonDark: "inline-flex h-10 items-center justify-center gap-2 rounded-[16px] bg-[#050B18] px-4 text-[13px] font-bold text-white transition hover:translate-y-0 hover:bg-[#111827]",
+  buttonGhost: "inline-flex h-10 items-center justify-center gap-2 rounded-[16px] border border-[#E7EDF5] bg-white px-4 text-[13px] font-bold ft-text-main transition hover:bg-[#F8FAFC]",
   eyebrow: "text-xs font-semibold uppercase tracking-[0.22em] text-[#16A36C]",
 };
 
@@ -159,7 +159,7 @@ function AvatarStack({ members }: { members: any[] }) {
           );
         })}
       </div>
-      <span className="text-xs font-bold text-[#64748B]">{members.length} en el equipo</span>
+      <span className="text-xs font-bold ft-text-muted">{members.length} en el equipo</span>
     </div>
   );
 }
@@ -183,13 +183,13 @@ function ProjectStatsRow({ tasks }: { tasks: any[] }) {
       {items.map((item) => {
         const Icon = item.icon;
         return (
-          <article key={item.label} className="rounded-[20px] border border-[#E7EDF5] bg-white p-5 transition hover:-translate-y-0.5">
+          <article key={item.label} className="rounded-[20px] border border-[#E7EDF5] bg-white p-5 transition hover:translate-y-0">
             <div className="flex items-center gap-4">
               <span className={`grid h-10 w-10 place-items-center rounded-full ${item.tone}`}><Icon className="h-5 w-5" /></span>
               <div>
-                <p className="text-sm font-semibold text-[#64748B]">{item.label}</p>
-                <p className="mt-1 text-[28px] font-semibold leading-none text-[#0F172A]">{item.value}</p>
-                <p className="mt-1 text-sm text-[#64748B]">{item.helper}</p>
+                <p className="text-sm font-semibold ft-text-muted">{item.label}</p>
+                <p className="mt-1 text-[28px] font-semibold leading-none ft-text-main">{item.value}</p>
+                <p className="mt-1 text-sm ft-text-muted">{item.helper}</p>
               </div>
             </div>
           </article>
@@ -220,11 +220,11 @@ function ProjectHeroCard({ project, tasks, members, currentQuery }: { project: a
             <span className="rounded-full bg-[#F6F0FF] px-3 py-1 text-xs font-semibold text-[#7C3AED] ring-1 ring-[#E9D5FF]">{department?.name || project.country || "Proyecto"}</span>
           </div>
           <div className="mt-4 flex flex-wrap items-center gap-2">
-            <h1 className="text-[26px] font-semibold leading-tight tracking-[-0.035em] text-[#0F172A]">{project.title}</h1>
+            <h1 className="text-[26px] font-semibold leading-tight tracking-[-0.035em] ft-text-main">{project.title}</h1>
             <Star className="h-5 w-5 text-slate-400" />
           </div>
-          <p className="mt-2 text-sm font-semibold text-[#64748B]">Creado el {project.created_at ? formatDate(project.created_at) : "—"}</p>
-          <p className="mt-4 max-w-2xl text-base leading-7 text-[#64748B]">{project.description || "Proyecto activo. Centraliza tareas, equipo, archivos y seguimiento en un solo lugar."}</p>
+          <p className="mt-2 text-sm font-semibold ft-text-muted">Creado el {project.created_at ? formatDate(project.created_at) : "—"}</p>
+          <p className="mt-4 max-w-2xl text-base leading-7 ft-text-muted">{project.description || "Proyecto activo. Centraliza tareas, equipo, archivos y seguimiento en un solo lugar."}</p>
           <AvatarStack members={members} />
         </div>
 
@@ -235,14 +235,14 @@ function ProjectHeroCard({ project, tasks, members, currentQuery }: { project: a
           </div>
           <div>
             <div className="mb-2 flex items-center justify-between text-sm">
-              <span className="font-semibold text-[#64748B]">Progreso general</span>
+              <span className="font-semibold ft-text-muted">Progreso general</span>
               <span className="text-xl font-semibold text-[#16A36C]">{progress}%</span>
             </div>
             <div className="h-[7px] rounded-full bg-[#EEF2F7]"><div className="h-[7px] rounded-full bg-[#16C784]" style={{ width: `${Math.min(100, Math.max(0, progress))}%` }} /></div>
           </div>
           <div className="grid grid-cols-2 gap-4 text-sm">
-            <div><p className="text-xs font-bold text-[#64748B]">Fecha límite</p><p className="mt-2 inline-flex items-center gap-1.5 font-semibold text-[#0F172A]"><CalendarDays className="h-4 w-4 text-[#64748B]" />{project.due_date ? formatDate(project.due_date) : "Sin fecha"}</p></div>
-            <div><p className="text-xs font-bold text-[#64748B]">Estado</p><span className={`mt-2 inline-flex rounded-full px-3 py-1 text-xs font-semibold ring-1 ${statusClass(project.status)}`}>{statusLabel(project.status)}</span></div>
+            <div><p className="text-xs font-bold ft-text-muted">Fecha límite</p><p className="mt-2 inline-flex items-center gap-1.5 font-semibold ft-text-main"><CalendarDays className="h-4 w-4 ft-text-muted" />{project.due_date ? formatDate(project.due_date) : "Sin fecha"}</p></div>
+            <div><p className="text-xs font-bold ft-text-muted">Estado</p><span className={`mt-2 inline-flex rounded-full px-3 py-1 text-xs font-semibold ring-1 ${statusClass(project.status)}`}>{statusLabel(project.status)}</span></div>
           </div>
         </div>
       </div>
@@ -262,7 +262,7 @@ function ProjectTabs() {
   return (
     <nav className="flex h-10 items-center gap-5 overflow-x-auto border-b border-[#E7EDF5]">
       {tabs.map((tab, index) => (
-        <a key={tab.label} href={tab.href} data-active={index === 0} className="relative h-10 shrink-0 text-sm font-semibold text-[#64748B] transition hover:text-[#0F172A] data-[active=true]:text-[#16A36C] after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full after:rounded-full after:bg-[#16C784] after:opacity-0 data-[active=true]:after:opacity-100">
+        <a key={tab.label} href={tab.href} data-active={index === 0} className="relative h-10 shrink-0 text-sm font-semibold ft-text-muted transition hover:ft-text-main data-[active=true]:text-[#16A36C] after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full after:rounded-full after:bg-[#16C784] after:opacity-0 data-[active=true]:after:opacity-100">
           {tab.label}
         </a>
       ))}
@@ -274,7 +274,7 @@ function ProjectMembersCard({ members }: { members: any[] }) {
   return (
     <section id="equipo" className={`${projectUi.smallCard} scroll-mt-28`}>
       <div className="mb-4 flex items-center justify-between gap-3">
-        <h2 className="text-base font-semibold text-[#0F172A]">Miembros del proyecto</h2>
+        <h2 className="text-base font-semibold ft-text-main">Miembros del proyecto</h2>
         <Link href="/app/organization/roles" className="inline-flex h-9 items-center gap-1 rounded-[12px] border border-[#E7EDF5] bg-white px-3 text-xs font-semibold text-[#475569] hover:bg-slate-50"><Plus className="h-4 w-4" />Invitar</Link>
       </div>
       <div className="space-y-4">
@@ -284,12 +284,12 @@ function ProjectMembersCard({ members }: { members: any[] }) {
             <div key={member.id ?? member.user_id} className="flex items-center justify-between gap-3">
               <div className="flex min-w-0 items-center gap-3">
                 <span className="relative grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#ECFDF5] text-xs font-semibold text-[#087A4B] ring-1 ring-[#BBF7D0]">{initials(name)}<span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-white bg-[#16C784]" /></span>
-                <div className="min-w-0"><p className="truncate text-sm font-semibold text-[#0F172A]">{name}</p><p className="truncate text-xs font-medium text-[#64748B]">{member.role === "owner" ? "Líder del proyecto" : roleLabel(member.role)}</p></div>
+                <div className="min-w-0"><p className="truncate text-sm font-semibold ft-text-main">{name}</p><p className="truncate text-xs font-medium ft-text-muted">{member.role === "owner" ? "Líder del proyecto" : roleLabel(member.role)}</p></div>
               </div>
-              <span className="rounded-full border border-[#E7EDF5] bg-white px-3 py-1 text-xs font-semibold text-[#64748B]">{roleLabel(member.role)}</span>
+              <span className="rounded-full border border-[#E7EDF5] bg-white px-3 py-1 text-xs font-semibold ft-text-muted">{roleLabel(member.role)}</span>
             </div>
           );
-        }) : <p className="text-sm font-medium text-[#64748B]">Aún no hay personas agregadas al proyecto.</p>}
+        }) : <p className="text-sm font-medium ft-text-muted">Aún no hay personas agregadas al proyecto.</p>}
       </div>
     </section>
   );
@@ -298,16 +298,16 @@ function ProjectMembersCard({ members }: { members: any[] }) {
 function RecentFilesCard({ attachments }: { attachments: any[] }) {
   return (
     <section id="archivos" className={`${projectUi.smallCard} scroll-mt-28`}>
-      <div className="mb-4 flex items-center justify-between gap-3"><h2 className="text-base font-semibold text-[#0F172A]">Archivos recientes</h2><a href="#archivos" className="inline-flex h-9 items-center rounded-[12px] border border-[#E7EDF5] bg-white px-3 text-xs font-semibold text-[#475569] hover:bg-slate-50">Ver todo</a></div>
+      <div className="mb-4 flex items-center justify-between gap-3"><h2 className="text-base font-semibold ft-text-main">Archivos recientes</h2><a href="#archivos" className="inline-flex h-9 items-center rounded-[12px] border border-[#E7EDF5] bg-white px-3 text-xs font-semibold text-[#475569] hover:bg-slate-50">Ver todo</a></div>
       <div className="grid grid-cols-2 gap-3">
         {attachments.length ? attachments.slice(0, 4).map((file) => (
-          <a key={file.id} href={file.public_url || "#"} className="group overflow-hidden rounded-[16px] border border-[#E7EDF5] bg-white transition hover:-translate-y-0.5 hover:">
-            <span className="grid aspect-square place-items-center overflow-hidden bg-[#F8FAFC] text-[#64748B]">
+          <a key={file.id} href={file.public_url || "#"} className="group overflow-hidden rounded-[16px] border border-[#E7EDF5] bg-white transition hover:translate-y-0 hover:">
+            <span className="grid aspect-square place-items-center overflow-hidden bg-[#F8FAFC] ft-text-muted">
               {isImageAttachment(file) ? <img src={file.public_url} alt={file.file_name || "Archivo"} className="h-full w-full object-cover" /> : attachmentIcon(file.file_name)}
             </span>
-            <span className="block min-w-0 p-2"><span className="block truncate text-xs font-semibold text-[#334155]">{file.file_name || "Archivo"}</span><span className="block truncate text-[11px] font-medium text-[#64748B]">{formatFileSize(file.file_size)}</span></span>
+            <span className="block min-w-0 p-2"><span className="block truncate text-xs font-semibold text-[#334155]">{file.file_name || "Archivo"}</span><span className="block truncate text-[11px] font-medium ft-text-muted">{formatFileSize(file.file_size)}</span></span>
           </a>
-        )) : <p className="col-span-2 text-sm font-medium text-[#64748B]">Sin archivos recientes.</p>}
+        )) : <p className="col-span-2 text-sm font-medium ft-text-muted">Sin archivos recientes.</p>}
       </div>
     </section>
   );
@@ -316,14 +316,14 @@ function RecentFilesCard({ attachments }: { attachments: any[] }) {
 function ProjectActivityCard({ activity }: { activity: ActivityItem[] }) {
   return (
     <section id="actividad" className={`${projectUi.card} scroll-mt-28 p-5`}>
-      <div className="mb-5 flex items-center justify-between gap-3"><div><p className={projectUi.eyebrow}>Actividad reciente</p><h2 className="mt-2 text-xl font-semibold text-[#0F172A]">Movimientos del proyecto</h2></div><a href="#actividad" className="inline-flex h-10 items-center rounded-[14px] border border-[#E7EDF5] bg-white px-4 text-xs font-semibold text-[#475569] hover:bg-slate-50">Ver movimientos</a></div>
+      <div className="mb-5 flex items-center justify-between gap-3"><div><p className={projectUi.eyebrow}>Actividad reciente</p><h2 className="mt-2 text-xl font-semibold ft-text-main">Movimientos del proyecto</h2></div><a href="#actividad" className="inline-flex h-10 items-center rounded-[14px] border border-[#E7EDF5] bg-white px-4 text-xs font-semibold text-[#475569] hover:bg-slate-50">Ver movimientos</a></div>
       <div className="space-y-4">
         {activity.length ? activity.slice(0, 5).map((item) => (
           <div key={item.id} className="flex gap-3">
             <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#F6F0FF] text-xs font-semibold text-[#7C3AED] ring-1 ring-[#E9D5FF]">FT</span>
-            <div><p className="text-sm font-bold text-[#334155]">{activityCopy(item)}</p><p className="mt-1 text-xs font-medium text-[#64748B]">{item.created_at ? formatDate(item.created_at) : "Ahora"}</p></div>
+            <div><p className="text-sm font-bold text-[#334155]">{activityCopy(item)}</p><p className="mt-1 text-xs font-medium ft-text-muted">{item.created_at ? formatDate(item.created_at) : "Ahora"}</p></div>
           </div>
-        )) : <p className="text-sm font-medium text-[#64748B]">Aún no hay actividad para mostrar.</p>}
+        )) : <p className="text-sm font-medium ft-text-muted">Aún no hay actividad para mostrar.</p>}
       </div>
     </section>
   );
@@ -332,9 +332,9 @@ function ProjectActivityCard({ activity }: { activity: ActivityItem[] }) {
 export function ProjectDetailPro({ project, tasks, members, attachments, activity, currentQuery = "", canCreateTask = false, canEdit = false, editMode = false }: ProjectDetailProProps) {
   const progress = projectProgress(tasks, project.status);
   return (
-    <div id="resumen" className="mx-auto max-w-[1440px] space-y-5 px-4 py-5 text-[#0F172A] sm:px-5 lg:px-5">
-      <nav className="flex flex-wrap items-center gap-2 text-sm font-semibold text-[#64748B]">
-        <Link href="/app/projects" className="transition hover:text-[#0F172A]">Proyectos</Link><span>›</span><span className="text-[#0F172A]">{project.title}</span>
+    <div id="resumen" className="mx-auto max-w-[1440px] space-y-5 px-4 py-5 ft-text-main sm:px-5 lg:px-5">
+      <nav className="flex flex-wrap items-center gap-2 text-sm font-semibold ft-text-muted">
+        <Link href="/app/projects" className="transition hover:ft-text-main">Proyectos</Link><span>›</span><span className="ft-text-main">{project.title}</span>
       </nav>
       {editMode && canEdit ? (
         <ProjectHeroInlineEditor project={project} progress={progress} currentQuery={currentQuery.replace(/(^|&)mode=edit(&|$)/, "$1").replace(/&$/, "")} />
@@ -349,8 +349,8 @@ export function ProjectDetailPro({ project, tasks, members, attachments, activit
         <aside className="space-y-5 xl:sticky xl:top-5 xl:self-start">
           <section className="rounded-[20px] border border-[#BBF7D0] bg-[#ECFDF5] p-5">
             <p className="text-xs font-semibold uppercase tracking-[0.20em] text-[#087A4B]">Acción rápida</p>
-            <h3 className="mt-2 text-xl font-semibold text-[#0F172A]">Crear tarea interna</h3>
-            <p className="mt-2 text-sm leading-6 text-[#64748B]">Agrega tareas dentro de este proyecto sin salir de esta vista.</p>
+            <h3 className="mt-2 text-xl font-semibold ft-text-main">Crear tarea interna</h3>
+            <p className="mt-2 text-sm leading-6 ft-text-muted">Agrega tareas dentro de este proyecto sin salir de esta vista.</p>
             <a href="#tareas" className={`mt-5 inline-flex h-10 w-full items-center justify-center gap-2 rounded-[16px] text-sm font-semibold ${canCreateTask ? "bg-[#16C784] text-white" : "pointer-events-none bg-white/70 text-slate-400"}`}><Plus className="h-4 w-4" />Ir a tareas del proyecto</a>
           </section>
           <ProjectMembersCard members={members} />
