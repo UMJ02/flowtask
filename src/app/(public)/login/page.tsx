@@ -1,5 +1,6 @@
 import { AuthBrand } from "@/components/auth/auth-brand";
 import { LoginForm } from "@/components/auth/login-form";
+import { LoginSessionNotice } from '@/components/auth/login-session-notice';
 
 export default async function LoginPage({
   searchParams,
@@ -8,6 +9,7 @@ export default async function LoginPage({
 }) {
   const params = (await searchParams) ?? {};
   const next = typeof params.next === "string" ? params.next : undefined;
+  const reason = typeof params.reason === "string" ? params.reason : undefined;
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-[linear-gradient(180deg,#ecfdf5_0%,#f8fafc_38%,#eef5f2_100%)]">
@@ -24,6 +26,7 @@ export default async function LoginPage({
             <p className="mt-1.5 text-sm text-slate-600 md:text-base">Accede a tu tablero personal y proyectos.</p>
           </div>
 
+          <LoginSessionNotice reason={reason} />
           <LoginForm initialNext={next} />
         </div>
       </div>

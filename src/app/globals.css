@@ -2013,3 +2013,56 @@
     color: var(--ft-apple-muted);
   }
 }
+
+
+/* v58.24.9.10 — Interaction performance + skeleton shimmer */
+@layer components {
+  .ft-skeleton-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--ft-radius-lg);
+    border: 1px solid var(--ft-apple-border);
+    background: #fff;
+  }
+
+  .ft-skeleton-card::after,
+  .ft-skeleton-line::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.72), transparent);
+    animation: ftSkeletonSweep 1.25s ease-in-out infinite;
+  }
+
+  .ft-skeleton-line {
+    position: relative;
+    overflow: hidden;
+    min-height: 10px;
+    background: linear-gradient(90deg, #eef2f7, #f8fafc, #eef2f7);
+  }
+
+  .ft-scroll-stable {
+    overscroll-behavior: contain;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .ft-no-heavy-blur {
+    backdrop-filter: none;
+  }
+
+  @keyframes ftSkeletonSweep {
+    100% { transform: translateX(100%); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ft-skeleton-card::after,
+    .ft-skeleton-line::after {
+      animation: none !important;
+    }
+    .ft-scroll-stable {
+      scroll-behavior: auto;
+    }
+  }
+}

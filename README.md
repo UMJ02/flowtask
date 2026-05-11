@@ -1,62 +1,93 @@
-# FlowTask — v58.24.9.9.1 Visual Style Deduplication + Motion Cleanup Pass
+# FlowTask — v58.24.9.10 Session Security + Interaction Performance + Account Danger Zone + Auth Asset Fix
 
-Base: **v58.24.9.9 — Visual System Cleanup + Apple Workspace UI Polish**
+Base: **v58.24.9.9.1 — Visual Style Deduplication + Motion Cleanup Pass**
 
 ## Objetivo
 
-Hacer que el sistema visual nuevo realmente gobierne más la app, reduciendo estilos viejos repetidos que estaban empujando sobre la dirección Apple Workspace.
+Corregir puntos visibles de UX/performance y agregar seguridad de sesión:
+
+- Auto logout por inactividad de 15 minutos.
+- Skeleton shimmer más pro.
+- Opción de eliminar cuenta en Settings.
+- API server-side para solicitar eliminación de cuenta.
+- Fix de imagen en página de cuenta confirmada.
+- Mejoras de scroll/performance.
+- Menú colapsado del sidebar se mantiene compacto y sin dropdown roto.
 
 ## Cambios principales
 
-### Deduplicación visual
+### Session security
 
-Se reducen estilos directos repetidos en `src/**/*.tsx`:
+Nuevo componente:
 
 ```txt
-border-[#E5EAF1] → 0 usos
-text-[#0F172A] → 0 usos
-text-[#64748B] → 0 usos
-hover:-translate → 0 usos
+src/components/auth/idle-session-guard.tsx
 ```
 
-Se agregan aliases globales:
+Se monta en `AppShell`. Si el usuario queda inactivo 15 minutos:
 
 ```txt
-ft-border
-ft-border-strong
-ft-text-main
-ft-text-muted
-ft-text-faint
-ft-bg-surface
-ft-bg-muted
-ft-control
-ft-control-muted
+signOut
+redirect /login?reason=idle
+mensaje de seguridad en login
 ```
 
-### Cleanup de motion
+### Account danger zone
 
-- Se elimina `hover:-translate` en componentes de app.
-- En pantallas principales se remueve `animate-pulse` directo y se usa `ft-skeleton-line`.
-- Se mantiene motion funcional: skeleton, feedback de importante, drag feedback y estados de acción.
-
-### Pantallas priorizadas
-
-Se depuró con más fuerza:
+Nuevo componente:
 
 ```txt
-/app/tasks
-/app/tasks/trash
-TaskActionList
-TaskKanbanBoard
-WorkspaceHome
-TaskWorkspaceInline
+src/components/settings/account-danger-zone.tsx
+```
+
+Nuevo endpoint:
+
+```txt
+src/app/api/account/delete/route.ts
+```
+
+Nueva migración:
+
+```txt
+supabase/migrations/0054_v58_24_9_10_account_deletion_status.sql
+```
+
+La acción requiere escribir:
+
+```txt
+ELIMINAR
+```
+
+### Auth asset fix
+
+Se agrega:
+
+```txt
+public/check/confirmacion.png
+src/app/(public)/confirmed/page.tsx
+```
+
+La imagen se referencia como:
+
+```txt
+/check/confirmacion.png
+```
+
+### Skeleton / performance
+
+Se agregan:
+
+```txt
+ft-skeleton-card
+ft-skeleton-line shimmer
+ft-scroll-stable
 ```
 
 ## Validación recomendada
 
 ```bash
 npm install
-npm run verify:v58.24.9.9.1
+npm run verify:v58.24.9.10
 npm run typecheck
 npm run build:preflight
 npm run build

@@ -11,6 +11,7 @@ import { getOrganizationBillingSummary } from '@/lib/queries/billing';
 import { safeServerCall } from '@/lib/runtime/safe-server';
 import { AccessControlSettingsCard } from '@/components/settings/access-control-settings-card';
 import { IntelligentAttentionSettingsCard } from '@/components/settings/intelligent-attention-settings-card';
+import { AccountDangerZone } from '@/components/settings/account-danger-zone';
 
 export default async function SettingsPage() {
   const [profile, preferences, organizationContext, accessSummary] = await Promise.all([
@@ -48,6 +49,7 @@ export default async function SettingsPage() {
 
       {preferences ? <NotificationPreferencesForm initialPreferences={preferences} /> : null}
       <IntelligentAttentionSettingsCard />
+      <AccountDangerZone />
     </div>
   );
 }

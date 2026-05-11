@@ -5,6 +5,7 @@ import { AppHeader } from '@/components/layout/app-header';
 import { AppSidebar } from '@/components/layout/app-sidebar';
 import { SidebarStateProvider, useSidebarState } from '@/components/layout/sidebar-state';
 import { NotificationsProvider } from '@/components/notifications/notifications-provider';
+import { IdleSessionGuard } from '@/components/auth/idle-session-guard';
 import type { OrganizationSummary } from '@/types/organization';
 
 export function AppShell({
@@ -28,6 +29,7 @@ export function AppShell({
 }) {
   return (
     <NotificationsProvider userId={userId} initialUnreadCount={unreadCount}>
+      <IdleSessionGuard />
       <SidebarStateProvider>
         <ShellFrame
           userEmail={userEmail}
@@ -64,7 +66,7 @@ function ShellFrame({
   const { collapsed } = useSidebarState();
 
   return (
-    <div className="min-h-screen bg-[#F7F9FC] ft-text-main">
+    <div className="min-h-screen bg-[#F7F9FC] ft-text-main ft-scroll-stable">
       <div className={`grid min-h-screen items-stretch overflow-x-hidden ${collapsed ? 'md:grid-cols-[72px_minmax(0,1fr)]' : 'md:grid-cols-[260px_minmax(0,1fr)]'}`}>
         <AppSidebar organizations={organizations} activeOrganization={activeOrganization} userEmail={userEmail} userName={userName} />
         <div className="min-w-0 overflow-x-hidden px-4 py-4 md:px-5 md:py-5">
