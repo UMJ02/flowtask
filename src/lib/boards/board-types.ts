@@ -65,10 +65,27 @@ export type ConnectorElement = BoardElementBase & {
   style: BoardStyle;
 };
 
+export type BoardTableSelection =
+  | { type: "cell"; rowId: string; columnId: string }
+  | { type: "row"; rowId: string }
+  | { type: "column"; columnId: string };
+
+export type BoardTableCellStyle = {
+  backgroundColor?: string;
+  textColor?: string;
+};
+
 export type TableElement = BoardElementBase & {
   type: "table";
   columns: Array<{ id: string; label: string; width: number }>;
   rows: Array<{ id: string; cells: Record<string, string> }>;
+  hiddenRowIds?: string[];
+  hiddenColumnIds?: string[];
+  rowStyles?: Record<string, BoardTableCellStyle>;
+  columnStyles?: Record<string, BoardTableCellStyle>;
+  cellStyles?: Record<string, BoardTableCellStyle>;
+  formulas?: Record<string, string>;
+  selectedRange?: BoardTableSelection;
   style: BoardStyle;
 };
 

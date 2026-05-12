@@ -126,6 +126,13 @@ export function createDefaultBoardElement(type: BoardTool, boardId: string, poin
         { id: crypto.randomUUID(), cells: { task: "Actividad clave", owner: "Equipo", status: "Pendiente", notes: "" } },
         { id: crypto.randomUUID(), cells: { task: "Validar diseño", owner: "Ulises", status: "En progreso", notes: "" } },
       ],
+      hiddenRowIds: [],
+      hiddenColumnIds: [],
+      rowStyles: {},
+      columnStyles: {},
+      cellStyles: {},
+      formulas: {},
+      selectedRange: undefined,
       style: { fill: "#FFFFFF", stroke: "#C4B5FD", shadow: "none", radius: 16 },
     };
   }

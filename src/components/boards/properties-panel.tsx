@@ -1,6 +1,7 @@
 "use client";
 
-import { Download, FileText, GitBranch, Image, Lock, Minus, Plus, Trash2, Unlock } from "lucide-react";
+import { ChevronLeft, ChevronRight, Download, FileText, GitBranch, Image, Lock, Minus, Plus, Trash2, Unlock } from "lucide-react";
+import { useState } from "react";
 import type { BoardElement, BoardStyle, ConnectorElement, ShapeElement, TableElement } from "@/lib/boards/board-types";
 
 const fillSwatches = ["#FFFFFF", "#ECFDF5", "#DBEAFE", "#F5F3FF", "#FEF3C7", "#FFE4E6"];
@@ -30,14 +31,27 @@ type Props = {
   onSetTableColumnCount: (count: number) => void;
   onRemoveTableColumn: (columnId: string) => void;
   onRenameTableColumn: (columnId: string, label: string) => void;
+  onShowHiddenTableRows: () => void;
+  onShowHiddenTableColumns: () => void;
 };
 
-export function PropertiesPanel({ selected, onPatch, onDelete, onSetTableRowCount, onSetTableColumnCount, onRemoveTableColumn, onRenameTableColumn }: Props) {
+export function PropertiesPanel({ selected, onPatch, onDelete, onSetTableRowCount, onSetTableColumnCount, onRemoveTableColumn, onRenameTableColumn, onShowHiddenTableRows, onShowHiddenTableColumns }: Props) {
+  const [collapsed, setCollapsed] = useState(false);
   const connector = selected?.type === "connector" ? selected : null;
   const table = selected?.type === "table" ? selected : null;
   const shape = selected?.type === "shape" ? selected : null;
   const isConnector = Boolean(connector);
   const media = selected?.type === "image" || selected?.type === "file" ? selected : null;
+
+  if (collapsed) {
+    return (
+      <aside className="board-inspector board-inspector-collapsed ft-glass-panel absolute bottom-6 right-6 top-6 z-30 hidden w-[64px] items-start justify-center overflow-hidden p-3 xl:flex">
+        <button type="button" onClick={() => setCollapsed(false)} className="grid h-10 w-10 place-items-center rounded-2xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50" title="Expandir propiedades">
+          <ChevronLeft className="h-4 w-4" />
+        </button>
+      </aside>
+    );
+  }
 
   return (
     <aside className="board-inspector ft-glass-panel absolute bottom-6 right-6 top-6 z-30 hidden w-[320px] overflow-y-auto p-4 xl:block">
@@ -46,7 +60,10 @@ export function PropertiesPanel({ selected, onPatch, onDelete, onSetTableRowCoun
           <p className="ft-text-label text-slate-500">Propiedades</p>
           <h2 className="ft-title-card mt-1">{selected ? (isConnector ? "Conector" : table ? "Tabla" : media ? (media.type === "image" ? "Imagen" : "Archivo") : "Elemento") : "Pizarra"}</h2>
         </div>
-        {selected ? <button type="button" onClick={onDelete} className="grid h-9 w-9 place-items-center rounded-xl border border-rose-200 text-rose-600 hover:bg-rose-50"><Trash2 className="h-4 w-4" /></button> : null}
+        <div className="flex items-center gap-2">
+          <button type="button" onClick={() => setCollapsed(true)} className="grid h-9 w-9 place-items-center rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50" title="Contraer panel"><ChevronRight className="h-4 w-4" /></button>
+          {selected ? <button type="button" onClick={onDelete} className="grid h-9 w-9 place-items-center rounded-xl border border-rose-200 text-rose-600 hover:bg-rose-50"><Trash2 className="h-4 w-4" /></button> : null}
+        </div>
       </div>
       {!selected ? (
         <div className="mt-5 rounded-2xl border border-dashed border-slate-200 bg-white/70 p-4 text-sm font-medium text-slate-500">
@@ -61,6 +78,12 @@ export function PropertiesPanel({ selected, onPatch, onDelete, onSetTableRowCoun
               {selected.type}
             </p>
           </section>
+
+          {table?.selectedRange ? (
+            <section className="rounded-2xl border border-emerald-100 bg-emerald-50/70 p-3 text-xs font-bold text-emerald-700">
+              Selección activa: {table.selectedRange.type === "row" ? "fila" : table.selectedRange.type === "column" ? "columna" : "celda"}. Usa las bolitas de color para aplicar estilos.
+            </section>
+          ) : null}
 
           {isConnector ? (
             <>
@@ -117,7 +140,7 @@ export function PropertiesPanel({ selected, onPatch, onDelete, onSetTableRowCoun
                 </section>
               ) : null}
 
-              {table ? <TableControls table={table} onSetTableRowCount={onSetTableRowCount} onSetTableColumnCount={onSetTableColumnCount} onRemoveTableColumn={onRemoveTableColumn} onRenameTableColumn={onRenameTableColumn} /> : null}
+              {table ? <TableControls table={table} onSetTableRowCount={onSetTableRowCount} onSetTableColumnCount={onSetTableColumnCount} onRemoveTableColumn={onRemoveTableColumn} onRenameTableColumn={onRenameTableColumn} onShowHiddenTableRows={onShowHiddenTableRows} onShowHiddenTableColumns={onShowHiddenTableColumns} /> : null}
 
               {!table && !media ? (
                 <>
@@ -151,7 +174,7 @@ function Stepper({ label, value, min, onChange }: { label: string; value: number
   );
 }
 
-function TableControls({ table, onSetTableRowCount, onSetTableColumnCount, onRemoveTableColumn, onRenameTableColumn }: { table: TableElement; onSetTableRowCount: (count: number) => void; onSetTableColumnCount: (count: number) => void; onRemoveTableColumn: (columnId: string) => void; onRenameTableColumn: (columnId: string, label: string) => void }) {
+function TableControls({ table, onSetTableRowCount, onSetTableColumnCount, onRemoveTableColumn, onRenameTableColumn, onShowHiddenTableRows, onShowHiddenTableColumns }: { table: TableElement; onSetTableRowCount: (count: number) => void; onSetTableColumnCount: (count: number) => void; onRemoveTableColumn: (columnId: string) => void; onRenameTableColumn: (columnId: string, label: string) => void; onShowHiddenTableRows: () => void; onShowHiddenTableColumns: () => void }) {
   return (
     <>
       <section className="rounded-2xl border border-violet-100 bg-violet-50/50 p-3">
@@ -161,6 +184,12 @@ function TableControls({ table, onSetTableRowCount, onSetTableColumnCount, onRem
           <Stepper label="Filas" value={table.rows.length} min={1} onChange={onSetTableRowCount} />
           <Stepper label="Columnas" value={table.columns.length} min={1} onChange={onSetTableColumnCount} />
         </div>
+        {(table.hiddenRowIds?.length || table.hiddenColumnIds?.length) ? (
+          <div className="mt-3 grid grid-cols-2 gap-2">
+            <button type="button" onClick={onShowHiddenTableRows} className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-600 hover:bg-slate-50">Mostrar filas ({table.hiddenRowIds?.length ?? 0})</button>
+            <button type="button" onClick={onShowHiddenTableColumns} className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-600 hover:bg-slate-50">Mostrar cols. ({table.hiddenColumnIds?.length ?? 0})</button>
+          </div>
+        ) : null}
       </section>
       <section>
         <label className="ft-text-label text-slate-500">Columnas</label>

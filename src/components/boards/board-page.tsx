@@ -16,7 +16,8 @@ import { FloatingFormatToolbar } from "@/components/boards/floating-format-toolb
 import { PropertiesPanel } from "@/components/boards/properties-panel";
 import { createDefaultBoardElement, createDefaultConnector, createFileBoardElement } from "@/lib/boards/board-defaults";
 import { mapBoardActivityRow, mapBoardCollaboratorRow, mapBoardCommentRow, mapBoardRow, mapElementRow, serializeElementForUpsert } from "@/lib/boards/board-serialization";
-import type { BoardElement, BoardPoint, BoardTool, ConnectorElement, ShapeElement, TableElement, VisualBoard, VisualBoardActivity, VisualBoardActivityRow, VisualBoardCollaborator, VisualBoardCollaboratorRow, VisualBoardComment, VisualBoardCommentRow, VisualBoardElementRow, VisualBoardPresence, VisualBoardRow } from "@/lib/boards/board-types";
+import type { BoardElement, BoardPoint, BoardTool, BoardTableSelection, ConnectorElement, ShapeElement, TableElement, VisualBoard, VisualBoardActivity, VisualBoardActivityRow, VisualBoardCollaborator, VisualBoardCollaboratorRow, VisualBoardComment, VisualBoardCommentRow, VisualBoardElementRow, VisualBoardPresence, VisualBoardRow } from "@/lib/boards/board-types";
+import { cellKey, evaluateTableFormula, nextAutofillValue } from "@/lib/boards/table-tools";
 import { createClient } from "@/lib/supabase/client";
 import { getClientWorkspaceContext } from "@/lib/supabase/workspace-client";
 
@@ -871,6 +872,75 @@ export function BoardPage({ boardId }: BoardPageProps) {
     }));
   }
 
+  function resolveTableFormula(elementId: string, rowId: string, columnId: string, formula: string) {
+    patchTable(elementId, (table) => {
+      const result = evaluateTableFormula(table, formula);
+      return {
+        ...table,
+        formulas: { ...(table.formulas ?? {}), [cellKey(rowId, columnId)]: formula },
+        rows: table.rows.map((row) => row.id === rowId ? { ...row, cells: { ...row.cells, [columnId]: result } } : row),
+      };
+    });
+    void logBoardActivity("table_changed", { action: "formula", elementId });
+  }
+
+  function selectTableRange(elementId: string, selection: BoardTableSelection) {
+    patchTable(elementId, (table) => ({ ...table, selectedRange: selection }));
+  }
+
+  function applyTableSelectionColor(elementId: string, color: string) {
+    patchTable(elementId, (table) => {
+      const selection = table.selectedRange;
+      if (!selection) return { ...table, style: { ...table.style, fill: color } };
+      if (selection.type === "row") {
+        return { ...table, rowStyles: { ...(table.rowStyles ?? {}), [selection.rowId]: { ...(table.rowStyles?.[selection.rowId] ?? {}), backgroundColor: color } } };
+      }
+      if (selection.type === "column") {
+        return { ...table, columnStyles: { ...(table.columnStyles ?? {}), [selection.columnId]: { ...(table.columnStyles?.[selection.columnId] ?? {}), backgroundColor: color } } };
+      }
+      return { ...table, cellStyles: { ...(table.cellStyles ?? {}), [cellKey(selection.rowId, selection.columnId)]: { ...(table.cellStyles?.[cellKey(selection.rowId, selection.columnId)] ?? {}), backgroundColor: color } } };
+    });
+    void logBoardActivity("table_changed", { action: "color_selection", elementId });
+  }
+
+  function hideTableRow(elementId: string, rowId: string) {
+    patchTable(elementId, (table) => ({ ...table, hiddenRowIds: Array.from(new Set([...(table.hiddenRowIds ?? []), rowId])) }));
+  }
+
+  function hideTableColumn(elementId: string, columnId: string) {
+    patchTable(elementId, (table) => ({ ...table, hiddenColumnIds: Array.from(new Set([...(table.hiddenColumnIds ?? []), columnId])) }));
+  }
+
+  function showHiddenTableRows(elementId: string) {
+    patchTable(elementId, (table) => ({ ...table, hiddenRowIds: [] }));
+  }
+
+  function showHiddenTableColumns(elementId: string) {
+    patchTable(elementId, (table) => ({ ...table, hiddenColumnIds: [] }));
+  }
+
+  function autofillTableFromCell(elementId: string, rowId: string, columnId: string) {
+    patchTable(elementId, (table) => {
+      const sourceIndex = table.rows.findIndex((row) => row.id === rowId);
+      if (sourceIndex < 0) return table;
+      const sourceValue = table.rows[sourceIndex]?.cells[columnId] ?? "";
+      const beforeValue = sourceIndex > 0 ? table.rows[sourceIndex - 1]?.cells[columnId] : undefined;
+      let previous = sourceValue;
+      let beforePrevious = beforeValue;
+      return {
+        ...table,
+        rows: table.rows.map((row, index) => {
+          if (index <= sourceIndex || index > sourceIndex + 4) return row;
+          const nextValue = nextAutofillValue(previous, beforePrevious);
+          beforePrevious = previous;
+          previous = nextValue;
+          return { ...row, cells: { ...row.cells, [columnId]: nextValue } };
+        }),
+      };
+    });
+    void logBoardActivity("table_changed", { action: "autofill", elementId });
+  }
+
   function updateTableColumnLabel(elementId: string, columnId: string, label: string) {
     patchTable(elementId, (table) => ({
       ...table,
@@ -1128,9 +1198,17 @@ export function BoardPage({ boardId }: BoardPageProps) {
                   onConnectorTarget={handleConnectorTarget}
                   onCommentTarget={handleCommentElementTarget}
                   onUpdateTableCell={updateTableCell}
+                  onResolveTableFormula={resolveTableFormula}
+                  onSelectTableRange={selectTableRange}
                   onAddTableRow={addTableRow}
                   onAddTableColumn={addTableColumn}
                   onRemoveTableRow={removeTableRow}
+                  onRemoveTableColumn={removeTableColumn}
+                  onHideTableRow={hideTableRow}
+                  onHideTableColumn={hideTableColumn}
+                  onShowHiddenTableRows={showHiddenTableRows}
+                  onShowHiddenTableColumns={showHiddenTableColumns}
+                  onAutofillTableFromCell={autofillTableFromCell}
                 />
               ))}
               <BoardCommentPins
@@ -1166,7 +1244,11 @@ export function BoardPage({ boardId }: BoardPageProps) {
             selected={selected}
             onDuplicate={duplicateSelected}
             onDelete={deleteSelected}
-            onChangeColor={(color) => selected ? patchElement(selected.id, { style: selected.type === "connector" ? { ...selected.style, stroke: color } : { ...selected.style, fill: color } } as Partial<BoardElement>) : undefined}
+            onChangeColor={(color) => {
+              if (!selected) return undefined;
+              if (selected.type === "table") return applyTableSelectionColor(selected.id, color);
+              return patchElement(selected.id, { style: selected.type === "connector" ? { ...selected.style, stroke: color } : { ...selected.style, fill: color } } as Partial<BoardElement>);
+            }}
             onAddTableRow={() => selected?.type === "table" ? addTableRow(selected.id) : undefined}
             onAddTableColumn={() => selected?.type === "table" ? addTableColumn(selected.id) : undefined}
           />
@@ -1178,6 +1260,8 @@ export function BoardPage({ boardId }: BoardPageProps) {
             onSetTableColumnCount={(count) => selected?.type === "table" ? setTableColumnCount(selected.id, count) : undefined}
             onRemoveTableColumn={(columnId) => selected?.type === "table" ? removeTableColumn(selected.id, columnId) : undefined}
             onRenameTableColumn={(columnId, label) => selected?.type === "table" ? updateTableColumnLabel(selected.id, columnId, label) : undefined}
+            onShowHiddenTableRows={() => selected?.type === "table" ? showHiddenTableRows(selected.id) : undefined}
+            onShowHiddenTableColumns={() => selected?.type === "table" ? showHiddenTableColumns(selected.id) : undefined}
           />
           <BoardCommentsActivity
             comments={comments}

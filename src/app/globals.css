@@ -3861,3 +3861,126 @@
     }
   }
 }
+
+
+/* v58.25.6.5 — Boards Table Spreadsheet Tools + Properties Panel Collapse */
+@layer components {
+  .board-table-mini-action {
+    display: inline-flex;
+    height: 24px;
+    align-items: center;
+    gap: 4px;
+    border-radius: 9px;
+    background: #FFFFFF;
+    padding-inline: 8px;
+    color: #475569;
+    font-size: 11px;
+    font-weight: 800;
+    transition: background 160ms ease, color 160ms ease;
+  }
+
+  .board-table-mini-action:hover {
+    background: #EDE9FE;
+    color: #6D28D9;
+  }
+
+  .board-table-header-cell {
+    border: 1px solid #EDE9FE;
+    padding: 8px;
+    text-align: left;
+    font-weight: 800;
+    cursor: pointer;
+    user-select: none;
+    transition: background 160ms ease, box-shadow 160ms ease;
+  }
+
+  .board-table-header-cell:hover,
+  .board-table-column-selected {
+    background: #ECFDF5 !important;
+    box-shadow: inset 0 0 0 2px rgba(22,199,132,.24);
+  }
+
+  .board-table-row-handle {
+    border: 1px solid #E5EAF1;
+    background: #F8FAFC;
+    color: #64748B;
+    font-size: 11px;
+    font-weight: 800;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .board-table-row-handle:hover,
+  .board-table-row-selected .board-table-row-handle {
+    background: #ECFDF5 !important;
+    color: #047857;
+    box-shadow: inset 0 0 0 2px rgba(22,199,132,.2);
+  }
+
+  .board-table-cell {
+    position: relative;
+    border: 1px solid #EEF2F7;
+    padding: 0;
+    color: #334155;
+    transition: background 160ms ease, box-shadow 160ms ease;
+  }
+
+  .board-table-cell-selected {
+    background: #ECFDF5 !important;
+    box-shadow: inset 0 0 0 2px rgba(22,199,132,.22);
+  }
+
+  .board-table-fill-handle {
+    position: absolute;
+    right: 2px;
+    bottom: 2px;
+    height: 8px;
+    width: 8px;
+    border-radius: 999px;
+    border: 1px solid #FFFFFF;
+    background: #16C784;
+    opacity: 0;
+    cursor: crosshair;
+    box-shadow: 0 2px 8px rgba(22,199,132,.35);
+    transition: opacity 140ms ease;
+  }
+
+  .board-table-cell:hover .board-table-fill-handle,
+  .board-table-cell-selected .board-table-fill-handle {
+    opacity: 1;
+  }
+
+  .board-table-context-menu {
+    position: absolute;
+    z-index: 80;
+    min-width: 180px;
+    overflow: hidden;
+    border-radius: 16px;
+    border: 1px solid #E5EAF1;
+    background: rgba(255,255,255,.96);
+    padding: 6px;
+    box-shadow: 0 20px 48px rgba(15,23,42,.16);
+    backdrop-filter: blur(16px);
+  }
+
+  .board-table-context-menu button {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    border-radius: 12px;
+    padding: 9px 10px;
+    color: #334155;
+    font-size: 12px;
+    font-weight: 800;
+    text-align: left;
+  }
+
+  .board-table-context-menu button:hover {
+    background: #F8FAFC;
+    color: #0F172A;
+  }
+
+  .board-inspector-collapsed {
+    border-radius: 28px;
+  }
+}

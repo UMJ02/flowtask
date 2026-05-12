@@ -106,9 +106,17 @@ export function BoardShareView({ token }: BoardShareViewProps) {
                 onUpdateContent={() => undefined}
                 onConnectorTarget={() => undefined}
                 onUpdateTableCell={() => undefined}
+                onResolveTableFormula={() => undefined}
+                onSelectTableRange={() => undefined}
                 onAddTableRow={() => undefined}
                 onAddTableColumn={() => undefined}
                 onRemoveTableRow={() => undefined}
+                onRemoveTableColumn={() => undefined}
+                onHideTableRow={() => undefined}
+                onHideTableColumn={() => undefined}
+                onShowHiddenTableRows={() => undefined}
+                onShowHiddenTableColumns={() => undefined}
+                onAutofillTableFromCell={() => undefined}
               />
             ))}
           </div>

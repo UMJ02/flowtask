@@ -1,8 +1,9 @@
 "use client";
 
-import type { CSSProperties, PointerEvent as ReactPointerEvent } from "react";
+import { useState, type CSSProperties, type MouseEvent as ReactMouseEvent, type PointerEvent as ReactPointerEvent } from "react";
 import { Download, FileText, Plus, Trash2 } from "lucide-react";
-import type { BoardElement, BoardTool } from "@/lib/boards/board-types";
+import type { BoardElement, BoardTableSelection, BoardTool } from "@/lib/boards/board-types";
+import { cellKey, selectionMatches, selectionStyleForCell, visibleColumns, visibleRows } from "@/lib/boards/table-tools";
 
 export type ResizeHandle = "nw" | "n" | "ne" | "e" | "se" | "s" | "sw" | "w";
 
@@ -17,9 +18,17 @@ type BoardElementViewProps = {
   onConnectorTarget: (id: string) => void;
   onCommentTarget?: (id: string) => void;
   onUpdateTableCell: (elementId: string, rowId: string, columnId: string, value: string) => void;
+  onResolveTableFormula: (elementId: string, rowId: string, columnId: string, formula: string) => void;
+  onSelectTableRange: (elementId: string, selection: BoardTableSelection) => void;
   onAddTableRow: (elementId: string) => void;
   onAddTableColumn: (elementId: string) => void;
   onRemoveTableRow: (elementId: string, rowId: string) => void;
+  onRemoveTableColumn: (elementId: string, columnId: string) => void;
+  onHideTableRow: (elementId: string, rowId: string) => void;
+  onHideTableColumn: (elementId: string, columnId: string) => void;
+  onShowHiddenTableRows: (elementId: string) => void;
+  onShowHiddenTableColumns: (elementId: string) => void;
+  onAutofillTableFromCell: (elementId: string, rowId: string, columnId: string) => void;
 };
 
 const handleClasses: Record<ResizeHandle, string> = {
@@ -80,10 +89,19 @@ export function BoardElementView({
   onConnectorTarget,
   onCommentTarget,
   onUpdateTableCell,
+  onResolveTableFormula,
+  onSelectTableRange,
   onAddTableRow,
   onAddTableColumn,
   onRemoveTableRow,
+  onRemoveTableColumn,
+  onHideTableRow,
+  onHideTableColumn,
+  onShowHiddenTableRows,
+  onShowHiddenTableColumns,
+  onAutofillTableFromCell,
 }: BoardElementViewProps) {
+  const [tableContextMenu, setTableContextMenu] = useState<null | { x: number; y: number; selection: BoardTableSelection }>(null);
   if (element.type === "connector") return null;
 
   const common = "group absolute touch-none select-none transition duration-150";
@@ -155,20 +173,48 @@ export function BoardElementView({
   }
 
   if (element.type === "table") {
+    const table = element;
+    const tableColumns = visibleColumns(table);
+    const tableRows = visibleRows(table);
+    const hiddenRowsCount = table.hiddenRowIds?.length ?? 0;
+    const hiddenColumnsCount = table.hiddenColumnIds?.length ?? 0;
+
+    function openTableContextMenu(event: ReactMouseEvent, selection: BoardTableSelection) {
+      event.preventDefault();
+      event.stopPropagation();
+      onSelect(element.id);
+      onSelectTableRange(element.id, selection);
+      setTableContextMenu({ x: event.clientX - element.x, y: event.clientY - element.y, selection });
+    }
+
+    function rowBackground(rowId: string) {
+      return table.rowStyles?.[rowId]?.backgroundColor;
+    }
+
+    function columnBackground(columnId: string) {
+      return table.columnStyles?.[columnId]?.backgroundColor;
+    }
+
+    function cellBackground(rowId: string, columnId: string) {
+      return table.cellStyles?.[cellKey(rowId, columnId)]?.backgroundColor ?? rowBackground(rowId) ?? columnBackground(columnId);
+    }
+
     return (
       <div
         style={getStyle(element)}
         className={`${common} overflow-visible rounded-[16px] border border-violet-200 bg-white ${selection} ${connectorMode || commentMode ? "cursor-crosshair hover:border-emerald-300" : ""}`}
         onPointerDown={handlePointerDown}
-        onClick={handleClick}
+        onClick={() => { setTableContextMenu(null); handleClick(); }}
       >
         <div className="flex h-full flex-col overflow-hidden rounded-[16px]">
           <div className="flex items-center justify-between border-b border-violet-100 bg-violet-50/90 px-2 py-1.5 text-[11px] font-bold uppercase tracking-[0.12em] text-violet-700">
             <span>Tabla editable</span>
             {selected && !connectorMode ? (
               <div className="flex items-center gap-1 normal-case tracking-normal">
-                <button type="button" onPointerDown={(event) => event.stopPropagation()} onClick={(event) => { event.stopPropagation(); onAddTableRow(element.id); }} className="inline-flex h-6 items-center gap-1 rounded-lg bg-white px-2 text-[11px] font-bold text-slate-600 hover:bg-violet-100"><Plus className="h-3 w-3" /> Fila</button>
-                <button type="button" onPointerDown={(event) => event.stopPropagation()} onClick={(event) => { event.stopPropagation(); onAddTableColumn(element.id); }} className="inline-flex h-6 items-center gap-1 rounded-lg bg-white px-2 text-[11px] font-bold text-slate-600 hover:bg-violet-100"><Plus className="h-3 w-3" /> Col.</button>
+                {hiddenRowsCount ? <button type="button" onPointerDown={(event) => event.stopPropagation()} onClick={(event) => { event.stopPropagation(); onShowHiddenTableRows(element.id); }} className="board-table-mini-action">Mostrar filas</button> : null}
+                {hiddenColumnsCount ? <button type="button" onPointerDown={(event) => event.stopPropagation()} onClick={(event) => { event.stopPropagation(); onShowHiddenTableColumns(element.id); }} className="board-table-mini-action">Mostrar cols.</button> : null}
+                <button type="button" onPointerDown={(event) => event.stopPropagation()} onClick={(event) => { event.stopPropagation(); onAddTableRow(element.id); }} className="board-table-mini-action"><Plus className="h-3 w-3" /> Fila</button>
+                <button type="button" onPointerDown={(event) => event.stopPropagation()} onClick={(event) => { event.stopPropagation(); onAddTableColumn(element.id); }} className="board-table-mini-action"><Plus className="h-3 w-3" /> Col.</button>
               </div>
             ) : null}
           </div>
@@ -176,20 +222,76 @@ export function BoardElementView({
             <table className="h-full min-w-full border-collapse text-[12px]">
               <thead className="bg-violet-50 text-slate-700">
                 <tr>
-                  {element.columns.map((column) => (
-                    <th key={column.id} style={{ width: column.width }} className="border border-violet-100 px-2 py-2 text-left font-bold">{column.label}</th>
+                  <th className="w-9 border border-violet-100 px-1 py-2 text-center font-bold text-slate-400">#</th>
+                  {tableColumns.map((column) => (
+                    <th
+                      key={column.id}
+                      style={{ width: column.width, backgroundColor: columnBackground(column.id) }}
+                      className={`board-table-header-cell ${selectionMatches(element.selectedRange, "column", column.id) ? "board-table-column-selected" : ""}`}
+                      onPointerDown={(event) => event.stopPropagation()}
+                      onClick={(event) => { event.stopPropagation(); onSelect(element.id); onSelectTableRange(element.id, { type: "column", columnId: column.id }); }}
+                      onContextMenu={(event) => openTableContextMenu(event, { type: "column", columnId: column.id })}
+                      title="Click para seleccionar columna. Click derecho para acciones."
+                    >
+                      {column.label}
+                    </th>
                   ))}
                   {selected && !connectorMode ? <th className="w-8 border border-violet-100 px-1 py-2" aria-label="Acciones" /> : null}
                 </tr>
               </thead>
               <tbody>
-                {element.rows.map((row) => (
-                  <tr key={row.id}>
-                    {element.columns.map((column) => (
-                      <td key={column.id} className="border border-slate-100 p-0 text-slate-700">
-                        <textarea value={row.cells[column.id] ?? ""} readOnly={connectorMode || commentMode || element.locked} onPointerDown={(event) => event.stopPropagation()} onClick={(event) => event.stopPropagation()} onChange={(event) => onUpdateTableCell(element.id, row.id, column.id, event.target.value)} className="block min-h-[34px] w-full resize-none border-none bg-transparent px-2 py-2 text-[12px] leading-4 outline-none focus:bg-emerald-50/50" placeholder="Escribe..." />
-                      </td>
-                    ))}
+                {tableRows.map((row, rowIndex) => (
+                  <tr key={row.id} className={selectionMatches(element.selectedRange, "row", row.id) ? "board-table-row-selected" : ""}>
+                    <th
+                      className="board-table-row-handle"
+                      style={{ backgroundColor: rowBackground(row.id) }}
+                      onPointerDown={(event) => event.stopPropagation()}
+                      onClick={(event) => { event.stopPropagation(); onSelect(element.id); onSelectTableRange(element.id, { type: "row", rowId: row.id }); }}
+                      onContextMenu={(event) => openTableContextMenu(event, { type: "row", rowId: row.id })}
+                      title="Click para seleccionar fila. Click derecho para acciones."
+                    >
+                      {rowIndex + 1}
+                    </th>
+                    {tableColumns.map((column) => {
+                      const formula = element.formulas?.[cellKey(row.id, column.id)];
+                      return (
+                        <td
+                          key={column.id}
+                          className={`board-table-cell ${selectionStyleForCell(element, row.id, column.id)}`}
+                          style={{ backgroundColor: cellBackground(row.id, column.id) }}
+                          onContextMenu={(event) => openTableContextMenu(event, { type: "cell", rowId: row.id, columnId: column.id })}
+                        >
+                          <div className="relative">
+                            <textarea
+                              value={row.cells[column.id] ?? ""}
+                              readOnly={connectorMode || commentMode || element.locked}
+                              onPointerDown={(event) => event.stopPropagation()}
+                              onClick={(event) => { event.stopPropagation(); onSelect(element.id); onSelectTableRange(element.id, { type: "cell", rowId: row.id, columnId: column.id }); }}
+                              onChange={(event) => onUpdateTableCell(element.id, row.id, column.id, event.target.value)}
+                              onBlur={(event) => {
+                                const value = event.target.value.trim();
+                                if (value.startsWith("=")) onResolveTableFormula(element.id, row.id, column.id, value);
+                              }}
+                              className="block min-h-[34px] w-full resize-none border-none bg-transparent px-2 py-2 pr-5 text-[12px] leading-4 outline-none focus:bg-emerald-50/50"
+                              placeholder="Escribe..."
+                              title={formula ? `Fórmula: ${formula}` : "Tip: usa =A1+B1 o =SUM(A1:A5)"}
+                            />
+                            {selected && !connectorMode && !commentMode ? (
+                              <button
+                                type="button"
+                                className="board-table-fill-handle"
+                                title="Autorrellenar hacia abajo"
+                                onPointerDown={(event) => {
+                                  event.preventDefault();
+                                  event.stopPropagation();
+                                  onAutofillTableFromCell(element.id, row.id, column.id);
+                                }}
+                              />
+                            ) : null}
+                          </div>
+                        </td>
+                      );
+                    })}
                     {selected && !connectorMode ? (
                       <td className="border border-slate-100 p-1 text-center">
                         <button type="button" onPointerDown={(event) => event.stopPropagation()} onClick={(event) => { event.stopPropagation(); onRemoveTableRow(element.id, row.id); }} className="grid h-7 w-7 place-items-center rounded-lg text-rose-500 hover:bg-rose-50" title="Eliminar fila"><Trash2 className="h-3.5 w-3.5" /></button>
@@ -201,6 +303,37 @@ export function BoardElementView({
             </table>
           </div>
         </div>
+
+        {tableContextMenu && selected && !connectorMode ? (
+          <div
+            className="board-table-context-menu"
+            style={{ left: tableContextMenu.x, top: tableContextMenu.y }}
+            onPointerDown={(event) => event.stopPropagation()}
+            onClick={(event) => event.stopPropagation()}
+          >
+            {tableContextMenu.selection.type === "row" ? (
+              <>
+                <button type="button" onClick={() => { onRemoveTableRow(element.id, (tableContextMenu.selection as Extract<BoardTableSelection, { type: "row" }>).rowId); setTableContextMenu(null); }}>Eliminar fila</button>
+                <button type="button" onClick={() => { onHideTableRow(element.id, (tableContextMenu.selection as Extract<BoardTableSelection, { type: "row" }>).rowId); setTableContextMenu(null); }}>Ocultar fila</button>
+              </>
+            ) : null}
+            {tableContextMenu.selection.type === "column" ? (
+              <>
+                <button type="button" onClick={() => { onRemoveTableColumn(element.id, (tableContextMenu.selection as Extract<BoardTableSelection, { type: "column" }>).columnId); setTableContextMenu(null); }}>Eliminar columna</button>
+                <button type="button" onClick={() => { onHideTableColumn(element.id, (tableContextMenu.selection as Extract<BoardTableSelection, { type: "column" }>).columnId); setTableContextMenu(null); }}>Ocultar columna</button>
+              </>
+            ) : null}
+            {tableContextMenu.selection.type === "cell" ? (
+              <>
+                <button type="button" onClick={() => { onSelectTableRange(element.id, { type: "row", rowId: (tableContextMenu.selection as Extract<BoardTableSelection, { type: "cell" }>).rowId }); setTableContextMenu(null); }}>Seleccionar fila</button>
+                <button type="button" onClick={() => { onSelectTableRange(element.id, { type: "column", columnId: (tableContextMenu.selection as Extract<BoardTableSelection, { type: "cell" }>).columnId }); setTableContextMenu(null); }}>Seleccionar columna</button>
+              </>
+            ) : null}
+            {hiddenRowsCount ? <button type="button" onClick={() => { onShowHiddenTableRows(element.id); setTableContextMenu(null); }}>Mostrar filas ocultas</button> : null}
+            {hiddenColumnsCount ? <button type="button" onClick={() => { onShowHiddenTableColumns(element.id); setTableContextMenu(null); }}>Mostrar columnas ocultas</button> : null}
+          </div>
+        ) : null}
+
         {canResize ? <ResizeHandles elementId={element.id} onResizeStart={onResizeStart} /> : null}
       </div>
     );

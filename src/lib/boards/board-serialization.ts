@@ -55,6 +55,13 @@ export function mapElementRow(row: VisualBoardElementRow): BoardElement {
       type: "table",
       columns: Array.isArray((data as any).columns) ? (data as any).columns : [],
       rows: Array.isArray((data as any).rows) ? (data as any).rows : [],
+      hiddenRowIds: Array.isArray((data as any).hiddenRowIds) ? (data as any).hiddenRowIds : [],
+      hiddenColumnIds: Array.isArray((data as any).hiddenColumnIds) ? (data as any).hiddenColumnIds : [],
+      rowStyles: typeof (data as any).rowStyles === "object" && (data as any).rowStyles ? (data as any).rowStyles : {},
+      columnStyles: typeof (data as any).columnStyles === "object" && (data as any).columnStyles ? (data as any).columnStyles : {},
+      cellStyles: typeof (data as any).cellStyles === "object" && (data as any).cellStyles ? (data as any).cellStyles : {},
+      formulas: typeof (data as any).formulas === "object" && (data as any).formulas ? (data as any).formulas : {},
+      selectedRange: typeof (data as any).selectedRange === "object" && (data as any).selectedRange ? (data as any).selectedRange : undefined,
     } as TableElement;
   }
 
@@ -96,7 +103,7 @@ export function mapElementRow(row: VisualBoardElementRow): BoardElement {
 
 export function serializeElementForUpsert(element: BoardElement) {
   const data = element.type === "table"
-    ? { columns: element.columns, rows: element.rows }
+    ? { columns: element.columns, rows: element.rows, hiddenRowIds: element.hiddenRowIds ?? [], hiddenColumnIds: element.hiddenColumnIds ?? [], rowStyles: element.rowStyles ?? {}, columnStyles: element.columnStyles ?? {}, cellStyles: element.cellStyles ?? {}, formulas: element.formulas ?? {}, selectedRange: element.selectedRange }
     : element.type === "connector"
       ? { fromElementId: element.fromElementId ?? null, toElementId: element.toElementId ?? null, from: element.from, to: element.to, label: element.label ?? "" }
       : element.type === "image" || element.type === "file"
