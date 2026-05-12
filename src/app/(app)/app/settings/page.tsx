@@ -1,7 +1,6 @@
 export const dynamic = 'force-dynamic';
 
 import { Card } from '@/components/ui/card';
-import { SettingsFooter } from '@/components/settings/settings-footer';
 import { NotificationPreferencesForm } from '@/components/notifications/notification-preferences-form';
 import { SettingsAccountOverview } from '@/components/settings/settings-account-overview';
 import { getNotificationPreferences } from '@/lib/queries/notification-preferences';
@@ -53,7 +52,6 @@ export default async function SettingsPage() {
 
       <IntelligentAttentionSettingsCard />
       <AccountDangerZone />
-      <SettingsFooter />
     </div>
   );
 }

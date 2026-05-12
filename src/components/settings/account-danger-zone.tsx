@@ -37,7 +37,7 @@ export function AccountDangerZone() {
   };
 
   return (
-    <Card className="rounded-[24px] border border-[#FECDD3] bg-[#FFF1F2] p-5 md:p-6 shadow-none">
+    <Card className="rounded-[24px] border border-[#FECDD3] bg-[#FFF1F2] p-4 md:p-5 shadow-none">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <p className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-rose-600">

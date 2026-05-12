@@ -80,10 +80,10 @@ export function SettingsAccountOverview({
   ] as const;
 
   return (
-    <Card className="ft-settings-card p-5 md:p-6">
+    <Card className="ft-settings-card p-4 md:p-5">
       <div>
         <p className="ft-settings-eyebrow text-[#047857]">Settings Hub</p>
-        <h1 className="mt-2 max-w-4xl text-[26px] font-extrabold tracking-[-0.03em] text-[#0F172A] md:text-[30px]">
+        <h1 className="mt-2 max-w-4xl text-[24px] font-extrabold tracking-[-0.03em] text-[#0F172A] md:text-[28px]">
           Cuenta, notificaciones y contexto de trabajo
         </h1>
         <p className="mt-2 max-w-3xl text-sm leading-6 text-[#64748B]">
@@ -95,16 +95,16 @@ export function SettingsAccountOverview({
         </div>
       </div>
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         {stats.map((item) => {
           const Icon = item.icon;
           return (
-            <div key={item.key} className="min-h-[104px] rounded-[18px] border border-[#E5EAF1] bg-white p-5 shadow-[0_10px_30px_rgba(15,23,42,.03)]">
-              <div className={`flex h-11 w-11 items-center justify-center rounded-[14px] ${item.bg}`}>
-                <Icon className={`h-7 w-7 ${item.tone}`} />
+            <div key={item.key} className="min-h-[96px] rounded-[18px] border border-[#E5EAF1] bg-white p-4 shadow-[0_10px_30px_rgba(15,23,42,.03)]">
+              <div className={`flex h-10 w-10 items-center justify-center rounded-[14px] ${item.bg}`}>
+                <Icon className={`h-6 w-6 ${item.tone}`} />
               </div>
-              <p className="mt-4 text-[11px] font-extrabold uppercase tracking-[0.16em] text-[#64748B]">{item.label}</p>
-              <p title={item.value} className="mt-1 line-clamp-2 break-words text-2xl font-extrabold leading-tight text-[#0F172A]">{item.value}</p>
+              <p className="mt-3 text-[11px] font-extrabold uppercase tracking-[0.16em] text-[#64748B]">{item.label}</p>
+              <p title={item.value} className="mt-1 line-clamp-2 break-words text-[22px] font-extrabold leading-tight text-[#0F172A]">{item.value}</p>
             </div>
           );
         })}

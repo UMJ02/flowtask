@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { BadgeCheck, BarChart3, ChevronDown, ShieldCheck, Sparkles } from 'lucide-react';
+import { BadgeCheck, BarChart3, ChevronDown, ShieldCheck } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { formatOrganizationRole } from '@/lib/organization/labels';
 
@@ -76,7 +76,7 @@ export function AccessControlSettingsCard({
   const activeItems = tab === 'organization' ? organizationItems : planItems;
 
   return (
-    <Card className="ft-settings-card p-5 md:p-6">
+    <Card className="ft-settings-card p-4 md:p-5">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <div className="flex items-center gap-2">
@@ -103,19 +103,19 @@ export function AccessControlSettingsCard({
         </div>
       </div>
 
-      <div className="mt-5 flex flex-wrap gap-2">
-        <span className="inline-flex h-8 items-center gap-2 rounded-[10px] bg-[#ECFDF5] px-3 text-xs font-extrabold text-[#047857]">
+      <div className="mt-4 flex flex-wrap gap-2">
+        <span className="inline-flex h-8 items-center gap-2 rounded-[12px] bg-[#ECFDF5] px-3 text-xs font-extrabold text-[#047857]">
           <BadgeCheck className="h-4 w-4" />
           {activeOrganization ? `${formatOrganizationRole(activeOrganization.role)} activo` : 'Plan individual activo'}
         </span>
-        <span className="inline-flex h-8 items-center gap-2 rounded-[10px] bg-[#F1F5F9] px-3 text-xs font-extrabold text-[#475569]">
+        <span className="inline-flex h-8 items-center gap-2 rounded-[12px] bg-[#F1F5F9] px-3 text-xs font-extrabold text-[#475569]">
           <BarChart3 className="h-4 w-4" />
           Resumen de cobertura del plan
         </span>
       </div>
 
       {isExpanded ? (
-        <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-5">
+        <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-5">
           {activeItems.map((item) => (
             <div key={item.label} className="ft-settings-soft p-4">
               <p className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-[#64748B]">{item.label}</p>

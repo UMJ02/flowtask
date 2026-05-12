@@ -85,7 +85,7 @@ export function NotificationPreferencesForm({ initialPreferences }: Props) {
         onClick={() => setActiveTab(value)}
         className={active
           ? "rounded-[14px] bg-[#ECFDF5] px-4 py-2 text-sm font-extrabold text-[#047857] ring-1 ring-[#16C784]/25"
-          : "rounded-full border border-[#E5EAF1] bg-white px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-[#F8FAFC]"}
+          : "rounded-[14px] border border-[#E5EAF1] bg-white px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-[#F8FAFC]"}
       >
         {label}
       </button>
@@ -93,9 +93,9 @@ export function NotificationPreferencesForm({ initialPreferences }: Props) {
   };
 
   return (
-    <div className="space-y-4 md:space-y-5">
+    <div>
       <Card className="overflow-hidden rounded-[20px] border border-[#E5EAF1] bg-white shadow-none">
-        <div className="flex flex-col gap-4 md:gap-5 lg:flex-row lg:items-start lg:justify-between">
+        <div className="flex flex-col gap-4 md:gap-5 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <h2 className="text-base font-semibold text-[#0F172A]">Preferencias de notificaciones</h2>
             <p className="mt-1 max-w-2xl text-sm leading-6 text-[#64748B]">Elige qué avisos quieres ver y cuándo prefieres recibirlos, con una vista más clara y compacta.</p>
@@ -161,7 +161,7 @@ export function NotificationPreferencesForm({ initialPreferences }: Props) {
                         onClick={() => updateField("delivery_frequency", option.value as NotificationPreferences["delivery_frequency"])}
                         className={active
                           ? "rounded-full bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white"
-                          : "rounded-full border border-[#E5EAF1] bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-[#F8FAFC]"}
+                          : "rounded-[14px] border border-[#E5EAF1] bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-[#F8FAFC]"}
                       >
                         {option.label}
                       </button>

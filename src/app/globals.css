@@ -2155,3 +2155,44 @@
     accent-color: #16C784;
   }
 }
+
+
+/* v58.25.1 — Settings footer cleanup + app alignment polish */
+@layer components {
+  .ft-settings-shell {
+    padding-bottom: 0;
+  }
+
+  .ft-settings-card {
+    box-shadow: 0 1px 2px rgba(15,23,42,.035), 0 12px 28px rgba(15,23,42,.035);
+  }
+
+  .ft-settings-card,
+  .ft-settings-subcard,
+  .ft-settings-soft {
+    transition: border-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
+  }
+
+  .ft-settings-card:hover {
+    border-color: rgba(203,213,225,.95);
+  }
+
+  .ft-settings-section-row {
+    border-radius: 20px;
+    border: 1px solid #E5EAF1;
+    background: #FFFFFF;
+  }
+
+  .ft-settings-button-green {
+    background: #064E3B;
+  }
+
+  .ft-settings-button-green:hover {
+    background: #047857;
+  }
+
+  .ft-settings-button-ghost:hover {
+    background: #F8FAFC;
+    border-color: #CBD5E1;
+  }
+}

@@ -52,14 +52,14 @@ export function IntelligentAttentionSettingsCard() {
   };
 
   return (
-    <Card className="ft-settings-card p-5 md:p-6">
+    <Card className="ft-settings-card p-4 md:p-5">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div className="max-w-3xl">
           <div className="inline-flex items-center gap-2 rounded-full bg-[#ECFDF5] px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.16em] text-[#047857] ring-1 ring-[#16C784]/20">
             <BrainCircuit className="h-3.5 w-3.5" />
             Asistente inteligente avanzado
           </div>
-          <h3 className="mt-3 text-[24px] font-extrabold tracking-[-0.03em] text-[#0F172A]">Ayuda más inteligente, menos ruido y memoria real por workspace</h3>
+          <h3 className="mt-3 text-[22px] font-extrabold tracking-[-0.03em] text-[#0F172A]">Ayuda más inteligente, menos ruido y memoria real por workspace</h3>
           <p className="mt-2 text-sm leading-6 text-[#64748B]">
             Ajusta el motor de prioridad, el nivel de detalle y cómo quieres que el asistente se comporte entre tu espacio personal y tus organizaciones.
           </p>
@@ -72,8 +72,8 @@ export function IntelligentAttentionSettingsCard() {
 
       {saved ? <p className="mt-3 text-sm font-medium text-emerald-700">{saved}</p> : null}
 
-      <div className="mt-5 grid gap-4 xl:grid-cols-[minmax(0,1.1fr)_minmax(360px,0.9fr)]">
-        <div className="space-y-4">
+      <div className="mt-4 grid gap-4 xl:grid-cols-[minmax(0,1.1fr)_minmax(360px,0.9fr)]">
+        <div className="space-y-3">
           <div className="rounded-[18px] border border-[#E5EAF1] bg-white p-4">
             <div className="flex items-center gap-2 text-[#0F172A]">
               <Sparkles className="h-4 w-4 text-emerald-600" />
@@ -128,7 +128,7 @@ export function IntelligentAttentionSettingsCard() {
           </div>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-3">
           <div className="rounded-[18px] border border-[#E5EAF1] bg-white p-4">
             <div className="flex items-center gap-2 text-[#0F172A]">
               <Gauge className="h-4 w-4 text-slate-700" />
