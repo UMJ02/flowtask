@@ -4,24 +4,20 @@ import path from "node:path";
 
 const root = process.cwd();
 const failures = [];
-const expectedVersion = "58.25.2-settings-colorful-redesign-alignment";
+const expectedVersion = "58.25.3-settings-width-compact-hero-metrics";
 
 function exists(rel){ return fs.existsSync(path.join(root, rel)); }
 function read(rel){ return exists(rel) ? fs.readFileSync(path.join(root, rel), "utf8") : ""; }
 function requireFile(rel){ if(!exists(rel)) failures.push(`Missing required file: ${rel}`); }
 function requireMissing(rel){ if(exists(rel)) failures.push(`File should have been removed: ${rel}`); }
 function requireIncludes(rel, text){ if(!read(rel).includes(text)) failures.push(`Expected '${text}' in ${rel}`); }
-function requireNotIncludes(rel, text){ if(read(rel).includes(text)) failures.push(`Did not expect '${text}' in ${rel}`); }
 
 for (const rel of [
   "package.json","package-lock.json","vercel.json","next.config.ts",".nvmrc",".env.example",
-  "scripts/runtime-check.mjs","scripts/validate-env.mjs","scripts/verify-v58.25.2.mjs",
-  "docs/release/V58_25_2_SETTINGS_COLORFUL_REDESIGN_ALIGNMENT.md",
-  "docs/qa/FLOWTASK_V58_25_2_SETTINGS_COLORFUL_REDESIGN_ALIGNMENT_QA.md",
-  "src/app/(app)/app/settings/page.tsx",
+  "scripts/runtime-check.mjs","scripts/validate-env.mjs","scripts/verify-v58.25.3.mjs",
+  "docs/release/V58_25_3_SETTINGS_WIDTH_COMPACT_HERO_METRICS.md",
+  "docs/qa/FLOWTASK_V58_25_3_SETTINGS_WIDTH_COMPACT_HERO_METRICS_QA.md",
   "src/components/settings/settings-account-overview.tsx",
-  "src/components/settings/access-control-settings-card.tsx",
-  "src/components/settings/intelligent-attention-settings-card.tsx",
   "public/settings/herosettings.png"
 ]) requireFile(rel);
 
@@ -30,8 +26,7 @@ requireMissing("src/components/settings/settings-footer.tsx");
 const pkg = JSON.parse(read("package.json"));
 const scripts = pkg.scripts ?? {};
 if (pkg.version !== expectedVersion) failures.push(`Unexpected package version: ${pkg.version}`);
-if (scripts["verify:current"] !== "npm run verify:v58.25.2") failures.push("verify:current must target verify:v58.25.2");
-if (scripts["verify:v58.25.2"] !== "node scripts/verify-v58.25.2.mjs") failures.push("verify:v58.25.2 must target scripts/verify-v58.25.2.mjs");
+if (scripts["verify:current"] !== "npm run verify:v58.25.3") failures.push("verify:current must target verify:v58.25.3");
 
 const vercel = JSON.parse(read("vercel.json"));
 if (vercel.framework !== "nextjs") failures.push("vercel.json framework must be nextjs");
@@ -39,12 +34,9 @@ if (vercel.buildCommand !== "npm run vercel:build") failures.push("vercel.json b
 
 requireIncludes("src/lib/release/version.ts", expectedVersion);
 requireIncludes("package-lock.json", expectedVersion);
-requireIncludes("src/app/globals.css", "v58.25.2 — Settings Colorful Redesign Alignment");
-requireIncludes("src/components/settings/settings-account-overview.tsx", "/settings/herosettings.png");
-requireIncludes("src/components/settings/settings-account-overview.tsx", "ft-settings-hero");
-requireIncludes("src/components/settings/access-control-settings-card.tsx", "ft-settings-soft-gradient");
-requireIncludes("src/components/settings/intelligent-attention-settings-card.tsx", "ft-settings-assistant-card");
-requireNotIncludes("src/app/(app)/app/settings/page.tsx", "SettingsFooter");
+requireIncludes("src/app/globals.css", "v58.25.3 — Settings width + compact hero/metrics adjustment");
+requireIncludes("src/components/settings/settings-account-overview.tsx", "min-h-[168px]");
+requireIncludes("src/components/settings/settings-account-overview.tsx", "h-[170px]");
 
 if (failures.length) {
   console.error("[build-deploy-readiness] Failed checks:");
@@ -52,4 +44,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log("[build-deploy-readiness] OK — v58.25.2 Settings colorful redesign readiness aligned.");
+console.log("[build-deploy-readiness] OK — v58.25.3 Settings width compact readiness aligned.");

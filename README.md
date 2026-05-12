@@ -1,32 +1,32 @@
-# FlowTask — v58.25.2 Settings Colorful Redesign Alignment
+# FlowTask — v58.25.3 Settings Width + Compact Hero/Metrics
 
-Base: **v58.25.1 — Settings Footer Cleanup + Alignment Polish**
+Base: **v58.25.2 — Settings Colorful Redesign Alignment**
 
 ## Objetivo
 
-Aplicar de forma más fiel el documento **FlowTask Settings Colorful UX/UI Redesign Guide** sin cambiar funcionalidades.
+Ajustar la vista de Settings para que ocupe todo el ancho disponible del contenedor del app/header y reducir el tamaño visual del hero y de las métricas.
 
 ## Cambios principales
 
-- Hero blanco premium con ilustración derecha.
-- Se agrega asset `public/settings/herosettings.png`.
-- El contenido de Settings mantiene `max-width: 1440px`, alineado al header/contenedor principal.
-- No se agrega footer local; se conserva solo footer global.
-- Metric cards más coloridas por categoría:
-  - Workspace verde
-  - Espacios azul
-  - Clientes morado
-  - Canales naranja
-- Acceso y plan usa gradiente verde suave y botón activo con gradiente.
-- Asistente inteligente usa fondo morado suave.
-- Zona de peligro vuelve a fondo blanco con borde rojo suave.
-- Se conservan las funcionalidades actuales de notificaciones, asistente, permisos y eliminación de cuenta.
+- `ft-settings-shell` ahora usa `width: 100%` y `max-width: none`.
+- Hero más compacto:
+  - menor `min-height`
+  - menor padding
+  - ilustración derecha más pequeña
+  - columna visual derecha más contenida
+- Métricas más compactas:
+  - menor padding
+  - menor radius
+  - iconos más pequeños
+  - tipografía un poco más compacta
+- Se mantiene el asset `/settings/herosettings.png`.
+- No se toca funcionalidad de permisos, preferencias, asistente ni eliminación de cuenta.
 
 ## Validación recomendada
 
 ```bash
 npm install
-npm run verify:v58.25.2
+npm run verify:v58.25.3
 npm run typecheck
 npm run build:preflight
 npm run build
