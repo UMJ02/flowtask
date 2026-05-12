@@ -1,0 +1,182 @@
+"use client";
+
+import { useMemo, useState } from "react";
+import { ChevronDown } from 'lucide-react';
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { formatDate } from "@/lib/utils/dates";
+import type { ActivityItem } from "@/lib/queries/activity";
+
+const labels: Record<string, string> = {
+  task_created: "Tarea creada",
+  task_updated: "Tarea actualizada",
+  task_deleted: "Tarea eliminada",
+  task_status_changed: "Estado cambiado",
+  task_assignee_added: "Responsable agregado",
+  task_assignee_removed: "Responsable removido",
+  checklist_item_added: "Nuevo punto agregado al checklist",
+  checklist_item_completed: "Punto del checklist completado",
+  checklist_item_reopened: "Punto reabierto",
+  checklist_item_deleted: "Punto eliminado del checklist",
+  file_uploaded: "Archivo subido",
+  assignee_changed: "Responsable actualizado",
+  project_created: "Proyecto creado",
+  project_updated: "Proyecto actualizado",
+  project_deleted: "Proyecto eliminado",
+  project_status_changed: "Estado de proyecto cambiado",
+  project_member_added: "Miembro agregado al proyecto",
+  project_member_updated: "Rol de miembro actualizado",
+  project_member_removed: "Miembro removido del proyecto",
+  client_created: "Cliente creado",
+  client_updated: "Cliente actualizado",
+  client_deleted: "Cliente eliminado",
+  organization_member_created: "Nueva persona en el espacio de trabajo",
+  organization_member_updated: "Rol de equipo actualizado",
+  organization_member_deleted: "Persona removida del espacio de trabajo",
+  organization_invite_created: "Invitación enviada",
+  organization_invite_revoked: "Invitación revocada",
+  client_permission_created: "Permiso de cliente creado",
+  client_permission_updated: "Permiso de cliente actualizado",
+  client_permission_deleted: "Permiso de cliente eliminado",
+  attachment_uploaded: "Archivo subido",
+  attachment_deleted: "Archivo eliminado",
+  comment_added: "Nuevo comentario agregado",
+  reminder_sent: "Recordatorio disparado",
+};
+
+const entityStyles: Record<string, string> = {
+  task: "bg-slate-100 text-slate-700 ring-slate-200",
+  task_assignee: "bg-slate-100 text-slate-700 ring-slate-200",
+  project: "bg-slate-100 text-slate-700 ring-slate-200",
+  project_member: "bg-slate-100 text-slate-700 ring-slate-200",
+  client: "bg-emerald-50 text-emerald-700 ring-emerald-100",
+  client_permission: "bg-emerald-50 text-emerald-700 ring-emerald-100",
+  organization_member: "bg-sky-50 text-sky-700 ring-sky-100",
+  organization_invite: "bg-sky-50 text-sky-700 ring-sky-100",
+  attachment: "bg-slate-100 text-slate-700 ring-slate-200",
+  comment: "bg-amber-50 text-amber-700 ring-amber-100",
+  reminder: "bg-emerald-50 text-emerald-700 ring-emerald-100",
+};
+
+function resolveEntityLabel(item: ActivityItem) {
+  if (item.entity_type === "task") return "Tarea";
+  if (item.entity_type === "task_assignee") return "Responsable";
+  if (item.entity_type === "project") return "Proyecto";
+  if (item.entity_type === "project_member") return "Proyecto";
+  if (item.entity_type === "client") return "Cliente";
+  if (item.entity_type === "client_permission") return "Permiso";
+  if (item.entity_type === "organization_member") return "Equipo";
+  if (item.entity_type === "organization_invite") return "Invitación";
+  if (item.entity_type === "attachment") return "Adjunto";
+  if (item.action.includes("comment")) return "Comentario";
+  if (item.action.includes("reminder")) return "Recordatorio";
+  return "Actividad";
+}
+
+function resolveEntityStyle(item: ActivityItem) {
+  if (item.entity_type && entityStyles[item.entity_type]) return entityStyles[item.entity_type];
+  if (item.action.includes("comment")) return entityStyles.comment;
+  if (item.action.includes("reminder")) return entityStyles.reminder;
+  return "bg-slate-100 text-slate-700 ring-slate-200";
+}
+
+function extractDetail(item: ActivityItem) {
+  const title = typeof item.metadata?.title === "string"
+    ? item.metadata.title
+    : typeof item.metadata?.name === "string"
+      ? item.metadata.name
+      : typeof item.metadata?.file_name === "string"
+        ? item.metadata.file_name
+        : typeof item.metadata?.email === "string"
+          ? item.metadata.email
+          : null;
+  const status = typeof item.metadata?.status === "string" ? item.metadata.status : null;
+  const description = typeof item.metadata?.description === "string"
+    ? item.metadata.description
+    : typeof item.metadata?.notes === "string"
+      ? item.metadata.notes
+      : null;
+  const role = typeof item.metadata?.role === "string" ? item.metadata.role : null;
+  const previousRole = typeof item.metadata?.previous_role === "string" ? item.metadata.previous_role : null;
+
+  return { title, status, description, role, previousRole };
+}
+
+export function ActivityTimeline({
+  items,
+  title = "Actividad reciente",
+  description = "Últimos cambios registrados.",
+  compact = false,
+  defaultVisibleCount,
+  expandLabel = "Ver más movimientos",
+  collapseLabel = "Ver menos movimientos",
+}: {
+  items: ActivityItem[];
+  title?: string;
+  description?: string;
+  compact?: boolean;
+  defaultVisibleCount?: number;
+  expandLabel?: string;
+  collapseLabel?: string;
+}) {
+  const [expanded, setExpanded] = useState(false);
+  const [open, setOpen] = useState(false);
+  const shouldClamp = typeof defaultVisibleCount === "number" && defaultVisibleCount > 0;
+  const visibleItems = useMemo(() => {
+    if (!shouldClamp) return items;
+    return expanded ? items : items.slice(0, defaultVisibleCount);
+  }, [defaultVisibleCount, expanded, items, shouldClamp]);
+
+  return (
+    <Card className={compact ? "rounded-[22px] border border-[#FEE2E2] bg-white p-4" : undefined}>
+      <button type="button" onClick={() => setOpen((value) => !value)} className="flex w-full items-center justify-between gap-3 rounded-[18px] bg-[#FFF7F7] px-3 py-3 text-left transition hover:bg-slate-100">
+        <div>
+          <h3 className="text-base font-semibold text-slate-900">{title}</h3>
+          <p className="text-sm text-slate-500">{description}</p>
+        </div>
+        <ChevronDown className={`h-4 w-4 text-slate-500 transition ${open ? 'rotate-180' : ''}`} />
+      </button>
+      {open ? (
+        <>
+          <div className={compact ? "mt-4 space-y-2" : "mt-4 space-y-3"}>
+            {visibleItems.length ? (
+              visibleItems.map((item) => {
+                const detail = extractDetail(item);
+                return (
+                  <div key={item.id} className={compact ? "rounded-xl border border-slate-200 bg-slate-50/65 px-3 py-2.5" : "rounded-2xl border border-slate-200 bg-white px-4 py-3"}>
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className={`inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold ring-1 ${resolveEntityStyle(item)}`}>
+                          {resolveEntityLabel(item)}
+                        </span>
+                        <p className="text-sm font-medium text-slate-900">{labels[item.action] ?? "Actividad registrada"}</p>
+                      </div>
+                      <p className="text-[11px] text-slate-500">{formatDate(item.created_at)}</p>
+                    </div>
+                    {detail.title ? <p className={compact ? "mt-1.5 text-sm text-slate-700" : "mt-2 text-sm text-slate-700"}>{detail.title}</p> : null}
+                    {detail.role ? (
+                      <p className={compact ? "mt-1.5 text-[11px] text-slate-500" : "mt-2 text-xs text-slate-500"}>
+                        Rol{detail.previousRole ? `: ${detail.previousRole} → ${detail.role}` : `: ${detail.role}`}
+                      </p>
+                    ) : null}
+                    {!compact && detail.description ? <p className="mt-2 text-sm text-slate-500">{detail.description}</p> : null}
+                    {detail.status ? <p className={compact ? "mt-1.5 text-[11px] text-slate-500" : "mt-2 text-xs text-slate-500"}>Estado: {detail.status?.replaceAll("_", " ")}</p> : null}
+                  </div>
+                );
+              })
+            ) : (
+              <p className="text-sm text-slate-500">Todavía no hay movimientos registrados.</p>
+            )}
+          </div>
+          {shouldClamp && items.length > defaultVisibleCount ? (
+            <div className="mt-4 flex justify-center">
+              <Button type="button" variant="secondary" className="h-10 rounded-xl px-4" onClick={() => setExpanded((value) => !value)}>
+                {expanded ? collapseLabel : expandLabel}
+              </Button>
+            </div>
+          ) : null}
+        </>
+      ) : null}
+    </Card>
+  );
+}

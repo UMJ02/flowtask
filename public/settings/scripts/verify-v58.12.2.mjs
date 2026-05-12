@@ -1,0 +1,10 @@
+import fs from "node:fs";
+const packageJson = JSON.parse(fs.readFileSync(new URL("../package.json", import.meta.url), "utf8"));
+const versionFile = fs.readFileSync(new URL("../src/lib/release/version.ts", import.meta.url), "utf8");
+const readme = fs.readFileSync(new URL("../README.md", import.meta.url), "utf8");
+const expectedVersion = "58.12.2-organization-delete-now-fix";
+const expectedRelease = "v58.12.2 Organization Delete Now Fix";
+if (packageJson.version !== expectedVersion) throw new Error(`[verify-v58.12.2] package.json version mismatch: ${packageJson.version}`);
+if (!versionFile.includes(expectedVersion) || !versionFile.includes(expectedRelease)) throw new Error('[verify-v58.12.2] src/lib/release/version.ts is not aligned.');
+if (!readme.includes('V58.12.2')) throw new Error('[verify-v58.12.2] README does not mention V58.12.2.');
+console.log('[verify-v58.12.2] OK — organization delete-now hardening, reactivation countdown copy and permanent delete fix on top of V58.12.1.');

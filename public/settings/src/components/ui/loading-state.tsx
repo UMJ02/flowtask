@@ -1,0 +1,32 @@
+export function LoadingState({
+  title = 'Preparando tu espacio…',
+  description = 'Cargando tarjetas, accesos y contenido para que todo aparezca de forma clara.',
+  cards = 3,
+}: {
+  title?: string;
+  description?: string;
+  cards?: number;
+}) {
+  return (
+    <div className="space-y-3" aria-busy="true" aria-live="polite" role="status">
+      <div className="rounded-[24px] border border-slate-200/80 bg-white/[0.92] p-4 md:p-[18px]">
+        <div className="min-w-0 space-y-3">
+          <div className="space-y-2">
+            <div className="skeleton h-3 w-20 rounded-full" />
+            <div className="skeleton h-7 w-full max-w-[280px] rounded-full" />
+          </div>
+          <div className="skeleton h-3 w-full max-w-2xl rounded-full" />
+          <div className="rounded-[18px] border border-slate-200/80 bg-slate-50/80 px-3.5 py-3">
+            <div className="text-sm font-semibold text-slate-800">{title}</div>
+            <p className="mt-1 text-sm leading-6 text-slate-500">{description}</p>
+          </div>
+        </div>
+      </div>
+      <div className="grid gap-3 md:grid-cols-3">
+        {Array.from({ length: cards }).map((_, index) => (
+          <div key={index} className="skeleton h-28 rounded-[20px]" />
+        ))}
+      </div>
+    </div>
+  );
+}

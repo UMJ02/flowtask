@@ -1,0 +1,1058 @@
+"use client";
+
+import { memo, useEffect, useMemo, useState, useTransition, type ReactNode } from "react";
+import Link from "next/link";
+import {
+  ArrowLeft,
+  ArrowRight,
+  AlertCircle,
+  CalendarCheck2,
+  CalendarDays,
+  CheckCircle2,
+  ChevronDown,
+  Download,
+  Eye,
+  Flag,
+  LayoutGrid,
+  Layers3,
+  List,
+  MoreVertical,
+  Pencil,
+  Save,
+  Settings2,
+  SlidersHorizontal,
+  Star,
+  Trash2,
+  Workflow,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Select } from "@/components/ui/select";
+import { TaskKanbanBoard } from "@/components/tasks/task-kanban-board";
+import { safeDeleteTaskClient, safeDeleteTasksClient } from "@/lib/tasks/safe-delete-client";
+import { taskDetailRoute, taskEditRoute } from "@/lib/navigation/routes";
+import { getTaskStandbyDays, getTaskStatusLabel, getTaskStatusUpdatePayload, isTaskOverdue, isTaskWaiting, todayIsoDate } from "@/lib/tasks/status";
+import { cn } from "@/lib/utils/classnames";
+
+type TaskRow = {
+  id: string;
+  title: string;
+  status: string;
+  priority?: string | null;
+  client_name?: string | null;
+  due_date?: string | null;
+  project_id?: string | null;
+  updated_at?: string | null;
+  created_at?: string | null;
+};
+
+type PageAnimationState = "idle" | "out-next" | "out-prev" | "in-next" | "in-prev";
+type ViewMode = "list" | "calendar";
+type GanttColorMode = "priority" | "status" | "client";
+type NoticeState = { tone: "success" | "error" | "info"; message: string } | null;
+type ConfirmAction =
+  | { type: "delete-one"; taskId: string; title: string }
+  | { type: "delete-bulk"; count: number };
+
+const TASK_VIEW_KEY = "flowtask.tasks.view-mode.v58150";
+const GANTT_CONFIG_KEY = "flowtask.tasks.gantt-config.v58143";
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
+
+function safeDate(value?: string | null) {
+  if (!value) return null;
+  const date = new Date(`${value.slice(0, 10)}T12:00:00`);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function toIsoDate(date: Date) {
+  return date.toISOString().slice(0, 10);
+}
+
+function addDays(date: Date, amount: number) {
+  const next = new Date(date);
+  next.setDate(next.getDate() + amount);
+  return next;
+}
+
+function diffDays(end: Date, start: Date) {
+  return Math.round((end.getTime() - start.getTime()) / MS_PER_DAY);
+}
+
+function formatHumanDate(value?: string | null) {
+  if (!value) return "Sin fecha";
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value.slice(0, 10));
+  return match ? `${match[3]}/${match[2]}/${match[1]}` : value;
+}
+
+function formatDeadline(task: TaskRow) {
+  const value = task.due_date;
+  if (!value) return { label: "Sin fecha", helper: "No definida", overdue: false, today: false };
+  const normalized = value.slice(0, 10);
+  const today = todayIsoDate();
+  if (task.status === "concluido") return { label: formatHumanDate(normalized), helper: "Concluida", overdue: false, today: false };
+  if (isTaskWaiting(task.status)) {
+    const days = getTaskStandbyDays(task);
+    return { label: formatHumanDate(normalized), helper: days > 0 ? `En espera hace ${days} día${days === 1 ? "" : "s"}` : "En espera", overdue: false, today: false };
+  }
+  return {
+    label: formatHumanDate(normalized),
+    helper: isTaskOverdue(normalized, task.status) ? "Vencido" : normalized === today ? "Vence hoy" : "Programada",
+    overdue: isTaskOverdue(normalized, task.status),
+    today: normalized === today,
+  };
+}
+
+function priorityTone(priority?: string | null) {
+  if (priority === "alta") return "border-rose-200 bg-rose-50 text-rose-700";
+  if (priority === "baja") return "border-emerald-200 bg-emerald-50 text-emerald-700";
+  return "border-amber-200 bg-amber-50 text-amber-700";
+}
+
+function priorityDot(priority?: string | null) {
+  if (priority === "alta") return "bg-rose-500";
+  if (priority === "baja") return "bg-emerald-500";
+  return "bg-amber-500";
+}
+
+function priorityLabel(priority?: string | null) {
+  if (priority === "alta") return "Alta";
+  if (priority === "baja") return "Baja";
+  return "Media";
+}
+
+
+function statusTone(status?: string | null) {
+  if (status === "concluido") return "border-emerald-200 bg-emerald-50 text-emerald-700";
+  if (status === "produccion") return "border-violet-200 bg-violet-50 text-violet-700";
+  if (status === "en_espera") return "border-amber-200 bg-amber-50 text-amber-700";
+  return "border-sky-200 bg-sky-50 text-sky-700";
+}
+
+function statusDot(status?: string | null) {
+  if (status === "concluido") return "bg-emerald-500";
+  if (status === "produccion") return "bg-violet-500";
+  if (status === "en_espera") return "bg-amber-500";
+  return "bg-sky-500";
+}
+
+function statusLabel(status?: string | null) {
+  return getTaskStatusLabel(status);
+}
+
+function barColor(task: TaskRow, mode: GanttColorMode = "priority") {
+  if (mode === "status") {
+    if (task.status === "concluido") return "bg-emerald-500";
+    if (task.status === "produccion") return "bg-violet-500";
+    if (task.status === "en_espera") return "bg-amber-400";
+    return "bg-blue-500";
+  }
+  if (mode === "client") {
+    const bucket = (task.client_name ?? task.title).length % 4;
+    return ["bg-emerald-500", "bg-blue-500", "bg-violet-400", "bg-amber-400"][bucket] ?? "bg-emerald-500";
+  }
+  if (task.status === "concluido") return "bg-emerald-500";
+  if (task.status === "produccion") return "bg-violet-500";
+  if (task.status === "en_espera") return "bg-amber-400";
+  if (task.priority === "alta") return "bg-rose-400";
+  if (task.priority === "baja") return "bg-emerald-400";
+  return "bg-amber-400";
+}
+
+function getProgress(task: TaskRow) {
+  if (task.status === "concluido") return 100;
+  if (task.status === "produccion") return 75;
+  if (task.status === "en_espera") return 20;
+  if (task.priority === "alta") return 70;
+  if (task.priority === "baja") return 40;
+  return 55;
+}
+
+function getTaskRange(task: TaskRow) {
+  const deadline = safeDate(task.due_date) ?? safeDate(task.updated_at) ?? safeDate(task.created_at) ?? new Date();
+  const duration = task.priority === "alta" ? 5 : task.priority === "baja" ? 3 : 4;
+  const start = addDays(deadline, -duration + 1);
+  return { start, end: deadline, duration };
+}
+
+function getTimelineBounds(tasks: TaskRow[]) {
+  if (!tasks.length) {
+    const today = new Date();
+    return { start: addDays(today, -3), end: addDays(today, 10) };
+  }
+  const ranges = tasks.map(getTaskRange);
+  const minTime = Math.min(...ranges.map((range) => range.start.getTime()));
+  const maxTime = Math.max(...ranges.map((range) => range.end.getTime()));
+  return { start: addDays(new Date(minTime), -1), end: addDays(new Date(maxTime), 3) };
+}
+
+function getBarStyle(task: TaskRow, rangeStart: Date, rangeEnd: Date) {
+  const { start, end } = getTaskRange(task);
+  const totalDays = Math.max(1, diffDays(rangeEnd, rangeStart) + 1);
+  const offset = Math.max(0, diffDays(start, rangeStart));
+  const duration = Math.max(1, diffDays(end, start) + 1);
+  return {
+    marginLeft: `${Math.min(92, (offset / totalDays) * 100)}%`,
+    width: `${Math.max(6, Math.min(100, (duration / totalDays) * 100))}%`,
+  };
+}
+
+function readStoredViewMode(fallback: ViewMode) {
+  if (typeof window === "undefined") return fallback;
+  const raw = window.localStorage.getItem(TASK_VIEW_KEY);
+  return raw === "list" || raw === "calendar" ? raw : fallback;
+}
+
+function viewFromInitial(initialView?: string): ViewMode {
+  if (initialView === "calendar") return "calendar";
+  return "list";
+}
+
+function buildViewQuery(currentQuery: string, view: ViewMode) {
+  const params = new URLSearchParams(currentQuery);
+  params.set("view", view);
+  return params.toString();
+}
+
+function startDownload(filename: string, content: string, type = "text/csv;charset=utf-8") {
+  const blob = new Blob([content], { type });
+  const href = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = href;
+  link.download = filename;
+  link.click();
+  URL.revokeObjectURL(href);
+}
+
+
+function csvEscape(value: unknown) {
+  const text = String(value ?? "");
+  return `"${text.replaceAll('"', '""')}"`;
+}
+
+function tasksToCsv(tasks: TaskRow[]) {
+  const header = ["id", "title", "status", "priority", "client", "project_id", "due_date", "updated_at"];
+  const rows = tasks.map((task) => [task.id, task.title, task.status, task.priority ?? "", task.client_name ?? "", task.project_id ?? "", task.due_date ?? "", task.updated_at ?? ""].map(csvEscape).join(","));
+  return [header.join(","), ...rows].join("\n");
+}
+
+function TaskActionListComponent({
+  tasks,
+  currentQuery = "",
+  initialView = "list",
+  searchPanel,
+}: {
+  tasks: TaskRow[];
+  currentQuery?: string;
+  initialView?: string;
+  searchPanel?: ReactNode;
+}) {
+  const router = useRouter();
+  const supabase = useMemo(() => createClient(), []);
+  const [items, setItems] = useState(tasks);
+  const [busyId, setBusyId] = useState<string | null>(null);
+  const [busyPriorityId, setBusyPriorityId] = useState<string | null>(null);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [pageSize, setPageSize] = useState<10 | 20>(10);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageAnimation, setPageAnimation] = useState<PageAnimationState>("idle");
+  const [viewMode, setViewMode] = useState<ViewMode>(viewFromInitial(initialView));
+  const [timelineOpen, setTimelineOpen] = useState(false);
+  const [timelineScale, setTimelineScale] = useState<"Día" | "Semana" | "Mes" | "Mis tareas" | "Equipo">("Semana");
+  const [timelineOffsetDays, setTimelineOffsetDays] = useState(0);
+  const [calendarScale, setCalendarScale] = useState<"Hoy" | "Día" | "Semana" | "Mes">("Mes");
+  const [showCalendarSummary, setShowCalendarSummary] = useState(true);
+  const [showGanttSettings, setShowGanttSettings] = useState(true);
+  const [showProgress, setShowProgress] = useState(true);
+  const [showDates, setShowDates] = useState(true);
+  const [showPriority, setShowPriority] = useState(true);
+  const [compactGantt, setCompactGantt] = useState(true);
+  const [ganttColorMode, setGanttColorMode] = useState<GanttColorMode>("priority");
+  const [importantOnly, setImportantOnly] = useState(false);
+  const [notice, setNotice] = useState<NoticeState>(null);
+  const [confirmAction, setConfirmAction] = useState<ConfirmAction | null>(null);
+  const [newViewModalOpen, setNewViewModalOpen] = useState(false);
+  const [newViewName, setNewViewName] = useState("Vista de tareas");
+  const [, startRefresh] = useTransition();
+
+  useEffect(() => {
+    setItems(tasks);
+    setSelectedIds((ids) => ids.filter((id) => tasks.some((task) => task.id === id)));
+  }, [tasks]);
+
+  useEffect(() => {
+    setViewMode(readStoredViewMode(viewFromInitial(initialView)));
+  }, [initialView]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    window.localStorage.setItem(TASK_VIEW_KEY, viewMode);
+  }, [viewMode]);
+
+  const visibleItems = useMemo(() => (importantOnly ? items.filter((task) => task.priority === "alta") : items), [importantOnly, items]);
+  const totalPages = Math.max(1, Math.ceil(visibleItems.length / pageSize));
+
+  useEffect(() => {
+    setCurrentPage((value) => Math.min(value, totalPages));
+  }, [totalPages]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [importantOnly, pageSize, viewMode]);
+
+  const currentItems = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return visibleItems.slice(start, start + pageSize);
+  }, [currentPage, pageSize, visibleItems]);
+
+  const timelineItems = useMemo(() => visibleItems.slice(0, 18), [visibleItems]);
+  const baseTimelineBounds = useMemo(() => getTimelineBounds(timelineItems), [timelineItems]);
+  const timelineBounds = useMemo(() => ({ start: addDays(baseTimelineBounds.start, timelineOffsetDays), end: addDays(baseTimelineBounds.end, timelineOffsetDays) }), [baseTimelineBounds.end, baseTimelineBounds.start, timelineOffsetDays]);
+  const timelineDays = useMemo(() => {
+    const days = Math.min(21, Math.max(7, diffDays(timelineBounds.end, timelineBounds.start) + 1));
+    return Array.from({ length: days }, (_, index) => addDays(timelineBounds.start, index));
+  }, [timelineBounds.end, timelineBounds.start]);
+  const calendarDays = useMemo(() => buildCalendarDays(visibleItems, calendarScale), [visibleItems, calendarScale]);
+
+  const allCurrentSelected = currentItems.length > 0 && currentItems.every((item) => selectedIds.includes(item.id));
+  const timelineActive = false;
+
+  const showNotice = (message: string, tone: "success" | "error" | "info" = "info") => {
+    setNotice({ message, tone });
+    window.setTimeout(() => setNotice(null), 3600);
+  };
+
+  const changeView = (nextView: ViewMode) => {
+    setViewMode(nextView);
+    setTimelineOpen(false);
+    const query = buildViewQuery(currentQuery, nextView);
+    router.replace(`/app/tasks?${query}`);
+  };
+
+  const toggleSelected = (taskId: string) => {
+    setSelectedIds((ids) => (ids.includes(taskId) ? ids.filter((id) => id !== taskId) : [...ids, taskId]));
+  };
+
+  const toggleCurrentPage = () => {
+    setSelectedIds((ids) => {
+      const currentIds = currentItems.map((item) => item.id);
+      if (currentIds.every((id) => ids.includes(id))) return ids.filter((id) => !currentIds.includes(id));
+      return Array.from(new Set([...ids, ...currentIds]));
+    });
+  };
+
+  const animatePage = (direction: "next" | "prev", targetPage: number) => {
+    setPageAnimation(direction === "next" ? "out-next" : "out-prev");
+    window.setTimeout(() => {
+      setCurrentPage(targetPage);
+      setPageAnimation(direction === "next" ? "in-next" : "in-prev");
+      window.setTimeout(() => setPageAnimation("idle"), 220);
+    }, 120);
+  };
+
+  const toggleImportant = async (taskId: string) => {
+    const currentTask = items.find((item) => item.id === taskId);
+    if (!currentTask || busyPriorityId === taskId) return;
+
+    const previousItems = items;
+    const nextPriority = currentTask.priority === "alta" ? "media" : "alta";
+    const nextItems = items.map((item) => (item.id === taskId ? { ...item, priority: nextPriority } : item));
+
+    setItems(nextItems);
+    setBusyPriorityId(taskId);
+
+    const { data, error } = await supabase
+      .from("tasks")
+      .update({ priority: nextPriority })
+      .eq("id", taskId)
+      .select("id,priority,updated_at")
+      .maybeSingle();
+
+    setBusyPriorityId(null);
+
+    if (error || !data) {
+      setItems(previousItems);
+      showNotice(error?.message ?? "No se pudo actualizar la prioridad de la tarea.", "error");
+      return;
+    }
+
+    startRefresh(() => router.refresh());
+  };
+
+  const markComplete = async (taskId: string) => {
+    setBusyId(taskId);
+    const previousItems = items;
+    const nextItems = items.map((item) => (item.id === taskId ? { ...item, status: "concluido", due_date: todayIsoDate() } : item));
+    setItems(nextItems);
+
+    const { data: confirmedTask, error } = await supabase.from("tasks").update(getTaskStatusUpdatePayload("concluido")).eq("id", taskId).select("id,status,updated_at").maybeSingle();
+    setBusyId(null);
+
+    if (error || !confirmedTask) {
+      setItems(previousItems);
+      showNotice(error?.message ?? "No se pudo confirmar la finalización de la tarea.", "error");
+      return;
+    }
+
+    showNotice("Tarea finalizada.", "success");
+    startRefresh(() => router.refresh());
+  };
+
+  const executeDeleteTask = async (taskId: string) => {
+    const current = items;
+    setItems((list) => list.filter((item) => item.id !== taskId));
+    setBusyId(taskId);
+
+    const result = await safeDeleteTaskClient(supabase as any, taskId);
+    setBusyId(null);
+
+    if (!result.ok) {
+      setItems(current);
+      showNotice(result.error ?? "No se pudo confirmar la eliminación de la tarea.", "error");
+      return;
+    }
+
+    showNotice(result.fallback ? "Tarea eliminada. Aplica la migración 0052 para activar papelera segura." : "Tarea enviada a papelera.", "success");
+    startRefresh(() => router.refresh());
+  };
+
+  const requestDeleteTask = (taskId: string) => {
+    const task = items.find((item) => item.id === taskId);
+    setConfirmAction({ type: "delete-one", taskId, title: task?.title ?? "esta tarea" });
+  };
+
+  const bulkCompleteSelected = async () => {
+    if (!selectedIds.length) return;
+    setBusyId("bulk");
+    const previousItems = items;
+    const payload = getTaskStatusUpdatePayload("concluido");
+    setItems((list) => list.map((item) => (selectedIds.includes(item.id) ? { ...item, status: "concluido", due_date: todayIsoDate() } : item)));
+    const { data: confirmedTasks, error } = await supabase.from("tasks").update(payload).in("id", selectedIds).select("id,status,updated_at");
+    setBusyId(null);
+    if (error || !confirmedTasks || confirmedTasks.length !== selectedIds.length) {
+      setItems(previousItems);
+      showNotice(error?.message ?? "No se pudo confirmar la finalización de todas las tareas seleccionadas.", "error");
+      return;
+    }
+    setSelectedIds([]);
+    showNotice("Tareas finalizadas.", "success");
+    startRefresh(() => router.refresh());
+  };
+
+  const executeBulkDeleteSelected = async () => {
+    if (!selectedIds.length) return;
+    const idsToDelete = [...selectedIds];
+    const previousItems = items;
+    setItems((list) => list.filter((item) => !idsToDelete.includes(item.id)));
+    setBusyId("bulk");
+    const results = await safeDeleteTasksClient(supabase as any, idsToDelete);
+    setBusyId(null);
+    const failed = results.filter((item) => !item.ok);
+    if (failed.length) {
+      setItems(previousItems);
+      showNotice(failed[0]?.error ?? "No se pudo confirmar la eliminación de todas las tareas seleccionadas.", "error");
+      return;
+    }
+    setSelectedIds([]);
+    showNotice(results.some((item) => item.fallback) ? "Tareas eliminadas. Aplica la migración 0052 para activar papelera segura." : "Tareas enviadas a papelera.", "success");
+    startRefresh(() => router.refresh());
+  };
+
+  const requestBulkDeleteSelected = () => {
+    if (!selectedIds.length) return;
+    setConfirmAction({ type: "delete-bulk", count: selectedIds.length });
+  };
+
+  const confirmPendingAction = async () => {
+    const action = confirmAction;
+    setConfirmAction(null);
+    if (!action) return;
+    if (action.type === "delete-one") await executeDeleteTask(action.taskId);
+    if (action.type === "delete-bulk") await executeBulkDeleteSelected();
+  };
+
+  const saveGanttView = async () => {
+    const config = { showProgress, showDates, showPriority, compactGantt, ganttColorMode, savedAt: new Date().toISOString() };
+    window.localStorage.setItem(GANTT_CONFIG_KEY, JSON.stringify(config));
+    const { data: authData } = await supabase.auth.getUser();
+    const user = authData.user;
+    if (!user) {
+      showNotice("Vista guardada localmente. Iniciá sesión para sincronizarla.", "info");
+      return;
+    }
+    const { error } = await supabase.from("task_view_preferences").upsert(
+      { user_id: user.id, organization_id: null, scope: "tasks", name: "Vista personal", view_mode: viewMode, config },
+      { onConflict: "user_id,organization_id,scope,name" },
+    );
+    showNotice(error ? `Vista guardada localmente, pero no se pudo sincronizar: ${error.message}` : "Vista guardada y sincronizada con tu cuenta.", error ? "error" : "success");
+  };
+
+  const openNewSavedViewModal = () => {
+    setNewViewName("Vista de tareas");
+    setNewViewModalOpen(true);
+  };
+
+  const createNewSavedView = async () => {
+    const name = newViewName.trim();
+    if (!name) {
+      showNotice("Escribí un nombre para la nueva vista.", "error");
+      return;
+    }
+    const { data: authData } = await supabase.auth.getUser();
+    const user = authData.user;
+    if (!user) { showNotice("Iniciá sesión para crear vistas sincronizadas.", "info"); return; }
+    const config = { showProgress, showDates, showPriority, compactGantt, ganttColorMode, savedAt: new Date().toISOString() };
+    const { error } = await supabase.from("task_view_preferences").upsert(
+      { user_id: user.id, organization_id: null, scope: "tasks", name, view_mode: viewMode, config },
+      { onConflict: "user_id,organization_id,scope,name" },
+    );
+    if (!error) setNewViewModalOpen(false);
+    showNotice(error ? `No se pudo guardar la vista: ${error.message}` : "Nueva vista guardada.", error ? "error" : "success");
+  };
+
+  const exportTasks = () => {
+    startDownload(`flowtask-tareas-${viewMode}.csv`, tasksToCsv(visibleItems));
+  };
+
+  const renderTable = () => (
+    <div className="ft-tasks-table">
+      <div className="ft-tasks-table-head hidden xl:grid">
+        <div><input aria-label="Seleccionar tareas de esta página" type="checkbox" checked={allCurrentSelected} onChange={toggleCurrentPage} className="ft-checkbox" /></div>
+        <div>Tarea</div>
+        <div>Proyecto</div>
+        <div>Responsable</div>
+        <div>Estado</div>
+        <div>Prioridad</div>
+        <div>Fecha límite</div>
+        <div className="text-right">Acciones</div>
+      </div>
+
+      <div
+        className={cn(
+          "transition-all duration-300",
+          pageAnimation === "out-next" && "translate-x-4 opacity-0",
+          pageAnimation === "out-prev" && "-translate-x-4 opacity-0",
+          pageAnimation === "in-next" && "animate-[slideInFromRight_220ms_ease-out]",
+          pageAnimation === "in-prev" && "animate-[slideInFromLeft_220ms_ease-out]",
+        )}
+      >
+        {currentItems.length ? currentItems.map((task) => {
+          const deadline = formatDeadline(task);
+          const isBusy = busyId === task.id;
+          return (
+            <div
+              key={task.id}
+              className={cn(
+                "ft-tasks-row",
+                task.priority === "alta" && "ft-tasks-row-important",
+                isBusy && "opacity-60",
+              )}
+            >
+              <div className="hidden xl:block">
+                <input aria-label={`Seleccionar ${task.title}`} type="checkbox" checked={selectedIds.includes(task.id)} onChange={() => toggleSelected(task.id)} className="ft-checkbox" />
+              </div>
+
+              <div className="min-w-0">
+                <div className="flex min-w-0 items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => void toggleImportant(task.id)}
+                    disabled={busyPriorityId === task.id}
+                    title={task.priority === "alta" ? "Quitar de importantes" : "Marcar como importante"}
+                    aria-label={task.priority === "alta" ? "Quitar de importantes" : "Marcar como importante"}
+                    className={cn("ft-task-star disabled:opacity-60", task.priority === "alta" && "ft-task-star-active")}
+                  >
+                    <Star className={`h-3.5 w-3.5 ${task.priority === "alta" ? "fill-current" : ""}`} />
+                  </button>
+                  <Link href={taskDetailRoute(task.id, currentQuery)} className="ft-task-title block min-w-0 line-clamp-2 transition">
+                    {task.title}
+                  </Link>
+                </div>
+                <p className="ft-task-muted mt-1 line-clamp-1">{task.client_name || "Tarea sin cliente asignado"}</p>
+              </div>
+
+              <div>
+                <span className="inline-flex max-w-full items-center rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+                  <span className="truncate">{task.client_name || (task.project_id ? "Con proyecto" : "Independiente")}</span>
+                </span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 text-xs font-bold text-slate-700">
+                  {(task.client_name || "FT").slice(0, 1).toUpperCase()}
+                </span>
+                <span className="text-sm font-medium text-slate-600">Equipo</span>
+              </div>
+
+              <div>
+                <span className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold ${statusTone(task.status)}`}>
+                  <span className={`h-1.5 w-1.5 rounded-full ${statusDot(task.status)}`} />
+                  {statusLabel(task.status)}
+                </span>
+              </div>
+
+              <div>
+                <span className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold ${priorityTone(task.priority)}`}>
+                  <span className={`h-1.5 w-1.5 rounded-full ${priorityDot(task.priority)}`} />
+                  {priorityLabel(task.priority)}
+                </span>
+              </div>
+
+              <div>
+                <p className={cn("text-sm font-bold", deadline.overdue ? "text-rose-600" : deadline.today ? "text-orange-600" : "ft-text-main")}>{deadline.label}</p>
+                <p className={cn("mt-1 text-xs font-semibold", deadline.overdue ? "text-rose-500" : deadline.today ? "text-orange-500" : "ft-text-muted")}>{deadline.helper}</p>
+              </div>
+
+              <div className="flex items-center gap-2 xl:justify-end">
+                <Link href={taskDetailRoute(task.id, currentQuery)} className="ft-task-icon-button" aria-label="Ver tarea">
+                  <Eye className="h-4 w-4" />
+                </Link>
+                <Link href={taskEditRoute(task.id, currentQuery)} className="ft-task-icon-button" aria-label="Editar tarea">
+                  <Pencil className="h-4 w-4" />
+                </Link>
+                {task.status !== "concluido" ? (
+                  <button type="button" onClick={() => markComplete(task.id)} className="ft-task-icon-button border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100" aria-label="Finalizar tarea">
+                    <CheckCircle2 className="h-4 w-4" />
+                  </button>
+                ) : null}
+                <button type="button" onClick={() => requestDeleteTask(task.id)} className="ft-task-icon-button ft-task-icon-button-danger" aria-label="Eliminar tarea">
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          );
+        }) : (
+          <div className="px-5 py-10 text-center text-sm font-medium text-slate-500">No hay tareas para esta combinación de filtros.</div>
+        )}
+      </div>
+    </div>
+  );
+
+  const renderSmartTimeline = () => (
+    <Card className="overflow-hidden rounded-2xl border ft-border bg-white p-5">
+      <div className="mb-5 flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#16C784]">Planificación inteligente</p>
+          <h3 className="mt-1 text-xl font-semibold ft-text-main">Vista híbrida Calendario + Gantt</h3>
+          <p className="mt-1 text-sm font-medium ft-text-muted">Planifica campañas, producción y duración visual usando las tareas actuales.</p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {(["Día", "Semana", "Mes", "Mis tareas", "Equipo"] as const).map((label) => (
+            <button key={label} type="button" onClick={() => setTimelineScale(label)} className={cn("h-10 rounded-xl border px-4 text-sm font-bold transition", timelineScale === label ? "border-[#050B18] bg-[#050B18] text-white" : "ft-border bg-white text-slate-700 hover:bg-slate-50")}>{label}</button>
+          ))}
+          <button type="button" onClick={() => changeView("list")} className="ft-apple-button ft-apple-button-secondary"><SlidersHorizontal className="h-4 w-4" />Filtros</button>
+        </div>
+      </div>
+
+      <div className="mb-4 flex flex-col gap-3 rounded-2xl border ft-border bg-slate-50/70 p-3 md:flex-row md:items-center md:justify-between">
+        <div className="flex items-center gap-2">
+          <button type="button" onClick={() => setTimelineOffsetDays((value) => value - 7)} className="inline-flex h-9 w-9 items-center justify-center rounded-xl border ft-border bg-white"><ArrowLeft className="h-4 w-4" /></button>
+          <span className="rounded-full bg-white px-4 py-2 text-sm font-semibold ft-text-main ring-1 ring-[#E5EAF1]">{formatHumanDate(toIsoDate(timelineBounds.start))} — {formatHumanDate(toIsoDate(timelineBounds.end))}</span>
+          <button type="button" onClick={() => setTimelineOffsetDays((value) => value + 7)} className="inline-flex h-9 w-9 items-center justify-center rounded-xl border ft-border bg-white"><ArrowRight className="h-4 w-4" /></button>
+        </div>
+        <p className="text-xs font-bold ft-text-muted">Click en una barra abre el detalle. Usa guardar vista para sincronizar configuración y exportar CSV.</p>
+      </div>
+
+      <div className="overflow-x-auto rounded-2xl border ft-border">
+        <div className="min-w-[960px] grid grid-cols-[300px_1fr]">
+          <div className="border-r ft-border bg-white">
+            <div className="h-10 border-b ft-border px-4 py-4 text-[11px] font-semibold uppercase tracking-[0.14em] ft-text-muted">Tarea / responsable</div>
+            {timelineItems.map((task) => (
+              <div key={task.id} className="flex h-[58px] items-center gap-3 border-b border-[#EEF2F7] px-4 last:border-b-0">
+                <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-100 text-xs font-semibold text-slate-700">{(task.client_name || task.title).slice(0, 1).toUpperCase()}</span>
+                <div className="min-w-0">
+                  <Link href={taskDetailRoute(task.id, currentQuery)} className="block truncate text-sm font-semibold ft-text-main hover:text-emerald-700">{task.title}</Link>
+                  <p className="truncate text-xs font-semibold ft-text-muted">{task.client_name || "Equipo FlowTask"}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="relative bg-white">
+            <div className="grid h-10 border-b ft-border" style={{ gridTemplateColumns: `repeat(${timelineDays.length}, minmax(42px, 1fr))` }}>
+              {timelineDays.map((day) => (
+                <div key={day.toISOString()} className="border-r border-[#EEF2F7] px-2 py-3 text-center text-[11px] font-semibold uppercase ft-text-muted last:border-r-0">{day.getDate()}</div>
+              ))}
+            </div>
+            {timelineItems.map((task) => (
+              <div key={task.id} className="relative h-[58px] border-b border-[#EEF2F7] last:border-b-0">
+                <div className="absolute inset-0 grid" style={{ gridTemplateColumns: `repeat(${timelineDays.length}, minmax(42px, 1fr))` }}>
+                  {timelineDays.map((day) => <div key={day.toISOString()} className="border-r border-[#F1F5F9] last:border-r-0" />)}
+                </div>
+                <Link
+                  href={taskDetailRoute(task.id, currentQuery)}
+                  title={`${task.title} · ${formatHumanDate(toIsoDate(getTaskRange(task).start))} - ${formatHumanDate(toIsoDate(getTaskRange(task).end))}`}
+                  className={cn("absolute top-1/2 h-4 -translate-y-1/2 rounded-full transition hover:scale-[1.02]", barColor(task))}
+                  style={getBarStyle(task, timelineBounds.start, timelineBounds.end)}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+      <div className="mt-4 flex flex-wrap gap-3 text-xs font-bold ft-text-muted">
+        <span className="inline-flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full bg-rose-400" />Alta prioridad</span>
+        <span className="inline-flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full bg-amber-400" />Media</span>
+        <span className="inline-flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full bg-emerald-400" />Baja</span>
+        <span className="inline-flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />Completada</span>
+      </div>
+    </Card>
+  );
+
+  const renderCalendarPro = () => {
+    const calendarColumnsClass = calendarScale === "Día" ? "grid-cols-1" : "grid-cols-7";
+    const calendarLabels = calendarScale === "Día" ? ["Hoy"] : ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
+    const operationalItems = items.filter((task) => task.status !== "concluido");
+    const total = operationalItems.length;
+    const done = items.filter((task) => task.status === "concluido").length;
+    const urgent = operationalItems.filter((task) => task.priority === "alta").length;
+    const today = todayIsoDate();
+    const dueToday = operationalItems.filter((task) => (task.status === "en_proceso" || task.status === "produccion") && task.due_date?.slice(0, 10) === today).length;
+    const percent = items.length ? Math.round((done / items.length) * 100) : 0;
+
+    return (
+      <Card className="rounded-2xl border ft-border bg-white p-5">
+        <div className="mb-5 flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#16C784]">Operations Calendar Pro</p>
+            <h3 className="mt-1 text-xl font-semibold ft-text-main">Calendario premium de ejecución diaria</h3>
+            <p className="mt-1 text-sm font-medium ft-text-muted">Deadlines, agenda operativa y carga de trabajo por día.</p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {(["Hoy", "Día", "Semana", "Mes"] as const).map((label) => (
+              <button key={label} type="button" onClick={() => setCalendarScale(label)} className={cn("h-10 rounded-xl border px-4 text-sm font-bold transition", calendarScale === label ? "border-[#16C784] bg-[#16C784] text-white" : "ft-border bg-white text-slate-700 hover:bg-slate-50")}>{label}</button>
+            ))}
+            <button type="button" onClick={() => setShowCalendarSummary((value) => !value)} className="ft-apple-button ft-apple-button-secondary"><Settings2 className="h-4 w-4" />Ajustes</button>
+          </div>
+        </div>
+
+        <div className={cn("grid gap-5", showCalendarSummary ? "xl:grid-cols-[minmax(0,1fr)_280px]" : "xl:grid-cols-1")}>
+          <div className="overflow-hidden rounded-2xl border ft-border">
+            <div className={cn("grid border-b ft-border bg-[#F8FAFC] text-center text-[11px] font-semibold uppercase tracking-[0.12em] ft-text-muted", calendarColumnsClass)}>
+              {calendarLabels.map((day) => <div key={day} className="px-2 py-3">{day}</div>)}
+            </div>
+            <div className={cn("grid", calendarColumnsClass)}>
+              {calendarDays.map((day) => (
+                <div key={day.iso} className={cn("min-h-[145px] border-r border-b ft-border bg-white p-3 last:border-r-0", day.isToday && "bg-emerald-50/40")}>
+                  <div className={cn("mb-3 inline-flex h-7 min-w-7 items-center justify-center rounded-full px-2 text-xs font-semibold", day.isToday ? "bg-[#16C784] text-white" : "ft-text-main")}>{day.label}</div>
+                  <div className="space-y-2">
+                    {day.tasks.slice(0, 4).map((task) => (
+                      <Link key={task.id} href={taskDetailRoute(task.id, currentQuery)} className={cn("block w-full truncate rounded-full border px-3 py-2 text-left text-xs font-bold transition hover:translate-y-0 hover:border-[#16C784]/40", priorityTone(task.priority))}>{task.title}</Link>
+                    ))}
+                    {day.tasks.length > 4 ? <button type="button" onClick={() => changeView("list")} className="text-xs font-bold ft-text-muted">+{day.tasks.length - 4} más</button> : null}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <aside className="space-y-4">
+            <div className="rounded-2xl border ft-border bg-white p-5">
+              <h4 className="text-sm font-semibold ft-text-main">Resumen semanal</h4>
+              <div className="mt-4 space-y-3">
+                <CalendarMetric icon={<Layers3 className="h-4 w-4" />} label="Total tareas" value={total} tone="violet" />
+                <CalendarMetric icon={<Flag className="h-4 w-4" />} label="Urgentes" value={urgent} tone="rose" />
+                <CalendarMetric icon={<CalendarCheck2 className="h-4 w-4" />} label="Vencen hoy" value={dueToday} tone="amber" />
+                <CalendarMetric icon={<CheckCircle2 className="h-4 w-4" />} label="Completadas" value={done} tone="emerald" />
+              </div>
+            </div>
+            <div className="rounded-2xl border ft-border bg-white p-5 text-center">
+              <div className="mx-auto grid h-32 w-32 place-items-center rounded-full border-[12px] border-emerald-100 text-xl font-semibold ft-text-main" style={{ background: `conic-gradient(#16C784 ${percent * 3.6}deg, #ECFDF5 0deg)` }}>
+                <span className="grid h-24 w-24 place-items-center rounded-full bg-white">{percent}%</span>
+              </div>
+              <p className="mt-3 text-sm font-bold ft-text-muted">Completado</p>
+            </div>
+          </aside>
+        </div>
+        <div className="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-900">Consejo: arrastra y suelta tareas para reprogramar en otra fase cuando conectemos el adapter de fechas.</div>
+      </Card>
+    );
+  };
+
+  const renderGanttBuilder = () => (
+    <Card className="rounded-2xl border ft-border bg-white p-5">
+      <div className="mb-5 flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#16C784]">Vista personalizada</p>
+          <h3 className="mt-1 text-xl font-semibold ft-text-main">Gantt personalizable y potente</h3>
+          <p className="mt-1 text-sm font-medium ft-text-muted">Control avanzado de planificación, progreso y vistas guardadas.</p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <button type="button" onClick={saveGanttView} className="ft-apple-button ft-apple-button-secondary"><Save className="h-4 w-4" />Guardar vista</button>
+          <button type="button" onClick={openNewSavedViewModal} className="h-10 rounded-xl border ft-border bg-white px-4 text-sm font-bold text-slate-700 hover:bg-slate-50">Nueva vista</button>
+          <button type="button" onClick={exportTasks} className="ft-apple-button ft-apple-button-secondary"><Download className="h-4 w-4" />Exportar</button>
+          <button
+            type="button"
+            onClick={() => setImportantOnly((value) => !value)}
+            className={cn(
+              "inline-flex h-10 items-center gap-2 rounded-xl border px-4 text-sm font-bold transition",
+              importantOnly ? "border-amber-200 bg-amber-50 text-amber-700" : "ft-border bg-white text-slate-700 hover:bg-slate-50",
+            )}
+          >
+            <Star className={cn("h-4 w-4", importantOnly && "fill-current")} />
+            Solo importantes
+          </button>
+          <button type="button" onClick={() => setShowGanttSettings((value) => !value)} className="ft-apple-button ft-apple-button-primary"><Settings2 className="h-4 w-4" />Personalizar</button>
+        </div>
+      </div>
+
+      <div className={cn("grid gap-5", showGanttSettings ? "xl:grid-cols-[minmax(0,1fr)_300px]" : "xl:grid-cols-1")}>
+        <div className="overflow-hidden rounded-2xl border ft-border bg-white">
+          <div className="grid grid-cols-[minmax(240px,1.2fr)_110px_110px_90px_90px_minmax(260px,1.4fr)] border-b ft-border bg-[#F8FAFC] px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.12em] ft-text-muted">
+            <div>Tarea</div><div>Inicio</div><div>Fin</div><div>Duración</div><div>Progreso</div><div>Timeline</div>
+          </div>
+          {timelineItems.map((task) => {
+            const range = getTaskRange(task);
+            return (
+              <div key={task.id} className={cn("grid grid-cols-[minmax(240px,1.2fr)_110px_110px_90px_90px_minmax(260px,1.4fr)] items-center border-b border-[#EEF2F7] px-4 last:border-b-0 hover:bg-[#F8FAFC]", compactGantt ? "py-3" : "py-5")}>
+                <div className="min-w-0">
+                  <Link href={taskDetailRoute(task.id, currentQuery)} className="block truncate text-sm font-semibold ft-text-main hover:text-emerald-700">{task.title}</Link>
+                  <p className="truncate text-xs font-semibold ft-text-muted">{task.client_name || "Sin cliente"}</p>
+                </div>
+                <div className="text-xs font-bold ft-text-muted">{showDates ? formatHumanDate(toIsoDate(range.start)) : "—"}</div>
+                <div className="text-xs font-bold ft-text-muted">{showDates ? formatHumanDate(toIsoDate(range.end)) : "—"}</div>
+                <div className="text-xs font-bold ft-text-muted">{range.duration} días</div>
+                <div className="text-xs font-semibold ft-text-main">{showProgress ? `${getProgress(task)}%` : "—"}</div>
+                <div className="h-8 rounded-2xl bg-slate-100 p-1">
+                  <div className={cn("h-6 rounded-xl", barColor(task, ganttColorMode))} style={getBarStyle(task, timelineBounds.start, timelineBounds.end)} />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {showGanttSettings ? (
+          <aside className="rounded-2xl border ft-border bg-white p-5">
+            <h4 className="text-sm font-semibold uppercase tracking-[0.14em] ft-text-main">Personalizar vista</h4>
+            <div className="mt-5 space-y-4">
+              <SettingsCheckbox label="Mostrar % progreso" checked={showProgress} onChange={setShowProgress} />
+              <SettingsCheckbox label="Mostrar fechas" checked={showDates} onChange={setShowDates} />
+              <SettingsCheckbox label="Mostrar prioridad" checked={showPriority} onChange={setShowPriority} />
+              <SettingsCheckbox label="Modo compacto" checked={compactGantt} onChange={setCompactGantt} />
+              <label className="block space-y-2">
+                <span className="text-xs font-semibold uppercase tracking-[0.12em] ft-text-muted">Colores</span>
+                <Select value={ganttColorMode} onChange={(event) => setGanttColorMode(event.target.value as GanttColorMode)} className="h-11 w-full rounded-xl ft-border text-sm font-bold">
+                  <option value="priority">Por prioridad</option>
+                  <option value="status">Por estado</option>
+                  <option value="client">Por cliente</option>
+                </Select>
+              </label>
+              <label className="block space-y-2">
+                <span className="text-xs font-semibold uppercase tracking-[0.12em] ft-text-muted">Agrupar por</span>
+                <Select className="h-11 w-full rounded-xl ft-border text-sm font-bold" defaultValue="project">
+                  <option value="none">Ninguno</option>
+                  <option value="project">Proyecto</option>
+                  <option value="client">Cliente</option>
+                  <option value="department">Departamento</option>
+                </Select>
+              </label>
+              <button type="button" onClick={saveGanttView} className="mt-2 h-11 w-full rounded-xl bg-[#050B18] text-sm font-semibold text-white hover:bg-slate-900">Guardar vista</button>
+            </div>
+          </aside>
+        ) : null}
+      </div>
+    </Card>
+  );
+
+  return (
+    <div className="ft-tasks-screen">
+      {notice ? (
+        <div className={`rounded-2xl border px-4 py-3 text-sm font-semibold ${
+          notice.tone === "error"
+            ? "border-rose-200 bg-rose-50 text-rose-700"
+            : notice.tone === "success"
+              ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+              : "border-slate-200 bg-slate-50 text-slate-700"
+        }`}>
+          <span className="inline-flex items-center gap-2">
+            {notice.tone === "error" ? <AlertCircle className="h-4 w-4" /> : <CheckCircle2 className="h-4 w-4" />}
+            {notice.message}
+          </span>
+        </div>
+      ) : null}
+
+      {confirmAction ? (
+        <div className="ft-danger-zone p-4 text-rose-900">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p className="text-sm font-bold">
+                {confirmAction.type === "delete-one" ? `¿Deseas eliminar “${confirmAction.title}”?` : `¿Deseas eliminar ${confirmAction.count} tarea(s)?`}
+              </p>
+              <p className="mt-1 text-xs font-semibold text-rose-700">Esta acción no se puede deshacer.</p>
+            </div>
+            <div className="flex gap-2">
+              <Button type="button" variant="secondary" onClick={() => setConfirmAction(null)} className="h-10 rounded-xl px-4">Cancelar</Button>
+              <Button type="button" onClick={() => void confirmPendingAction()} className="h-10 rounded-xl bg-rose-600 px-4 text-white hover:bg-rose-700">
+                <Trash2 className="h-4 w-4" />
+                Eliminar
+              </Button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {newViewModalOpen ? (
+        <div className="ft-panel p-4 shadow-none">
+          <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+            <label className="block flex-1 space-y-2">
+              <span className="text-sm font-bold ft-text-main">Nombre de la nueva vista</span>
+              <input
+                value={newViewName}
+                onChange={(event) => setNewViewName(event.target.value)}
+                className="h-11 w-full rounded-xl border ft-border bg-white px-3 text-sm font-semibold ft-text-main outline-none focus:border-[#16C784]"
+                placeholder="Vista de tareas"
+              />
+            </label>
+            <div className="flex gap-2">
+              <Button type="button" variant="secondary" onClick={() => setNewViewModalOpen(false)} className="h-11 rounded-xl px-4">Cancelar</Button>
+              <Button type="button" onClick={() => void createNewSavedView()} className="h-11 rounded-xl bg-[#050B18] px-4 text-white">Guardar vista</Button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      <Card className="ft-tasks-toolbar relative z-20">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <h2 className="text-base font-bold ft-text-main">Vistas de tareas</h2>
+            <p className="mt-1 text-sm font-medium ft-text-muted">Tareas queda simple: lista para ejecución diaria y calendario para fechas. La planificación avanzada vive en Proyectos.</p>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <ViewButton active={viewMode === "list"} icon={<List className="h-4 w-4" />} label="Lista" onClick={() => changeView("list")} />
+            <ViewButton active={viewMode === "calendar"} icon={<CalendarDays className="h-4 w-4" />} label="Calendario" onClick={() => changeView("calendar")} />
+          </div>
+        </div>
+      </Card>
+      {searchPanel ? <div className="relative z-10">{searchPanel}</div> : null}
+
+      {selectedIds.length ? (
+        <Card className="ft-actionbar border-emerald-100 bg-emerald-50/80 px-4 py-3 shadow-none">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <p className="text-sm font-bold text-emerald-900">{selectedIds.length} tarea(s) seleccionada(s)</p>
+            <div className="flex flex-wrap gap-2">
+              <Button type="button" onClick={bulkCompleteSelected} loading={busyId === "bulk"} className="h-10 rounded-xl bg-[#16C784] px-4 text-white hover:bg-[#12b777]">
+                <CheckCircle2 className="h-4 w-4" />
+                Finalizar
+              </Button>
+              <Button type="button" variant="secondary" onClick={requestBulkDeleteSelected} disabled={busyId === "bulk"} className="h-10 rounded-xl px-4">
+                <Trash2 className="h-4 w-4" />
+                Eliminar
+              </Button>
+              <Button type="button" variant="ghost" onClick={() => setSelectedIds([])} className="h-10 rounded-xl px-4">Limpiar selección</Button>
+            </div>
+          </div>
+        </Card>
+      ) : null}
+
+      <div className="animate-[viewFadeIn_180ms_ease-out]">
+        {viewMode === "list" ? renderTable() : null}
+        {viewMode === "calendar" ? renderCalendarPro() : null}
+      </div>
+
+      {viewMode === "list" ? (
+        <Card className="ft-tasks-footer px-4 py-4">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <p className="text-sm font-medium ft-text-muted">
+              Mostrando {visibleItems.length ? (currentPage - 1) * pageSize + 1 : 0} a {Math.min(currentPage * pageSize, visibleItems.length)} de {visibleItems.length} tareas
+            </p>
+
+            <div className="flex flex-wrap items-center gap-2 md:justify-end">
+              <Button type="button" variant="secondary" className="h-10 rounded-xl px-3" disabled={currentPage <= 1 || pageAnimation !== "idle"} onClick={() => animatePage("prev", currentPage - 1)}>
+                <ArrowLeft className="h-4 w-4" />Anterior
+              </Button>
+              <span className="inline-flex h-10 min-w-10 items-center justify-center rounded-xl bg-[#050B18] px-3 text-sm font-bold text-white">{currentPage}</span>
+              {totalPages > 1 ? <span className="inline-flex h-10 min-w-10 items-center justify-center rounded-xl border ft-border bg-white px-3 text-sm font-bold text-slate-700">{Math.min(currentPage + 1, totalPages)}</span> : null}
+              <Button type="button" variant="secondary" className="h-10 rounded-xl px-3" disabled={currentPage >= totalPages || pageAnimation !== "idle"} onClick={() => animatePage("next", currentPage + 1)}>
+                Siguiente<ArrowRight className="h-4 w-4" />
+              </Button>
+              <div className="ml-0 flex items-center gap-2 rounded-xl border ft-border bg-white px-3 py-1.5 md:ml-3">
+                <span className="text-sm font-medium text-slate-500">Mostrar</span>
+                <Select aria-label="Cantidad de tareas por página" className="h-8 min-w-[72px] border-none bg-transparent px-1 py-0 text-sm font-semibold ft-text-main focus:border-none" value={String(pageSize)} onChange={(event) => { setPageSize(Number(event.target.value) as 10 | 20); setCurrentPage(1); }}>
+                  <option value="10">10</option>
+                  <option value="20">20</option>
+                </Select>
+              </div>
+            </div>
+          </div>
+        </Card>
+      ) : null}
+
+      <style>{`
+        @keyframes slideInFromRight { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes slideInFromLeft { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes viewFadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes importantPulse { 0% { background-color: rgba(251, 191, 36, 0.28); } 100% { background-color: rgba(255, 251, 235, 0.4); } }
+      `}</style>
+    </div>
+  );
+}
+
+function ViewButton({ active, icon, label, onClick }: { active: boolean; icon: ReactNode; label: string; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        "ft-btn-secondary inline-flex h-11 items-center gap-2 px-4 text-sm font-semibold transition",
+        active ? "ft-btn-primary text-white" : "text-slate-700",
+      )}
+    >
+      {icon}
+      {label}
+    </button>
+  );
+}
+
+function SettingsCheckbox({ label, checked, onChange }: { label: string; checked: boolean; onChange: (value: boolean) => void }) {
+  return (
+    <label className="ft-subcard flex items-center justify-between gap-3 px-3 py-3 text-sm font-bold ft-text-main">
+      {label}
+      <input type="checkbox" checked={checked} onChange={(event) => onChange(event.target.checked)} className="ft-checkbox" />
+    </label>
+  );
+}
+
+function CalendarMetric({ icon, label, value, tone }: { icon: ReactNode; label: string; value: number; tone: "violet" | "rose" | "amber" | "emerald" }) {
+  const tones = {
+    violet: "bg-violet-50 text-violet-700",
+    rose: "bg-rose-50 text-rose-700",
+    amber: "bg-amber-50 text-amber-700",
+    emerald: "bg-emerald-50 text-emerald-700",
+  } as const;
+  return (
+    <div className="flex items-center justify-between gap-3 rounded-2xl border ft-border bg-white p-3">
+      <span className={cn("inline-flex h-9 w-9 items-center justify-center rounded-xl", tones[tone])}>{icon}</span>
+      <span className="mr-auto text-sm font-bold ft-text-muted">{label}</span>
+      <span className="text-base font-semibold ft-text-main">{value}</span>
+    </div>
+  );
+}
+
+function buildCalendarDays(tasks: TaskRow[], scale: "Hoy" | "Día" | "Semana" | "Mes") {
+  const today = safeDate(todayIsoDate()) ?? new Date();
+  const todayIso = todayIsoDate();
+  if (scale === "Hoy" || scale === "Día") {
+    return [{
+      iso: todayIso,
+      label: String(today.getDate()),
+      isToday: true,
+      tasks: tasks.filter((task) => task.due_date?.slice(0, 10) === todayIso),
+    }];
+  }
+  const anchor = scale === "Semana" ? today : new Date(today.getFullYear(), today.getMonth(), 1, 12);
+  const weekday = anchor.getDay() === 0 ? 6 : anchor.getDay() - 1;
+  const start = addDays(anchor, -weekday);
+  const length = scale === "Semana" ? 7 : 35;
+  return Array.from({ length }, (_, index) => {
+    const date = addDays(start, index);
+    const iso = toIsoDate(date);
+    return {
+      iso,
+      label: String(date.getDate()),
+      isToday: iso === todayIso,
+      tasks: tasks.filter((task) => task.due_date?.slice(0, 10) === iso),
+    };
+  });
+}
+
+export const TaskActionList = memo(TaskActionListComponent);

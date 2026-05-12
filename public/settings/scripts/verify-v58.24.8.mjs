@@ -1,0 +1,36 @@
+#!/usr/bin/env node
+import fs from "node:fs";
+import path from "node:path";
+const root = process.cwd();
+const failures = [];
+const read = (rel) => fs.existsSync(path.join(root, rel)) ? fs.readFileSync(path.join(root, rel), "utf8") : "";
+const exists = (rel) => fs.existsSync(path.join(root, rel));
+const requireIncludes = (rel, text) => { if (!read(rel).includes(text)) failures.push(`Expected '${text}' in ${rel}`); };
+const requireNotIncludes = (rel, text) => { if (read(rel).includes(text)) failures.push(`Unexpected '${text}' in ${rel}`); };
+const pkg = JSON.parse(read("package.json"));
+if (pkg.version !== "58.24.8-boards-hero-diagram-visual-refresh") failures.push("package version must be v58.24.8 hero diagram visual refresh");
+if ((pkg.scripts ?? {})["verify:current"] !== "npm run verify:v58.24.8") failures.push("verify:current must target verify:v58.24.8");
+if ((pkg.scripts ?? {})["verify:v58.24.8"] !== "node scripts/verify-v58.24.8.mjs") failures.push("verify:v58.24.8 script must be available");
+if (!exists("scripts/verify-v58.24.8.mjs")) failures.push("missing verify-v58.24.8 script");
+requireIncludes("src/lib/release/version.ts", "58.24.8-boards-hero-diagram-visual-refresh");
+requireIncludes("src/lib/release/version.ts", "v58.24.8 Boards Hero Diagram Visual Refresh");
+requireIncludes("package-lock.json", "58.24.8-boards-hero-diagram-visual-refresh");
+requireIncludes("src/components/boards/boards-home.tsx", "Ver plantillas");
+requireIncludes("src/components/boards/boards-home.tsx", "showAllTemplates");
+requireIncludes("src/components/boards/boards-home.tsx", "BoardAccessBadge");
+requireIncludes("src/components/boards/boards-home.tsx", "Enlace activo");
+requireIncludes("src/components/boards/boards-home.tsx", "Privada");
+requireIncludes("src/components/boards/boards-home.tsx", "Actualizar");
+requireIncludes("src/components/boards/boards-home.tsx", "¿Quitar esta pizarra?");
+requireIncludes("src/components/boards/boards-home.tsx", "deleted_at");
+requireNotIncludes("src/components/boards/boards-home.tsx", "Importar");
+requireNotIncludes("src/components/boards/boards-home.tsx", "Ver todas mis pizarras");
+requireNotIncludes("src/components/boards/boards-home.tsx", "Acción irreversible");
+requireNotIncludes("src/components/boards/boards-home.tsx", "board.title.length % 4");
+requireIncludes("src/app/globals.css", "v58.24.8 — Boards Hero Diagram Visual Refresh");
+requireIncludes("src/app/globals.css", ".board-home-access-badge");
+requireIncludes("docs/release/V58_24_8_BOARDS_HERO_DIAGRAM_VISUAL_REFRESH.md", "v58.24.8");
+requireIncludes("docs/qa/FLOWTASK_V58_24_8_BOARDS_HERO_DIAGRAM_VISUAL_REFRESH_QA.md", "QA");
+requireIncludes("README.md", "v58.24.8");
+if (failures.length) { console.error("[verify:v58.24.8] FAIL"); for (const f of failures) console.error(`- ${f}`); process.exit(1); }
+console.log("[verify:v58.24.8] OK — Boards hero diagram visual refresh aligned.");

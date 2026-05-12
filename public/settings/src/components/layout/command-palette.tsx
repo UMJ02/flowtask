@@ -1,0 +1,388 @@
+'use client';
+
+import { useEffect, useMemo, useState } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
+import {
+  Bookmark,
+  BrainCircuit,
+  Building2,
+  ClipboardList,
+  Command,
+  FolderKanban,
+  History,
+  LayoutDashboard,
+  Plus,
+  Search,
+  Settings,
+  UserCircle2,
+  Star,
+  Users,
+  X,
+  BarChart3,
+} from 'lucide-react';
+import { useWorkspaceMemory } from '@/hooks/use-workspace-memory';
+import { asRoute, projectListRoute, taskListRoute, type AppRoute } from '@/lib/navigation/routes';
+
+type CommandItem = {
+  id: string;
+  label: string;
+  description: string;
+  href: AppRoute;
+  keywords: string[];
+  icon: React.ComponentType<{ className?: string }>;
+  section?: 'Favoritos' | 'Fijados' | 'Recientes' | 'Accesos' | 'Guardados';
+};
+
+type SavedFilterView = {
+  id: string;
+  label: string;
+  query: string;
+};
+
+const COMMANDS: CommandItem[] = [
+  {
+    id: 'workspace',
+    label: 'Abrir workspace',
+    description: 'Tu tablero principal para entrar a trabajar.',
+    href: '/app/dashboard',
+    keywords: ['workspace', 'inicio', 'tablero'],
+    icon: LayoutDashboard,
+    section: 'Accesos',
+  },
+  {
+    id: 'tasks',
+    label: 'Ver tareas',
+    description: 'Consulta y organiza pendientes.',
+    href: '/app/tasks',
+    keywords: ['tareas', 'pendientes', 'kanban'],
+    icon: ClipboardList,
+    section: 'Accesos',
+  },
+  {
+    id: 'new-task',
+    label: 'Crear tarea',
+    description: 'Registra una nueva tarea en segundos.',
+    href: '/app/tasks/new',
+    keywords: ['crear', 'nueva tarea', 'agregar tarea'],
+    icon: Plus,
+    section: 'Accesos',
+  },
+  {
+    id: 'projects',
+    label: 'Ver proyectos',
+    description: 'Revisa avance, responsables y fechas.',
+    href: '/app/projects',
+    keywords: ['proyectos', 'trabajos'],
+    icon: FolderKanban,
+    section: 'Accesos',
+  },
+  {
+    id: 'new-project',
+    label: 'Crear proyecto',
+    description: 'Inicia un proyecto nuevo.',
+    href: '/app/projects/new',
+    keywords: ['crear proyecto', 'nuevo proyecto'],
+    icon: ClipboardList,
+    section: 'Accesos',
+  },
+  {
+    id: 'clients',
+    label: 'Ver clientes',
+    description: 'Consulta clientes y carga actual.',
+    href: '/app/clients',
+    keywords: ['clientes', 'cuentas'],
+    icon: Users,
+    section: 'Accesos',
+  },
+  {
+    id: 'analytics',
+    label: 'Abrir analytics',
+    description: 'Ve salud operativa, adopción y foco desde una sola vista.',
+    href: '/app/analytics',
+    keywords: ['analytics', 'metricas', 'salud', 'adopcion', 'escala'],
+    icon: BarChart3,
+    section: 'Accesos',
+  },
+  {
+    id: 'intelligence',
+    label: 'Abrir insights',
+    description: 'Ve riesgos, foco y capacidad en una sola vista.',
+    href: '/app/intelligence',
+    keywords: ['intelligence', 'riesgo', 'foco', 'capacidad'],
+    icon: BrainCircuit,
+    section: 'Accesos',
+  },
+  {
+    id: 'reports',
+    label: 'Abrir reportes',
+    description: 'Resume avances y exporta un PDF.',
+    href: '/app/reports',
+    keywords: ['reportes', 'pdf', 'resumen'],
+    icon: BarChart3,
+    section: 'Accesos',
+  },
+  {
+    id: 'organization',
+    label: 'Ver equipo',
+    description: 'Gestiona miembros, roles y accesos.',
+    href: '/app/organization',
+    keywords: ['organizacion', 'equipo', 'roles'],
+    icon: Building2,
+    section: 'Accesos',
+  },
+  {
+    id: 'profile',
+    label: 'Abrir perfil',
+    description: 'Edita nombre, correo y foto.',
+    href: '/app/profile',
+    keywords: ['perfil', 'cuenta', 'usuario'],
+    icon: UserCircle2,
+    section: 'Accesos',
+  },
+  {
+    id: 'settings',
+    label: 'Abrir ajustes',
+    description: 'Configura avisos y workspace.',
+    href: '/app/settings',
+    keywords: ['configuracion', 'ajustes', 'notificaciones'],
+    icon: Settings,
+    section: 'Accesos',
+  },
+];
+
+function readSavedViews(storageKey: string): SavedFilterView[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const raw = window.localStorage.getItem(storageKey);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed.filter((item) => typeof item?.id === 'string' && typeof item?.label === 'string' && typeof item?.query === 'string') : [];
+  } catch {
+    return [];
+  }
+}
+
+export function CommandPalette() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState('');
+  const [savedViewsVersion, setSavedViewsVersion] = useState(0);
+  const { favorites, pinned, recent } = useWorkspaceMemory();
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      const isShortcut = (event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k';
+      if (isShortcut) {
+        event.preventDefault();
+        setOpen((current) => !current);
+      }
+      if (event.key === 'Escape') {
+        setOpen(false);
+      }
+    };
+
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, []);
+
+  useEffect(() => {
+    if (!open) setQuery('');
+  }, [open]);
+
+  useEffect(() => {
+    const onUpdate = () => setSavedViewsVersion((current) => current + 1);
+    window.addEventListener('flowtask-filter-views-updated', onUpdate as EventListener);
+    return () => window.removeEventListener('flowtask-filter-views-updated', onUpdate as EventListener);
+  }, []);
+
+  const favoriteCommands: CommandItem[] = favorites.map((item) => ({
+    id: `favorite-${item.type}-${item.id}`,
+    label: item.title,
+    description: item.subtitle || 'Acceso favorito',
+    href: item.href,
+    keywords: [item.title, item.subtitle || '', item.type],
+    icon: Star,
+    section: 'Favoritos',
+  }));
+
+  const pinnedCommands: CommandItem[] = pinned.map((item) => ({
+    id: `pinned-${item.type}-${item.id}`,
+    label: item.title,
+    description: item.subtitle || 'Fijado',
+    href: item.href,
+    keywords: [item.title, item.subtitle || '', item.type],
+    icon: Star,
+    section: 'Fijados',
+  }));
+
+  const recentCommands: CommandItem[] = recent.map((item) => ({
+    id: `recent-${item.type}-${item.id}`,
+    label: item.title,
+    description: item.subtitle || 'Visto recientemente',
+    href: item.href,
+    keywords: [item.title, item.subtitle || '', item.type],
+    icon: History,
+    section: 'Recientes',
+  }));
+
+  const savedViewCommands: CommandItem[] = useMemo(() => {
+    const taskViews = readSavedViews('flowtask:filters:tasks').map((item) => ({
+      id: `task-view-${item.id}`,
+      label: `Tareas · ${item.label}`,
+      description: item.query || 'Vista guardada de tareas',
+      href: taskListRoute(item.query),
+      keywords: [item.label, item.query, 'tareas', 'vista guardada'],
+      icon: Bookmark,
+      section: 'Guardados' as const,
+    }));
+
+    const projectViews = readSavedViews('flowtask:filters:projects').map((item) => ({
+      id: `project-view-${item.id}`,
+      label: `Proyectos · ${item.label}`,
+      description: item.query || 'Vista guardada de proyectos',
+      href: projectListRoute(item.query),
+      keywords: [item.label, item.query, 'proyectos', 'vista guardada'],
+      icon: Bookmark,
+      section: 'Guardados' as const,
+    }));
+
+    const clientViews = readSavedViews('flowtask:filters:clients').map((item) => ({
+      id: `client-view-${item.id}`,
+      label: `Registros · ${item.label}`,
+      description: item.query || 'Búsqueda guardada de clientes',
+      href: item.query ? asRoute(`/app/clients?${item.query}`) : asRoute('/app/clients'),
+      keywords: [item.label, item.query, 'clientes', 'vista guardada'],
+      icon: Bookmark,
+      section: 'Guardados' as const,
+    }));
+
+    return [...taskViews, ...projectViews, ...clientViews];
+  }, [savedViewsVersion]);
+
+  const quickQueryCommands = useMemo<CommandItem[]>(() => {
+    const normalized = query.trim();
+    if (!normalized) return [];
+
+    return [
+      {
+        id: `search-tasks-${normalized}`,
+        label: `Buscar tareas: ${normalized}`,
+        description: 'Abre tareas filtradas por este texto.',
+        href: taskListRoute(new URLSearchParams({ q: normalized }).toString()),
+        keywords: [normalized, 'buscar tareas'],
+        icon: Search,
+        section: 'Accesos',
+      },
+      {
+        id: `search-projects-${normalized}`,
+        label: `Buscar proyectos: ${normalized}`,
+        description: 'Abre proyectos filtrados por este texto.',
+        href: projectListRoute(new URLSearchParams({ q: normalized }).toString()),
+        keywords: [normalized, 'buscar proyectos'],
+        icon: Search,
+        section: 'Accesos',
+      },
+    ];
+  }, [query]);
+
+  const commands = useMemo(() => {
+    const normalized = query.trim().toLowerCase();
+    const allCommands = [...favoriteCommands, ...pinnedCommands, ...recentCommands, ...savedViewCommands, ...COMMANDS, ...quickQueryCommands];
+    if (!normalized) return allCommands;
+
+    return allCommands.filter((item) => {
+      const haystack = [item.label, item.description, ...item.keywords].join(' ').toLowerCase();
+      return haystack.includes(normalized);
+    });
+  }, [favoriteCommands, pinnedCommands, quickQueryCommands, query, recentCommands, savedViewCommands]);
+
+  const grouped = useMemo(() => {
+    const map = new Map<string, CommandItem[]>();
+    for (const item of commands) {
+      const section = item.section ?? 'Accesos';
+      const current = map.get(section) ?? [];
+      current.push(item);
+      map.set(section, current);
+    }
+    return Array.from(map.entries());
+  }, [commands]);
+
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="hidden h-10 w-full min-w-0 items-center gap-3 rounded-[16px] border ft-border bg-white/90 px-4 text-left text-sm font-medium text-[#94A3B8] shadow-[inset_0_1px_0_rgba(255,255,255,0.70),0_4px_16px_rgba(15,23,42,0.03)] transition-all duration-150 hover:translate-y-0 hover:border-[#16C784]/35 hover:bg-white hover: focus:outline-none focus:ring-4 focus:ring-[#16C784]/10 lg:inline-flex"
+      >
+        <Search className="h-[18px] w-[18px] shrink-0 ft-text-muted" />
+        <span className="min-w-0 flex-1 truncate">Buscar proyectos, tareas, clientes...</span>
+        <span className="inline-flex h-8 shrink-0 items-center gap-1 rounded-[10px] border ft-border bg-[#F8FAFC] px-2.5 text-xs font-bold ft-text-muted shadow-none"><Command className="h-3.5 w-3.5" /> K</span>
+      </button>
+
+      {open ? (
+        <>
+          <button
+            aria-label="Cerrar búsqueda"
+            className="fixed inset-0 z-40 cursor-default bg-transparent"
+            onClick={() => setOpen(false)}
+            type="button"
+          />
+          <div className="absolute left-1/2 top-[calc(100%+14px)] z-50 w-[min(760px,calc(100vw-32px))] -translate-x-1/2 overflow-hidden rounded-[24px] border ft-border bg-white shadow-[0_18px_44px_rgba(15,23,42,0.12)]">
+            <div className="flex items-center gap-3 border-b ft-border bg-white px-4 py-4">
+              <Search className="h-5 w-5 ft-text-muted" />
+              <input
+                autoFocus
+                className="w-full bg-transparent text-sm ft-text-main outline-none placeholder:text-[#94A3B8]"
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder="Busca tareas, proyectos, clientes o pantallas"
+                value={query}
+              />
+              <button type="button" className="inline-flex h-10 w-10 items-center justify-center rounded-full ft-text-muted transition hover:bg-[#F7F9FC] hover:ft-text-main" onClick={() => setOpen(false)}>
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="max-h-[min(520px,calc(100vh-180px))] overflow-y-auto bg-white p-3">
+              {grouped.length ? (
+                grouped.map(([section, items]) => (
+                  <div key={section} className="mb-4 last:mb-0">
+                    <p className="mb-2 px-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#94A3B8]">{section}</p>
+                    <div className="space-y-2">
+                      {items.map((item) => {
+                        const Icon = item.icon;
+                        const active = pathname === item.href;
+                        return (
+                          <button
+                            key={item.id}
+                            className={`flex w-full items-center gap-3 rounded-[22px] border px-4 py-3 text-left transition ${active ? 'border-emerald-200 bg-emerald-50' : 'border-slate-200 bg-white hover:border-emerald-200 hover:bg-emerald-50/50'}`}
+                            onClick={() => {
+                              router.push(item.href);
+                              setOpen(false);
+                            }}
+                            type="button"
+                          >
+                            <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-slate-100 text-slate-700">
+                              <Icon className="h-5 w-5" />
+                            </span>
+                            <div className="min-w-0">
+                              <p className="truncate text-sm font-semibold text-slate-900">{item.label}</p>
+                              <p className="truncate text-sm text-slate-500">{item.description}</p>
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="rounded-[22px] border border-dashed border-slate-200 bg-slate-50 px-4 py-10 text-center text-sm text-slate-500">
+                  No encontramos resultados para tu búsqueda.
+                </div>
+              )}
+            </div>
+          </div>
+        </>
+      ) : null}
+    </div>
+  );
+}

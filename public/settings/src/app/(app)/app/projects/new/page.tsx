@@ -1,0 +1,44 @@
+export const dynamic = 'force-dynamic';
+
+import { Card } from '@/components/ui/card';
+import { ProjectForm } from '@/components/projects/project-form';
+import { getTaskById } from '@/lib/queries/tasks';
+import { safeServerCall } from '@/lib/runtime/safe-server';
+
+export default async function ProjectNewPage({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
+  const search = (await searchParams) ?? {};
+  const queryString = new URLSearchParams(
+    Object.entries(search).flatMap(([key, value]) => typeof value === 'string' && value ? [[key, value]] : [])
+  ).toString();
+
+  const clientName = typeof search.clientName === 'string' ? search.clientName : '';
+  const sourceTaskId = typeof search.sourceTaskId === 'string' ? search.sourceTaskId : '';
+  const sourceTask = sourceTaskId ? await safeServerCall('getTaskByIdForProjectConversion', () => getTaskById(sourceTaskId), null) : null;
+
+  const sourceDepartment = Array.isArray((sourceTask as any)?.departments) ? (sourceTask as any).departments[0] : (sourceTask as any)?.departments;
+
+  return (
+    <div className="space-y-4">
+      <Card className="rounded-[24px] border border-slate-200/90 bg-white/[0.92] p-5">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Nuevo proyecto</p>
+        <h1 className="mt-2 text-xl font-bold text-slate-900">{sourceTask ? 'Convertir tarea en proyecto' : 'Crear proyecto'}</h1>
+        <p className="mt-2 text-sm text-slate-500">{sourceTask ? 'Convierte una tarea compleja en proyecto colaborativo con planificación avanzada.' : 'Prepara un frente nuevo con su cliente, deadline, área y modo colaborativo.'}</p>
+      </Card>
+      <ProjectForm
+        initialData={{
+          clientName: sourceTask?.client_name ?? clientName,
+          title: sourceTask?.title ?? '',
+          description: sourceTask?.description ? `${sourceTask.description}\n\nOrigen: tarea ${sourceTask.id}` : '',
+          dueDate: sourceTask?.due_date ?? '',
+          department: sourceDepartment?.code ?? sourceDepartment?.name ?? '',
+          country: (sourceTask as any)?.country ?? '',
+          organizationId: (sourceTask as any)?.organization_id ?? null,
+          ownerId: (sourceTask as any)?.owner_id ?? null,
+        }}
+        sourceTaskId={sourceTask?.id ?? undefined}
+        submitLabel={sourceTask ? 'Crear proyecto y subtareas' : undefined}
+        redirectTo={queryString ? `/app/projects?${queryString}` as any : '/app/projects'}
+      />
+    </div>
+  );
+}

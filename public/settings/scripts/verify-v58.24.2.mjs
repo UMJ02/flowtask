@@ -1,0 +1,32 @@
+#!/usr/bin/env node
+import fs from "node:fs";
+import path from "node:path";
+const root = process.cwd();
+const failures = [];
+const read = (rel) => fs.existsSync(path.join(root, rel)) ? fs.readFileSync(path.join(root, rel), "utf8") : "";
+const exists = (rel) => fs.existsSync(path.join(root, rel));
+const requireIncludes = (rel, text) => { if (!read(rel).includes(text)) failures.push(`Expected '${text}' in ${rel}`); };
+const requireNotIncludes = (rel, text) => { if (read(rel).includes(text)) failures.push(`Unexpected '${text}' in ${rel}`); };
+const pkg = JSON.parse(read("package.json"));
+if (pkg.version !== "58.24.2-board-premium-toolbar-clear-canvas-actions") failures.push("package version must be v58.24.2 premium toolbar");
+if ((pkg.scripts ?? {})["verify:current"] !== "npm run verify:v58.24.2") failures.push("verify:current must target verify:v58.24.2");
+if (!exists("scripts/verify-v58.24.2.mjs")) failures.push("missing verify-v58.24.2 script");
+requireIncludes("src/lib/release/version.ts", "58.24.2-board-premium-toolbar-clear-canvas-actions");
+requireIncludes("src/lib/release/version.ts", "v58.24.2 Board Premium Toolbar + Clear Canvas Actions");
+requireIncludes("src/components/boards/board-toolbox.tsx", "ToolbarMode");
+requireIncludes("src/components/boards/board-toolbox.tsx", "flowtask.board.toolbar.v58.24.2");
+requireIncludes("src/components/boards/board-toolbox.tsx", "board-tool-floating-trigger");
+requireIncludes("src/components/boards/board-toolbox.tsx", "onRequestClearBoard");
+requireIncludes("src/components/boards/board-toolbox.tsx", "Limpiar pizarra");
+requireIncludes("src/components/boards/board-page.tsx", "clearBoardElements");
+requireIncludes("src/components/boards/board-page.tsx", "board-clear-dialog");
+requireIncludes("src/components/boards/board-page.tsx", "Esta acción no se puede deshacer");
+requireIncludes("src/app/globals.css", ".board-tool-palette-expanded");
+requireIncludes("src/app/globals.css", ".board-tool-floating-trigger");
+requireIncludes("src/app/globals.css", ".board-clear-dialog");
+requireIncludes("src/components/boards/properties-panel.tsx", "Stepper");
+requireNotIncludes("src/components/boards/properties-panel.tsx", "> Fila</button>");
+requireNotIncludes("src/components/boards/properties-panel.tsx", "> Columna</button>");
+requireNotIncludes("src/components/boards/board-page.tsx", "<BoardWorkspaceRail");
+if (failures.length) { console.error("[verify:v58.24.2] FAIL"); for (const f of failures) console.error(`- ${f}`); process.exit(1); }
+console.log("[verify:v58.24.2] OK — Premium toolbar and clear canvas actions aligned.");
