@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { isToday, isYesterday, parseISO } from "date-fns";
-import { Search, SlidersHorizontal, Trash2, CheckCheck, Eye } from "lucide-react";
+import { Search, SlidersHorizontal, Trash2, CheckCheck, Eye, BellRing, CheckSquare, FolderOpen, MessageSquare, UserPlus, BarChart3, Settings } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Card } from "@/components/ui/card";
@@ -69,6 +69,35 @@ function deliveryLabel(status: string) {
   if (status === "failed") return "Falló";
   if (status === "skipped") return "Omitido";
   return "En cola";
+}
+
+function filterCount(notifications: LiveNotification[], filter: NotificationFilterKey) {
+  if (filter === "all") return notifications.length;
+  if (filter === "unread") return notifications.filter((item) => !item.is_read).length;
+  if (filter === "task") return notifications.filter((item) => item.entity_type === "task").length;
+  if (filter === "project") return notifications.filter((item) => item.entity_type === "project").length;
+  if (filter === "comment") return notifications.filter((item) => item.entity_type === "comment").length;
+  if (filter === "reminder") return notifications.filter((item) => item.entity_type === "reminder").length;
+  return notifications.length;
+}
+
+function displayFilterLabel(value: NotificationFilterKey, baseLabel: string) {
+  if (value === "task") return "Asignadas a mí";
+  if (value === "project") return "Actualizaciones";
+  if (value === "comment") return "Menciones";
+  if (value === "reminder") return "Sistema";
+  return baseLabel;
+}
+
+function getNotificationVisual(item: LiveNotification) {
+  const kind = `${item.entity_type ?? item.kind ?? ""}`.toLowerCase();
+  if (kind.includes("task")) return { icon: CheckSquare, bg: "bg-[#ECFDF5]", color: "text-[#16C784]" };
+  if (kind.includes("comment")) return { icon: MessageSquare, bg: "bg-[#EFF6FF]", color: "text-[#2563EB]" };
+  if (kind.includes("project")) return { icon: FolderOpen, bg: "bg-[#FEF3C7]", color: "text-[#D97706]" };
+  if (kind.includes("reminder")) return { icon: BellRing, bg: "bg-[#F5F3FF]", color: "text-[#7C3AED]" };
+  if (kind.includes("user")) return { icon: UserPlus, bg: "bg-[#F5F3FF]", color: "text-[#7C3AED]" };
+  if (kind.includes("report")) return { icon: BarChart3, bg: "bg-[#ECFDF5]", color: "text-[#16C784]" };
+  return { icon: Settings, bg: "bg-[#F1F5F9]", color: "text-[#64748B]" };
 }
 
 function withDelivery(current: LiveNotification[], delivery: NotificationDelivery) {
@@ -225,100 +254,132 @@ export function NotificationsLivePanel({
   };
 
   return (
-    <Card className="space-y-4">
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-        <div>
-          <h2 className="text-base font-semibold text-slate-900">Centro de notificaciones</h2>
-          <p className="max-w-2xl text-sm text-slate-500">Usa búsqueda y filtros inteligentes para revisar solo lo que de verdad requiere atención.</p>
-        </div>
-        <span className="inline-flex w-fit rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
-          En vivo · {visibleNotifications.length}
-        </span>
-      </div>
-
-      <div className="flex flex-col gap-3 lg:flex-row">
-        <label className="relative flex-1">
-          <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-          <input
-            value={searchQuery}
-            onChange={(event) => {
-              const nextValue = event.target.value;
-              setSearchQuery(nextValue);
-              syncUrl(activeFilter, nextValue);
-            }}
-            placeholder="Buscar por texto, cliente o proyecto"
-            className="w-full rounded-2xl border border-slate-200 bg-white px-11 py-3 text-sm text-slate-700 outline-none transition focus:border-emerald-300"
-          />
-        </label>
-        <Button type="button" variant="secondary" onClick={() => setFiltersOpen((value) => !value)} className="rounded-2xl">
-          <SlidersHorizontal className="h-4 w-4" />
-          {filtersOpen ? 'Ocultar filtros' : 'Filtros'}
-        </Button>
-      </div>
-
-      {filtersOpen ? (
-        <div className="rounded-[24px] border border-slate-200 bg-slate-50 p-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Filtros inteligentes</p>
-          <div className="mt-3 flex flex-wrap gap-2">
-            {NOTIFICATION_FILTERS.map((filter) => {
-              const active = activeFilter === filter.value;
-              return (
-                <button
-                  key={filter.value}
-                  type="button"
-                  onClick={() => {
-                    setActiveFilter(filter.value);
-                    syncUrl(filter.value, searchQuery);
-                  }}
-                  className={active
-                    ? "rounded-full bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white"
-                    : "rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-100"}
-                >
-                  {filter.label}
-                </button>
-              );
-            })}
+    <Card className="ft-notifications-panel overflow-hidden p-0">
+      <div className="p-5 md:p-6">
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+          <div>
+            <h2 className="text-[22px] font-extrabold tracking-[-0.03em] text-[#0F172A]">Centro de notificaciones</h2>
+            <p className="mt-1 max-w-3xl text-sm font-medium text-[#475569]">
+              Usa búsqueda y filtros inteligentes para revisar solo lo que de verdad requiere atención.
+            </p>
           </div>
+          <span className="inline-flex w-fit items-center gap-2 rounded-full bg-[#ECFDF5] px-4 py-2 text-xs font-extrabold text-[#0E9F6E]">
+            <span className="h-2 w-2 rounded-full bg-[#16C784]" />
+            En vivo · {visibleNotifications.length}
+          </span>
         </div>
-      ) : null}
 
-      {message ? <p className="text-sm font-medium text-emerald-700">{message}</p> : null}
-      {error ? <p className="text-sm font-medium text-rose-700">{error}</p> : null}
+        <div className="mt-5 flex flex-col gap-3 lg:flex-row">
+          <label className="relative flex-1">
+            <Search className="pointer-events-none absolute left-5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#64748B]" />
+            <input
+              value={searchQuery}
+              onChange={(event) => {
+                const nextValue = event.target.value;
+                setSearchQuery(nextValue);
+                syncUrl(activeFilter, nextValue);
+              }}
+              placeholder="Buscar por texto, cliente o proyecto"
+              className="ft-notification-search w-full px-12 py-3 text-sm font-semibold text-[#334155] outline-none transition focus:border-[#16C784]"
+            />
+          </label>
+          <Button type="button" variant="secondary" onClick={() => setFiltersOpen((value) => !value)} className="h-[50px] rounded-full border-[#E5EAF1] px-5 font-extrabold">
+            <SlidersHorizontal className="h-4 w-4" />
+            {filtersOpen ? 'Ocultar filtros' : 'Filtros'}
+          </Button>
+        </div>
 
-      <div className="min-h-[360px] rounded-[18px] border border-slate-200 bg-slate-50 p-4 md:p-5">
-        <div className="space-y-4">
+        <div className="mt-4 flex flex-wrap gap-2">
+          {NOTIFICATION_FILTERS.filter((filter) => ["all", "unread", "comment", "task", "project", "reminder"].includes(filter.value)).map((filter) => {
+            const active = activeFilter === filter.value;
+            const count = filterCount(notifications, filter.value);
+            return (
+              <button
+                key={filter.value}
+                type="button"
+                onClick={() => {
+                  setActiveFilter(filter.value);
+                  syncUrl(filter.value, searchQuery);
+                }}
+                className={active ? "ft-notification-chip ft-notification-chip-active" : "ft-notification-chip"}
+              >
+                {displayFilterLabel(filter.value, filter.label)}{filter.value !== "all" ? ` · ${count}` : ""}
+              </button>
+            );
+          })}
+        </div>
+
+        {filtersOpen ? (
+          <div className="mt-4 rounded-[20px] border border-[#E5EAF1] bg-[#F8FAFC] p-4">
+            <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-[#64748B]">Filtros de entrega</p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {NOTIFICATION_FILTERS.filter((filter) => ["delivery_failed", "delivery_pending", "delivery_sent"].includes(filter.value)).map((filter) => {
+                const active = activeFilter === filter.value;
+                return (
+                  <button
+                    key={filter.value}
+                    type="button"
+                    onClick={() => {
+                      setActiveFilter(filter.value);
+                      syncUrl(filter.value, searchQuery);
+                    }}
+                    className={active ? "ft-notification-chip ft-notification-chip-active" : "ft-notification-chip"}
+                  >
+                    {filter.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ) : null}
+
+        {message ? <p className="mt-3 text-sm font-bold text-[#0E9F6E]">{message}</p> : null}
+        {error ? <p className="mt-3 text-sm font-bold text-rose-700">{error}</p> : null}
+      </div>
+
+      <div className="border-t border-[#E5EAF1] bg-[#FBFCFE] px-5 py-4 md:px-6">
+        <div className="space-y-5">
           {(["today", "yesterday", "earlier"] as GroupKey[]).map((groupKey) => {
             const items = groupedNotifications[groupKey];
             if (!items.length) return null;
             return (
               <div key={groupKey}>
-                <p className="mb-2 text-sm font-semibold text-slate-500">{GROUP_LABELS[groupKey]}</p>
+                <p className="mb-3 text-xs font-extrabold uppercase tracking-[0.16em] text-[#0F172A]">{GROUP_LABELS[groupKey]}</p>
                 <div className="space-y-3">
                   {items.map((item) => {
                     const href = buildNotificationHref(item);
                     const checked = selectedIds.includes(item.id);
+                    const visual = getNotificationVisual(item);
+                    const Icon = visual.icon;
                     return (
-                      <div key={item.id} className={`rounded-[24px] border px-4 py-4 transition ${checked ? "border-emerald-300 bg-emerald-50/60" : "border-slate-200 bg-white"}`}>
-                        <div className="flex gap-3">
+                      <div key={item.id} className={`ft-notification-row ${checked ? "border-[#16C784] bg-[#ECFDF5]" : ""}`}>
+                        <div className="flex items-center gap-4">
                           <input
                             type="checkbox"
                             checked={checked}
                             onChange={() => toggleSelect(item.id)}
-                            className="mt-1 h-4 w-4 rounded border-slate-300"
+                            className="h-4 w-4 rounded border-slate-300 accent-[#16C784]"
                             aria-label={`Seleccionar ${item.title}`}
                           />
+                          <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-[16px] ${visual.bg}`}>
+                            <Icon className={`h-5 w-5 ${visual.color}`} />
+                          </div>
                           <div className="min-w-0 flex-1">
-                            <div className="flex flex-wrap items-center gap-2">
-                              {!item.is_read ? <span className="rounded-full bg-emerald-100 px-2.5 py-1 text-[11px] font-semibold text-emerald-700">Nueva</span> : null}
-                              <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-medium text-slate-600">{item.entity_type ?? item.kind}</span>
-                              <span className="text-xs text-slate-400">{formatDate(item.created_at)}</span>
+                            <div className="flex flex-col gap-1 md:flex-row md:items-center md:justify-between">
+                              <div className="min-w-0">
+                                <p className="truncate text-sm font-extrabold text-[#0F172A]">{item.title}</p>
+                                <p className="mt-1 line-clamp-2 text-sm font-medium leading-6 text-[#334155]">{item.body}</p>
+                              </div>
+                              <div className="flex shrink-0 items-center gap-3 text-sm font-semibold text-[#475569]">
+                                <span>{formatDate(item.created_at)}</span>
+                                {!item.is_read ? <span className="ft-notification-status">No leída</span> : <span className="rounded-full bg-[#F1F5F9] px-3 py-1 text-[11px] font-extrabold text-[#64748B]">Leída</span>}
+                                <button type="button" aria-label="Más opciones" className="text-[#64748B]">•••</button>
+                              </div>
                             </div>
-                            <p className="mt-3 text-sm font-semibold text-slate-900">{item.title}</p>
-                            <p className="mt-1 text-sm leading-6 text-slate-600">{item.body}</p>
                             {(item.deliveries ?? []).length ? (
                               <div className="mt-3 flex flex-wrap gap-2">
                                 {item.deliveries?.slice(0, 3).map((delivery) => (
-                                  <span key={delivery.id} className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">
+                                  <span key={delivery.id} className="rounded-full bg-[#F1F5F9] px-3 py-1 text-xs font-bold text-[#475569]">
                                     {delivery.channel}: {deliveryLabel(delivery.status)}
                                   </span>
                                 ))}
@@ -326,7 +387,7 @@ export function NotificationsLivePanel({
                             ) : null}
                             {href ? (
                               <div className="mt-3">
-                                <Link href={href} className="inline-flex rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-100">
+                                <Link href={href} className="inline-flex rounded-full border border-[#E5EAF1] bg-white px-3 py-2 text-xs font-extrabold text-[#334155] transition hover:bg-[#F8FAFC]">
                                   Abrir detalle
                                 </Link>
                               </div>
@@ -342,30 +403,34 @@ export function NotificationsLivePanel({
           })}
 
           {!visibleNotifications.length ? (
-            <div className="rounded-2xl border border-dashed border-slate-200 bg-white p-5 text-sm text-slate-600">
+            <div className="rounded-[18px] border border-dashed border-[#CBD5E1] bg-white p-6 text-sm font-semibold text-[#64748B]">
               No hay notificaciones para este filtro. Ajusta la búsqueda o abre los filtros inteligentes.
             </div>
           ) : null}
         </div>
       </div>
 
-      <div className="flex flex-col gap-3 border-t border-slate-200 pt-4 sm:flex-row sm:flex-wrap sm:items-center">
-        <div className="text-sm text-slate-500">{selectedVisibleIds.length ? `${selectedVisibleIds.length} seleccionada(s)` : 'Selecciona una o varias notificaciones para aplicar acciones.'}</div>
+      <div className="ft-notification-actionbar flex flex-col gap-3 px-5 py-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between md:px-6">
+        <div>
+          <p className="text-sm font-extrabold text-[#334155]">{selectedVisibleIds.length ? `${selectedVisibleIds.length} seleccionada(s)` : '0 seleccionadas'}</p>
+          <p className="mt-1 text-sm font-medium text-[#64748B]">Selecciona una o varias notificaciones para aplicar acciones.</p>
+        </div>
         <div className="flex flex-wrap items-center gap-2">
-        <Button type="button" variant="secondary" onClick={handleMarkSelectedRead} disabled={!selectedVisibleIds.length || isMarkingRead}>
-          <CheckCheck className="h-4 w-4" />
-          {isMarkingRead ? "Marcando..." : "Marcar como leídas"}
-        </Button>
-        <Button type="button" variant="secondary" onClick={handleSelectVisible} disabled={!visibleIds.length}>
-          <Eye className="h-4 w-4" />
-          Marcar visibles
-        </Button>
-        <Button type="button" variant="secondary" onClick={handleDeleteSelected} disabled={!selectedVisibleIds.length || isDeleting}>
-          <Trash2 className="h-4 w-4" />
-          {isDeleting ? 'Eliminando...' : 'Eliminar'}
-        </Button>
+          <Button type="button" variant="secondary" onClick={handleMarkSelectedRead} disabled={!selectedVisibleIds.length || isMarkingRead} className="rounded-[14px] border-[#E5EAF1]">
+            <CheckCheck className="h-4 w-4" />
+            {isMarkingRead ? "Marcando..." : "Marcar como leídas"}
+          </Button>
+          <Button type="button" variant="secondary" onClick={handleSelectVisible} disabled={!visibleIds.length} className="rounded-[14px] border-[#E5EAF1]">
+            <Eye className="h-4 w-4" />
+            Marcar visibles
+          </Button>
+          <Button type="button" variant="secondary" onClick={handleDeleteSelected} disabled={!selectedVisibleIds.length || isDeleting} className="rounded-[14px] border-rose-200 text-rose-600 hover:bg-rose-50">
+            <Trash2 className="h-4 w-4" />
+            {isDeleting ? 'Eliminando...' : 'Eliminar'}
+          </Button>
         </div>
       </div>
     </Card>
   );
+
 }

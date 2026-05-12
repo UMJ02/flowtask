@@ -2338,3 +2338,122 @@
     }
   }
 }
+
+
+/* v58.25.4 — Notification Center Redesign */
+@layer components {
+  .ft-notifications-shell {
+    width: 100%;
+    max-width: none;
+    margin-inline: 0;
+    display: grid;
+    gap: 18px;
+  }
+
+  .ft-notifications-hero,
+  .ft-notifications-panel {
+    width: 100%;
+    border-radius: 28px;
+    border: 1px solid #E5EAF1;
+    background: #FFFFFF;
+    box-shadow: 0 12px 36px rgba(15,23,42,.045);
+  }
+
+  .ft-notifications-hero {
+    overflow: hidden;
+  }
+
+  .ft-notifications-icon-tile {
+    display: inline-flex;
+    height: 76px;
+    width: 76px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 22px;
+    background: #ECFDF5;
+    color: #16C784;
+    box-shadow: inset 0 0 0 1px rgba(22,199,132,.12);
+  }
+
+  .ft-notification-metric {
+    min-height: 108px;
+    border-radius: 22px;
+    border: 1px solid #E5EAF1;
+    background: linear-gradient(135deg,#FFFFFF,#F8FAFC);
+    padding: 18px;
+    box-shadow: 0 10px 26px rgba(15,23,42,.035);
+  }
+
+  .ft-notification-search {
+    min-height: 50px;
+    border-radius: 999px;
+    border: 1px solid #DDE5EF;
+    background: #FFFFFF;
+    box-shadow: 0 8px 22px rgba(15,23,42,.035);
+  }
+
+  .ft-notification-chip {
+    min-height: 36px;
+    border-radius: 999px;
+    border: 1px solid #E5EAF1;
+    background: #FFFFFF;
+    padding-inline: 16px;
+    font-size: 13px;
+    font-weight: 800;
+    color: #475569;
+    transition: background 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms ease;
+  }
+
+  .ft-notification-chip:hover {
+    border-color: #CBD5E1;
+    background: #F8FAFC;
+  }
+
+  .ft-notification-chip-active {
+    border-color: #16C784;
+    background: linear-gradient(135deg,#16C784,#0E9F6E);
+    color: #FFFFFF;
+    box-shadow: 0 12px 24px rgba(22,199,132,.20);
+  }
+
+  .ft-notification-row {
+    border-radius: 18px;
+    border: 1px solid #E5EAF1;
+    background: #FFFFFF;
+    padding: 14px 16px;
+    transition: background 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+  }
+
+  .ft-notification-row:hover {
+    border-color: #CBD5E1;
+    background: #FCFCFD;
+    box-shadow: 0 10px 26px rgba(15,23,42,.04);
+  }
+
+  .ft-notification-status {
+    border-radius: 999px;
+    background: #ECFDF5;
+    padding: 5px 10px;
+    font-size: 11px;
+    font-weight: 800;
+    color: #0E9F6E;
+  }
+
+  .ft-notification-actionbar {
+    border-top: 1px solid #E5EAF1;
+    background: #FFFFFF;
+  }
+
+  @media (max-width: 768px) {
+    .ft-notifications-hero,
+    .ft-notifications-panel {
+      border-radius: 22px;
+    }
+
+    .ft-notifications-icon-tile {
+      height: 58px;
+      width: 58px;
+      border-radius: 18px;
+    }
+  }
+}

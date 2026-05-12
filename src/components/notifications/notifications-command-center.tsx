@@ -31,32 +31,39 @@ export function NotificationsCommandCenter({
       : 'Todo limpio por ahora';
 
   return (
-    <Card className="overflow-hidden bg-[linear-gradient(135deg,#062b2a_0%,#0f172a_58%,#111827_100%)] text-white shadow-none">
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-        <div className="max-w-3xl">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">Notification command</p>
-          <h1 className="mt-2 text-xl font-bold md:text-[28px]">Centro claro para revisar avisos</h1>
-          <p className="mt-2 max-w-2xl text-sm text-slate-300 md:text-base">
-            Busca, filtra y resuelve notificaciones con una cabecera compacta y sin elementos repetidos.
-          </p>
+    <Card className="ft-notifications-hero p-5 md:p-6">
+      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_430px] lg:items-center">
+        <div className="flex min-w-0 gap-5">
+          <div className="ft-notifications-icon-tile shrink-0">
+            <BellRing className="h-9 w-9" />
+          </div>
+          <div className="min-w-0">
+            <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#047857]">Notification Command</p>
+            <h1 className="mt-2 text-[26px] font-extrabold tracking-[-0.035em] text-[#0F172A] md:text-[32px]">
+              Centro claro para revisar avisos
+            </h1>
+            <p className="mt-2 max-w-3xl text-sm font-medium leading-6 text-[#475569] md:text-base">
+              Busca, filtra y resuelve notificaciones con una cabecera compacta y sin elementos repetidos.
+            </p>
+          </div>
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-2 lg:min-w-[360px]">
-          <div className="rounded-[22px] bg-white/10 px-4 py-3 ring-1 ring-white/10 backdrop-blur-sm">
-            <div className="flex items-center gap-2 text-emerald-300">
-              <BellRing className="h-4 w-4" />
-              <p className="text-xs uppercase tracking-[0.16em]">Pendientes</p>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <div className="ft-notification-metric">
+            <div className="flex items-center gap-2 text-[#16C784]">
+              <BellRing className="h-5 w-5" />
+              <p className="text-xs font-extrabold uppercase tracking-[0.16em]">Pendientes</p>
             </div>
-            <p className="mt-2 text-xl font-bold text-white">{unreadCount}</p>
-            <p className="mt-1 text-xs text-slate-300">{helperLabel}</p>
+            <p className="mt-3 text-[26px] font-extrabold text-[#0F172A]">{unreadCount}</p>
+            <p className="mt-1 text-sm font-medium text-[#475569]">{helperLabel}</p>
           </div>
-          <div className="rounded-[22px] bg-white/10 px-4 py-3 ring-1 ring-white/10 backdrop-blur-sm">
-            <div className="flex items-center gap-2 text-emerald-300">
-              <Clock3 className="h-4 w-4" />
-              <p className="text-xs uppercase tracking-[0.16em]">Entrega</p>
+          <div className="ft-notification-metric">
+            <div className="flex items-center gap-2 text-[#16C784]">
+              <Clock3 className="h-5 w-5" />
+              <p className="text-xs font-extrabold uppercase tracking-[0.16em]">Entrega</p>
             </div>
-            <p className="mt-2 text-sm font-semibold text-white">{cadenceLabel}</p>
-            <p className="mt-1 text-xs text-slate-300">
+            <p className="mt-3 text-base font-extrabold text-[#0F172A]">{cadenceLabel}</p>
+            <p className="mt-1 text-sm font-medium text-[#475569]">
               {deliverySummary.total ? `${deliverySummary.total} evento(s) de entrega registrados` : 'Aún no hay historial de entregas.'}
             </p>
           </div>

@@ -1,32 +1,37 @@
-# FlowTask — v58.25.3 Settings Width + Compact Hero/Metrics
+# FlowTask — v58.25.4 Notifications Center Redesign
 
-Base: **v58.25.2 — Settings Colorful Redesign Alignment**
+Base: **v58.25.3 — Settings Width + Compact Hero/Metrics**
 
 ## Objetivo
 
-Ajustar la vista de Settings para que ocupe todo el ancho disponible del contenedor del app/header y reducir el tamaño visual del hero y de las métricas.
+Rediseñar la vista `/app/notifications` según el documento **FlowTask — Notification Center Redesign**, manteniendo funcionalidades existentes y asegurando que el contenido use todo el ancho disponible del header/app.
 
 ## Cambios principales
 
-- `ft-settings-shell` ahora usa `width: 100%` y `max-width: none`.
-- Hero más compacto:
-  - menor `min-height`
-  - menor padding
-  - ilustración derecha más pequeña
-  - columna visual derecha más contenida
-- Métricas más compactas:
-  - menor padding
-  - menor radius
-  - iconos más pequeños
-  - tipografía un poco más compacta
-- Se mantiene el asset `/settings/herosettings.png`.
-- No se toca funcionalidad de permisos, preferencias, asistente ni eliminación de cuenta.
+- Se elimina el hero oscuro de notificaciones.
+- Nueva cabecera blanca premium con:
+  - icono verde
+  - título grande
+  - subtítulo
+  - métricas compactas de Pendientes y Entrega
+- Nuevo shell `ft-notifications-shell` con `width: 100%` y `max-width: none`.
+- Panel principal blanco con búsqueda, chips horizontales y feed claro.
+- Chips principales:
+  - Todas
+  - No leídas
+  - Menciones
+  - Asignadas a mí
+  - Actualizaciones
+  - Sistema
+- Chip activo verde.
+- Notificaciones como cards blancas con icono colorido, pill de estado, hora y hover suave.
+- Action bar inferior más limpia.
 
 ## Validación recomendada
 
 ```bash
 npm install
-npm run verify:v58.25.3
+npm run verify:v58.25.4
 npm run typecheck
 npm run build:preflight
 npm run build
