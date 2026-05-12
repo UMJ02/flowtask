@@ -1,15 +1,14 @@
-# FlowTask — v58.25.5 Records Spacing + Compact Metrics
+# FlowTask — v58.25.5.1 Records Metric Text Overflow Fix
 
-Base: **v58.25.4 — Notifications Center Redesign**
+Base: **v58.25.5 — Records Spacing + Compact Metrics**
 
 ## Objetivo
 
-Corregir la cabecera de la vista de Registros para que el título no quede pegado al header global y compactar las tarjetas métricas superiores.
+Corregir el desborde de texto en las métricas superiores de la vista de Registros sin volver a agrandar las cards.
 
 ## Cambios
 
-- Se agrega espacio superior al bloque principal de Registros.
-- Se reduce la separación vertical del hero textual.
-- Se compacta la columna de métricas.
-- Se reduce el tamaño visual de las metric cards: padding, icono, radio y tipografía.
-- Se preserva la funcionalidad existente de clientes, departamentos y países.
+- Label de métricas ahora puede hacer wrap.
+- Se reduce un poco el tracking del texto uppercased.
+- Se ajusta el layout interno a grid con icono + contenido.
+- Se mantiene el tamaño compacto logrado en v58.25.5.

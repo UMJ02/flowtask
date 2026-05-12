@@ -4,7 +4,7 @@ import path from "node:path";
 
 const root = process.cwd();
 const failures = [];
-const expectedVersion = "58.25.5-records-spacing-compact-metrics";
+const expectedVersion = "58.25.5.1-records-metric-text-overflow-fix";
 
 function exists(rel){ return fs.existsSync(path.join(root, rel)); }
 function read(rel){ return exists(rel) ? fs.readFileSync(path.join(root, rel), "utf8") : ""; }
@@ -14,9 +14,9 @@ function requireNotIncludes(rel, text){ if(read(rel).includes(text)) failures.pu
 
 for (const rel of [
   "package.json","package-lock.json","vercel.json","next.config.ts",".nvmrc",".env.example",
-  "scripts/runtime-check.mjs","scripts/validate-env.mjs","scripts/verify-v58.25.5.mjs",
-  "docs/release/V58_25_5_RECORDS_SPACING_COMPACT_METRICS.md",
-  "docs/qa/FLOWTASK_V58_25_5_RECORDS_SPACING_COMPACT_METRICS_QA.md",
+  "scripts/runtime-check.mjs","scripts/validate-env.mjs","scripts/verify-v58.25.5.1.mjs",
+  "docs/release/V58_25_5_1_RECORDS_METRIC_TEXT_OVERFLOW_FIX.md",
+  "docs/qa/FLOWTASK_V58_25_5_1_RECORDS_METRIC_TEXT_OVERFLOW_FIX_QA.md",
   "src/app/(app)/app/notifications/page.tsx",
   "src/components/notifications/notifications-command-center.tsx",
   "src/components/notifications/notifications-live-panel.tsx"
@@ -25,7 +25,7 @@ for (const rel of [
 const pkg = JSON.parse(read("package.json"));
 const scripts = pkg.scripts ?? {};
 if (pkg.version !== expectedVersion) failures.push(`Unexpected package version: ${pkg.version}`);
-if (scripts["verify:current"] !== "npm run verify:v58.25.5") failures.push("verify:current must target verify:v58.25.5");
+if (scripts["verify:current"] !== "npm run verify:v58.25.5.1") failures.push("verify:current must target verify:v58.25.5.1");
 
 const vercel = JSON.parse(read("vercel.json"));
 if (vercel.framework !== "nextjs") failures.push("vercel.json framework must be nextjs");
