@@ -4033,3 +4033,333 @@
     }
   }
 }
+
+
+/* v58.25.7 — Global Productivity Density System + UI Scale Refactor */
+@layer base {
+  :root {
+    --ft-density-page-gap: 14px;
+    --ft-density-section-gap: 12px;
+    --ft-density-card-padding: 14px;
+    --ft-density-panel-padding: 16px;
+    --ft-density-control-height-sm: 32px;
+    --ft-density-control-height: 36px;
+    --ft-density-control-height-lg: 40px;
+    --ft-density-row-height: 44px;
+    --ft-density-radius-card: 16px;
+    --ft-density-radius-panel: 18px;
+    --ft-density-radius-control: 12px;
+    --ft-density-radius-pill: 999px;
+
+    --ft-density-title-page: clamp(22px, 1.9vw, 28px);
+    --ft-density-title-section: 16px;
+    --ft-density-title-card: 14px;
+    --ft-density-body: 13px;
+    --ft-density-muted: 12px;
+    --ft-density-label: 10px;
+
+    --ft-density-shadow-card: 0 8px 20px rgba(15, 23, 42, .035);
+    --ft-density-shadow-panel: 0 14px 34px rgba(15, 23, 42, .055);
+    --ft-density-border: #E5EAF1;
+  }
+}
+
+@layer components {
+  .ft-density-app,
+  .ft-page-shell,
+  .ft-governed-screen,
+  .ft-dashboard-screen,
+  .ft-analytics-screen,
+  .ft-reports-screen,
+  .ft-projects-screen,
+  .ft-settings-screen,
+  .ft-notifications-ui-screen,
+  .ft-org-screen,
+  .ft-profile-screen {
+    gap: var(--ft-density-page-gap);
+  }
+
+  .ft-main-card,
+  .ft-section-card,
+  .ft-panel,
+  .ft-dashboard-panel,
+  .ft-dashboard-card,
+  .ft-analytics-panel,
+  .ft-analytics-card,
+  .ft-report-panel,
+  .ft-report-card,
+  .ft-projects-panel,
+  .ft-project-detail-panel,
+  .ft-project-form-panel,
+  .ft-settings-panel,
+  .ft-notifications-ui-panel,
+  .ft-org-panel,
+  .ft-profile-panel,
+  .ft-card,
+  .ft-card-muted {
+    border-radius: var(--ft-density-radius-panel);
+    padding: var(--ft-density-panel-padding);
+    box-shadow: var(--ft-density-shadow-card);
+  }
+
+  .ft-dashboard-hero,
+  .ft-analytics-hero,
+  .ft-report-hero,
+  .ft-projects-hero,
+  .ft-settings-hero-system,
+  .ft-notifications-hero-system,
+  .ft-org-hero,
+  .ft-profile-hero {
+    border-radius: var(--ft-density-radius-panel);
+    padding: 16px;
+    box-shadow: var(--ft-density-shadow-card);
+  }
+
+  .ft-dashboard-metric,
+  .ft-analytics-metric,
+  .ft-report-metric,
+  .ft-project-metric-card,
+  .ft-settings-metric,
+  .ft-notifications-metric,
+  .ft-org-metric,
+  .ft-stat-card,
+  .ft-metric-card {
+    min-height: 78px;
+    border-radius: var(--ft-density-radius-card);
+    padding: 12px;
+    box-shadow: var(--ft-density-shadow-card);
+  }
+
+  .ft-heading-page,
+  .ft-page-title,
+  .ft-dashboard-title,
+  .ft-analytics-title,
+  .ft-report-title,
+  .ft-project-title,
+  .ft-settings-system-title,
+  .ft-notifications-system-title,
+  .ft-org-title,
+  .ft-profile-title {
+    font-size: var(--ft-density-title-page);
+    line-height: 1.08;
+    letter-spacing: -0.035em;
+  }
+
+  .ft-heading-section,
+  .ft-section-title,
+  .ft-card-title {
+    font-size: var(--ft-density-title-section);
+    line-height: 1.18;
+    letter-spacing: -0.02em;
+  }
+
+  .ft-copy,
+  .ft-page-subtitle,
+  .ft-dashboard-copy,
+  .ft-analytics-copy,
+  .ft-report-copy,
+  .ft-project-copy,
+  .ft-settings-system-copy,
+  .ft-notifications-system-copy,
+  .ft-org-copy,
+  .ft-profile-copy {
+    font-size: var(--ft-density-body);
+    line-height: 1.48;
+  }
+
+  .ft-text-muted,
+  .ft-task-muted,
+  .ft-secondary {
+    font-size: var(--ft-density-muted);
+    line-height: 1.45;
+  }
+
+  .ft-kicker,
+  .ft-text-label,
+  .ft-metric-label,
+  .ft-small-title,
+  .ft-label {
+    font-size: var(--ft-density-label);
+    letter-spacing: .14em;
+    line-height: 1.15;
+  }
+
+  .ft-btn-primary,
+  .ft-btn-secondary,
+  .ft-btn-ghost,
+  .ft-button,
+  .ft-project-action,
+  .ft-dashboard-action,
+  .ft-analytics-action,
+  .ft-report-action,
+  .ft-org-action,
+  .ft-settings-system-action,
+  .ft-notifications-system-action,
+  .ft-profile-action {
+    min-height: var(--ft-density-control-height);
+    border-radius: var(--ft-density-radius-control);
+    padding-inline: 12px;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .ft-input,
+  .ft-select,
+  .board-input,
+  input.ft-input,
+  select.ft-input,
+  textarea.ft-input {
+    min-height: var(--ft-density-control-height);
+    border-radius: var(--ft-density-radius-control);
+    font-size: 13px;
+  }
+
+  .ft-badge,
+  .ft-chip,
+  .ft-project-chip,
+  .ft-org-chip,
+  .ft-settings-system-chip,
+  .ft-notifications-system-chip {
+    min-height: 24px;
+    border-radius: var(--ft-density-radius-pill);
+    padding-inline: 9px;
+    font-size: 11px;
+    font-weight: 800;
+  }
+
+  .ft-actionbar,
+  .ft-chart-toolbar,
+  .ft-projects-filter-panel,
+  .ft-filter-bar,
+  .ft-toolbar {
+    border-radius: var(--ft-density-radius-card);
+    padding: 10px;
+    gap: 10px;
+  }
+
+  .ft-dashboard-row,
+  .ft-analytics-row,
+  .ft-report-row,
+  .ft-org-row,
+  .ft-settings-row,
+  .ft-notification-system-row,
+  .ft-project-inline-task-row,
+  .ft-table-row,
+  .ft-list-row {
+    min-height: var(--ft-density-row-height);
+    border-radius: var(--ft-density-radius-card);
+    padding: 10px 12px;
+  }
+
+  .ft-modal,
+  .ft-dialog,
+  .ft-popover-surface,
+  .ft-glass-panel {
+    border-radius: var(--ft-density-radius-panel);
+  }
+
+  .ft-popover-surface {
+    padding: 10px;
+  }
+
+  .board-inspector {
+    width: 380px;
+    border-radius: 22px;
+    font-size: 12px;
+  }
+
+  .board-inspector h2 {
+    font-size: 16px;
+  }
+
+  .board-inspector section {
+    padding-block: 10px;
+  }
+
+  .board-inspector .ft-input,
+  .board-inspector input,
+  .board-inspector select {
+    min-height: 30px;
+    font-size: 12px;
+  }
+
+  .board-inspector button {
+    min-height: 30px;
+  }
+
+  .board-table-header-cell {
+    padding: 5px 7px;
+    font-size: 11px;
+  }
+
+  .board-table-cell textarea {
+    min-height: 28px;
+    padding: 5px 7px;
+    font-size: 11px;
+    line-height: 1.3;
+  }
+
+  .board-table-row-handle {
+    font-size: 10px;
+  }
+
+  .ft-kanban-card {
+    border-radius: var(--ft-density-radius-card);
+    padding: 10px;
+  }
+
+  .ft-kanban-column {
+    border-radius: var(--ft-density-radius-panel);
+  }
+
+  .ft-kanban-action-button {
+    height: 30px;
+    width: 30px;
+    min-width: 30px;
+    flex-basis: 30px;
+  }
+
+  @media (max-width: 1535px) {
+    .board-inspector {
+      width: 368px;
+    }
+
+    .ft-dashboard-hero,
+    .ft-analytics-hero,
+    .ft-report-hero,
+    .ft-projects-hero,
+    .ft-settings-hero-system,
+    .ft-notifications-hero-system,
+    .ft-org-hero,
+    .ft-profile-hero {
+      padding: 14px;
+    }
+  }
+
+  @media (max-width: 767px) {
+    :root {
+      --ft-density-page-gap: 12px;
+      --ft-density-panel-padding: 12px;
+      --ft-density-card-padding: 12px;
+    }
+
+    .ft-main-card,
+    .ft-section-card,
+    .ft-panel,
+    .ft-dashboard-panel,
+    .ft-dashboard-card,
+    .ft-analytics-panel,
+    .ft-analytics-card,
+    .ft-report-panel,
+    .ft-report-card,
+    .ft-projects-panel,
+    .ft-project-detail-panel,
+    .ft-project-form-panel,
+    .ft-settings-panel,
+    .ft-notifications-ui-panel,
+    .ft-org-panel,
+    .ft-profile-panel {
+      padding: 12px;
+    }
+  }
+}
