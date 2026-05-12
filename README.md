@@ -1,23 +1,35 @@
-# FlowTask — v58.25.6.5.1 Boards Table Typecheck Fix
+# FlowTask — v58.25.6.6 Boards Floating Layout + Properties Panel Redesign
 
-Base: **v58.25.6.5 — Boards Table Spreadsheet Tools + Properties Panel Collapse**
+Base: **v58.25.6.5.1 — Boards Table Typecheck Fix**
 
 ## Objetivo
 
-Corregir errores de TypeScript encontrados en CLI después de agregar herramientas spreadsheet a tablas de Pizarras.
+Refinar la experiencia de Pizarras en tres frentes:
 
-## Fixes
+- mover el minimap para que no quede oculto por el panel de propiedades
+- mover la barra superior flotante para que conviva mejor con el panel
+- rediseñar el panel de propiedades con un layout premium, compacto y colapsable
 
-- `board-element.tsx`: se fija el narrowing de tabla usando `const table = element` dentro del branch `element.type === "table"`.
-- `board-element.tsx`: se corrige `handleClick(event)` porque `handleClick` no recibe argumentos.
-- `board-share-view.tsx`: se agregan handlers no-op para las nuevas props obligatorias de `BoardElementView`.
-- `table-tools.ts`: se corrige `selectionMatches` usando discriminación segura del union `BoardTableSelection`.
+## Cambios principales
+
+- `PropertiesPanel` rediseñado con:
+  - ancho amplio (~448px)
+  - header sticky
+  - footer sticky
+  - secciones colapsables
+  - modo colapsado en rail de iconos
+  - grid compacto para posición/tamaño
+  - controles de tabla más visuales
+  - lista de columnas más limpia
+- `FloatingFormatToolbar` ahora acepta `rightOffset` para reposicionarse.
+- `BoardMiniMap` ahora acepta `rightOffset`, `hidden` y `onHiddenChange`.
+- `BoardPage` controla el estado colapsado del panel y desplaza los overlays flotantes para evitar solapamientos.
 
 ## Validación recomendada
 
 ```bash
 npm install
-npm run verify:v58.25.6.5.1
+npm run verify:v58.25.6.6
 npm run design:doctor
 npm run typecheck
 npm run build:preflight

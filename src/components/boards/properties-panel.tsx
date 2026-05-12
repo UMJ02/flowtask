@@ -1,7 +1,31 @@
 "use client";
 
-import { ChevronLeft, ChevronRight, Download, FileText, GitBranch, Image, Lock, Minus, Plus, Trash2, Unlock } from "lucide-react";
-import { useState } from "react";
+import {
+  AlignHorizontalJustifyCenter,
+  ArrowDownUp,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  ChevronUp,
+  Download,
+  FileText,
+  GitBranch,
+  GripVertical,
+  Image,
+  LayoutTemplate,
+  Lock,
+  MapPin,
+  Minus,
+  Palette,
+  PanelRightClose,
+  PanelRightOpen,
+  Ruler,
+  Table2,
+  Type,
+  Trash2,
+  Unlock,
+} from "lucide-react";
+import { useState, type ReactNode } from "react";
 import type { BoardElement, BoardStyle, ConnectorElement, ShapeElement, TableElement } from "@/lib/boards/board-types";
 
 const fillSwatches = ["#FFFFFF", "#ECFDF5", "#DBEAFE", "#F5F3FF", "#FEF3C7", "#FFE4E6"];
@@ -25,6 +49,8 @@ function numberPatch(value: string, fallback: number) {
 
 type Props = {
   selected: BoardElement | null;
+  collapsed: boolean;
+  onCollapsedChange: (collapsed: boolean) => void;
   onPatch: (patch: Partial<BoardElement>) => void;
   onDelete: () => void;
   onSetTableRowCount: (count: number) => void;
@@ -35,173 +61,360 @@ type Props = {
   onShowHiddenTableColumns: () => void;
 };
 
-export function PropertiesPanel({ selected, onPatch, onDelete, onSetTableRowCount, onSetTableColumnCount, onRemoveTableColumn, onRenameTableColumn, onShowHiddenTableRows, onShowHiddenTableColumns }: Props) {
-  const [collapsed, setCollapsed] = useState(false);
+type SectionKey = "position" | "table" | "columns" | "appearance" | "connector" | "media";
+
+export function PropertiesPanel({
+  selected,
+  collapsed,
+  onCollapsedChange,
+  onPatch,
+  onDelete,
+  onSetTableRowCount,
+  onSetTableColumnCount,
+  onRemoveTableColumn,
+  onRenameTableColumn,
+  onShowHiddenTableRows,
+  onShowHiddenTableColumns,
+}: Props) {
+  const [openSections, setOpenSections] = useState<Record<SectionKey, boolean>>({
+    position: true,
+    table: true,
+    columns: true,
+    appearance: true,
+    connector: true,
+    media: true,
+  });
+
+  function toggleSection(section: SectionKey) {
+    setOpenSections((current) => ({ ...current, [section]: !current[section] }));
+  }
+
   const connector = selected?.type === "connector" ? selected : null;
   const table = selected?.type === "table" ? selected : null;
   const shape = selected?.type === "shape" ? selected : null;
-  const isConnector = Boolean(connector);
   const media = selected?.type === "image" || selected?.type === "file" ? selected : null;
+  const isConnector = Boolean(connector);
+  const title = selected ? (isConnector ? "Conector" : table ? "Tabla" : media ? (media.type === "image" ? "Imagen" : "Archivo") : "Elemento") : "Pizarra";
 
   if (collapsed) {
     return (
-      <aside className="board-inspector board-inspector-collapsed ft-glass-panel absolute bottom-6 right-6 top-6 z-30 hidden w-[64px] items-start justify-center overflow-hidden p-3 xl:flex">
-        <button type="button" onClick={() => setCollapsed(false)} className="grid h-10 w-10 place-items-center rounded-2xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50" title="Expandir propiedades">
-          <ChevronLeft className="h-4 w-4" />
-        </button>
+      <aside className="board-inspector board-inspector-collapsed absolute bottom-6 right-6 top-6 z-30 hidden w-[84px] overflow-hidden rounded-[32px] border border-slate-200 bg-white/95 shadow-[0_24px_60px_rgba(15,23,42,0.12)] xl:flex xl:flex-col">
+        <div className="flex items-center justify-center border-b border-slate-200 px-3 py-4">
+          <button type="button" onClick={() => onCollapsedChange(false)} className="grid h-11 w-11 place-items-center rounded-2xl border border-slate-200 bg-white text-slate-700 transition hover:bg-slate-50" title="Expandir propiedades">
+            <ChevronLeft className="h-5 w-5" />
+          </button>
+        </div>
+        <div className="flex flex-1 flex-col items-center gap-6 px-3 py-5">
+          <CollapsedRailIcon icon={<LayoutTemplate className="h-5 w-5" />} tone="violet" label="Propiedades" />
+          <CollapsedRailIcon icon={<Table2 className="h-5 w-5" />} tone="blue" label="Tipo" />
+          <CollapsedRailIcon icon={<Ruler className="h-5 w-5" />} tone="emerald" label="Posición" />
+          <CollapsedRailIcon icon={<Palette className="h-5 w-5" />} tone="violet" label="Visual" />
+          <CollapsedRailIcon icon={<AlignHorizontalJustifyCenter className="h-5 w-5" />} tone="amber" label="Columnas" />
+        </div>
+        <div className="border-t border-slate-200 px-3 py-4">
+          <div className="grid place-items-center rounded-2xl border border-slate-200 bg-slate-50 py-3 text-slate-500">
+            {selected?.locked ? <Lock className="h-5 w-5" /> : <Unlock className="h-5 w-5" />}
+          </div>
+        </div>
       </aside>
     );
   }
 
   return (
-    <aside className="board-inspector ft-glass-panel absolute bottom-6 right-6 top-6 z-30 hidden w-[320px] overflow-y-auto p-4 xl:block">
-      <div className="flex items-center justify-between gap-3">
-        <div>
-          <p className="ft-text-label text-slate-500">Propiedades</p>
-          <h2 className="ft-title-card mt-1">{selected ? (isConnector ? "Conector" : table ? "Tabla" : media ? (media.type === "image" ? "Imagen" : "Archivo") : "Elemento") : "Pizarra"}</h2>
-        </div>
-        <div className="flex items-center gap-2">
-          <button type="button" onClick={() => setCollapsed(true)} className="grid h-9 w-9 place-items-center rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50" title="Contraer panel"><ChevronRight className="h-4 w-4" /></button>
-          {selected ? <button type="button" onClick={onDelete} className="grid h-9 w-9 place-items-center rounded-xl border border-rose-200 text-rose-600 hover:bg-rose-50"><Trash2 className="h-4 w-4" /></button> : null}
+    <aside className="board-inspector absolute bottom-6 right-6 top-6 z-30 hidden w-[448px] overflow-hidden rounded-[34px] border border-slate-200 bg-white/95 shadow-[0_24px_60px_rgba(15,23,42,0.12)] xl:flex xl:flex-col">
+      <div className="sticky top-0 z-20 border-b border-slate-200 bg-white/95 px-6 py-5 backdrop-blur">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex min-w-0 items-center gap-4">
+            <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-violet-50 text-violet-600">
+              <LayoutTemplate className="h-5 w-5" />
+            </div>
+            <div className="min-w-0">
+              <h2 className="truncate text-[21px] font-extrabold tracking-[-0.03em] text-slate-900">Propiedades</h2>
+              <p className="mt-1 text-sm font-semibold text-slate-500">{title}</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <button type="button" onClick={() => onCollapsedChange(true)} className="grid h-12 w-12 place-items-center rounded-2xl border border-slate-200 text-slate-600 transition hover:bg-slate-50" title="Contraer panel">
+              <PanelRightClose className="h-5 w-5" />
+            </button>
+            {selected ? (
+              <button type="button" onClick={onDelete} className="grid h-12 w-12 place-items-center rounded-2xl border border-rose-200 text-rose-600 transition hover:bg-rose-50" title="Eliminar elemento">
+                <Trash2 className="h-5 w-5" />
+              </button>
+            ) : null}
+          </div>
         </div>
       </div>
-      {!selected ? (
-        <div className="mt-5 rounded-2xl border border-dashed border-slate-200 bg-white/70 p-4 text-sm font-medium text-slate-500">
-          Selecciona un elemento para editar tamaño, posición, forma, texto, tablas, conectores y organización.
-        </div>
-      ) : (
-        <div className="mt-5 space-y-4">
-          <section>
-            <label className="ft-text-label text-slate-500">Tipo</label>
-            <p className="mt-2 flex items-center gap-2 rounded-xl bg-slate-50 px-3 py-2 text-sm font-semibold capitalize text-slate-700">
-              {isConnector ? <GitBranch className="h-4 w-4 text-emerald-600" /> : null}
-              {selected.type}
-            </p>
-          </section>
 
-          {table?.selectedRange ? (
-            <section className="rounded-2xl border border-emerald-100 bg-emerald-50/70 p-3 text-xs font-bold text-emerald-700">
-              Selección activa: {table.selectedRange.type === "row" ? "fila" : table.selectedRange.type === "column" ? "columna" : "celda"}. Usa las bolitas de color para aplicar estilos.
-            </section>
-          ) : null}
-
-          {isConnector ? (
-            <>
-              <section className="board-inspector-section rounded-2xl border border-slate-200 bg-white/80 p-3">
-                <label className="ft-text-label text-slate-500">Puntos del conector</label>
-                <div className="mt-2 grid grid-cols-2 gap-2">
-                  <div><label className="text-[10px] font-bold uppercase text-slate-400">Inicio X</label><input type="number" value={Math.round(connector!.from.x)} onChange={(event) => onPatch({ from: { ...connector!.from, x: numberPatch(event.target.value, connector!.from.x) } } as Partial<ConnectorElement>)} className="board-input ft-input mt-1 w-full" /></div>
-                  <div><label className="text-[10px] font-bold uppercase text-slate-400">Inicio Y</label><input type="number" value={Math.round(connector!.from.y)} onChange={(event) => onPatch({ from: { ...connector!.from, y: numberPatch(event.target.value, connector!.from.y) } } as Partial<ConnectorElement>)} className="board-input ft-input mt-1 w-full" /></div>
-                  <div><label className="text-[10px] font-bold uppercase text-slate-400">Final X</label><input type="number" value={Math.round(connector!.to.x)} onChange={(event) => onPatch({ to: { ...connector!.to, x: numberPatch(event.target.value, connector!.to.x) } } as Partial<ConnectorElement>)} className="board-input ft-input mt-1 w-full" /></div>
-                  <div><label className="text-[10px] font-bold uppercase text-slate-400">Final Y</label><input type="number" value={Math.round(connector!.to.y)} onChange={(event) => onPatch({ to: { ...connector!.to, y: numberPatch(event.target.value, connector!.to.y) } } as Partial<ConnectorElement>)} className="board-input ft-input mt-1 w-full" /></div>
+      <div className="min-h-0 flex-1 overflow-y-auto">
+        {!selected ? (
+          <div className="px-6 py-6">
+            <div className="rounded-[28px] border border-dashed border-slate-200 bg-slate-50 px-5 py-6 text-sm font-medium text-slate-500">
+              Selecciona un elemento para editar tamaño, posición, forma, texto, tablas, conectores y organización.
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-0">
+            <div className="border-b border-slate-200 px-6 py-5">
+              <div className="rounded-[24px] border border-slate-200 bg-slate-50 px-4 py-4">
+                <div className="flex items-center gap-3 text-sm font-semibold text-slate-700">
+                  {isConnector ? <GitBranch className="h-4 w-4 text-emerald-600" /> : table ? <Table2 className="h-4 w-4 text-violet-600" /> : media ? media.type === "image" ? <Image className="h-4 w-4 text-blue-600" /> : <FileText className="h-4 w-4 text-slate-600" /> : <LayoutTemplate className="h-4 w-4 text-violet-600" />}
+                  <span className="capitalize">{selected.type}</span>
                 </div>
-              </section>
-              <section>
-                <label className="ft-text-label text-slate-500">Etiqueta</label>
-                <input value={connector?.label ?? ""} onChange={(event) => onPatch({ label: event.target.value } as Partial<BoardElement>)} placeholder="Ej. Sí, No, Aprobado..." className="board-input ft-input mt-2 w-full" />
-              </section>
-              <section>
-                <label className="ft-text-label text-slate-500">Color de línea</label>
-                <div className="mt-2 flex flex-wrap gap-2">
-                  {strokeSwatches.map((stroke) => <button key={stroke} type="button" onClick={() => onPatch(mergeStyle(selected, { stroke }))} className="h-7 w-7 rounded-full border border-slate-200 transition hover:scale-110" style={{ backgroundColor: stroke }} />)}
-                </div>
-              </section>
-              <section className="grid grid-cols-2 gap-2">
-                <div><label className="ft-text-label text-slate-500">Grosor</label><select value={connector?.style?.strokeWidth ?? 2} onChange={(event) => onPatch(mergeStyle(selected, { strokeWidth: Number(event.target.value) }))} className="board-input ft-input mt-2 w-full"><option value={1}>1 px</option><option value={2}>2 px</option><option value={3}>3 px</option><option value={4}>4 px</option></select></div>
-                <div><label className="ft-text-label text-slate-500">Tipo</label><select value={connector?.style?.lineType ?? "straight"} onChange={(event) => onPatch(mergeStyle(selected, { lineType: event.target.value as BoardStyle["lineType"] }))} className="board-input ft-input mt-2 w-full"><option value="straight">Recta</option><option value="elbow">Codo</option><option value="curve">Curva</option></select></div>
-              </section>
-              <label className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white/80 px-3 py-3 text-sm font-bold text-slate-700">Flecha final<input type="checkbox" checked={connector?.style?.arrowEnd !== false} onChange={(event) => onPatch(mergeStyle(selected, { arrowEnd: event.target.checked }))} /></label>
-            </>
-          ) : (
-            <>
-              <section className="board-inspector-section rounded-2xl border border-slate-200 bg-white/80 p-3">
-                <label className="ft-text-label text-slate-500">Posición y tamaño</label>
-                <div className="mt-2 grid grid-cols-2 gap-2">
-                  <div><label className="text-[10px] font-bold uppercase text-slate-400">X</label><input type="number" value={Math.round(selected.x)} onChange={(event) => onPatch({ x: numberPatch(event.target.value, selected.x) } as Partial<BoardElement>)} className="board-input ft-input mt-1 w-full" /></div>
-                  <div><label className="text-[10px] font-bold uppercase text-slate-400">Y</label><input type="number" value={Math.round(selected.y)} onChange={(event) => onPatch({ y: numberPatch(event.target.value, selected.y) } as Partial<BoardElement>)} className="board-input ft-input mt-1 w-full" /></div>
-                  <div><label className="text-[10px] font-bold uppercase text-slate-400">W</label><input type="number" min={32} value={Math.round(selected.width)} onChange={(event) => onPatch({ width: Math.max(32, numberPatch(event.target.value, selected.width)) } as Partial<BoardElement>)} className="board-input ft-input mt-1 w-full" /></div>
-                  <div><label className="text-[10px] font-bold uppercase text-slate-400">H</label><input type="number" min={32} value={Math.round(selected.height)} onChange={(event) => onPatch({ height: Math.max(32, numberPatch(event.target.value, selected.height)) } as Partial<BoardElement>)} className="board-input ft-input mt-1 w-full" /></div>
-                </div>
-              </section>
+                {table?.selectedRange ? (
+                  <p className="mt-3 rounded-2xl border border-emerald-100 bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-700">
+                    Selección activa: {table.selectedRange.type === "row" ? "fila" : table.selectedRange.type === "column" ? "columna" : "celda"}. Usa las bolitas de color para aplicar estilos.
+                  </p>
+                ) : null}
+              </div>
+            </div>
 
-              {shape ? (
-                <section>
-                  <label className="ft-text-label text-slate-500">Tipo de forma</label>
-                  <select value={shape.shape} onChange={(event) => onPatch({ shape: event.target.value as ShapeElement["shape"] } as Partial<ShapeElement>)} className="board-input ft-input mt-2 w-full">
-                    {shapeOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
-                  </select>
-                </section>
-              ) : null}
+            {isConnector ? (
+              <>
+                <SectionCard icon={<GitBranch className="h-5 w-5" />} tone="emerald" title="Conector" sectionKey="connector" open={openSections.connector} onToggle={toggleSection}>
+                  <div className="grid grid-cols-2 gap-3">
+                    <MetricInput label="Inicio X" value={Math.round(connector!.from.x)} onChange={(value) => onPatch({ from: { ...connector!.from, x: value } } as Partial<ConnectorElement>)} accent="emerald" />
+                    <MetricInput label="Inicio Y" value={Math.round(connector!.from.y)} onChange={(value) => onPatch({ from: { ...connector!.from, y: value } } as Partial<ConnectorElement>)} accent="blue" />
+                    <MetricInput label="Final X" value={Math.round(connector!.to.x)} onChange={(value) => onPatch({ to: { ...connector!.to, x: value } } as Partial<ConnectorElement>)} accent="violet" />
+                    <MetricInput label="Final Y" value={Math.round(connector!.to.y)} onChange={(value) => onPatch({ to: { ...connector!.to, y: value } } as Partial<ConnectorElement>)} accent="amber" />
+                  </div>
+                  <PanelField label="Etiqueta">
+                    <input value={connector?.label ?? ""} onChange={(event) => onPatch({ label: event.target.value } as Partial<BoardElement>)} placeholder="Ej. Sí, No, Aprobado..." className="board-input ft-input w-full rounded-2xl" />
+                  </PanelField>
+                  <PanelField label="Color de línea">
+                    <Swatches colors={strokeSwatches} onSelect={(stroke) => onPatch(mergeStyle(selected, { stroke }))} />
+                  </PanelField>
+                  <div className="grid grid-cols-2 gap-3">
+                    <PanelField label="Grosor">
+                      <select value={connector?.style?.strokeWidth ?? 2} onChange={(event) => onPatch(mergeStyle(selected, { strokeWidth: Number(event.target.value) }))} className="board-input ft-input w-full rounded-2xl">
+                        <option value={1}>1 px</option><option value={2}>2 px</option><option value={3}>3 px</option><option value={4}>4 px</option>
+                      </select>
+                    </PanelField>
+                    <PanelField label="Tipo">
+                      <select value={connector?.style?.lineType ?? "straight"} onChange={(event) => onPatch(mergeStyle(selected, { lineType: event.target.value as BoardStyle["lineType"] }))} className="board-input ft-input w-full rounded-2xl">
+                        <option value="straight">Recta</option><option value="elbow">Codo</option><option value="curve">Curva</option>
+                      </select>
+                    </PanelField>
+                  </div>
+                  <ToggleRow label="Flecha final" checked={connector?.style?.arrowEnd !== false} onChange={(checked) => onPatch(mergeStyle(selected, { arrowEnd: checked }))} />
+                </SectionCard>
+              </>
+            ) : (
+              <>
+                <SectionCard icon={<Ruler className="h-5 w-5" />} tone="emerald" title="Posición y tamaño" sectionKey="position" open={openSections.position} onToggle={toggleSection}>
+                  <div className="grid grid-cols-2 gap-3">
+                    <MetricInput label="X" value={Math.round(selected.x)} onChange={(value) => onPatch({ x: value } as Partial<BoardElement>)} accent="emerald" />
+                    <MetricInput label="Y" value={Math.round(selected.y)} onChange={(value) => onPatch({ y: value } as Partial<BoardElement>)} accent="emerald" />
+                    <MetricInput label="W" value={Math.round(selected.width)} onChange={(value) => onPatch({ width: Math.max(32, value) } as Partial<BoardElement>)} accent="blue" />
+                    <MetricInput label="H" value={Math.round(selected.height)} onChange={(value) => onPatch({ height: Math.max(32, value) } as Partial<BoardElement>)} accent="violet" />
+                  </div>
+                </SectionCard>
 
-              {media ? (
-                <section className="board-inspector-section rounded-2xl border border-slate-200 bg-white/80 p-3">
-                  <div className="flex items-start gap-3"><div className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-slate-100 text-slate-600">{media.type === "image" ? <Image className="h-5 w-5" /> : <FileText className="h-5 w-5" />}</div><div className="min-w-0 flex-1"><p className="truncate text-sm font-bold text-slate-800">{media.data.name}</p><p className="mt-1 text-xs font-semibold text-slate-500">{Math.max(1, Math.round(media.data.size / 1024))} KB · {media.data.mime}</p></div></div>
-                  <a href={media.data.url} target="_blank" rel="noreferrer" className="ft-btn-secondary mt-3 flex h-9 w-full justify-center gap-2 text-xs"><Download className="h-3.5 w-3.5" /> Abrir archivo</a>
-                </section>
-              ) : null}
+                {shape ? (
+                  <SectionCard icon={<LayoutTemplate className="h-5 w-5" />} tone="violet" title="Forma" sectionKey="appearance" open={openSections.appearance} onToggle={toggleSection}>
+                    <PanelField label="Tipo de forma">
+                      <select value={shape.shape} onChange={(event) => onPatch({ shape: event.target.value as ShapeElement["shape"] } as Partial<ShapeElement>)} className="board-input ft-input w-full rounded-2xl">
+                        {shapeOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+                      </select>
+                    </PanelField>
+                  </SectionCard>
+                ) : null}
 
-              {table ? <TableControls table={table} onSetTableRowCount={onSetTableRowCount} onSetTableColumnCount={onSetTableColumnCount} onRemoveTableColumn={onRemoveTableColumn} onRenameTableColumn={onRenameTableColumn} onShowHiddenTableRows={onShowHiddenTableRows} onShowHiddenTableColumns={onShowHiddenTableColumns} /> : null}
+                {media ? (
+                  <SectionCard icon={media.type === "image" ? <Image className="h-5 w-5" /> : <FileText className="h-5 w-5" />} tone="blue" title="Archivo" sectionKey="media" open={openSections.media} onToggle={toggleSection}>
+                    <div className="rounded-[24px] border border-slate-200 bg-white px-4 py-4">
+                      <div className="flex items-start gap-3">
+                        <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-slate-100 text-slate-600">
+                          {media.type === "image" ? <Image className="h-5 w-5" /> : <FileText className="h-5 w-5" />}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-sm font-bold text-slate-800">{media.data.name}</p>
+                          <p className="mt-1 text-xs font-semibold text-slate-500">{Math.max(1, Math.round(media.data.size / 1024))} KB · {media.data.mime}</p>
+                        </div>
+                      </div>
+                      <a href={media.data.url} target="_blank" rel="noreferrer" className="ft-btn-secondary mt-4 flex h-10 w-full justify-center gap-2 text-xs">
+                        <Download className="h-3.5 w-3.5" /> Abrir archivo
+                      </a>
+                    </div>
+                  </SectionCard>
+                ) : null}
 
-              {!table && !media ? (
-                <>
-                  <section><label className="ft-text-label text-slate-500">Relleno</label><div className="mt-2 flex flex-wrap gap-2">{fillSwatches.map((fill) => <button key={fill} type="button" onClick={() => onPatch(mergeStyle(selected, { fill }))} className="h-7 w-7 rounded-full border border-slate-200 transition hover:scale-110" style={{ backgroundColor: fill }} />)}</div></section>
-                  <section><label className="ft-text-label text-slate-500">Texto</label><div className="mt-2 grid grid-cols-2 gap-2"><select value={selected.style?.fontSize ?? 14} onChange={(event) => onPatch(mergeStyle(selected, { fontSize: Number(event.target.value) }))} className="board-input ft-input w-full"><option value={12}>12 px</option><option value={14}>14 px</option><option value={16}>16 px</option><option value={18}>18 px</option><option value={22}>22 px</option></select><select value={selected.style?.textAlign ?? "center"} onChange={(event) => onPatch(mergeStyle(selected, { textAlign: event.target.value as BoardStyle["textAlign"] }))} className="board-input ft-input w-full"><option value="left">Izquierda</option><option value="center">Centro</option><option value="right">Derecha</option></select></div></section>
-                </>
-              ) : null}
-            </>
-          )}
+                {table ? (
+                  <>
+                    <SectionCard icon={<Table2 className="h-5 w-5" />} tone="violet" title="Tabla visual" sectionKey="table" open={openSections.table} onToggle={toggleSection} action={table.hiddenRowIds?.length || table.hiddenColumnIds?.length ? <button type="button" onClick={() => { onShowHiddenTableRows(); onShowHiddenTableColumns(); }} className="grid h-10 w-10 place-items-center rounded-2xl border border-slate-200 bg-white text-blue-600 transition hover:bg-blue-50" title="Mostrar ocultos"><PanelRightOpen className="h-4 w-4" /></button> : undefined}>
+                      <p className="text-sm font-medium leading-6 text-slate-500">Edita celdas inline o define filas/columnas con valores exactos.</p>
+                      <div className="mt-5 grid grid-cols-2 gap-4 rounded-[24px] border border-slate-200 bg-white px-4 py-4">
+                        <CompactStepper label="Filas" value={table.rows.length} min={1} onChange={onSetTableRowCount} accent="violet" />
+                        <CompactStepper label="Columnas" value={table.columns.length} min={1} onChange={onSetTableColumnCount} accent="emerald" />
+                      </div>
+                      {(table.hiddenRowIds?.length || table.hiddenColumnIds?.length) ? (
+                        <div className="mt-4 grid grid-cols-2 gap-3">
+                          <button type="button" onClick={onShowHiddenTableRows} className="rounded-2xl border border-slate-200 bg-white px-3 py-3 text-xs font-bold text-slate-600 transition hover:bg-slate-50">Mostrar filas ({table.hiddenRowIds?.length ?? 0})</button>
+                          <button type="button" onClick={onShowHiddenTableColumns} className="rounded-2xl border border-slate-200 bg-white px-3 py-3 text-xs font-bold text-slate-600 transition hover:bg-slate-50">Mostrar cols. ({table.hiddenColumnIds?.length ?? 0})</button>
+                        </div>
+                      ) : null}
+                    </SectionCard>
 
-          <button type="button" onClick={() => onPatch({ locked: !selected.locked } as Partial<BoardElement>)} className="ft-btn-secondary w-full justify-between">
-            {selected.locked ? <Lock className="h-4 w-4" /> : <Unlock className="h-4 w-4" />}
-            {selected.locked ? "Desbloquear" : "Bloquear"}
-          </button>
-        </div>
-      )}
+                    <SectionCard icon={<AlignHorizontalJustifyCenter className="h-5 w-5" />} tone="amber" title="Columnas" sectionKey="columns" open={openSections.columns} onToggle={toggleSection}>
+                      <div className="space-y-3">
+                        {table.columns.map((column) => (
+                          <div key={column.id} className="flex items-center gap-3 rounded-[24px] border border-slate-200 bg-white px-4 py-4">
+                            <GripVertical className="h-5 w-5 shrink-0 text-slate-400" />
+                            <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-violet-50 text-violet-600">
+                              <Type className="h-5 w-5" />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <input value={column.label} onChange={(event) => onRenameTableColumn(column.id, event.target.value)} className="w-full bg-transparent text-base font-bold text-slate-800 outline-none" />
+                              <p className="mt-1 text-sm font-medium text-slate-500">Columna editable</p>
+                            </div>
+                            <button type="button" disabled={table.columns.length <= 1} onClick={() => onRemoveTableColumn(column.id)} className="grid h-10 w-10 place-items-center rounded-2xl text-rose-500 transition hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-40" title="Eliminar columna">
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </SectionCard>
+                  </>
+                ) : !media ? (
+                  <SectionCard icon={<Palette className="h-5 w-5" />} tone="violet" title="Apariencia" sectionKey="appearance" open={openSections.appearance} onToggle={toggleSection}>
+                    <PanelField label="Relleno">
+                      <Swatches colors={fillSwatches} onSelect={(fill) => onPatch(mergeStyle(selected, { fill }))} />
+                    </PanelField>
+                    <PanelField label="Texto">
+                      <div className="grid grid-cols-2 gap-3">
+                        <select value={selected.style?.fontSize ?? 14} onChange={(event) => onPatch(mergeStyle(selected, { fontSize: Number(event.target.value) }))} className="board-input ft-input w-full rounded-2xl">
+                          <option value={12}>12 px</option><option value={14}>14 px</option><option value={16}>16 px</option><option value={18}>18 px</option><option value={22}>22 px</option>
+                        </select>
+                        <select value={selected.style?.textAlign ?? "center"} onChange={(event) => onPatch(mergeStyle(selected, { textAlign: event.target.value as BoardStyle["textAlign"] }))} className="board-input ft-input w-full rounded-2xl">
+                          <option value="left">Izquierda</option><option value="center">Centro</option><option value="right">Derecha</option>
+                        </select>
+                      </div>
+                    </PanelField>
+                  </SectionCard>
+                ) : null}
+              </>
+            )}
+          </div>
+        )}
+      </div>
+
+      <div className="sticky bottom-0 mt-auto border-t border-slate-200 bg-white/95 px-6 py-5 backdrop-blur">
+        {selected ? (
+          <div className="flex items-center justify-between gap-3 rounded-[24px] border border-slate-200 bg-white px-4 py-4">
+            <div className="flex items-center gap-3">
+              <div className="grid h-12 w-12 place-items-center rounded-2xl border border-slate-200 text-slate-700">
+                {selected.locked ? <Lock className="h-5 w-5" /> : <Unlock className="h-5 w-5" />}
+              </div>
+              <div>
+                <p className="text-[15px] font-bold text-slate-900">Bloquear panel</p>
+                <p className="text-sm font-medium text-slate-500">Evita mover o editar por accidente.</p>
+              </div>
+            </div>
+            <ToggleSwitch checked={selected.locked} onChange={(checked) => onPatch({ locked: checked } as Partial<BoardElement>)} />
+          </div>
+        ) : (
+          <div className="rounded-[24px] border border-slate-200 bg-slate-50 px-4 py-4 text-sm font-medium text-slate-500">Selecciona un elemento para activar acciones rápidas.</div>
+        )}
+      </div>
     </aside>
   );
 }
 
-function Stepper({ label, value, min, onChange }: { label: string; value: number; min: number; onChange: (value: number) => void }) {
+function CollapsedRailIcon({ icon, tone, label }: { icon: ReactNode; tone: "violet" | "blue" | "emerald" | "amber"; label: string }) {
+  const toneClass = tone === "violet" ? "bg-violet-50 text-violet-600" : tone === "blue" ? "bg-blue-50 text-blue-600" : tone === "emerald" ? "bg-emerald-50 text-emerald-600" : "bg-amber-50 text-amber-600";
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white/80 p-2">
-      <label className="text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400">{label}</label>
-      <div className="mt-2 flex items-center gap-2">
-        <button type="button" onClick={() => onChange(Math.max(min, value - 1))} className="grid h-8 w-8 place-items-center rounded-xl border border-slate-200 hover:bg-slate-50"><Minus className="h-3.5 w-3.5" /></button>
-        <input type="number" min={min} value={value} onChange={(event) => onChange(Math.max(min, numberPatch(event.target.value, value)))} className="board-input ft-input h-8 min-w-0 flex-1 text-center" />
-        <button type="button" onClick={() => onChange(value + 1)} className="grid h-8 w-8 place-items-center rounded-xl border border-slate-200 hover:bg-slate-50"><Plus className="h-3.5 w-3.5" /></button>
+    <div className={`grid h-12 w-12 place-items-center rounded-2xl ${toneClass}`} title={label}>
+      {icon}
+    </div>
+  );
+}
+
+function SectionCard({ icon, tone, title, sectionKey, open, onToggle, children, action }: { icon: ReactNode; tone: "violet" | "blue" | "emerald" | "amber"; title: string; sectionKey: SectionKey; open: boolean; onToggle: (section: SectionKey) => void; children: ReactNode; action?: ReactNode }) {
+  const toneClass = tone === "violet" ? "bg-violet-50 text-violet-600" : tone === "blue" ? "bg-blue-50 text-blue-600" : tone === "emerald" ? "bg-emerald-50 text-emerald-600" : "bg-amber-50 text-amber-600";
+  return (
+    <section className="border-b border-slate-200 px-6 py-5 last:border-b-0">
+      <div className="rounded-[28px] border border-slate-200 bg-slate-50">
+        <div className="flex items-center justify-between gap-4 px-5 py-4">
+          <div className="flex min-w-0 items-center gap-4">
+            <div className={`grid h-12 w-12 shrink-0 place-items-center rounded-2xl ${toneClass}`}>{icon}</div>
+            <h3 className="truncate text-[13px] font-black uppercase tracking-[0.18em] text-slate-800">{title}</h3>
+          </div>
+          <div className="flex items-center gap-3">
+            {action}
+            <button type="button" onClick={() => onToggle(sectionKey)} className="grid h-10 w-10 place-items-center rounded-2xl border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50" title={open ? "Contraer sección" : "Expandir sección"}>
+              {open ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+            </button>
+          </div>
+        </div>
+        {open ? <div className="border-t border-slate-200 px-5 py-5">{children}</div> : null}
+      </div>
+    </section>
+  );
+}
+
+function PanelField({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <div>
+      <label className="mb-2 block text-[11px] font-black uppercase tracking-[0.16em] text-slate-500">{label}</label>
+      {children}
+    </div>
+  );
+}
+
+function Swatches({ colors, onSelect }: { colors: string[]; onSelect: (color: string) => void }) {
+  return (
+    <div className="flex flex-wrap gap-2.5">
+      {colors.map((color) => (
+        <button key={color} type="button" onClick={() => onSelect(color)} className="h-9 w-9 rounded-full border border-slate-200 transition hover:shadow-sm" style={{ backgroundColor: color }} />
+      ))}
+    </div>
+  );
+}
+
+function MetricInput({ label, value, onChange, accent }: { label: string; value: number; onChange: (value: number) => void; accent: "emerald" | "blue" | "violet" | "amber" }) {
+  const accentClass = accent === "emerald" ? "text-emerald-500" : accent === "blue" ? "text-blue-500" : accent === "violet" ? "text-violet-500" : "text-amber-500";
+  return (
+    <div className="rounded-[22px] border border-slate-200 bg-white px-4 py-3">
+      <label className="mb-2 block text-[11px] font-black uppercase tracking-[0.16em] text-slate-500">{label}</label>
+      <div className="flex items-center gap-3">
+        <ArrowDownUp className={`h-4 w-4 ${accentClass}`} />
+        <input type="number" value={value} onChange={(event) => onChange(numberPatch(event.target.value, value))} className="board-input ft-input h-10 min-w-0 flex-1 rounded-2xl border-0 bg-transparent px-0 text-lg font-extrabold text-slate-900 shadow-none focus:ring-0" />
+        <span className="text-sm font-bold text-slate-400">px</span>
       </div>
     </div>
   );
 }
 
-function TableControls({ table, onSetTableRowCount, onSetTableColumnCount, onRemoveTableColumn, onRenameTableColumn, onShowHiddenTableRows, onShowHiddenTableColumns }: { table: TableElement; onSetTableRowCount: (count: number) => void; onSetTableColumnCount: (count: number) => void; onRemoveTableColumn: (columnId: string) => void; onRenameTableColumn: (columnId: string, label: string) => void; onShowHiddenTableRows: () => void; onShowHiddenTableColumns: () => void }) {
+function CompactStepper({ label, value, min, onChange, accent }: { label: string; value: number; min: number; onChange: (value: number) => void; accent: "violet" | "emerald" }) {
+  const iconClass = accent === "violet" ? "text-violet-500" : "text-emerald-500";
   return (
-    <>
-      <section className="rounded-2xl border border-violet-100 bg-violet-50/50 p-3">
-        <label className="ft-text-label text-violet-700">Tabla visual</label>
-        <p className="mt-1 text-xs font-semibold text-slate-500">Edita celdas inline o define filas/columnas con valores exactos.</p>
-        <div className="mt-3 grid gap-2">
-          <Stepper label="Filas" value={table.rows.length} min={1} onChange={onSetTableRowCount} />
-          <Stepper label="Columnas" value={table.columns.length} min={1} onChange={onSetTableColumnCount} />
-        </div>
-        {(table.hiddenRowIds?.length || table.hiddenColumnIds?.length) ? (
-          <div className="mt-3 grid grid-cols-2 gap-2">
-            <button type="button" onClick={onShowHiddenTableRows} className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-600 hover:bg-slate-50">Mostrar filas ({table.hiddenRowIds?.length ?? 0})</button>
-            <button type="button" onClick={onShowHiddenTableColumns} className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-600 hover:bg-slate-50">Mostrar cols. ({table.hiddenColumnIds?.length ?? 0})</button>
-          </div>
-        ) : null}
-      </section>
-      <section>
-        <label className="ft-text-label text-slate-500">Columnas</label>
-        <div className="mt-2 space-y-2">
-          {table.columns.map((column) => (
-            <div key={column.id} className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white/80 p-2">
-              <input value={column.label} onChange={(event) => onRenameTableColumn(column.id, event.target.value)} className="min-w-0 flex-1 bg-transparent text-sm font-semibold text-slate-700 outline-none" />
-              <button type="button" disabled={table.columns.length <= 1} onClick={() => onRemoveTableColumn(column.id)} className="grid h-8 w-8 place-items-center rounded-lg text-rose-500 hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-40" title="Eliminar columna"><Trash2 className="h-3.5 w-3.5" /></button>
-            </div>
-          ))}
-        </div>
-      </section>
-    </>
+    <div>
+      <label className="mb-3 flex items-center gap-2 text-sm font-bold text-slate-500">
+        <ArrowDownUp className={`h-4 w-4 ${iconClass}`} />
+        {label}
+      </label>
+      <div className="flex items-center gap-3 rounded-[20px] border border-slate-200 bg-slate-50 px-3 py-3">
+        <button type="button" onClick={() => onChange(Math.max(min, value - 1))} className="grid h-11 w-11 place-items-center rounded-2xl border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50"><Minus className="h-4 w-4" /></button>
+        <input type="number" min={min} value={value} onChange={(event) => onChange(Math.max(min, numberPatch(event.target.value, value)))} className="board-input ft-input h-10 min-w-0 flex-1 rounded-2xl border-0 bg-transparent px-0 text-center text-lg font-extrabold text-slate-900 shadow-none focus:ring-0" />
+        <button type="button" onClick={() => onChange(value + 1)} className="grid h-11 w-11 place-items-center rounded-2xl border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50"><ChevronRight className="h-4 w-4 rotate-90" /></button>
+      </div>
+    </div>
+  );
+}
+
+function ToggleSwitch({ checked, onChange }: { checked: boolean; onChange: (checked: boolean) => void }) {
+  return (
+    <button type="button" onClick={() => onChange(!checked)} className={`relative h-10 w-[68px] rounded-full transition ${checked ? "bg-emerald-500" : "bg-slate-200"}`} aria-pressed={checked}>
+      <span className={`absolute top-1 h-8 w-8 rounded-full bg-white shadow transition ${checked ? "left-[32px]" : "left-1"}`} />
+    </button>
+  );
+}
+
+function ToggleRow({ label, checked, onChange }: { label: string; checked: boolean; onChange: (checked: boolean) => void }) {
+  return (
+    <div className="flex items-center justify-between rounded-[22px] border border-slate-200 bg-white px-4 py-4">
+      <span className="text-sm font-bold text-slate-700">{label}</span>
+      <ToggleSwitch checked={checked} onChange={onChange} />
+    </div>
   );
 }

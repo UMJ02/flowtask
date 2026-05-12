@@ -153,9 +153,13 @@ export function BoardPage({ boardId }: BoardPageProps) {
   const [error, setError] = useState<string | null>(null);
   const [clearDialogOpen, setClearDialogOpen] = useState(false);
   const [clearingBoard, setClearingBoard] = useState(false);
+  const [propertiesCollapsed, setPropertiesCollapsed] = useState(false);
+  const [minimapHidden, setMinimapHidden] = useState(false);
 
   const selected = selectedIds.length === 1 ? elements.find((item) => item.id === selectedIds[0]) ?? null : null;
   const connectors = elements.filter((element): element is ConnectorElement => element.type === "connector");
+  const rightFloatingOffset = propertiesCollapsed ? 120 : 500;
+  const minimapRightOffset = propertiesCollapsed ? 120 : 490;
 
   const loadBoard = useCallback(async () => {
     setLoading(true);
@@ -1242,6 +1246,7 @@ export function BoardPage({ boardId }: BoardPageProps) {
           ) : null}
           <FloatingFormatToolbar
             selected={selected}
+            rightOffset={rightFloatingOffset}
             onDuplicate={duplicateSelected}
             onDelete={deleteSelected}
             onChangeColor={(color) => {
@@ -1254,6 +1259,8 @@ export function BoardPage({ boardId }: BoardPageProps) {
           />
           <PropertiesPanel
             selected={selected}
+            collapsed={propertiesCollapsed}
+            onCollapsedChange={setPropertiesCollapsed}
             onPatch={(patch) => selected ? patchElement(selected.id, patch) : undefined}
             onDelete={deleteSelected}
             onSetTableRowCount={(count) => selected?.type === "table" ? setTableRowCount(selected.id, count) : undefined}
@@ -1287,6 +1294,9 @@ export function BoardPage({ boardId }: BoardPageProps) {
             elements={elements}
             viewport={viewport}
             onViewportChange={setViewport}
+            rightOffset={minimapRightOffset}
+            hidden={minimapHidden}
+            onHiddenChange={setMinimapHidden}
           />
           {clearDialogOpen ? (
             <div className="board-clear-backdrop animate-board-pop" role="dialog" aria-modal="true" aria-labelledby="clear-board-title">
