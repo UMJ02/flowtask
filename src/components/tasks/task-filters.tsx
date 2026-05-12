@@ -20,19 +20,19 @@ interface TaskFiltersProps {
 
 export function TaskFilters({ filters }: TaskFiltersProps) {
   return (
-    <form className="grid gap-3 md:grid-cols-2 xl:grid-cols-6" method="get">
+    <form className="ft-task-filter-panel grid gap-3 md:grid-cols-2 xl:grid-cols-6" method="get">
       {!!filters.view && <input type="hidden" name="view" value={filters.view} />}
       <label className="relative block md:col-span-2 xl:col-span-2">
-        <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Buscar</span>
+        <span className="ft-kicker mb-2 block text-slate-500">Buscar</span>
         <Search className="pointer-events-none absolute left-3 top-[42px] h-4 w-4 text-slate-400" />
         <Input className="pl-9" defaultValue={filters.q ?? ''} name="q" placeholder="Escribe una tarea, cliente o palabra clave" />
       </label>
-      <label className="flex items-end gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700">
-        <input type="checkbox" name="includeCompleted" value="true" defaultChecked={filters.includeCompleted === 'true'} className="h-4 w-4 rounded border-slate-300 text-[#16C784]" />
+      <label className="ft-subcard flex items-center gap-2 px-3 py-2 text-sm font-bold text-slate-700">
+        <input type="checkbox" name="includeCompleted" value="true" defaultChecked={filters.includeCompleted === 'true'} className="ft-checkbox" />
         Incluir concluidas
       </label>
       <label className="block">
-        <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Estado</span>
+        <span className="ft-kicker mb-2 block text-slate-500">Estado</span>
         <Select defaultValue={filters.status ?? ''} name="status">
           <option value="">Todos</option>
           {TASK_STATUSES.map((item) => (
@@ -41,7 +41,7 @@ export function TaskFilters({ filters }: TaskFiltersProps) {
         </Select>
       </label>
       <label className="block">
-        <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Prioridad</span>
+        <span className="ft-kicker mb-2 block text-slate-500">Prioridad</span>
         <Select defaultValue={filters.priority ?? ''} name="priority">
           <option value="">Todas</option>
           <option value="alta">Alta</option>
@@ -50,7 +50,7 @@ export function TaskFilters({ filters }: TaskFiltersProps) {
         </Select>
       </label>
       <label className="block">
-        <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Área</span>
+        <span className="ft-kicker mb-2 block text-slate-500">Área</span>
         <Select defaultValue={filters.department ?? ''} name="department">
           <option value="">Todas</option>
           {DEPARTMENTS.map((item) => (
@@ -59,7 +59,7 @@ export function TaskFilters({ filters }: TaskFiltersProps) {
         </Select>
       </label>
       <label className="block">
-        <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Fecha</span>
+        <span className="ft-kicker mb-2 block text-slate-500">Fecha</span>
         <Select defaultValue={filters.due ?? ''} name="due">
           <option value="">Todas</option>
           <option value="overdue">Vencidas</option>

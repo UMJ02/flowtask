@@ -35,9 +35,9 @@ export function TaskList({ tasks, currentQuery }: { tasks: Array<{ id: string; t
   }
 
   return (
-    <div className="grid gap-4">
+    <div className="ft-tasks-screen">
       {tasks.map((task) => (
-        <Card key={task.id} className="space-y-4 rounded-[24px] border border-slate-200/90 p-5 md:p-5">
+        <Card key={task.id} className="ft-card space-y-4 p-4 md:p-5">
           <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2">
@@ -48,7 +48,7 @@ export function TaskList({ tasks, currentQuery }: { tasks: Array<{ id: string; t
               </div>
 
               <Link href={taskDetailRoute(task.id, currentQuery)} className="mt-3 block">
-                <h3 className="line-clamp-2 text-base font-semibold tracking-tight text-slate-900 transition hover:text-emerald-700">{task.title}</h3>
+                <h3 className="ft-task-title line-clamp-2 text-base transition">{task.title}</h3>
               </Link>
 
               <p className="mt-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">

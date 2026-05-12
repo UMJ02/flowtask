@@ -8,6 +8,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Card } from "@/components/ui/card";
 import { taskDetailRoute } from "@/lib/navigation/routes";
 import { getTaskStatusUpdatePayload } from "@/lib/tasks/status";
+import { cn } from "@/lib/utils/classnames";
 
 export type TaskItem = {
   id: string;
@@ -325,17 +326,17 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery, work
 
   if (!hydrated) {
     return (
-      <div className="grid gap-3 xl:grid-cols-3">
+      <div className="ft-kanban-grid">
         {activeColumns.map((column) => {
           const Icon = column.icon;
           return (
-            <Card key={column.value} className="rounded-2xl border border-slate-200/85 bg-white p-4">
+            <Card key={column.value} className="ft-kanban-column">
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200/90 text-slate-500 bg-slate-50"><Icon className="h-7 w-7" /></span>
-                  <h3 className="text-xl font-bold tracking-tight text-slate-950">{column.label}</h3>
+                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-[14px] border border-slate-200/90 text-slate-500 bg-slate-50"><Icon className="h-7 w-7" /></span>
+                  <h3 className="text-base font-extrabold tracking-tight text-slate-950">{column.label}</h3>
                 </div>
-                <span className="inline-flex h-11 min-w-11 items-center justify-center rounded-2xl border border-slate-200/90 px-3 text-base font-semibold text-slate-700 bg-white">0</span>
+                <span className="inline-flex h-9 min-w-9 items-center justify-center rounded-[14px] border border-slate-200/90 px-3 text-sm font-bold text-slate-700 bg-white">0</span>
               </div>
             </Card>
           );
@@ -434,17 +435,17 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery, work
   return (
     <div className="space-y-4">
       {showHeader ? (
-        <Card className="ft-apple-panel p-4 md:p-4.5">
+        <Card className="ft-kanban-header p-4">
           <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
             <div className="max-w-2xl">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Pizarra</p>
-              <h2 className="mt-2 text-[1.55rem] font-bold tracking-tight text-slate-900">Flujo</h2>
+              <p className="ft-kicker text-slate-500">Pizarra</p>
+              <h2 className="ft-heading-section mt-1 text-slate-900">Flujo</h2>
             </div>
             <div className="grid gap-3 sm:grid-cols-2 xl:min-w-[560px] xl:grid-cols-3">
               {grouped.map((column) => {
                 const Icon = column.icon;
                 return (
-                  <span key={column.value} className="inline-flex min-h-[60px] items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm font-semibold text-slate-700 shadow-[inset_0_1px_0_rgba(255,255,255,0.75)]">
+                  <span key={column.value} className="ft-chip min-h-[42px] justify-center gap-2 px-3 py-2 text-sm font-bold text-slate-700">
                     <Icon className="h-4 w-4 shrink-0" />
                     <span>{column.label}: {column.allItems.length}</span>
                   </span>
@@ -459,16 +460,21 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery, work
         <div className="rounded-2xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div>
       ) : null}
 
-      <div className="grid gap-3 xl:grid-cols-3">
+      <div className="ft-kanban-grid">
         {grouped.map((column) => {
           const isActiveDropzone = hoverColumn === column.value;
           const isRecentDrop = recentDropColumn === column.value;
           return (
             <section
               key={column.value}
-              className={`rounded-2xl border p-3 transition ${
-                isActiveDropzone || isRecentDrop ? "border-emerald-300 bg-emerald-50/60" : column.value === "en_proceso" ? "border-[#BFDBFE] bg-[linear-gradient(180deg,#F8FBFF,#FFFFFF)]" : column.value === "produccion" ? "border-violet-200 bg-[linear-gradient(180deg,#FBF8FF,#FFFFFF)]" : column.value === "en_espera" ? "border-[#FDE68A] bg-[linear-gradient(180deg,#FFFDF5,#FFFFFF)]" : "border-[#BBF7D0] bg-[linear-gradient(180deg,#F7FFFB,#FFFFFF)]"
-              }`}
+              className={cn(
+                "ft-kanban-column",
+                isActiveDropzone || isRecentDrop ? "ft-kanban-column-active" : "",
+                column.value === "en_proceso" ? "border-[#BFDBFE] bg-[linear-gradient(180deg,#F8FBFF,#FFFFFF)]" : "",
+                column.value === "produccion" ? "border-violet-200 bg-[linear-gradient(180deg,#FBF8FF,#FFFFFF)]" : "",
+                column.value === "en_espera" ? "border-[#FDE68A] bg-[linear-gradient(180deg,#FFFDF5,#FFFFFF)]" : "",
+                column.value === "concluido" ? "border-[#BBF7D0] bg-[linear-gradient(180deg,#F7FFFB,#FFFFFF)]" : "",
+              )}
               onDragOver={(event) => {
                 event.preventDefault();
                 event.dataTransfer.dropEffect = "move";
@@ -481,12 +487,12 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery, work
                 if (taskId) void moveTask(taskId, column.value);
               }}
             >
-              <div className="mb-3 flex items-center justify-between gap-3 pb-1.5">
+              <div className="ft-kanban-column-head">
                 <div className="flex min-w-0 items-center gap-3">
                   <span className={`inline-flex h-2.5 w-2.5 rounded-full ${column.value === "en_proceso" ? "bg-[#2F80ED]" : column.value === "produccion" ? "bg-violet-500" : column.value === "en_espera" ? "bg-[#F59E0B]" : "bg-[#16C784]"}`} />
-                  <p className="text-base font-bold tracking-tight text-slate-900">{column.label}</p>
+                  <p className="text-sm font-extrabold tracking-tight text-slate-900">{column.label}</p>
                 </div>
-                <span className="inline-flex h-9 min-w-9 items-center justify-center rounded-xl bg-white px-3 text-sm font-semibold text-slate-700 ring-1 ring-slate-200 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]">
+                <span className="inline-flex h-8 min-w-8 items-center justify-center rounded-[12px] bg-white px-2.5 text-xs font-extrabold text-slate-700 ring-1 ring-slate-200">
                   {column.allItems.length}
                 </span>
               </div>
@@ -530,28 +536,28 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery, work
                         }}
                         className={draggingId === task.id ? "opacity-60" : "opacity-100"}
                       >
-                        <Card className={`ft-apple-card p-3 transition hover:translate-y-0 hover: ${
-                          task.priority === "alta" ? "bg-amber-50/50 border-amber-100 ring-1 ring-amber-100 animate-[importantPulse_420ms_ease-out]" : "bg-white"
-                        } ${
-                          isHoverCard ? "border-emerald-300 ring-2 ring-emerald-100" : "border-white/70 hover:border-slate-200"
-                        }`}>
+                        <Card className={cn(
+                          "ft-kanban-card",
+                          task.priority === "alta" && "ft-kanban-card-important",
+                          isHoverCard && "ft-kanban-drop-target"
+                        )}>
                           <div className="space-y-3">
                             <div className="flex items-start gap-3">
                               <span
                                 title="Arrastrar"
                                 aria-label="Arrastrar tarea"
-                                className="inline-flex h-8 w-8 shrink-0 cursor-grab items-center justify-center rounded-xl bg-slate-50 text-slate-400 ring-1 ring-slate-100 active:cursor-grabbing"
+                                className="inline-flex h-8 w-8 shrink-0 cursor-grab items-center justify-center rounded-[12px] bg-slate-50 text-slate-400 ring-1 ring-slate-100 active:cursor-grabbing"
                               >
                                 <GripVertical className="h-4 w-4" />
                               </span>
                               <div className="min-w-0 flex-1">
-                                <Link href={taskDetailRoute(task.id, currentQuery)} className="block line-clamp-2 text-sm font-bold leading-snug tracking-[-0.01em] text-slate-900 transition hover:text-emerald-700">
+                                <Link href={taskDetailRoute(task.id, currentQuery)} className="ft-task-title block line-clamp-2 transition">
                                   {task.title}
                                 </Link>
                               </div>
                             </div>
 
-                            <div className="flex items-center justify-between gap-2 border-t border-slate-100 pt-1.5">
+                            <div className="flex items-center justify-between gap-2 border-t border-slate-100 pt-2">
                               <span className="inline-flex shrink-0 items-center rounded-full bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-500 ring-1 ring-slate-200">
                                 {formatDate(task.due_date)}
                               </span>

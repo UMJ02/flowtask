@@ -516,9 +516,9 @@ function TaskActionListComponent({
   };
 
   const renderTable = () => (
-    <div className="overflow-hidden rounded-2xl border ft-border bg-white">
-      <div className="hidden grid-cols-[42px_minmax(260px,1.5fr)_minmax(120px,0.7fr)_minmax(130px,0.7fr)_minmax(130px,0.7fr)_minmax(120px,0.65fr)_minmax(130px,0.7fr)_120px] border-b ft-border bg-slate-50/70 px-5 py-4 text-[11px] font-bold uppercase tracking-[0.12em] text-slate-500 xl:grid">
-        <div><input aria-label="Seleccionar tareas de esta página" type="checkbox" checked={allCurrentSelected} onChange={toggleCurrentPage} className="h-4 w-4 rounded border-slate-300" /></div>
+    <div className="ft-tasks-table">
+      <div className="ft-tasks-table-head hidden xl:grid">
+        <div><input aria-label="Seleccionar tareas de esta página" type="checkbox" checked={allCurrentSelected} onChange={toggleCurrentPage} className="ft-checkbox" /></div>
         <div>Tarea</div>
         <div>Proyecto</div>
         <div>Responsable</div>
@@ -544,13 +544,13 @@ function TaskActionListComponent({
             <div
               key={task.id}
               className={cn(
-                "grid gap-3 border-b border-[#EEF2F7] px-5 py-4 transition last:border-b-0 hover:bg-slate-50/70 xl:grid-cols-[42px_minmax(260px,1.5fr)_minmax(120px,0.7fr)_minmax(130px,0.7fr)_minmax(130px,0.7fr)_minmax(120px,0.65fr)_minmax(130px,0.7fr)_120px] xl:items-center",
-                task.priority === "alta" && "bg-amber-50/40 ring-1 ring-inset ring-amber-100 animate-[importantPulse_420ms_ease-out]",
+                "ft-tasks-row",
+                task.priority === "alta" && "ft-tasks-row-important",
                 isBusy && "opacity-60",
               )}
             >
               <div className="hidden xl:block">
-                <input aria-label={`Seleccionar ${task.title}`} type="checkbox" checked={selectedIds.includes(task.id)} onChange={() => toggleSelected(task.id)} className="h-4 w-4 rounded border-slate-300" />
+                <input aria-label={`Seleccionar ${task.title}`} type="checkbox" checked={selectedIds.includes(task.id)} onChange={() => toggleSelected(task.id)} className="ft-checkbox" />
               </div>
 
               <div className="min-w-0">
@@ -561,19 +561,15 @@ function TaskActionListComponent({
                     disabled={busyPriorityId === task.id}
                     title={task.priority === "alta" ? "Quitar de importantes" : "Marcar como importante"}
                     aria-label={task.priority === "alta" ? "Quitar de importantes" : "Marcar como importante"}
-                    className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl ring-1 transition disabled:opacity-60 ${
-                      task.priority === "alta"
-                        ? "bg-amber-50 text-amber-600 ring-amber-100 hover:bg-amber-100"
-                        : "bg-white text-slate-500 ring-slate-200 hover:bg-slate-100"
-                    }`}
+                    className={cn("ft-task-star disabled:opacity-60", task.priority === "alta" && "ft-task-star-active")}
                   >
                     <Star className={`h-3.5 w-3.5 ${task.priority === "alta" ? "fill-current" : ""}`} />
                   </button>
-                  <Link href={taskDetailRoute(task.id, currentQuery)} className="block min-w-0 truncate text-sm font-bold ft-text-main transition hover:text-emerald-700">
+                  <Link href={taskDetailRoute(task.id, currentQuery)} className="ft-task-title block min-w-0 line-clamp-2 transition">
                     {task.title}
                   </Link>
                 </div>
-                <p className="mt-1 truncate text-xs font-medium ft-text-muted">{task.client_name || "Tarea sin cliente asignado"}</p>
+                <p className="ft-task-muted mt-1 line-clamp-1">{task.client_name || "Tarea sin cliente asignado"}</p>
               </div>
 
               <div>
@@ -609,18 +605,18 @@ function TaskActionListComponent({
               </div>
 
               <div className="flex items-center gap-2 xl:justify-end">
-                <Link href={taskDetailRoute(task.id, currentQuery)} className="inline-flex h-9 w-9 items-center justify-center rounded-xl border ft-border bg-white text-slate-600 transition hover:bg-slate-50 hover:text-slate-900" aria-label="Ver tarea">
+                <Link href={taskDetailRoute(task.id, currentQuery)} className="ft-task-icon-button" aria-label="Ver tarea">
                   <Eye className="h-4 w-4" />
                 </Link>
-                <Link href={taskEditRoute(task.id, currentQuery)} className="inline-flex h-9 w-9 items-center justify-center rounded-xl border ft-border bg-white text-slate-600 transition hover:bg-slate-50 hover:text-slate-900" aria-label="Editar tarea">
+                <Link href={taskEditRoute(task.id, currentQuery)} className="ft-task-icon-button" aria-label="Editar tarea">
                   <Pencil className="h-4 w-4" />
                 </Link>
                 {task.status !== "concluido" ? (
-                  <button type="button" onClick={() => markComplete(task.id)} className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-700 transition hover:bg-emerald-100" aria-label="Finalizar tarea">
+                  <button type="button" onClick={() => markComplete(task.id)} className="ft-task-icon-button border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100" aria-label="Finalizar tarea">
                     <CheckCircle2 className="h-4 w-4" />
                   </button>
                 ) : null}
-                <button type="button" onClick={() => requestDeleteTask(task.id)} className="inline-flex h-9 w-9 items-center justify-center rounded-xl border ft-border bg-white text-slate-500 transition hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600" aria-label="Eliminar tarea">
+                <button type="button" onClick={() => requestDeleteTask(task.id)} className="ft-task-icon-button ft-task-icon-button-danger" aria-label="Eliminar tarea">
                   <Trash2 className="h-4 w-4" />
                 </button>
               </div>
@@ -859,7 +855,7 @@ function TaskActionListComponent({
   );
 
   return (
-    <div className="space-y-4">
+    <div className="ft-tasks-screen">
       {notice ? (
         <div className={`rounded-2xl border px-4 py-3 text-sm font-semibold ${
           notice.tone === "error"
@@ -876,7 +872,7 @@ function TaskActionListComponent({
       ) : null}
 
       {confirmAction ? (
-        <div className="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-rose-900 shadow-sm">
+        <div className="ft-danger-zone p-4 text-rose-900">
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div>
               <p className="text-sm font-bold">
@@ -896,7 +892,7 @@ function TaskActionListComponent({
       ) : null}
 
       {newViewModalOpen ? (
-        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+        <div className="ft-panel p-4 shadow-none">
           <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <label className="block flex-1 space-y-2">
               <span className="text-sm font-bold ft-text-main">Nombre de la nueva vista</span>
@@ -915,7 +911,7 @@ function TaskActionListComponent({
         </div>
       ) : null}
 
-      <Card className="relative z-20 ft-apple-panel p-5">
+      <Card className="ft-tasks-toolbar relative z-20">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <h2 className="text-base font-bold ft-text-main">Vistas de tareas</h2>
@@ -930,7 +926,7 @@ function TaskActionListComponent({
       {searchPanel ? <div className="relative z-10">{searchPanel}</div> : null}
 
       {selectedIds.length ? (
-        <Card className="rounded-2xl border border-emerald-100 bg-emerald-50/80 px-4 py-3 shadow-none">
+        <Card className="ft-actionbar border-emerald-100 bg-emerald-50/80 px-4 py-3 shadow-none">
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <p className="text-sm font-bold text-emerald-900">{selectedIds.length} tarea(s) seleccionada(s)</p>
             <div className="flex flex-wrap gap-2">
@@ -954,7 +950,7 @@ function TaskActionListComponent({
       </div>
 
       {viewMode === "list" ? (
-        <Card className="rounded-2xl border ft-border bg-white px-4 py-4">
+        <Card className="ft-tasks-footer px-4 py-4">
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <p className="text-sm font-medium ft-text-muted">
               Mostrando {visibleItems.length ? (currentPage - 1) * pageSize + 1 : 0} a {Math.min(currentPage * pageSize, visibleItems.length)} de {visibleItems.length} tareas
@@ -997,8 +993,8 @@ function ViewButton({ active, icon, label, onClick }: { active: boolean; icon: R
       type="button"
       onClick={onClick}
       className={cn(
-        "inline-flex h-11 items-center gap-2 rounded-xl border px-4 text-sm font-semibold transition",
-        active ? "border-[#050B18] bg-[#050B18] text-white" : "ft-border bg-white text-slate-700 hover:bg-slate-50",
+        "ft-btn-secondary inline-flex h-11 items-center gap-2 px-4 text-sm font-semibold transition",
+        active ? "ft-btn-primary text-white" : "text-slate-700",
       )}
     >
       {icon}
@@ -1009,9 +1005,9 @@ function ViewButton({ active, icon, label, onClick }: { active: boolean; icon: R
 
 function SettingsCheckbox({ label, checked, onChange }: { label: string; checked: boolean; onChange: (value: boolean) => void }) {
   return (
-    <label className="flex items-center justify-between gap-3 rounded-xl border ft-border bg-[#F8FAFC] px-3 py-3 text-sm font-bold ft-text-main">
+    <label className="ft-subcard flex items-center justify-between gap-3 px-3 py-3 text-sm font-bold ft-text-main">
       {label}
-      <input type="checkbox" checked={checked} onChange={(event) => onChange(event.target.checked)} className="h-4 w-4 rounded border-[#CBD5E1] text-[#16C784]" />
+      <input type="checkbox" checked={checked} onChange={(event) => onChange(event.target.checked)} className="ft-checkbox" />
     </label>
   );
 }
