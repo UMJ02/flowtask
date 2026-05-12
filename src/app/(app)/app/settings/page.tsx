@@ -39,13 +39,13 @@ export default async function SettingsPage() {
         billingSummary={resolvedBillingSummary}
       />
 
-      <Card className="ft-settings-card p-5 md:p-6">
+      <Card className="ft-settings-card p-6 md:p-7">
         <p className="ft-settings-eyebrow text-[#64748B]">Settings</p>
         <h2 className="mt-2 ft-settings-title">Preferencias operativas</h2>
         <p className="mt-2 max-w-3xl ft-settings-muted">
           Aquí decides qué avisos quieres ver, cómo se entregan y qué ventanas prefieres mantener en silencio.
         </p>
-        <div className="mt-5">
+        <div className="mt-6">
           {preferences ? <NotificationPreferencesForm initialPreferences={preferences} /> : null}
         </div>
       </Card>

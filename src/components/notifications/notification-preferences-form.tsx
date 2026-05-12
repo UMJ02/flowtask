@@ -24,7 +24,7 @@ function ToggleRow({
   onChange: (value: boolean) => void;
 }) {
   return (
-    <label className="flex flex-col gap-3 rounded-2xl border border-[#E5EAF1] bg-white px-4 py-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+    <label className="flex flex-col gap-3 rounded-[18px] border border-[#E5EAF1] bg-white px-4 py-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
       <div className="min-w-0">
         <p className="text-sm font-semibold text-[#0F172A]">{label}</p>
         <p className="mt-1 text-sm text-[#64748B]">{description}</p>
@@ -94,8 +94,8 @@ export function NotificationPreferencesForm({ initialPreferences }: Props) {
 
   return (
     <div>
-      <Card className="overflow-hidden rounded-[20px] border border-[#E5EAF1] bg-white shadow-none">
-        <div className="flex flex-col gap-4 md:gap-5 lg:flex-row lg:items-center lg:justify-between">
+      <Card className="overflow-hidden rounded-[22px] border border-[#E5EAF1] bg-white shadow-none">
+        <div className="flex flex-col gap-4 p-0 md:gap-5 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <h2 className="text-base font-semibold text-[#0F172A]">Preferencias de notificaciones</h2>
             <p className="mt-1 max-w-2xl text-sm leading-6 text-[#64748B]">Elige qué avisos quieres ver y cuándo prefieres recibirlos, con una vista más clara y compacta.</p>
@@ -130,7 +130,7 @@ export function NotificationPreferencesForm({ initialPreferences }: Props) {
         ) : null}
       </Card>
 
-      <Card className="overflow-hidden rounded-[20px] border border-[#E5EAF1] bg-white shadow-none">
+      <Card className="overflow-hidden rounded-[22px] border border-[#E5EAF1] bg-white shadow-none">
         <div className="flex flex-col gap-3 md:gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <h3 className="text-base font-semibold text-[#0F172A]">Canales y automatización</h3>

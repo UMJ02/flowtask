@@ -2196,3 +2196,114 @@
     border-color: #CBD5E1;
   }
 }
+
+
+/* v58.25.2 — Settings Colorful Redesign Alignment
+   Based on FlowTask Settings Colorful UX/UI Redesign Guide:
+   max-width aligned to header, no local footer, colorful premium hero and softer app-style cards. */
+@layer components {
+  .ft-settings-shell {
+    width: min(100%, 1440px);
+    max-width: 1440px;
+    margin-inline: auto;
+    display: grid;
+    gap: 18px;
+    padding-inline: 0;
+  }
+
+  .ft-settings-hero {
+    border-radius: 30px;
+    border: 1px solid #E5EAF1;
+    background:
+      linear-gradient(135deg, rgba(255,255,255,.98), rgba(248,251,255,.96)),
+      #FFFFFF;
+    box-shadow: 0 12px 40px rgba(15,23,42,.05);
+  }
+
+  .ft-settings-card {
+    border-radius: 28px;
+    border: 1px solid #E5EAF1;
+    background: #FFFFFF;
+    box-shadow: 0 12px 36px rgba(15,23,42,.045);
+  }
+
+  .ft-settings-card:hover,
+  .ft-settings-hero:hover {
+    border-color: rgba(203,213,225,.95);
+  }
+
+  .ft-settings-soft-gradient {
+    background: linear-gradient(135deg, rgba(236,253,245,.78), rgba(255,255,255,.96));
+  }
+
+  .ft-settings-assistant-card {
+    border-radius: 28px;
+    border: 1px solid rgba(139,92,246,.18);
+    background: linear-gradient(135deg, #FBFAFF 0%, #F5F3FF 45%, #FFFFFF 100%);
+    box-shadow: 0 12px 36px rgba(88,28,135,.055);
+  }
+
+  .ft-settings-section-row {
+    border-radius: 22px;
+    border: 1px solid #E5EAF1;
+    background: #FFFFFF;
+  }
+
+  .ft-settings-button-green {
+    min-height: 44px;
+    border-radius: 16px;
+    background: linear-gradient(135deg,#16C784,#0E9F6E);
+    padding: 0 20px;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 800;
+    box-shadow: 0 12px 24px rgba(22,199,132,.22);
+    transition: transform 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
+  }
+
+  .ft-settings-button-green:active,
+  .ft-settings-button-ghost:active {
+    transform: scale(.98);
+  }
+
+  .ft-settings-button-ghost {
+    min-height: 44px;
+    border-radius: 16px;
+    border: 1px solid #E5EAF1;
+    background: #fff;
+    padding: 0 20px;
+    color: #334155;
+    font-size: 13px;
+    font-weight: 800;
+    transition: background 160ms ease, border-color 160ms ease, transform 160ms ease;
+  }
+
+  .ft-settings-subcard {
+    border-radius: 22px;
+    border: 1px solid #E5EAF1;
+    background: #FFFFFF;
+  }
+
+  .ft-settings-soft {
+    border-radius: 22px;
+    border: 1px solid #E5EAF1;
+    background: #F8FAFC;
+  }
+
+  .ft-settings-pill {
+    min-height: 32px;
+    border-radius: 999px;
+    background: #F1F5F9;
+    padding: 0 13px;
+    color: #475569;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  @media (max-width: 768px) {
+    .ft-settings-shell { gap: 14px; }
+    .ft-settings-hero,
+    .ft-settings-card,
+    .ft-settings-assistant-card { border-radius: 22px; }
+  }
+}

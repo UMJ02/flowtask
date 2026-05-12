@@ -1,3 +1,3 @@
-export const APP_VERSION = "58.25.1-settings-footer-cleanup-alignment-polish";
-export const APP_RELEASE_NAME = "v58.25.1 Settings Footer Cleanup + Alignment Polish";
+export const APP_VERSION = "58.25.2-settings-colorful-redesign-alignment";
+export const APP_RELEASE_NAME = "v58.25.2 Settings Colorful Redesign Alignment";
 export const APP_RELEASE_STAGE = "production-candidate";

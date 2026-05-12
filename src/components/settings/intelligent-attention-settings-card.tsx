@@ -52,10 +52,10 @@ export function IntelligentAttentionSettingsCard() {
   };
 
   return (
-    <Card className="ft-settings-card p-4 md:p-5">
+    <Card className="ft-settings-assistant-card p-6 md:p-7">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div className="max-w-3xl">
-          <div className="inline-flex items-center gap-2 rounded-full bg-[#ECFDF5] px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.16em] text-[#047857] ring-1 ring-[#16C784]/20">
+          <div className="inline-flex items-center gap-2 rounded-full bg-[#F5F3FF] px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.16em] text-[#7C3AED] ring-1 ring-[#8B5CF6]/20">
             <BrainCircuit className="h-3.5 w-3.5" />
             Asistente inteligente avanzado
           </div>
@@ -88,7 +88,7 @@ export function IntelligentAttentionSettingsCard() {
                     type="button"
                     onClick={() => persist({ ...settings, sensitivity: key })}
                     className={active
-                      ? "rounded-[18px] border border-[#16C784]/25 bg-[#ECFDF5] px-4 py-4 text-left shadow-none"
+                      ? "rounded-[18px] border border-[#16C784]/25 bg-[#F5F3FF] px-4 py-4 text-left shadow-none"
                       : "rounded-[18px] border border-[#E5EAF1] bg-[#F8FAFC] px-4 py-4 text-left hover:border-[#CBD5E1] hover:bg-white"}
                   >
                     <p className="text-sm font-semibold text-[#0F172A]">{SENSITIVITY_LABELS[key].title}</p>
