@@ -3984,3 +3984,52 @@
     border-radius: 28px;
   }
 }
+
+
+/* v58.25.6.6.2 — Boards compact inspector + table controls polish */
+@layer components {
+  .board-inspector {
+    font-size: 13px;
+  }
+
+  .board-inspector input,
+  .board-inspector select,
+  .board-inspector button {
+    line-height: 1.15;
+  }
+
+  .board-inspector .ft-input {
+    min-height: 32px;
+  }
+
+  .board-inspector-collapsed {
+    width: 76px;
+  }
+
+  .board-inspector [type="number"]::-webkit-outer-spin-button,
+  .board-inspector [type="number"]::-webkit-inner-spin-button {
+    margin: 0;
+    opacity: .55;
+  }
+
+  .board-table-header-cell {
+    padding-block: 6px;
+    font-size: 11px;
+  }
+
+  .board-table-cell textarea {
+    min-height: 30px;
+    padding-block: 6px;
+    font-size: 11px;
+  }
+
+  .board-table-row-handle {
+    font-size: 10px;
+  }
+
+  @media (max-width: 1535px) {
+    .board-inspector {
+      width: 392px;
+    }
+  }
+}

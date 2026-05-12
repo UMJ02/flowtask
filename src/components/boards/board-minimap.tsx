@@ -86,15 +86,15 @@ export function BoardMiniMap({ elements, viewport, onViewportChange, rightOffset
   }
 
   return (
-    <aside style={floatingStyle} className="ft-glass-panel absolute bottom-5 z-20 hidden w-[212px] overflow-hidden rounded-[26px] p-3 shadow-[0_20px_45px_rgba(15,23,42,0.12)] lg:block">
+    <aside style={floatingStyle} className="ft-glass-panel absolute bottom-5 z-20 hidden w-[184px] overflow-hidden rounded-[20px] p-2.5 shadow-[0_20px_45px_rgba(15,23,42,0.12)] lg:block">
       <div className="flex items-center justify-between gap-2">
         <div>
           <p className="ft-text-label text-slate-500">Minimap</p>
-          <p className="mt-1 text-[11px] font-medium text-slate-500">Click para navegar · H para mover</p>
+          <p className="mt-1 text-[10px] font-medium text-slate-500">Click para navegar · H para mover</p>
         </div>
         <div className="flex items-center gap-2">
           <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700">{Math.round(viewport.zoom * 100)}%</span>
-          <button type="button" onClick={() => onHiddenChange?.(true)} className="grid h-8 w-8 place-items-center rounded-xl border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50" title="Ocultar minimap">
+          <button type="button" onClick={() => onHiddenChange?.(true)} className="grid h-7 w-7 place-items-center rounded-xl border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50" title="Ocultar minimap">
             <X className="h-4 w-4" />
           </button>
         </div>
@@ -102,7 +102,7 @@ export function BoardMiniMap({ elements, viewport, onViewportChange, rightOffset
       <div
         role="button"
         tabIndex={0}
-        className="relative mt-3 h-[104px] w-full overflow-hidden rounded-2xl border border-slate-200 bg-white/80"
+        className="relative mt-3 h-[82px] w-full overflow-hidden rounded-2xl border border-slate-200 bg-white/80"
         onClick={handleJump}
         title="Click para mover el viewport"
       >
@@ -126,7 +126,7 @@ export function BoardMiniMap({ elements, viewport, onViewportChange, rightOffset
       <button
         type="button"
         onClick={() => onHiddenChange?.(true)}
-        className="mt-3 inline-flex items-center gap-2 rounded-xl px-2 py-1 text-[11px] font-bold text-slate-500 transition hover:bg-slate-100"
+        className="mt-3 inline-flex items-center gap-2 rounded-xl px-2 py-1 text-[10px] font-bold text-slate-500 transition hover:bg-slate-100"
       >
         <EyeOff className="h-3.5 w-3.5" /> Quitar de vista
       </button>

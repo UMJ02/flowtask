@@ -4,7 +4,7 @@ import path from "node:path";
 
 const root = process.cwd();
 const failures = [];
-const expectedVersion = "58.25.6.6.1-boards-properties-locked-typecheck-fix";
+const expectedVersion = "58.25.6.6.2-boards-compact-inspector-table-controls-polish";
 
 function exists(rel){ return fs.existsSync(path.join(root, rel)); }
 function read(rel){ return exists(rel) ? fs.readFileSync(path.join(root, rel), "utf8") : ""; }
@@ -22,9 +22,9 @@ for (const rel of [
   "scripts/runtime-check.mjs",
   "scripts/validate-env.mjs",
   "scripts/design-doctor.mjs",
-  "scripts/verify-v58.25.6.6.1.mjs",
-  "docs/release/V58_25_6_6_1_BOARDS_PROPERTIES_LOCKED_TYPECHECK_FIX.md",
-  "docs/qa/FLOWTASK_V58_25_6_6_1_BOARDS_PROPERTIES_LOCKED_TYPECHECK_FIX_QA.md",
+  "scripts/verify-v58.25.6.6.2.mjs",
+  "docs/release/V58_25_6_6_2_BOARDS_COMPACT_INSPECTOR_TABLE_CONTROLS_POLISH.md",
+  "docs/qa/FLOWTASK_V58_25_6_6_2_BOARDS_COMPACT_INSPECTOR_TABLE_CONTROLS_POLISH_QA.md",
   "src/components/boards/board-element.tsx",
   "src/components/boards/board-share-view.tsx",
   "src/lib/boards/table-tools.ts",
@@ -33,7 +33,7 @@ for (const rel of [
 const pkg = JSON.parse(read("package.json"));
 const scripts = pkg.scripts ?? {};
 if (pkg.version !== expectedVersion) failures.push(`Unexpected package version: ${pkg.version}`);
-if (scripts["verify:current"] !== "npm run verify:v58.25.6.6.1") failures.push("verify:current must target verify:v58.25.6.6.1");
+if (scripts["verify:current"] !== "npm run verify:v58.25.6.6.2") failures.push("verify:current must target verify:v58.25.6.6.2");
 
 const vercel = JSON.parse(read("vercel.json"));
 if (vercel.framework !== "nextjs") failures.push("vercel.json framework must be nextjs");

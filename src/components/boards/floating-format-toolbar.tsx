@@ -23,29 +23,29 @@ export function FloatingFormatToolbar({ selected, onDuplicate, onDelete, onChang
   const style: CSSProperties = { right: `${rightOffset}px` };
 
   return (
-    <div style={style} className="ft-popover-surface absolute top-5 z-50 flex items-center gap-2 rounded-[28px] px-4 py-3 shadow-[0_18px_40px_rgba(15,23,42,0.12)]">
+    <div style={style} className="ft-popover-surface absolute top-5 z-50 flex items-center gap-1.5 rounded-[20px] px-3 py-2 shadow-[0_18px_40px_rgba(15,23,42,0.12)]">
       {isConnector ? <GitBranch className="h-4 w-4 text-emerald-600" /> : null}
       {isTable ? <Table2 className="h-4 w-4 text-violet-600" /> : null}
-      <div className="flex items-center gap-2 border-r border-slate-200 pr-3">
+      <div className="flex items-center gap-1.5 border-r border-slate-200 pr-2">
         {colors.map((color) => (
           <button
             key={color}
             type="button"
             onClick={() => onChangeColor(color)}
-            className="h-8 w-8 rounded-full border border-slate-200 transition hover:shadow-sm"
+            className="h-7 w-7 rounded-full border border-slate-200 transition hover:shadow-sm"
             style={{ backgroundColor: color }}
             aria-label={isConnector ? `Color de línea ${color}` : `Color ${color}`}
           />
         ))}
       </div>
       {isTable ? (
-        <div className="flex items-center gap-1 border-r border-slate-200 pr-3">
-          <button type="button" onClick={onAddTableRow} className="ft-pressable inline-flex h-9 items-center gap-1 rounded-xl px-2 text-xs font-bold text-slate-600 hover:bg-slate-100" title="Agregar fila"><Plus className="h-3.5 w-3.5" /> Fila</button>
-          <button type="button" onClick={onAddTableColumn} className="ft-pressable inline-flex h-9 items-center gap-1 rounded-xl px-2 text-xs font-bold text-slate-600 hover:bg-slate-100" title="Agregar columna"><Plus className="h-3.5 w-3.5" /> Col.</button>
+        <div className="flex items-center gap-1 border-r border-slate-200 pr-2">
+          <button type="button" onClick={onAddTableRow} className="ft-pressable inline-flex h-8 items-center gap-1 rounded-xl px-2 text-[11px] font-bold text-slate-600 hover:bg-slate-100" title="Agregar fila"><Plus className="h-3.5 w-3.5" /> Fila</button>
+          <button type="button" onClick={onAddTableColumn} className="ft-pressable inline-flex h-8 items-center gap-1 rounded-xl px-2 text-[11px] font-bold text-slate-600 hover:bg-slate-100" title="Agregar columna"><Plus className="h-3.5 w-3.5" /> Col.</button>
         </div>
       ) : null}
-      <button type="button" onClick={onDuplicate} className="ft-pressable grid h-9 w-9 place-items-center rounded-xl text-slate-600 hover:bg-slate-100" title="Duplicar"><Copy className="h-4 w-4" /></button>
-      <button type="button" onClick={onDelete} className="ft-pressable grid h-9 w-9 place-items-center rounded-xl text-rose-600 hover:bg-rose-50" title="Borrar"><Trash2 className="h-4 w-4" /></button>
+      <button type="button" onClick={onDuplicate} className="ft-pressable grid h-8 w-8 place-items-center rounded-xl text-slate-600 hover:bg-slate-100" title="Duplicar"><Copy className="h-4 w-4" /></button>
+      <button type="button" onClick={onDelete} className="ft-pressable grid h-8 w-8 place-items-center rounded-xl text-rose-600 hover:bg-rose-50" title="Borrar"><Trash2 className="h-4 w-4" /></button>
     </div>
   );
 }

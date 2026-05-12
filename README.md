@@ -1,25 +1,29 @@
-# FlowTask — v58.25.6.6.1 Boards Properties Locked Typecheck Fix
+# FlowTask — v58.25.6.6.2 Boards Compact Inspector + Table Controls Polish
 
-Base: **v58.25.6.6 — Boards Floating Layout + Properties Panel Redesign**
+Base: **v58.25.6.6.1 — Boards Properties Locked Typecheck Fix**
 
 ## Objetivo
 
-Corregir el error de TypeScript en `src/components/boards/properties-panel.tsx` donde `selected.locked` podía ser `undefined`, pero `ToggleSwitch` espera un boolean estricto.
+Compactar la experiencia visual de Pizarras después del rediseño del panel de propiedades.
 
-## Fix aplicado
+## Correcciones
 
-```tsx
-<ToggleSwitch
-  checked={Boolean(selected.locked)}
-  onChange={(checked) => onPatch({ locked: checked } as Partial<BoardElement>)} 
-/>
-```
+- Panel de propiedades menos grande.
+- Header del panel más compacto.
+- Secciones menos altas.
+- Inputs X/Y/W/H más pequeños.
+- Selector de filas/columnas corregido para que los números sean visibles.
+- Botones `-` y `+` reales en stepper.
+- Lista de columnas más compacta.
+- Toolbar flotante más pequeña.
+- Minimap más pequeño.
+- Celdas/headers de tabla más compactos.
 
 ## Validación recomendada
 
 ```bash
 npm install
-npm run verify:v58.25.6.6.1
+npm run verify:v58.25.6.6.2
 npm run design:doctor
 npm run typecheck
 npm run build:preflight
