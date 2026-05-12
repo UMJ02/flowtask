@@ -557,22 +557,18 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery, work
                               </div>
                             </div>
 
-                            <div className="flex items-center justify-between gap-2 border-t border-slate-100 pt-2">
-                              <span className="inline-flex shrink-0 items-center rounded-full bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-500 ring-1 ring-slate-200">
+                            <div className="ft-kanban-card-actions">
+                              <span className="ft-kanban-date-pill">
                                 {formatDate(task.due_date)}
                               </span>
-                              <div className="flex items-center gap-1.5">
+                              <div className="ft-kanban-action-strip">
                                 <button
                                   type="button"
                                   onClick={() => void toggleImportant(task.id)}
                                   disabled={busyPriority === task.id}
                                   title={task.priority === "alta" ? "Quitar de importantes" : "Marcar como importante"}
                                   aria-label={task.priority === "alta" ? "Quitar de importantes" : "Marcar como importante"}
-                                  className={`inline-flex h-8 w-8 items-center justify-center rounded-xl ring-1 transition disabled:opacity-60 ${
-                                    task.priority === "alta"
-                                      ? "bg-amber-50 text-amber-600 ring-amber-100 hover:bg-amber-100"
-                                      : "bg-white text-slate-500 ring-slate-200 hover:bg-slate-100"
-                                  }`}
+                                  className={cn("ft-kanban-action-button disabled:opacity-60", task.priority === "alta" && "ft-kanban-action-button-important")}
                                 >
                                   {busyPriority === task.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Star className={`h-3.5 w-3.5 ${task.priority === "alta" ? "fill-current" : ""}`} />}
                                 </button>
@@ -586,7 +582,7 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery, work
                                       disabled={Boolean(saving)}
                                       title={option.label}
                                       aria-label={`Mover a ${option.label}`}
-                                      className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-white text-slate-600 ring-1 ring-slate-200 transition hover:bg-slate-100 disabled:opacity-60"
+                                      className="ft-kanban-action-button disabled:opacity-60"
                                     >
                                       {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <option.icon className="h-3.5 w-3.5" />}
                                     </button>
