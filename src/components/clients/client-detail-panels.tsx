@@ -13,8 +13,8 @@ export function ClientDetailPanels({ client }: { client: ClientDetailSummary }) 
       <Card>
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Cliente</p>
         <div className="mt-2 flex flex-wrap items-start justify-between gap-3">
-          <div className="flex items-start gap-4"><span className="inline-flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-emerald-50 text-emerald-700">{client.avatarUrl ? <img src={client.avatarUrl} alt={client.name} className="h-full w-full object-cover" /> : <Building2 className="h-6 w-6" />}</span><div>
-            <h1 className="text-xl font-bold text-slate-900">{client.name}</h1>
+          <div className="flex items-start gap-4"><span className="inline-flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-emerald-50 text-emerald-700">{client.avatarUrl ? <img src={client.avatarUrl} alt={client.name} className="h-full w-full object-cover" /> : <Building2 className="h-6 w-6" />}</span><div>
+            <h1 className="text-base font-bold text-slate-900">{client.name}</h1>
             <p className="mt-2 text-sm text-slate-600">{client.notes || 'Este cliente ya cuenta con tablero de seguimiento por organización.'}</p>
           </div></div>
           <div className="rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-600">
@@ -42,9 +42,9 @@ export function ClientDetailPanels({ client }: { client: ClientDetailSummary }) 
       </Card>
 
       <div className="grid gap-4 md:grid-cols-3">
-        <Card><p className="text-xs uppercase tracking-[0.18em] text-slate-500">Proyectos activos</p><p className="mt-3 text-[28px] font-bold text-slate-900">{client.projectsCount}</p></Card>
-        <Card><p className="text-xs uppercase tracking-[0.18em] text-slate-500">Tareas abiertas</p><p className="mt-3 text-[28px] font-bold text-slate-900">{client.openTasksCount}</p></Card>
-        <Card><p className="text-xs uppercase tracking-[0.18em] text-slate-500">Tareas cerradas</p><p className="mt-3 text-[28px] font-bold text-slate-900">{client.completedTasksCount}</p></Card>
+        <Card><p className="text-xs uppercase tracking-[0.18em] text-slate-500">Proyectos activos</p><p className="mt-3 text-[18px] font-bold text-slate-900">{client.projectsCount}</p></Card>
+        <Card><p className="text-xs uppercase tracking-[0.18em] text-slate-500">Tareas abiertas</p><p className="mt-3 text-[18px] font-bold text-slate-900">{client.openTasksCount}</p></Card>
+        <Card><p className="text-xs uppercase tracking-[0.18em] text-slate-500">Tareas cerradas</p><p className="mt-3 text-[18px] font-bold text-slate-900">{client.completedTasksCount}</p></Card>
       </div>
 
       <div className="grid gap-4 xl:grid-cols-2">

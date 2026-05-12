@@ -173,7 +173,7 @@ export function ProjectPlanningTimeline({ project, tasks, currentQuery = "" }: P
   };
 
   return (
-    <section id="timeline" className="ft-project-timeline-panel scroll-mt-28 p-5">
+    <section id="timeline" className="ft-project-timeline-panel scroll-mt-28 p-3">
       <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
         <div>
           <p className="ft-kicker text-[#16A36C]">Project Planificación inteligente</p>
@@ -190,28 +190,28 @@ export function ProjectPlanningTimeline({ project, tasks, currentQuery = "" }: P
       </div>
 
       <div className="mt-5 flex justify-center xl:justify-end">
-        <button type="button" aria-pressed={showBuilder} onClick={() => setShowBuilder((v) => !v)} className={cn("inline-flex h-10 items-center gap-2 rounded-[14px] px-5 text-sm font-semibold ring-1 transition", showBuilder ? "bg-[#050B18] text-white ring-[#050B18]" : "bg-[#ECFDF5] text-[#087A4B] ring-[#BBF7D0]")}><Settings2 className="h-4 w-4" />Ajustes de vista</button>
+        <button type="button" aria-pressed={showBuilder} onClick={() => setShowBuilder((v) => !v)} className={cn("inline-flex h-10 items-center gap-2 rounded-[14px] px-3 text-sm font-semibold ring-1 transition", showBuilder ? "bg-[#050B18] text-white ring-[#050B18]" : "bg-[#ECFDF5] text-[#087A4B] ring-[#BBF7D0]")}><Settings2 className="h-4 w-4" />Ajustes de vista</button>
       </div>
 
-      <div className={cn("mt-6 grid gap-5", showBuilder ? "xl:grid-cols-[minmax(0,1fr)_320px]" : "xl:grid-cols-1")}>
+      <div className={cn("mt-6 grid gap-3", showBuilder ? "xl:grid-cols-[minmax(0,1fr)_320px]" : "xl:grid-cols-1")}>
         <div className="min-w-0">
           <div className="ft-subcard mb-4 flex flex-col gap-3 bg-[#FBFCFE] p-3 md:flex-row md:items-center md:justify-between">
             <div className="flex items-center gap-2">
-              <button type="button" onClick={() => setOffset((v) => v - 1)} className="inline-flex h-9 w-9 items-center justify-center rounded-[12px] border border-[#E7EDF5] bg-white">‹</button>
+              <button type="button" onClick={() => setOffset((v) => v - 1)} className="inline-flex h-9 w-9 items-center justify-center rounded-[12px] border ft-border bg-white">‹</button>
               <span className="rounded-full bg-white px-4 py-2 text-sm font-semibold ft-text-main ring-1 ring-[#E5EAF1]">{formatDate(toIsoDate(range.start))} — {formatDate(toIsoDate(range.end))}</span>
-              <button type="button" onClick={() => setOffset((v) => v + 1)} className="inline-flex h-9 w-9 items-center justify-center rounded-[12px] border border-[#E7EDF5] bg-white">›</button>
+              <button type="button" onClick={() => setOffset((v) => v + 1)} className="inline-flex h-9 w-9 items-center justify-center rounded-[12px] border ft-border bg-white">›</button>
             </div>
             <div className="flex items-center gap-3 text-xs font-bold ft-text-muted"><CalendarDays className="h-4 w-4" /> Avance del proyecto: <span className="text-[#16A66F]">{projectProgress}%</span></div>
           </div>
 
           {visibleTasks.length ? (
-            <div className="overflow-x-auto rounded-[20px] border border-[#E7EDF5]">
+            <div className="overflow-x-auto rounded-[16px] border ft-border">
               <div className="min-w-[980px] grid grid-cols-[320px_1fr] bg-white">
-                <div className="border-r border-[#E7EDF5]">
-                  <div className="h-10 border-b border-[#E7EDF5] bg-slate-50/80 px-4 py-4 text-[11px] font-semibold uppercase tracking-[0.14em] ft-text-muted">Tarea / Responsable</div>
+                <div className="border-r ft-border">
+                  <div className="h-10 border-b ft-border bg-slate-50/80 px-4 py-4 text-[11px] font-semibold uppercase tracking-[0.14em] ft-text-muted">Tarea / Responsable</div>
                   {groupedTasks.map((group) => (
                     <div key={group.label}>
-                      <div className="border-b border-[#E7EDF5] bg-[#F8FAFC] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.14em] ft-text-muted">{group.label}</div>
+                      <div className="border-b ft-border bg-[#F8FAFC] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.14em] ft-text-muted">{group.label}</div>
                       {group.tasks.map((task) => (
                         <div key={task.id} className="flex h-[64px] items-center gap-3 border-b border-[#EEF2F7] px-4 last:border-b-0">
                           <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-100 text-xs font-semibold text-slate-700">{String(task.client_name ?? task.title ?? "FT").slice(0, 1).toUpperCase()}</span>
@@ -225,12 +225,12 @@ export function ProjectPlanningTimeline({ project, tasks, currentQuery = "" }: P
                   ))}
                 </div>
                 <div className="relative">
-                  <div className="grid h-10 border-b border-[#E7EDF5] bg-slate-50/80" style={{ gridTemplateColumns: `repeat(${days.length}, minmax(40px, 1fr))` }}>
+                  <div className="grid h-10 border-b ft-border bg-slate-50/80" style={{ gridTemplateColumns: `repeat(${days.length}, minmax(40px, 1fr))` }}>
                     {days.map((day) => <div key={day.toISOString()} className="border-r border-[#EEF2F7] px-1 py-3 text-center text-[11px] font-semibold ft-text-muted last:border-r-0">{day.getDate()}</div>)}
                   </div>
                   {groupedTasks.map((group) => (
                     <div key={group.label}>
-                      <div className="h-[33px] border-b border-[#E7EDF5] bg-[#F8FAFC]" />
+                      <div className="h-[33px] border-b ft-border bg-[#F8FAFC]" />
                       {group.tasks.map((task) => {
                         const pct = progressFor(task);
                         return (
@@ -248,7 +248,7 @@ export function ProjectPlanningTimeline({ project, tasks, currentQuery = "" }: P
               </div>
             </div>
           ) : (
-            <div className="rounded-[20px] border border-dashed border-[#CBD5E1] bg-[#F8FAFC] px-5 py-10 text-center">
+            <div className="rounded-[16px] border border-dashed border-[#CBD5E1] bg-[#F8FAFC] px-3 py-4 text-center">
               <p className="text-base font-semibold ft-text-main">Este proyecto aún no tiene tareas internas.</p>
               <p className="mt-2 text-sm font-medium ft-text-muted">Crea fases o tareas vinculadas para construir el timeline del proyecto.</p>
             </div>
@@ -256,13 +256,13 @@ export function ProjectPlanningTimeline({ project, tasks, currentQuery = "" }: P
         </div>
 
         {showBuilder ? (
-          <aside className="rounded-[20px] border border-[#E7EDF5] bg-white p-5">
+          <aside className="rounded-[16px] border ft-border bg-white p-3">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] ft-text-muted">Ajustes de vista</p>
             <h3 className="mt-2 text-base font-semibold ft-text-main">Modificar vista</h3>
             <div className="mt-5 space-y-4">
-              <label className="flex items-center justify-between rounded-[14px] border border-[#E7EDF5] bg-[#F8FAFC] px-4 py-3 text-sm font-bold ft-text-main">Incluir concluidas<input type="checkbox" checked={showConcluded} onChange={(e) => setShowConcluded(e.target.checked)} /></label>
-              <label className="block text-xs font-semibold uppercase tracking-[0.14em] ft-text-muted">Colores<select value={colorBy} onChange={(e) => setColorBy(e.target.value as ColorMode)} className="mt-2 h-11 w-full rounded-[14px] border border-[#E7EDF5] bg-white px-3 text-sm font-bold ft-text-main"><option value="status">Por estado</option><option value="priority">Por prioridad</option><option value="responsible">Por responsable</option></select></label>
-              <label className="block text-xs font-semibold uppercase tracking-[0.14em] ft-text-muted">Agrupar por<select value={groupBy} onChange={(e) => setGroupBy(e.target.value as GroupMode)} className="mt-2 h-11 w-full rounded-[14px] border border-[#E7EDF5] bg-white px-3 text-sm font-bold ft-text-main"><option value="none">Sin agrupar</option><option value="status">Estado</option><option value="priority">Prioridad</option></select></label>
+              <label className="flex items-center justify-between rounded-[14px] border ft-border bg-[#F8FAFC] px-4 py-3 text-sm font-bold ft-text-main">Incluir concluidas<input type="checkbox" checked={showConcluded} onChange={(e) => setShowConcluded(e.target.checked)} /></label>
+              <label className="block text-xs font-semibold uppercase tracking-[0.14em] ft-text-muted">Colores<select value={colorBy} onChange={(e) => setColorBy(e.target.value as ColorMode)} className="mt-2 h-11 w-full rounded-[14px] border ft-border bg-white px-3 text-sm font-bold ft-text-main"><option value="status">Por estado</option><option value="priority">Por prioridad</option><option value="responsible">Por responsable</option></select></label>
+              <label className="block text-xs font-semibold uppercase tracking-[0.14em] ft-text-muted">Agrupar por<select value={groupBy} onChange={(e) => setGroupBy(e.target.value as GroupMode)} className="mt-2 h-11 w-full rounded-[14px] border ft-border bg-white px-3 text-sm font-bold ft-text-main"><option value="none">Sin agrupar</option><option value="status">Estado</option><option value="priority">Prioridad</option></select></label>
               <button type="button" onClick={saveView} disabled={busy} className="h-11 w-full rounded-[14px] bg-[#050B18] text-sm font-semibold text-white hover:bg-slate-900 disabled:opacity-60"><Save className="mr-2 inline h-4 w-4" />Guardar vista</button>
             </div>
           </aside>

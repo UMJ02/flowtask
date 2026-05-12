@@ -180,7 +180,7 @@ function ProjectsStatCard({ icon, label, value, helper, tone }: { icon: ReactNod
 
 function ProjectsPagination({ total }: { total: number }) {
   return (
-    <div className="ft-actionbar flex flex-col gap-3 border-t-0 px-5 py-4 text-sm ft-text-muted md:flex-row md:items-center md:justify-between">
+    <div className="ft-actionbar flex flex-col gap-3 border-t-0 px-3 py-4 text-sm ft-text-muted md:flex-row md:items-center md:justify-between">
       <p>Mostrando {total ? 1 : 0} a {Math.min(total, 10)} de {total} proyectos</p>
       <div className="flex flex-wrap items-center gap-2">
         <span className="inline-flex h-9 items-center rounded-xl border ft-border bg-slate-50 px-4 font-semibold text-slate-500">Página 1</span>
@@ -197,9 +197,9 @@ function ProjectRow({ project, index, queryString }: { project: ProjectSummary; 
 
   return (
     <tr className="group border-t ft-border transition hover:bg-slate-50/70">
-      <td className="px-5 py-4 align-middle">
+      <td className="px-3 py-4 align-middle">
         <Link href={detailHref} className="flex min-w-[290px] items-center gap-4">
-          <span className={`relative inline-flex h-16 w-16 shrink-0 overflow-hidden rounded-2xl bg-gradient-to-br ${coverTone} ring-1 ring-slate-200`}>
+          <span className={`relative inline-flex h-10 w-16 shrink-0 overflow-hidden rounded-2xl bg-gradient-to-br ${coverTone} ring-1 ring-slate-200`}>
             {project.imageUrl || project.image_url ? (
               <img src={(project.imageUrl || project.image_url) as string} alt={project.title} className="h-full w-full object-cover" />
             ) : (
@@ -215,18 +215,18 @@ function ProjectRow({ project, index, queryString }: { project: ProjectSummary; 
           </span>
         </Link>
       </td>
-      <td className="px-5 py-4 align-middle"><StatusBadge status={project.status} /></td>
-      <td className="px-5 py-4 align-middle">
+      <td className="px-3 py-4 align-middle"><StatusBadge status={project.status} /></td>
+      <td className="px-3 py-4 align-middle">
         <ProjectProgressBar value={progress} />
         <p className="mt-1 text-xs font-semibold text-slate-500">
           {project.projectTaskTotal ? `${project.projectTaskDone ?? 0}/${project.projectTaskTotal} tareas` : 'Sin tareas hijas'}
         </p>
       </td>
-      <td className="px-5 py-4 align-middle"><ProjectMembersAvatars countSeed={project.title.length + index} /></td>
-      <td className="whitespace-nowrap px-5 py-4 align-middle text-sm font-semibold text-slate-600">
+      <td className="px-3 py-4 align-middle"><ProjectMembersAvatars countSeed={project.title.length + index} /></td>
+      <td className="whitespace-nowrap px-3 py-4 align-middle text-sm font-semibold text-slate-600">
         {project.dueDate || project.due_date ? formatDate((project.dueDate || project.due_date) as string) : 'Sin fecha'}
       </td>
-      <td className="px-5 py-4 align-middle">
+      <td className="px-3 py-4 align-middle">
         <div className="flex items-center justify-center gap-2">
           <Link href={detailHref} aria-label={`Abrir proyecto ${project.title}`} className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border ft-border bg-white text-slate-600 transition hover:translate-y-0 hover:border-slate-300 hover:ft-text-main hover:">
             <Eye className="h-4 w-4" />
@@ -262,7 +262,7 @@ export default async function ProjectsPage({ searchParams }: { searchParams?: Pr
   return (
     <div className="ft-projects-screen pb-3">
       <Card className="ft-projects-hero">
-        <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
           <div>
             <h1 className="ft-heading-page">Proyectos</h1>
             <p className="ft-copy mt-2 max-w-3xl">Todos los proyectos de tu espacio de trabajo.</p>
@@ -344,7 +344,7 @@ export default async function ProjectsPage({ searchParams }: { searchParams?: Pr
             <ProjectsPagination total={projects.length} />
           </div>
         ) : (
-          <div className="p-5">
+          <div className="p-3">
             <EmptyState
               icon={<BriefcaseBusiness className="h-6 w-6" />}
               title="No encontramos proyectos con este filtro"
@@ -360,7 +360,7 @@ export default async function ProjectsPage({ searchParams }: { searchParams?: Pr
         )}
       </Card>
 
-      <div className="flex items-center justify-between rounded-[20px] border border-emerald-100 bg-emerald-50/70 px-5 py-4 text-sm text-slate-600">
+      <div className="flex items-center justify-between rounded-[20px] border border-emerald-100 bg-emerald-50/70 px-3 py-4 text-sm text-slate-600">
         <div className="flex items-center gap-3">
           <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#16C784] ring-1 ring-emerald-100">
             <ShieldCheck className="h-4 w-4" />

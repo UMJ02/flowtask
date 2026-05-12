@@ -7,7 +7,7 @@ export async function SharedProjectView({ token }: { token: string }) {
 
   if (!data) {
     return (
-      <main className="min-h-screen bg-slate-50 py-10">
+      <main className="min-h-dvh bg-slate-50 py-5">
         <div className="container-page max-w-5xl space-y-4">
           <Card>
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">FlowTask</p>
@@ -24,7 +24,7 @@ export async function SharedProjectView({ token }: { token: string }) {
   const pendingTasks = totalTasks - completedTasks;
 
   return (
-    <main className="min-h-screen bg-slate-50 py-10">
+    <main className="min-h-dvh bg-slate-50 py-5">
       <div className="container-page max-w-5xl space-y-4">
         <Card className="border border-slate-100 bg-gradient-to-br from-white to-slate-50">
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">FlowTask</p>

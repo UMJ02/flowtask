@@ -99,21 +99,21 @@ export function PropertiesPanel({
 
   if (collapsed) {
     return (
-      <aside className="board-inspector board-inspector-collapsed absolute bottom-6 right-6 top-6 z-30 hidden w-[76px] overflow-hidden rounded-[32px] border border-slate-200 bg-white/95 shadow-[0_24px_60px_rgba(15,23,42,0.12)] xl:flex xl:flex-col">
-        <div className="flex items-center justify-center border-b border-slate-200 px-3 py-3">
-          <button type="button" onClick={() => onCollapsedChange(false)} className="grid h-9 w-9 place-items-center rounded-xl border border-slate-200 bg-white text-slate-700 transition hover:bg-slate-50" title="Expandir propiedades">
+      <aside className="board-inspector board-inspector-collapsed absolute bottom-6 right-6 top-4 z-30 hidden w-[76px] overflow-hidden rounded-[18px] border ft-border bg-white/95 shadow-sm xl:flex xl:flex-col">
+        <div className="flex items-center justify-center border-b ft-border px-3 py-3">
+          <button type="button" onClick={() => onCollapsedChange(false)} className="grid h-9 w-9 place-items-center rounded-xl border ft-border bg-white text-slate-700 transition hover:bg-slate-50" title="Expandir propiedades">
             <ChevronLeft className="h-5 w-5" />
           </button>
         </div>
-        <div className="flex flex-1 flex-col items-center gap-6 px-3 py-3">
+        <div className="flex flex-1 flex-col items-center gap-4 px-3 py-3">
           <CollapsedRailIcon icon={<LayoutTemplate className="h-5 w-5" />} tone="violet" label="Propiedades" />
           <CollapsedRailIcon icon={<Table2 className="h-5 w-5" />} tone="blue" label="Tipo" />
           <CollapsedRailIcon icon={<Ruler className="h-5 w-5" />} tone="emerald" label="Posición" />
           <CollapsedRailIcon icon={<Palette className="h-5 w-5" />} tone="violet" label="Visual" />
           <CollapsedRailIcon icon={<AlignHorizontalJustifyCenter className="h-5 w-5" />} tone="amber" label="Columnas" />
         </div>
-        <div className="border-t border-slate-200 px-3 py-3">
-          <div className="grid place-items-center rounded-xl border border-slate-200 bg-slate-50 py-3 text-slate-500">
+        <div className="border-t ft-border px-3 py-3">
+          <div className="grid place-items-center rounded-xl border ft-border bg-slate-50 py-3 text-slate-500">
             {selected?.locked ? <Lock className="h-5 w-5" /> : <Unlock className="h-5 w-5" />}
           </div>
         </div>
@@ -122,8 +122,8 @@ export function PropertiesPanel({
   }
 
   return (
-    <aside className="board-inspector absolute bottom-6 right-6 top-6 z-30 hidden w-[404px] overflow-hidden rounded-[18px] border border-slate-200 bg-white/95 shadow-[0_24px_60px_rgba(15,23,42,0.12)] xl:flex xl:flex-col">
-      <div className="sticky top-0 z-20 border-b border-slate-200 bg-white/95 px-3 py-3 backdrop-blur">
+    <aside className="board-inspector absolute bottom-6 right-6 top-4 z-30 hidden w-[404px] overflow-hidden rounded-[18px] border ft-border bg-white/95 shadow-sm xl:flex xl:flex-col">
+      <div className="sticky top-0 z-20 border-b ft-border bg-white/95 px-3 py-3 backdrop-blur">
         <div className="flex items-center justify-between gap-2">
           <div className="flex min-w-0 items-center gap-2">
             <div className="grid h-8 w-8 shrink-0 place-items-center rounded-xl bg-violet-50 text-violet-600">
@@ -135,7 +135,7 @@ export function PropertiesPanel({
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <button type="button" onClick={() => onCollapsedChange(true)} className="grid h-9 w-9 place-items-center rounded-xl border border-slate-200 text-slate-600 transition hover:bg-slate-50" title="Contraer panel">
+            <button type="button" onClick={() => onCollapsedChange(true)} className="grid h-9 w-9 place-items-center rounded-xl border ft-border text-slate-600 transition hover:bg-slate-50" title="Contraer panel">
               <PanelRightClose className="h-5 w-5" />
             </button>
             {selected ? (
@@ -150,14 +150,14 @@ export function PropertiesPanel({
       <div className="min-h-0 flex-1 overflow-y-auto">
         {!selected ? (
           <div className="px-3 py-3">
-            <div className="rounded-[18px] border border-dashed border-slate-200 bg-slate-50 px-3 py-3 text-sm font-medium text-slate-500">
+            <div className="rounded-[18px] border border-dashed ft-border bg-slate-50 px-3 py-3 text-sm font-medium text-slate-500">
               Selecciona un elemento para editar tamaño, posición, forma, texto, tablas, conectores y organización.
             </div>
           </div>
         ) : (
           <div className="space-y-0">
-            <div className="border-b border-slate-200 px-3 py-3">
-              <div className="rounded-[16px] border border-slate-200 bg-slate-50 px-3 py-3">
+            <div className="border-b ft-border px-3 py-3">
+              <div className="rounded-[16px] border ft-border bg-slate-50 px-3 py-3">
                 <div className="flex items-center gap-2 text-sm font-semibold text-slate-700">
                   {isConnector ? <GitBranch className="h-4 w-4 text-emerald-600" /> : table ? <Table2 className="h-4 w-4 text-violet-600" /> : media ? media.type === "image" ? <Image className="h-4 w-4 text-blue-600" /> : <FileText className="h-4 w-4 text-slate-600" /> : <LayoutTemplate className="h-4 w-4 text-violet-600" />}
                   <span className="capitalize">{selected.type}</span>
@@ -223,7 +223,7 @@ export function PropertiesPanel({
 
                 {media ? (
                   <SectionCard icon={media.type === "image" ? <Image className="h-5 w-5" /> : <FileText className="h-5 w-5" />} tone="blue" title="Archivo" sectionKey="media" open={openSections.media} onToggle={toggleSection}>
-                    <div className="rounded-[16px] border border-slate-200 bg-white px-3 py-3">
+                    <div className="rounded-[16px] border ft-border bg-white px-3 py-3">
                       <div className="flex items-start gap-2">
                         <div className="grid h-8 w-8 shrink-0 place-items-center rounded-xl bg-slate-100 text-slate-600">
                           {media.type === "image" ? <Image className="h-5 w-5" /> : <FileText className="h-5 w-5" />}
@@ -242,16 +242,16 @@ export function PropertiesPanel({
 
                 {table ? (
                   <>
-                    <SectionCard icon={<Table2 className="h-5 w-5" />} tone="violet" title="Tabla visual" sectionKey="table" open={openSections.table} onToggle={toggleSection} action={table.hiddenRowIds?.length || table.hiddenColumnIds?.length ? <button type="button" onClick={() => { onShowHiddenTableRows(); onShowHiddenTableColumns(); }} className="grid h-8 w-8 place-items-center rounded-xl border border-slate-200 bg-white text-blue-600 transition hover:bg-blue-50" title="Mostrar ocultos"><PanelRightOpen className="h-4 w-4" /></button> : undefined}>
+                    <SectionCard icon={<Table2 className="h-5 w-5" />} tone="violet" title="Tabla visual" sectionKey="table" open={openSections.table} onToggle={toggleSection} action={table.hiddenRowIds?.length || table.hiddenColumnIds?.length ? <button type="button" onClick={() => { onShowHiddenTableRows(); onShowHiddenTableColumns(); }} className="grid h-8 w-8 place-items-center rounded-xl border ft-border bg-white text-blue-600 transition hover:bg-blue-50" title="Mostrar ocultos"><PanelRightOpen className="h-4 w-4" /></button> : undefined}>
                       <p className="text-[12px] font-semibold leading-5 text-slate-500">Edita celdas inline o define filas/columnas con valores exactos.</p>
-                      <div className="mt-5 grid grid-cols-2 gap-2 rounded-[16px] border border-slate-200 bg-white px-3 py-3">
+                      <div className="mt-5 grid grid-cols-2 gap-2 rounded-[16px] border ft-border bg-white px-3 py-3">
                         <CompactStepper label="Filas" value={table.rows.length} min={1} onChange={onSetTableRowCount} accent="violet" />
                         <CompactStepper label="Columnas" value={table.columns.length} min={1} onChange={onSetTableColumnCount} accent="emerald" />
                       </div>
                       {(table.hiddenRowIds?.length || table.hiddenColumnIds?.length) ? (
                         <div className="mt-4 grid grid-cols-2 gap-2">
-                          <button type="button" onClick={onShowHiddenTableRows} className="rounded-xl border border-slate-200 bg-white px-3 py-3 text-xs font-bold text-slate-600 transition hover:bg-slate-50">Mostrar filas ({table.hiddenRowIds?.length ?? 0})</button>
-                          <button type="button" onClick={onShowHiddenTableColumns} className="rounded-xl border border-slate-200 bg-white px-3 py-3 text-xs font-bold text-slate-600 transition hover:bg-slate-50">Mostrar cols. ({table.hiddenColumnIds?.length ?? 0})</button>
+                          <button type="button" onClick={onShowHiddenTableRows} className="rounded-xl border ft-border bg-white px-3 py-3 text-xs font-bold text-slate-600 transition hover:bg-slate-50">Mostrar filas ({table.hiddenRowIds?.length ?? 0})</button>
+                          <button type="button" onClick={onShowHiddenTableColumns} className="rounded-xl border ft-border bg-white px-3 py-3 text-xs font-bold text-slate-600 transition hover:bg-slate-50">Mostrar cols. ({table.hiddenColumnIds?.length ?? 0})</button>
                         </div>
                       ) : null}
                     </SectionCard>
@@ -259,7 +259,7 @@ export function PropertiesPanel({
                     <SectionCard icon={<AlignHorizontalJustifyCenter className="h-5 w-5" />} tone="amber" title="Columnas" sectionKey="columns" open={openSections.columns} onToggle={toggleSection}>
                       <div className="space-y-2">
                         {table.columns.map((column) => (
-                          <div key={column.id} className="flex items-center gap-2 rounded-[14px] border border-slate-200 bg-white px-3 py-2">
+                          <div key={column.id} className="flex items-center gap-2 rounded-[14px] border ft-border bg-white px-3 py-2">
                             <GripVertical className="h-5 w-5 shrink-0 text-slate-400" />
                             <div className="grid h-8 w-8 shrink-0 place-items-center rounded-xl bg-violet-50 text-violet-600">
                               <Type className="h-5 w-5" />
@@ -299,11 +299,11 @@ export function PropertiesPanel({
         )}
       </div>
 
-      <div className="sticky bottom-0 mt-auto border-t border-slate-200 bg-white/95 px-3 py-3 backdrop-blur">
+      <div className="sticky bottom-0 mt-auto border-t ft-border bg-white/95 px-3 py-3 backdrop-blur">
         {selected ? (
-          <div className="flex items-center justify-between gap-2 rounded-[16px] border border-slate-200 bg-white px-3 py-3">
+          <div className="flex items-center justify-between gap-2 rounded-[16px] border ft-border bg-white px-3 py-3">
             <div className="flex items-center gap-2">
-              <div className="grid h-9 w-9 place-items-center rounded-xl border border-slate-200 text-slate-700">
+              <div className="grid h-9 w-9 place-items-center rounded-xl border ft-border text-slate-700">
                 {selected.locked ? <Lock className="h-5 w-5" /> : <Unlock className="h-5 w-5" />}
               </div>
               <div>
@@ -314,7 +314,7 @@ export function PropertiesPanel({
             <ToggleSwitch checked={Boolean(selected.locked)} onChange={(checked) => onPatch({ locked: checked } as Partial<BoardElement>)} />
           </div>
         ) : (
-          <div className="rounded-[16px] border border-slate-200 bg-slate-50 px-3 py-3 text-sm font-medium text-slate-500">Selecciona un elemento para activar acciones rápidas.</div>
+          <div className="rounded-[16px] border ft-border bg-slate-50 px-3 py-3 text-sm font-medium text-slate-500">Selecciona un elemento para activar acciones rápidas.</div>
         )}
       </div>
     </aside>
@@ -333,8 +333,8 @@ function CollapsedRailIcon({ icon, tone, label }: { icon: ReactNode; tone: "viol
 function SectionCard({ icon, tone, title, sectionKey, open, onToggle, children, action }: { icon: ReactNode; tone: "violet" | "blue" | "emerald" | "amber"; title: string; sectionKey: SectionKey; open: boolean; onToggle: (section: SectionKey) => void; children: ReactNode; action?: ReactNode }) {
   const toneClass = tone === "violet" ? "bg-violet-50 text-violet-600" : tone === "blue" ? "bg-blue-50 text-blue-600" : tone === "emerald" ? "bg-emerald-50 text-emerald-600" : "bg-amber-50 text-amber-600";
   return (
-    <section className="border-b border-slate-200 px-3 py-3 last:border-b-0">
-      <div className="rounded-[18px] border border-slate-200 bg-slate-50">
+    <section className="border-b ft-border px-3 py-3 last:border-b-0">
+      <div className="rounded-[18px] border ft-border bg-slate-50">
         <div className="flex items-center justify-between gap-2 px-3 py-3">
           <div className="flex min-w-0 items-center gap-2">
             <div className={`grid h-8 w-8 shrink-0 place-items-center rounded-xl ${toneClass}`}>{icon}</div>
@@ -342,12 +342,12 @@ function SectionCard({ icon, tone, title, sectionKey, open, onToggle, children, 
           </div>
           <div className="flex items-center gap-2">
             {action}
-            <button type="button" onClick={() => onToggle(sectionKey)} className="grid h-8 w-8 place-items-center rounded-xl border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50" title={open ? "Contraer sección" : "Expandir sección"}>
+            <button type="button" onClick={() => onToggle(sectionKey)} className="grid h-8 w-8 place-items-center rounded-xl border ft-border bg-white text-slate-500 transition hover:bg-slate-50" title={open ? "Contraer sección" : "Expandir sección"}>
               {open ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
             </button>
           </div>
         </div>
-        {open ? <div className="border-t border-slate-200 px-3 py-3">{children}</div> : null}
+        {open ? <div className="border-t ft-border px-3 py-3">{children}</div> : null}
       </div>
     </section>
   );
@@ -366,7 +366,7 @@ function Swatches({ colors, onSelect }: { colors: string[]; onSelect: (color: st
   return (
     <div className="flex flex-wrap gap-2.5">
       {colors.map((color) => (
-        <button key={color} type="button" onClick={() => onSelect(color)} className="h-9 w-9 rounded-full border border-slate-200 transition hover:shadow-sm" style={{ backgroundColor: color }} />
+        <button key={color} type="button" onClick={() => onSelect(color)} className="h-9 w-9 rounded-full border ft-border transition hover:shadow-sm" style={{ backgroundColor: color }} />
       ))}
     </div>
   );
@@ -375,7 +375,7 @@ function Swatches({ colors, onSelect }: { colors: string[]; onSelect: (color: st
 function MetricInput({ label, value, onChange, accent }: { label: string; value: number; onChange: (value: number) => void; accent: "emerald" | "blue" | "violet" | "amber" }) {
   const accentClass = accent === "emerald" ? "text-emerald-500" : accent === "blue" ? "text-blue-500" : accent === "violet" ? "text-violet-500" : "text-amber-500";
   return (
-    <div className="rounded-[14px] border border-slate-200 bg-white px-3 py-2">
+    <div className="rounded-[14px] border ft-border bg-white px-3 py-2">
       <label className="mb-1.5 block text-[10px] font-black uppercase tracking-[0.12em] text-slate-500">{label}</label>
       <div className="flex h-8 items-center gap-2">
         <ArrowDownUp className={`h-3.5 w-3.5 ${accentClass}`} />
@@ -396,8 +396,8 @@ function CompactStepper({ label, value, min, onChange, accent }: { label: string
         <ArrowDownUp className={`h-3.5 w-3.5 ${iconClass}`} />
         {label}
       </label>
-      <div className={`grid grid-cols-[34px_minmax(42px,1fr)_34px] items-center gap-1 rounded-[14px] border border-slate-200 bg-white p-1.5 transition focus-within:ring-4 ${ringClass}`}>
-        <button type="button" onClick={() => onChange(Math.max(min, value - 1))} className="grid h-8 w-8 place-items-center rounded-[11px] border border-slate-200 bg-slate-50 text-slate-600 transition hover:bg-slate-100" aria-label={`Restar ${label}`}>
+      <div className={`grid grid-cols-[34px_minmax(42px,1fr)_34px] items-center gap-1 rounded-[14px] border ft-border bg-white p-1.5 transition focus-within:ring-4 ${ringClass}`}>
+        <button type="button" onClick={() => onChange(Math.max(min, value - 1))} className="grid h-8 w-8 place-items-center rounded-[11px] border ft-border bg-slate-50 text-slate-600 transition hover:bg-slate-100" aria-label={`Restar ${label}`}>
           <Minus className="h-3.5 w-3.5" />
         </button>
         <input
@@ -408,7 +408,7 @@ function CompactStepper({ label, value, min, onChange, accent }: { label: string
           className="h-8 min-w-0 bg-transparent px-1 text-center text-[14px] font-black text-slate-900 outline-none"
           aria-label={label}
         />
-        <button type="button" onClick={() => onChange(value + 1)} className="grid h-8 w-8 place-items-center rounded-[11px] border border-slate-200 bg-slate-50 text-slate-600 transition hover:bg-slate-100" aria-label={`Sumar ${label}`}>
+        <button type="button" onClick={() => onChange(value + 1)} className="grid h-8 w-8 place-items-center rounded-[11px] border ft-border bg-slate-50 text-slate-600 transition hover:bg-slate-100" aria-label={`Sumar ${label}`}>
           <Plus className="h-3.5 w-3.5" />
         </button>
       </div>
@@ -426,7 +426,7 @@ function ToggleSwitch({ checked, onChange }: { checked: boolean; onChange: (chec
 
 function ToggleRow({ label, checked, onChange }: { label: string; checked: boolean; onChange: (checked: boolean) => void }) {
   return (
-    <div className="flex items-center justify-between rounded-[14px] border border-slate-200 bg-white px-3 py-3">
+    <div className="flex items-center justify-between rounded-[14px] border ft-border bg-white px-3 py-3">
       <span className="text-sm font-bold text-slate-700">{label}</span>
       <ToggleSwitch checked={checked} onChange={onChange} />
     </div>

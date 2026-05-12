@@ -228,7 +228,7 @@ export function ProjectInlineTasks({ project, initialTasks, members, canManage =
   }
 
   return (
-    <section id="tareas" className="ft-project-detail-panel scroll-mt-28 p-5">
+    <section id="tareas" className="ft-project-detail-panel scroll-mt-28 p-3">
       <div className="mb-5 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <p className="ft-kicker text-[#16A36C]">Tareas internas</p>
@@ -271,7 +271,7 @@ export function ProjectInlineTasks({ project, initialTasks, members, canManage =
                   <select value={editDraft.assigneeId} onChange={(e) => setEditDraft((current) => ({ ...current, assigneeId: e.target.value }))} className="h-11 px-3 text-sm font-bold"><option value="">Sin responsable</option>{members.map((member) => <option key={member.user_id} value={member.user_id}>{memberName(member)}</option>)}</select>
                   <div className="flex gap-2">
                     <button type="button" onClick={() => saveProjectTask(task.id)} disabled={busyId === task.id} className="grid h-11 w-11 place-items-center rounded-[14px] bg-[#050B18] text-white"><Save className="h-4 w-4" /></button>
-                    <button type="button" onClick={() => setEditingId(null)} className="grid h-11 w-11 place-items-center rounded-[14px] border border-[#E7EDF5] bg-white ft-text-muted"><X className="h-4 w-4" /></button>
+                    <button type="button" onClick={() => setEditingId(null)} className="grid h-11 w-11 place-items-center rounded-[14px] border ft-border bg-white ft-text-muted"><X className="h-4 w-4" /></button>
                   </div>
                 </div>
               ) : (
@@ -286,15 +286,15 @@ export function ProjectInlineTasks({ project, initialTasks, members, canManage =
                   <span className="inline-flex items-center gap-1 text-xs font-bold ft-text-muted"><CalendarDays className="h-3.5 w-3.5" />{task.due_date ? formatDate(task.due_date) : "Sin fecha"}</span>
                   <div className="flex items-center justify-end gap-2">
                     <span className={`hidden w-fit rounded-full px-2.5 py-1 text-xs font-bold ring-1 lg:inline-flex ${priorityClass(task.priority)}`}>{priorityLabel(task.priority)}</span>
-                    <button type="button" onClick={() => openEdit(task)} disabled={!canManage} className="grid h-9 w-9 place-items-center rounded-[12px] border border-[#E7EDF5] bg-white ft-text-muted hover:bg-slate-50"><Edit3 className="h-4 w-4" /></button>
-                    <button type="button" onClick={() => deleteProjectTask(task)} disabled={!canManage || busyId === task.id} className="grid h-9 w-9 place-items-center rounded-[12px] border border-[#E7EDF5] bg-white ft-text-muted hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600"><Trash2 className="h-4 w-4" /></button>
+                    <button type="button" onClick={() => openEdit(task)} disabled={!canManage} className="grid h-9 w-9 place-items-center rounded-[12px] border ft-border bg-white ft-text-muted hover:bg-slate-50"><Edit3 className="h-4 w-4" /></button>
+                    <button type="button" onClick={() => deleteProjectTask(task)} disabled={!canManage || busyId === task.id} className="grid h-9 w-9 place-items-center rounded-[12px] border ft-border bg-white ft-text-muted hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600"><Trash2 className="h-4 w-4" /></button>
                   </div>
                 </div>
               )}
             </div>
           );
         }) : (
-          <div className="px-5 py-10 text-center">
+          <div className="px-3 py-4 text-center">
             <UserRound className="mx-auto h-10 w-10 text-[#94A3B8]" />
             <p className="mt-3 text-base font-semibold ft-text-main">Todavía no hay tareas internas.</p>
             <p className="mt-1 text-sm font-medium ft-text-muted">Agrega la primera tarea para empezar a medir el avance del proyecto.</p>

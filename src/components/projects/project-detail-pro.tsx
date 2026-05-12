@@ -24,10 +24,10 @@ import { ProjectInlineTasks } from "@/components/projects/project-inline-tasks";
 import { ProjectHeroInlineEditor } from "@/components/projects/project-hero-inline-editor";
 
 const projectUi = {
-  card: "rounded-[20px] border border-[#E7EDF5] bg-white",
-  smallCard: "rounded-[20px] border border-[#E7EDF5] bg-white p-5",
+  card: "rounded-[16px] border ft-border bg-white",
+  smallCard: "rounded-[16px] border ft-border bg-white p-3",
   buttonDark: "inline-flex h-10 items-center justify-center gap-2 rounded-[16px] bg-[#050B18] px-4 text-[13px] font-bold text-white transition hover:bg-[#111827]",
-  buttonGhost: "inline-flex h-10 items-center justify-center gap-2 rounded-[16px] border border-[#E7EDF5] bg-white px-4 text-[13px] font-bold ft-text-main transition hover:bg-[#F8FAFC]",
+  buttonGhost: "inline-flex h-10 items-center justify-center gap-2 rounded-[16px] border ft-border bg-white px-4 text-[13px] font-bold ft-text-main transition hover:bg-[#F8FAFC]",
   eyebrow: "text-xs font-semibold uppercase tracking-[0.22em] text-[#16A36C]",
 };
 
@@ -205,10 +205,10 @@ function ProjectHeroCard({ project, tasks, members, currentQuery }: { project: a
   const cover = project.image_url || "/imagenes/organization-team-hero.png";
 
   return (
-    <section className="ft-project-detail-panel relative overflow-hidden p-5">
+    <section className="ft-project-detail-panel relative overflow-hidden p-3">
       <div className="pointer-events-none absolute right-0 top-0 h-full w-1/2 bg-gradient-to-l from-[#ECFDF5] via-[#EFF6FF]/50 to-transparent" />
-      <div className="pointer-events-none absolute right-6 top-5 h-[78%] w-[34%] rounded-[20px] bg-[radial-gradient(circle_at_1px_1px,rgba(22,199,132,0.13)_1px,transparent_0)] [background-size:14px_14px] opacity-70" />
-      <div className="relative grid gap-5 lg:grid-cols-[230px_minmax(0,1fr)_360px]">
+      <div className="pointer-events-none absolute right-6 top-3 h-[78%] w-[34%] rounded-[16px] bg-[radial-gradient(circle_at_1px_1px,rgba(22,199,132,0.13)_1px,transparent_0)] [background-size:14px_14px] opacity-70" />
+      <div className="relative grid gap-3 lg:grid-cols-[230px_minmax(0,1fr)_360px]">
         <div className="relative h-[190px] overflow-hidden rounded-[18px] bg-slate-100">
           <Image src={cover} alt={project.title || "Proyecto FlowTask"} fill className="object-cover" sizes="230px" priority={false} unoptimized={Boolean(project.image_url)} />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950/20 to-transparent" />
@@ -220,15 +220,15 @@ function ProjectHeroCard({ project, tasks, members, currentQuery }: { project: a
             <span className="rounded-full bg-[#F6F0FF] px-3 py-1 text-xs font-semibold text-[#7C3AED] ring-1 ring-[#E9D5FF]">{department?.name || project.country || "Proyecto"}</span>
           </div>
           <div className="mt-4 flex flex-wrap items-center gap-2">
-            <h1 className="text-[26px] font-semibold leading-tight tracking-[-0.035em] ft-text-main">{project.title}</h1>
+            <h1 className="text-[18px] font-semibold leading-tight tracking-[-0.035em] ft-text-main">{project.title}</h1>
             <Star className="h-5 w-5 text-slate-400" />
           </div>
           <p className="mt-2 text-sm font-semibold ft-text-muted">Creado el {project.created_at ? formatDate(project.created_at) : "—"}</p>
-          <p className="mt-4 max-w-2xl text-base leading-7 ft-text-muted">{project.description || "Proyecto activo. Centraliza tareas, equipo, archivos y seguimiento en un solo lugar."}</p>
+          <p className="mt-4 max-w-2xl text-base leading-6 ft-text-muted">{project.description || "Proyecto activo. Centraliza tareas, equipo, archivos y seguimiento en un solo lugar."}</p>
           <AvatarStack members={members} />
         </div>
 
-        <div className="flex flex-col justify-between gap-5">
+        <div className="flex flex-col justify-between gap-3">
           <div className="flex justify-start gap-3 lg:justify-end">
             <CopyCurrentUrlButton label="Compartir" className={projectUi.buttonGhost} />
             <Link href={projectEditRoute(project.id, currentQuery)} className={projectUi.buttonDark}><MoreVertical className="h-4 w-4" />Editar proyecto</Link>
@@ -236,7 +236,7 @@ function ProjectHeroCard({ project, tasks, members, currentQuery }: { project: a
           <div>
             <div className="mb-2 flex items-center justify-between text-sm">
               <span className="font-semibold ft-text-muted">Progreso general</span>
-              <span className="text-xl font-semibold text-[#16A36C]">{progress}%</span>
+              <span className="text-base font-semibold text-[#16A36C]">{progress}%</span>
             </div>
             <div className="h-[7px] rounded-full bg-[#EEF2F7]"><div className="h-[7px] rounded-full bg-[#16C784]" style={{ width: `${Math.min(100, Math.max(0, progress))}%` }} /></div>
           </div>
@@ -260,7 +260,7 @@ function ProjectTabs() {
     { label: "Actividad", href: "#actividad" },
   ];
   return (
-    <nav className="flex h-10 items-center gap-5 overflow-x-auto border-b border-[#E7EDF5]">
+    <nav className="flex h-10 items-center gap-3 overflow-x-auto border-b ft-border">
       {tabs.map((tab, index) => (
         <a key={tab.label} href={tab.href} data-active={index === 0} className="relative h-10 shrink-0 text-sm font-semibold ft-text-muted transition hover:ft-text-main data-[active=true]:text-[#16A36C] after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full after:rounded-full after:bg-[#16C784] after:opacity-0 data-[active=true]:after:opacity-100">
           {tab.label}
@@ -275,7 +275,7 @@ function ProjectMembersCard({ members }: { members: any[] }) {
     <section id="equipo" className={`${projectUi.smallCard} scroll-mt-28`}>
       <div className="mb-4 flex items-center justify-between gap-3">
         <h2 className="text-base font-semibold ft-text-main">Miembros del proyecto</h2>
-        <Link href="/app/organization/roles" className="inline-flex h-9 items-center gap-1 rounded-[12px] border border-[#E7EDF5] bg-white px-3 text-xs font-semibold text-[#475569] hover:bg-slate-50"><Plus className="h-4 w-4" />Invitar</Link>
+        <Link href="/app/organization/roles" className="inline-flex h-9 items-center gap-1 rounded-[12px] border ft-border bg-white px-3 text-xs font-semibold text-[#475569] hover:bg-slate-50"><Plus className="h-4 w-4" />Invitar</Link>
       </div>
       <div className="space-y-4">
         {members.length ? members.slice(0, 6).map((member) => {
@@ -286,7 +286,7 @@ function ProjectMembersCard({ members }: { members: any[] }) {
                 <span className="relative grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#ECFDF5] text-xs font-semibold text-[#087A4B] ring-1 ring-[#BBF7D0]">{initials(name)}<span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-white bg-[#16C784]" /></span>
                 <div className="min-w-0"><p className="truncate text-sm font-semibold ft-text-main">{name}</p><p className="truncate text-xs font-medium ft-text-muted">{member.role === "owner" ? "Líder del proyecto" : roleLabel(member.role)}</p></div>
               </div>
-              <span className="rounded-full border border-[#E7EDF5] bg-white px-3 py-1 text-xs font-semibold ft-text-muted">{roleLabel(member.role)}</span>
+              <span className="rounded-full border ft-border bg-white px-3 py-1 text-xs font-semibold ft-text-muted">{roleLabel(member.role)}</span>
             </div>
           );
         }) : <p className="text-sm font-medium ft-text-muted">Aún no hay personas agregadas al proyecto.</p>}
@@ -298,10 +298,10 @@ function ProjectMembersCard({ members }: { members: any[] }) {
 function RecentFilesCard({ attachments }: { attachments: any[] }) {
   return (
     <section id="archivos" className={`${projectUi.smallCard} scroll-mt-28`}>
-      <div className="mb-4 flex items-center justify-between gap-3"><h2 className="text-base font-semibold ft-text-main">Archivos recientes</h2><a href="#archivos" className="inline-flex h-9 items-center rounded-[12px] border border-[#E7EDF5] bg-white px-3 text-xs font-semibold text-[#475569] hover:bg-slate-50">Ver todo</a></div>
+      <div className="mb-4 flex items-center justify-between gap-3"><h2 className="text-base font-semibold ft-text-main">Archivos recientes</h2><a href="#archivos" className="inline-flex h-9 items-center rounded-[12px] border ft-border bg-white px-3 text-xs font-semibold text-[#475569] hover:bg-slate-50">Ver todo</a></div>
       <div className="grid grid-cols-2 gap-3">
         {attachments.length ? attachments.slice(0, 4).map((file) => (
-          <a key={file.id} href={file.public_url || "#"} className="group overflow-hidden rounded-[16px] border border-[#E7EDF5] bg-white transition hover:">
+          <a key={file.id} href={file.public_url || "#"} className="group overflow-hidden rounded-[16px] border ft-border bg-white transition hover:">
             <span className="grid aspect-square place-items-center overflow-hidden bg-[#F8FAFC] ft-text-muted">
               {isImageAttachment(file) ? <img src={file.public_url} alt={file.file_name || "Archivo"} className="h-full w-full object-cover" /> : attachmentIcon(file.file_name)}
             </span>
@@ -315,8 +315,8 @@ function RecentFilesCard({ attachments }: { attachments: any[] }) {
 
 function ProjectActivityCard({ activity }: { activity: ActivityItem[] }) {
   return (
-    <section id="actividad" className={`${projectUi.card} scroll-mt-28 p-5`}>
-      <div className="mb-5 flex items-center justify-between gap-3"><div><p className={projectUi.eyebrow}>Actividad reciente</p><h2 className="mt-2 text-xl font-semibold ft-text-main">Movimientos del proyecto</h2></div><a href="#actividad" className="inline-flex h-10 items-center rounded-[14px] border border-[#E7EDF5] bg-white px-4 text-xs font-semibold text-[#475569] hover:bg-slate-50">Ver movimientos</a></div>
+    <section id="actividad" className={`${projectUi.card} scroll-mt-28 p-3`}>
+      <div className="mb-5 flex items-center justify-between gap-3"><div><p className={projectUi.eyebrow}>Actividad reciente</p><h2 className="mt-2 text-base font-semibold ft-text-main">Movimientos del proyecto</h2></div><a href="#actividad" className="inline-flex h-10 items-center rounded-[14px] border ft-border bg-white px-4 text-xs font-semibold text-[#475569] hover:bg-slate-50">Ver movimientos</a></div>
       <div className="space-y-4">
         {activity.length ? activity.slice(0, 5).map((item) => (
           <div key={item.id} className="flex gap-3">
@@ -332,7 +332,7 @@ function ProjectActivityCard({ activity }: { activity: ActivityItem[] }) {
 export function ProjectDetailPro({ project, tasks, members, attachments, activity, currentQuery = "", canCreateTask = false, canEdit = false, editMode = false }: ProjectDetailProProps) {
   const progress = projectProgress(tasks, project.status);
   return (
-    <div id="resumen" className="mx-auto max-w-[1440px] space-y-5 px-4 py-5 ft-text-main sm:px-5 lg:px-5">
+    <div id="resumen" className="mx-auto max-w-[1440px] space-y-3 px-4 py-3 ft-text-main sm:px-3 lg:px-3">
       <nav className="flex flex-wrap items-center gap-2 text-sm font-semibold ft-text-muted">
         <Link href="/app/projects" className="transition hover:ft-text-main">Proyectos</Link><span>›</span><span className="ft-text-main">{project.title}</span>
       </nav>
@@ -344,12 +344,12 @@ export function ProjectDetailPro({ project, tasks, members, attachments, activit
       <ProjectStatsRow tasks={tasks} />
       <ProjectTabs />
       <ProjectPlanningTimeline project={project} tasks={tasks} currentQuery={currentQuery} />
-      <div className="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
-        <section className="space-y-5"><ProjectInlineTasks project={project} initialTasks={tasks} members={members} canManage={canCreateTask} /><ProjectActivityCard activity={activity} /></section>
-        <aside className="space-y-5 xl:sticky xl:top-5 xl:self-start">
-          <section className="rounded-[20px] border border-[#BBF7D0] bg-[#ECFDF5] p-5">
+      <div className="grid grid-cols-1 gap-3 xl:grid-cols-[minmax(0,1fr)_360px]">
+        <section className="space-y-3"><ProjectInlineTasks project={project} initialTasks={tasks} members={members} canManage={canCreateTask} /><ProjectActivityCard activity={activity} /></section>
+        <aside className="space-y-3 xl:sticky xl:top-3 xl:self-start">
+          <section className="rounded-[16px] border border-[#BBF7D0] bg-[#ECFDF5] p-3">
             <p className="text-xs font-semibold uppercase tracking-[0.20em] text-[#087A4B]">Acción rápida</p>
-            <h3 className="mt-2 text-xl font-semibold ft-text-main">Crear tarea interna</h3>
+            <h3 className="mt-2 text-base font-semibold ft-text-main">Crear tarea interna</h3>
             <p className="mt-2 text-sm leading-6 ft-text-muted">Agrega tareas dentro de este proyecto sin salir de esta vista.</p>
             <a href="#tareas" className={`mt-5 inline-flex h-10 w-full items-center justify-center gap-2 rounded-[16px] text-sm font-semibold ${canCreateTask ? "bg-[#16C784] text-white" : "pointer-events-none bg-white/70 text-slate-400"}`}><Plus className="h-4 w-4" />Ir a tareas del proyecto</a>
           </section>

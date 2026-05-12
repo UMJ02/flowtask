@@ -623,18 +623,18 @@ function TaskActionListComponent({
             </div>
           );
         }) : (
-          <div className="px-5 py-10 text-center text-sm font-medium text-slate-500">No hay tareas para esta combinación de filtros.</div>
+          <div className="px-3 py-4 text-center text-sm font-medium text-slate-500">No hay tareas para esta combinación de filtros.</div>
         )}
       </div>
     </div>
   );
 
   const renderSmartTimeline = () => (
-    <Card className="overflow-hidden rounded-2xl border ft-border bg-white p-5">
+    <Card className="overflow-hidden rounded-2xl border ft-border bg-white p-3">
       <div className="mb-5 flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#16C784]">Planificación inteligente</p>
-          <h3 className="mt-1 text-xl font-semibold ft-text-main">Vista híbrida Calendario + Gantt</h3>
+          <h3 className="mt-1 text-base font-semibold ft-text-main">Vista híbrida Calendario + Gantt</h3>
           <p className="mt-1 text-sm font-medium ft-text-muted">Planifica campañas, producción y duración visual usando las tareas actuales.</p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -711,11 +711,11 @@ function TaskActionListComponent({
     const percent = items.length ? Math.round((done / items.length) * 100) : 0;
 
     return (
-      <Card className="rounded-2xl border ft-border bg-white p-5">
+      <Card className="rounded-2xl border ft-border bg-white p-3">
         <div className="mb-5 flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#16C784]">Operations Calendar Pro</p>
-            <h3 className="mt-1 text-xl font-semibold ft-text-main">Calendario premium de ejecución diaria</h3>
+            <h3 className="mt-1 text-base font-semibold ft-text-main">Calendario premium de ejecución diaria</h3>
             <p className="mt-1 text-sm font-medium ft-text-muted">Deadlines, agenda operativa y carga de trabajo por día.</p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -726,7 +726,7 @@ function TaskActionListComponent({
           </div>
         </div>
 
-        <div className={cn("grid gap-5", showCalendarSummary ? "xl:grid-cols-[minmax(0,1fr)_280px]" : "xl:grid-cols-1")}>
+        <div className={cn("grid gap-3", showCalendarSummary ? "xl:grid-cols-[minmax(0,1fr)_280px]" : "xl:grid-cols-1")}>
           <div className="overflow-hidden rounded-2xl border ft-border">
             <div className={cn("grid border-b ft-border bg-[#F8FAFC] text-center text-[11px] font-semibold uppercase tracking-[0.12em] ft-text-muted", calendarColumnsClass)}>
               {calendarLabels.map((day) => <div key={day} className="px-2 py-3">{day}</div>)}
@@ -747,7 +747,7 @@ function TaskActionListComponent({
           </div>
 
           <aside className="space-y-4">
-            <div className="rounded-2xl border ft-border bg-white p-5">
+            <div className="rounded-2xl border ft-border bg-white p-3">
               <h4 className="text-sm font-semibold ft-text-main">Resumen semanal</h4>
               <div className="mt-4 space-y-3">
                 <CalendarMetric icon={<Layers3 className="h-4 w-4" />} label="Total tareas" value={total} tone="violet" />
@@ -756,8 +756,8 @@ function TaskActionListComponent({
                 <CalendarMetric icon={<CheckCircle2 className="h-4 w-4" />} label="Completadas" value={done} tone="emerald" />
               </div>
             </div>
-            <div className="rounded-2xl border ft-border bg-white p-5 text-center">
-              <div className="mx-auto grid h-32 w-32 place-items-center rounded-full border-[12px] border-emerald-100 text-xl font-semibold ft-text-main" style={{ background: `conic-gradient(#16C784 ${percent * 3.6}deg, #ECFDF5 0deg)` }}>
+            <div className="rounded-2xl border ft-border bg-white p-3 text-center">
+              <div className="mx-auto grid h-32 w-32 place-items-center rounded-full border-[12px] border-emerald-100 text-base font-semibold ft-text-main" style={{ background: `conic-gradient(#16C784 ${percent * 3.6}deg, #ECFDF5 0deg)` }}>
                 <span className="grid h-24 w-24 place-items-center rounded-full bg-white">{percent}%</span>
               </div>
               <p className="mt-3 text-sm font-bold ft-text-muted">Completado</p>
@@ -770,11 +770,11 @@ function TaskActionListComponent({
   };
 
   const renderGanttBuilder = () => (
-    <Card className="rounded-2xl border ft-border bg-white p-5">
+    <Card className="rounded-2xl border ft-border bg-white p-3">
       <div className="mb-5 flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#16C784]">Vista personalizada</p>
-          <h3 className="mt-1 text-xl font-semibold ft-text-main">Gantt personalizable y potente</h3>
+          <h3 className="mt-1 text-base font-semibold ft-text-main">Gantt personalizable y potente</h3>
           <p className="mt-1 text-sm font-medium ft-text-muted">Control avanzado de planificación, progreso y vistas guardadas.</p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -796,7 +796,7 @@ function TaskActionListComponent({
         </div>
       </div>
 
-      <div className={cn("grid gap-5", showGanttSettings ? "xl:grid-cols-[minmax(0,1fr)_300px]" : "xl:grid-cols-1")}>
+      <div className={cn("grid gap-3", showGanttSettings ? "xl:grid-cols-[minmax(0,1fr)_300px]" : "xl:grid-cols-1")}>
         <div className="overflow-hidden rounded-2xl border ft-border bg-white">
           <div className="grid grid-cols-[minmax(240px,1.2fr)_110px_110px_90px_90px_minmax(260px,1.4fr)] border-b ft-border bg-[#F8FAFC] px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.12em] ft-text-muted">
             <div>Tarea</div><div>Inicio</div><div>Fin</div><div>Duración</div><div>Progreso</div><div>Timeline</div>
@@ -804,7 +804,7 @@ function TaskActionListComponent({
           {timelineItems.map((task) => {
             const range = getTaskRange(task);
             return (
-              <div key={task.id} className={cn("grid grid-cols-[minmax(240px,1.2fr)_110px_110px_90px_90px_minmax(260px,1.4fr)] items-center border-b border-[#EEF2F7] px-4 last:border-b-0 hover:bg-[#F8FAFC]", compactGantt ? "py-3" : "py-5")}>
+              <div key={task.id} className={cn("grid grid-cols-[minmax(240px,1.2fr)_110px_110px_90px_90px_minmax(260px,1.4fr)] items-center border-b border-[#EEF2F7] px-4 last:border-b-0 hover:bg-[#F8FAFC]", compactGantt ? "py-3" : "py-3")}>
                 <div className="min-w-0">
                   <Link href={taskDetailRoute(task.id, currentQuery)} className="block truncate text-sm font-semibold ft-text-main hover:text-emerald-700">{task.title}</Link>
                   <p className="truncate text-xs font-semibold ft-text-muted">{task.client_name || "Sin cliente"}</p>
@@ -822,7 +822,7 @@ function TaskActionListComponent({
         </div>
 
         {showGanttSettings ? (
-          <aside className="rounded-2xl border ft-border bg-white p-5">
+          <aside className="rounded-2xl border ft-border bg-white p-3">
             <h4 className="text-sm font-semibold uppercase tracking-[0.14em] ft-text-main">Personalizar vista</h4>
             <div className="mt-5 space-y-4">
               <SettingsCheckbox label="Mostrar % progreso" checked={showProgress} onChange={setShowProgress} />
@@ -862,7 +862,7 @@ function TaskActionListComponent({
             ? "border-rose-200 bg-rose-50 text-rose-700"
             : notice.tone === "success"
               ? "border-emerald-200 bg-emerald-50 text-emerald-700"
-              : "border-slate-200 bg-slate-50 text-slate-700"
+              : "ft-border bg-slate-50 text-slate-700"
         }`}>
           <span className="inline-flex items-center gap-2">
             {notice.tone === "error" ? <AlertCircle className="h-4 w-4" /> : <CheckCircle2 className="h-4 w-4" />}

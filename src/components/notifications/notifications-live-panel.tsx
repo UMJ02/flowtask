@@ -255,10 +255,10 @@ export function NotificationsLivePanel({
 
   return (
     <Card className="ft-notifications-ui-panel overflow-hidden p-0">
-      <div className="p-5 md:p-6">
+      <div className="p-3 md:p-4">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
           <div>
-            <h2 className="text-[22px] font-extrabold tracking-[-0.03em] text-[#0F172A]">Centro de notificaciones</h2>
+            <h2 className="text-[18px] font-extrabold tracking-[-0.03em] text-[#0F172A]">Centro de notificaciones</h2>
             <p className="mt-1 max-w-3xl text-sm font-medium text-[#475569]">
               Usa búsqueda y filtros inteligentes para revisar solo lo que de verdad requiere atención.
             </p>
@@ -280,10 +280,10 @@ export function NotificationsLivePanel({
                 syncUrl(activeFilter, nextValue);
               }}
               placeholder="Buscar por texto, cliente o proyecto"
-              className="ft-notification-search w-full px-12 py-3 text-sm font-semibold text-[#334155] outline-none transition focus:border-[#16C784]"
+              className="ft-notification-search w-full px-4 py-3 text-sm font-semibold text-[#334155] outline-none transition focus:border-[#16C784]"
             />
           </label>
-          <Button type="button" variant="secondary" onClick={() => setFiltersOpen((value) => !value)} className="h-[50px] rounded-full border-[#E5EAF1] px-5 font-extrabold">
+          <Button type="button" variant="secondary" onClick={() => setFiltersOpen((value) => !value)} className="h-[50px] rounded-full ft-border px-3 font-extrabold">
             <SlidersHorizontal className="h-4 w-4" />
             {filtersOpen ? 'Ocultar filtros' : 'Filtros'}
           </Button>
@@ -310,7 +310,7 @@ export function NotificationsLivePanel({
         </div>
 
         {filtersOpen ? (
-          <div className="mt-4 rounded-[20px] border border-[#E5EAF1] bg-[#F8FAFC] p-4">
+          <div className="mt-4 rounded-[16px] border ft-border bg-[#F8FAFC] p-4">
             <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-[#64748B]">Filtros de entrega</p>
             <div className="mt-3 flex flex-wrap gap-2">
               {NOTIFICATION_FILTERS.filter((filter) => ["delivery_failed", "delivery_pending", "delivery_sent"].includes(filter.value)).map((filter) => {
@@ -337,8 +337,8 @@ export function NotificationsLivePanel({
         {error ? <p className="mt-3 text-sm font-bold text-rose-700">{error}</p> : null}
       </div>
 
-      <div className="border-t border-[#E5EAF1] bg-[#FBFCFE] px-5 py-4 md:px-6">
-        <div className="space-y-5">
+      <div className="border-t ft-border bg-[#FBFCFE] px-3 py-4 md:px-4">
+        <div className="space-y-3">
           {(["today", "yesterday", "earlier"] as GroupKey[]).map((groupKey) => {
             const items = groupedNotifications[groupKey];
             if (!items.length) return null;
@@ -387,7 +387,7 @@ export function NotificationsLivePanel({
                             ) : null}
                             {href ? (
                               <div className="mt-3">
-                                <Link href={href} className="inline-flex rounded-full border border-[#E5EAF1] bg-white px-3 py-2 text-xs font-extrabold text-[#334155] transition hover:bg-[#F8FAFC]">
+                                <Link href={href} className="inline-flex rounded-full border ft-border bg-white px-3 py-2 text-xs font-extrabold text-[#334155] transition hover:bg-[#F8FAFC]">
                                   Abrir detalle
                                 </Link>
                               </div>
@@ -403,24 +403,24 @@ export function NotificationsLivePanel({
           })}
 
           {!visibleNotifications.length ? (
-            <div className="rounded-[18px] border border-dashed border-[#CBD5E1] bg-white p-6 text-sm font-semibold text-[#64748B]">
+            <div className="rounded-[18px] border border-dashed border-[#CBD5E1] bg-white p-4 text-sm font-semibold text-[#64748B]">
               No hay notificaciones para este filtro. Ajusta la búsqueda o abre los filtros inteligentes.
             </div>
           ) : null}
         </div>
       </div>
 
-      <div className="ft-notification-actionbar flex flex-col gap-3 px-5 py-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between md:px-6">
+      <div className="ft-notification-actionbar flex flex-col gap-3 px-3 py-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between md:px-4">
         <div>
           <p className="text-sm font-extrabold text-[#334155]">{selectedVisibleIds.length ? `${selectedVisibleIds.length} seleccionada(s)` : '0 seleccionadas'}</p>
           <p className="mt-1 text-sm font-medium text-[#64748B]">Selecciona una o varias notificaciones para aplicar acciones.</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <Button type="button" variant="secondary" onClick={handleMarkSelectedRead} disabled={!selectedVisibleIds.length || isMarkingRead} className="rounded-[14px] border-[#E5EAF1]">
+          <Button type="button" variant="secondary" onClick={handleMarkSelectedRead} disabled={!selectedVisibleIds.length || isMarkingRead} className="rounded-[14px] ft-border">
             <CheckCheck className="h-4 w-4" />
             {isMarkingRead ? "Marcando..." : "Marcar como leídas"}
           </Button>
-          <Button type="button" variant="secondary" onClick={handleSelectVisible} disabled={!visibleIds.length} className="rounded-[14px] border-[#E5EAF1]">
+          <Button type="button" variant="secondary" onClick={handleSelectVisible} disabled={!visibleIds.length} className="rounded-[14px] ft-border">
             <Eye className="h-4 w-4" />
             Marcar visibles
           </Button>

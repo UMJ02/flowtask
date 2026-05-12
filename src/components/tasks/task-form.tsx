@@ -379,15 +379,15 @@ export function TaskForm({
 
   return (
     <form className="ft-tasks-screen bg-[#F6F8FC] pb-8" onSubmit={handleSubmit(onSubmit)}>
-      <div className="sticky top-0 z-40 mb-6 px-3 py-2 sm:px-4 lg:px-5">
-        <div className="ft-tasks-toolbar bg-white/95 px-4 py-4 backdrop-blur-xl sm:px-5 lg:px-5">
+      <div className="sticky top-0 z-40 mb-6 px-3 py-2 sm:px-4 lg:px-3">
+        <div className="ft-tasks-toolbar bg-white/95 px-4 py-4 backdrop-blur-xl sm:px-3 lg:px-3">
           <div className="flex min-h-[72px] w-full flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex min-w-0 items-center gap-3">
             <Link href={cancelHref} className="ft-btn-primary inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-white transition" aria-label="Volver">
               <ArrowLeft className="h-5 w-5" />
             </Link>
             <div className="min-w-0">
-              <h1 className="truncate text-xl font-semibold tracking-[-0.035em] ft-text-main sm:text-[28px]">{editorTitle}</h1>
+              <h1 className="truncate text-base font-semibold tracking-[-0.035em] ft-text-main sm:text-[18px]">{editorTitle}</h1>
               <p className="mt-1 line-clamp-1 text-sm font-medium ft-text-muted">Crea una tarea clara para que tu equipo sepa qué hacer y cuándo entregarlo.</p>
             </div>
           </div>
@@ -398,7 +398,7 @@ export function TaskForm({
             <Link href={cancelHref} className="ft-btn-secondary inline-flex h-10 items-center justify-center px-4 text-[13px] font-bold text-slate-800 transition">
               Cancelar
             </Link>
-            <Button loading={isBusy} type="submit" className="ft-btn-primary h-10 px-5 text-white">
+            <Button loading={isBusy} type="submit" className="ft-btn-primary h-10 px-3 text-white">
               {submitLabel ?? (isEdit ? "Guardar cambios" : "Crear tarea")}
             </Button>
           </div>
@@ -406,27 +406,27 @@ export function TaskForm({
       </div>
 
       </div>
-      <div className="grid w-full gap-4 px-3 sm:px-4 lg:px-5 xl:grid-cols-[minmax(0,1fr)_380px] 2xl:gap-5">
-        <div className="space-y-5">
-          <section className="ft-task-form-panel p-4 sm:p-5">
-            <div className="ft-subcard p-5 transition focus-within:border-emerald-200 focus-within:ring-4 focus-within:ring-emerald-50">
+      <div className="grid w-full gap-4 px-3 sm:px-4 lg:px-3 xl:grid-cols-[minmax(0,1fr)_380px] 2xl:gap-3">
+        <div className="space-y-3">
+          <section className="ft-task-form-panel p-4 sm:p-3">
+            <div className="ft-subcard p-3 transition focus-within:border-emerald-200 focus-within:ring-4 focus-within:ring-emerald-50">
               <div className="mb-3 flex items-center justify-between gap-3">
                 <label className="ft-kicker text-slate-500">Título</label>
                 <span className="text-xs font-bold text-slate-400">{watchedTitle.length} / 120</span>
               </div>
-              <Input {...register("title")} placeholder="Ej. Diseñar propuesta cliente" className="min-h-[52px] w-full rounded-xl border ft-border bg-white px-4 py-2.5 text-[22px] font-semibold leading-[1.15] tracking-[-0.028em] ft-text-main shadow-none outline-none transition placeholder:text-slate-400 focus:border-[#16C784] focus:ring-4 focus:ring-emerald-500/10 sm:text-[26px]" />
+              <Input {...register("title")} placeholder="Ej. Diseñar propuesta cliente" className="min-h-[52px] w-full rounded-xl border ft-border bg-white px-4 py-2.5 text-[18px] font-semibold leading-[1.15] tracking-[-0.028em] ft-text-main shadow-none outline-none transition placeholder:text-slate-400 focus:border-[#16C784] focus:ring-4 focus:ring-emerald-500/10 sm:text-[18px]" />
               {errors.title ? <p className="mt-3 text-sm font-semibold text-red-600">{errors.title.message}</p> : null}
             </div>
 
-            <div className="mt-5 overflow-hidden rounded-[20px] border ft-border bg-white">
-              <div className="flex items-center justify-between border-b ft-border px-5 py-4">
+            <div className="mt-5 overflow-hidden rounded-[16px] border ft-border bg-white">
+              <div className="flex items-center justify-between border-b ft-border px-3 py-4">
                 <label className="ft-kicker text-slate-500">Descripción</label>
                 <span className="text-xs font-bold text-slate-400">{watchedDescription.length} / 2000</span>
               </div>
               <div className="flex flex-wrap items-center gap-2 border-b ft-border bg-slate-50/60 px-4 py-3 text-xs font-semibold text-slate-500">
                 Agrega detalles, entregables o notas que ayuden a completar esta tarea.
               </div>
-              <Textarea {...register("description")} placeholder="Describe el contexto, entregables o notas importantes…" className="min-h-[130px] rounded-none border-0 bg-white px-5 py-4 text-base leading-7 shadow-none focus:border-0 focus:ring-0" />
+              <Textarea {...register("description")} placeholder="Describe el contexto, entregables o notas importantes…" className="min-h-[130px] rounded-none border-0 bg-white px-3 py-4 text-base leading-6 shadow-none focus:border-0 focus:ring-0" />
             </div>
           </section>
 
@@ -442,7 +442,7 @@ export function TaskForm({
               </Select>
             </FieldCard>
             {isProjectTask ? (
-              <div className="rounded-[20px] border border-emerald-200 bg-emerald-50/80 p-4 md:col-span-2">
+              <div className="rounded-[16px] border border-emerald-200 bg-emerald-50/80 p-4 md:col-span-2">
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-700">Tarea de proyecto</p>
                 <p className="mt-2 text-sm font-semibold text-slate-700">Esta tarea quedará dentro del proyecto y usará su misma información base.</p>
               </div>
@@ -479,12 +479,12 @@ export function TaskForm({
             ) : null}
           </section>
 
-          <details className="group overflow-hidden rounded-[20px] border ft-border bg-white">
-            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-5 py-4">
+          <details className="group overflow-hidden rounded-[16px] border ft-border bg-white">
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-3 py-4">
               <span className="ft-kicker text-slate-500">Datos relacionados</span>
               <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-50 text-slate-500 transition group-open:rotate-180"><ChevronDown className="h-4 w-4" /></span>
             </summary>
-            <div className="border-t ft-border p-5">
+            <div className="border-t ft-border p-3">
               <p className="text-sm font-medium leading-6 ft-text-muted">Aquí aparecerá información útil según el país, registro o proyecto que selecciones. Solo mostramos datos que la app puede guardar correctamente.</p>
             </div>
           </details>
@@ -493,7 +493,7 @@ export function TaskForm({
           {message ? <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">{message}</div> : null}
         </div>
 
-        <aside className="space-y-5 xl:sticky xl:top-[104px] xl:self-start">
+        <aside className="space-y-3 xl:sticky xl:top-[104px] xl:self-start">
           <SideCard tone="green">
             <div className="flex items-start justify-between gap-3">
               <div>
@@ -569,7 +569,7 @@ export function TaskForm({
 
 function FieldCard({ label, icon, helper, children }: { label: string; icon: ReactNode; helper?: string; children: ReactNode }) {
   return (
-    <div className="rounded-[20px] border ft-border bg-white p-4">
+    <div className="rounded-[16px] border ft-border bg-white p-4">
       <label className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
         <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-slate-50 text-slate-500">{icon}</span>
         {label}
@@ -591,7 +591,7 @@ function FieldMini({ label, children }: { label: string; children: ReactNode }) 
 
 function SideCard({ children, tone = "white" }: { children: ReactNode; tone?: "white" | "green" | "amber" | "purple" | "blue" }) {
   const toneClass = tone === "green" ? "border-[#BBF7D0] bg-[#ECFDF5]" : tone === "amber" ? "border-[#FDECC8] bg-[#FFF8E8]" : tone === "purple" ? "border-[#E9D5FF] bg-[#FAF5FF]" : tone === "blue" ? "border-[#BFDBFE] bg-[#EFF6FF]" : "ft-border bg-white";
-  return <section className={`rounded-[20px] border p-5 ${toneClass}`}>{children}</section>;
+  return <section className={`rounded-[16px] border p-3 ${toneClass}`}>{children}</section>;
 }
 
 function CommentBubble({ name, meta, text }: { name: string; meta: string; text: string }) {

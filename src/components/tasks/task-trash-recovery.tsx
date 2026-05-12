@@ -89,7 +89,7 @@ export function TaskTrashRecovery({ tasks }: { tasks: TaskSummary[] }) {
 
   return (
     <div className="ft-governed-screen ft-app-bg rounded-3xl p-1">
-      <Card className="ft-apple-panel p-5 md:p-6">
+      <Card className="ft-apple-panel p-3 md:p-4">
         <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div>
             <Link href="/app/tasks" className="mb-4 inline-flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-slate-900">
@@ -142,14 +142,14 @@ export function TaskTrashRecovery({ tasks }: { tasks: TaskSummary[] }) {
 
         <div className="mt-6 overflow-hidden rounded-2xl border ft-border bg-white">
           {items.length === 0 ? (
-            <div className="p-8 text-center">
+            <div className="p-4 text-center">
               <p className="text-base font-bold ft-text-main">No hay tareas eliminadas.</p>
               <p className="mt-2 text-sm ft-text-muted">Cuando elimines una tarea, aparecerá aquí para recuperación.</p>
             </div>
           ) : (
             <div className="divide-y divide-slate-100">
               {items.map((task) => (
-                <div key={task.id} className="grid gap-3 px-5 py-4 md:grid-cols-[minmax(240px,1fr)_160px_220px] md:items-center">
+                <div key={task.id} className="grid gap-3 px-3 py-4 md:grid-cols-[minmax(240px,1fr)_160px_220px] md:items-center">
                   <div>
                     <p className="text-sm font-bold ft-text-main">{task.title}</p>
                     <p className="mt-1 text-xs font-semibold ft-text-muted">{task.client_name || 'Sin cliente'} · {task.status}</p>

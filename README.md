@@ -1,74 +1,44 @@
-# FlowTask — v58.25.7 Global Productivity Density System + UI Scale Refactor
+# FlowTask — v58.25.7.1 Deep Density Component Refactor + Hardcoded Style Cleanup
 
-Base: **v58.25.6.6.2 — Boards Compact Inspector + Table Controls Polish**
+Base: **v58.25.7 — Global Productivity Density System + UI Scale Refactor**
 
 ## Objetivo
 
-Aplicar una capa global de densidad visual tipo productividad pro para que toda la app se sienta más compacta, minimalista, operativa y alineada a referencias como ClickUp, Notion, Asana y Linear.
+Convertir la capa global de densidad en cambios reales dentro de componentes. Esta versión no solo agrega tokens: limpia estilos hardcoded de los módulos con más deuda visual.
 
-## Cambio principal
+## Componentes depurados
 
-Esta versión agrega una capa global en `globals.css` con tokens de densidad y overrides controlados para:
+- Dashboard interactivo.
+- Workspace home.
+- Tasks list/action form.
+- Task workspace inline.
+- Projects detail/timeline/inline tasks.
+- Reports overview.
+- Notifications command/live panel.
+- Organization members.
+- Clients manager/detail.
+- Boards properties panel.
+- Command palette.
+- Empty state.
 
-- pantallas internas
-- cards
-- panels
-- heros
-- métricas
-- botones
-- inputs
-- selects
-- badges
-- chips
-- rows/listas
-- Kanban
-- Boards
-- inspector de Pizarras
-- tablas internas
+## Limpieza realizada
 
-## Tokens agregados
-
-```css
---ft-density-page-gap
---ft-density-section-gap
---ft-density-card-padding
---ft-density-panel-padding
---ft-density-control-height-sm
---ft-density-control-height
---ft-density-control-height-lg
---ft-density-row-height
---ft-density-radius-card
---ft-density-radius-panel
---ft-density-radius-control
---ft-density-title-page
---ft-density-title-section
---ft-density-title-card
---ft-density-body
---ft-density-muted
---ft-density-label
-```
-
-## Nuevo guardrail
-
-```bash
-npm run density:guard
-```
-
-Este script detecta patrones que vuelven a inflar la UI:
-
-- paddings grandes
-- radios gigantes
-- textos internos enormes
-- controles muy altos
-- sombras pesadas
+- `p-5`, `p-6`, `px-6`, `py-6` reducidos.
+- `rounded-[24px]`, `rounded-[28px]`, `rounded-[34px]` eliminados en los componentes objetivo.
+- `text-[28px]`, `text-[32px]` reducidos.
+- `h-12`, `h-14`, `h-16` reducidos en controles internos.
+- `shadow-[...]` pesado reemplazado por `shadow-sm`.
+- Bordes hardcoded `border-slate-200` / `border-[#E7...]` normalizados donde correspondía.
+- Se agrega `density:guard:strict`.
 
 ## Validación recomendada
 
 ```bash
 npm install
-npm run verify:v58.25.7
+npm run verify:v58.25.7.1
 npm run design:doctor
 npm run density:guard
+npm run density:guard:strict
 npm run typecheck
 npm run build:preflight
 npm run build

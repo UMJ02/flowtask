@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "58.25.7-global-productivity-density-system-ui-scale-refactor",
+  "version": "58.25.7.1-deep-density-component-refactor-hardcoded-style-cleanup",
   "private": true,
   "scripts": {
     "dev": "node node_modules/next/dist/bin/next dev",
@@ -58,7 +58,7 @@
     "release:repo:current": "npm run release:repo:v58.21.0",
     "qa:current": "npm run validate:node && npm run validate:env && npm run verify:current && npm run runtime:check && npm run typecheck && npm run security:check && npm run performance:check && npm run hardening:final:check && npm run ops:check && npm run deploy:production:ready",
     "release:current": "npm run clean && npm run release:repo:v58.20 && npm run qa:current && npm run qa:functional && npm run qa:report && npm run ux:review && npm run preprod:validate && npm run production:gate",
-    "verify:current": "npm run verify:v58.25.7",
+    "verify:current": "npm run verify:v58.25.7.1",
     "release:repo:v54.3.3": "npm run verify:current && npm run runtime:check && npm run typecheck",
     "verify:v54.3.4": "node scripts/verify-v54.3.4.mjs",
     "release:repo:v54.3.4": "npm run verify:current && npm run runtime:check && npm run typecheck",
@@ -153,7 +153,8 @@
     "db:doctor": "node scripts/db-doctor.mjs",
     "design:doctor": "node scripts/design-doctor.mjs",
     "density:guard": "node scripts/density-guard.mjs",
-    "verify:v58.25.7": "node scripts/verify-v58.25.7.mjs"
+    "verify:v58.25.7.1": "node scripts/verify-v58.25.7.1.mjs",
+    "density:guard:strict": "node scripts/density-guard.mjs --strict"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

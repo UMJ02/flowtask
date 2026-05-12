@@ -312,7 +312,7 @@ export function CommandPalette() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="hidden h-10 w-full min-w-0 items-center gap-3 rounded-[16px] border ft-border bg-white/90 px-4 text-left text-sm font-medium text-[#94A3B8] shadow-[inset_0_1px_0_rgba(255,255,255,0.70),0_4px_16px_rgba(15,23,42,0.03)] transition-all duration-150 hover:translate-y-0 hover:border-[#16C784]/35 hover:bg-white hover: focus:outline-none focus:ring-4 focus:ring-[#16C784]/10 lg:inline-flex"
+        className="hidden h-10 w-full min-w-0 items-center gap-3 rounded-[16px] border ft-border bg-white/90 px-4 text-left text-sm font-medium text-[#94A3B8] shadow-sm transition-all duration-150 hover:translate-y-0 hover:border-[#16C784]/35 hover:bg-white hover: focus:outline-none focus:ring-4 focus:ring-[#16C784]/10 lg:inline-flex"
       >
         <Search className="h-[18px] w-[18px] shrink-0 ft-text-muted" />
         <span className="min-w-0 flex-1 truncate">Buscar proyectos, tareas, clientes...</span>
@@ -327,7 +327,7 @@ export function CommandPalette() {
             onClick={() => setOpen(false)}
             type="button"
           />
-          <div className="absolute left-1/2 top-[calc(100%+14px)] z-50 w-[min(760px,calc(100vw-32px))] -translate-x-1/2 overflow-hidden rounded-[24px] border ft-border bg-white shadow-[0_18px_44px_rgba(15,23,42,0.12)]">
+          <div className="absolute left-1/2 top-[calc(100%+14px)] z-50 w-[min(760px,calc(100vw-32px))] -translate-x-1/2 overflow-hidden rounded-[16px] border ft-border bg-white shadow-sm">
             <div className="flex items-center gap-3 border-b ft-border bg-white px-4 py-4">
               <Search className="h-5 w-5 ft-text-muted" />
               <input
@@ -354,7 +354,7 @@ export function CommandPalette() {
                         return (
                           <button
                             key={item.id}
-                            className={`flex w-full items-center gap-3 rounded-[22px] border px-4 py-3 text-left transition ${active ? 'border-emerald-200 bg-emerald-50' : 'border-slate-200 bg-white hover:border-emerald-200 hover:bg-emerald-50/50'}`}
+                            className={`flex w-full items-center gap-3 rounded-[16px] border px-4 py-3 text-left transition ${active ? 'border-emerald-200 bg-emerald-50' : 'ft-border bg-white hover:border-emerald-200 hover:bg-emerald-50/50'}`}
                             onClick={() => {
                               router.push(item.href);
                               setOpen(false);
@@ -375,7 +375,7 @@ export function CommandPalette() {
                   </div>
                 ))
               ) : (
-                <div className="rounded-[22px] border border-dashed border-slate-200 bg-slate-50 px-4 py-10 text-center text-sm text-slate-500">
+                <div className="rounded-[16px] border border-dashed ft-border bg-slate-50 px-4 py-4 text-center text-sm text-slate-500">
                   No encontramos resultados para tu búsqueda.
                 </div>
               )}

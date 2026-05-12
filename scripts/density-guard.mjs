@@ -73,10 +73,16 @@ for (const token of [
   if (!globals.includes(token)) failures.push(`Missing density token/marker in globals.css: ${token}`);
 }
 
+const strict = process.argv.includes("--strict");
+
 if (warnings.length) {
   console.warn("[density-guard] WARN — visual density review items:");
   for (const warning of warnings.slice(0, 80)) console.warn(`- ${warning}`);
   if (warnings.length > 80) console.warn(`- ...and ${warnings.length - 80} more`);
+}
+
+if (strict && warnings.length > 80) {
+  failures.push(`Strict density guard allows up to 80 warnings; found ${warnings.length}.`);
 }
 
 if (failures.length) {
@@ -85,4 +91,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log("[density-guard] OK — global density tokens and guardrails are present.");
+console.log(strict ? "[density-guard:strict] OK — density debt is inside accepted threshold." : "[density-guard] OK — global density tokens and guardrails are present.");

@@ -25,7 +25,7 @@ const ROLE_OPTIONS = [
 ] as const;
 
 const metricTones = {
-  admins: 'border border-slate-200 bg-slate-950 text-white',
+  admins: 'border ft-border bg-slate-950 text-white',
   managers: 'border border-emerald-100 bg-emerald-50 text-emerald-950',
   pending: 'border border-amber-100 bg-amber-50 text-amber-950',
   capacity: 'border border-sky-100 bg-sky-50 text-sky-950',
@@ -37,9 +37,9 @@ function roleHelper(role: OrganizationMemberItem['role']) {
 
 function StatCard({ title, value, helper, tone }: { title: string; value: number | string; helper: string; tone: string }) {
   return (
-    <div className={`rounded-[20px] px-4 py-4 ${tone}`}>
+    <div className={`rounded-[16px] px-4 py-4 ${tone}`}>
       <p className="text-[11px] font-semibold uppercase tracking-[0.22em] opacity-80">{title}</p>
-      <p className="mt-2 text-[28px] font-bold leading-none">{value}</p>
+      <p className="mt-2 text-[18px] font-bold leading-none">{value}</p>
       <p className="mt-2 text-sm opacity-85">{helper}</p>
     </div>
   );
@@ -116,11 +116,11 @@ export function OrganizationMembersPanel({
   const nearCapacity = seatsIncluded !== null && seatsUsed !== null ? seatsUsed + pendingInvites >= seatsIncluded : false;
 
   return (
-    <Card className="rounded-[18px] p-4 md:p-5">
+    <Card className="rounded-[18px] p-4 md:p-3">
       <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">Equipo y capacidad</p>
-          <h2 className="mt-1 text-xl font-semibold text-slate-950">Tu organización en una sola vista</h2>
+          <h2 className="mt-1 text-base font-semibold text-slate-950">Tu organización en una sola vista</h2>
           <p className="mt-1 text-sm text-slate-600">Consulta cómo va el equipo, revisa cupos y ajusta roles sin moverte de aquí.</p>
         </div>
         <Button type="button" variant="secondary" className="h-10 rounded-2xl px-4" onClick={() => setTeamExpanded((value) => !value)}>
@@ -129,9 +129,9 @@ export function OrganizationMembersPanel({
         </Button>
       </div>
 
-      <div className="mt-4 overflow-hidden rounded-[24px] border border-slate-200/80 bg-slate-50/65">
+      <div className="mt-4 overflow-hidden rounded-[16px] border border-slate-200/80 bg-slate-50/65">
         <div className={`grid transition-[grid-template-columns] duration-300 ease-out xl:min-h-[540px] ${teamExpanded ? 'xl:grid-cols-[1.02fr_1.15fr]' : 'xl:grid-cols-[1fr_0fr]'}`}>
-          <div className="min-w-0 border-b border-slate-200/80 p-4 xl:border-b-0 xl:border-r">
+          <div className="min-w-0 border-b ft-border/80 p-4 xl:border-b-0 xl:border-r">
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">Panel del workspace</p>
             <h3 className="mt-1 text-base font-semibold text-slate-950">Lo importante del espacio hoy</h3>
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
@@ -141,7 +141,7 @@ export function OrganizationMembersPanel({
               <StatCard title="Tareas abiertas" value={String(metrics?.openTasks ?? 0)} helper="Trabajo pendiente dentro del espacio" tone={metricTones.pending} />
             </div>
             <div className="mt-4 grid gap-3 lg:grid-cols-2">
-              <div className="rounded-[22px] border border-slate-200/80 bg-white/90 p-3.5">
+              <div className="rounded-[16px] border border-slate-200/80 bg-white/90 p-3.5">
                 <p className="text-sm font-semibold text-slate-950">Distribución de roles</p>
                 <div className="mt-3 space-y-2">
                   <Row label="Admins globales" value={metrics?.roleBreakdown.admin_global ?? counters.admin_global} />
@@ -150,7 +150,7 @@ export function OrganizationMembersPanel({
                   <Row label="Viewers" value={metrics?.roleBreakdown.viewer ?? counters.viewer} />
                 </div>
               </div>
-              <div className="rounded-[22px] border border-slate-200/80 bg-white/90 p-3.5">
+              <div className="rounded-[16px] border border-slate-200/80 bg-white/90 p-3.5">
                 <p className="text-sm font-semibold text-slate-950">Cobertura operativa</p>
                 <div className="mt-3 space-y-2">
                   <Row label="Clientes editables" value={metrics?.editableClients ?? 0} />
@@ -194,7 +194,7 @@ export function OrganizationMembersPanel({
                   const canEditThisMember = canManageRoles && !isOwner;
 
                   return (
-                    <div key={member.id} className="rounded-[22px] border border-slate-200/80 bg-white px-3.5 py-3.5">
+                    <div key={member.id} className="rounded-[16px] border border-slate-200/80 bg-white px-3.5 py-3.5">
                       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
                         <div className="min-w-0 flex-1">
                           <div className="flex flex-wrap items-center gap-2.5">
@@ -236,7 +236,7 @@ export function OrganizationMembersPanel({
                     </div>
                   );
                 }) : (
-                  <div className="rounded-[22px] border border-dashed border-slate-200 bg-slate-50 px-4 py-10 text-center text-sm text-slate-500">
+                  <div className="rounded-[16px] border border-dashed ft-border bg-slate-50 px-4 py-4 text-center text-sm text-slate-500">
                     <Users className="mx-auto mb-3 h-5 w-5 text-slate-400" />
                     Aún no hay más personas visibles dentro de esta organización.
                   </div>

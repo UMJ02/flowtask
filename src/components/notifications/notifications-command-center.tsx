@@ -31,15 +31,15 @@ export function NotificationsCommandCenter({
       : 'Todo limpio por ahora';
 
   return (
-    <Card className="ft-notifications-hero-system p-5 md:p-6">
-      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_430px] lg:items-center">
-        <div className="flex min-w-0 gap-5">
+    <Card className="ft-notifications-hero-system p-3 md:p-4">
+      <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_430px] lg:items-center">
+        <div className="flex min-w-0 gap-3">
           <div className="ft-notifications-icon-tile shrink-0">
             <BellRing className="h-9 w-9" />
           </div>
           <div className="min-w-0">
             <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#047857]">Notification Command</p>
-            <h1 className="mt-2 text-[26px] font-extrabold tracking-[-0.035em] text-[#0F172A] md:text-[32px]">
+            <h1 className="mt-2 text-[18px] font-extrabold tracking-[-0.035em] text-[#0F172A] md:text-[20px]">
               Centro claro para revisar avisos
             </h1>
             <p className="mt-2 max-w-3xl text-sm font-medium leading-6 text-[#475569] md:text-base">

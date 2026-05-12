@@ -322,7 +322,7 @@ const CalendarPanel = memo(function CalendarPanel({
           <p className="text-xs text-slate-500">Consulta 2 semanas laborales o una lectura mensual solo con días hábiles.</p>
         </div>
         <div className="flex items-center gap-2">
-          <div className="inline-flex rounded-lg border border-slate-200 bg-slate-50 p-1">
+          <div className="inline-flex rounded-lg border ft-border bg-slate-50 p-1">
             {(['week', 'month'] as const).map((item) => (
               <button
                 key={item}
@@ -337,17 +337,17 @@ const CalendarPanel = memo(function CalendarPanel({
               </button>
             ))}
           </div>
-          <button type="button" onClick={() => onStep(-1)} className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-700 transition hover:bg-slate-50">
+          <button type="button" onClick={() => onStep(-1)} className="inline-flex h-9 w-9 items-center justify-center rounded-lg border ft-border bg-white text-slate-700 transition hover:bg-slate-50">
             <ChevronLeft className="h-4 w-4" />
           </button>
-          <button type="button" onClick={() => onStep(1)} className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-700 transition hover:bg-slate-50">
+          <button type="button" onClick={() => onStep(1)} className="inline-flex h-9 w-9 items-center justify-center rounded-lg border ft-border bg-white text-slate-700 transition hover:bg-slate-50">
             <ChevronRight className="h-4 w-4" />
           </button>
         </div>
       </div>
 
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_280px]">
-        <div className="rounded-xl border border-slate-200 bg-white p-3">
+        <div className="rounded-xl border ft-border bg-white p-3">
           <div className="mb-3 flex items-center justify-between gap-2">
             <p className="text-sm font-semibold capitalize text-slate-900">{formatMonthLabel(anchorDate)}</p>
             <p className="text-xs text-slate-500">Pulsa un día hábil para ver su agenda.</p>
@@ -371,8 +371,8 @@ const CalendarPanel = memo(function CalendarPanel({
                     isSelected
                       ? 'border-sky-500 bg-white shadow-none'
                       : inMonth
-                        ? 'border-slate-200 bg-slate-50/70 hover:border-slate-300 hover:bg-white'
-                        : 'border-slate-100 bg-slate-50/30 text-slate-400 hover:border-slate-200'
+                        ? 'ft-border bg-slate-50/70 hover:border-slate-300 hover:bg-white'
+                        : 'border-slate-100 bg-slate-50/30 text-slate-400 hover:border-slate-300'
                   )}
                 >
                   <div className="flex items-baseline gap-2 text-left">
@@ -391,7 +391,7 @@ const CalendarPanel = memo(function CalendarPanel({
           </div>
         </div>
 
-        <div className="rounded-xl border border-slate-200 bg-slate-50/80 p-4">
+        <div className="rounded-xl border ft-border bg-slate-50/80 p-4">
           <div className="flex items-start justify-between gap-3">
             <div>
               <p className="ft-kicker text-slate-500">Agenda del día</p>
@@ -406,7 +406,7 @@ const CalendarPanel = memo(function CalendarPanel({
                 return (
                   <div
                     key={item.id}
-                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-3 text-left shadow-none transition hover:border-emerald-200 hover:shadow"
+                    className="w-full rounded-lg border ft-border bg-white px-3 py-3 text-left shadow-none transition hover:border-emerald-200 hover:shadow"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
@@ -416,7 +416,7 @@ const CalendarPanel = memo(function CalendarPanel({
                             <ExternalLink className="h-3.5 w-3.5" />
                           </button>
                           {item.project_id ? (
-                            <button type="button" onClick={() => onOpenProject(item.project_id)} className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-slate-200 text-slate-600 transition hover:bg-slate-50" title="Abrir proyecto" aria-label="Abrir proyecto">
+                            <button type="button" onClick={() => onOpenProject(item.project_id)} className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full border ft-border text-slate-600 transition hover:bg-slate-50" title="Abrir proyecto" aria-label="Abrir proyecto">
                               <FolderKanban className="h-3.5 w-3.5" />
                             </button>
                           ) : null}
@@ -451,7 +451,7 @@ const CalendarPanel = memo(function CalendarPanel({
                 Hay {dueItems.length} tarea(s) con fecha para este día, pero ninguna está marcada como favorita. Usa la estrella en el panel de tareas para traerlas a la agenda visible.
               </div>
             ) : (
-              <div className="rounded-lg border border-dashed border-slate-200 bg-white px-3 py-4 text-sm text-slate-500">
+              <div className="rounded-lg border border-dashed ft-border bg-white px-3 py-4 text-sm text-slate-500">
                 No hay tareas programadas para esta fecha. Puedes crear una tarea rápida desde el panel lateral.
               </div>
             )}
@@ -731,18 +731,18 @@ function InteractiveDashboardBoardComponent() {
   if (!hydrated) {
     return (
       <div className="ft-dashboard-screen">
-        <Card className="border-slate-200 bg-white px-5 py-5 shadow-none">
+        <Card className="ft-border bg-white px-3 py-3 shadow-none">
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-600">Modo pizarra</p>
-              <h2 className="mt-2 text-xl font-bold tracking-tight text-slate-950">Tablero visual premium</h2>
+              <h2 className="mt-2 text-base font-bold tracking-tight text-slate-950">Tablero visual premium</h2>
               <p className="mt-1 max-w-2xl text-sm text-slate-500">Cargando la pizarra con tu configuración y paneles…</p>
             </div>
           </div>
         </Card>
         <div className="grid gap-4 xl:grid-cols-[340px_minmax(0,1fr)]">
-          <Card className="border-slate-200 bg-white p-5 shadow-none"><div className="h-[420px] rounded-[22px] bg-slate-50" /></Card>
-          <Card className="border-slate-200 bg-white p-5 shadow-none"><div className="h-[420px] rounded-[22px] bg-slate-50" /></Card>
+          <Card className="ft-border bg-white p-3 shadow-none"><div className="h-[420px] rounded-[16px] bg-slate-50" /></Card>
+          <Card className="ft-border bg-white p-3 shadow-none"><div className="h-[420px] rounded-[16px] bg-slate-50" /></Card>
         </div>
       </div>
     );
@@ -936,31 +936,31 @@ function InteractiveDashboardBoardComponent() {
 
   return (
     <div className="ft-dashboard-screen">
-      <Card className="border-slate-200 bg-white px-5 py-5 shadow-none">
+      <Card className="ft-border bg-white px-3 py-3 shadow-none">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-600">Modo pizarra</p>
-            <h2 className="mt-2 text-xl font-bold tracking-tight text-slate-950">Tablero visual premium</h2>
+            <h2 className="mt-2 text-base font-bold tracking-tight text-slate-950">Tablero visual premium</h2>
             <p className="mt-1 max-w-2xl text-sm text-slate-500">Calendario, tareas rápidas y proyectos activos leyendo desde la base real del workspace.</p>
             <div className="mt-3 flex flex-wrap gap-2">
-              <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-600">{activeCount} paneles activos</span>
+              <span className="inline-flex items-center rounded-full border ft-border bg-slate-50 px-3 py-1 text-xs font-medium text-slate-600">{activeCount} paneles activos</span>
               <span className="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">{activeOrganizationId ? 'Workspace de organización activo' : 'Workspace personal activo'}</span>
               <span className="inline-flex items-center rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-medium text-amber-700">{favoriteCount} favorita(s) listas para agenda</span>
             </div>
             <div className="mt-4 grid gap-3 sm:grid-cols-3">
-              <div className="rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-3">
+              <div className="rounded-2xl border ft-border bg-slate-50/80 px-4 py-3">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">Vence hoy</p>
-                <p className="mt-2 text-xl font-bold text-slate-950">{tasksToday.length}</p>
+                <p className="mt-2 text-base font-bold text-slate-950">{tasksToday.length}</p>
                 <p className="text-xs text-slate-500">Tareas abiertas con fecha de hoy.</p>
               </div>
-              <div className="rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-3">
+              <div className="rounded-2xl border ft-border bg-slate-50/80 px-4 py-3">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">Agenda cliente</p>
-                <p className="mt-2 text-xl font-bold text-slate-950">{selectedAgendaItems.length}</p>
+                <p className="mt-2 text-base font-bold text-slate-950">{selectedAgendaItems.length}</p>
                 <p className="text-xs text-slate-500">Favoritas abiertas en la fecha seleccionada.</p>
               </div>
-              <div className="rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-3">
+              <div className="rounded-2xl border ft-border bg-slate-50/80 px-4 py-3">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">Pendientes fecha</p>
-                <p className="mt-2 text-xl font-bold text-slate-950">{selectedDateOpenTasks.length}</p>
+                <p className="mt-2 text-base font-bold text-slate-950">{selectedDateOpenTasks.length}</p>
                 <p className="text-xs text-slate-500">Abiertas para la fecha activa y {activeProjects.length} proyectos activos.</p>
               </div>
             </div>
@@ -969,13 +969,13 @@ function InteractiveDashboardBoardComponent() {
             <button type="button" onClick={() => setAsideOpen((v) => !v)} className="inline-flex h-11 items-center gap-2 rounded-lg border border-sky-200 bg-sky-50/70 px-4 text-sm font-semibold text-sky-800 transition hover:bg-sky-100/70">
               <Menu className="h-4 w-4" /> {asideOpen ? 'Ocultar paneles' : 'Mostrar paneles'}
             </button>
-            <button type="button" onClick={refreshBoard} className="inline-flex h-11 items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+            <button type="button" onClick={refreshBoard} className="inline-flex h-11 items-center gap-2 rounded-lg border ft-border bg-white px-4 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
               <RefreshCcw className="h-4 w-4" /> Refrescar datos
             </button>
             <button type="button" onClick={resetBoardView} className="inline-flex h-11 items-center gap-2 rounded-lg border border-rose-200 bg-rose-50 px-4 text-sm font-semibold text-rose-700 transition hover:bg-rose-100/70">
               <RotateCcw className="h-4 w-4" /> Resetear vista
             </button>
-            <Link href="/app/dashboard" className="inline-flex h-11 items-center rounded-lg border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+            <Link href="/app/dashboard" className="inline-flex h-11 items-center rounded-lg border ft-border bg-white px-4 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
               Volver al dashboard
             </Link>
           </div>
@@ -1030,8 +1030,8 @@ function InteractiveDashboardBoardComponent() {
         ) : null}
 
         <div className="ft-dashboard-screen">
-          <Card className="border-slate-200 bg-white p-4 md:p-5 shadow-none">
-            <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50/80 px-4 py-3 xl:pr-24">
+          <Card className="ft-border bg-white p-4 md:p-3 shadow-none">
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border ft-border bg-slate-50/80 px-4 py-3 xl:pr-24">
               <div className="flex items-center gap-3">
                 <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-white text-slate-700 shadow-none"><LayoutPanelLeft className="h-4 w-4" /></span>
                 <div>
@@ -1039,12 +1039,12 @@ function InteractiveDashboardBoardComponent() {
                   <p className="text-xs text-slate-500">Quita paneles, vuelve a activarlos desde el lateral y deja solo lo que usarás hoy.</p>
                 </div>
               </div>
-              <div className="flex flex-col items-end gap-1 text-right"><span className="inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-600">Estado guardado automáticamente</span>{lastSyncedAt ? <span className="text-[11px] text-slate-500">Última sincronización: {new Intl.DateTimeFormat('es-CR', { hour: '2-digit', minute: '2-digit' }).format(new Date(lastSyncedAt))}</span> : null}</div>
+              <div className="flex flex-col items-end gap-1 text-right"><span className="inline-flex items-center rounded-full border ft-border bg-white px-3 py-1 text-xs font-medium text-slate-600">Estado guardado automáticamente</span>{lastSyncedAt ? <span className="text-[11px] text-slate-500">Última sincronización: {new Intl.DateTimeFormat('es-CR', { hour: '2-digit', minute: '2-digit' }).format(new Date(lastSyncedAt))}</span> : null}</div>
             </div>
             {dataError ? <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">{dataError}</div> : null}
             {activePanels.includes('kanban') ? (
-              <div className="mb-4 rounded-[24px] border border-emerald-200 bg-gradient-to-br from-white via-emerald-50/40 to-white p-4 md:p-5">
-                <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-[24px] border border-emerald-100 bg-white/[0.80] px-4 py-3">
+              <div className="mb-4 rounded-[16px] border border-emerald-200 bg-gradient-to-br from-white via-emerald-50/40 to-white p-4 md:p-3">
+                <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-[16px] border border-emerald-100 bg-white/[0.80] px-4 py-3">
                   <div className="flex items-center gap-3">
                     <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100"><CheckCircle2 className="h-5 w-5" /></span>
                     <div>
@@ -1056,7 +1056,7 @@ function InteractiveDashboardBoardComponent() {
                       <Plus className={cn('h-4 w-4 transition-transform', expanded.kanban ? 'rotate-45' : '')} />
                       {expanded.kanban ? 'Ocultar flujo' : 'Desplegar flujo'}
                     </button>
-                    <button type="button" onClick={() => removePanel('kanban')} className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50"><X className="h-4 w-4" /></button>
+                    <button type="button" onClick={() => removePanel('kanban')} className="inline-flex h-11 w-11 items-center justify-center rounded-full border ft-border bg-white text-slate-500 transition hover:bg-slate-50"><X className="h-4 w-4" /></button>
                   </div>
                 </div>
                 {expanded.kanban ? (
@@ -1072,7 +1072,7 @@ function InteractiveDashboardBoardComponent() {
                     showHeader={false}
                   />
                 ) : (
-                  <div className="rounded-[16px] border border-dashed border-emerald-200 bg-white/[0.70] px-3 py-5 text-sm text-slate-500">
+                  <div className="rounded-[16px] border border-dashed border-emerald-200 bg-white/[0.70] px-3 py-3 text-sm text-slate-500">
                     Usa <span className="font-semibold text-slate-700">Desplegar flujo</span> para volver a abrir las columnas.
                   </div>
                 )}
@@ -1085,10 +1085,10 @@ function InteractiveDashboardBoardComponent() {
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Panel</p>
-                      <h3 className="mt-1 text-xl font-bold text-slate-950">Tarea</h3>
+                      <h3 className="mt-1 text-base font-bold text-slate-950">Tarea</h3>
                     </div>
                     <div className="flex items-center gap-2">
-                      <button type="button" onClick={() => removePanel('task')} className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50"><X className="h-4 w-4" /></button>
+                      <button type="button" onClick={() => removePanel('task')} className="inline-flex h-10 w-10 items-center justify-center rounded-full border ft-border bg-white text-slate-500 transition hover:bg-slate-50"><X className="h-4 w-4" /></button>
                       <button type="button" className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-emerald-200 bg-white text-emerald-600 transition hover:bg-emerald-50"><Grip className="h-4 w-4" /></button>
                       <button type="button" onClick={() => toggleExpanded('task')} className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500 text-white transition hover:bg-emerald-400"><Plus className={cn('h-4 w-4 transition-transform', expanded.task ? 'rotate-45' : '')} /></button>
                     </div>
@@ -1112,7 +1112,7 @@ function InteractiveDashboardBoardComponent() {
                         <p className="text-xs text-slate-500">Se agenda para <span className="font-semibold text-slate-700 capitalize">{formatLongDate(new Date(selectedDate))}</span>.</p>
                         <div className="flex gap-2">
                           <Button className="h-10" onClick={addQuickTask} disabled={savingTask || !taskDraft.title.trim()}>{savingTask ? 'Creando…' : 'Crear tarea'}</Button>
-                          <Link href="/app/tasks/new" className="inline-flex h-10 items-center rounded-lg border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">Ir a tareas</Link>
+                          <Link href="/app/tasks/new" className="inline-flex h-10 items-center rounded-lg border ft-border bg-white px-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">Ir a tareas</Link>
                         </div>
                       </div>
                       {createdTaskId ? (
@@ -1131,7 +1131,7 @@ function InteractiveDashboardBoardComponent() {
                         {(nextTasks.length ? nextTasks : openTasks.slice(0, 4)).map((task) => {
                           const favorite = favoriteTaskIds.has(task.id);
                           return (
-                            <div key={task.id} className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-3 text-left transition hover:bg-white hover:shadow-none">
+                            <div key={task.id} className="rounded-lg border ft-border bg-slate-50 px-3 py-3 text-left transition hover:bg-white hover:shadow-none">
                             <div className="flex items-start justify-between gap-3">
                               <button type="button" onClick={() => openTask(task.id)} className="min-w-0 flex-1 text-left">
                                 <p className="text-sm font-semibold text-slate-900">{task.title}</p>
@@ -1142,7 +1142,7 @@ function InteractiveDashboardBoardComponent() {
                                 onClick={() => toggleTaskFavorite(task)}
                                 title={favorite ? 'Quitar de agenda del día' : 'Mostrar en agenda del día'}
                                 aria-label={favorite ? 'Quitar de agenda del día' : 'Mostrar en agenda del día'}
-                                className={cn('inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border transition', favorite ? 'border-amber-200 bg-amber-50 text-amber-600' : 'border-slate-200 bg-white text-slate-500 hover:text-amber-600')}
+                                className={cn('inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border transition', favorite ? 'border-amber-200 bg-amber-50 text-amber-600' : 'ft-border bg-white text-slate-500 hover:text-amber-600')}
                               >
                                 <Star className={cn('h-4 w-4', favorite && 'fill-current')} />
                               </button>
@@ -1150,7 +1150,7 @@ function InteractiveDashboardBoardComponent() {
                             </div>
                           );
                         })}
-                        {!loadingData && !openTasks.length ? <div className="rounded-lg border border-dashed border-slate-200 bg-slate-50 px-3 py-3 text-sm text-slate-500">No hay tareas cargadas todavía.</div> : null}
+                        {!loadingData && !openTasks.length ? <div className="rounded-lg border border-dashed ft-border bg-slate-50 px-3 py-3 text-sm text-slate-500">No hay tareas cargadas todavía.</div> : null}
                       </div>
                     </div>
                   ) : null}
@@ -1158,15 +1158,15 @@ function InteractiveDashboardBoardComponent() {
               ) : null}
 
               {activePanels.includes('projects') ? (
-                <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-none transition hover:shadow-none">
+                <div className="rounded-xl border ft-border bg-white p-4 shadow-none transition hover:shadow-none">
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Panel</p>
-                      <h3 className="mt-1 text-xl font-bold text-slate-950">Proyectos</h3>
+                      <h3 className="mt-1 text-base font-bold text-slate-950">Proyectos</h3>
                     </div>
                     <div className="flex items-center gap-2">
-                      <button type="button" onClick={() => removePanel('projects')} className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50"><X className="h-4 w-4" /></button>
-                      <span className="inline-flex h-10 items-center rounded-full border border-slate-200 bg-slate-50 px-3 text-xs font-semibold text-slate-500">CRUD rápido</span>
+                      <button type="button" onClick={() => removePanel('projects')} className="inline-flex h-10 w-10 items-center justify-center rounded-full border ft-border bg-white text-slate-500 transition hover:bg-slate-50"><X className="h-4 w-4" /></button>
+                      <span className="inline-flex h-10 items-center rounded-full border ft-border bg-slate-50 px-3 text-xs font-semibold text-slate-500">CRUD rápido</span>
                       <Link href="/app/projects/new" className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500 text-white transition hover:bg-emerald-400"><Plus className="h-4 w-4" /></Link>
                     </div>
                   </div>
@@ -1174,14 +1174,14 @@ function InteractiveDashboardBoardComponent() {
                   {expanded.projects ? (
                     <div className="mt-4 grid gap-3 sm:grid-cols-2">
                       {activeProjects.map((project) => (
-                        <Link key={project.id} href={projectDetailRoute(project.id)} className="rounded-lg border border-slate-200 bg-white px-4 py-3 transition hover:shadow-none">
+                        <Link key={project.id} href={projectDetailRoute(project.id)} className="rounded-lg border ft-border bg-white px-4 py-3 transition hover:shadow-none">
                           <p className="text-sm font-semibold text-slate-900">{project.title}</p>
                           <p className="mt-1 text-xs text-slate-500">{project.client_name?.trim() || 'Sin cliente'} · {formatStatus(project.status)}</p>
                           <p className="mt-2 text-[11px] font-medium uppercase tracking-[0.14em] text-emerald-700">{project.due_date || 'Sin fecha'}</p>
                         </Link>
                       ))}
                       {!loadingData && !activeProjects.length ? (
-                        <div className="rounded-lg border border-dashed border-slate-200 bg-slate-50 px-4 py-4 text-sm text-slate-500 sm:col-span-2">
+                        <div className="rounded-lg border border-dashed ft-border bg-slate-50 px-4 py-4 text-sm text-slate-500 sm:col-span-2">
                           Aún no hay proyectos activos para mostrar. <Link href="/app/projects" className="font-semibold text-emerald-700">Ir a proyectos</Link>
                         </div>
                       ) : null}
@@ -1192,15 +1192,15 @@ function InteractiveDashboardBoardComponent() {
             </div>
 
             {activePanels.includes('calendar') ? (
-              <div className="mt-4 rounded-xl border border-slate-200 bg-white p-4 shadow-none transition hover:shadow-none">
+              <div className="mt-4 rounded-xl border ft-border bg-white p-4 shadow-none transition hover:shadow-none">
                 <div className="mb-4 flex items-center justify-between gap-3">
                   <div>
                     <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Panel</p>
-                    <h3 className="mt-1 text-xl font-bold text-slate-950">Calendario</h3>
+                    <h3 className="mt-1 text-base font-bold text-slate-950">Calendario</h3>
                   </div>
                   <div className="flex items-center gap-2">
-                    <button type="button" onClick={() => removePanel('calendar')} className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50"><X className="h-4 w-4" /></button>
-                    <span className="inline-flex h-10 items-center rounded-full border border-slate-200 bg-slate-50 px-3 text-xs font-semibold text-slate-500">CRUD rápido</span>
+                    <button type="button" onClick={() => removePanel('calendar')} className="inline-flex h-10 w-10 items-center justify-center rounded-full border ft-border bg-white text-slate-500 transition hover:bg-slate-50"><X className="h-4 w-4" /></button>
+                    <span className="inline-flex h-10 items-center rounded-full border ft-border bg-slate-50 px-3 text-xs font-semibold text-slate-500">CRUD rápido</span>
                   </div>
                 </div>
                 <CalendarPanel
@@ -1226,7 +1226,7 @@ function InteractiveDashboardBoardComponent() {
 
 
 
-          <Card className="border-slate-200 bg-white p-4 md:p-5 transition hover:shadow-none">
+          <Card className="ft-border bg-white p-4 md:p-3 transition hover:shadow-none">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
               <div className="flex items-center gap-3">
                 <span className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
@@ -1244,18 +1244,18 @@ function InteractiveDashboardBoardComponent() {
               value={noteDraft}
               onChange={(event) => setNoteDraft(event.target.value)}
               placeholder="Escribe una nota o recordatorio"
-              className="mt-4 min-h-[120px] w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm leading-6 text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-emerald-300 focus:bg-white"
+              className="mt-4 min-h-[88px] w-full rounded-xl border ft-border bg-slate-50 px-4 py-3 text-sm leading-6 text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-emerald-300 focus:bg-white"
             />
             <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-500">
               <span>{noteDraft.trim() ? 'Se guardará sola en 10 segundos de inactividad' : 'Empieza escribiendo para dejar un recordatorio nuevo'}</span>
               <button type="button" onClick={() => { setNoteDraft(''); setEditingNoteId(null); }} className="font-medium text-slate-600 hover:text-slate-900">Limpiar editor</button>
             </div>
 
-            <div className="mt-5 overflow-hidden rounded-[22px] border border-slate-200 bg-white">
+            <div className="mt-5 overflow-hidden rounded-[16px] border ft-border bg-white">
               {visibleNotes.length ? visibleNotes.map((item, index) => {
                 const isEditingInline = inlineEditingNoteId === item.id;
                 return (
-                  <div key={item.id} className={index === 0 ? '' : 'border-t border-slate-200'}>
+                  <div key={item.id} className={index === 0 ? '' : 'border-t ft-border'}>
                     <div className="flex flex-col gap-3 px-4 py-4 md:flex-row md:items-start md:justify-between">
                       <div className="min-w-0 flex-1">
                         {isEditingInline ? (
@@ -1263,11 +1263,11 @@ function InteractiveDashboardBoardComponent() {
                             <textarea
                               value={inlineNoteDraft}
                               onChange={(event) => setInlineNoteDraft(event.target.value)}
-                              className="min-h-[92px] w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm leading-6 text-slate-700 outline-none transition focus:border-emerald-300 focus:bg-white"
+                              className="min-h-[92px] w-full rounded-xl border ft-border bg-slate-50 px-3 py-2 text-sm leading-6 text-slate-700 outline-none transition focus:border-emerald-300 focus:bg-white"
                             />
                             <div className="mt-3 flex flex-wrap gap-2">
                               <button type="button" onClick={() => saveInlineNote(item.id)} className="inline-flex h-9 items-center rounded-lg border border-emerald-200 bg-emerald-50 px-3 text-xs font-semibold text-emerald-800 transition hover:bg-emerald-100">Guardar</button>
-                              <button type="button" onClick={cancelInlineNoteEdit} className="inline-flex h-9 items-center rounded-lg border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-600 transition hover:bg-slate-50">Cancelar</button>
+                              <button type="button" onClick={cancelInlineNoteEdit} className="inline-flex h-9 items-center rounded-lg border ft-border bg-white px-3 text-xs font-semibold text-slate-600 transition hover:bg-slate-50">Cancelar</button>
                             </div>
                           </>
                         ) : (
@@ -1279,10 +1279,10 @@ function InteractiveDashboardBoardComponent() {
                       </div>
                       {!isEditingInline ? (
                         <div className="flex items-center gap-2 md:pl-4">
-                          <button type="button" onClick={() => startInlineNoteEdit(item.id)} className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50 hover:text-slate-900">
+                          <button type="button" onClick={() => startInlineNoteEdit(item.id)} className="inline-flex h-9 w-9 items-center justify-center rounded-lg border ft-border bg-white text-slate-500 transition hover:bg-slate-50 hover:text-slate-900">
                             <Pencil className="h-3.5 w-3.5" />
                           </button>
-                          <button type="button" onClick={() => deleteSavedNote(item.id)} className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50 hover:text-rose-600">
+                          <button type="button" onClick={() => deleteSavedNote(item.id)} className="inline-flex h-9 w-9 items-center justify-center rounded-lg border ft-border bg-white text-slate-500 transition hover:bg-slate-50 hover:text-rose-600">
                             <Trash2 className="h-3.5 w-3.5" />
                           </button>
                         </div>
@@ -1291,13 +1291,13 @@ function InteractiveDashboardBoardComponent() {
                   </div>
                 );
               }) : (
-                <div className="px-4 py-5 text-sm text-slate-500">Todavía no hay notas guardadas para esta pizarra.</div>
+                <div className="px-4 py-3 text-sm text-slate-500">Todavía no hay notas guardadas para esta pizarra.</div>
               )}
             </div>
 
             <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
               <p className="text-xs text-slate-500">Mostrando {visibleNotes.length ? `${(notesPage - 1) * 5 + 1}-${Math.min(notesPage * 5, orderedNotes.length)}` : '0'} de {orderedNotes.length} notas</p>
-              <div className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-2 py-2">
+              <div className="flex items-center gap-2 rounded-2xl border ft-border bg-white px-2 py-2">
                 <button type="button" onClick={() => setNotesPage((current) => Math.max(1, current - 1))} disabled={notesPage <= 1} className="inline-flex h-9 items-center gap-2 rounded-xl px-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40">
                   <ChevronLeft className="h-4 w-4" />Atrás
                 </button>
