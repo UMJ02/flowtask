@@ -228,12 +228,12 @@ export function ProjectInlineTasks({ project, initialTasks, members, canManage =
   }
 
   return (
-    <section id="tareas" className="scroll-mt-28 rounded-[24px] border border-[#E7EDF5] bg-white p-5">
+    <section id="tareas" className="ft-project-detail-panel scroll-mt-28 p-5">
       <div className="mb-5 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#16A36C]">Tareas internas</p>
-          <h2 className="mt-1 text-xl font-semibold ft-text-main">Tareas del proyecto</h2>
-          <p className="mt-1 max-w-2xl text-sm font-medium ft-text-muted">Estas tareas viven dentro del proyecto y ayudan a medir su avance real.</p>
+          <p className="ft-kicker text-[#16A36C]">Tareas internas</p>
+          <h2 className="ft-heading-section mt-1">Tareas del proyecto</h2>
+          <p className="ft-copy mt-1 max-w-2xl">Estas tareas viven dentro del proyecto y ayudan a medir su avance real.</p>
         </div>
         <div className="min-w-[180px]">
           <div className="flex items-center justify-between text-sm font-semibold ft-text-main"><span>Avance</span><span>{progress}%</span></div>
@@ -242,33 +242,33 @@ export function ProjectInlineTasks({ project, initialTasks, members, canManage =
         </div>
       </div>
 
-      <div className="mb-5 grid gap-3 rounded-[22px] border border-[#E7EDF5] bg-[#FBFCFE] p-3 md:grid-cols-2 xl:grid-cols-[minmax(220px,1fr)_170px_150px_minmax(190px,240px)_130px] xl:items-center">
-        <input value={draft.title} onChange={(e) => setDraft((current) => ({ ...current, title: e.target.value }))} disabled={!canManage} className="h-10 rounded-[16px] border border-[#E7EDF5] bg-white px-4 text-sm font-bold ft-text-main outline-none focus:border-[#16C784] focus:ring-4 focus:ring-[#16C784]/10" placeholder="Nueva tarea del proyecto..." />
-        <input type="date" value={draft.dueDate} onChange={(e) => setDraft((current) => ({ ...current, dueDate: e.target.value }))} disabled={!canManage} className="h-10 rounded-[16px] border border-[#E7EDF5] bg-white px-3 text-sm font-bold ft-text-main outline-none" />
-        <select value={draft.priority} onChange={(e) => setDraft((current) => ({ ...current, priority: e.target.value }))} disabled={!canManage} className="h-10 rounded-[16px] border border-[#E7EDF5] bg-white px-3 text-sm font-bold ft-text-main outline-none">
+      <div className="ft-subcard mb-5 grid gap-3 bg-[#FBFCFE] p-3 md:grid-cols-2 xl:grid-cols-[minmax(220px,1fr)_170px_150px_minmax(190px,240px)_130px] xl:items-center">
+        <input value={draft.title} onChange={(e) => setDraft((current) => ({ ...current, title: e.target.value }))} disabled={!canManage} className="h-10 px-4 text-sm font-bold ft-text-main" placeholder="Nueva tarea del proyecto..." />
+        <input type="date" value={draft.dueDate} onChange={(e) => setDraft((current) => ({ ...current, dueDate: e.target.value }))} disabled={!canManage} className="h-10 px-3 text-sm font-bold ft-text-main" />
+        <select value={draft.priority} onChange={(e) => setDraft((current) => ({ ...current, priority: e.target.value }))} disabled={!canManage} className="h-10 px-3 text-sm font-bold ft-text-main">
           <option value="media">Media</option><option value="alta">Alta</option><option value="baja">Baja</option>
         </select>
-        <select value={draft.assigneeId || firstMemberId} onChange={(e) => setDraft((current) => ({ ...current, assigneeId: e.target.value }))} disabled={!canManage || !members.length} className="h-10 rounded-[16px] border border-[#E7EDF5] bg-white px-3 text-sm font-bold ft-text-main outline-none">
+        <select value={draft.assigneeId || firstMemberId} onChange={(e) => setDraft((current) => ({ ...current, assigneeId: e.target.value }))} disabled={!canManage || !members.length} className="h-10 px-3 text-sm font-bold ft-text-main">
           <option value="">Sin responsable</option>
           {members.map((member) => <option key={member.user_id} value={member.user_id}>{memberName(member)}</option>)}
         </select>
-        <button type="button" onClick={createProjectTask} disabled={!canManage || !draft.title.trim() || busyId === "new"} className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-[16px] bg-[#16C784] px-5 text-sm font-semibold text-white disabled:opacity-50"><Plus className="h-4 w-4" />Agregar</button>
+        <button type="button" onClick={createProjectTask} disabled={!canManage || !draft.title.trim() || busyId === "new"} className="ft-project-action ft-project-action-primary w-full disabled:opacity-50"><Plus className="h-4 w-4" />Agregar</button>
       </div>
 
-      <div className="divide-y divide-[#EEF2F7] overflow-hidden rounded-[22px] border border-[#E7EDF5] bg-white">
+      <div className="space-y-2">
         {tasks.length ? tasks.map((task) => {
           const isEditing = editingId === task.id;
           const currentAssigneeId = isEditing ? editDraft.assigneeId : (task.assignee_id ?? task.task_assignees?.[0]?.user_id ?? "");
           const assignee = members.find((member) => member.user_id === currentAssigneeId) ?? members[0];
           const assigneeLabel = assignee ? memberName(assignee) : "Sin responsable";
           return (
-            <div key={task.id} className="p-4">
+            <div key={task.id} className="ft-project-inline-task-row">
               {isEditing ? (
                 <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-[minmax(220px,1fr)_150px_140px_minmax(180px,230px)_auto] xl:items-center">
-                  <input value={editDraft.title} onChange={(e) => setEditDraft((current) => ({ ...current, title: e.target.value }))} className="h-11 rounded-[14px] border border-[#E7EDF5] px-3 text-sm font-bold outline-none" />
-                  <input type="date" value={editDraft.dueDate} onChange={(e) => setEditDraft((current) => ({ ...current, dueDate: e.target.value }))} className="h-11 rounded-[14px] border border-[#E7EDF5] px-3 text-sm font-bold outline-none" />
-                  <select value={editDraft.status} onChange={(e) => setEditDraft((current) => ({ ...current, status: e.target.value }))} className="h-11 rounded-[14px] border border-[#E7EDF5] px-3 text-sm font-bold outline-none"><option value="en_proceso">En proceso</option><option value="produccion">Producción</option><option value="en_espera">En espera</option><option value="concluido">Completada</option></select>
-                  <select value={editDraft.assigneeId} onChange={(e) => setEditDraft((current) => ({ ...current, assigneeId: e.target.value }))} className="h-11 rounded-[14px] border border-[#E7EDF5] px-3 text-sm font-bold outline-none"><option value="">Sin responsable</option>{members.map((member) => <option key={member.user_id} value={member.user_id}>{memberName(member)}</option>)}</select>
+                  <input value={editDraft.title} onChange={(e) => setEditDraft((current) => ({ ...current, title: e.target.value }))} className="h-11 px-3 text-sm font-bold" />
+                  <input type="date" value={editDraft.dueDate} onChange={(e) => setEditDraft((current) => ({ ...current, dueDate: e.target.value }))} className="h-11 px-3 text-sm font-bold" />
+                  <select value={editDraft.status} onChange={(e) => setEditDraft((current) => ({ ...current, status: e.target.value }))} className="h-11 px-3 text-sm font-bold"><option value="en_proceso">En proceso</option><option value="produccion">Producción</option><option value="en_espera">En espera</option><option value="concluido">Completada</option></select>
+                  <select value={editDraft.assigneeId} onChange={(e) => setEditDraft((current) => ({ ...current, assigneeId: e.target.value }))} className="h-11 px-3 text-sm font-bold"><option value="">Sin responsable</option>{members.map((member) => <option key={member.user_id} value={member.user_id}>{memberName(member)}</option>)}</select>
                   <div className="flex gap-2">
                     <button type="button" onClick={() => saveProjectTask(task.id)} disabled={busyId === task.id} className="grid h-11 w-11 place-items-center rounded-[14px] bg-[#050B18] text-white"><Save className="h-4 w-4" /></button>
                     <button type="button" onClick={() => setEditingId(null)} className="grid h-11 w-11 place-items-center rounded-[14px] border border-[#E7EDF5] bg-white ft-text-muted"><X className="h-4 w-4" /></button>

@@ -165,13 +165,13 @@ function ProjectMembersAvatars({ countSeed }: { countSeed: number }) {
 
 function ProjectsStatCard({ icon, label, value, helper, tone }: { icon: ReactNode; label: string; value: number; helper: string; tone: string }) {
   return (
-    <div className="ft-section-card">
+    <div className="ft-project-metric-card">
       <div className="flex items-center gap-4">
         <span className={`inline-flex h-10 w-14 shrink-0 items-center justify-center rounded-full ${tone}`}>{icon}</span>
         <div>
-          <p className="ft-small-title text-slate-500">{label}</p>
-          <p className="mt-1 text-[24px] font-semibold tracking-tight text-slate-950">{value}</p>
-          <p className="ft-secondary mt-1">{helper}</p>
+          <p className="ft-metric-label">{label}</p>
+          <p className="ft-metric-value mt-1">{value}</p>
+          <p className="ft-task-muted mt-1">{helper}</p>
         </div>
       </div>
     </div>
@@ -180,7 +180,7 @@ function ProjectsStatCard({ icon, label, value, helper, tone }: { icon: ReactNod
 
 function ProjectsPagination({ total }: { total: number }) {
   return (
-    <div className="flex flex-col gap-3 border-t ft-border px-5 py-4 text-sm ft-text-muted md:flex-row md:items-center md:justify-between">
+    <div className="ft-actionbar flex flex-col gap-3 border-t-0 px-5 py-4 text-sm ft-text-muted md:flex-row md:items-center md:justify-between">
       <p>Mostrando {total ? 1 : 0} a {Math.min(total, 10)} de {total} proyectos</p>
       <div className="flex flex-wrap items-center gap-2">
         <span className="inline-flex h-9 items-center rounded-xl border ft-border bg-slate-50 px-4 font-semibold text-slate-500">Página 1</span>
@@ -210,8 +210,8 @@ function ProjectRow({ project, index, queryString }: { project: ProjectSummary; 
             )}
           </span>
           <span>
-            <span className="block text-base font-semibold ft-text-main transition group-hover:text-[#16C784]">{project.title}</span>
-            <span className="mt-1 line-clamp-2 block max-w-[330px] text-sm leading-6 ft-text-muted">{getProjectDescription(project)}</span>
+            <span className="ft-project-title block transition group-hover:text-[#16C784]">{project.title}</span>
+            <span className="ft-project-copy mt-1 line-clamp-2 block max-w-[330px]">{getProjectDescription(project)}</span>
           </span>
         </Link>
       </td>
@@ -260,26 +260,26 @@ export default async function ProjectsPage({ searchParams }: { searchParams?: Pr
   };
 
   return (
-    <div className="ft-governed-screen pb-3">
-      <Card className="ft-main-card">
+    <div className="ft-projects-screen pb-3">
+      <Card className="ft-projects-hero">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
           <div>
-            <h1 className="ft-page-title">Proyectos</h1>
-            <p className="ft-page-subtitle">Todos los proyectos de tu espacio de trabajo.</p>
+            <h1 className="ft-heading-page">Proyectos</h1>
+            <p className="ft-copy mt-2 max-w-3xl">Todos los proyectos de tu espacio de trabajo.</p>
           </div>
           <div className="flex flex-wrap gap-3">
-            <a href="#project-filters" className="ft-button border border-[#E7ECF3] bg-white text-slate-700 hover:bg-slate-50">
+            <a href="#project-filters" className="ft-project-action">
               <Filter className="h-4 w-4" />
               Filtros
             </a>
-            <Link href={projectNewRoute(queryString)} className="ft-button bg-slate-950 text-white hover:bg-slate-900">
+            <Link href={projectNewRoute(queryString)} className="ft-project-action ft-project-action-primary">
               <Plus className="h-4 w-4" />
               Nuevo proyecto
             </Link>
           </div>
         </div>
 
-        <div className="mt-7 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <div className="ft-projects-stat-grid mt-6">
           <ProjectsStatCard icon={<FolderKanban className="h-6 w-6" />} label="Total proyectos" value={stats.total} helper="proyectos creados" tone="bg-violet-50 text-violet-700" />
           <ProjectsStatCard icon={<CheckCircle2 className="h-6 w-6" />} label="Activos" value={stats.active} helper="proyectos en marcha" tone="bg-emerald-50 text-emerald-700" />
           <ProjectsStatCard icon={<PauseCircle className="h-6 w-6" />} label="En pausa" value={stats.paused} helper="proyecto pausado" tone="bg-amber-50 text-amber-700" />
@@ -287,8 +287,8 @@ export default async function ProjectsPage({ searchParams }: { searchParams?: Pr
         </div>
       </Card>
 
-      <Card className="ft-section-card p-0">
-        <form id="project-filters" className="border-b border-[#E7ECF3] p-5">
+      <Card className="ft-projects-panel p-0">
+        <form id="project-filters" className="ft-projects-filter-panel border-b-0">
           <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-[minmax(280px,1fr)_180px_190px_auto_auto]">
             <div className="relative">
               <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
@@ -303,22 +303,22 @@ export default async function ProjectsPage({ searchParams }: { searchParams?: Pr
             </select>
             <input name="department" defaultValue={filters.department} placeholder="Departamento" className="ft-control w-full px-4 font-semibold text-slate-700" />
             <details className="group relative">
-              <summary className="ft-button w-full cursor-pointer list-none border border-[#E7ECF3] bg-white text-slate-700 hover:bg-slate-50">
+              <summary className="ft-project-action w-full cursor-pointer list-none">
                 Más filtros <ChevronDown className="h-4 w-4 transition group-open:rotate-180" />
               </summary>
-              <div className="absolute right-0 z-20 mt-2 w-[280px] space-y-3 rounded-[20px] border ft-border bg-white p-4">
+              <div className="ft-panel absolute right-0 z-20 mt-2 w-[280px] space-y-3 p-4">
                 <label className="block text-xs font-semibold uppercase tracking-[0.12em] ft-text-muted">Tipo</label>
-                <select name="mode" defaultValue={filters.mode} className="h-11 w-full rounded-[14px] border ft-border bg-white px-3 text-sm font-bold text-[#334155] outline-none focus:border-[#16C784]">
+                <select name="mode" defaultValue={filters.mode} className="h-11 w-full text-sm font-bold">
                   <option value="">Todos</option>
                   <option value="solo">Individuales</option>
                   <option value="collaborative">Colaborativos</option>
                 </select>
                 <label className="block text-xs font-semibold uppercase tracking-[0.12em] ft-text-muted">Cliente</label>
-                <input name="client" defaultValue={filters.client} placeholder="Nombre del cliente" className="h-11 w-full rounded-[14px] border ft-border bg-white px-3 text-sm font-bold text-[#334155] outline-none placeholder:text-slate-400 focus:border-[#16C784]" />
+                <input name="client" defaultValue={filters.client} placeholder="Nombre del cliente" className="h-11 w-full text-sm font-bold" />
               </div>
             </details>
-            <button type="submit" className="ft-button bg-slate-950 text-white hover:bg-slate-900"><Filter className="h-4 w-4" /> Aplicar</button>
-            <Link href="/app/projects" className="ft-button border border-[#E7ECF3] bg-white text-slate-700 hover:bg-slate-50">Limpiar</Link>
+            <button type="submit" className="ft-project-action ft-project-action-primary"><Filter className="h-4 w-4" /> Aplicar</button>
+            <Link href="/app/projects" className="ft-project-action">Limpiar</Link>
           </div>
         </form>
 

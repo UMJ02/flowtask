@@ -310,12 +310,12 @@ export function ProjectForm({ projectId, initialData, submitLabel, successMessag
   }), [initialData, departmentOptions, countryOptions]);
 
   return (
-    <form className="-mx-4 min-h-screen bg-[#F6F8FC] pb-8 md:-mx-6" onSubmit={handleSubmit(onSubmit)}>
+    <form className="ft-projects-screen bg-[#F6F8FC] pb-8" onSubmit={handleSubmit(onSubmit)}>
       <div className="sticky top-0 z-40 mb-6 px-3 py-2 sm:px-4 lg:px-5">
-        <div className="rounded-[20px] border ft-border bg-white/95 px-4 py-4 backdrop-blur-xl sm:px-5 lg:px-5">
+        <div className="ft-projects-toolbar bg-white/95 px-4 py-4 backdrop-blur-xl sm:px-5 lg:px-5">
           <div className="flex min-h-[72px] w-full flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex min-w-0 items-center gap-3">
-              <Link href={cancelHref} className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#050B18] text-white transition hover:translate-y-0" aria-label="Volver">
+              <Link href={cancelHref} className="ft-btn-primary inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-white transition" aria-label="Volver">
                 <ArrowLeft className="h-5 w-5" />
               </Link>
               <div className="min-w-0">
@@ -325,9 +325,9 @@ export function ProjectForm({ projectId, initialData, submitLabel, successMessag
               </div>
             </div>
             <div className="flex flex-wrap items-center gap-2 lg:justify-end">
-              <button type="button" onClick={() => { reset(resetValues); setProjectImagePreview(initialData?.imageUrl ?? ""); setProjectImageFile(null); }} className="inline-flex h-10 items-center rounded-2xl border ft-border bg-white px-3.5 text-[13px] font-bold text-slate-800 transition hover:bg-slate-50">Restablecer</button>
-              <Link href={cancelHref} className="inline-flex h-10 items-center justify-center rounded-2xl border ft-border bg-white px-4 text-[13px] font-bold text-slate-800 transition hover:bg-slate-50">Cancelar</Link>
-              <Button loading={isBusy} type="submit" className="h-10 rounded-xl bg-[#16C784] px-5 text-white hover:bg-[#12b777]">{submitLabel ?? (isEdit ? "Guardar cambios" : "Crear proyecto")}</Button>
+              <button type="button" onClick={() => { reset(resetValues); setProjectImagePreview(initialData?.imageUrl ?? ""); setProjectImageFile(null); }} className="ft-btn-secondary inline-flex h-10 items-center px-3.5 text-[13px] font-bold text-slate-800 transition">Restablecer</button>
+              <Link href={cancelHref} className="ft-btn-secondary inline-flex h-10 items-center justify-center px-4 text-[13px] font-bold text-slate-800 transition">Cancelar</Link>
+              <Button loading={isBusy} type="submit" className="ft-btn-primary h-10 px-5 text-white">{submitLabel ?? (isEdit ? "Guardar cambios" : "Crear proyecto")}</Button>
             </div>
           </div>
         </div>
@@ -335,19 +335,19 @@ export function ProjectForm({ projectId, initialData, submitLabel, successMessag
 
       <div className="grid w-full gap-4 px-3 sm:px-4 lg:px-5 xl:grid-cols-[minmax(0,1fr)_380px] 2xl:gap-5">
         <div className="space-y-5">
-          <section className="rounded-[20px] border ft-border bg-white p-4 sm:p-5">
-            <div className="rounded-[20px] border ft-border bg-white p-5 transition focus-within:border-emerald-200 focus-within:ring-4 focus-within:ring-emerald-50">
+          <section className="ft-project-form-panel p-4 sm:p-5">
+            <div className="ft-subcard p-5 transition focus-within:border-emerald-200 focus-within:ring-4 focus-within:ring-emerald-50">
               <div className="mb-3 flex items-center justify-between gap-3">
-                <label className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Nombre del proyecto</label>
+                <label className="ft-kicker text-slate-500">Nombre del proyecto</label>
                 <span className="text-xs font-bold text-slate-400">{watchedTitle.length} / 120</span>
               </div>
-              <Input {...register("title")} placeholder="Ej. Lanzamiento de campaña Q3" className="min-h-[52px] w-full rounded-xl border ft-border bg-white px-4 py-2.5 text-[22px] font-semibold leading-[1.15] tracking-[-0.028em] ft-text-main shadow-none outline-none transition placeholder:text-slate-400 focus:border-[#16C784] focus:ring-4 focus:ring-emerald-500/10 sm:text-[26px]" />
+              <Input {...register("title")} placeholder="Ej. Lanzamiento de campaña Q3" className="min-h-[52px] w-full px-4 py-2.5 text-[22px] font-semibold leading-[1.15] tracking-[-0.028em] ft-text-main shadow-none sm:text-[26px]" />
               {errors.title ? <p className="mt-3 text-sm font-semibold text-red-600">{errors.title.message}</p> : null}
             </div>
 
             <div className="mt-5 overflow-hidden rounded-[20px] border ft-border bg-white">
               <div className="flex items-center justify-between border-b ft-border px-5 py-4">
-                <label className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Descripción</label>
+                <label className="ft-kicker text-slate-500">Descripción</label>
                 <span className="text-xs font-bold text-slate-400">{watchedDescription.length} caracteres</span>
               </div>
               <Textarea {...register("description")} placeholder="Objetivo, alcance, entregables y contexto del proyecto." className="min-h-[180px] resize-y rounded-none border-0 bg-white px-5 py-4 text-base leading-7 text-slate-700 shadow-none focus:ring-0" />
@@ -362,7 +362,7 @@ export function ProjectForm({ projectId, initialData, submitLabel, successMessag
                 </div>
                 <div className="space-y-3">
                   <input type="hidden" {...register("imageUrl")} />
-                  <Input type="file" accept="image/*" className="h-10 rounded-2xl ft-border bg-white font-semibold" onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                  <Input type="file" accept="image/*" className="h-10 font-semibold" onChange={(event: ChangeEvent<HTMLInputElement>) => {
                     const file = event.target.files?.[0] ?? null;
                     setProjectImageFile(file);
                     if (file) {
@@ -377,32 +377,32 @@ export function ProjectForm({ projectId, initialData, submitLabel, successMessag
             </FieldCard>
 
             <FieldCard label="Estado" icon={<CheckCircle2 className="h-4 w-4" />}>
-              <Select {...register("status")} className="h-10 rounded-2xl ft-border bg-white font-semibold">
+              <Select {...register("status")} className="h-10 font-semibold">
                 {PROJECT_STATUSES.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
               </Select>
             </FieldCard>
 
             <FieldCard label="Departamento" icon={<FolderKanban className="h-4 w-4" />}>
-              <Select {...register("department")} className="h-10 rounded-2xl ft-border bg-white font-semibold">
+              <Select {...register("department")} className="h-10 font-semibold">
                 <option value="">Seleccionar</option>
                 {departmentOptions.map((item) => <option key={item.id} value={item.code}>{item.name}</option>)}
               </Select>
             </FieldCard>
 
             <FieldCard label="Registro" icon={<Tag className="h-4 w-4" />} helper="Asocia este proyecto con el registro correcto para mantener todo organizado.">
-              <Input {...register("clientName")} placeholder="Nombre del registro" list="project-registry-client-options" className="h-10 rounded-2xl ft-border bg-white font-semibold" />
+              <Input {...register("clientName")} placeholder="Nombre del registro" list="project-registry-client-options" className="h-10 font-semibold" />
               <datalist id="project-registry-client-options">{clientOptions.map((item) => <option key={item.id} value={item.name} />)}</datalist>
             </FieldCard>
 
             <FieldCard label="País" icon={<Globe2 className="h-4 w-4" />}>
-              <Select {...register("country")} className="h-10 rounded-2xl ft-border bg-white font-semibold">
+              <Select {...register("country")} className="h-10 font-semibold">
                 <option value="">Seleccionar país</option>
                 {countryOptions.map((item) => <option key={item.id} value={item.name}>{item.name}</option>)}
               </Select>
             </FieldCard>
 
             <FieldCard label="Deadline" icon={<CalendarDays className="h-4 w-4" />}>
-              <Input {...register("dueDate")} type="date" className="h-10 rounded-2xl ft-border bg-white font-semibold" />
+              <Input {...register("dueDate")} type="date" className="h-10 font-semibold" />
             </FieldCard>
 
             <label className="md:col-span-2 flex cursor-pointer items-center justify-between gap-4 rounded-[20px] border border-[#BBF7D0] bg-[#ECFDF5] p-5">

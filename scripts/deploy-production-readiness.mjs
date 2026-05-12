@@ -4,7 +4,7 @@ import path from "node:path";
 
 const root = process.cwd();
 const failures = [];
-const expectedVersion = "58.25.6.1-tasks-kanban-ui-system-migration";
+const expectedVersion = "58.25.6.2-projects-ui-system-migration";
 
 function exists(rel){ return fs.existsSync(path.join(root, rel)); }
 function read(rel){ return exists(rel) ? fs.readFileSync(path.join(root, rel), "utf8") : ""; }
@@ -22,20 +22,21 @@ for (const rel of [
   "scripts/runtime-check.mjs",
   "scripts/validate-env.mjs",
   "scripts/design-doctor.mjs",
-  "scripts/verify-v58.25.6.1.mjs",
-  "docs/release/V58_25_6_1_TASKS_KANBAN_UI_SYSTEM_MIGRATION.md",
-  "docs/qa/FLOWTASK_V58_25_6_1_TASKS_KANBAN_UI_SYSTEM_MIGRATION_QA.md",
-  "src/components/tasks/task-action-list.tsx",
-  "src/components/tasks/task-kanban-board.tsx",
-  "src/components/tasks/task-filters.tsx",
-  "src/components/tasks/task-form.tsx",
+  "scripts/verify-v58.25.6.2.mjs",
+  "docs/release/V58_25_6_2_PROJECTS_UI_SYSTEM_MIGRATION.md",
+  "docs/qa/FLOWTASK_V58_25_6_2_PROJECTS_UI_SYSTEM_MIGRATION_QA.md",
+  "src/app/(app)/app/projects/page.tsx",
+  "src/components/projects/project-detail-summary.tsx",
+  "src/components/projects/project-form.tsx",
+  "src/components/projects/project-inline-tasks.tsx",
+  "src/components/projects/project-planning-timeline.tsx",
 ]) requireFile(rel);
 
 const pkg = JSON.parse(read("package.json"));
 const scripts = pkg.scripts ?? {};
 if (pkg.version !== expectedVersion) failures.push(`Unexpected package version: ${pkg.version}`);
-if (scripts["verify:current"] !== "npm run verify:v58.25.6.1") failures.push("verify:current must target verify:v58.25.6.1");
-if (scripts["verify:v58.25.6.1"] !== "node scripts/verify-v58.25.6.1.mjs") failures.push("verify:v58.25.6.1 must target scripts/verify-v58.25.6.1.mjs");
+if (scripts["verify:current"] !== "npm run verify:v58.25.6.2") failures.push("verify:current must target verify:v58.25.6.2");
+if (scripts["verify:v58.25.6.2"] !== "node scripts/verify-v58.25.6.2.mjs") failures.push("verify:v58.25.6.2 must target scripts/verify-v58.25.6.2.mjs");
 
 const vercel = JSON.parse(read("vercel.json"));
 if (vercel.framework !== "nextjs") failures.push("vercel.json framework must be nextjs");
@@ -43,13 +44,12 @@ if (vercel.buildCommand !== "npm run vercel:build") failures.push("vercel.json b
 
 requireIncludes("src/lib/release/version.ts", expectedVersion);
 requireIncludes("package-lock.json", expectedVersion);
-requireIncludes("src/app/globals.css", "v58.25.6.1 — Tasks + Kanban UI System Migration");
-requireIncludes("src/components/tasks/task-action-list.tsx", "ft-tasks-screen");
-requireIncludes("src/components/tasks/task-kanban-board.tsx", "ft-kanban-grid");
-requireIncludes("src/components/tasks/task-filters.tsx", "ft-task-filter-panel");
-requireIncludes("src/components/tasks/task-form.tsx", "ft-task-form-panel");
-requireNotIncludes("src/components/tasks/task-action-list.tsx", "animate-[importantPulse");
-requireNotIncludes("src/components/tasks/task-kanban-board.tsx", "animate-[importantPulse");
+requireIncludes("src/app/globals.css", "v58.25.6.2 — Projects UI System Migration");
+requireIncludes("src/app/(app)/app/projects/page.tsx", "ft-projects-screen");
+requireIncludes("src/components/projects/project-form.tsx", "ft-project-form-panel");
+requireIncludes("src/components/projects/project-inline-tasks.tsx", "ft-project-inline-task-row");
+requireIncludes("src/components/projects/project-planning-timeline.tsx", "ft-project-timeline-panel");
+requireNotIncludes("src/components/projects/project-form.tsx", "hover:translate-y-0");
 
 if (failures.length) {
   console.error("[deploy-production-readiness] Failed checks:");
@@ -57,4 +57,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log("[deploy-production-readiness] OK — v58.25.6.1 Tasks + Kanban UI system migration readiness aligned.");
+console.log("[deploy-production-readiness] OK — v58.25.6.2 Projects UI system migration readiness aligned.");

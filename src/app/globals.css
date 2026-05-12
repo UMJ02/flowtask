@@ -3098,3 +3098,181 @@
     }
   }
 }
+
+
+/* v58.25.6.2 — Projects UI System Migration */
+@layer components {
+  .ft-projects-screen {
+    width: 100%;
+    max-width: none;
+    margin-inline: 0;
+    display: grid;
+    gap: 16px;
+  }
+
+  .ft-projects-hero,
+  .ft-projects-panel,
+  .ft-projects-toolbar,
+  .ft-projects-filter-panel,
+  .ft-project-form-panel,
+  .ft-project-detail-panel,
+  .ft-project-timeline-panel {
+    border: 1px solid var(--ft-border, #E5EAF1);
+    background: #FFFFFF;
+    border-radius: var(--ft-radius-lg, 24px);
+    box-shadow: var(--ft-shadow-xs, 0 8px 24px rgba(15,23,42,.035));
+  }
+
+  .ft-projects-hero,
+  .ft-project-detail-panel {
+    padding: 20px;
+  }
+
+  .ft-projects-filter-panel,
+  .ft-projects-toolbar {
+    padding: 16px;
+  }
+
+  .ft-projects-stat-grid {
+    display: grid;
+    gap: 12px;
+  }
+
+  .ft-project-metric-card {
+    min-height: 92px;
+    border: 1px solid var(--ft-border, #E5EAF1);
+    background: #FFFFFF;
+    border-radius: var(--ft-radius-md, 18px);
+    padding: 14px;
+    box-shadow: var(--ft-shadow-xs, 0 8px 24px rgba(15,23,42,.035));
+  }
+
+  .ft-project-card {
+    border: 1px solid var(--ft-border, #E5EAF1);
+    background: #FFFFFF;
+    border-radius: var(--ft-radius-lg, 24px);
+    padding: 16px;
+    box-shadow: var(--ft-shadow-xs, 0 8px 24px rgba(15,23,42,.035));
+    transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+  }
+
+  .ft-project-card:hover {
+    border-color: #CBD5E1;
+    box-shadow: var(--ft-shadow-sm, 0 12px 28px rgba(15,23,42,.055));
+  }
+
+  .ft-project-title {
+    color: #0F172A;
+    font-size: 16px;
+    font-weight: 850;
+    line-height: 1.22;
+    letter-spacing: -.02em;
+    overflow-wrap: anywhere;
+  }
+
+  .ft-project-title:hover {
+    color: #047857;
+  }
+
+  .ft-project-copy {
+    color: #64748B;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.55;
+    overflow-wrap: anywhere;
+  }
+
+  .ft-project-chip {
+    display: inline-flex;
+    max-width: 100%;
+    align-items: center;
+    gap: 7px;
+    border-radius: 999px;
+    border: 1px solid #E5EAF1;
+    background: #FFFFFF;
+    padding: 5px 10px;
+    color: #475569;
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1.1;
+  }
+
+  .ft-project-action {
+    display: inline-flex;
+    height: 38px;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border-radius: var(--ft-radius-xs, 12px);
+    border: 1px solid var(--ft-border, #E5EAF1);
+    background: #FFFFFF;
+    padding-inline: 12px;
+    color: #334155;
+    font-size: 13px;
+    font-weight: 800;
+    transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+  }
+
+  .ft-project-action:hover {
+    border-color: #CBD5E1;
+    background: #F8FAFC;
+    color: #0F172A;
+  }
+
+  .ft-project-action-primary {
+    border-color: #16C784;
+    background: #16C784;
+    color: #FFFFFF;
+  }
+
+  .ft-project-action-primary:hover {
+    border-color: #0E9F6E;
+    background: #0E9F6E;
+    color: #FFFFFF;
+  }
+
+  .ft-project-inline-task-row {
+    border: 1px solid var(--ft-border, #E5EAF1);
+    border-radius: var(--ft-radius-md, 18px);
+    background: #FFFFFF;
+    padding: 12px;
+    transition: background 160ms ease, border-color 160ms ease;
+  }
+
+  .ft-project-inline-task-row:hover {
+    border-color: #CBD5E1;
+    background: #F8FAFC;
+  }
+
+  .ft-project-timeline-row {
+    border-bottom: 1px solid #EEF2F7;
+    min-height: 58px;
+  }
+
+  .ft-project-timeline-row:last-child {
+    border-bottom: 0;
+  }
+
+  @media (min-width: 768px) {
+    .ft-projects-stat-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .ft-projects-stat-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 767px) {
+    .ft-projects-hero,
+    .ft-projects-panel,
+    .ft-project-card,
+    .ft-project-form-panel,
+    .ft-project-detail-panel,
+    .ft-project-timeline-panel {
+      border-radius: var(--ft-radius-md, 18px);
+    }
+  }
+}

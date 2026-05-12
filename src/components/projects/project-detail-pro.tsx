@@ -26,7 +26,7 @@ import { ProjectHeroInlineEditor } from "@/components/projects/project-hero-inli
 const projectUi = {
   card: "rounded-[20px] border border-[#E7EDF5] bg-white",
   smallCard: "rounded-[20px] border border-[#E7EDF5] bg-white p-5",
-  buttonDark: "inline-flex h-10 items-center justify-center gap-2 rounded-[16px] bg-[#050B18] px-4 text-[13px] font-bold text-white transition hover:translate-y-0 hover:bg-[#111827]",
+  buttonDark: "inline-flex h-10 items-center justify-center gap-2 rounded-[16px] bg-[#050B18] px-4 text-[13px] font-bold text-white transition hover:bg-[#111827]",
   buttonGhost: "inline-flex h-10 items-center justify-center gap-2 rounded-[16px] border border-[#E7EDF5] bg-white px-4 text-[13px] font-bold ft-text-main transition hover:bg-[#F8FAFC]",
   eyebrow: "text-xs font-semibold uppercase tracking-[0.22em] text-[#16A36C]",
 };
@@ -183,13 +183,13 @@ function ProjectStatsRow({ tasks }: { tasks: any[] }) {
       {items.map((item) => {
         const Icon = item.icon;
         return (
-          <article key={item.label} className="rounded-[20px] border border-[#E7EDF5] bg-white p-5 transition hover:translate-y-0">
+          <article key={item.label} className="ft-project-metric-card transition">
             <div className="flex items-center gap-4">
               <span className={`grid h-10 w-10 place-items-center rounded-full ${item.tone}`}><Icon className="h-5 w-5" /></span>
               <div>
-                <p className="text-sm font-semibold ft-text-muted">{item.label}</p>
-                <p className="mt-1 text-[28px] font-semibold leading-none ft-text-main">{item.value}</p>
-                <p className="mt-1 text-sm ft-text-muted">{item.helper}</p>
+                <p className="ft-metric-label">{item.label}</p>
+                <p className="ft-metric-value mt-1 leading-none">{item.value}</p>
+                <p className="ft-task-muted mt-1">{item.helper}</p>
               </div>
             </div>
           </article>
@@ -205,11 +205,11 @@ function ProjectHeroCard({ project, tasks, members, currentQuery }: { project: a
   const cover = project.image_url || "/imagenes/organization-team-hero.png";
 
   return (
-    <section className="relative overflow-hidden rounded-[20px] border border-[#E7EDF5] bg-white p-5">
+    <section className="ft-project-detail-panel relative overflow-hidden p-5">
       <div className="pointer-events-none absolute right-0 top-0 h-full w-1/2 bg-gradient-to-l from-[#ECFDF5] via-[#EFF6FF]/50 to-transparent" />
       <div className="pointer-events-none absolute right-6 top-5 h-[78%] w-[34%] rounded-[20px] bg-[radial-gradient(circle_at_1px_1px,rgba(22,199,132,0.13)_1px,transparent_0)] [background-size:14px_14px] opacity-70" />
       <div className="relative grid gap-5 lg:grid-cols-[230px_minmax(0,1fr)_360px]">
-        <div className="relative h-[190px] overflow-hidden rounded-[20px] bg-slate-100">
+        <div className="relative h-[190px] overflow-hidden rounded-[18px] bg-slate-100">
           <Image src={cover} alt={project.title || "Proyecto FlowTask"} fill className="object-cover" sizes="230px" priority={false} unoptimized={Boolean(project.image_url)} />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950/20 to-transparent" />
         </div>
@@ -301,7 +301,7 @@ function RecentFilesCard({ attachments }: { attachments: any[] }) {
       <div className="mb-4 flex items-center justify-between gap-3"><h2 className="text-base font-semibold ft-text-main">Archivos recientes</h2><a href="#archivos" className="inline-flex h-9 items-center rounded-[12px] border border-[#E7EDF5] bg-white px-3 text-xs font-semibold text-[#475569] hover:bg-slate-50">Ver todo</a></div>
       <div className="grid grid-cols-2 gap-3">
         {attachments.length ? attachments.slice(0, 4).map((file) => (
-          <a key={file.id} href={file.public_url || "#"} className="group overflow-hidden rounded-[16px] border border-[#E7EDF5] bg-white transition hover:translate-y-0 hover:">
+          <a key={file.id} href={file.public_url || "#"} className="group overflow-hidden rounded-[16px] border border-[#E7EDF5] bg-white transition hover:">
             <span className="grid aspect-square place-items-center overflow-hidden bg-[#F8FAFC] ft-text-muted">
               {isImageAttachment(file) ? <img src={file.public_url} alt={file.file_name || "Archivo"} className="h-full w-full object-cover" /> : attachmentIcon(file.file_name)}
             </span>

@@ -173,19 +173,19 @@ export function ProjectPlanningTimeline({ project, tasks, currentQuery = "" }: P
   };
 
   return (
-    <section id="timeline" className="scroll-mt-28 rounded-[24px] border border-[#E7EDF5] bg-white p-5">
+    <section id="timeline" className="ft-project-timeline-panel scroll-mt-28 p-5">
       <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#16A36C]">Project Planificación inteligente</p>
-          <h2 className="mt-1 text-xl font-semibold tracking-[-0.02em] ft-text-main">Planificación colaborativa del proyecto</h2>
-          <p className="mt-1 max-w-3xl text-sm font-medium ft-text-muted">Timeline híbrido con progreso, fechas y vista flexible. Las tareas simples viven en Tareas; la planificación avanzada vive aquí.</p>
+          <p className="ft-kicker text-[#16A36C]">Project Planificación inteligente</p>
+          <h2 className="ft-heading-section mt-1">Planificación colaborativa del proyecto</h2>
+          <p className="ft-copy mt-1 max-w-3xl">Timeline híbrido con progreso, fechas y vista flexible. Las tareas simples viven en Tareas; la planificación avanzada vive aquí.</p>
         </div>
         <div className="flex flex-wrap gap-2">
           {(["day", "week", "month"] as const).map((mode) => (
-            <button key={mode} type="button" onClick={() => setZoom(mode)} className={cn("h-10 rounded-[14px] border px-4 text-sm font-semibold transition", zoom === mode ? "border-[#050B18] bg-[#050B18] text-white" : "border-[#E7EDF5] bg-white text-slate-700 hover:bg-slate-50")}>{mode === "day" ? "Día" : mode === "week" ? "Semana" : "Mes"}</button>
+            <button key={mode} type="button" onClick={() => setZoom(mode)} className={cn("ft-project-action", zoom === mode ? "ft-project-action-primary" : "")}>{mode === "day" ? "Día" : mode === "week" ? "Semana" : "Mes"}</button>
           ))}
-          <button type="button" onClick={saveView} disabled={busy} className="inline-flex h-10 items-center gap-2 rounded-[14px] border border-[#E7EDF5] bg-white px-4 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-60"><Save className="h-4 w-4" />Guardar vista</button>
-          <button type="button" onClick={() => exportCsv(project, visibleTasks)} className="inline-flex h-10 items-center gap-2 rounded-[14px] border border-[#E7EDF5] bg-white px-4 text-sm font-semibold text-slate-700 hover:bg-slate-50"><Download className="h-4 w-4" />Exportar</button>
+          <button type="button" onClick={saveView} disabled={busy} className="ft-project-action disabled:opacity-60"><Save className="h-4 w-4" />Guardar vista</button>
+          <button type="button" onClick={() => exportCsv(project, visibleTasks)} className="ft-project-action"><Download className="h-4 w-4" />Exportar</button>
         </div>
       </div>
 
@@ -195,7 +195,7 @@ export function ProjectPlanningTimeline({ project, tasks, currentQuery = "" }: P
 
       <div className={cn("mt-6 grid gap-5", showBuilder ? "xl:grid-cols-[minmax(0,1fr)_320px]" : "xl:grid-cols-1")}>
         <div className="min-w-0">
-          <div className="mb-4 flex flex-col gap-3 rounded-[18px] border border-[#E7EDF5] bg-[#FBFCFE] p-3 md:flex-row md:items-center md:justify-between">
+          <div className="ft-subcard mb-4 flex flex-col gap-3 bg-[#FBFCFE] p-3 md:flex-row md:items-center md:justify-between">
             <div className="flex items-center gap-2">
               <button type="button" onClick={() => setOffset((v) => v - 1)} className="inline-flex h-9 w-9 items-center justify-center rounded-[12px] border border-[#E7EDF5] bg-white">‹</button>
               <span className="rounded-full bg-white px-4 py-2 text-sm font-semibold ft-text-main ring-1 ring-[#E5EAF1]">{formatDate(toIsoDate(range.start))} — {formatDate(toIsoDate(range.end))}</span>
