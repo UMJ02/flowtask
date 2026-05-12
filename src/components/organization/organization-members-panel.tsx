@@ -177,7 +177,7 @@ export function OrganizationMembersPanel({
                 ) : null}
               </div>
 
-              <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+              <div className="ft-org-metric-grid mt-4">
                 <StatCard title="Admins" value={counters.admin_global} helper="Controlan el espacio y sus accesos" tone={metricTones.admins} />
                 <StatCard title="Managers" value={counters.manager} helper="Coordinan el trabajo del equipo" tone={metricTones.managers} />
                 <StatCard title="Pendientes" value={pendingInvites} helper="Aún no aceptan la invitación" tone={metricTones.pending} />

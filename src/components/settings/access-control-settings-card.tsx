@@ -76,7 +76,7 @@ export function AccessControlSettingsCard({
   const activeItems = tab === 'organization' ? organizationItems : planItems;
 
   return (
-    <Card className="ft-settings-card ft-settings-soft-gradient p-6 md:p-7">
+    <Card className="ft-settings-panel ft-settings-soft-gradient p-6 md:p-7">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <div className="flex items-center gap-2">
@@ -90,13 +90,13 @@ export function AccessControlSettingsCard({
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <button type="button" onClick={() => setTab('organization')} className={tab === 'organization' ? 'ft-settings-button-green' : 'ft-settings-button-ghost'}>
+          <button type="button" onClick={() => setTab('organization')} className={tab === 'organization' ? 'ft-settings-system-action ft-settings-system-action-primary' : 'ft-settings-system-action'}>
             Permisos organización
           </button>
-          <button type="button" onClick={() => setTab('plan')} className={tab === 'plan' ? 'ft-settings-button-green' : 'ft-settings-button-ghost'}>
+          <button type="button" onClick={() => setTab('plan')} className={tab === 'plan' ? 'ft-settings-system-action ft-settings-system-action-primary' : 'ft-settings-system-action'}>
             Permisos en tu plan
           </button>
-          <button type="button" onClick={() => setIsExpanded((value) => !value)} className="ft-settings-button-ghost">
+          <button type="button" onClick={() => setIsExpanded((value) => !value)} className="ft-settings-system-action">
             Ver detalle
             <ChevronDown className={`h-4 w-4 transition ${isExpanded ? 'rotate-180' : ''}`} />
           </button>

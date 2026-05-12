@@ -15,13 +15,13 @@ export default async function ProfilePage() {
   ] as const;
 
   return (
-    <div className="space-y-4">
-      <Card className="overflow-hidden bg-[linear-gradient(135deg,#0f172a_0%,#111827_55%,#1e293b_100%)] text-white shadow-none">
+    <div className="ft-profile-screen">
+      <Card className="ft-profile-hero">
         <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
           <div className="max-w-3xl">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">Perfil</p>
-            <h1 className="mt-2 text-[24px] font-semibold tracking-[-0.02em] md:text-[28px]">Tu identidad dentro de FlowTask</h1>
-            <p className="mt-2 max-w-2xl text-sm text-slate-300 md:text-base">
+            <p className="ft-kicker text-[#047857]">Perfil</p>
+            <h1 className="ft-profile-title mt-2">Tu identidad dentro de FlowTask</h1>
+            <p className="ft-profile-copy mt-2 max-w-2xl">
               Gestiona nombre, correo, contraseña y foto de perfil desde una sola vista clara, segura y cómoda en desktop y móvil.
             </p>
           </div>
@@ -30,12 +30,12 @@ export default async function ProfilePage() {
             {heroItems.map((item) => {
               const Icon = item.icon;
               return (
-                <div key={item.label} className="min-w-0 rounded-[18px] bg-white/10 px-5 py-4 ring-1 ring-white/10 backdrop-blur-sm">
-                  <div className="flex items-center gap-2 text-emerald-300">
+                <div key={item.label} className="ft-profile-card min-w-0 px-5 py-4">
+                  <div className="flex items-center gap-2 text-[#047857]">
                     <Icon className="h-4 w-4" />
                     <p className="text-xs uppercase tracking-[0.16em]">{item.label}</p>
                   </div>
-                  <p title={item.value} className="mt-3 overflow-hidden text-ellipsis break-words text-xl font-semibold leading-tight text-white md:text-xl">
+                  <p title={item.value} className="mt-3 overflow-hidden text-ellipsis break-words text-xl font-semibold leading-tight text-[#0F172A] md:text-xl">
                     {item.value}
                   </p>
                 </div>
@@ -45,7 +45,7 @@ export default async function ProfilePage() {
         </div>
       </Card>
 
-      <Card>
+      <Card className="ft-profile-panel">
         <h2 className="text-base font-semibold text-slate-900">Editar perfil</h2>
         <p className="mt-1 text-sm text-slate-500">
           Aquí solo ves datos personales y seguridad básica. La configuración operativa sigue separada en Settings.

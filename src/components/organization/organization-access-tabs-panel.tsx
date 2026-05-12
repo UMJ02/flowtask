@@ -27,14 +27,14 @@ export function OrganizationAccessTabsPanel({
   const currentLabel = useMemo(() => (tab === 'permissions' ? 'Permisos del cliente' : 'Invitaciones'), [tab]);
 
   return (
-    <Card className="rounded-[24px] p-4 md:p-5">
+    <Card className="ft-org-panel p-4 md:p-5">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div className="flex items-center gap-3">
           <p className="text-sm font-semibold text-slate-900">{currentLabel}</p>
           <button
             type="button"
             onClick={() => setOpen((value) => !value)}
-            className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-600 transition hover:bg-slate-100"
+            className="ft-org-action h-9 w-9 px-0"
             aria-label={open ? 'Contraer contenido' : 'Expandir contenido'}
           >
             <ChevronDown className={`h-4 w-4 transition ${open ? 'rotate-180' : ''}`} />

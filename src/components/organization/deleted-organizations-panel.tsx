@@ -95,7 +95,7 @@ export function DeletedOrganizationsPanel({ organizations }: { organizations: De
               <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                 <div>
                   <p className="font-semibold text-slate-900">{organization.name}</p>
-                  <p className="mt-1 text-sm text-slate-500">Se eliminará automáticamente el {purgeSummary.dateLabel}.</p>
+                  <p className="ft-copy mt-1">Se eliminará automáticamente el {purgeSummary.dateLabel}.</p>
                   <p className="mt-1 text-xs font-medium text-amber-700">{purgeSummary.daysLabel}</p>
                 </div>
                 <div className="flex flex-wrap gap-2">

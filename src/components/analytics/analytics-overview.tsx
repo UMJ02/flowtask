@@ -57,7 +57,7 @@ function downloadCsv(filename: string, rows: string[][]) {
 
 function ActionTooltip({ title }: { title: string }) {
   return (
-    <span className="pointer-events-none absolute -bottom-9 left-1/2 z-20 -translate-x-1/2 whitespace-nowrap rounded-full border ft-border bg-white px-3 py-1.5 text-xs font-bold text-[#334155] opacity-0 transition group-hover:translate-y-0 group-hover:opacity-100">
+    <span className="pointer-events-none absolute -bottom-9 left-1/2 z-20 -translate-x-1/2 whitespace-nowrap rounded-full border ft-border bg-white px-3 py-1.5 text-xs font-bold text-[#334155] opacity-0 transition group-group-hover:opacity-100">
       {title}
     </span>
   );
@@ -70,7 +70,7 @@ function ActionIconButton({ title, onClick, children }: { title: string; onClick
       aria-label={title}
       title={title}
       onClick={onClick}
-      className="group relative inline-flex h-10 w-10 items-center justify-center rounded-[16px] border ft-border bg-white text-[#334155] transition hover:border-[#16C784]/40 hover:ft-text-main"
+      className="ft-analytics-action group relative h-10 w-10 px-0"
     >
       {children}
       <ActionTooltip title={title} />
@@ -148,12 +148,12 @@ function KpiCard({ item }: { item: KpiItem }) {
   const tone = palette[item.tone];
 
   return (
-    <Card className="group rounded-[20px] ft-border bg-white p-5 transition-all duration-200 hover:translate-y-0 hover:">
+    <Card className="ft-analytics-metric transition-all duration-200">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-[13px] font-semibold text-[#334155]">{item.label}</p>
-          <p className="mt-4 text-[28px] font-bold leading-none tracking-[-0.04em] ft-text-main">{item.value}</p>
-          <p className="mt-3 text-[12px] font-medium ft-text-muted">{item.helper}</p>
+          <p className="ft-metric-label">{item.label}</p>
+          <p className="ft-metric-value mt-3 leading-none">{item.value}</p>
+          <p className="ft-task-muted mt-2">{item.helper}</p>
         </div>
         <span className={`inline-flex h-10 w-10 items-center justify-center rounded-2xl ${tone.bg} ${tone.text} ring-1 ${tone.ring}`}>
           <Icon className="h-5 w-5" />
@@ -197,24 +197,24 @@ function TeamActivityChart({ summary }: { summary: WorkspaceAnalyticsSummary }) 
   const grid = [0, Math.round(maxValue * 0.25), Math.round(maxValue * 0.5), Math.round(maxValue * 0.75), maxValue];
 
   return (
-    <Card className="rounded-[20px] ft-border bg-white p-5 xl:col-span-2">
+    <Card className="ft-analytics-panel xl:col-span-2">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h2 className="text-[17px] font-bold ft-text-main">Actividad real del workspace</h2>
+          <h2 className="ft-heading-section">Actividad real del workspace</h2>
           <div className="mt-4 flex flex-wrap items-center gap-4 text-sm font-medium text-[#334155]">
             <span className="inline-flex items-center gap-2"><span className="h-3 w-3 rounded-full bg-[#16C784]" /> Concluidas</span>
             <span className="inline-flex items-center gap-2"><span className="h-3 w-3 rounded-full bg-[#94A3B8]" /> Creadas</span>
             <span className="inline-flex items-center gap-2"><span className="h-3 w-3 rounded-full bg-[#F59E0B]" /> Vencen activas</span>
           </div>
         </div>
-        <button type="button" onClick={() => setRange((value) => value === '30d' ? '7d' : '30d')} className="inline-flex items-center gap-2 rounded-2xl border ft-border bg-white px-4 py-2 text-sm font-semibold text-[#334155] transition hover:border-[#16C784]/40 hover:ft-text-main">
+        <button type="button" onClick={() => setRange((value) => value === '30d' ? '7d' : '30d')} className="ft-analytics-action">
           {range === '30d' ? 'Últimos 30 días' : 'Últimos 7 días'} <ChevronDown className="h-4 w-4" />
         </button>
       </div>
       <div className="relative mt-4 overflow-hidden">
         {hovered ? (
           <div
-            className="pointer-events-none absolute z-10 -translate-x-1/2 -translate-y-full rounded-2xl border ft-border bg-white px-3 py-2 text-xs"
+            className="pointer-events-none absolute z-10 -translate-x-1/2 -translate-y-full rounded-[14px] border ft-border bg-white px-3 py-2 text-xs"
             style={{ left: `${(hovered.x / width) * 100}%`, top: `${(hovered.y / height) * 100}%` }}
           >
             <p className="font-bold ft-text-main">{hovered.day}</p>
@@ -307,7 +307,7 @@ function DonutChart({ summary }: { summary: WorkspaceAnalyticsSummary }) {
         {values.map((item) => {
           const isActive = activeLabel === item.label;
           return (
-            <button key={item.status} type="button" className="grid w-full grid-cols-[1fr_auto] items-center gap-4 rounded-2xl px-3 py-2 text-left text-sm transition hover:bg-slate-50" onClick={() => setActiveLabel(activeLabel === item.label ? null : item.label)} onMouseEnter={() => setActiveLabel(item.label)} onMouseLeave={() => setActiveLabel(null)}>
+            <button key={item.status} type="button" className="ft-analytics-row grid w-full grid-cols-[1fr_auto] items-center gap-4 text-left text-sm" onClick={() => setActiveLabel(activeLabel === item.label ? null : item.label)} onMouseEnter={() => setActiveLabel(item.label)} onMouseLeave={() => setActiveLabel(null)}>
               <span className="inline-flex items-center gap-3 font-semibold text-[#334155]"><span className="h-3 w-3 rounded-full" style={{ backgroundColor: item.color }} /> {item.label}</span>
               <span className="rounded-full px-2 py-1 text-xs font-bold" style={{ color: item.color, backgroundColor: isActive ? `${item.color}18` : 'transparent' }}>{item.count}</span>
             </button>
@@ -320,8 +320,8 @@ function DonutChart({ summary }: { summary: WorkspaceAnalyticsSummary }) {
 
 function TaskStatusDonut({ summary }: { summary: WorkspaceAnalyticsSummary }) {
   return (
-    <Card className="rounded-[20px] ft-border bg-white p-5">
-      <h2 className="text-[17px] font-bold ft-text-main">Distribución real por estado</h2>
+    <Card className="ft-analytics-panel">
+      <h2 className="ft-heading-section">Distribución real por estado</h2>
       <p className="mt-2 text-sm font-medium ft-text-muted">Concluidas se muestran como cierre histórico, no como atraso.</p>
       <div className="mt-5">
         <DonutChart summary={summary} />
@@ -348,14 +348,14 @@ function ProgressBar({ label, percent, meta }: { label: string; percent: number;
 function ProjectsProgressCard({ summary }: { summary: WorkspaceAnalyticsSummary }) {
   const rows = summary.projectProgress;
   return (
-    <Card className="rounded-[20px] ft-border bg-white p-5">
-      <h2 className="text-[17px] font-bold ft-text-main">Progreso real por proyecto</h2>
+    <Card className="ft-analytics-panel">
+      <h2 className="ft-heading-section">Progreso real por proyecto</h2>
       <div className="mt-5 space-y-4">
         {rows.length ? rows.map((item) => (
           <ProgressBar key={item.id} label={item.title} percent={item.percent} meta={`${item.completed}/${item.total} concluidas · ${item.active} activas · ${item.waiting} en espera`} />
-        )) : <p className="rounded-2xl border border-dashed ft-border p-5 text-sm font-medium ft-text-muted">No hay proyectos con tareas para calcular progreso.</p>}
+        )) : <p className="rounded-[18px] border border-dashed ft-border p-5 text-sm font-medium ft-text-muted">No hay proyectos con tareas para calcular progreso.</p>}
       </div>
-      <Link href="/app/projects" className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-2xl border ft-border bg-white px-4 py-3 text-sm font-bold text-[#334155] transition hover:border-[#16C784]/40 hover:ft-text-main">
+      <Link href="/app/projects" className="ft-analytics-action mt-6 w-full">
         Ver todos los proyectos <ChevronDown className="h-4 w-4 -rotate-90" />
       </Link>
     </Card>
@@ -366,8 +366,8 @@ function WorkloadCard({ summary }: { summary: WorkspaceAnalyticsSummary }) {
   const rows = summary.workload;
   const max = Math.max(1, ...rows.map((item) => item.total));
   return (
-    <Card className="rounded-[20px] ft-border bg-white p-5">
-      <h2 className="text-[17px] font-bold ft-text-main">Carga operativa real</h2>
+    <Card className="ft-analytics-panel">
+      <h2 className="ft-heading-section">Carga operativa real</h2>
       <p className="mt-2 text-xs font-semibold ft-text-muted">Tareas activas y en espera por cliente/departamento.</p>
       <div className="mt-5 space-y-4">
         {rows.length ? rows.map((item) => (
@@ -380,9 +380,9 @@ function WorkloadCard({ summary }: { summary: WorkspaceAnalyticsSummary }) {
             </div>
             <span className="text-sm font-bold ft-text-muted">{item.total}</span>
           </div>
-        )) : <p className="rounded-2xl border border-dashed ft-border p-5 text-sm font-medium ft-text-muted">Sin carga operativa activa.</p>}
+        )) : <p className="rounded-[18px] border border-dashed ft-border p-5 text-sm font-medium ft-text-muted">Sin carga operativa activa.</p>}
       </div>
-      <button type="button" onClick={() => downloadCsv('flowtask-carga-operativa.csv', [['area', 'en_proceso', 'en_espera', 'vencidas_activas', 'total'], ...rows.map((item) => [item.label, String(item.active), String(item.waiting), String(item.overdue), String(item.total)])])} className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-2xl border ft-border bg-white px-4 py-3 text-sm font-bold text-[#334155] transition hover:border-[#16C784]/40 hover:ft-text-main">
+      <button type="button" onClick={() => downloadCsv('flowtask-carga-operativa.csv', [['area', 'en_proceso', 'en_espera', 'vencidas_activas', 'total'], ...rows.map((item) => [item.label, String(item.active), String(item.waiting), String(item.overdue), String(item.total)])])} className="ft-analytics-action mt-6 w-full">
         Exportar carga real <Download className="h-4 w-4" />
       </button>
     </Card>
@@ -402,9 +402,9 @@ function RecentActivityCard({ summary }: { summary: WorkspaceAnalyticsSummary })
     stable: 'bg-emerald-50 text-emerald-600',
   };
   return (
-    <Card className="rounded-[20px] ft-border bg-white p-5">
+    <Card className="ft-analytics-panel">
       <div className="flex items-center justify-between gap-4">
-        <h2 className="text-[17px] font-bold ft-text-main">Foco operativo</h2>
+        <h2 className="ft-heading-section">Foco operativo</h2>
         <Link href="/app/tasks" className="rounded-2xl border ft-border px-4 py-2 text-sm font-bold text-[#334155] transition hover:border-[#16C784]/40">Ver tareas</Link>
       </div>
       <div className="mt-5 space-y-4">
@@ -419,7 +419,7 @@ function RecentActivityCard({ summary }: { summary: WorkspaceAnalyticsSummary })
               </div>
             </div>
           );
-        }) : <p className="rounded-2xl border border-dashed ft-border p-5 text-sm font-medium ft-text-muted">Sin foco operativo urgente.</p>}
+        }) : <p className="rounded-[18px] border border-dashed ft-border p-5 text-sm font-medium ft-text-muted">Sin foco operativo urgente.</p>}
       </div>
     </Card>
   );
@@ -430,7 +430,7 @@ function RecommendationsCard({ summary }: { summary: WorkspaceAnalyticsSummary }
     <Card className="rounded-[20px] ft-border bg-white p-5 xl:col-span-3">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="text-[17px] font-bold ft-text-main">Inteligencia operativa</h2>
+          <h2 className="ft-heading-section">Inteligencia operativa</h2>
           <p className="mt-1 text-sm font-medium ft-text-muted">Lectura generada con tareas, proyectos, comentarios y adjuntos reales.</p>
         </div>
         <span className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-700"><Zap className="h-3.5 w-3.5" /> Datos reales</span>
@@ -462,7 +462,7 @@ export function AnalyticsOverview({ summary, compact = false }: { summary: Works
 
   if (compact) {
     return (
-      <Card className="rounded-[20px] ft-border bg-white p-5">
+      <Card className="ft-analytics-panel">
         <h2 className="text-xl font-bold ft-text-main">Analytics</h2>
         <p className="mt-2 text-sm ft-text-muted">Lectura rápida del workspace con datos reales.</p>
         <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
@@ -473,7 +473,7 @@ export function AnalyticsOverview({ summary, compact = false }: { summary: Works
   }
 
   return (
-    <div className="space-y-5 pb-1">
+    <div className="ft-analytics-screen pb-1">
       <style jsx global>{`
         @keyframes drawLine {
           from { stroke-dasharray: 900; stroke-dashoffset: 900; }

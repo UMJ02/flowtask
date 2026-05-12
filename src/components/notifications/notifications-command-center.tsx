@@ -31,7 +31,7 @@ export function NotificationsCommandCenter({
       : 'Todo limpio por ahora';
 
   return (
-    <Card className="ft-notifications-hero p-5 md:p-6">
+    <Card className="ft-notifications-hero-system p-5 md:p-6">
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_430px] lg:items-center">
         <div className="flex min-w-0 gap-5">
           <div className="ft-notifications-icon-tile shrink-0">
@@ -48,21 +48,21 @@ export function NotificationsCommandCenter({
           </div>
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-2">
-          <div className="ft-notification-metric">
+        <div className="ft-notifications-metric-grid">
+          <div className="ft-notifications-metric">
             <div className="flex items-center gap-2 text-[#16C784]">
               <BellRing className="h-5 w-5" />
               <p className="text-xs font-extrabold uppercase tracking-[0.16em]">Pendientes</p>
             </div>
-            <p className="mt-3 text-[26px] font-extrabold text-[#0F172A]">{unreadCount}</p>
+            <p className="ft-metric-value mt-3">{unreadCount}</p>
             <p className="mt-1 text-sm font-medium text-[#475569]">{helperLabel}</p>
           </div>
-          <div className="ft-notification-metric">
+          <div className="ft-notifications-metric">
             <div className="flex items-center gap-2 text-[#16C784]">
               <Clock3 className="h-5 w-5" />
               <p className="text-xs font-extrabold uppercase tracking-[0.16em]">Entrega</p>
             </div>
-            <p className="mt-3 text-base font-extrabold text-[#0F172A]">{cadenceLabel}</p>
+            <p className="mt-3 text-base font-extrabold ft-text-main">{cadenceLabel}</p>
             <p className="mt-1 text-sm font-medium text-[#475569]">
               {deliverySummary.total ? `${deliverySummary.total} evento(s) de entrega registrados` : 'Aún no hay historial de entregas.'}
             </p>

@@ -121,38 +121,38 @@ export function DashboardHero({
   ];
 
   return (
-    <Card className="rounded-[20px] border border-slate-200/80 bg-[radial-gradient(circle_at_top_left,_rgba(16,185,129,0.14),_transparent_28%),radial-gradient(circle_at_top_right,_rgba(59,130,246,0.08),_transparent_22%),linear-gradient(135deg,rgba(255,255,255,0.98),rgba(248,250,252,0.98))] p-3 md:p-4">
+    <Card className="ft-dashboard-hero bg-[radial-gradient(circle_at_top_left,_rgba(16,185,129,0.12),_transparent_28%),radial-gradient(circle_at_top_right,_rgba(59,130,246,0.08),_transparent_22%),linear-gradient(135deg,rgba(255,255,255,0.98),rgba(248,250,252,0.98))]">
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1.25fr)_minmax(360px,0.95fr)] xl:items-start">
         <div>
           <div className="inline-flex items-center gap-2 rounded-full bg-white/[0.85] px-3 py-1 text-xs font-semibold tracking-[0.16em] text-emerald-700 ring-1 ring-emerald-100">
             <Sparkles className="h-3.5 w-3.5" />
             Workspace overview
           </div>
-          <h1 className="mt-2 text-[1.68rem] font-bold tracking-tight text-slate-900 md:text-[2.18rem]">
+          <h1 className="ft-dashboard-title mt-2">
             Tu jornada arranca con {activeTasks} tareas activas y {activeProjects} proyectos en movimiento.
           </h1>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600 md:text-[14px]">
+          <p className="ft-dashboard-copy mt-2 max-w-2xl">
             {focusLabel} Revisa la pizarra, prioriza lo que bloquea al equipo y entra directo a ejecución sin perder contexto.
           </p>
 
           <div className="mt-3 flex flex-wrap items-center gap-2 lg:flex-nowrap">
             <Link
               href={asRoute('/app/board')}
-              className="inline-flex items-center gap-2 rounded-2xl bg-slate-950 px-4 py-2.5 text-sm font-semibold text-white transition hover:translate-y-0 hover:bg-slate-900"
+              className="ft-dashboard-action ft-dashboard-action-primary"
             >
               Abrir pizarra
               <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
               href={taskListRoute('view=list')}
-              className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:translate-y-0 hover:border-emerald-200 hover:text-emerald-700"
+              className="ft-dashboard-action"
             >
               Ver tareas
             </Link>
           </div>
         </div>
 
-        <div className="grid gap-2.5 sm:grid-cols-2">
+        <div className="ft-dashboard-metric-grid">
           {metrics.map((metric) => {
             const Icon = metric.icon;
             const theme = hoverThemes[metric.variant];
@@ -161,7 +161,7 @@ export function DashboardHero({
                 key={metric.label}
                 href={metric.href}
                 className={[
-                  'group relative overflow-hidden rounded-[16px] border border-slate-200 bg-white/96 p-3 ring-1 ring-white transition-all duration-300 hover:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-200',
+                  'group relative overflow-hidden rounded-[16px] border border-slate-200 bg-white/96 p-3 ring-1 ring-white transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-200',
                   theme.border,
                   theme.shadow,
                   theme.surface,

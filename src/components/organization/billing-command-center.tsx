@@ -12,21 +12,21 @@ export function BillingCommandCenter({ summary, usage }: { summary?: Organizatio
   const readiness = hottest ? Math.max(0, 100 - hottest.percentage) : 100;
 
   return (
-    <Card>
+    <Card className="ft-org-panel">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Billing command center</p>
+          <p className="ft-kicker text-slate-500">Billing command center</p>
           <h2 className="mt-1 text-xl font-bold text-slate-900">Pulso financiero y capacidad operativa</h2>
-          <p className="mt-2 max-w-2xl text-sm text-slate-600">Te resume en una sola lectura el plan activo, la presión de límites y la ventana de renovación para que la organización no choque con topes de uso.</p>
+          <p className="ft-org-copy mt-2 max-w-2xl">Te resume en una sola lectura el plan activo, la presión de límites y la ventana de renovación para que la organización no choque con topes de uso.</p>
         </div>
-        <div className="rounded-2xl bg-slate-950 px-5 py-4 text-white">
+        <div className="ft-org-metric bg-slate-950 text-white">
           <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400">Readiness</p>
           <p className="mt-1 text-[28px] font-bold">{readiness}%</p>
           <p className="mt-2 text-sm text-slate-300">{summary ? `${summary.planName} · ${summary.billingCycle === "annual" ? "anual" : "mensual"}` : "Sin suscripción activa"}</p>
         </div>
       </div>
 
-      <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+      <div className="ft-org-metric-grid mt-4">
         <Metric label="Plan" value={summary?.planName ?? "Sin plan"} hint={summary ? `Estado ${summary.status}` : "Configura suscripción"} />
         <Metric label="Renovación" value={summary?.renewalDateLabel ?? "Pendiente"} hint="Próximo hito comercial" />
         <Metric label="Uso más presionado" value={hottest ? hottest.label : "Estable"} hint={hottest ? `${hottest.percentage}% del límite` : "Sin presión detectada"} />

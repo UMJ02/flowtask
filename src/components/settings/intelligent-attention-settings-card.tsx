@@ -52,7 +52,7 @@ export function IntelligentAttentionSettingsCard() {
   };
 
   return (
-    <Card className="ft-settings-assistant-card p-6 md:p-7">
+    <Card className="ft-settings-panel p-6 md:p-7">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div className="max-w-3xl">
           <div className="inline-flex items-center gap-2 rounded-full bg-[#F5F3FF] px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.16em] text-[#7C3AED] ring-1 ring-[#8B5CF6]/20">
@@ -91,7 +91,7 @@ export function IntelligentAttentionSettingsCard() {
                       ? "rounded-[18px] border border-[#16C784]/25 bg-[#F5F3FF] px-4 py-4 text-left shadow-none"
                       : "rounded-[18px] border border-[#E5EAF1] bg-[#F8FAFC] px-4 py-4 text-left hover:border-[#CBD5E1] hover:bg-white"}
                   >
-                    <p className="text-sm font-semibold text-[#0F172A]">{SENSITIVITY_LABELS[key].title}</p>
+                    <p className="text-sm font-semibold ft-text-main">{SENSITIVITY_LABELS[key].title}</p>
                     <p className="mt-2 text-sm leading-6 text-[#64748B]">{SENSITIVITY_LABELS[key].body}</p>
                   </button>
                 );
@@ -113,8 +113,8 @@ export function IntelligentAttentionSettingsCard() {
               ].map(([key, label]) => (
                 <label key={key} className="flex items-center justify-between rounded-[18px] border border-[#E5EAF1] bg-[#F8FAFC] px-4 py-3">
                   <div>
-                    <p className="text-sm font-semibold text-[#0F172A]">{label}</p>
-                    <p className="mt-1 text-sm text-[#64748B]">Puedes reducir ruido quitando esta familia de avisos.</p>
+                    <p className="text-sm font-semibold ft-text-main">{label}</p>
+                    <p className="mt-1 text-sm ft-text-muted">Puedes reducir ruido quitando esta familia de avisos.</p>
                   </div>
                   <input
                     type="checkbox"
@@ -168,36 +168,36 @@ export function IntelligentAttentionSettingsCard() {
             <div className="mt-4 space-y-3">
               <label className="flex items-center justify-between rounded-[18px] border border-[#E5EAF1] bg-[#F8FAFC] px-4 py-3">
                 <div>
-                  <p className="text-sm font-semibold text-[#0F172A]">Texto más corto</p>
-                  <p className="mt-1 text-sm text-[#64748B]">Muestra mensajes más directos y menos explicativos.</p>
+                  <p className="text-sm font-semibold ft-text-main">Texto más corto</p>
+                  <p className="mt-1 text-sm ft-text-muted">Muestra mensajes más directos y menos explicativos.</p>
                 </div>
                 <input type="checkbox" checked={settings.verbosity === "minimal"} onChange={(event) => persist({ ...settings, verbosity: event.target.checked ? "minimal" : "guided" })} className="ft-switch" />
               </label>
               <label className="flex items-center justify-between rounded-[18px] border border-[#E5EAF1] bg-[#F8FAFC] px-4 py-3">
                 <div>
-                  <p className="text-sm font-semibold text-[#0F172A]">Mostrar personaje guía</p>
-                  <p className="mt-1 text-sm text-[#64748B]">Úsalo para darle más calidez visual a las alertas.</p>
+                  <p className="text-sm font-semibold ft-text-main">Mostrar personaje guía</p>
+                  <p className="mt-1 text-sm ft-text-muted">Úsalo para darle más calidez visual a las alertas.</p>
                 </div>
                 <input type="checkbox" checked={settings.showMascot} onChange={(event) => persist({ ...settings, showMascot: event.target.checked })} className="ft-switch" />
               </label>
               <label className="flex items-center justify-between rounded-[18px] border border-[#E5EAF1] bg-[#F8FAFC] px-4 py-3">
                 <div>
-                  <p className="text-sm font-semibold text-[#0F172A]">Memoria aislada por workspace</p>
-                  <p className="mt-1 text-sm text-[#64748B]">Cada espacio recuerda sus propios silencios y descartes.</p>
+                  <p className="text-sm font-semibold ft-text-main">Memoria aislada por workspace</p>
+                  <p className="mt-1 text-sm ft-text-muted">Cada espacio recuerda sus propios silencios y descartes.</p>
                 </div>
                 <input type="checkbox" checked={settings.allowWorkspaceSpecificHistory} onChange={(event) => persist({ ...settings, allowWorkspaceSpecificHistory: event.target.checked })} className="ft-switch" />
               </label>
               <label className="flex items-center justify-between rounded-[18px] border border-[#E5EAF1] bg-[#F8FAFC] px-4 py-3">
                 <div>
-                  <p className="text-sm font-semibold text-[#0F172A]">Mostrar también en organizaciones</p>
-                  <p className="mt-1 text-sm text-[#64748B]">Permite que el asistente también te oriente en workspaces de equipo.</p>
+                  <p className="text-sm font-semibold ft-text-main">Mostrar también en organizaciones</p>
+                  <p className="mt-1 text-sm ft-text-muted">Permite que el asistente también te oriente en workspaces de equipo.</p>
                 </div>
                 <input type="checkbox" checked={settings.showWorkspaceAlertsInOrganizations} onChange={(event) => persist({ ...settings, showWorkspaceAlertsInOrganizations: event.target.checked })} className="ft-switch" />
               </label>
               <label className="flex items-center justify-between rounded-[18px] border border-[#E5EAF1] bg-[#F8FAFC] px-4 py-3">
                 <div>
-                  <p className="text-sm font-semibold text-[#0F172A]">Solo en dashboard</p>
-                  <p className="mt-1 text-sm text-[#64748B]">Mantiene la guía principal al entrar, sin invadir otras vistas.</p>
+                  <p className="text-sm font-semibold ft-text-main">Solo en dashboard</p>
+                  <p className="mt-1 text-sm ft-text-muted">Mantiene la guía principal al entrar, sin invadir otras vistas.</p>
                 </div>
                 <input type="checkbox" checked={settings.showOnDashboardOnly} onChange={(event) => persist({ ...settings, showOnDashboardOnly: event.target.checked })} className="ft-switch" />
               </label>

@@ -38,7 +38,7 @@ export function OperationsOverview({ summary }: { summary: ReportsOverview }) {
   ];
 
   return (
-    <div className="space-y-4">
+    <div className="ft-reports-screen">
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {cards.map((card) => (
           <Card key={card.label} className="bg-gradient-to-br from-white to-slate-50/70">
@@ -78,11 +78,11 @@ export function OperationsOverview({ summary }: { summary: ReportsOverview }) {
           </div>
         </Card>
 
-        <Card>
+        <Card className="ft-report-card">
           <div className="flex items-start justify-between gap-3">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Acciones rápidas</p>
-              <h3 className="mt-2 text-xl font-bold text-slate-900">Salida de reporte</h3>
+              <h3 className="ft-metric-value mt-2 text-xl">Salida de reporte</h3>
               <p className="mt-2 text-sm text-slate-500">Exporta y comparte el estado del equipo sin salir del módulo.</p>
             </div>
             <span className="inline-flex h-10 w-10 items-center justify-center rounded-[16px] bg-slate-100 text-slate-700 ring-1 ring-slate-200">
@@ -99,40 +99,40 @@ export function OperationsOverview({ summary }: { summary: ReportsOverview }) {
       </div>
 
       <div className="grid gap-4 xl:grid-cols-3">
-        <Card>
+        <Card className="ft-report-card">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <h3 className="text-base font-semibold text-slate-900">Ventana crítica</h3>
-              <p className="mt-1 text-sm text-slate-500">Lo que más presiona esta semana.</p>
+              <h3 className="ft-heading-section text-base">Ventana crítica</h3>
+              <p className="ft-copy mt-1">Lo que más presiona esta semana.</p>
             </div>
             <span className="inline-flex h-11 w-11 items-center justify-center rounded-[16px] bg-rose-50 text-rose-700 ring-1 ring-rose-100">
               <AlertTriangle className="h-5 w-5" />
             </span>
           </div>
           <div className="mt-5 space-y-3">
-            <div className="rounded-[16px] border border-slate-200 bg-slate-50 px-4 py-3">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Vencidas</p>
-              <p className="mt-2 text-xl font-bold text-slate-900">{summary.kpis.overdueTasks}</p>
-              <p className="mt-1 text-sm text-slate-500">Tareas fuera de fecha.</p>
+            <div className="ft-report-row bg-slate-50 px-4 py-3">
+              <p className="ft-kicker text-slate-500">Vencidas</p>
+              <p className="ft-metric-value mt-2 text-xl">{summary.kpis.overdueTasks}</p>
+              <p className="ft-copy mt-1">Tareas fuera de fecha.</p>
             </div>
-            <div className="rounded-[16px] border border-slate-200 bg-slate-50 px-4 py-3">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">En espera</p>
-              <p className="mt-2 text-xl font-bold text-slate-900">{summary.kpis.waitingTasks}</p>
-              <p className="mt-1 text-sm text-slate-500">Tareas que necesitan desbloqueo.</p>
+            <div className="ft-report-row bg-slate-50 px-4 py-3">
+              <p className="ft-kicker text-slate-500">En espera</p>
+              <p className="ft-metric-value mt-2 text-xl">{summary.kpis.waitingTasks}</p>
+              <p className="ft-copy mt-1">Tareas que necesitan desbloqueo.</p>
             </div>
-            <div className="rounded-[16px] border border-slate-200 bg-slate-50 px-4 py-3">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Proyectos vencidos</p>
-              <p className="mt-2 text-xl font-bold text-slate-900">{summary.kpis.overdueProjects}</p>
-              <p className="mt-1 text-sm text-slate-500">Requieren seguimiento con equipo o cliente.</p>
+            <div className="ft-report-row bg-slate-50 px-4 py-3">
+              <p className="ft-kicker text-slate-500">Proyectos vencidos</p>
+              <p className="ft-metric-value mt-2 text-xl">{summary.kpis.overdueProjects}</p>
+              <p className="ft-copy mt-1">Requieren seguimiento con equipo o cliente.</p>
             </div>
           </div>
         </Card>
 
-        <Card className="xl:col-span-2">
+        <Card className="ft-report-card xl:col-span-2">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <h3 className="text-base font-semibold text-slate-900">Capacidad por departamento</h3>
-              <p className="mt-1 text-sm text-slate-500">Distribución combinada de tareas abiertas y proyectos activos.</p>
+              <h3 className="ft-heading-section text-base">Capacidad por departamento</h3>
+              <p className="ft-copy mt-1">Distribución combinada de tareas abiertas y proyectos activos.</p>
             </div>
             <span className="inline-flex h-11 w-11 items-center justify-center rounded-[16px] bg-blue-50 text-blue-700 ring-1 ring-blue-100">
               <Layers3 className="h-5 w-5" />
@@ -162,11 +162,11 @@ export function OperationsOverview({ summary }: { summary: ReportsOverview }) {
       </div>
 
       <div className="grid gap-4 xl:grid-cols-[0.95fr_1.05fr]">
-        <Card>
+        <Card className="ft-report-card">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <h3 className="text-base font-semibold text-slate-900">Distribución por estado</h3>
-              <p className="mt-1 text-sm text-slate-500">Lectura rápida de tareas y proyectos.</p>
+              <h3 className="ft-heading-section text-base">Distribución por estado</h3>
+              <p className="ft-copy mt-1">Lectura rápida de tareas y proyectos.</p>
             </div>
             <span className="inline-flex h-11 w-11 items-center justify-center rounded-[16px] bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100">
               <BriefcaseBusiness className="h-5 w-5" />
@@ -174,7 +174,7 @@ export function OperationsOverview({ summary }: { summary: ReportsOverview }) {
           </div>
           <div className="mt-5 grid gap-4 md:grid-cols-2">
             <div className="space-y-3">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Tareas</p>
+              <p className="ft-kicker text-slate-500">Tareas</p>
               {summary.taskStatus.length ? summary.taskStatus.map((item) => (
                 <div key={`task-${item.value}`} className="flex items-center justify-between gap-3 rounded-[16px] border border-slate-200 bg-slate-50 px-4 py-3">
                   <StatusBadge value={item.value} />
@@ -183,7 +183,7 @@ export function OperationsOverview({ summary }: { summary: ReportsOverview }) {
               )) : <div className="rounded-[16px] border border-dashed border-slate-300 px-4 py-5 text-sm text-slate-500">Todavía no hay tareas para resumir.</div>}
             </div>
             <div className="space-y-3">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Proyectos</p>
+              <p className="ft-kicker text-slate-500">Proyectos</p>
               {summary.projectStatus.length ? summary.projectStatus.map((item) => (
                 <div key={`project-${item.value}`} className="flex items-center justify-between gap-3 rounded-[16px] border border-slate-200 bg-slate-50 px-4 py-3">
                   <StatusBadge value={item.value} />
@@ -194,11 +194,11 @@ export function OperationsOverview({ summary }: { summary: ReportsOverview }) {
           </div>
         </Card>
 
-        <Card>
+        <Card className="ft-report-card">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <h3 className="text-base font-semibold text-slate-900">Radar de atención</h3>
-              <p className="mt-1 text-sm text-slate-500">Clientes y tareas que piden revisión primero.</p>
+              <h3 className="ft-heading-section text-base">Radar de atención</h3>
+              <p className="ft-copy mt-1">Clientes y tareas que piden revisión primero.</p>
             </div>
             <span className="inline-flex h-11 w-11 items-center justify-center rounded-[16px] bg-amber-50 text-amber-700 ring-1 ring-amber-100">
               <CheckCircle2 className="h-5 w-5" />
@@ -206,13 +206,13 @@ export function OperationsOverview({ summary }: { summary: ReportsOverview }) {
           </div>
           <div className="mt-5 grid gap-4 lg:grid-cols-2">
             <div className="space-y-3">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Clientes con más carga</p>
+              <p className="ft-kicker text-slate-500">Clientes con más carga</p>
               {summary.attentionClients.length ? summary.attentionClients.map((client) => (
                 <Link key={client.id} href={`/app/clients/${client.id}`} className="block rounded-[16px] border border-slate-200 bg-white px-4 py-3 transition hover:border-emerald-200 hover:bg-emerald-50/40">
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="text-sm font-semibold text-slate-900">{client.name}</p>
-                      <p className="mt-1 text-sm text-slate-500">{client.openTasks} tareas abiertas · {client.openProjects} proyectos activos</p>
+                      <p className="ft-copy mt-1">{client.openTasks} tareas abiertas · {client.openProjects} proyectos activos</p>
                     </div>
                     <StatusBadge value={client.status} className="shrink-0" />
                   </div>
@@ -220,13 +220,13 @@ export function OperationsOverview({ summary }: { summary: ReportsOverview }) {
               )) : <div className="rounded-[16px] border border-dashed border-slate-300 px-4 py-5 text-sm text-slate-500">No hay clientes con carga visible todavía.</div>}
             </div>
             <div className="space-y-3">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Tareas foco</p>
+              <p className="ft-kicker text-slate-500">Tareas foco</p>
               {summary.focusTasks.length ? summary.focusTasks.map((task) => (
                 <Link key={task.id} href={`/app/tasks/${task.id}`} className="block rounded-[16px] border border-slate-200 bg-slate-50 px-4 py-3 transition hover:border-emerald-200 hover:bg-emerald-50/40">
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="text-sm font-semibold text-slate-900">{task.title}</p>
-                      <p className="mt-1 text-sm text-slate-500">{task.clientName} · {task.dueLabel}</p>
+                      <p className="ft-copy mt-1">{task.clientName} · {task.dueLabel}</p>
                     </div>
                     <span className={`inline-flex rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] ${urgencyStyles[task.urgency]}`}>
                       {urgencyLabels[task.urgency]}
@@ -239,11 +239,11 @@ export function OperationsOverview({ summary }: { summary: ReportsOverview }) {
         </Card>
       </div>
 
-      <Card>
+      <Card className="ft-report-card">
         <div className="flex items-center justify-between gap-3">
           <div>
-            <h3 className="text-base font-semibold text-slate-900">Watchlist de proyectos</h3>
-            <p className="mt-1 text-sm text-slate-500">Los proyectos que requieren monitoreo más de cerca.</p>
+            <h3 className="ft-heading-section text-base">Watchlist de proyectos</h3>
+            <p className="ft-copy mt-1">Los proyectos que requieren monitoreo más de cerca.</p>
           </div>
           <span className="inline-flex h-11 w-11 items-center justify-center rounded-[16px] bg-indigo-50 text-indigo-700 ring-1 ring-indigo-100">
             <FolderKanban className="h-5 w-5" />
@@ -255,7 +255,7 @@ export function OperationsOverview({ summary }: { summary: ReportsOverview }) {
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <p className="text-sm font-semibold text-slate-900">{project.title}</p>
-                  <p className="mt-1 text-sm text-slate-500">{project.clientName} · {project.dueLabel}</p>
+                  <p className="ft-copy mt-1">{project.clientName} · {project.dueLabel}</p>
                 </div>
                 <span className={`inline-flex rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] ${projectUrgencyStyles[project.urgency]}`}>
                   {projectUrgencyLabels[project.urgency]}

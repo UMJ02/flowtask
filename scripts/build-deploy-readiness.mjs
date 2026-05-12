@@ -4,7 +4,7 @@ import path from "node:path";
 
 const root = process.cwd();
 const failures = [];
-const expectedVersion = "58.25.6.2-projects-ui-system-migration";
+const expectedVersion = "58.25.6.4-organization-settings-notifications-ui-system-final-alignment";
 
 function exists(rel){ return fs.existsSync(path.join(root, rel)); }
 function read(rel){ return exists(rel) ? fs.readFileSync(path.join(root, rel), "utf8") : ""; }
@@ -22,21 +22,24 @@ for (const rel of [
   "scripts/runtime-check.mjs",
   "scripts/validate-env.mjs",
   "scripts/design-doctor.mjs",
-  "scripts/verify-v58.25.6.2.mjs",
-  "docs/release/V58_25_6_2_PROJECTS_UI_SYSTEM_MIGRATION.md",
-  "docs/qa/FLOWTASK_V58_25_6_2_PROJECTS_UI_SYSTEM_MIGRATION_QA.md",
-  "src/app/(app)/app/projects/page.tsx",
-  "src/components/projects/project-detail-summary.tsx",
-  "src/components/projects/project-form.tsx",
-  "src/components/projects/project-inline-tasks.tsx",
-  "src/components/projects/project-planning-timeline.tsx",
+  "scripts/verify-v58.25.6.4.mjs",
+  "docs/release/V58_25_6_4_ORGANIZATION_SETTINGS_NOTIFICATIONS_UI_SYSTEM_FINAL_ALIGNMENT.md",
+  "docs/qa/FLOWTASK_V58_25_6_4_ORGANIZATION_SETTINGS_NOTIFICATIONS_UI_SYSTEM_FINAL_ALIGNMENT_QA.md",
+  "src/app/(app)/app/organization/page.tsx",
+  "src/app/(app)/app/settings/page.tsx",
+  "src/app/(app)/app/notifications/page.tsx",
+  "src/app/(app)/app/profile/page.tsx",
+  "src/components/settings/settings-account-overview.tsx",
+  "src/components/settings/account-danger-zone.tsx",
+  "src/components/notifications/notifications-command-center.tsx",
+  "src/components/notifications/notifications-live-panel.tsx",
 ]) requireFile(rel);
 
 const pkg = JSON.parse(read("package.json"));
 const scripts = pkg.scripts ?? {};
 if (pkg.version !== expectedVersion) failures.push(`Unexpected package version: ${pkg.version}`);
-if (scripts["verify:current"] !== "npm run verify:v58.25.6.2") failures.push("verify:current must target verify:v58.25.6.2");
-if (scripts["verify:v58.25.6.2"] !== "node scripts/verify-v58.25.6.2.mjs") failures.push("verify:v58.25.6.2 must target scripts/verify-v58.25.6.2.mjs");
+if (scripts["verify:current"] !== "npm run verify:v58.25.6.4") failures.push("verify:current must target verify:v58.25.6.4");
+if (scripts["verify:v58.25.6.4"] !== "node scripts/verify-v58.25.6.4.mjs") failures.push("verify:v58.25.6.4 must target scripts/verify-v58.25.6.4.mjs");
 
 const vercel = JSON.parse(read("vercel.json"));
 if (vercel.framework !== "nextjs") failures.push("vercel.json framework must be nextjs");
@@ -44,12 +47,12 @@ if (vercel.buildCommand !== "npm run vercel:build") failures.push("vercel.json b
 
 requireIncludes("src/lib/release/version.ts", expectedVersion);
 requireIncludes("package-lock.json", expectedVersion);
-requireIncludes("src/app/globals.css", "v58.25.6.2 — Projects UI System Migration");
-requireIncludes("src/app/(app)/app/projects/page.tsx", "ft-projects-screen");
-requireIncludes("src/components/projects/project-form.tsx", "ft-project-form-panel");
-requireIncludes("src/components/projects/project-inline-tasks.tsx", "ft-project-inline-task-row");
-requireIncludes("src/components/projects/project-planning-timeline.tsx", "ft-project-timeline-panel");
-requireNotIncludes("src/components/projects/project-form.tsx", "hover:translate-y-0");
+requireIncludes("src/app/globals.css", "v58.25.6.4 — Organization + Settings + Notifications UI System Final Alignment");
+requireIncludes("src/app/(app)/app/organization/page.tsx", "ft-org-screen");
+requireIncludes("src/app/(app)/app/settings/page.tsx", "ft-settings-screen");
+requireIncludes("src/app/(app)/app/notifications/page.tsx", "ft-notifications-ui-screen");
+requireIncludes("src/app/(app)/app/profile/page.tsx", "ft-profile-hero");
+requireNotIncludes("src/app/(app)/app/profile/page.tsx", "bg-[linear-gradient(135deg,#0f172a");
 
 if (failures.length) {
   console.error("[build-deploy-readiness] Failed checks:");
@@ -57,4 +60,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log("[build-deploy-readiness] OK — v58.25.6.2 Projects UI system migration readiness aligned.");
+console.log("[build-deploy-readiness] OK — v58.25.6.4 Organization + Settings + Notifications readiness aligned.");

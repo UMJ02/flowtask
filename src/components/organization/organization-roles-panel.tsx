@@ -32,7 +32,7 @@ export function OrganizationRolesPanel({
   const activePermissions = useMemo(() => (activeRole ? resolvePermissions(activeRole.permissions, permissions) : []), [activeRole, permissions]);
 
   return (
-    <Card className="rounded-[24px] p-4 md:p-5">
+    <Card className="ft-org-panel p-4 md:p-5">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">Roles del equipo</p>
@@ -100,7 +100,7 @@ export function OrganizationRolesPanel({
                         {permission.category}
                       </span>
                     </div>
-                    <p className="mt-1 text-sm text-slate-500">{permission.description}</p>
+                    <p className="ft-copy mt-1">{permission.description}</p>
                   </div>
                 )) : <p className="text-sm text-slate-500">Este rol todavía no tiene permisos configurados.</p>}
               </div>

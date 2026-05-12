@@ -3,8 +3,8 @@ import type { OrganizationMetricSummary } from "@/types/organization";
 
 export function OrganizationMetricsPanel({ metrics }: { metrics?: OrganizationMetricSummary | null }) {
   return (
-    <Card>
-      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Dashboard por organización</p>
+    <Card className="ft-org-panel">
+      <p className="ft-kicker text-slate-500">Dashboard por organización</p>
       <h2 className="mt-1 text-base font-semibold text-slate-900">Salud operativa consolidada</h2>
       <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <Metric label="Miembros" value={String(metrics?.members ?? 0)} />

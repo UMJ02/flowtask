@@ -1,41 +1,25 @@
-# FlowTask — v58.25.6.2 Projects UI System Migration
+# FlowTask — v58.25.6.4 Organization + Settings + Notifications UI System Final Alignment
 
-Base: **v58.25.6.1 — Tasks + Kanban UI System Migration**
+Base: **v58.25.6.3 — Dashboard + Analytics UI System Migration**
 
 ## Objetivo
 
-Migrar Proyectos al sistema visual madre creado en v58.25.6, para mantener una sola arquitectura de diseño en listados, filtros, formulario, detalle, tareas internas y timeline.
+Alinear Organización, Settings, Notifications y Profile con el sistema visual madre de v58.25.6 para cerrar la etapa de administración/configuración con una sola arquitectura visual.
 
 ## Cambios principales
 
-- Se agrega `ft-projects-screen` como shell global de proyectos.
-- Listado principal usa `ft-projects-hero`, `ft-projects-panel`, `ft-projects-filter-panel`.
-- Métricas usan `ft-project-metric-card`.
-- Acciones usan `ft-project-action` y `ft-project-action-primary`.
-- Detalle usa `ft-project-detail-panel`.
-- Formulario usa `ft-project-form-panel` y controles globales.
-- Tareas internas usan `ft-project-inline-task-row`.
-- Timeline usa `ft-project-timeline-panel`.
-- Se reduce uso de estilos por pantalla y se alinea con la arquitectura UI de FlowTask.
-
-## Funcionalidad preservada
-
-- Listado.
-- Filtros.
-- Crear proyecto.
-- Editar proyecto.
-- Detalle.
-- Tareas internas.
-- Timeline.
-- Exportar CSV.
-- Compartir / miembros / permisos.
-- Acciones de borrar donde ya existían.
+- Organization usa `ft-org-*`.
+- Settings usa `ft-settings-screen`, `ft-settings-panel`, `ft-settings-hero-system` y métricas del sistema.
+- Notifications usa `ft-notifications-ui-*` y chips/rows del sistema.
+- Profile deja hero oscuro y pasa a hero/panel blanco del sistema.
+- Se normalizan cards, filas, acciones, métricas y danger panels.
+- Se preservan todas las funcionalidades de organización, settings, notificaciones y perfil.
 
 ## Validación recomendada
 
 ```bash
 npm install
-npm run verify:v58.25.6.2
+npm run verify:v58.25.6.4
 npm run design:doctor
 npm run typecheck
 npm run build:preflight

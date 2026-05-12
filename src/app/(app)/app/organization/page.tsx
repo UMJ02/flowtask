@@ -45,18 +45,18 @@ export default async function OrganizationPage({ searchParams }: { searchParams?
   const featuredMember = members.find((member: (typeof members)[number]) => member.userId === activeOrganization?.ownerId) ?? members[0] ?? null;
 
   return (
-    <div className="space-y-4">
+    <div className="ft-org-screen">
       <OrganizationReactivationModal openInitially={showReactivated} />
       {pendingInvitesForCurrentUser.length ? <OrganizationPendingInvitesCard invites={pendingInvitesForCurrentUser} /> : null}
       {!activeOrganization ? (
         organizations.length || deletedOrganizations.length ? (
-          <div className="space-y-4">
+          <div className="ft-org-screen">
             {organizations.length ? (
-              <div className="rounded-[24px] border border-slate-200 bg-white px-5 py-5">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-600">Workspace personal activo</p>
-                <h2 className="mt-2 text-xl font-bold text-slate-900">Tu organización sigue disponible, pero no reemplaza tu modo individual</h2>
-                <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-600">Ahora FlowTask mantiene separados tu trabajo personal y los workspaces de equipo. Usa el selector del sidebar para cambiar entre <strong>Workspace personal</strong> y cualquiera de tus organizaciones sin perder acceso a tus tareas, proyectos y catálogos anteriores.</p>
-                <div className="mt-4 inline-flex rounded-full bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-700 ring-1 ring-emerald-200">Organizaciones disponibles: {organizations.length}</div>
+              <div className="ft-org-hero px-5 py-5">
+                <p className="ft-kicker text-[#047857]">Workspace personal activo</p>
+                <h2 className="ft-org-title mt-2">Tu organización sigue disponible, pero no reemplaza tu modo individual</h2>
+                <p className="ft-org-copy mt-3 max-w-3xl">Ahora FlowTask mantiene separados tu trabajo personal y los workspaces de equipo. Usa el selector del sidebar para cambiar entre <strong>Workspace personal</strong> y cualquiera de tus organizaciones sin perder acceso a tus tareas, proyectos y catálogos anteriores.</p>
+                <div className="ft-org-chip mt-4 bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200">Organizaciones disponibles: {organizations.length}</div>
               </div>
             ) : null}
             {deletedOrganizations.length ? <DeletedOrganizationsPanel organizations={deletedOrganizations} /> : null}
@@ -65,7 +65,7 @@ export default async function OrganizationPage({ searchParams }: { searchParams?
           <OrganizationBootstrapCard />
         )
       ) : (
-        <div className="space-y-3">
+        <div className="ft-org-screen">
           {assistantSummary ? (
             <IntelligentAttentionAssistant
               workspaceKey={assistantSummary.workspaceKey}

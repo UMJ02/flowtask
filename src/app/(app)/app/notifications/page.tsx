@@ -50,7 +50,7 @@ export default async function NotificationsPage({ searchParams }: { searchParams
   ]);
 
   return (
-    <div className="ft-notifications-shell">
+    <div className="ft-notifications-ui-screen">
       <NotificationsCommandCenter
         unreadCount={data.unreadCount}
         deliverySummary={data.deliverySummary}

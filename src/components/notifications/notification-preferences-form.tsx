@@ -24,10 +24,10 @@ function ToggleRow({
   onChange: (value: boolean) => void;
 }) {
   return (
-    <label className="flex flex-col gap-3 rounded-[18px] border border-[#E5EAF1] bg-white px-4 py-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+    <label className="ft-settings-row flex flex-col gap-3 px-4 py-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
       <div className="min-w-0">
-        <p className="text-sm font-semibold text-[#0F172A]">{label}</p>
-        <p className="mt-1 text-sm text-[#64748B]">{description}</p>
+        <p className="text-sm font-semibold ft-text-main">{label}</p>
+        <p className="mt-1 text-sm ft-text-muted">{description}</p>
       </div>
       <input
         type="checkbox"
@@ -147,7 +147,7 @@ export function NotificationPreferencesForm({ initialPreferences }: Props) {
           {activeTab === "delivery" ? (
             <div className="space-y-4">
               <div>
-                <p className="text-sm font-semibold text-[#0F172A]">Frecuencia</p>
+                <p className="text-sm font-semibold ft-text-main">Frecuencia</p>
                 <div className="mt-2 flex flex-wrap gap-2">
                   {[
                     { value: "immediate", label: "Inmediato" },
@@ -176,7 +176,7 @@ export function NotificationPreferencesForm({ initialPreferences }: Props) {
               </div>
 
               <label className="block">
-                <p className="text-sm font-semibold text-[#0F172A]">Hora del resumen diario</p>
+                <p className="text-sm font-semibold ft-text-main">Hora del resumen diario</p>
                 <select
                   className="mt-2 w-full rounded-2xl border border-[#E5EAF1] bg-white px-4 py-2 text-sm text-slate-700"
                   value={state.daily_digest_hour}
@@ -234,7 +234,7 @@ export function NotificationPreferencesForm({ initialPreferences }: Props) {
               />
               <div className="grid gap-3 sm:grid-cols-2">
                 <label className="block">
-                  <p className="text-sm font-semibold text-[#0F172A]">Inicio</p>
+                  <p className="text-sm font-semibold ft-text-main">Inicio</p>
                   <select
                     className="mt-2 w-full rounded-2xl border border-[#E5EAF1] bg-white px-4 py-2 text-sm text-slate-700"
                     value={state.quiet_hours_start}
@@ -247,7 +247,7 @@ export function NotificationPreferencesForm({ initialPreferences }: Props) {
                   </select>
                 </label>
                 <label className="block">
-                  <p className="text-sm font-semibold text-[#0F172A]">Fin</p>
+                  <p className="text-sm font-semibold ft-text-main">Fin</p>
                   <select
                     className="mt-2 w-full rounded-2xl border border-[#E5EAF1] bg-white px-4 py-2 text-sm text-slate-700"
                     value={state.quiet_hours_end}

@@ -5,12 +5,12 @@ export function SupportReadinessPanel({ summary, tickets, organizationName }: { 
   const readiness = Math.max(0, 100 - summary.open * 8 - summary.inProgress * 5 - summary.critical * 12 + Math.min(summary.resolvedLast30Days * 2, 12));
 
   return (
-    <Card>
+    <Card className="ft-org-panel">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Support center</p>
+          <p className="ft-kicker text-slate-500">Support center</p>
           <h2 className="mt-1 text-xl font-bold text-slate-900">Mesa interna y salud de soporte</h2>
-          <p className="mt-2 max-w-2xl text-sm text-slate-600">Centraliza incidencias de plataforma por organización para detectar presión operativa antes de que escale en producción.</p>
+          <p className="ft-org-copy mt-2 max-w-2xl">Centraliza incidencias de plataforma por organización para detectar presión operativa antes de que escale en producción.</p>
         </div>
         <div className="rounded-2xl bg-emerald-950 px-5 py-4 text-white">
           <p className="text-[11px] uppercase tracking-[0.18em] text-emerald-200">Support readiness</p>
@@ -19,7 +19,7 @@ export function SupportReadinessPanel({ summary, tickets, organizationName }: { 
         </div>
       </div>
 
-      <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+      <div className="ft-org-metric-grid mt-4">
         <Metric label="Abiertos" value={summary.open} hint="Casos esperando primer movimiento" />
         <Metric label="En progreso" value={summary.inProgress} hint="Casos con seguimiento activo" />
         <Metric label="Críticos" value={summary.critical} hint="Impacto alto o bloqueo" />

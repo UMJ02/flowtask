@@ -93,7 +93,7 @@ export function OrganizationAdminSettingsCard({
   }
 
   return (
-    <Card className="rounded-[24px] p-4 md:p-5">
+    <Card className="ft-org-panel p-4 md:p-5">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">Ajustes del workspace</p>

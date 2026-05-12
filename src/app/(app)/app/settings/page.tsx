@@ -26,7 +26,7 @@ export default async function SettingsPage() {
     : null;
 
   return (
-    <div className="ft-settings-shell">
+    <div className="ft-settings-screen">
       <SettingsAccountOverview
         profile={profile}
         preferences={preferences}
@@ -39,7 +39,7 @@ export default async function SettingsPage() {
         billingSummary={resolvedBillingSummary}
       />
 
-      <Card className="ft-settings-card p-6 md:p-7">
+      <Card className="ft-settings-panel p-6 md:p-7">
         <p className="ft-settings-eyebrow text-[#64748B]">Settings</p>
         <h2 className="mt-2 ft-settings-title">Preferencias operativas</h2>
         <p className="mt-2 max-w-3xl ft-settings-muted">

@@ -3276,3 +3276,441 @@
     }
   }
 }
+
+
+/* v58.25.6.3 — Dashboard + Analytics UI System Migration */
+@layer components {
+  .ft-dashboard-screen,
+  .ft-analytics-screen,
+  .ft-reports-screen {
+    width: 100%;
+    max-width: none;
+    margin-inline: 0;
+    display: grid;
+    gap: 16px;
+  }
+
+  .ft-dashboard-hero,
+  .ft-dashboard-panel,
+  .ft-dashboard-card,
+  .ft-analytics-hero,
+  .ft-analytics-panel,
+  .ft-analytics-card,
+  .ft-report-hero,
+  .ft-report-panel,
+  .ft-report-card {
+    border: 1px solid var(--ft-border, #E5EAF1);
+    background: #FFFFFF;
+    border-radius: var(--ft-radius-lg, 24px);
+    box-shadow: var(--ft-shadow-xs, 0 8px 24px rgba(15,23,42,.035));
+  }
+
+  .ft-dashboard-hero,
+  .ft-analytics-hero,
+  .ft-report-hero {
+    padding: 18px;
+    overflow: hidden;
+  }
+
+  .ft-dashboard-panel,
+  .ft-analytics-panel,
+  .ft-report-panel,
+  .ft-dashboard-card,
+  .ft-analytics-card,
+  .ft-report-card {
+    padding: 16px;
+  }
+
+  .ft-dashboard-metric-grid,
+  .ft-analytics-metric-grid,
+  .ft-report-metric-grid {
+    display: grid;
+    gap: 12px;
+  }
+
+  .ft-dashboard-metric,
+  .ft-analytics-metric,
+  .ft-report-metric {
+    min-height: 96px;
+    border: 1px solid var(--ft-border, #E5EAF1);
+    background: linear-gradient(135deg, #FFFFFF, #F8FAFC);
+    border-radius: var(--ft-radius-md, 18px);
+    padding: 14px;
+    box-shadow: var(--ft-shadow-xs, 0 8px 24px rgba(15,23,42,.035));
+  }
+
+  .ft-dashboard-title,
+  .ft-analytics-title,
+  .ft-report-title {
+    color: #0F172A;
+    font-size: clamp(24px, 2.2vw, 34px);
+    font-weight: 850;
+    letter-spacing: -0.035em;
+    line-height: 1.08;
+    overflow-wrap: anywhere;
+  }
+
+  .ft-dashboard-copy,
+  .ft-analytics-copy,
+  .ft-report-copy {
+    color: #64748B;
+    font-size: 14px;
+    line-height: 1.6;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+  }
+
+  .ft-dashboard-action,
+  .ft-analytics-action,
+  .ft-report-action {
+    display: inline-flex;
+    min-height: 40px;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border-radius: var(--ft-radius-xs, 12px);
+    border: 1px solid var(--ft-border, #E5EAF1);
+    background: #FFFFFF;
+    padding-inline: 14px;
+    color: #334155;
+    font-size: 13px;
+    font-weight: 800;
+    transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+  }
+
+  .ft-dashboard-action:hover,
+  .ft-analytics-action:hover,
+  .ft-report-action:hover {
+    border-color: #CBD5E1;
+    background: #F8FAFC;
+    color: #0F172A;
+  }
+
+  .ft-dashboard-action-primary,
+  .ft-analytics-action-primary,
+  .ft-report-action-primary {
+    border-color: #16C784;
+    background: #16C784;
+    color: #FFFFFF;
+  }
+
+  .ft-dashboard-action-primary:hover,
+  .ft-analytics-action-primary:hover,
+  .ft-report-action-primary:hover {
+    border-color: #0E9F6E;
+    background: #0E9F6E;
+    color: #FFFFFF;
+  }
+
+  .ft-dashboard-row,
+  .ft-analytics-row,
+  .ft-report-row {
+    border: 1px solid var(--ft-border, #E5EAF1);
+    background: #FFFFFF;
+    border-radius: var(--ft-radius-md, 18px);
+    padding: 12px;
+    transition: background 160ms ease, border-color 160ms ease;
+  }
+
+  .ft-dashboard-row:hover,
+  .ft-analytics-row:hover,
+  .ft-report-row:hover {
+    border-color: #CBD5E1;
+    background: #F8FAFC;
+  }
+
+  .ft-chart-frame {
+    border: 1px solid var(--ft-border, #E5EAF1);
+    border-radius: var(--ft-radius-md, 18px);
+    background: #FFFFFF;
+    padding: 12px;
+    overflow: hidden;
+  }
+
+  .ft-chart-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border-radius: var(--ft-radius-md, 18px);
+    border: 1px solid var(--ft-border, #E5EAF1);
+    background: #F8FAFC;
+    padding: 12px;
+  }
+
+  @media (min-width: 768px) {
+    .ft-dashboard-metric-grid,
+    .ft-analytics-metric-grid,
+    .ft-report-metric-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .ft-dashboard-metric-grid,
+    .ft-analytics-metric-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .ft-report-metric-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 767px) {
+    .ft-dashboard-hero,
+    .ft-dashboard-panel,
+    .ft-dashboard-card,
+    .ft-analytics-hero,
+    .ft-analytics-panel,
+    .ft-analytics-card,
+    .ft-report-hero,
+    .ft-report-panel,
+    .ft-report-card {
+      border-radius: var(--ft-radius-md, 18px);
+    }
+  }
+}
+
+
+/* v58.25.6.4 — Organization + Settings + Notifications UI System Final Alignment */
+@layer components {
+  .ft-org-screen,
+  .ft-settings-screen,
+  .ft-notifications-ui-screen,
+  .ft-profile-screen {
+    width: 100%;
+    max-width: none;
+    margin-inline: 0;
+    display: grid;
+    gap: 16px;
+  }
+
+  .ft-org-hero,
+  .ft-settings-hero-system,
+  .ft-notifications-hero-system,
+  .ft-profile-hero,
+  .ft-org-panel,
+  .ft-settings-panel,
+  .ft-notifications-ui-panel,
+  .ft-profile-panel {
+    border: 1px solid var(--ft-border, #E5EAF1);
+    background: #FFFFFF;
+    border-radius: var(--ft-radius-lg, 24px);
+    box-shadow: var(--ft-shadow-xs, 0 8px 24px rgba(15,23,42,.035));
+  }
+
+  .ft-org-hero,
+  .ft-settings-hero-system,
+  .ft-notifications-hero-system,
+  .ft-profile-hero {
+    padding: 18px;
+    overflow: hidden;
+  }
+
+  .ft-org-panel,
+  .ft-settings-panel,
+  .ft-notifications-ui-panel,
+  .ft-profile-panel {
+    padding: 16px;
+  }
+
+  .ft-org-card,
+  .ft-settings-system-card,
+  .ft-notification-system-card,
+  .ft-profile-card {
+    border: 1px solid var(--ft-border, #E5EAF1);
+    background: #FFFFFF;
+    border-radius: var(--ft-radius-md, 18px);
+    padding: 14px;
+    box-shadow: var(--ft-shadow-xs, 0 8px 24px rgba(15,23,42,.035));
+  }
+
+  .ft-org-row,
+  .ft-settings-row,
+  .ft-notification-system-row,
+  .ft-profile-row {
+    border: 1px solid var(--ft-border, #E5EAF1);
+    background: #FFFFFF;
+    border-radius: var(--ft-radius-md, 18px);
+    padding: 12px;
+    transition: background 160ms ease, border-color 160ms ease;
+  }
+
+  .ft-org-row:hover,
+  .ft-settings-row:hover,
+  .ft-notification-system-row:hover,
+  .ft-profile-row:hover {
+    border-color: #CBD5E1;
+    background: #F8FAFC;
+  }
+
+  .ft-org-metric-grid,
+  .ft-settings-metric-grid,
+  .ft-notifications-metric-grid {
+    display: grid;
+    gap: 12px;
+  }
+
+  .ft-org-metric,
+  .ft-settings-metric,
+  .ft-notifications-metric {
+    min-height: 92px;
+    border: 1px solid var(--ft-border, #E5EAF1);
+    background: linear-gradient(135deg, #FFFFFF, #F8FAFC);
+    border-radius: var(--ft-radius-md, 18px);
+    padding: 14px;
+    box-shadow: var(--ft-shadow-xs, 0 8px 24px rgba(15,23,42,.035));
+  }
+
+  .ft-org-title,
+  .ft-settings-system-title,
+  .ft-notifications-system-title,
+  .ft-profile-title {
+    color: #0F172A;
+    font-size: clamp(24px, 2.2vw, 32px);
+    font-weight: 850;
+    letter-spacing: -0.035em;
+    line-height: 1.08;
+    overflow-wrap: anywhere;
+  }
+
+  .ft-org-copy,
+  .ft-settings-system-copy,
+  .ft-notifications-system-copy,
+  .ft-profile-copy {
+    color: #64748B;
+    font-size: 14px;
+    line-height: 1.6;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+  }
+
+  .ft-org-action,
+  .ft-settings-system-action,
+  .ft-notifications-system-action,
+  .ft-profile-action {
+    display: inline-flex;
+    min-height: 40px;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border-radius: var(--ft-radius-xs, 12px);
+    border: 1px solid var(--ft-border, #E5EAF1);
+    background: #FFFFFF;
+    padding-inline: 14px;
+    color: #334155;
+    font-size: 13px;
+    font-weight: 800;
+    transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+  }
+
+  .ft-org-action:hover,
+  .ft-settings-system-action:hover,
+  .ft-notifications-system-action:hover,
+  .ft-profile-action:hover {
+    border-color: #CBD5E1;
+    background: #F8FAFC;
+    color: #0F172A;
+  }
+
+  .ft-org-action-primary,
+  .ft-settings-system-action-primary,
+  .ft-notifications-system-action-primary,
+  .ft-profile-action-primary {
+    border-color: #16C784;
+    background: #16C784;
+    color: #FFFFFF;
+  }
+
+  .ft-org-action-primary:hover,
+  .ft-settings-system-action-primary:hover,
+  .ft-notifications-system-action-primary:hover,
+  .ft-profile-action-primary:hover {
+    border-color: #0E9F6E;
+    background: #0E9F6E;
+    color: #FFFFFF;
+  }
+
+  .ft-org-action-danger,
+  .ft-settings-system-action-danger,
+  .ft-profile-action-danger {
+    border-color: #FECDD3;
+    background: #FFF1F2;
+    color: #E11D48;
+  }
+
+  .ft-org-action-danger:hover,
+  .ft-settings-system-action-danger:hover,
+  .ft-profile-action-danger:hover {
+    border-color: #FDA4AF;
+    background: #FFE4E6;
+    color: #BE123C;
+  }
+
+  .ft-org-chip,
+  .ft-settings-system-chip,
+  .ft-notifications-system-chip {
+    display: inline-flex;
+    max-width: 100%;
+    align-items: center;
+    gap: 7px;
+    border-radius: 999px;
+    border: 1px solid #E5EAF1;
+    background: #FFFFFF;
+    padding: 5px 10px;
+    color: #475569;
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1.1;
+  }
+
+  .ft-settings-danger-panel,
+  .ft-org-danger-panel {
+    border: 1px solid #FECDD3;
+    background: #FFFFFF;
+    border-radius: var(--ft-radius-lg, 24px);
+    box-shadow: var(--ft-shadow-xs, 0 8px 24px rgba(15,23,42,.035));
+    padding: 16px;
+  }
+
+  @media (min-width: 768px) {
+    .ft-org-metric-grid,
+    .ft-settings-metric-grid,
+    .ft-notifications-metric-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .ft-org-metric-grid,
+    .ft-settings-metric-grid,
+    .ft-notifications-metric-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 767px) {
+    .ft-org-hero,
+    .ft-settings-hero-system,
+    .ft-notifications-hero-system,
+    .ft-profile-hero,
+    .ft-org-panel,
+    .ft-settings-panel,
+    .ft-notifications-ui-panel,
+    .ft-profile-panel {
+      border-radius: var(--ft-radius-md, 18px);
+    }
+  }
+}
+
+@layer components {
+  .ft-notifications-system-chip.ft-notification-chip-active,
+  .ft-notifications-system-chip-active {
+    border-color: #16C784;
+    background: linear-gradient(135deg,#16C784,#0E9F6E);
+    color: #FFFFFF;
+    box-shadow: 0 12px 24px rgba(22,199,132,.20);
+  }
+}

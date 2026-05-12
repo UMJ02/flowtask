@@ -85,7 +85,7 @@ export function SettingsAccountOverview({
   ] as const;
 
   return (
-    <Card className="ft-settings-hero overflow-hidden p-0">
+    <Card className="ft-settings-hero-system overflow-hidden p-0">
       <div className="grid min-h-[168px] gap-4 p-5 md:p-6 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-center">
         <div className="relative z-10">
           <p className="ft-settings-eyebrow text-[#047857]">Settings Hub</p>
@@ -114,16 +114,16 @@ export function SettingsAccountOverview({
         </div>
       </div>
 
-      <div className="grid gap-3 border-t border-[#E5EAF1] bg-white/80 p-4 md:grid-cols-2 xl:grid-cols-4">
+      <div className="ft-settings-metric-grid border-t border-[#E5EAF1] bg-white/80 p-4">
         {stats.map((item) => {
           const Icon = item.icon;
           return (
-            <div key={item.key} className={`rounded-[18px] border border-[#E5EAF1] bg-gradient-to-br ${item.card} p-4 shadow-[0_10px_24px_rgba(15,23,42,.035)] transition duration-180 hover:translate-y-0 hover:shadow-[0_14px_32px_rgba(15,23,42,.06)]`}>
+            <div key={item.key} className={`ft-settings-metric bg-gradient-to-br ${item.card} transition duration-180`}>
               <div className={`flex h-10 w-10 items-center justify-center rounded-[14px] ${item.bg}`}>
                 <Icon className={`h-6 w-6 ${item.tone}`} />
               </div>
-              <p className="mt-3 text-[10px] font-extrabold uppercase tracking-[0.16em] text-[#64748B]">{item.label}</p>
-              <p title={item.value} className="mt-1 line-clamp-2 break-words text-[22px] font-extrabold leading-tight text-[#0F172A]">{item.value}</p>
+              <p className="ft-metric-label mt-3">{item.label}</p>
+              <p title={item.value} className="ft-metric-value mt-1 line-clamp-2 break-words leading-tight">{item.value}</p>
             </div>
           );
         })}

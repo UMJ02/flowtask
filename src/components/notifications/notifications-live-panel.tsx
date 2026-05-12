@@ -254,7 +254,7 @@ export function NotificationsLivePanel({
   };
 
   return (
-    <Card className="ft-notifications-panel overflow-hidden p-0">
+    <Card className="ft-notifications-ui-panel overflow-hidden p-0">
       <div className="p-5 md:p-6">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
           <div>
@@ -301,7 +301,7 @@ export function NotificationsLivePanel({
                   setActiveFilter(filter.value);
                   syncUrl(filter.value, searchQuery);
                 }}
-                className={active ? "ft-notification-chip ft-notification-chip-active" : "ft-notification-chip"}
+                className={active ? "ft-notifications-system-chip ft-notification-chip-active" : "ft-notifications-system-chip"}
               >
                 {displayFilterLabel(filter.value, filter.label)}{filter.value !== "all" ? ` · ${count}` : ""}
               </button>
@@ -323,7 +323,7 @@ export function NotificationsLivePanel({
                       setActiveFilter(filter.value);
                       syncUrl(filter.value, searchQuery);
                     }}
-                    className={active ? "ft-notification-chip ft-notification-chip-active" : "ft-notification-chip"}
+                    className={active ? "ft-notifications-system-chip ft-notification-chip-active" : "ft-notifications-system-chip"}
                   >
                     {filter.label}
                   </button>
@@ -352,7 +352,7 @@ export function NotificationsLivePanel({
                     const visual = getNotificationVisual(item);
                     const Icon = visual.icon;
                     return (
-                      <div key={item.id} className={`ft-notification-row ${checked ? "border-[#16C784] bg-[#ECFDF5]" : ""}`}>
+                      <div key={item.id} className={`ft-notification-system-row ${checked ? "border-[#16C784] bg-[#ECFDF5]" : ""}`}>
                         <div className="flex items-center gap-4">
                           <input
                             type="checkbox"

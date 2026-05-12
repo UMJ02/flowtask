@@ -3,8 +3,8 @@ import type { OrganizationUsageMetric } from "@/types/billing";
 
 export function OrganizationPlanLimitsPanel({ items }: { items: OrganizationUsageMetric[] }) {
   return (
-    <Card>
-      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Límites del plan</p>
+    <Card className="ft-org-panel">
+      <p className="ft-kicker text-slate-500">Límites del plan</p>
       <h2 className="mt-1 text-base font-semibold text-slate-900">Uso actual de la organización</h2>
       <div className="mt-4 space-y-4">
         {items.map((item) => (
