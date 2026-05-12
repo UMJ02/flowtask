@@ -171,35 +171,35 @@ export function IntelligentAttentionSettingsCard() {
                   <p className="text-sm font-semibold text-[#0F172A]">Texto más corto</p>
                   <p className="mt-1 text-sm text-[#64748B]">Muestra mensajes más directos y menos explicativos.</p>
                 </div>
-                <input type="checkbox" checked={settings.verbosity === "minimal"} onChange={(event) => persist({ ...settings, verbosity: event.target.checked ? "minimal" : "guided" })} className="h-4 w-4" />
+                <input type="checkbox" checked={settings.verbosity === "minimal"} onChange={(event) => persist({ ...settings, verbosity: event.target.checked ? "minimal" : "guided" })} className="ft-switch" />
               </label>
               <label className="flex items-center justify-between rounded-[18px] border border-[#E5EAF1] bg-[#F8FAFC] px-4 py-3">
                 <div>
                   <p className="text-sm font-semibold text-[#0F172A]">Mostrar personaje guía</p>
                   <p className="mt-1 text-sm text-[#64748B]">Úsalo para darle más calidez visual a las alertas.</p>
                 </div>
-                <input type="checkbox" checked={settings.showMascot} onChange={(event) => persist({ ...settings, showMascot: event.target.checked })} className="h-4 w-4" />
+                <input type="checkbox" checked={settings.showMascot} onChange={(event) => persist({ ...settings, showMascot: event.target.checked })} className="ft-switch" />
               </label>
               <label className="flex items-center justify-between rounded-[18px] border border-[#E5EAF1] bg-[#F8FAFC] px-4 py-3">
                 <div>
                   <p className="text-sm font-semibold text-[#0F172A]">Memoria aislada por workspace</p>
                   <p className="mt-1 text-sm text-[#64748B]">Cada espacio recuerda sus propios silencios y descartes.</p>
                 </div>
-                <input type="checkbox" checked={settings.allowWorkspaceSpecificHistory} onChange={(event) => persist({ ...settings, allowWorkspaceSpecificHistory: event.target.checked })} className="h-4 w-4" />
+                <input type="checkbox" checked={settings.allowWorkspaceSpecificHistory} onChange={(event) => persist({ ...settings, allowWorkspaceSpecificHistory: event.target.checked })} className="ft-switch" />
               </label>
               <label className="flex items-center justify-between rounded-[18px] border border-[#E5EAF1] bg-[#F8FAFC] px-4 py-3">
                 <div>
                   <p className="text-sm font-semibold text-[#0F172A]">Mostrar también en organizaciones</p>
                   <p className="mt-1 text-sm text-[#64748B]">Permite que el asistente también te oriente en workspaces de equipo.</p>
                 </div>
-                <input type="checkbox" checked={settings.showWorkspaceAlertsInOrganizations} onChange={(event) => persist({ ...settings, showWorkspaceAlertsInOrganizations: event.target.checked })} className="h-4 w-4" />
+                <input type="checkbox" checked={settings.showWorkspaceAlertsInOrganizations} onChange={(event) => persist({ ...settings, showWorkspaceAlertsInOrganizations: event.target.checked })} className="ft-switch" />
               </label>
               <label className="flex items-center justify-between rounded-[18px] border border-[#E5EAF1] bg-[#F8FAFC] px-4 py-3">
                 <div>
                   <p className="text-sm font-semibold text-[#0F172A]">Solo en dashboard</p>
                   <p className="mt-1 text-sm text-[#64748B]">Mantiene la guía principal al entrar, sin invadir otras vistas.</p>
                 </div>
-                <input type="checkbox" checked={settings.showOnDashboardOnly} onChange={(event) => persist({ ...settings, showOnDashboardOnly: event.target.checked })} className="h-4 w-4" />
+                <input type="checkbox" checked={settings.showOnDashboardOnly} onChange={(event) => persist({ ...settings, showOnDashboardOnly: event.target.checked })} className="ft-switch" />
               </label>
             </div>
           </div>

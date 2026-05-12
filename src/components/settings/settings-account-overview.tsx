@@ -118,7 +118,7 @@ export function SettingsAccountOverview({
         {stats.map((item) => {
           const Icon = item.icon;
           return (
-            <div key={item.key} className={`rounded-[18px] border border-[#E5EAF1] bg-gradient-to-br ${item.card} p-4 shadow-[0_10px_24px_rgba(15,23,42,.035)] transition duration-180 hover:-translate-y-0.5 hover:shadow-[0_14px_32px_rgba(15,23,42,.06)]`}>
+            <div key={item.key} className={`rounded-[18px] border border-[#E5EAF1] bg-gradient-to-br ${item.card} p-4 shadow-[0_10px_24px_rgba(15,23,42,.035)] transition duration-180 hover:translate-y-0 hover:shadow-[0_14px_32px_rgba(15,23,42,.06)]`}>
               <div className={`flex h-10 w-10 items-center justify-center rounded-[14px] ${item.bg}`}>
                 <Icon className={`h-6 w-6 ${item.tone}`} />
               </div>

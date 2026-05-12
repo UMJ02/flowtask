@@ -1,4 +1,4 @@
-export const designSystemVersion = "58.22.1-full-semantic-migration-motion-experience-layer";
+export const designSystemVersion = "58.25.6-design-system-consolidation-app-ui-hardening";
 
 export const ds = {
   semantic: true,
@@ -188,4 +188,33 @@ export const semanticMigrationLayer = {
   policy: "core interactive components should use semantic surfaces, density contracts and motion roles",
   components: ["AppMotion", "AppSkeleton", "AppFeedback", "AppGlassPanel", "AppAnimatedTabs"],
   disallow: ["unscoped heavy manual shadows", "oversized controls", "unanimated expandable UI", "unstyled feedback states"],
+} as const;
+
+
+export const designSystemConsolidationLayer = {
+  version: "58.25.6-design-system-consolidation-app-ui-hardening",
+  policy: "FlowTask uses a single app-wide UI architecture for page shells, panels, cards, controls, actions, typography and feedback states.",
+  primaryClasses: [
+    "ft-page-frame",
+    "ft-page-hero",
+    "ft-panel",
+    "ft-card",
+    "ft-subcard",
+    "ft-metric-card",
+    "ft-input",
+    "ft-select",
+    "ft-switch",
+    "ft-chip",
+    "ft-actionbar",
+  ],
+  hardeningFocus: [
+    "compact cards",
+    "consistent padding",
+    "styled selects",
+    "styled checkboxes",
+    "styled toggles",
+    "one focus ring",
+    "reduced shadows",
+    "no decorative hover jumps",
+  ],
 } as const;

@@ -31,7 +31,7 @@ function ToggleRow({
       </div>
       <input
         type="checkbox"
-        className="h-4 w-4 shrink-0 rounded border-slate-300 self-end sm:mt-1 sm:self-auto"
+        className="ft-switch shrink-0 self-end sm:mt-1 sm:self-auto"
         checked={checked}
         onChange={(event) => onChange(event.target.checked)}
       />

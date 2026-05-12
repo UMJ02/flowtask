@@ -66,7 +66,7 @@ function ShellFrame({
   const { collapsed } = useSidebarState();
 
   return (
-    <div className="min-h-screen bg-[#F7F9FC] ft-text-main ft-scroll-stable">
+    <div className="ft-app-root min-h-screen bg-[#F7F9FC] ft-text-main ft-scroll-stable">
       <div className={`grid min-h-screen items-stretch overflow-x-hidden ${collapsed ? 'md:grid-cols-[72px_minmax(0,1fr)]' : 'md:grid-cols-[260px_minmax(0,1fr)]'}`}>
         <AppSidebar organizations={organizations} activeOrganization={activeOrganization} userEmail={userEmail} userName={userName} />
         <div className="min-w-0 overflow-x-hidden px-4 py-4 md:px-5 md:py-5">
