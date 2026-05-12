@@ -375,12 +375,17 @@ function Swatches({ colors, onSelect }: { colors: string[]; onSelect: (color: st
 function MetricInput({ label, value, onChange, accent }: { label: string; value: number; onChange: (value: number) => void; accent: "emerald" | "blue" | "violet" | "amber" }) {
   const accentClass = accent === "emerald" ? "text-emerald-500" : accent === "blue" ? "text-blue-500" : accent === "violet" ? "text-violet-500" : "text-amber-500";
   return (
-    <div className="rounded-[14px] border ft-border bg-white px-3 py-2">
-      <label className="mb-1.5 block text-[10px] font-black uppercase tracking-[0.12em] text-slate-500">{label}</label>
-      <div className="flex h-8 items-center gap-2">
+    <div className="board-inspector-metric">
+      <label>{label}</label>
+      <div className="board-inspector-metric-control">
         <ArrowDownUp className={`h-3.5 w-3.5 ${accentClass}`} />
-        <input type="number" value={value} onChange={(event) => onChange(numberPatch(event.target.value, value))} className="h-8 min-w-0 flex-1 bg-transparent px-0 text-[14px] font-black text-slate-900 outline-none" />
-        <span className="text-[11px] font-bold text-slate-400">px</span>
+        <input
+          type="number"
+          value={value}
+          onChange={(event) => onChange(numberPatch(event.target.value, value))}
+          className="board-inspector-metric-input"
+        />
+        <span>px</span>
       </div>
     </div>
   );

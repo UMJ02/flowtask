@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -68,74 +67,57 @@ function getWorkspaceModeLabel(organizationId?: string | null) {
 
 type TemplateVisual = {
   className: string;
-  previewSrc: string;
-  previewWidth: number;
-  previewHeight: number;
-  variant?: "default" | "wide";
+  previewClass: string;
 };
 
 const TEMPLATE_VISUALS: Record<BoardTemplateId, TemplateVisual> = {
-  blank: { className: "board-home-template-mint", previewSrc: "/boards-home/pizarra_blanco.png", previewWidth: 100, previewHeight: 78 },
-  flow: { className: "board-home-template-blue", previewSrc: "/boards-home/diagrama_fujo.png", previewWidth: 100, previewHeight: 78 },
-  project: { className: "board-home-template-amber", previewSrc: "/boards-home/plan_proyecto.png", previewWidth: 100, previewHeight: 78 },
-  meeting: { className: "board-home-template-mint", previewSrc: "/boards-home/hero.png", previewWidth: 645, previewHeight: 192, variant: "wide" },
-  ideas: { className: "board-home-template-violet", previewSrc: "/boards-home/mapa_ideas.png", previewWidth: 100, previewHeight: 78 },
-  wireframe: { className: "board-home-template-rose", previewSrc: "/boards-home/wireframe.png", previewWidth: 100, previewHeight: 78 },
+  blank: { className: "board-home-template-mint", previewClass: "is-blank" },
+  flow: { className: "board-home-template-blue", previewClass: "is-flow" },
+  project: { className: "board-home-template-amber", previewClass: "is-project" },
+  meeting: { className: "board-home-template-mint", previewClass: "is-meeting" },
+  ideas: { className: "board-home-template-violet", previewClass: "is-ideas" },
+  wireframe: { className: "board-home-template-rose", previewClass: "is-wireframe" },
 };
 
-const HERO_TOOL_ICONS = [
-  { src: "/boards-home/icon-flecha.png", width: 50, height: 47 },
-  { src: "/boards-home/icon-frame.png", width: 50, height: 47 },
-  { src: "/boards-home/icon-text.png", width: 50, height: 47 },
-  { src: "/boards-home/icon-puntos.png", width: 50, height: 47 },
-] as const;
-
-function TemplatePreview({ templateId }: { templateId: BoardTemplateId }) {
-  const visual = TEMPLATE_VISUALS[templateId];
-
+function MinimalBoardPreview({ variant = "is-blank" }: { variant?: string }) {
   return (
-    <div className={`board-home-template-preview-asset ${visual.variant === "wide" ? "is-wide" : ""}`} aria-hidden="true">
-      <Image
-        src={visual.previewSrc}
-        alt=""
-        width={visual.previewWidth}
-        height={visual.previewHeight}
-        className="board-home-template-image"
-      />
+    <div className={`board-minimal-preview ${variant}`} aria-hidden="true">
+      <span className="board-preview-note note-a" />
+      <span className="board-preview-note note-b" />
+      <span className="board-preview-note note-c" />
+      <span className="board-preview-line line-a" />
+      <span className="board-preview-line line-b" />
+      <span className="board-preview-table">
+        {Array.from({ length: 6 }).map((_, index) => <i key={index} />)}
+      </span>
     </div>
   );
 }
 
+function TemplatePreview({ templateId }: { templateId: BoardTemplateId }) {
+  const visual = TEMPLATE_VISUALS[templateId];
+
+  return <MinimalBoardPreview variant={visual.previewClass} />;
+}
+
 function HeroIllustration() {
   return (
-    <div className="board-home-hero-visual" aria-hidden="true">
-      <div className="board-home-hero-toolbar">
-        {HERO_TOOL_ICONS.map((icon, index) => (
-          <span key={icon.src} className={`board-home-hero-tool ${index === 0 ? "is-active" : ""}`}>
-            <Image src={icon.src} alt="" width={icon.width} height={icon.height} className="board-home-hero-tool-image" priority={index === 0} />
-          </span>
-        ))}
+    <div className="board-home-hero-minimal" aria-hidden="true">
+      <div className="board-home-hero-minimal-top">
+        <span />
+        <span />
+        <span />
       </div>
-      <div className="board-home-hero-stage">
-        <div className="board-home-hero-stage-frame">
-          <Image src="/boards-home/hero.png" alt="" width={645} height={192} className="board-home-hero-image" priority />
-        </div>
-      </div>
+      <MinimalBoardPreview variant="is-hero" />
     </div>
   );
 }
 
 function RecentBoardPreview({ board }: { board: VisualBoard }) {
   if (board.thumbnailUrl) {
-    return <img src={board.thumbnailUrl} alt="" className="h-full w-full rounded-[18px] object-cover" />;
+    return <img src={board.thumbnailUrl} alt="" className="h-full w-full rounded-[14px] object-cover" />;
   }
-  return (
-    <div className="board-home-recent-preview" aria-hidden="true">
-      <span className="tile a" /><span className="tile b" /><span className="tile c" />
-      <span className="line a" /><span className="line b" />
-      <span className="table">{Array.from({ length: 6 }).map((_, index) => <i key={index} />)}</span>
-    </div>
-  );
+  return <MinimalBoardPreview variant="is-recent" />;
 }
 
 function BoardAccessBadge({ board }: { board: VisualBoard }) {
@@ -449,7 +431,7 @@ export function BoardsHome() {
                   <MoreVertical className="h-4 w-4" />
                 </button>
               </div>
-              <Link href={`/app/boards/${board.id}`} className="mt-4 block h-[138px] overflow-hidden rounded-[20px] border border-[#E8EDF5] bg-white/80 p-3 transition group-hover:border-emerald-200">
+              <Link href={`/app/boards/${board.id}`} className="mt-3 block h-[112px] overflow-hidden rounded-[16px] border ft-border bg-white/80 p-2.5 transition group-hover:border-emerald-200">
                 <RecentBoardPreview board={board} />
               </Link>
               <div className="mt-4 flex items-center justify-between gap-3">
@@ -461,7 +443,7 @@ export function BoardsHome() {
 
           {!loading ? (
             <button type="button" disabled={creating} onClick={() => createBoard()} className="board-home-create-card">
-              <span><Plus className="h-6 w-6" /></span>
+              <span><Plus className="h-4 w-4" /></span>
               <strong>Crear nueva pizarra</strong>
               <small>Lienzo en blanco</small>
             </button>

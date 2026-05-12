@@ -1,41 +1,27 @@
-# FlowTask — v58.25.7.1 Deep Density Component Refactor + Hardcoded Style Cleanup
+# FlowTask — v58.25.7.2 Boards Hero Cleanup + Inspector Numeric Polish + Minimal Board Previews
 
-Base: **v58.25.7 — Global Productivity Density System + UI Scale Refactor**
+Base: **v58.25.7.1 — Deep Density Component Refactor + Hardcoded Style Cleanup**
 
 ## Objetivo
 
-Convertir la capa global de densidad en cambios reales dentro de componentes. Esta versión no solo agrega tokens: limpia estilos hardcoded de los módulos con más deuda visual.
+Refinar Pizarras para eliminar peso visual innecesario y hacer que el módulo se sienta más minimalista, compacto y profesional.
 
-## Componentes depurados
+## Cambios principales
 
-- Dashboard interactivo.
-- Workspace home.
-- Tasks list/action form.
-- Task workspace inline.
-- Projects detail/timeline/inline tasks.
-- Reports overview.
-- Notifications command/live panel.
-- Organization members.
-- Clients manager/detail.
-- Boards properties panel.
-- Command palette.
-- Empty state.
-
-## Limpieza realizada
-
-- `p-5`, `p-6`, `px-6`, `py-6` reducidos.
-- `rounded-[24px]`, `rounded-[28px]`, `rounded-[34px]` eliminados en los componentes objetivo.
-- `text-[28px]`, `text-[32px]` reducidos.
-- `h-12`, `h-14`, `h-16` reducidos en controles internos.
-- `shadow-[...]` pesado reemplazado por `shadow-sm`.
-- Bordes hardcoded `border-slate-200` / `border-[#E7...]` normalizados donde correspondía.
-- Se agrega `density:guard:strict`.
+- Se elimina la ilustración grande del hero de Pizarras.
+- Se reemplaza por un preview minimalista CSS-based.
+- Se eliminan dependencias de imágenes grandes en previews de templates.
+- Las tarjetas recientes usan un placeholder minimalista más limpio.
+- Los previews de "crear nueva pizarra" y templates se sienten más pro y menos rotos.
+- Los inputs de Posición y tamaño del inspector centran los números.
+- Se ocultan spinners nativos de number input para evitar look desalineado.
+- Se agrega estilo `board-inspector-metric` para X/Y/W/H.
 
 ## Validación recomendada
 
 ```bash
 npm install
-npm run verify:v58.25.7.1
+npm run verify:v58.25.7.2
 npm run design:doctor
 npm run density:guard
 npm run density:guard:strict
