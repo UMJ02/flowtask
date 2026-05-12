@@ -310,7 +310,7 @@ export function PropertiesPanel({
                 <p className="text-sm font-medium text-slate-500">Evita mover o editar por accidente.</p>
               </div>
             </div>
-            <ToggleSwitch checked={selected.locked} onChange={(checked) => onPatch({ locked: checked } as Partial<BoardElement>)} />
+            <ToggleSwitch checked={Boolean(selected.locked)} onChange={(checked) => onPatch({ locked: checked } as Partial<BoardElement>)} />
           </div>
         ) : (
           <div className="rounded-[24px] border border-slate-200 bg-slate-50 px-4 py-4 text-sm font-medium text-slate-500">Selecciona un elemento para activar acciones rápidas.</div>
