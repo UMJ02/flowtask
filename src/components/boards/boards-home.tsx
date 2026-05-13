@@ -80,6 +80,35 @@ const TEMPLATE_VISUALS: Record<BoardTemplateId, TemplateVisual> = {
   wireframe: { className: "board-home-template-rose", previewSrc: "/boards-home/wireframe.png", alt: "Wireframe landing" },
 };
 
+const BOARD_COVER_COLORS = [
+  "mint",
+  "sky",
+  "violet",
+  "amber",
+  "rose",
+  "slate",
+  "teal",
+  "indigo",
+] as const;
+
+type BoardCoverColor = typeof BOARD_COVER_COLORS[number];
+
+function getBoardCoverColor(board: Pick<VisualBoard, "id" | "title">): BoardCoverColor {
+  const seed = `${board.id}-${board.title}`;
+  const hash = Array.from(seed).reduce((total, char) => total + char.charCodeAt(0), 0);
+  return BOARD_COVER_COLORS[hash % BOARD_COVER_COLORS.length];
+}
+
+function getBoardInitials(title: string) {
+  return title
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((word) => word[0]?.toUpperCase() ?? "")
+    .join("") || "FT";
+}
+
+
 function TemplatePreview({ templateId }: { templateId: BoardTemplateId }) {
   const visual = TEMPLATE_VISUALS[templateId];
 
@@ -91,14 +120,20 @@ function TemplatePreview({ templateId }: { templateId: BoardTemplateId }) {
 }
 
 function RecentBoardPreview({ board }: { board: VisualBoard }) {
-  const isNewBoard = board.title.trim().toLowerCase().includes("nueva pizarra");
-  const fallbackSrc = isNewBoard ? "/boards-home/nuevo_proyecto.png" : "/boards-home/pizarra_blanco.png";
-
-  if (board.thumbnailUrl) {
-    return <img src={board.thumbnailUrl} alt="" className="h-full w-full rounded-[14px] object-cover" />;
-  }
-
-  return <img src={fallbackSrc} alt="" className="h-full w-full rounded-[14px] object-cover" />;
+  const color = getBoardCoverColor(board);
+  return (
+    <div className={`board-home-color-cover is-${color}`} aria-hidden="true">
+      <span className="board-home-color-cover-orb orb-a" />
+      <span className="board-home-color-cover-orb orb-b" />
+      <span className="board-home-color-cover-grid" />
+      <span className="board-home-color-cover-mark">{getBoardInitials(board.title)}</span>
+      <span className="board-home-color-cover-lines">
+        <i />
+        <i />
+        <i />
+      </span>
+    </div>
+  );
 }
 
 function BoardAccessBadge({ board }: { board: VisualBoard }) {
@@ -403,8 +438,10 @@ export function BoardsHome() {
             <div key={index} className="board-home-recent-card board-home-skeleton"><span className="sr-only">Cargando pizarra</span></div>
           )) : null}
 
-          {!loading && boards.map((board) => (
-            <article key={board.id} className="board-home-recent-card group">
+          {!loading && boards.map((board) => {
+            const coverColor = getBoardCoverColor(board);
+            return (
+            <article key={board.id} className={`board-home-recent-card group board-home-recent-card-color is-${coverColor}`}>
               <div className="flex items-start justify-between gap-3">
                 <Link href={`/app/boards/${board.id}`} className="min-w-0 flex-1">
                   <h3>{board.title}</h3>
@@ -419,7 +456,7 @@ export function BoardsHome() {
                   <MoreVertical className="h-4 w-4" />
                 </button>
               </div>
-              <Link href={`/app/boards/${board.id}`} className="mt-3 block h-[112px] overflow-hidden rounded-[16px] border ft-border bg-white/80 p-2.5 transition group-hover:border-emerald-200">
+              <Link href={`/app/boards/${board.id}`} className="board-home-color-cover-link">
                 <RecentBoardPreview board={board} />
               </Link>
               <div className="mt-4 flex items-center justify-between gap-3">
@@ -427,14 +464,12 @@ export function BoardsHome() {
                 <button type="button" onClick={() => setDeleteTarget({ id: board.id, title: board.title })} className="board-home-delete-btn"><Trash2 className="h-4 w-4" /> Quitar</button>
               </div>
             </article>
-          ))}
+            );
+          })}
 
           {!loading ? (
-            <button type="button" disabled={creating} onClick={() => createBoard()} className="board-home-create-card">
-              <div className="board-home-create-visual" aria-hidden="true">
-                <img src="/boards-home/nuevo_proyecto.png" alt="Nuevo proyecto" className="board-home-create-image" />
-              </div>
-              <span><Plus className="h-4 w-4" /></span>
+            <button type="button" disabled={creating} onClick={() => createBoard()} className="board-home-create-card board-home-create-card-red">
+              <span className="board-home-create-plus-red"><Plus className="h-5 w-5" /></span>
               <strong>Crear nueva pizarra</strong>
               <small>Lienzo en blanco</small>
             </button>
