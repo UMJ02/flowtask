@@ -67,57 +67,38 @@ function getWorkspaceModeLabel(organizationId?: string | null) {
 
 type TemplateVisual = {
   className: string;
-  previewClass: string;
+  previewSrc: string;
+  alt: string;
 };
 
 const TEMPLATE_VISUALS: Record<BoardTemplateId, TemplateVisual> = {
-  blank: { className: "board-home-template-mint", previewClass: "is-blank" },
-  flow: { className: "board-home-template-blue", previewClass: "is-flow" },
-  project: { className: "board-home-template-amber", previewClass: "is-project" },
-  meeting: { className: "board-home-template-mint", previewClass: "is-meeting" },
-  ideas: { className: "board-home-template-violet", previewClass: "is-ideas" },
-  wireframe: { className: "board-home-template-rose", previewClass: "is-wireframe" },
+  blank: { className: "board-home-template-mint", previewSrc: "/boards-home/pizarra_blanco.png", alt: "Pizarra en blanco" },
+  flow: { className: "board-home-template-blue", previewSrc: "/boards-home/diagrama_fujo.png", alt: "Diagrama de flujo" },
+  project: { className: "board-home-template-amber", previewSrc: "/boards-home/plan_proyecto.png", alt: "Plan de proyecto" },
+  meeting: { className: "board-home-template-mint", previewSrc: "/boards-home/hero.png", alt: "Reunión visual" },
+  ideas: { className: "board-home-template-violet", previewSrc: "/boards-home/mapa_ideas.png", alt: "Mapa de ideas" },
+  wireframe: { className: "board-home-template-rose", previewSrc: "/boards-home/wireframe.png", alt: "Wireframe landing" },
 };
-
-function MinimalBoardPreview({ variant = "is-blank" }: { variant?: string }) {
-  return (
-    <div className={`board-minimal-preview ${variant}`} aria-hidden="true">
-      <span className="board-preview-note note-a" />
-      <span className="board-preview-note note-b" />
-      <span className="board-preview-note note-c" />
-      <span className="board-preview-line line-a" />
-      <span className="board-preview-line line-b" />
-      <span className="board-preview-table">
-        {Array.from({ length: 6 }).map((_, index) => <i key={index} />)}
-      </span>
-    </div>
-  );
-}
 
 function TemplatePreview({ templateId }: { templateId: BoardTemplateId }) {
   const visual = TEMPLATE_VISUALS[templateId];
 
-  return <MinimalBoardPreview variant={visual.previewClass} />;
-}
-
-function HeroIllustration() {
   return (
-    <div className="board-home-hero-minimal" aria-hidden="true">
-      <div className="board-home-hero-minimal-top">
-        <span />
-        <span />
-        <span />
-      </div>
-      <MinimalBoardPreview variant="is-hero" />
+    <div className="board-home-template-preview-asset" aria-hidden="true">
+      <img src={visual.previewSrc} alt={visual.alt} className="board-home-template-image" />
     </div>
   );
 }
 
 function RecentBoardPreview({ board }: { board: VisualBoard }) {
+  const isNewBoard = board.title.trim().toLowerCase().includes("nueva pizarra");
+  const fallbackSrc = isNewBoard ? "/boards-home/nuevo_proyecto.png" : "/boards-home/pizarra_blanco.png";
+
   if (board.thumbnailUrl) {
     return <img src={board.thumbnailUrl} alt="" className="h-full w-full rounded-[14px] object-cover" />;
   }
-  return <MinimalBoardPreview variant="is-recent" />;
+
+  return <img src={fallbackSrc} alt="" className="h-full w-full rounded-[14px] object-cover" />;
 }
 
 function BoardAccessBadge({ board }: { board: VisualBoard }) {
@@ -375,7 +356,6 @@ export function BoardsHome() {
             </button>
           </div>
         </div>
-        <HeroIllustration />
       </section>
 
       {error ? <div className="board-home-alert">{error}</div> : null}
@@ -443,6 +423,9 @@ export function BoardsHome() {
 
           {!loading ? (
             <button type="button" disabled={creating} onClick={() => createBoard()} className="board-home-create-card">
+              <div className="board-home-create-visual" aria-hidden="true">
+                <img src="/boards-home/nuevo_proyecto.png" alt="Nuevo proyecto" className="board-home-create-image" />
+              </div>
               <span><Plus className="h-4 w-4" /></span>
               <strong>Crear nueva pizarra</strong>
               <small>Lienzo en blanco</small>
