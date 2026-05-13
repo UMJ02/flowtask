@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
-import { AlertTriangle, CalendarClock, CheckCircle2, CircleDot, Clock3, FileArchive, Flag, Gauge, Paperclip, Sparkles, Target, TrendingUp } from "lucide-react";
+import { AlertTriangle, CalendarClock, CheckCircle2, CircleDot, FileArchive, Flag, Gauge, Paperclip, Sparkles, TrendingUp } from "lucide-react";
 import { getTaskProgress } from "@/lib/workspace-system/adapters";
+import { WorkspaceActivityTimeline } from "./workspace-activity-timeline";
 import type { WorkspaceActivityItem, WorkspaceContext, WorkspaceFileSummary, WorkspaceProjectSummary, WorkspaceTaskItem } from "@/lib/workspace-system/view-state";
 
 function isOverdue(task: WorkspaceTaskItem) {
@@ -19,12 +20,6 @@ function formatShortDate(value?: string | null) {
   return new Intl.DateTimeFormat("es", { day: "2-digit", month: "short" }).format(date);
 }
 
-function activityTone(activity: WorkspaceActivityItem) {
-  if (activity.action.includes("attachment")) return "bg-blue-50 text-blue-700";
-  if (activity.action.includes("comment")) return "bg-amber-50 text-amber-700";
-  if (activity.action.includes("project")) return "bg-violet-50 text-violet-700";
-  return "bg-emerald-50 text-emerald-700";
-}
 
 export function WorkspaceRightPanel({
   tasks,
@@ -84,19 +79,11 @@ export function WorkspaceRightPanel({
 
       <section className="ft-ws-card p-5">
         <div className="flex items-center justify-between gap-3">
-          <h3 className="font-extrabold text-[var(--ft-workspace-text)]">Actividad del proyecto</h3>
+          <h3 className="font-extrabold text-[var(--ft-workspace-text)]">Línea de actividad</h3>
           <span className="text-xs font-bold text-emerald-600">{recentActivity.length} movimientos</span>
         </div>
-        <div className="mt-4 space-y-2">
-          {recentActivity.length ? recentActivity.map((item) => (
-            <div key={item.id} className="ft-ws-activity-item">
-              <span className={`mt-0.5 rounded-full px-2 py-1 text-[10px] font-black ${activityTone(item)}`}>{item.description}</span>
-              <div className="min-w-0">
-                <p className="truncate text-sm font-black text-slate-800">{item.title}</p>
-                <p className="mt-1 flex items-center gap-1 text-xs font-bold text-slate-500"><Clock3 className="h-3.5 w-3.5" /> {formatShortDate(item.createdAt)}</p>
-              </div>
-            </div>
-          )) : <p className="text-sm font-semibold text-slate-500">No hay actividad reciente para este contexto.</p>}
+        <div className="mt-4">
+          <WorkspaceActivityTimeline activity={recentActivity} compact />
         </div>
       </section>
 

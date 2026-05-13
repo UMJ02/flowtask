@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { FileArchive, FileSpreadsheet, FileText, Image as ImageIcon, LayoutDashboard, Paperclip } from "lucide-react";
 import { boardRoute } from "@/lib/navigation/routes";
-import type { WorkspaceBoardSummary, WorkspaceContext, WorkspaceFileSummary } from "@/lib/workspace-system/view-state";
+import { WorkspaceFilesUploadEntry } from "@/components/workspace-system/workspace-files-upload-entry";
+import type { WorkspaceBoardSummary, WorkspaceContext, WorkspaceFileSummary, WorkspaceProjectSummary } from "@/lib/workspace-system/view-state";
 
 function formatBytes(bytes?: number | null) {
   if (!bytes || bytes <= 0) return "0 KB";
@@ -30,7 +31,7 @@ function formatDate(value?: string | null) {
   return new Intl.DateTimeFormat("es", { day: "2-digit", month: "short", year: "numeric" }).format(date);
 }
 
-export function FilesView({ boards, files, context }: { boards: WorkspaceBoardSummary[]; files: WorkspaceFileSummary[]; context: WorkspaceContext }) {
+export function FilesView({ boards, files, context, projects }: { boards: WorkspaceBoardSummary[]; files: WorkspaceFileSummary[]; context: WorkspaceContext; projects: WorkspaceProjectSummary[] }) {
   const imageFiles = files.filter((file) => file.mimeType?.startsWith("image/")).length;
   const documentFiles = files.length - imageFiles;
   return (
@@ -51,6 +52,10 @@ export function FilesView({ boards, files, context }: { boards: WorkspaceBoardSu
         <div className="ft-ws-file-context-stat"><ImageIcon className="h-4 w-4 text-emerald-500" /><b>{imageFiles}</b><span>Imágenes</span></div>
         <div className="ft-ws-file-context-stat"><FileText className="h-4 w-4 text-violet-500" /><b>{documentFiles}</b><span>Documentos</span></div>
         <div className="ft-ws-file-context-stat"><LayoutDashboard className="h-4 w-4 text-amber-500" /><b>{boards.length}</b><span>Pizarras</span></div>
+      </div>
+
+      <div className="mt-5">
+        <WorkspaceFilesUploadEntry context={context} projects={projects} />
       </div>
 
       <div className="mt-6 grid gap-5 xl:grid-cols-[minmax(0,1.2fr)_minmax(320px,.8fr)]">

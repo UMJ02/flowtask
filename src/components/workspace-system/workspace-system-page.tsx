@@ -123,7 +123,7 @@ export function WorkspaceSystemPage({
             {activeView === "timeline" ? <TimelineView tasks={tasks} /> : null}
             {activeView === "table" ? <TableView tasks={tasks} /> : null}
             {activeView === "canvas" ? <CanvasView tasks={tasks} boards={boards} context={context} /> : null}
-            {activeView === "files" ? <FilesView boards={boards} files={files} context={context} /> : null}
+            {activeView === "files" ? <FilesView boards={boards} files={files} context={context} projects={projects} /> : null}
             {activeView === "reports" ? <ReportsView reports={reports} tasks={tasks} /> : null}
           </main>
           {rightPanelOpen ? (
