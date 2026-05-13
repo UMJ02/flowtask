@@ -1,5 +1,5 @@
 import { applyWorkspaceScope, getWorkspaceContext } from "@/lib/queries/workspace";
-import type { WorkspaceBoardSummary } from "@/lib/workspace-system/view-state";
+import type { WorkspaceBoardSummary, WorkspaceProjectViewPreference, WorkspaceSpaceSummary } from "@/lib/workspace-system/view-state";
 
 export async function getWorkspaceIdentity() {
   const { supabase, user, activeOrganizationId } = await getWorkspaceContext();
@@ -214,4 +214,60 @@ export async function getWorkspaceFiles(options: { projectId?: string | null; pr
       createdAt: row.created_at ?? null,
     };
   });
+}
+
+
+export async function getWorkspacePersistedSpaces(): Promise<WorkspaceSpaceSummary[]> {
+  const { supabase, user, activeOrganizationId } = await getWorkspaceContext();
+  if (!user) return [];
+
+  let query = supabase
+    .from("workspace_spaces")
+    .select("id,name,slug,color,icon,sort_order,organization_id,user_id,is_archived")
+    .eq("is_archived", false)
+    .order("sort_order", { ascending: true })
+    .order("name", { ascending: true })
+    .limit(24);
+
+  if (activeOrganizationId) query = query.eq("organization_id", activeOrganizationId);
+  else query = query.eq("user_id", user.id).is("organization_id", null);
+
+  const { data, error } = await query;
+  if (error) return [];
+
+  return ((data ?? []) as any[]).map((space) => ({
+    id: String(space.id),
+    name: String(space.name ?? "Espacio"),
+    slug: String(space.slug ?? space.id),
+    source: "persisted" as const,
+    taskCount: 0,
+    projectCount: 0,
+    color: space.color ?? null,
+    icon: space.icon ?? null,
+    isPersisted: true,
+  }));
+}
+
+export async function getWorkspaceProjectViews(projectId?: string | null): Promise<WorkspaceProjectViewPreference[]> {
+  const { supabase, user } = await getWorkspaceContext();
+  if (!user || !projectId) return [];
+
+  const { data, error } = await supabase
+    .from("project_views")
+    .select("id,project_id,view_type,title,config,is_default,sort_order")
+    .eq("project_id", projectId)
+    .order("sort_order", { ascending: true })
+    .order("created_at", { ascending: true });
+
+  if (error) return [];
+
+  return ((data ?? []) as any[]).map((view) => ({
+    id: String(view.id),
+    projectId: String(view.project_id),
+    viewType: String(view.view_type) as WorkspaceProjectViewPreference["viewType"],
+    title: String(view.title ?? view.view_type ?? "Vista"),
+    config: (view.config && typeof view.config === "object" ? view.config : {}) as Record<string, unknown>,
+    isDefault: Boolean(view.is_default),
+    sortOrder: Number(view.sort_order ?? 0),
+  }));
 }

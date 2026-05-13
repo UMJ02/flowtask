@@ -4,7 +4,7 @@ import path from "node:path";
 
 const root = process.cwd();
 const failures = [];
-const expectedVersion = "58.25.8.9-workspace-activity-timeline-files-upload-entry-polish";
+const expectedVersion = "58.25.9-workspace-persistence-foundation";
 
 function exists(rel) { return fs.existsSync(path.join(root, rel)); }
 function read(rel) { return exists(rel) ? fs.readFileSync(path.join(root, rel), "utf8") : ""; }
@@ -23,9 +23,9 @@ for (const rel of [
   "scripts/validate-env.mjs",
   "scripts/design-doctor.mjs",
   "scripts/density-guard.mjs",
-  "scripts/verify-v58.25.8.9.mjs",
-  "docs/release/V58_25_8_9_WORKSPACE_ACTIVITY_TIMELINE_FILES_UPLOAD_ENTRY_POLISH.md",
-  "docs/qa/FLOWTASK_V58_25_8_9_WORKSPACE_ACTIVITY_TIMELINE_FILES_UPLOAD_ENTRY_POLISH_QA.md",
+  "scripts/verify-v58.25.9.mjs",
+  "docs/release/V58_25_9_WORKSPACE_PERSISTENCE_FOUNDATION.md",
+  "docs/qa/FLOWTASK_V58_25_9_WORKSPACE_PERSISTENCE_FOUNDATION_QA.md",
   "src/components/boards/boards-home.tsx",
   "src/components/notifications/notifications-command-center.tsx",
   "src/app/(app)/app/workspace/page.tsx",
@@ -45,8 +45,8 @@ for (const rel of [
 const pkg = JSON.parse(read("package.json"));
 const scripts = pkg.scripts ?? {};
 if (pkg.version !== expectedVersion) failures.push(`Unexpected package version: ${pkg.version}`);
-if (scripts["verify:current"] !== "npm run verify:v58.25.8.9") failures.push("verify:current must target verify:v58.25.8.9");
-if (scripts["verify:v58.25.8.9"] !== "node scripts/verify-v58.25.8.9.mjs") failures.push("verify:v58.25.8.9 must target scripts/verify-v58.25.8.9.mjs");
+if (scripts["verify:current"] !== "npm run verify:v58.25.9") failures.push("verify:current must target verify:v58.25.9");
+if (scripts["verify:v58.25.9"] !== "node scripts/verify-v58.25.9.mjs") failures.push("verify:v58.25.9 must target scripts/verify-v58.25.9.mjs");
 
 const vercel = JSON.parse(read("vercel.json"));
 if (vercel.framework !== "nextjs") failures.push("vercel.json framework must be nextjs");
@@ -57,7 +57,7 @@ requireIncludes("package-lock.json", expectedVersion);
 requireIncludes("src/components/boards/boards-home.tsx", "board-home-hero-compact-actions");
 requireIncludes("src/components/boards/boards-home.tsx", "board-home-create-preview-red");
 requireIncludes("src/components/notifications/notifications-command-center.tsx", "ft-notifications-hero-balanced");
-requireIncludes("src/app/globals.css", "v58.25.8.9 Workspace Activity Timeline + Files Upload Entry Polish");
+requireIncludes("src/app/globals.css", "v58.25.9 Workspace Persistence Foundation");
 requireIncludes("src/app/(app)/app/workspace/page.tsx", "getTasks({ includeCompleted: true })");
 requireIncludes("src/app/(app)/app/workspace/page.tsx", "getWorkspaceIdentity()");
 requireIncludes("src/app/(app)/app/workspace/page.tsx", "invalidProjectId");
@@ -77,6 +77,10 @@ requireIncludes("src/app/globals.css", "ft-ws-upload-entry");
 requireIncludes("src/app/globals.css", "ft-ws-activity-timeline");
 requireIncludes("src/app/globals.css", "ft-ws-file-card");
 
+requireFile("supabase/migrations/0056_v58_25_9_workspace_persistence_foundation.sql");
+requireIncludes("src/lib/workspace-system/server-data.ts", "getWorkspacePersistedSpaces");
+requireIncludes("src/lib/workspace-system/server-data.ts", "getWorkspaceProjectViews");
+requireIncludes("src/components/workspace-system/workspace-right-panel.tsx", "Persistencia Workspace");
 
 if (failures.length) {
   console.error("[build-deploy-readiness] Failed checks:");
@@ -84,4 +88,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log("[build-deploy-readiness] OK — v58.25.8.9 workspace activity timeline + files upload entry polish readiness aligned.");
+console.log("[build-deploy-readiness] OK — v58.25.9 workspace persistence foundation readiness aligned.");

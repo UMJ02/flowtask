@@ -94,7 +94,7 @@ export function WorkspaceSidebarPro({
       </nav>
 
       <div className="mt-6 flex items-center justify-between text-[11px] font-extrabold uppercase tracking-[.16em] text-slate-500">
-        Espacios reales <Plus className="h-4 w-4" />
+        Espacios reales / guardados <Plus className="h-4 w-4" />
       </div>
       <div className="mt-2 space-y-1">
         {spaces.length ? spaces.map((space) => {

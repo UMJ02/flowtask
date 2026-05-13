@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { BarChart3, CalendarRange, Columns3, FileArchive, LayoutGrid, List, Table2 } from "lucide-react";
-import type { WorkspaceViewId } from "@/lib/workspace-system/view-state";
+import type { WorkspaceProjectViewPreference, WorkspaceViewId } from "@/lib/workspace-system/view-state";
 
 const views: Array<{ id: WorkspaceViewId; label: string; icon: typeof List }> = [
   { id: "list", label: "Lista", icon: List },
@@ -14,9 +14,10 @@ const views: Array<{ id: WorkspaceViewId; label: string; icon: typeof List }> = 
   { id: "reports", label: "Reportes", icon: BarChart3 },
 ];
 
-export function WorkspaceViewTabs({ activeView }: { activeView: WorkspaceViewId }) {
+export function WorkspaceViewTabs({ activeView, projectViews = [] }: { activeView: WorkspaceViewId; projectViews?: WorkspaceProjectViewPreference[] }) {
   const router = useRouter();
   const params = useSearchParams();
+  const persistedByType = new Map(projectViews.map((view) => [view.viewType, view]));
 
   function setView(view: WorkspaceViewId) {
     const next = new URLSearchParams(params.toString());
@@ -32,7 +33,8 @@ export function WorkspaceViewTabs({ activeView }: { activeView: WorkspaceViewId 
         return (
           <button key={view.id} type="button" onClick={() => setView(view.id)} className={active ? "ft-ws-tab ft-ws-tab-active" : "ft-ws-tab"}>
             <Icon className="h-4 w-4" />
-            {view.label}
+            {persistedByType.get(view.id)?.title ?? view.label}
+            {persistedByType.has(view.id) ? <span className="ft-ws-view-saved-dot" title="Vista persistida" /> : null}
           </button>
         );
       })}

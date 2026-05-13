@@ -14,7 +14,7 @@ import {
   normalizeWorkspaceView,
   slugifyWorkspaceValue,
 } from "@/lib/workspace-system/adapters";
-import { getWorkspaceActivity, getWorkspaceBoards, getWorkspaceFiles, getWorkspaceIdentity } from "@/lib/workspace-system/server-data";
+import { getWorkspaceActivity, getWorkspaceBoards, getWorkspaceFiles, getWorkspaceIdentity, getWorkspacePersistedSpaces, getWorkspaceProjectViews } from "@/lib/workspace-system/server-data";
 import type { WorkspaceContext, WorkspaceViewId } from "@/lib/workspace-system/view-state";
 
 function getParam(params: Record<string, string | string[] | undefined>, key: string) {
@@ -29,19 +29,21 @@ export default async function WorkspacePage({ searchParams }: { searchParams?: P
   const requestedSpace = getParam(params, "space");
   const requestedStatus = getParam(params, "status");
 
-  const [workspaceIdentity, rawProjects, rawTasks, reports, workspaceBoards] = await Promise.all([
+  const [workspaceIdentity, rawProjects, rawTasks, reports, workspaceBoards, persistedSpaces] = await Promise.all([
     safeServerCall("workspace:getIdentity", () => getWorkspaceIdentity(), null),
     safeServerCall("workspace:getProjects", () => getProjects({}), []),
     safeServerCall("workspace:getTasks", () => getTasks({ includeCompleted: true }), []),
     safeServerCall("workspace:getReportsOverview", () => getReportsOverview(), null),
     safeServerCall("workspace:getBoards", () => getWorkspaceBoards(), []),
+    safeServerCall("workspace:getPersistedSpaces", () => getWorkspacePersistedSpaces(), []),
   ]);
 
   const projectsAll = rawProjects.map(mapProjectToWorkspaceSummary);
   const projectTitleById = new Map(projectsAll.map((project) => [project.id, project.title]));
   const tasksAll = rawTasks.map((task) => mapTaskToWorkspaceItem(task, projectTitleById));
 
-  const spaces = buildWorkspaceSpaces(tasksAll, projectsAll);
+  const generatedSpaces = buildWorkspaceSpaces(tasksAll, projectsAll);
+  const spaces = persistedSpaces.length ? [...persistedSpaces, ...generatedSpaces.filter((space) => !persistedSpaces.some((persisted) => persisted.slug === space.slug))].slice(0, 12) : generatedSpaces;
   const spaceSlug = requestedSpace ? slugifyWorkspaceValue(requestedSpace) : null;
   const activeSpace = spaceSlug ? spaces.find((space) => space.slug === spaceSlug) ?? null : null;
   const projectsInSpace = filterProjectsForWorkspace(projectsAll, { spaceSlug: activeSpace?.slug ?? null });
@@ -56,13 +58,14 @@ export default async function WorkspacePage({ searchParams }: { searchParams?: P
         status: requestedStatus,
       });
 
-  const [workspaceActivity, workspaceFiles] = await Promise.all([
+  const [workspaceActivity, workspaceFiles, projectViews] = await Promise.all([
     safeServerCall("workspace:getActivity", () => getWorkspaceActivity(activeProject?.id ?? null), []),
     safeServerCall("workspace:getFiles", () => getWorkspaceFiles({
       projectId: activeProject?.id ?? null,
       projectIds: projectsInSpace.map((project) => project.id),
       taskIds: tasks.map((task) => task.id),
     }), []),
+    safeServerCall("workspace:getProjectViews", () => getWorkspaceProjectViews(activeProject?.id ?? null), []),
   ]);
 
   const context: WorkspaceContext = {
@@ -85,5 +88,5 @@ export default async function WorkspacePage({ searchParams }: { searchParams?: P
     },
   };
 
-  return <WorkspaceSystemPage activeView={activeView} tasks={tasks} projects={projectsInSpace} spaces={spaces} reports={reports} boards={workspaceBoards} files={workspaceFiles} activity={workspaceActivity} context={context} />;
+  return <WorkspaceSystemPage activeView={activeView} tasks={tasks} projects={projectsInSpace} spaces={spaces} reports={reports} boards={workspaceBoards} files={workspaceFiles} activity={workspaceActivity} projectViews={projectViews} context={context} />;
 }

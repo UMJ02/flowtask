@@ -5741,3 +5741,19 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+/* v58.25.9 Workspace Persistence Foundation
+   Lightweight persistence indicators for project_views and workspace_spaces. */
+.ft-ws-view-saved-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: #16c784;
+  box-shadow: 0 0 0 3px rgba(22, 199, 132, .14);
+}
+.ft-ws-persistence-card {
+  border: 1px solid rgba(22, 199, 132, .18);
+  background: linear-gradient(135deg, rgba(236, 253, 245, .88), rgba(255,255,255,.96));
+}

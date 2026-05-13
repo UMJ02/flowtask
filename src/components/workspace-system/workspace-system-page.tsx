@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AlertTriangle, Menu, PanelRightClose, PanelRightOpen, SlidersHorizontal, X } from "lucide-react";
 import type { ReportsOverview } from "@/lib/queries/reports";
-import type { WorkspaceActivityItem, WorkspaceBoardSummary, WorkspaceContext, WorkspaceFileSummary, WorkspaceProjectSummary, WorkspaceSpaceSummary, WorkspaceTaskItem, WorkspaceViewId } from "@/lib/workspace-system/view-state";
+import type { WorkspaceActivityItem, WorkspaceBoardSummary, WorkspaceContext, WorkspaceFileSummary, WorkspaceProjectSummary, WorkspaceProjectViewPreference, WorkspaceSpaceSummary, WorkspaceTaskItem, WorkspaceViewId } from "@/lib/workspace-system/view-state";
 import { BoardView } from "./views/board-view";
 import { CanvasView } from "./views/canvas-view";
 import { FilesView } from "./views/files-view";
@@ -27,6 +27,7 @@ export function WorkspaceSystemPage({
   boards,
   files,
   activity,
+  projectViews,
   context,
 }: {
   activeView: WorkspaceViewId;
@@ -37,6 +38,7 @@ export function WorkspaceSystemPage({
   boards: WorkspaceBoardSummary[];
   files: WorkspaceFileSummary[];
   activity: WorkspaceActivityItem[];
+  projectViews: WorkspaceProjectViewPreference[];
   context: WorkspaceContext;
 }) {
   const router = useRouter();
@@ -90,7 +92,7 @@ export function WorkspaceSystemPage({
         ) : null}
 
         <div className="mt-5 flex flex-col gap-4 2xl:flex-row 2xl:items-center 2xl:justify-between">
-          <WorkspaceViewTabs activeView={activeView} />
+          <WorkspaceViewTabs activeView={activeView} projectViews={projectViews} />
           <div className="ft-ws-action-bar flex flex-wrap items-center gap-2">
             <button className="ft-ws-control h-11 px-4 text-sm font-bold"><SlidersHorizontal className="h-4 w-4" /> Filtros</button>
             <select className="ft-ws-control h-11 px-4 text-sm font-bold" value={statusParam} onChange={(event) => setStatusFilter(event.target.value)}>
@@ -133,7 +135,7 @@ export function WorkspaceSystemPage({
                   <X className="h-4 w-4" /> Ocultar resumen
                 </button>
               </div>
-              <WorkspaceRightPanel tasks={tasks} projects={projects} files={files} activity={activity} context={context} />
+              <WorkspaceRightPanel tasks={tasks} projects={projects} files={files} activity={activity} projectViews={projectViews} context={context} />
             </div>
           ) : null}
         </div>

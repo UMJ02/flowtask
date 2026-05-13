@@ -6,7 +6,10 @@ export type WorkspaceSpaceSummary = {
   id: string;
   name: string;
   slug: string;
-  source: "department" | "client" | "general";
+  source: "department" | "client" | "general" | "persisted";
+  color?: string | null;
+  icon?: string | null;
+  isPersisted?: boolean;
   taskCount: number;
   projectCount: number;
 };
@@ -97,4 +100,14 @@ export type WorkspaceFileSummary = {
   taskId?: string | null;
   taskTitle?: string | null;
   createdAt?: string | null;
+};
+
+export type WorkspaceProjectViewPreference = {
+  id: string;
+  projectId: string;
+  viewType: WorkspaceViewId;
+  title: string;
+  config: Record<string, unknown>;
+  isDefault: boolean;
+  sortOrder: number;
 };

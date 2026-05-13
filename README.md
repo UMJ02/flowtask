@@ -1,20 +1,21 @@
-# FlowTask — v58.25.8 Workspace-First Foundation
+# FlowTask — v58.25.9 Workspace Persistence Foundation
 
-Base: **v58.25.7.7 — Boards Hero + Template Icons + Notifications Metric Polish**
+Base: **v58.25.8.9 — Workspace Activity Timeline + Files Upload Entry Polish**
 
 ## Objetivo
 
-Crear una nueva experiencia Workspace-First tipo ClickUp / Notion / Asana sin reemplazar los módulos existentes. La ruta nueva `/app/workspace` centraliza el contexto de trabajo con sidebar pro, header contextual, tabs de views, panel derecho y datos reales del app.
+Agregar la base de persistencia del Workspace System para guardar espacios y vistas por proyecto, manteniendo la experiencia Workspace-First ya conectada a datos reales.
 
 ## Cambios principales
 
-- Nueva ruta: `/app/workspace`.
-- Nueva capa: `src/components/workspace-system/*`.
-- Nuevos adapters: `src/lib/workspace-system/*`.
-- Views dinámicas: Lista, Board, Timeline, Tabla, Canvas, Archivos y Reportes.
-- CSS `ft-ws-*` agregado al final de `src/app/globals.css`.
-- Datos reales desde `getTasks`, `getProjects` y `getReportsOverview`.
-- Sin nuevas tablas ni migraciones en esta fase.
+- Nueva migración: `0056_v58_25_9_workspace_persistence_foundation.sql`.
+- Nueva tabla opcional: `workspace_spaces`.
+- Nueva tabla opcional: `project_views`.
+- Helpers server-safe: `getWorkspacePersistedSpaces()` y `getWorkspaceProjectViews()`.
+- `/app/workspace` usa espacios persistidos cuando existen y mantiene fallback generado por datos reales.
+- Tabs superiores muestran indicador de vista persistida cuando aplica.
+- Panel derecho muestra bloque de Persistencia Workspace.
+- RLS para modo personal y organización.
 
 ## Validación recomendada
 
@@ -32,4 +33,4 @@ npm run dev
 
 ## Nota
 
-Esta versión es foundation. Quick create, conexión profunda con BoardPage y persistencia de espacios/vistas quedan para la siguiente fase.
+Esta versión introduce la base DB opcional para persistencia. No reemplaza rutas existentes, no duplica BoardPage y no toca `safe_delete_visual_board`.

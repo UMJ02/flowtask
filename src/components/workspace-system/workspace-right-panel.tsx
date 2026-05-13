@@ -2,7 +2,7 @@ import type { CSSProperties } from "react";
 import { AlertTriangle, CalendarClock, CheckCircle2, CircleDot, FileArchive, Flag, Gauge, Paperclip, Sparkles, TrendingUp } from "lucide-react";
 import { getTaskProgress } from "@/lib/workspace-system/adapters";
 import { WorkspaceActivityTimeline } from "./workspace-activity-timeline";
-import type { WorkspaceActivityItem, WorkspaceContext, WorkspaceFileSummary, WorkspaceProjectSummary, WorkspaceTaskItem } from "@/lib/workspace-system/view-state";
+import type { WorkspaceActivityItem, WorkspaceContext, WorkspaceFileSummary, WorkspaceProjectSummary, WorkspaceProjectViewPreference, WorkspaceTaskItem } from "@/lib/workspace-system/view-state";
 
 function isOverdue(task: WorkspaceTaskItem) {
   if (task.isOverdue) return true;
@@ -26,12 +26,14 @@ export function WorkspaceRightPanel({
   projects,
   files,
   activity,
+  projectViews,
   context,
 }: {
   tasks: WorkspaceTaskItem[];
   projects: WorkspaceProjectSummary[];
   files: WorkspaceFileSummary[];
   activity: WorkspaceActivityItem[];
+  projectViews: WorkspaceProjectViewPreference[];
   context: WorkspaceContext;
 }) {
   const progress = getTaskProgress(tasks);
@@ -44,6 +46,7 @@ export function WorkspaceRightPanel({
   const dueSoon = tasks.filter((task) => task.dueDate).sort((a, b) => String(a.dueDate).localeCompare(String(b.dueDate))).slice(0, 5);
   const recentFiles = files.slice(0, 4);
   const recentActivity = activity.slice(0, 5);
+  const persistedViews = projectViews.length;
   const focusSignal = overdue > 0 ? "Revisar vencidas" : important > 0 ? "Priorizar importantes" : recentFiles.length > 0 ? "Revisar archivos recientes" : dueToday > 0 ? "Cerrar tareas de hoy" : "Workspace saludable";
 
   return (
@@ -75,6 +78,19 @@ export function WorkspaceRightPanel({
         <div className="ft-ws-mini-metric"><AlertTriangle className="h-4 w-4 text-amber-500" /><b>{overdue}</b><span>Vencidas</span></div>
         <div className="ft-ws-mini-metric"><Paperclip className="h-4 w-4 text-blue-500" /><b>{files.length}</b><span>Archivos</span></div>
         <div className="ft-ws-mini-metric"><Gauge className="h-4 w-4 text-violet-500" /><b>{projects.length}</b><span>Proyectos</span></div>
+      </section>
+
+
+      <section className="ft-ws-card p-5">
+        <div className="flex items-center justify-between gap-3">
+          <h3 className="font-extrabold text-[var(--ft-workspace-text)]">Persistencia Workspace</h3>
+          <span className="text-xs font-bold text-emerald-600">v58.25.9</span>
+        </div>
+        <div className="mt-4 grid grid-cols-2 gap-3">
+          <div className="ft-ws-mini-metric"><b>{persistedViews}</b><span>Vistas guardadas</span></div>
+          <div className="ft-ws-mini-metric"><b>{context.hasProjectFilter ? "Proyecto" : "Workspace"}</b><span>Contexto</span></div>
+        </div>
+        <p className="mt-3 rounded-[16px] bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-700">Los espacios y vistas pueden persistirse con workspace_spaces y project_views sin romper la capa actual.</p>
       </section>
 
       <section className="ft-ws-card p-5">
