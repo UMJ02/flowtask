@@ -5353,3 +5353,115 @@
     border-bottom: 1px solid rgba(255,255,255,.08);
   }
 }
+
+/* v58.25.8.6 Workspace Responsive Polish + Right Panel UX
+   Adds mobile workspace drawer behavior, responsive action wrapping and a sticky contextual right panel with richer real-data signals. */
+.ft-ws-right-panel {
+  align-self: start;
+}
+
+@media (min-width: 1536px) {
+  .ft-ws-right-panel {
+    position: sticky;
+    top: 20px;
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
+    padding-bottom: 4px;
+  }
+}
+
+.ft-ws-progress-ring {
+  --ft-ws-progress: 0deg;
+  display: grid;
+  width: 96px;
+  height: 96px;
+  place-items: center;
+  border-radius: 999px;
+  background:
+    conic-gradient(#16c784 var(--ft-ws-progress), #e2e8f0 0deg),
+    #ecfdf5;
+  box-shadow: inset 0 0 0 10px #fff, 0 14px 26px rgba(15, 23, 42, .06);
+}
+
+.ft-ws-progress-ring span {
+  display: grid;
+  width: 70px;
+  height: 70px;
+  place-items: center;
+  border-radius: 999px;
+  background: #fff;
+  color: #0f172a;
+  font-size: 20px;
+  font-weight: 950;
+}
+
+.ft-ws-mini-metric {
+  min-width: 0;
+  border: 1px solid var(--ft-workspace-border);
+  border-radius: 20px;
+  background: rgba(255,255,255,.92);
+  box-shadow: 0 10px 30px rgba(15, 23, 42, .035);
+  padding: 14px;
+}
+
+.ft-ws-mini-metric b {
+  display: block;
+  margin-top: 8px;
+  color: #0f172a;
+  font-size: 24px;
+  line-height: 1;
+  font-weight: 950;
+  letter-spacing: -.04em;
+}
+
+.ft-ws-mini-metric span {
+  margin-top: 4px;
+  display: block;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 850;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+
+.ft-ws-sidebar-mobile {
+  width: 100%;
+  height: 100%;
+}
+
+@media (max-width: 767px) {
+  .ft-ws-tabs {
+    border-radius: 18px;
+    padding: 3px;
+  }
+
+  .ft-ws-tab {
+    height: 38px;
+    padding: 0 12px;
+    font-size: 13px;
+  }
+
+  .ft-ws-action-bar {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+  }
+
+  .ft-ws-action-bar > * {
+    width: 100%;
+  }
+
+  .ft-ws-quick-create {
+    border-radius: 20px;
+    padding: 12px;
+  }
+
+  .ft-ws-card {
+    border-radius: 22px;
+  }
+
+  .ft-ws-mini-metric {
+    border-radius: 18px;
+    padding: 12px;
+  }
+}

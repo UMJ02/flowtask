@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { AlertTriangle, SlidersHorizontal } from "lucide-react";
+import { AlertTriangle, Menu, PanelRightClose, PanelRightOpen, SlidersHorizontal, X } from "lucide-react";
 import type { ReportsOverview } from "@/lib/queries/reports";
 import type { WorkspaceBoardSummary, WorkspaceContext, WorkspaceProjectSummary, WorkspaceSpaceSummary, WorkspaceTaskItem, WorkspaceViewId } from "@/lib/workspace-system/view-state";
 import { BoardView } from "./views/board-view";
@@ -39,6 +39,8 @@ export function WorkspaceSystemPage({
   const searchParams = useSearchParams();
   const statusParam = context.activeFilters?.status ?? "todos";
   const [showQuickCreate, setShowQuickCreate] = useState(false);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const [rightPanelOpen, setRightPanelOpen] = useState(true);
 
   function setStatusFilter(status: string) {
     const next = new URLSearchParams(searchParams.toString());
@@ -50,8 +52,30 @@ export function WorkspaceSystemPage({
 
   return (
     <div className="ft-ws-shell ft-ws-fullscreen grid h-screen min-h-screen grid-cols-1 overflow-hidden lg:grid-cols-[296px_minmax(0,1fr)]">
-      <WorkspaceSidebarPro projects={projects} spaces={spaces} context={context} />
-      <section className="min-w-0 overflow-y-auto px-4 py-5 ft-ws-scroll md:px-6 xl:px-7">
+      <div className="hidden min-w-0 lg:block">
+        <WorkspaceSidebarPro projects={projects} spaces={spaces} context={context} />
+      </div>
+
+      {mobileSidebarOpen ? (
+        <div className="fixed inset-0 z-50 lg:hidden">
+          <button type="button" className="absolute inset-0 bg-slate-950/45 backdrop-blur-sm" aria-label="Cerrar menú workspace" onClick={() => setMobileSidebarOpen(false)} />
+          <div className="absolute inset-y-0 left-0 w-[min(88vw,340px)] overflow-hidden rounded-r-[28px] shadow-2xl">
+            <WorkspaceSidebarPro projects={projects} spaces={spaces} context={context} compactHeader onNavigate={() => setMobileSidebarOpen(false)} />
+          </div>
+        </div>
+      ) : null}
+
+      <section className="min-w-0 overflow-y-auto px-4 py-4 ft-ws-scroll md:px-6 md:py-5 xl:px-7">
+        <div className="mb-4 flex items-center justify-between gap-3 lg:hidden">
+          <button type="button" onClick={() => setMobileSidebarOpen(true)} className="ft-ws-control h-11 px-4 text-sm font-black">
+            <Menu className="h-4 w-4" /> Workspace
+          </button>
+          <button type="button" onClick={() => setRightPanelOpen((value) => !value)} className="ft-ws-control h-11 px-4 text-sm font-black">
+            {rightPanelOpen ? <PanelRightClose className="h-4 w-4" /> : <PanelRightOpen className="h-4 w-4" />}
+            Resumen
+          </button>
+        </div>
+
         <WorkspaceContextHeader context={context} tasks={tasks} />
 
         {context.invalidProjectId ? (
@@ -63,7 +87,7 @@ export function WorkspaceSystemPage({
 
         <div className="mt-5 flex flex-col gap-4 2xl:flex-row 2xl:items-center 2xl:justify-between">
           <WorkspaceViewTabs activeView={activeView} />
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="ft-ws-action-bar flex flex-wrap items-center gap-2">
             <button className="ft-ws-control h-11 px-4 text-sm font-bold"><SlidersHorizontal className="h-4 w-4" /> Filtros</button>
             <select className="ft-ws-control h-11 px-4 text-sm font-bold" value={statusParam} onChange={(event) => setStatusFilter(event.target.value)}>
               <option value="todos">Estado: todos</option>
@@ -76,6 +100,10 @@ export function WorkspaceSystemPage({
             <button className="ft-ws-control h-11 px-4 text-sm font-bold">Agrupar: Estado</button>
             <button className="ft-ws-control h-11 px-4 text-sm font-bold">Personalizar</button>
             <button type="button" onClick={() => setShowQuickCreate((value) => !value)} className="ft-ws-active h-11 rounded-[16px] px-5 text-sm font-extrabold">+ Nueva tarea</button>
+            <button type="button" onClick={() => setRightPanelOpen((value) => !value)} className="ft-ws-control hidden h-11 px-4 text-sm font-bold 2xl:inline-flex">
+              {rightPanelOpen ? <PanelRightClose className="h-4 w-4" /> : <PanelRightOpen className="h-4 w-4" />}
+              Panel
+            </button>
           </div>
         </div>
         {showQuickCreate ? (
@@ -84,7 +112,7 @@ export function WorkspaceSystemPage({
           </div>
         ) : null}
 
-        <div className="mt-5 grid gap-5 2xl:grid-cols-[minmax(0,1fr)_320px]">
+        <div className={rightPanelOpen ? "mt-5 grid gap-5 2xl:grid-cols-[minmax(0,1fr)_340px]" : "mt-5 grid gap-5"}>
           <main className="min-w-0">
             {activeView === "list" ? <ListView tasks={tasks} /> : null}
             {activeView === "board" ? <BoardView tasks={tasks} /> : null}
@@ -94,7 +122,16 @@ export function WorkspaceSystemPage({
             {activeView === "files" ? <FilesView boards={boards} /> : null}
             {activeView === "reports" ? <ReportsView reports={reports} tasks={tasks} /> : null}
           </main>
-          <WorkspaceRightPanel tasks={tasks} projects={projects} context={context} />
+          {rightPanelOpen ? (
+            <div className="min-w-0">
+              <div className="mb-3 flex justify-end 2xl:hidden">
+                <button type="button" onClick={() => setRightPanelOpen(false)} className="ft-ws-control h-10 px-3 text-xs font-black">
+                  <X className="h-4 w-4" /> Ocultar resumen
+                </button>
+              </div>
+              <WorkspaceRightPanel tasks={tasks} projects={projects} context={context} />
+            </div>
+          ) : null}
         </div>
       </section>
     </div>

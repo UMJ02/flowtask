@@ -1,23 +1,43 @@
-import { AlertTriangle, CalendarClock, CheckCircle2, CircleDot, Sparkles } from "lucide-react";
+import type { CSSProperties } from "react";
+import { AlertTriangle, CalendarClock, CheckCircle2, CircleDot, Flag, Gauge, Sparkles, Target, TrendingUp } from "lucide-react";
 import { getTaskProgress } from "@/lib/workspace-system/adapters";
 import type { WorkspaceContext, WorkspaceProjectSummary, WorkspaceTaskItem } from "@/lib/workspace-system/view-state";
+
+function isOverdue(task: WorkspaceTaskItem) {
+  if (task.isOverdue) return true;
+  if (!task.dueDate) return false;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const due = new Date(`${task.dueDate}T00:00:00`);
+  return !Number.isNaN(due.getTime()) && due < today && !["concluido", "completado"].includes(task.status);
+}
 
 export function WorkspaceRightPanel({ tasks, projects, context }: { tasks: WorkspaceTaskItem[]; projects: WorkspaceProjectSummary[]; context: WorkspaceContext }) {
   const progress = getTaskProgress(tasks);
   const completed = tasks.filter((task) => ["concluido", "completado"].includes(task.status)).length;
   const waiting = tasks.filter((task) => ["en_espera", "pendiente"].includes(task.status)).length;
   const inProgress = tasks.filter((task) => ["en_proceso", "produccion", "revision"].includes(task.status)).length;
-  const dueSoon = tasks.filter((task) => task.dueDate).sort((a, b) => String(a.dueDate).localeCompare(String(b.dueDate))).slice(0, 4);
+  const overdue = tasks.filter(isOverdue).length;
+  const dueToday = tasks.filter((task) => task.isDueToday).length;
   const important = tasks.filter((task) => task.priority === "alta").length;
+  const dueSoon = tasks.filter((task) => task.dueDate).sort((a, b) => String(a.dueDate).localeCompare(String(b.dueDate))).slice(0, 5);
+  const focusSignal = overdue > 0 ? "Revisar vencidas" : important > 0 ? "Priorizar importantes" : dueToday > 0 ? "Cerrar tareas de hoy" : "Workspace saludable";
 
   return (
-    <aside className="space-y-4">
+    <aside className="ft-ws-right-panel space-y-4">
       <section className="ft-ws-card p-5">
-        <h3 className="font-extrabold text-[var(--ft-workspace-text)]">Resumen del contexto</h3>
-        <p className="mt-1 text-xs font-bold text-slate-500">{context.projectTitle} · {context.spaceName}</p>
-        <div className="mt-4 flex items-center gap-4">
-          <div className="grid h-24 w-24 place-items-center rounded-full border-[10px] border-emerald-400 bg-emerald-50 text-center">
-            <b className="text-xl text-slate-950">{progress}%</b>
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-[11px] font-black uppercase tracking-[.18em] text-emerald-600">Panel contextual</p>
+            <h3 className="mt-1 truncate font-extrabold text-[var(--ft-workspace-text)]">{context.projectTitle ?? "Workspace"}</h3>
+            <p className="mt-1 truncate text-xs font-bold text-slate-500">{context.workspaceName} · {context.spaceName}</p>
+          </div>
+          <span className="rounded-full bg-emerald-50 px-3 py-1 text-[11px] font-black text-emerald-700">Live</span>
+        </div>
+
+        <div className="mt-5 grid grid-cols-[96px_minmax(0,1fr)] items-center gap-4">
+          <div className="ft-ws-progress-ring" style={{ "--ft-ws-progress": `${progress * 3.6}deg` } as CSSProperties}>
+            <span>{progress}%</span>
           </div>
           <div className="space-y-2 text-sm font-bold text-[var(--ft-workspace-muted)]">
             <p className="flex items-center gap-2"><CircleDot className="h-4 w-4 text-emerald-500" /> {inProgress} en curso</p>
@@ -27,6 +47,13 @@ export function WorkspaceRightPanel({ tasks, projects, context }: { tasks: Works
         </div>
       </section>
 
+      <section className="grid grid-cols-2 gap-3">
+        <div className="ft-ws-mini-metric"><Flag className="h-4 w-4 text-rose-500" /><b>{important}</b><span>Importantes</span></div>
+        <div className="ft-ws-mini-metric"><AlertTriangle className="h-4 w-4 text-amber-500" /><b>{overdue}</b><span>Vencidas</span></div>
+        <div className="ft-ws-mini-metric"><Target className="h-4 w-4 text-blue-500" /><b>{dueToday}</b><span>Hoy</span></div>
+        <div className="ft-ws-mini-metric"><Gauge className="h-4 w-4 text-violet-500" /><b>{projects.length}</b><span>Proyectos</span></div>
+      </section>
+
       <section className="ft-ws-card p-5">
         <div className="flex items-center justify-between gap-3">
           <h3 className="font-extrabold text-[var(--ft-workspace-text)]">Próximos vencimientos</h3>
@@ -34,10 +61,13 @@ export function WorkspaceRightPanel({ tasks, projects, context }: { tasks: Works
         </div>
         <div className="mt-4 space-y-3">
           {dueSoon.length ? dueSoon.map((task) => (
-            <p key={task.id} className="flex items-center justify-between gap-3 text-sm">
-              <span className="truncate font-semibold text-slate-700">{task.title}</span>
-              <b className="shrink-0 text-xs text-rose-500">{task.dueDate}</b>
-            </p>
+            <div key={task.id} className="rounded-[16px] border border-slate-100 bg-slate-50/70 px-3 py-2 text-sm">
+              <div className="flex items-center justify-between gap-3">
+                <span className="truncate font-bold text-slate-700">{task.title}</span>
+                <b className="shrink-0 text-xs text-rose-500">{task.dueDate}</b>
+              </div>
+              <p className="mt-1 truncate text-xs font-semibold text-slate-500">{task.projectTitle ?? context.projectTitle ?? "Sin proyecto"}</p>
+            </div>
           )) : <p className="text-sm font-semibold text-slate-500">No hay fechas próximas en este contexto.</p>}
         </div>
       </section>
@@ -45,8 +75,8 @@ export function WorkspaceRightPanel({ tasks, projects, context }: { tasks: Works
       <section className="ft-ws-card p-5">
         <h3 className="flex items-center gap-2 font-extrabold text-[var(--ft-workspace-text)]"><Sparkles className="h-4 w-4 text-violet-500" /> IA contextual</h3>
         <div className="mt-3 space-y-2">
-          <div className="rounded-[18px] bg-violet-50 p-4 text-sm font-semibold text-violet-700">{important} tareas importantes detectadas en este filtro real.</div>
-          <div className="rounded-[18px] bg-amber-50 p-4 text-sm font-semibold text-amber-700"><AlertTriangle className="mr-2 inline h-4 w-4" /> {context.mode === "organization" ? "Revisa permisos/carga del equipo antes de automatizar." : "Este modo usa solo datos personales del usuario activo."}</div>
+          <div className="rounded-[18px] bg-violet-50 p-4 text-sm font-semibold text-violet-700"><TrendingUp className="mr-2 inline h-4 w-4" /> Señal principal: {focusSignal}.</div>
+          <div className="rounded-[18px] bg-amber-50 p-4 text-sm font-semibold text-amber-700"><AlertTriangle className="mr-2 inline h-4 w-4" /> {context.mode === "organization" ? "Valida carga del equipo antes de automatizar." : "Este modo usa solo datos personales del usuario activo."}</div>
           <div className="rounded-[18px] bg-slate-50 p-4 text-sm font-semibold text-slate-600">{projects.length} proyectos visibles después de aplicar workspace/espacio.</div>
         </div>
       </section>
