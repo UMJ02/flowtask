@@ -4,7 +4,7 @@ import path from "node:path";
 
 const root = process.cwd();
 const failures = [];
-const expectedVersion = "58.25.9.1-workspace-persistence-ui-saved-views-manager";
+const expectedVersion = "58.25.9.2-workspace-persistence-qa-supabase-migration-guard";
 
 function exists(rel) { return fs.existsSync(path.join(root, rel)); }
 function read(rel) { return exists(rel) ? fs.readFileSync(path.join(root, rel), "utf8") : ""; }
@@ -23,9 +23,10 @@ for (const rel of [
   "scripts/validate-env.mjs",
   "scripts/design-doctor.mjs",
   "scripts/density-guard.mjs",
-  "scripts/verify-v58.25.9.1.mjs",
-  "docs/release/V58_25_9_1_WORKSPACE_PERSISTENCE_UI_SAVED_VIEWS_MANAGER.md",
-  "docs/qa/FLOWTASK_V58_25_9_1_WORKSPACE_PERSISTENCE_UI_SAVED_VIEWS_MANAGER_QA.md",
+  "scripts/verify-v58.25.9.2.mjs",
+  "scripts/workspace-persistence-doctor.mjs",
+  "docs/release/V58_25_9_2_WORKSPACE_PERSISTENCE_QA_SUPABASE_MIGRATION_GUARD.md",
+  "docs/qa/FLOWTASK_V58_25_9_2_WORKSPACE_PERSISTENCE_QA_SUPABASE_MIGRATION_GUARD_QA.md",
   "src/components/boards/boards-home.tsx",
   "src/components/notifications/notifications-command-center.tsx",
   "src/app/(app)/app/workspace/page.tsx",
@@ -45,8 +46,8 @@ for (const rel of [
 const pkg = JSON.parse(read("package.json"));
 const scripts = pkg.scripts ?? {};
 if (pkg.version !== expectedVersion) failures.push(`Unexpected package version: ${pkg.version}`);
-if (scripts["verify:current"] !== "npm run verify:v58.25.9.1") failures.push("verify:current must target verify:v58.25.9.1");
-if (scripts["verify:v58.25.9.1"] !== "node scripts/verify-v58.25.9.1.mjs") failures.push("verify:v58.25.9.1 must target scripts/verify-v58.25.9.1.mjs");
+if (scripts["verify:current"] !== "npm run verify:v58.25.9.2") failures.push("verify:current must target verify:v58.25.9.2");
+if (scripts["verify:v58.25.9.2"] !== "node scripts/verify-v58.25.9.2.mjs") failures.push("verify:v58.25.9.2 must target scripts/verify-v58.25.9.2.mjs");
 
 const vercel = JSON.parse(read("vercel.json"));
 if (vercel.framework !== "nextjs") failures.push("vercel.json framework must be nextjs");
@@ -57,7 +58,7 @@ requireIncludes("package-lock.json", expectedVersion);
 requireIncludes("src/components/boards/boards-home.tsx", "board-home-hero-compact-actions");
 requireIncludes("src/components/boards/boards-home.tsx", "board-home-create-preview-red");
 requireIncludes("src/components/notifications/notifications-command-center.tsx", "ft-notifications-hero-balanced");
-requireIncludes("src/app/globals.css", "v58.25.9.1 Workspace Persistence UI + Saved Views Manager");
+requireIncludes("src/app/globals.css", "v58.25.9.2 Workspace Persistence QA + Supabase Migration Guard");
 requireIncludes("src/app/(app)/app/workspace/page.tsx", "getTasks({ includeCompleted: true })");
 requireIncludes("src/app/(app)/app/workspace/page.tsx", "getWorkspaceIdentity()");
 requireIncludes("src/app/(app)/app/workspace/page.tsx", "invalidProjectId");
@@ -87,6 +88,10 @@ requireIncludes("src/components/workspace-system/workspace-saved-views-manager.t
 requireIncludes("src/components/workspace-system/workspace-system-page.tsx", "WorkspaceSavedViewsManager");
 requireIncludes("src/components/workspace-system/workspace-system-page.tsx", "Vistas guardadas");
 requireIncludes("src/app/globals.css", "ft-ws-saved-views-manager");
+requireIncludes("src/app/globals.css", "ft-ws-migration-guard");
+requireIncludes("src/lib/workspace-system/server-data.ts", "getWorkspacePersistenceGuardStatus");
+requireIncludes("src/components/workspace-system/workspace-saved-views-manager.tsx", "Migration Guard");
+requireIncludes("src/components/workspace-system/workspace-right-panel.tsx", "persistenceStatus.message");
 
 if (failures.length) {
   console.error("[deploy-production-readiness] Failed checks:");
@@ -94,4 +99,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log("[deploy-production-readiness] OK — v58.25.9.1 workspace persistence UI readiness aligned.");
+console.log("[deploy-production-readiness] OK — v58.25.9.2 workspace persistence QA guard readiness aligned.");

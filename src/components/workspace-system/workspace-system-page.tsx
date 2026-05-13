@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AlertTriangle, Menu, PanelRightClose, PanelRightOpen, SlidersHorizontal, X } from "lucide-react";
 import type { ReportsOverview } from "@/lib/queries/reports";
-import type { WorkspaceActivityItem, WorkspaceBoardSummary, WorkspaceContext, WorkspaceFileSummary, WorkspaceProjectSummary, WorkspaceProjectViewPreference, WorkspaceSpaceSummary, WorkspaceTaskItem, WorkspaceViewId } from "@/lib/workspace-system/view-state";
+import type { WorkspaceActivityItem, WorkspaceBoardSummary, WorkspaceContext, WorkspaceFileSummary, WorkspacePersistenceGuardStatus, WorkspaceProjectSummary, WorkspaceProjectViewPreference, WorkspaceSpaceSummary, WorkspaceTaskItem, WorkspaceViewId } from "@/lib/workspace-system/view-state";
 import { BoardView } from "./views/board-view";
 import { CanvasView } from "./views/canvas-view";
 import { FilesView } from "./views/files-view";
@@ -29,6 +29,7 @@ export function WorkspaceSystemPage({
   files,
   activity,
   projectViews,
+  persistenceStatus,
   context,
 }: {
   activeView: WorkspaceViewId;
@@ -40,6 +41,7 @@ export function WorkspaceSystemPage({
   files: WorkspaceFileSummary[];
   activity: WorkspaceActivityItem[];
   projectViews: WorkspaceProjectViewPreference[];
+  persistenceStatus: WorkspacePersistenceGuardStatus;
   context: WorkspaceContext;
 }) {
   const router = useRouter();
@@ -122,7 +124,7 @@ export function WorkspaceSystemPage({
 
         {savedViewsOpen ? (
           <div className="mt-4">
-            <WorkspaceSavedViewsManager activeView={activeView} context={context} projectViews={projectViews} onClose={() => setSavedViewsOpen(false)} />
+            <WorkspaceSavedViewsManager activeView={activeView} context={context} projectViews={projectViews} persistenceStatus={persistenceStatus} onClose={() => setSavedViewsOpen(false)} />
           </div>
         ) : null}
 
@@ -143,7 +145,7 @@ export function WorkspaceSystemPage({
                   <X className="h-4 w-4" /> Ocultar resumen
                 </button>
               </div>
-              <WorkspaceRightPanel tasks={tasks} projects={projects} files={files} activity={activity} projectViews={projectViews} context={context} />
+              <WorkspaceRightPanel tasks={tasks} projects={projects} files={files} activity={activity} projectViews={projectViews} persistenceStatus={persistenceStatus} context={context} />
             </div>
           ) : null}
         </div>

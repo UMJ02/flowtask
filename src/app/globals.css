@@ -5864,3 +5864,26 @@
   cursor: not-allowed;
   opacity: .55;
 }
+
+/* v58.25.9.2 Workspace Persistence QA + Supabase Migration Guard */
+.ft-ws-migration-guard {
+  border: 1px solid rgba(245, 158, 11, .24);
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(255, 251, 235, .92), rgba(255, 255, 255, .86));
+  padding: 12px 14px;
+  color: #92400e;
+  font-size: 12px;
+  font-weight: 850;
+  box-shadow: 0 10px 26px rgba(146, 64, 14, .06);
+}
+
+.ft-ws-migration-guard[data-ready="true"] {
+  border-color: rgba(22, 199, 132, .22);
+  background: linear-gradient(135deg, rgba(236, 253, 245, .94), rgba(255, 255, 255, .9));
+  color: #047857;
+}
+
+.ft-ws-migration-guard strong {
+  color: inherit;
+  font-weight: 950;
+}

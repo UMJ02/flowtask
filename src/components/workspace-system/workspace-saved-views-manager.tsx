@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { CheckCircle2, Eye, Loader2, Pencil, Save, Star, Trash2, X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import type { WorkspaceContext, WorkspaceProjectViewPreference, WorkspaceViewId } from "@/lib/workspace-system/view-state";
+import type { WorkspaceContext, WorkspacePersistenceGuardStatus, WorkspaceProjectViewPreference, WorkspaceViewId } from "@/lib/workspace-system/view-state";
 
 const viewLabels: Record<WorkspaceViewId, string> = {
   list: "Lista",
@@ -28,11 +28,13 @@ export function WorkspaceSavedViewsManager({
   activeView,
   context,
   projectViews,
+  persistenceStatus,
   onClose,
 }: {
   activeView: WorkspaceViewId;
   context: WorkspaceContext;
   projectViews: WorkspaceProjectViewPreference[];
+  persistenceStatus: WorkspacePersistenceGuardStatus;
   onClose?: () => void;
 }) {
   const supabase = useMemo(() => createClient(), []);
@@ -44,7 +46,7 @@ export function WorkspaceSavedViewsManager({
   const [busy, setBusy] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<Feedback>(null);
 
-  const canPersist = Boolean(context.projectId);
+  const canPersist = Boolean(context.projectId) && persistenceStatus.projectViewsReady;
   const sortedViews = [...projectViews].sort((a, b) => a.sortOrder - b.sortOrder || a.title.localeCompare(b.title));
 
   function openView(viewType: WorkspaceViewId) {
@@ -55,6 +57,11 @@ export function WorkspaceSavedViewsManager({
   }
 
   async function saveCurrentView() {
+    if (!persistenceStatus.projectViewsReady) {
+      setFeedback({ tone: "error", text: persistenceStatus.message || "Aplica la migración 0056 antes de guardar vistas." });
+      return;
+    }
+
     if (!context.projectId) {
       setFeedback({ tone: "error", text: "Selecciona un proyecto para guardar vistas persistidas." });
       return;
@@ -192,7 +199,9 @@ export function WorkspaceSavedViewsManager({
           <p className="mt-3 rounded-[16px] bg-slate-50 px-3 py-2 text-xs font-bold text-slate-500">
             Proyecto actual: <b className="text-slate-800">{context.projectTitle ?? "Sin proyecto"}</b> · Vista activa: <b className="text-emerald-700">{viewLabels[activeView]}</b>
           </p>
-          {!canPersist ? (
+          {!persistenceStatus.projectViewsReady ? (
+            <p className="mt-3 rounded-[16px] bg-amber-50 px-3 py-2 text-sm font-bold text-amber-700">Migration Guard: {persistenceStatus.message}</p>
+          ) : !context.projectId ? (
             <p className="mt-3 rounded-[16px] bg-amber-50 px-3 py-2 text-sm font-bold text-amber-700">Selecciona un proyecto desde la sidebar para habilitar guardado de vistas persistidas.</p>
           ) : null}
           {feedback ? (
@@ -205,6 +214,9 @@ export function WorkspaceSavedViewsManager({
 
         <div className="rounded-[22px] border border-emerald-100 bg-emerald-50/55 p-4">
           <p className="text-sm font-black text-emerald-800">Cómo se usa</p>
+          <p className={persistenceStatus.enabled ? "mt-2 rounded-[14px] bg-white/70 px-3 py-2 text-xs font-black text-emerald-700" : "mt-2 rounded-[14px] bg-amber-100 px-3 py-2 text-xs font-black text-amber-800"}>
+            Migration Guard: {persistenceStatus.status} · {persistenceStatus.projectViewsReady ? "project_views OK" : "project_views pendiente"}
+          </p>
           <ul className="mt-2 space-y-1 text-xs font-bold text-emerald-700">
             <li>• Guarda la vista activa con filtros/contexto.</li>
             <li>• Renombra vistas sin tocar la data real.</li>

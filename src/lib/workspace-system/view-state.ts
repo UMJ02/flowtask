@@ -111,3 +111,13 @@ export type WorkspaceProjectViewPreference = {
   isDefault: boolean;
   sortOrder: number;
 };
+
+export type WorkspacePersistenceGuardStatus = {
+  enabled: boolean;
+  status: "ready" | "missing_tables" | "partial" | "blocked" | "unknown";
+  workspaceSpacesReady: boolean;
+  projectViewsReady: boolean;
+  message: string;
+  checkedAt?: string | null;
+  details?: string[];
+};

@@ -2,7 +2,7 @@ import type { CSSProperties } from "react";
 import { AlertTriangle, CalendarClock, CheckCircle2, CircleDot, FileArchive, Flag, Gauge, Paperclip, Sparkles, TrendingUp } from "lucide-react";
 import { getTaskProgress } from "@/lib/workspace-system/adapters";
 import { WorkspaceActivityTimeline } from "./workspace-activity-timeline";
-import type { WorkspaceActivityItem, WorkspaceContext, WorkspaceFileSummary, WorkspaceProjectSummary, WorkspaceProjectViewPreference, WorkspaceTaskItem } from "@/lib/workspace-system/view-state";
+import type { WorkspaceActivityItem, WorkspaceContext, WorkspaceFileSummary, WorkspacePersistenceGuardStatus, WorkspaceProjectSummary, WorkspaceProjectViewPreference, WorkspaceTaskItem } from "@/lib/workspace-system/view-state";
 
 function isOverdue(task: WorkspaceTaskItem) {
   if (task.isOverdue) return true;
@@ -27,6 +27,7 @@ export function WorkspaceRightPanel({
   files,
   activity,
   projectViews,
+  persistenceStatus,
   context,
 }: {
   tasks: WorkspaceTaskItem[];
@@ -34,6 +35,7 @@ export function WorkspaceRightPanel({
   files: WorkspaceFileSummary[];
   activity: WorkspaceActivityItem[];
   projectViews: WorkspaceProjectViewPreference[];
+  persistenceStatus: WorkspacePersistenceGuardStatus;
   context: WorkspaceContext;
 }) {
   const progress = getTaskProgress(tasks);
@@ -84,13 +86,16 @@ export function WorkspaceRightPanel({
       <section className="ft-ws-card p-5">
         <div className="flex items-center justify-between gap-3">
           <h3 className="font-extrabold text-[var(--ft-workspace-text)]">Persistencia Workspace</h3>
-          <span className="text-xs font-bold text-emerald-600">v58.25.9</span>
+          <span className={persistenceStatus.enabled ? "text-xs font-bold text-emerald-600" : "text-xs font-bold text-amber-600"}>{persistenceStatus.status}</span>
         </div>
         <div className="mt-4 grid grid-cols-2 gap-3">
           <div className="ft-ws-mini-metric"><b>{persistedViews}</b><span>Vistas guardadas</span></div>
           <div className="ft-ws-mini-metric"><b>{context.hasProjectFilter ? "Proyecto" : "Workspace"}</b><span>Contexto</span></div>
         </div>
-        <p className="mt-3 rounded-[16px] bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-700">Los espacios y vistas pueden persistirse con workspace_spaces y project_views sin romper la capa actual.</p>
+        <div className="ft-ws-migration-guard mt-3" data-ready={persistenceStatus.enabled ? "true" : "false"}>
+          <p>{persistenceStatus.message}</p>
+          <p className="mt-1">workspace_spaces: {persistenceStatus.workspaceSpacesReady ? "OK" : "fallback"} · project_views: {persistenceStatus.projectViewsReady ? "OK" : "guardado bloqueado"}</p>
+        </div>
       </section>
 
       <section className="ft-ws-card p-5">

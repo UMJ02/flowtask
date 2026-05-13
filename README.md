@@ -35,3 +35,19 @@ npm run dev
 ## Nota
 
 Esta versión introduce la base DB opcional para persistencia. No reemplaza rutas existentes, no duplica BoardPage y no toca `safe_delete_visual_board`.
+
+## v58.25.9.2 — Workspace Persistence QA + Supabase Migration Guard
+
+Esta versión agrega guardas de persistencia para que `/app/workspace` siga funcionando aunque la migración `0056_v58_25_9_workspace_persistence_foundation.sql` no se haya aplicado todavía o esté parcialmente disponible.
+
+Comandos clave:
+
+```bash
+npm run workspace:doctor
+npm run verify:current
+npm run typecheck
+npm run build:preflight
+npm run build
+```
+
+La persistencia Workspace usa `workspace_spaces` y `project_views` cuando están listas. Si no están listas, FlowTask mantiene fallback con espacios generados desde datos reales y bloquea escrituras de Saved Views con feedback profesional.

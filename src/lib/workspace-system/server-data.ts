@@ -1,5 +1,5 @@
 import { applyWorkspaceScope, getWorkspaceContext } from "@/lib/queries/workspace";
-import type { WorkspaceBoardSummary, WorkspaceProjectViewPreference, WorkspaceSpaceSummary } from "@/lib/workspace-system/view-state";
+import type { WorkspaceBoardSummary, WorkspacePersistenceGuardStatus, WorkspaceProjectViewPreference, WorkspaceSpaceSummary } from "@/lib/workspace-system/view-state";
 
 export async function getWorkspaceIdentity() {
   const { supabase, user, activeOrganizationId } = await getWorkspaceContext();
@@ -37,6 +37,95 @@ export async function getWorkspaceIdentity() {
     mode: "organization" as const,
     workspaceId: `organization:${activeOrganizationId}`,
     workspaceName: data?.name ?? "Organización activa",
+  };
+}
+
+
+function isMissingPersistenceRelation(error: { code?: string; message?: string } | null | undefined) {
+  if (!error) return false;
+  const message = String(error.message ?? "").toLowerCase();
+  return error.code === "42P01" || error.code === "PGRST205" || message.includes("could not find the table") || message.includes("relation") && message.includes("does not exist");
+}
+
+function isBlockedPersistenceRelation(error: { code?: string; message?: string } | null | undefined) {
+  if (!error) return false;
+  return error.code === "42501" || String(error.message ?? "").toLowerCase().includes("permission denied");
+}
+
+export async function getWorkspacePersistenceGuardStatus(): Promise<WorkspacePersistenceGuardStatus> {
+  const { supabase, user } = await getWorkspaceContext();
+  if (!user) {
+    return {
+      enabled: false,
+      status: "unknown",
+      workspaceSpacesReady: false,
+      projectViewsReady: false,
+      message: "Workspace persistence is disabled until the user session is available.",
+      checkedAt: new Date().toISOString(),
+      details: ["No authenticated user in workspace context."],
+    };
+  }
+
+  const [spacesProbe, viewsProbe] = await Promise.all([
+    supabase.from("workspace_spaces").select("id", { count: "exact", head: true }).limit(1),
+    supabase.from("project_views").select("id", { count: "exact", head: true }).limit(1),
+  ]);
+
+  const spacesMissing = isMissingPersistenceRelation(spacesProbe.error);
+  const viewsMissing = isMissingPersistenceRelation(viewsProbe.error);
+  const spacesBlocked = isBlockedPersistenceRelation(spacesProbe.error);
+  const viewsBlocked = isBlockedPersistenceRelation(viewsProbe.error);
+  const workspaceSpacesReady = !spacesProbe.error;
+  const projectViewsReady = !viewsProbe.error;
+  const details = [
+    workspaceSpacesReady ? "workspace_spaces: ready" : `workspace_spaces: ${spacesProbe.error?.code ?? "error"} ${spacesProbe.error?.message ?? "unavailable"}`,
+    projectViewsReady ? "project_views: ready" : `project_views: ${viewsProbe.error?.code ?? "error"} ${viewsProbe.error?.message ?? "unavailable"}`,
+  ];
+
+  if (workspaceSpacesReady && projectViewsReady) {
+    return {
+      enabled: true,
+      status: "ready",
+      workspaceSpacesReady,
+      projectViewsReady,
+      message: "Workspace persistence tables are available. Saved spaces and saved views can be used safely.",
+      checkedAt: new Date().toISOString(),
+      details,
+    };
+  }
+
+  if (spacesBlocked || viewsBlocked) {
+    return {
+      enabled: false,
+      status: "blocked",
+      workspaceSpacesReady,
+      projectViewsReady,
+      message: "Workspace persistence tables exist but access is blocked by RLS or permissions. The workspace keeps generated fallbacks active.",
+      checkedAt: new Date().toISOString(),
+      details,
+    };
+  }
+
+  if (spacesMissing && viewsMissing) {
+    return {
+      enabled: false,
+      status: "missing_tables",
+      workspaceSpacesReady: false,
+      projectViewsReady: false,
+      message: "Migration 0056 has not been applied yet. FlowTask keeps generated spaces and disables saved views writes instead of breaking /app/workspace.",
+      checkedAt: new Date().toISOString(),
+      details,
+    };
+  }
+
+  return {
+    enabled: false,
+    status: "partial",
+    workspaceSpacesReady,
+    projectViewsReady,
+    message: "Workspace persistence is partially available. Apply or repair migration 0056 before relying on saved spaces/views.",
+    checkedAt: new Date().toISOString(),
+    details,
   };
 }
 
