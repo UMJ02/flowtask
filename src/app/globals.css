@@ -5265,3 +5265,8 @@
   border: 1px solid rgba(16, 185, 129, .18);
   background: rgba(236, 253, 245, .72);
 }
+
+/* v58.25.8.3 Workspace Canvas/Boards Integration
+   Canvas Workspace now reads real visual_boards summaries and links into the existing BoardPage editor. */
+.ft-ws-board-card { transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease; }
+.ft-ws-board-card:hover { transform: translateY(-2px); }

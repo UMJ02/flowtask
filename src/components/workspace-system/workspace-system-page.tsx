@@ -2,7 +2,7 @@
 
 import { AlertTriangle, SlidersHorizontal } from "lucide-react";
 import type { ReportsOverview } from "@/lib/queries/reports";
-import type { WorkspaceContext, WorkspaceProjectSummary, WorkspaceSpaceSummary, WorkspaceTaskItem, WorkspaceViewId } from "@/lib/workspace-system/view-state";
+import type { WorkspaceBoardSummary, WorkspaceContext, WorkspaceProjectSummary, WorkspaceSpaceSummary, WorkspaceTaskItem, WorkspaceViewId } from "@/lib/workspace-system/view-state";
 import { BoardView } from "./views/board-view";
 import { CanvasView } from "./views/canvas-view";
 import { FilesView } from "./views/files-view";
@@ -21,6 +21,7 @@ export function WorkspaceSystemPage({
   projects,
   spaces,
   reports,
+  boards,
   context,
 }: {
   activeView: WorkspaceViewId;
@@ -28,6 +29,7 @@ export function WorkspaceSystemPage({
   projects: WorkspaceProjectSummary[];
   spaces: WorkspaceSpaceSummary[];
   reports: ReportsOverview | null;
+  boards: WorkspaceBoardSummary[];
   context: WorkspaceContext;
 }) {
   const statusParam = context.activeFilters?.status ?? "todos";
@@ -73,8 +75,8 @@ export function WorkspaceSystemPage({
             {activeView === "board" ? <BoardView tasks={tasks} /> : null}
             {activeView === "timeline" ? <TimelineView tasks={tasks} /> : null}
             {activeView === "table" ? <TableView tasks={tasks} /> : null}
-            {activeView === "canvas" ? <CanvasView tasks={tasks} /> : null}
-            {activeView === "files" ? <FilesView /> : null}
+            {activeView === "canvas" ? <CanvasView tasks={tasks} boards={boards} context={context} /> : null}
+            {activeView === "files" ? <FilesView boards={boards} /> : null}
             {activeView === "reports" ? <ReportsView reports={reports} tasks={tasks} /> : null}
           </main>
           <WorkspaceRightPanel tasks={tasks} projects={projects} context={context} />

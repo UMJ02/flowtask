@@ -60,3 +60,15 @@ export type WorkspaceProjectSummary = {
   departmentName?: string | null;
   country?: string | null;
 };
+
+export type WorkspaceBoardSummary = {
+  id: string;
+  title: string;
+  description?: string | null;
+  projectId?: string | null;
+  projectTitle?: string | null;
+  visibility?: string | null;
+  thumbnailUrl?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+};

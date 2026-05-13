@@ -79,3 +79,15 @@ export function workspaceProjectRoute(id: string, view = "list", extraQuery = ""
   params.set("view", view);
   return `/app/workspace?${params.toString()}` as AppRoute;
 }
+
+
+export function boardRoute(id: string, query = ""): AppRoute {
+  return (query ? `/app/boards/${id}?${query}` : `/app/boards/${id}`) as AppRoute;
+}
+
+export function workspaceCanvasRoute(projectId?: string | null, extraQuery = ""): AppRoute {
+  const params = new URLSearchParams(extraQuery);
+  params.set("view", "canvas");
+  if (projectId) params.set("projectId", projectId);
+  return `/app/workspace?${params.toString()}` as AppRoute;
+}
