@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AlertTriangle, Menu, PanelRightClose, PanelRightOpen, SlidersHorizontal, X } from "lucide-react";
 import type { ReportsOverview } from "@/lib/queries/reports";
-import type { WorkspaceBoardSummary, WorkspaceContext, WorkspaceProjectSummary, WorkspaceSpaceSummary, WorkspaceTaskItem, WorkspaceViewId } from "@/lib/workspace-system/view-state";
+import type { WorkspaceActivityItem, WorkspaceBoardSummary, WorkspaceContext, WorkspaceFileSummary, WorkspaceProjectSummary, WorkspaceSpaceSummary, WorkspaceTaskItem, WorkspaceViewId } from "@/lib/workspace-system/view-state";
 import { BoardView } from "./views/board-view";
 import { CanvasView } from "./views/canvas-view";
 import { FilesView } from "./views/files-view";
@@ -25,6 +25,8 @@ export function WorkspaceSystemPage({
   spaces,
   reports,
   boards,
+  files,
+  activity,
   context,
 }: {
   activeView: WorkspaceViewId;
@@ -33,6 +35,8 @@ export function WorkspaceSystemPage({
   spaces: WorkspaceSpaceSummary[];
   reports: ReportsOverview | null;
   boards: WorkspaceBoardSummary[];
+  files: WorkspaceFileSummary[];
+  activity: WorkspaceActivityItem[];
   context: WorkspaceContext;
 }) {
   const router = useRouter();
@@ -119,7 +123,7 @@ export function WorkspaceSystemPage({
             {activeView === "timeline" ? <TimelineView tasks={tasks} /> : null}
             {activeView === "table" ? <TableView tasks={tasks} /> : null}
             {activeView === "canvas" ? <CanvasView tasks={tasks} boards={boards} context={context} /> : null}
-            {activeView === "files" ? <FilesView boards={boards} /> : null}
+            {activeView === "files" ? <FilesView boards={boards} files={files} context={context} /> : null}
             {activeView === "reports" ? <ReportsView reports={reports} tasks={tasks} /> : null}
           </main>
           {rightPanelOpen ? (
@@ -129,7 +133,7 @@ export function WorkspaceSystemPage({
                   <X className="h-4 w-4" /> Ocultar resumen
                 </button>
               </div>
-              <WorkspaceRightPanel tasks={tasks} projects={projects} context={context} />
+              <WorkspaceRightPanel tasks={tasks} projects={projects} files={files} activity={activity} context={context} />
             </div>
           ) : null}
         </div>

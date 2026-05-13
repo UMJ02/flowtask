@@ -72,3 +72,29 @@ export type WorkspaceBoardSummary = {
   updatedAt?: string | null;
   createdAt?: string | null;
 };
+
+export type WorkspaceActivityItem = {
+  id: string;
+  action: string;
+  entityType?: string | null;
+  entityId?: string | null;
+  title: string;
+  description?: string | null;
+  projectId?: string | null;
+  taskId?: string | null;
+  createdAt: string;
+};
+
+export type WorkspaceFileSummary = {
+  id: string;
+  fileName: string;
+  mimeType?: string | null;
+  fileSize?: number | null;
+  publicUrl?: string | null;
+  storagePath?: string | null;
+  projectId?: string | null;
+  projectTitle?: string | null;
+  taskId?: string | null;
+  taskTitle?: string | null;
+  createdAt?: string | null;
+};

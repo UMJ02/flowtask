@@ -14,7 +14,7 @@ import {
   normalizeWorkspaceView,
   slugifyWorkspaceValue,
 } from "@/lib/workspace-system/adapters";
-import { getWorkspaceBoards, getWorkspaceIdentity } from "@/lib/workspace-system/server-data";
+import { getWorkspaceActivity, getWorkspaceBoards, getWorkspaceFiles, getWorkspaceIdentity } from "@/lib/workspace-system/server-data";
 import type { WorkspaceContext, WorkspaceViewId } from "@/lib/workspace-system/view-state";
 
 function getParam(params: Record<string, string | string[] | undefined>, key: string) {
@@ -56,6 +56,15 @@ export default async function WorkspacePage({ searchParams }: { searchParams?: P
         status: requestedStatus,
       });
 
+  const [workspaceActivity, workspaceFiles] = await Promise.all([
+    safeServerCall("workspace:getActivity", () => getWorkspaceActivity(activeProject?.id ?? null), []),
+    safeServerCall("workspace:getFiles", () => getWorkspaceFiles({
+      projectId: activeProject?.id ?? null,
+      projectIds: projectsInSpace.map((project) => project.id),
+      taskIds: tasks.map((task) => task.id),
+    }), []),
+  ]);
+
   const context: WorkspaceContext = {
     workspaceId: workspaceIdentity?.workspaceId ?? "active-workspace",
     workspaceName: workspaceIdentity?.workspaceName ?? "FlowTask Workspace",
@@ -76,5 +85,5 @@ export default async function WorkspacePage({ searchParams }: { searchParams?: P
     },
   };
 
-  return <WorkspaceSystemPage activeView={activeView} tasks={tasks} projects={projectsInSpace} spaces={spaces} reports={reports} boards={workspaceBoards} context={context} />;
+  return <WorkspaceSystemPage activeView={activeView} tasks={tasks} projects={projectsInSpace} spaces={spaces} reports={reports} boards={workspaceBoards} files={workspaceFiles} activity={workspaceActivity} context={context} />;
 }

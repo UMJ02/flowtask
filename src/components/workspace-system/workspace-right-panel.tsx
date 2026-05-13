@@ -1,7 +1,7 @@
 import type { CSSProperties } from "react";
-import { AlertTriangle, CalendarClock, CheckCircle2, CircleDot, Flag, Gauge, Sparkles, Target, TrendingUp } from "lucide-react";
+import { AlertTriangle, CalendarClock, CheckCircle2, CircleDot, Clock3, FileArchive, Flag, Gauge, Paperclip, Sparkles, Target, TrendingUp } from "lucide-react";
 import { getTaskProgress } from "@/lib/workspace-system/adapters";
-import type { WorkspaceContext, WorkspaceProjectSummary, WorkspaceTaskItem } from "@/lib/workspace-system/view-state";
+import type { WorkspaceActivityItem, WorkspaceContext, WorkspaceFileSummary, WorkspaceProjectSummary, WorkspaceTaskItem } from "@/lib/workspace-system/view-state";
 
 function isOverdue(task: WorkspaceTaskItem) {
   if (task.isOverdue) return true;
@@ -12,7 +12,33 @@ function isOverdue(task: WorkspaceTaskItem) {
   return !Number.isNaN(due.getTime()) && due < today && !["concluido", "completado"].includes(task.status);
 }
 
-export function WorkspaceRightPanel({ tasks, projects, context }: { tasks: WorkspaceTaskItem[]; projects: WorkspaceProjectSummary[]; context: WorkspaceContext }) {
+function formatShortDate(value?: string | null) {
+  if (!value) return "Sin fecha";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return new Intl.DateTimeFormat("es", { day: "2-digit", month: "short" }).format(date);
+}
+
+function activityTone(activity: WorkspaceActivityItem) {
+  if (activity.action.includes("attachment")) return "bg-blue-50 text-blue-700";
+  if (activity.action.includes("comment")) return "bg-amber-50 text-amber-700";
+  if (activity.action.includes("project")) return "bg-violet-50 text-violet-700";
+  return "bg-emerald-50 text-emerald-700";
+}
+
+export function WorkspaceRightPanel({
+  tasks,
+  projects,
+  files,
+  activity,
+  context,
+}: {
+  tasks: WorkspaceTaskItem[];
+  projects: WorkspaceProjectSummary[];
+  files: WorkspaceFileSummary[];
+  activity: WorkspaceActivityItem[];
+  context: WorkspaceContext;
+}) {
   const progress = getTaskProgress(tasks);
   const completed = tasks.filter((task) => ["concluido", "completado"].includes(task.status)).length;
   const waiting = tasks.filter((task) => ["en_espera", "pendiente"].includes(task.status)).length;
@@ -21,7 +47,9 @@ export function WorkspaceRightPanel({ tasks, projects, context }: { tasks: Works
   const dueToday = tasks.filter((task) => task.isDueToday).length;
   const important = tasks.filter((task) => task.priority === "alta").length;
   const dueSoon = tasks.filter((task) => task.dueDate).sort((a, b) => String(a.dueDate).localeCompare(String(b.dueDate))).slice(0, 5);
-  const focusSignal = overdue > 0 ? "Revisar vencidas" : important > 0 ? "Priorizar importantes" : dueToday > 0 ? "Cerrar tareas de hoy" : "Workspace saludable";
+  const recentFiles = files.slice(0, 4);
+  const recentActivity = activity.slice(0, 5);
+  const focusSignal = overdue > 0 ? "Revisar vencidas" : important > 0 ? "Priorizar importantes" : recentFiles.length > 0 ? "Revisar archivos recientes" : dueToday > 0 ? "Cerrar tareas de hoy" : "Workspace saludable";
 
   return (
     <aside className="ft-ws-right-panel space-y-4">
@@ -50,8 +78,42 @@ export function WorkspaceRightPanel({ tasks, projects, context }: { tasks: Works
       <section className="grid grid-cols-2 gap-3">
         <div className="ft-ws-mini-metric"><Flag className="h-4 w-4 text-rose-500" /><b>{important}</b><span>Importantes</span></div>
         <div className="ft-ws-mini-metric"><AlertTriangle className="h-4 w-4 text-amber-500" /><b>{overdue}</b><span>Vencidas</span></div>
-        <div className="ft-ws-mini-metric"><Target className="h-4 w-4 text-blue-500" /><b>{dueToday}</b><span>Hoy</span></div>
+        <div className="ft-ws-mini-metric"><Paperclip className="h-4 w-4 text-blue-500" /><b>{files.length}</b><span>Archivos</span></div>
         <div className="ft-ws-mini-metric"><Gauge className="h-4 w-4 text-violet-500" /><b>{projects.length}</b><span>Proyectos</span></div>
+      </section>
+
+      <section className="ft-ws-card p-5">
+        <div className="flex items-center justify-between gap-3">
+          <h3 className="font-extrabold text-[var(--ft-workspace-text)]">Actividad del proyecto</h3>
+          <span className="text-xs font-bold text-emerald-600">{recentActivity.length} movimientos</span>
+        </div>
+        <div className="mt-4 space-y-2">
+          {recentActivity.length ? recentActivity.map((item) => (
+            <div key={item.id} className="ft-ws-activity-item">
+              <span className={`mt-0.5 rounded-full px-2 py-1 text-[10px] font-black ${activityTone(item)}`}>{item.description}</span>
+              <div className="min-w-0">
+                <p className="truncate text-sm font-black text-slate-800">{item.title}</p>
+                <p className="mt-1 flex items-center gap-1 text-xs font-bold text-slate-500"><Clock3 className="h-3.5 w-3.5" /> {formatShortDate(item.createdAt)}</p>
+              </div>
+            </div>
+          )) : <p className="text-sm font-semibold text-slate-500">No hay actividad reciente para este contexto.</p>}
+        </div>
+      </section>
+
+      <section className="ft-ws-card p-5">
+        <div className="flex items-center justify-between gap-3">
+          <h3 className="font-extrabold text-[var(--ft-workspace-text)]">Archivos recientes</h3>
+          <FileArchive className="h-4 w-4 text-blue-500" />
+        </div>
+        <div className="mt-4 space-y-2">
+          {recentFiles.length ? recentFiles.map((file) => (
+            <a key={file.id} href={file.publicUrl ?? "#"} target={file.publicUrl ? "_blank" : undefined} rel="noreferrer" className="ft-ws-file-mini-card">
+              <Paperclip className="h-4 w-4 text-blue-500" />
+              <span className="min-w-0 flex-1 truncate text-sm font-black text-slate-800">{file.fileName}</span>
+              <span className="text-xs font-bold text-slate-500">{formatShortDate(file.createdAt)}</span>
+            </a>
+          )) : <p className="text-sm font-semibold text-slate-500">No hay archivos recientes en este contexto.</p>}
+        </div>
       </section>
 
       <section className="ft-ws-card p-5">
@@ -76,8 +138,8 @@ export function WorkspaceRightPanel({ tasks, projects, context }: { tasks: Works
         <h3 className="flex items-center gap-2 font-extrabold text-[var(--ft-workspace-text)]"><Sparkles className="h-4 w-4 text-violet-500" /> IA contextual</h3>
         <div className="mt-3 space-y-2">
           <div className="rounded-[18px] bg-violet-50 p-4 text-sm font-semibold text-violet-700"><TrendingUp className="mr-2 inline h-4 w-4" /> Señal principal: {focusSignal}.</div>
-          <div className="rounded-[18px] bg-amber-50 p-4 text-sm font-semibold text-amber-700"><AlertTriangle className="mr-2 inline h-4 w-4" /> {context.mode === "organization" ? "Valida carga del equipo antes de automatizar." : "Este modo usa solo datos personales del usuario activo."}</div>
-          <div className="rounded-[18px] bg-slate-50 p-4 text-sm font-semibold text-slate-600">{projects.length} proyectos visibles después de aplicar workspace/espacio.</div>
+          <div className="rounded-[18px] bg-amber-50 p-4 text-sm font-semibold text-amber-700"><AlertTriangle className="mr-2 inline h-4 w-4" /> {context.mode === "organization" ? "Valida actividad y archivos del equipo antes de automatizar." : "Este modo usa solo datos personales del usuario activo."}</div>
+          <div className="rounded-[18px] bg-slate-50 p-4 text-sm font-semibold text-slate-600">{activity.length} movimientos y {files.length} archivos visibles en este contexto.</div>
         </div>
       </section>
     </aside>

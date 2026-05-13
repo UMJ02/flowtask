@@ -95,3 +95,123 @@ export async function getWorkspaceBoards(projectId?: string | null): Promise<Wor
     updatedAt: row.updated_at ?? null,
   }));
 }
+
+import type { WorkspaceActivityItem, WorkspaceFileSummary } from "@/lib/workspace-system/view-state";
+
+function formatWorkspaceAction(action?: string | null) {
+  const labels: Record<string, string> = {
+    task_created: "Tarea creada",
+    task_updated: "Tarea actualizada",
+    task_status_changed: "Estado actualizado",
+    project_created: "Proyecto creado",
+    project_updated: "Proyecto actualizado",
+    project_status_changed: "Estado de proyecto actualizado",
+    attachment_uploaded: "Archivo subido",
+    attachment_deleted: "Archivo eliminado",
+    comment_added: "Comentario agregado",
+  };
+  return labels[action ?? ""] ?? (action ?? "Actividad").replace(/_/g, " ");
+}
+
+function extractActivityTitle(row: { action?: string | null; metadata?: Record<string, unknown> | null }) {
+  const metadata = row.metadata ?? {};
+  const title = typeof metadata.title === "string" ? metadata.title : typeof metadata.name === "string" ? metadata.name : typeof metadata.file_name === "string" ? metadata.file_name : null;
+  return title ?? formatWorkspaceAction(row.action);
+}
+
+export async function getWorkspaceActivity(projectId?: string | null): Promise<WorkspaceActivityItem[]> {
+  const { supabase, user, activeOrganizationId } = await getWorkspaceContext();
+  if (!user) return [];
+
+  let query = supabase
+    .from("activity_logs")
+    .select("id,entity_type,entity_id,action,metadata,created_at,project_id,task_id,organization_id,user_id")
+    .order("created_at", { ascending: false })
+    .limit(18);
+
+  if (projectId) query = query.or(`project_id.eq.${projectId},and(entity_type.eq.project,entity_id.eq.${projectId})`);
+  else if (activeOrganizationId) query = query.eq("organization_id", activeOrganizationId);
+  else query = query.eq("user_id", user.id);
+
+  const { data, error } = await query;
+  if (error) return [];
+
+  return ((data ?? []) as any[]).map((row) => ({
+    id: String(row.id),
+    action: String(row.action ?? "activity"),
+    entityType: row.entity_type ?? null,
+    entityId: row.entity_id ?? null,
+    title: extractActivityTitle(row),
+    description: formatWorkspaceAction(row.action),
+    projectId: row.project_id ?? (row.entity_type === "project" ? row.entity_id : null),
+    taskId: row.task_id ?? (row.entity_type === "task" ? row.entity_id : null),
+    createdAt: row.created_at,
+  }));
+}
+
+export async function getWorkspaceFiles(options: { projectId?: string | null; projectIds?: string[]; taskIds?: string[] } = {}): Promise<WorkspaceFileSummary[]> {
+  const { supabase, user } = await getWorkspaceContext();
+  if (!user) return [];
+
+  const projectIds = options.projectId ? [options.projectId] : (options.projectIds ?? []).slice(0, 80);
+  const taskIds = options.taskIds ?? [];
+
+  let query = supabase
+    .from("attachments")
+    .select("id,file_name,mime_type,file_size,public_url,storage_path,project_id,task_id,created_at")
+    .order("created_at", { ascending: false })
+    .limit(24);
+
+  if (projectIds.length && taskIds.length) query = query.or(`project_id.in.(${projectIds.join(",")}),task_id.in.(${taskIds.slice(0, 80).join(",")})`);
+  else if (projectIds.length) query = query.in("project_id", projectIds);
+  else if (taskIds.length) query = query.in("task_id", taskIds.slice(0, 80));
+  else query = query.eq("owner_id", user.id);
+
+  const { data, error } = await query;
+  if (error) return [];
+
+  const rows = (data ?? []) as Array<{
+    id: string;
+    file_name?: string | null;
+    mime_type?: string | null;
+    file_size?: number | null;
+    public_url?: string | null;
+    storage_path?: string | null;
+    project_id?: string | null;
+    task_id?: string | null;
+    created_at?: string | null;
+  }>;
+
+  const relatedProjectIds = [...new Set(rows.map((row) => row.project_id).filter((id): id is string => Boolean(id)))];
+  const relatedTaskIds = [...new Set(rows.map((row) => row.task_id).filter((id): id is string => Boolean(id)))];
+  const projectTitleById = new Map<string, string>();
+  const taskTitleById = new Map<string, { title: string; projectId?: string | null }>();
+
+  if (relatedProjectIds.length) {
+    const { data: projects } = await supabase.from("projects").select("id,title").in("id", relatedProjectIds);
+    for (const project of projects ?? []) projectTitleById.set(String(project.id), String(project.title ?? "Proyecto"));
+  }
+
+  if (relatedTaskIds.length) {
+    const { data: tasks } = await supabase.from("tasks").select("id,title,project_id").in("id", relatedTaskIds);
+    for (const task of tasks ?? []) taskTitleById.set(String(task.id), { title: String(task.title ?? "Tarea"), projectId: task.project_id ?? null });
+  }
+
+  return rows.map((row) => {
+    const task = row.task_id ? taskTitleById.get(row.task_id) : null;
+    const projectId = row.project_id ?? task?.projectId ?? null;
+    return {
+      id: row.id,
+      fileName: row.file_name ?? "Archivo sin nombre",
+      mimeType: row.mime_type ?? null,
+      fileSize: row.file_size ?? null,
+      publicUrl: row.public_url ?? null,
+      storagePath: row.storage_path ?? null,
+      projectId,
+      projectTitle: projectId ? projectTitleById.get(projectId) ?? null : null,
+      taskId: row.task_id ?? null,
+      taskTitle: task?.title ?? null,
+      createdAt: row.created_at ?? null,
+    };
+  });
+}
