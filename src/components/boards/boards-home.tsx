@@ -380,24 +380,24 @@ export function BoardsHome() {
 
   return (
     <div className="board-home-shell">
-      <section className="board-home-hero">
+      <section className="board-home-hero board-home-hero-compact-actions">
         <div className="board-home-hero-copy">
           <p className="board-home-kicker">Pizarras visuales</p>
           <h1>Crea, organiza y visualiza tus ideas</h1>
           <p>Todo tu pensamiento en un solo espacio visual con sincronización, plantillas y colaboración en tiempo real.</p>
-          <div className="board-home-hero-actions">
-            <Button onClick={() => createBoard()} disabled={creating} className="board-home-primary-btn">
-              {creating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
-              Nueva pizarra
-            </Button>
-            <button
-              type="button"
-              onClick={() => document.getElementById("board-templates")?.scrollIntoView({ behavior: "smooth", block: "start" })}
-              className="board-home-secondary-btn"
-            >
-              <Sparkles className="h-4 w-4" /> Ver plantillas
-            </button>
-          </div>
+        </div>
+        <div className="board-home-hero-actions">
+          <Button onClick={() => createBoard()} disabled={creating} className="board-home-primary-btn">
+            {creating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+            Nueva pizarra
+          </Button>
+          <button
+            type="button"
+            onClick={() => document.getElementById("board-templates")?.scrollIntoView({ behavior: "smooth", block: "start" })}
+            className="board-home-secondary-btn"
+          >
+            <Sparkles className="h-4 w-4" /> Ver plantillas
+          </button>
         </div>
       </section>
 
@@ -469,7 +469,9 @@ export function BoardsHome() {
 
           {!loading ? (
             <button type="button" disabled={creating} onClick={() => createBoard()} className="board-home-create-card board-home-create-card-red">
-              <span className="board-home-create-plus-red"><Plus className="h-5 w-5" /></span>
+              <div className="board-home-create-preview-red" aria-hidden="true">
+                <span className="board-home-create-plus-red"><Plus className="h-6 w-6" /></span>
+              </div>
               <strong>Crear nueva pizarra</strong>
               <small>Lienzo en blanco</small>
             </button>

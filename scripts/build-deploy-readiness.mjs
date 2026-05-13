@@ -4,7 +4,7 @@ import path from "node:path";
 
 const root = process.cwd();
 const failures = [];
-const expectedVersion = "58.25.7.6-report-metrics-buckets-priority-star-export-alignment";
+const expectedVersion = "58.25.7.7-boards-hero-template-icons-notifications-metric-polish";
 
 function exists(rel) { return fs.existsSync(path.join(root, rel)); }
 function read(rel) { return exists(rel) ? fs.readFileSync(path.join(root, rel), "utf8") : ""; }
@@ -23,20 +23,19 @@ for (const rel of [
   "scripts/validate-env.mjs",
   "scripts/design-doctor.mjs",
   "scripts/density-guard.mjs",
-  "scripts/verify-v58.25.7.6.mjs",
-  "docs/release/V58_25_7_6_REPORT_METRICS_BUCKETS_PRIORITY_STAR_EXPORT_ALIGNMENT.md",
-  "docs/qa/FLOWTASK_V58_25_7_6_REPORT_METRICS_BUCKETS_PRIORITY_STAR_EXPORT_ALIGNMENT_QA.md",
-  "src/lib/queries/analytics.ts",
-  "src/lib/share/analytics-share.ts",
-  "src/components/shared/shared-analytics-landing.tsx",
-  "src/components/analytics/analytics-overview.tsx"
+  "scripts/verify-v58.25.7.7.mjs",
+  "docs/release/V58_25_7_7_BOARDS_HERO_TEMPLATE_ICONS_NOTIFICATIONS_METRIC_POLISH.md",
+  "docs/qa/FLOWTASK_V58_25_7_7_BOARDS_HERO_TEMPLATE_ICONS_NOTIFICATIONS_METRIC_POLISH_QA.md",
+  "src/components/boards/boards-home.tsx",
+  "src/components/notifications/notifications-command-center.tsx",
+  "src/app/globals.css"
 ]) requireFile(rel);
 
 const pkg = JSON.parse(read("package.json"));
 const scripts = pkg.scripts ?? {};
 if (pkg.version !== expectedVersion) failures.push(`Unexpected package version: ${pkg.version}`);
-if (scripts["verify:current"] !== "npm run verify:v58.25.7.6") failures.push("verify:current must target verify:v58.25.7.6");
-if (scripts["verify:v58.25.7.6"] !== "node scripts/verify-v58.25.7.6.mjs") failures.push("verify:v58.25.7.6 must target scripts/verify-v58.25.7.6.mjs");
+if (scripts["verify:current"] !== "npm run verify:v58.25.7.7") failures.push("verify:current must target verify:v58.25.7.7");
+if (scripts["verify:v58.25.7.7"] !== "node scripts/verify-v58.25.7.7.mjs") failures.push("verify:v58.25.7.7 must target scripts/verify-v58.25.7.7.mjs");
 
 const vercel = JSON.parse(read("vercel.json"));
 if (vercel.framework !== "nextjs") failures.push("vercel.json framework must be nextjs");
@@ -44,10 +43,10 @@ if (vercel.buildCommand !== "npm run vercel:build") failures.push("vercel.json b
 
 requireIncludes("src/lib/release/version.ts", expectedVersion);
 requireIncludes("package-lock.json", expectedVersion);
-requireIncludes("src/lib/queries/analytics.ts", "importantItems");
-requireIncludes("src/lib/share/analytics-share.ts", "Mes actual");
-requireIncludes("src/components/shared/shared-analytics-landing.tsx", "payload.shareDigest.weekCount");
-requireNotIncludes("src/lib/share/analytics-share.ts", "Tareas del día");
+requireIncludes("src/components/boards/boards-home.tsx", "board-home-hero-compact-actions");
+requireIncludes("src/components/boards/boards-home.tsx", "board-home-create-preview-red");
+requireIncludes("src/components/notifications/notifications-command-center.tsx", "ft-notifications-hero-balanced");
+requireIncludes("src/app/globals.css", "v58.25.7.7 — Boards hero layout + template icons + notification metrics polish");
 
 if (failures.length) {
   console.error("[build-deploy-readiness] Failed checks:");
@@ -55,4 +54,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log("[build-deploy-readiness] OK — v58.25.7.6 report metrics buckets readiness aligned.");
+console.log("[build-deploy-readiness] OK — v58.25.7.7 boards and notification metric polish readiness aligned.");

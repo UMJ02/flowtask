@@ -31,8 +31,8 @@ export function NotificationsCommandCenter({
       : 'Todo limpio por ahora';
 
   return (
-    <Card className="ft-notifications-hero-system p-3 md:p-4">
-      <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_430px] lg:items-center">
+    <Card className="ft-notifications-hero-system ft-notifications-hero-balanced p-3 md:p-4">
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(520px,0.9fr)] lg:items-center">
         <div className="flex min-w-0 gap-3">
           <div className="ft-notifications-icon-tile shrink-0">
             <BellRing className="h-9 w-9" />
@@ -49,23 +49,27 @@ export function NotificationsCommandCenter({
         </div>
 
         <div className="ft-notifications-metric-grid">
-          <div className="ft-notifications-metric">
-            <div className="flex items-center gap-2 text-[#16C784]">
+          <div className="ft-notifications-metric ft-notifications-metric-wide">
+            <div className="ft-notifications-metric-icon">
               <BellRing className="h-5 w-5" />
-              <p className="text-xs font-extrabold uppercase tracking-[0.16em]">Pendientes</p>
             </div>
-            <p className="ft-metric-value mt-3">{unreadCount}</p>
-            <p className="mt-1 text-sm font-medium text-[#475569]">{helperLabel}</p>
+            <div className="min-w-0">
+              <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-[#047857]">Pendientes</p>
+              <p className="ft-metric-value mt-2">{unreadCount}</p>
+              <p className="mt-1 text-sm font-medium leading-5 text-[#475569]">{helperLabel}</p>
+            </div>
           </div>
-          <div className="ft-notifications-metric">
-            <div className="flex items-center gap-2 text-[#16C784]">
+          <div className="ft-notifications-metric ft-notifications-metric-wide">
+            <div className="ft-notifications-metric-icon">
               <Clock3 className="h-5 w-5" />
-              <p className="text-xs font-extrabold uppercase tracking-[0.16em]">Entrega</p>
             </div>
-            <p className="mt-3 text-base font-extrabold ft-text-main">{cadenceLabel}</p>
-            <p className="mt-1 text-sm font-medium text-[#475569]">
-              {deliverySummary.total ? `${deliverySummary.total} evento(s) de entrega registrados` : 'Aún no hay historial de entregas.'}
-            </p>
+            <div className="min-w-0">
+              <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-[#047857]">Entrega</p>
+              <p className="mt-2 text-base font-extrabold leading-6 ft-text-main">{cadenceLabel}</p>
+              <p className="mt-1 text-sm font-medium leading-5 text-[#475569]">
+                {deliverySummary.total ? `${deliverySummary.total} evento(s) de entrega registrados` : 'Aún no hay historial de entregas.'}
+              </p>
+            </div>
           </div>
         </div>
       </div>
