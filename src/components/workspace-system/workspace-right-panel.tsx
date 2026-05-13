@@ -1,19 +1,20 @@
 import { AlertTriangle, CalendarClock, CheckCircle2, CircleDot, Sparkles } from "lucide-react";
 import { getTaskProgress } from "@/lib/workspace-system/adapters";
-import type { WorkspaceProjectSummary, WorkspaceTaskItem } from "@/lib/workspace-system/view-state";
+import type { WorkspaceContext, WorkspaceProjectSummary, WorkspaceTaskItem } from "@/lib/workspace-system/view-state";
 
-export function WorkspaceRightPanel({ tasks, projects }: { tasks: WorkspaceTaskItem[]; projects: WorkspaceProjectSummary[] }) {
+export function WorkspaceRightPanel({ tasks, projects, context }: { tasks: WorkspaceTaskItem[]; projects: WorkspaceProjectSummary[]; context: WorkspaceContext }) {
   const progress = getTaskProgress(tasks);
   const completed = tasks.filter((task) => ["concluido", "completado"].includes(task.status)).length;
   const waiting = tasks.filter((task) => ["en_espera", "pendiente"].includes(task.status)).length;
   const inProgress = tasks.filter((task) => ["en_proceso", "produccion", "revision"].includes(task.status)).length;
-  const dueSoon = tasks.filter((task) => task.dueDate).slice(0, 4);
+  const dueSoon = tasks.filter((task) => task.dueDate).sort((a, b) => String(a.dueDate).localeCompare(String(b.dueDate))).slice(0, 4);
   const important = tasks.filter((task) => task.priority === "alta").length;
 
   return (
     <aside className="space-y-4">
       <section className="ft-ws-card p-5">
-        <h3 className="font-extrabold text-[var(--ft-workspace-text)]">Resumen del proyecto</h3>
+        <h3 className="font-extrabold text-[var(--ft-workspace-text)]">Resumen del contexto</h3>
+        <p className="mt-1 text-xs font-bold text-slate-500">{context.projectTitle} · {context.spaceName}</p>
         <div className="mt-4 flex items-center gap-4">
           <div className="grid h-24 w-24 place-items-center rounded-full border-[10px] border-emerald-400 bg-emerald-50 text-center">
             <b className="text-xl text-slate-950">{progress}%</b>
@@ -29,7 +30,7 @@ export function WorkspaceRightPanel({ tasks, projects }: { tasks: WorkspaceTaskI
       <section className="ft-ws-card p-5">
         <div className="flex items-center justify-between gap-3">
           <h3 className="font-extrabold text-[var(--ft-workspace-text)]">Próximos vencimientos</h3>
-          <span className="text-xs font-bold text-emerald-600">Ver calendario</span>
+          <span className="text-xs font-bold text-emerald-600">Datos reales</span>
         </div>
         <div className="mt-4 space-y-3">
           {dueSoon.length ? dueSoon.map((task) => (
@@ -44,9 +45,9 @@ export function WorkspaceRightPanel({ tasks, projects }: { tasks: WorkspaceTaskI
       <section className="ft-ws-card p-5">
         <h3 className="flex items-center gap-2 font-extrabold text-[var(--ft-workspace-text)]"><Sparkles className="h-4 w-4 text-violet-500" /> IA contextual</h3>
         <div className="mt-3 space-y-2">
-          <div className="rounded-[18px] bg-violet-50 p-4 text-sm font-semibold text-violet-700">{important} tareas importantes detectadas en este workspace.</div>
-          <div className="rounded-[18px] bg-amber-50 p-4 text-sm font-semibold text-amber-700"><AlertTriangle className="mr-2 inline h-4 w-4" /> Revisa carga por proyecto antes de automatizar.</div>
-          <div className="rounded-[18px] bg-slate-50 p-4 text-sm font-semibold text-slate-600">{projects.length} proyectos visibles en el contexto actual.</div>
+          <div className="rounded-[18px] bg-violet-50 p-4 text-sm font-semibold text-violet-700">{important} tareas importantes detectadas en este filtro real.</div>
+          <div className="rounded-[18px] bg-amber-50 p-4 text-sm font-semibold text-amber-700"><AlertTriangle className="mr-2 inline h-4 w-4" /> {context.mode === "organization" ? "Revisa permisos/carga del equipo antes de automatizar." : "Este modo usa solo datos personales del usuario activo."}</div>
+          <div className="rounded-[18px] bg-slate-50 p-4 text-sm font-semibold text-slate-600">{projects.length} proyectos visibles después de aplicar workspace/espacio.</div>
         </div>
       </section>
     </aside>

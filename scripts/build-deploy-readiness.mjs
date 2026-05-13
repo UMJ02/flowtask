@@ -4,7 +4,7 @@ import path from "node:path";
 
 const root = process.cwd();
 const failures = [];
-const expectedVersion = "58.25.8-workspace-first-foundation";
+const expectedVersion = "58.25.8.1-workspace-real-data-hardening";
 
 function exists(rel) { return fs.existsSync(path.join(root, rel)); }
 function read(rel) { return exists(rel) ? fs.readFileSync(path.join(root, rel), "utf8") : ""; }
@@ -23,9 +23,9 @@ for (const rel of [
   "scripts/validate-env.mjs",
   "scripts/design-doctor.mjs",
   "scripts/density-guard.mjs",
-  "scripts/verify-v58.25.8.mjs",
-  "docs/release/V58_25_8_WORKSPACE_FIRST_FOUNDATION.md",
-  "docs/qa/FLOWTASK_V58_25_8_WORKSPACE_FIRST_FOUNDATION_QA.md",
+  "scripts/verify-v58.25.8.1.mjs",
+  "docs/release/V58_25_8_1_WORKSPACE_REAL_DATA_HARDENING.md",
+  "docs/qa/FLOWTASK_V58_25_8_1_WORKSPACE_REAL_DATA_HARDENING_QA.md",
   "src/components/boards/boards-home.tsx",
   "src/components/notifications/notifications-command-center.tsx",
   "src/app/(app)/app/workspace/page.tsx",
@@ -44,8 +44,8 @@ for (const rel of [
 const pkg = JSON.parse(read("package.json"));
 const scripts = pkg.scripts ?? {};
 if (pkg.version !== expectedVersion) failures.push(`Unexpected package version: ${pkg.version}`);
-if (scripts["verify:current"] !== "npm run verify:v58.25.8") failures.push("verify:current must target verify:v58.25.8");
-if (scripts["verify:v58.25.8"] !== "node scripts/verify-v58.25.8.mjs") failures.push("verify:v58.25.8 must target scripts/verify-v58.25.8.mjs");
+if (scripts["verify:current"] !== "npm run verify:v58.25.8.1") failures.push("verify:current must target verify:v58.25.8.1");
+if (scripts["verify:v58.25.8.1"] !== "node scripts/verify-v58.25.8.1.mjs") failures.push("verify:v58.25.8.1 must target scripts/verify-v58.25.8.1.mjs");
 
 const vercel = JSON.parse(read("vercel.json"));
 if (vercel.framework !== "nextjs") failures.push("vercel.json framework must be nextjs");
@@ -56,9 +56,11 @@ requireIncludes("package-lock.json", expectedVersion);
 requireIncludes("src/components/boards/boards-home.tsx", "board-home-hero-compact-actions");
 requireIncludes("src/components/boards/boards-home.tsx", "board-home-create-preview-red");
 requireIncludes("src/components/notifications/notifications-command-center.tsx", "ft-notifications-hero-balanced");
-requireIncludes("src/app/globals.css", "v58.25.8 Workspace-First Foundation");
+requireIncludes("src/app/globals.css", "v58.25.8.1 Workspace Real Data Hardening");
 requireIncludes("src/app/(app)/app/workspace/page.tsx", "getTasks({ includeCompleted: true })");
-requireIncludes("src/components/workspace-system/workspace-sidebar-pro.tsx", "Espacios");
+requireIncludes("src/app/(app)/app/workspace/page.tsx", "getWorkspaceIdentity()");
+requireIncludes("src/app/(app)/app/workspace/page.tsx", "invalidProjectId");
+requireIncludes("src/components/workspace-system/workspace-sidebar-pro.tsx", "Espacios reales");
 requireIncludes("src/components/workspace-system/workspace-view-tabs.tsx", "router.replace(`/app/workspace?");
 
 if (failures.length) {
@@ -67,4 +69,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log("[build-deploy-readiness] OK — v58.25.8 workspace-first foundation readiness aligned.");
+console.log("[build-deploy-readiness] OK — v58.25.8.1 workspace real data hardening readiness aligned.");

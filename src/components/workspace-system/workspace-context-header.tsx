@@ -22,8 +22,8 @@ export function WorkspaceContextHeader({ context, tasks }: { context: WorkspaceC
           <Star className="h-5 w-5 shrink-0 fill-amber-300 text-amber-400" />
         </div>
         <div className="mt-3 flex flex-wrap items-center gap-3 text-sm font-semibold text-[var(--ft-workspace-muted)]">
-          <span className="ft-ws-pill bg-emerald-50 text-emerald-700">Activa</span>
-          <span className="inline-flex items-center gap-1"><Users className="h-4 w-4" /> Workspace</span>
+          <span className="ft-ws-pill bg-emerald-50 text-emerald-700">{context.mode === "personal" ? "Personal" : "Organización"}</span>
+          <span className="inline-flex items-center gap-1"><Users className="h-4 w-4" /> {context.hasProjectFilter ? "Proyecto" : "Workspace"}</span>
           <span className="inline-flex items-center gap-1"><CheckSquare className="h-4 w-4" /> {tasks.length} tareas</span>
           <span className="inline-flex items-center gap-1"><CalendarDays className="h-4 w-4" /> {active} activas</span>
           <span className="inline-flex items-center gap-2"><span className="h-2 w-24 overflow-hidden rounded-full bg-slate-200"><span className="block h-full rounded-full bg-emerald-400" style={{ width: `${progress}%` }} /></span>{progress}%</span>

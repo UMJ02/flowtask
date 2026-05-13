@@ -5237,3 +5237,25 @@
   from { opacity: .65; transform: translateX(4px); }
   to { opacity: 1; transform: translateX(0); }
 }
+
+/* v58.25.8.1 Workspace Real Data Hardening */
+.ft-ws-sidebar-space {
+  display: flex;
+  height: 36px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  border-radius: 12px;
+  padding: 0 8px;
+  color: #cbd5e1;
+  font-size: 14px;
+  font-weight: 700;
+  transition: background-color 160ms ease, color 160ms ease, transform 160ms ease;
+}
+
+.ft-ws-sidebar-space:hover,
+.ft-ws-sidebar-space-active {
+  background: rgba(255, 255, 255, .07);
+  color: #fff;
+  transform: translateY(-1px);
+}
