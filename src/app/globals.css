@@ -5465,3 +5465,90 @@
     padding: 12px;
   }
 }
+
+/* v58.25.8.7 Workspace Views Real Interaction Polish
+   Lista, Board y Tabla dejan de ser previews pasivos: editan estado/prioridad/fecha con updates reales sobre tasks y refresh seguro. */
+.ft-ws-interactive-row {
+  border-color: transparent;
+}
+
+.ft-ws-interactive-row:hover,
+.ft-ws-board-interactive-card:hover {
+  border-color: rgba(22, 199, 132, .22);
+}
+
+.ft-ws-inline-editor {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.ft-ws-inline-editor-compact {
+  gap: 6px;
+}
+
+.ft-ws-inline-select,
+.ft-ws-inline-date {
+  height: 34px;
+  min-width: 104px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #fff;
+  padding: 0 10px;
+  color: #334155;
+  font-size: 12px;
+  font-weight: 850;
+  outline: none;
+  transition: border-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
+}
+
+.ft-ws-inline-date {
+  min-width: 132px;
+}
+
+.ft-ws-inline-select-compact {
+  height: 30px;
+  min-width: 92px;
+  border-radius: 999px;
+  padding: 0 9px;
+  font-size: 11px;
+}
+
+.ft-ws-inline-select:focus,
+.ft-ws-inline-date:focus {
+  border-color: rgba(22, 199, 132, .48);
+  box-shadow: 0 0 0 4px rgba(22, 199, 132, .12);
+}
+
+.ft-ws-inline-select:disabled,
+.ft-ws-inline-date:disabled {
+  cursor: wait;
+  opacity: .66;
+}
+
+.ft-ws-inline-message {
+  display: inline-flex;
+  min-height: 24px;
+  align-items: center;
+  gap: 4px;
+  border-radius: 999px;
+  background: rgba(236, 253, 245, .9);
+  padding: 0 8px;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+@media (max-width: 767px) {
+  .ft-ws-inline-editor {
+    display: grid;
+    grid-template-columns: 1fr;
+    width: 100%;
+  }
+
+  .ft-ws-inline-select,
+  .ft-ws-inline-date {
+    width: 100%;
+  }
+}

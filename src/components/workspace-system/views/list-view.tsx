@@ -1,6 +1,6 @@
 import { groupTasksByStatus } from "@/lib/workspace-system/adapters";
 import type { WorkspaceTaskItem } from "@/lib/workspace-system/view-state";
-import { PriorityBadge, StatusBadge } from "../workspace-badges";
+import { WorkspaceTaskInlineEditor } from "../workspace-task-inline-actions";
 
 const groups = [
   { key: "inProgress", label: "EN CURSO", dot: "bg-emerald-500", header: "from-emerald-50" },
@@ -29,11 +29,11 @@ export function ListView({ tasks }: { tasks: WorkspaceTaskItem[] }) {
               </div>
             </header>
             <div className="px-4 py-3">
-              <div className="hidden grid-cols-[minmax(0,1.7fr)_150px_120px_120px_120px_40px] px-3 py-2 text-xs font-bold text-slate-500 lg:grid">
-                <span>Tarea</span><span>Responsable</span><span>Prioridad</span><span>Fecha límite</span><span>Estado</span><span />
+              <div className="hidden grid-cols-[minmax(0,1.7fr)_150px_minmax(280px,.9fr)] px-3 py-2 text-xs font-bold text-slate-500 lg:grid">
+                <span>Tarea</span><span>Responsable</span><span>Edición rápida</span>
               </div>
               {items.length ? items.map((task) => <WorkspaceTaskRow key={task.id} task={task} />) : <p className="rounded-[18px] bg-slate-50 p-4 text-sm font-semibold text-slate-500">No hay tareas en este grupo.</p>}
-              <button className="mt-2 inline-flex h-9 items-center rounded-[14px] px-3 text-sm font-bold text-emerald-700 transition hover:bg-emerald-50">+ Agregar tarea</button>
+              <p className="mt-3 rounded-[16px] bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-700">Tip: ahora podés cambiar estado, prioridad y fecha directamente desde Lista sin abrir modal.</p>
             </div>
           </section>
         );
@@ -44,18 +44,16 @@ export function ListView({ tasks }: { tasks: WorkspaceTaskItem[] }) {
 
 function WorkspaceTaskRow({ task }: { task: WorkspaceTaskItem }) {
   return (
-    <article className="ft-ws-row grid min-h-[58px] grid-cols-1 gap-2 rounded-[16px] border border-transparent px-3 py-3 lg:grid-cols-[minmax(0,1.7fr)_150px_120px_120px_120px_40px] lg:items-center lg:gap-0 lg:py-2">
+    <article className="ft-ws-row ft-ws-interactive-row grid min-h-[68px] grid-cols-1 gap-3 rounded-[18px] border border-transparent px-3 py-3 lg:grid-cols-[minmax(0,1.7fr)_150px_minmax(280px,.9fr)] lg:items-center lg:gap-3">
       <div className="min-w-0">
         <p className="truncate text-sm font-extrabold text-slate-950">{task.title}</p>
         <div className="mt-1 flex flex-wrap gap-1">
           {(task.tags ?? []).slice(0, 2).map((tag) => <span key={tag} className="rounded-full bg-blue-50 px-2 py-0.5 text-[11px] font-bold text-blue-700">{tag}</span>)}
+          {task.projectTitle ? <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-bold text-slate-500">{task.projectTitle}</span> : null}
         </div>
       </div>
       <span className="text-sm font-semibold text-slate-500">{task.assigneeName ?? "Sin asignar"}</span>
-      <PriorityBadge priority={task.priority} />
-      <span className={task.dueDate ? "text-sm font-bold text-rose-500" : "text-sm font-bold text-slate-400"}>{task.dueDate ?? "Sin fecha"}</span>
-      <StatusBadge status={task.status} />
-      <button className="hidden h-8 w-8 rounded-full text-slate-500 transition hover:bg-white lg:block">...</button>
+      <WorkspaceTaskInlineEditor task={task} />
     </article>
   );
 }
