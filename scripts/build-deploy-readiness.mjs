@@ -4,7 +4,7 @@ import path from "node:path";
 
 const root = process.cwd();
 const failures = [];
-const expectedVersion = "58.25.7.3.1-boards-readiness-alignment-fix";
+const expectedVersion = "58.25.7.4-boards-delete-rpc-asset-fallback-fix";
 
 function exists(rel) { return fs.existsSync(path.join(root, rel)); }
 function read(rel) { return exists(rel) ? fs.readFileSync(path.join(root, rel), "utf8") : ""; }
@@ -23,20 +23,20 @@ for (const rel of [
   "scripts/validate-env.mjs",
   "scripts/design-doctor.mjs",
   "scripts/density-guard.mjs",
-  "scripts/verify-v58.25.7.3.1.mjs",
-  "docs/release/V58_25_7_3_1_BOARDS_READINESS_ALIGNMENT_FIX.md",
-  "docs/qa/FLOWTASK_V58_25_7_3_1_BOARDS_READINESS_ALIGNMENT_FIX_QA.md",
+  "scripts/verify-v58.25.7.4.mjs",
+  "docs/release/V58_25_7_4_BOARDS_DELETE_RPC_ASSET_FALLBACK_FIX.md",
+  "docs/qa/FLOWTASK_V58_25_7_4_BOARDS_DELETE_RPC_ASSET_FALLBACK_FIX_QA.md",
   "src/components/boards/boards-home.tsx",
-  "src/components/boards/properties-panel.tsx",
   "src/app/globals.css",
-  "public/boards-home/nuevo_proyecto.png"
+  "public/boards-home/diagrama_flujo.png",
+  "supabase/migrations/0055_v58_25_7_4_visual_board_safe_delete_rpc.sql"
 ]) requireFile(rel);
 
 const pkg = JSON.parse(read("package.json"));
 const scripts = pkg.scripts ?? {};
 if (pkg.version !== expectedVersion) failures.push(`Unexpected package version: ${pkg.version}`);
-if (scripts["verify:current"] !== "npm run verify:v58.25.7.3.1") failures.push("verify:current must target verify:v58.25.7.3.1");
-if (scripts["verify:v58.25.7.3.1"] !== "node scripts/verify-v58.25.7.3.1.mjs") failures.push("verify:v58.25.7.3.1 must target scripts/verify-v58.25.7.3.1.mjs");
+if (scripts["verify:current"] !== "npm run verify:v58.25.7.4") failures.push("verify:current must target verify:v58.25.7.4");
+if (scripts["verify:v58.25.7.4"] !== "node scripts/verify-v58.25.7.4.mjs") failures.push("verify:v58.25.7.4 must target scripts/verify-v58.25.7.4.mjs");
 
 const vercel = JSON.parse(read("vercel.json"));
 if (vercel.framework !== "nextjs") failures.push("vercel.json framework must be nextjs");
@@ -44,12 +44,10 @@ if (vercel.buildCommand !== "npm run vercel:build") failures.push("vercel.json b
 
 requireIncludes("src/lib/release/version.ts", expectedVersion);
 requireIncludes("package-lock.json", expectedVersion);
-requireIncludes("src/components/boards/boards-home.tsx", "/boards-home/pizarra_blanco.png");
-requireIncludes("src/components/boards/boards-home.tsx", "/boards-home/diagrama_fujo.png");
-requireIncludes("src/components/boards/boards-home.tsx", "/boards-home/plan_proyecto.png");
-requireIncludes("src/components/boards/boards-home.tsx", "/boards-home/nuevo_proyecto.png");
-requireNotIncludes("src/components/boards/boards-home.tsx", "<HeroIllustration />");
-requireIncludes("src/app/globals.css", "v58.25.7.3 — Boards hero remove + template icons restore");
+requireIncludes("src/components/boards/boards-home.tsx", "/boards-home/diagrama_flujo.png");
+requireNotIncludes("src/components/boards/boards-home.tsx", "/boards-home/diagrama_fujo.png");
+requireIncludes("src/components/boards/boards-home.tsx", 'supabase.rpc("safe_delete_visual_board"');
+requireIncludes("supabase/migrations/0055_v58_25_7_4_visual_board_safe_delete_rpc.sql", "create or replace function public.safe_delete_visual_board");
 
 if (failures.length) {
   console.error("[build-deploy-readiness] Failed checks:");
@@ -57,4 +55,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log("[build-deploy-readiness] OK — v58.25.7.3.1 boards readiness alignment fixed.");
+console.log("[build-deploy-readiness] OK — v58.25.7.4 boards delete RPC and asset fallback readiness aligned.");

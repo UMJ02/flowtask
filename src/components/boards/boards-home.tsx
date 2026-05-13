@@ -73,7 +73,7 @@ type TemplateVisual = {
 
 const TEMPLATE_VISUALS: Record<BoardTemplateId, TemplateVisual> = {
   blank: { className: "board-home-template-mint", previewSrc: "/boards-home/pizarra_blanco.png", alt: "Pizarra en blanco" },
-  flow: { className: "board-home-template-blue", previewSrc: "/boards-home/diagrama_fujo.png", alt: "Diagrama de flujo" },
+  flow: { className: "board-home-template-blue", previewSrc: "/boards-home/diagrama_flujo.png", alt: "Diagrama de flujo" },
   project: { className: "board-home-template-amber", previewSrc: "/boards-home/plan_proyecto.png", alt: "Plan de proyecto" },
   meeting: { className: "board-home-template-mint", previewSrc: "/boards-home/hero.png", alt: "Reunión visual" },
   ideas: { className: "board-home-template-violet", previewSrc: "/boards-home/mapa_ideas.png", alt: "Mapa de ideas" },
@@ -316,16 +316,24 @@ export function BoardsHome() {
     if (!deleteTarget) return;
     setDeletingId(deleteTarget.id);
     setError(null);
-    const timestamp = new Date().toISOString();
-    const { data, error: deleteError } = await supabase
-      .from("visual_boards")
-      .update({ deleted_at: timestamp, updated_at: timestamp })
-      .eq("id", deleteTarget.id)
-      .select("id")
-      .maybeSingle();
 
-    if (deleteError || !data?.id) {
-      setError("No pudimos quitar la pizarra. Revisa permisos o intenta de nuevo.");
+    const { data, error: rpcError } = await supabase.rpc("safe_delete_visual_board", {
+      p_board_id: deleteTarget.id,
+    });
+
+    if (rpcError || data !== true) {
+      logBoardDiagnostic("delete:error", {
+        code: rpcError?.code,
+        message: rpcError?.message,
+        details: rpcError?.details,
+        hint: rpcError?.hint,
+        boardId: deleteTarget.id,
+      });
+      setError(
+        rpcError?.code === "PGRST202"
+          ? "No pudimos quitar la pizarra. Falta aplicar la migración de borrado seguro de pizarras."
+          : "No pudimos quitar la pizarra. Revisa permisos o intenta de nuevo."
+      );
       setDeletingId(null);
       return;
     }
