@@ -23,7 +23,8 @@ export type AppNavLink = {
 };
 
 export const appNavLinks: AppNavLink[] = [
-  { href: '/app/dashboard', label: 'Workspace', hint: 'Tu tablero', icon: LayoutGrid },
+  { href: '/app/dashboard', label: 'Inicio', hint: 'Tu tablero', icon: LayoutGrid },
+  { href: '/app/workspace', label: 'Workspace Pro', hint: 'Vista centralizada', icon: LayoutGrid },
   { href: '/app/projects', label: 'Proyectos', hint: 'Fechas y avance', icon: FolderKanban },
   { href: '/app/tasks', label: 'Tareas', hint: 'Pendientes al día', icon: ClipboardList },
   { href: '/app/boards', label: 'Pizarras', hint: 'Diagramas y notas', icon: PenTool },

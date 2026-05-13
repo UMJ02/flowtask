@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { AlertTriangle, SlidersHorizontal } from "lucide-react";
 import type { ReportsOverview } from "@/lib/queries/reports";
 import type { WorkspaceBoardSummary, WorkspaceContext, WorkspaceProjectSummary, WorkspaceSpaceSummary, WorkspaceTaskItem, WorkspaceViewId } from "@/lib/workspace-system/view-state";
@@ -34,12 +35,23 @@ export function WorkspaceSystemPage({
   boards: WorkspaceBoardSummary[];
   context: WorkspaceContext;
 }) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const statusParam = context.activeFilters?.status ?? "todos";
   const [showQuickCreate, setShowQuickCreate] = useState(false);
+
+  function setStatusFilter(status: string) {
+    const next = new URLSearchParams(searchParams.toString());
+    if (status === "todos") next.delete("status");
+    else next.set("status", status);
+    router.replace(`/app/workspace?${next.toString()}`, { scroll: false });
+    router.refresh();
+  }
+
   return (
-    <div className="ft-ws-shell -mx-5 -my-5 grid min-h-screen grid-cols-1 overflow-hidden lg:grid-cols-[280px_minmax(0,1fr)]">
+    <div className="ft-ws-shell ft-ws-fullscreen grid h-screen min-h-screen grid-cols-1 overflow-hidden lg:grid-cols-[296px_minmax(0,1fr)]">
       <WorkspaceSidebarPro projects={projects} spaces={spaces} context={context} />
-      <section className="min-w-0 overflow-y-auto px-4 py-5 ft-ws-scroll md:px-6">
+      <section className="min-w-0 overflow-y-auto px-4 py-5 ft-ws-scroll md:px-6 xl:px-7">
         <WorkspaceContextHeader context={context} tasks={tasks} />
 
         {context.invalidProjectId ? (
@@ -53,13 +65,7 @@ export function WorkspaceSystemPage({
           <WorkspaceViewTabs activeView={activeView} />
           <div className="flex flex-wrap items-center gap-2">
             <button className="ft-ws-control h-11 px-4 text-sm font-bold"><SlidersHorizontal className="h-4 w-4" /> Filtros</button>
-            <select className="ft-ws-control h-11 px-4 text-sm font-bold" value={statusParam} onChange={(event) => {
-              const next = new URLSearchParams(window.location.search);
-              if (event.target.value === "todos") next.delete("status");
-              else next.set("status", event.target.value);
-              window.history.replaceState(null, "", `/app/workspace?${next.toString()}`);
-              window.location.reload();
-            }}>
+            <select className="ft-ws-control h-11 px-4 text-sm font-bold" value={statusParam} onChange={(event) => setStatusFilter(event.target.value)}>
               <option value="todos">Estado: todos</option>
               <option value="en_proceso">En proceso</option>
               <option value="produccion">Producción</option>

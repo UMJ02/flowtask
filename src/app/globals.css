@@ -5289,3 +5289,67 @@
   box-shadow: 0 16px 44px rgba(15, 23, 42, .06);
   padding: 16px;
 }
+
+/* v58.25.8.5 Workspace Full-Screen Shell + Navigation Polish
+   /app/workspace now bypasses the classic AppHeader/AppFooter/AppSidebar chrome and renders as a dedicated workspace operating surface. */
+.ft-workspace-fullscreen-root {
+  overflow: hidden;
+}
+
+.ft-ws-fullscreen {
+  height: 100vh;
+  max-height: 100vh;
+}
+
+.ft-ws-sidebar-fullscreen {
+  min-height: 100vh;
+  max-height: 100vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.ft-ws-sidebar-nav {
+  display: flex;
+  height: 40px;
+  align-items: center;
+  gap: 12px;
+  border-radius: 14px;
+  padding: 0 12px;
+  color: #cbd5e1;
+  font-size: 14px;
+  font-weight: 750;
+  transition: background-color 160ms ease, color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+}
+
+.ft-ws-sidebar-nav:hover {
+  background: rgba(255, 255, 255, .06);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.ft-ws-sidebar-nav-active {
+  background: rgba(22, 199, 132, .16);
+  color: #d1fae5;
+  box-shadow: inset 3px 0 0 #16c784, 0 10px 22px rgba(22, 199, 132, .10);
+}
+
+@media (min-width: 1536px) {
+  .ft-ws-tabs {
+    width: auto;
+  }
+}
+
+@media (max-width: 1023px) {
+  .ft-ws-fullscreen {
+    height: auto;
+    max-height: none;
+    min-height: 100vh;
+    overflow-y: auto;
+  }
+
+  .ft-ws-sidebar-fullscreen {
+    min-height: auto;
+    max-height: none;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+  }
+}

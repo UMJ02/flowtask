@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { BarChart3, ChevronDown, Folder, Home, Inbox, LayoutDashboard, Plus, Sparkles, Star, Table2 } from "lucide-react";
-import type { WorkspaceContext, WorkspaceProjectSummary, WorkspaceSpaceSummary } from "@/lib/workspace-system/view-state";
+import { ArrowLeft, BarChart3, CalendarRange, Columns3, Folder, Home, Inbox, LayoutDashboard, Plus, Sparkles, Star, Table2 } from "lucide-react";
+import type { WorkspaceContext, WorkspaceProjectSummary, WorkspaceSpaceSummary, WorkspaceViewId } from "@/lib/workspace-system/view-state";
 
 function workspaceHref(params: Record<string, string | null | undefined>) {
   const next = new URLSearchParams();
@@ -13,43 +13,72 @@ function workspaceHref(params: Record<string, string | null | undefined>) {
   return query ? `/app/workspace?${query}` : "/app/workspace";
 }
 
+const viewNavigation: Array<{ view: WorkspaceViewId; label: string; icon: typeof Inbox }> = [
+  { view: "list", label: "Mi trabajo", icon: Inbox },
+  { view: "board", label: "Board", icon: Columns3 },
+  { view: "timeline", label: "Timeline", icon: CalendarRange },
+  { view: "table", label: "Tabla operativa", icon: Table2 },
+  { view: "canvas", label: "Canvas / Pizarras", icon: LayoutDashboard },
+  { view: "reports", label: "Reportes", icon: BarChart3 },
+];
+
 export function WorkspaceSidebarPro({ projects, spaces, context }: { projects: WorkspaceProjectSummary[]; spaces: WorkspaceSpaceSummary[]; context: WorkspaceContext }) {
-  const visibleProjects = projects.slice(0, 7);
+  const visibleProjects = projects.slice(0, 8);
   const activeView = context.activeFilters?.view ?? "list";
+  const activeSpace = context.activeFilters?.space ?? null;
+  const activeProjectId = context.activeFilters?.projectId ?? context.projectId ?? null;
+  const baseParams = { space: activeSpace, projectId: activeProjectId };
+
   return (
-    <aside className="ft-ws-sidebar">
-      <div className="flex items-center gap-3">
-        <span className="grid h-10 w-10 place-items-center rounded-[14px] bg-emerald-400/15 text-sm font-black text-emerald-300">FT</span>
-        <div className="min-w-0">
-          <p className="truncate text-lg font-extrabold tracking-[-.03em]">FlowTask</p>
-          <p className="text-xs font-semibold text-slate-400">Workspace System</p>
+    <aside className="ft-ws-sidebar ft-ws-sidebar-fullscreen">
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex min-w-0 items-center gap-3">
+          <span className="grid h-10 w-10 place-items-center rounded-[14px] bg-emerald-400/15 text-sm font-black text-emerald-300">FT</span>
+          <div className="min-w-0">
+            <p className="truncate text-lg font-extrabold tracking-[-.03em]">FlowTask</p>
+            <p className="text-xs font-semibold text-slate-400">Workspace Pro</p>
+          </div>
         </div>
+        <Link href="/app/dashboard" className="grid h-9 w-9 place-items-center rounded-[12px] border border-white/10 bg-white/[.05] text-slate-300 transition hover:bg-white/[.09] hover:text-white" title="Volver al dashboard clásico">
+          <ArrowLeft className="h-4 w-4" />
+        </Link>
       </div>
 
-      <button className="mt-5 flex w-full items-center justify-between rounded-[18px] border border-white/10 bg-white/[.06] p-3 text-left transition hover:bg-white/[.09]">
-        <span className="min-w-0">
-          <b className="block truncate text-sm">{context.workspaceName}</b>
-          <span className="text-xs text-slate-400">{context.mode === "personal" ? "Modo individual" : "Organización activa"}</span>
-        </span>
-        <ChevronDown className="h-4 w-4 text-slate-400" />
-      </button>
+      <div className="mt-5 rounded-[20px] border border-white/10 bg-white/[.06] p-3">
+        <div className="flex items-start justify-between gap-3">
+          <span className="min-w-0">
+            <b className="block truncate text-sm">{context.workspaceName}</b>
+            <span className="text-xs text-slate-400">{context.mode === "personal" ? "Modo individual" : "Organización activa"}</span>
+          </span>
+          <span className="rounded-full bg-emerald-400/15 px-2 py-1 text-[10px] font-black uppercase tracking-[.14em] text-emerald-200">Live</span>
+        </div>
+        <Link href={workspaceHref({ view: "list" })} className="mt-3 flex h-10 items-center justify-center rounded-[14px] bg-emerald-400/15 text-sm font-extrabold text-emerald-100 transition hover:bg-emerald-400/20">
+          Todo el workspace
+        </Link>
+      </div>
 
-      <Link href="/app/workspace" className="mt-5 flex h-11 items-center gap-3 rounded-[14px] bg-emerald-400/15 px-3 text-sm font-bold text-emerald-200">
-        <Home className="h-4 w-4" /> Todo el workspace
-      </Link>
-
+      <div className="mt-5 flex items-center justify-between text-[11px] font-extrabold uppercase tracking-[.16em] text-slate-500">
+        Vistas del proyecto <Plus className="h-4 w-4" />
+      </div>
       <nav className="mt-2 space-y-1">
-        {[
-          ["Mi trabajo", Inbox, "/app/tasks"],
-          ["Pizarras", LayoutDashboard, "/app/boards"],
-          ["Reportes", BarChart3, "/app/reports"],
-          ["Tabla operativa", Table2, workspaceHref({ view: "table", space: context.activeFilters?.space })],
-          ["IA Assistant", Sparkles, "/app/intelligence"],
-        ].map(([label, Icon, href]: any) => (
-          <Link key={label} href={href} className="flex h-10 items-center gap-3 rounded-[14px] px-3 text-sm font-semibold text-slate-300 transition hover:bg-white/[.06] hover:text-white">
-            <Icon className="h-4 w-4" /> {label}
-          </Link>
-        ))}
+        {viewNavigation.map((item) => {
+          const Icon = item.icon;
+          const active = activeView === item.view;
+          return (
+            <Link key={item.view} href={workspaceHref({ ...baseParams, view: item.view })} className={active ? "ft-ws-sidebar-nav ft-ws-sidebar-nav-active" : "ft-ws-sidebar-nav"}>
+              <Icon className="h-4 w-4" />
+              <span className="truncate">{item.label}</span>
+            </Link>
+          );
+        })}
+        <Link href="/app/boards" className="ft-ws-sidebar-nav">
+          <LayoutDashboard className="h-4 w-4" />
+          <span className="truncate">Biblioteca de pizarras</span>
+        </Link>
+        <Link href="/app/intelligence" className="ft-ws-sidebar-nav">
+          <Sparkles className="h-4 w-4" />
+          <span className="truncate">IA Assistant</span>
+        </Link>
       </nav>
 
       <div className="mt-6 flex items-center justify-between text-[11px] font-extrabold uppercase tracking-[.16em] text-slate-500">
@@ -57,7 +86,7 @@ export function WorkspaceSidebarPro({ projects, spaces, context }: { projects: W
       </div>
       <div className="mt-2 space-y-1">
         {spaces.length ? spaces.map((space) => {
-          const isActive = context.activeFilters?.space === space.slug;
+          const isActive = activeSpace === space.slug;
           return (
             <Link key={space.id} href={workspaceHref({ view: activeView, space: space.slug })} className={isActive ? "ft-ws-sidebar-space ft-ws-sidebar-space-active" : "ft-ws-sidebar-space"}>
               <span className="flex min-w-0 items-center gap-2"><Folder className="h-4 w-4 shrink-0" /> <span className="truncate">{space.name}</span></span>
@@ -70,9 +99,9 @@ export function WorkspaceSidebarPro({ projects, spaces, context }: { projects: W
       <div className="mt-6 flex items-center justify-between text-[11px] font-extrabold uppercase tracking-[.16em] text-slate-500">
         Proyectos filtrados <Plus className="h-4 w-4" />
       </div>
-      <div className="mt-2 space-y-1">
+      <div className="mt-2 space-y-1 pb-5">
         {visibleProjects.length ? visibleProjects.map((project) => (
-          <Link key={project.id} href={workspaceHref({ view: activeView, space: context.activeFilters?.space, projectId: project.id })} className={project.id === context.projectId ? "ft-ws-sidebar-project ft-ws-sidebar-project-active" : "ft-ws-sidebar-project"}>
+          <Link key={project.id} href={workspaceHref({ view: activeView, space: activeSpace, projectId: project.id })} className={project.id === activeProjectId ? "ft-ws-sidebar-project ft-ws-sidebar-project-active" : "ft-ws-sidebar-project"}>
             <span className="truncate">{project.title}</span>
             <Star className="h-3.5 w-3.5 text-amber-300" />
           </Link>

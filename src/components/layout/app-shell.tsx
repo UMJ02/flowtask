@@ -6,6 +6,7 @@ import { AppSidebar } from '@/components/layout/app-sidebar';
 import { SidebarStateProvider, useSidebarState } from '@/components/layout/sidebar-state';
 import { NotificationsProvider } from '@/components/notifications/notifications-provider';
 import { IdleSessionGuard } from '@/components/auth/idle-session-guard';
+import { usePathname } from 'next/navigation';
 import type { OrganizationSummary } from '@/types/organization';
 
 export function AppShell({
@@ -64,6 +65,16 @@ function ShellFrame({
   children: React.ReactNode;
 }) {
   const { collapsed } = useSidebarState();
+  const pathname = usePathname();
+  const isWorkspaceFullScreen = pathname === '/app/workspace';
+
+  if (isWorkspaceFullScreen) {
+    return (
+      <div className="ft-app-root ft-workspace-fullscreen-root min-h-screen bg-[#F6F8FB] ft-text-main ft-scroll-stable">
+        <main className="min-h-screen min-w-0 overflow-hidden">{children}</main>
+      </div>
+    );
+  }
 
   return (
     <div className="ft-app-root min-h-screen bg-[#F7F9FC] ft-text-main ft-scroll-stable">
