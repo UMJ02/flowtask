@@ -4,7 +4,7 @@ import path from "node:path";
 
 const root = process.cwd();
 const failures = [];
-const expectedVersion = "58.25.7.7-boards-hero-template-icons-notifications-metric-polish";
+const expectedVersion = "58.25.8-workspace-first-foundation";
 
 function exists(rel) { return fs.existsSync(path.join(root, rel)); }
 function read(rel) { return exists(rel) ? fs.readFileSync(path.join(root, rel), "utf8") : ""; }
@@ -23,19 +23,29 @@ for (const rel of [
   "scripts/validate-env.mjs",
   "scripts/design-doctor.mjs",
   "scripts/density-guard.mjs",
-  "scripts/verify-v58.25.7.7.mjs",
-  "docs/release/V58_25_7_7_BOARDS_HERO_TEMPLATE_ICONS_NOTIFICATIONS_METRIC_POLISH.md",
-  "docs/qa/FLOWTASK_V58_25_7_7_BOARDS_HERO_TEMPLATE_ICONS_NOTIFICATIONS_METRIC_POLISH_QA.md",
+  "scripts/verify-v58.25.8.mjs",
+  "docs/release/V58_25_8_WORKSPACE_FIRST_FOUNDATION.md",
+  "docs/qa/FLOWTASK_V58_25_8_WORKSPACE_FIRST_FOUNDATION_QA.md",
   "src/components/boards/boards-home.tsx",
   "src/components/notifications/notifications-command-center.tsx",
+  "src/app/(app)/app/workspace/page.tsx",
+  "src/components/workspace-system/workspace-system-page.tsx",
+  "src/components/workspace-system/workspace-sidebar-pro.tsx",
+  "src/components/workspace-system/workspace-view-tabs.tsx",
+  "src/components/workspace-system/views/list-view.tsx",
+  "src/components/workspace-system/views/board-view.tsx",
+  "src/components/workspace-system/views/timeline-view.tsx",
+  "src/components/workspace-system/views/table-view.tsx",
+  "src/components/workspace-system/views/canvas-view.tsx",
+  "src/components/workspace-system/views/reports-view.tsx",
   "src/app/globals.css"
 ]) requireFile(rel);
 
 const pkg = JSON.parse(read("package.json"));
 const scripts = pkg.scripts ?? {};
 if (pkg.version !== expectedVersion) failures.push(`Unexpected package version: ${pkg.version}`);
-if (scripts["verify:current"] !== "npm run verify:v58.25.7.7") failures.push("verify:current must target verify:v58.25.7.7");
-if (scripts["verify:v58.25.7.7"] !== "node scripts/verify-v58.25.7.7.mjs") failures.push("verify:v58.25.7.7 must target scripts/verify-v58.25.7.7.mjs");
+if (scripts["verify:current"] !== "npm run verify:v58.25.8") failures.push("verify:current must target verify:v58.25.8");
+if (scripts["verify:v58.25.8"] !== "node scripts/verify-v58.25.8.mjs") failures.push("verify:v58.25.8 must target scripts/verify-v58.25.8.mjs");
 
 const vercel = JSON.parse(read("vercel.json"));
 if (vercel.framework !== "nextjs") failures.push("vercel.json framework must be nextjs");
@@ -46,7 +56,10 @@ requireIncludes("package-lock.json", expectedVersion);
 requireIncludes("src/components/boards/boards-home.tsx", "board-home-hero-compact-actions");
 requireIncludes("src/components/boards/boards-home.tsx", "board-home-create-preview-red");
 requireIncludes("src/components/notifications/notifications-command-center.tsx", "ft-notifications-hero-balanced");
-requireIncludes("src/app/globals.css", "v58.25.7.7 — Boards hero layout + template icons + notification metrics polish");
+requireIncludes("src/app/globals.css", "v58.25.8 Workspace-First Foundation");
+requireIncludes("src/app/(app)/app/workspace/page.tsx", "getTasks({ includeCompleted: true })");
+requireIncludes("src/components/workspace-system/workspace-sidebar-pro.tsx", "Espacios");
+requireIncludes("src/components/workspace-system/workspace-view-tabs.tsx", "router.replace(`/app/workspace?");
 
 if (failures.length) {
   console.error("[build-deploy-readiness] Failed checks:");
@@ -54,4 +67,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log("[build-deploy-readiness] OK — v58.25.7.7 boards and notification metric polish readiness aligned.");
+console.log("[build-deploy-readiness] OK — v58.25.8 workspace-first foundation readiness aligned.");
