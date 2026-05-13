@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { AlertTriangle, SlidersHorizontal } from "lucide-react";
 import type { ReportsOverview } from "@/lib/queries/reports";
 import type { WorkspaceBoardSummary, WorkspaceContext, WorkspaceProjectSummary, WorkspaceSpaceSummary, WorkspaceTaskItem, WorkspaceViewId } from "@/lib/workspace-system/view-state";
@@ -14,6 +15,7 @@ import { WorkspaceContextHeader } from "./workspace-context-header";
 import { WorkspaceRightPanel } from "./workspace-right-panel";
 import { WorkspaceSidebarPro } from "./workspace-sidebar-pro";
 import { WorkspaceViewTabs } from "./workspace-view-tabs";
+import { WorkspaceQuickCreate } from "./workspace-quick-create";
 
 export function WorkspaceSystemPage({
   activeView,
@@ -33,6 +35,7 @@ export function WorkspaceSystemPage({
   context: WorkspaceContext;
 }) {
   const statusParam = context.activeFilters?.status ?? "todos";
+  const [showQuickCreate, setShowQuickCreate] = useState(false);
   return (
     <div className="ft-ws-shell -mx-5 -my-5 grid min-h-screen grid-cols-1 overflow-hidden lg:grid-cols-[280px_minmax(0,1fr)]">
       <WorkspaceSidebarPro projects={projects} spaces={spaces} context={context} />
@@ -66,9 +69,15 @@ export function WorkspaceSystemPage({
             </select>
             <button className="ft-ws-control h-11 px-4 text-sm font-bold">Agrupar: Estado</button>
             <button className="ft-ws-control h-11 px-4 text-sm font-bold">Personalizar</button>
-            <button className="ft-ws-active h-11 rounded-[16px] px-5 text-sm font-extrabold">+ Nueva tarea</button>
+            <button type="button" onClick={() => setShowQuickCreate((value) => !value)} className="ft-ws-active h-11 rounded-[16px] px-5 text-sm font-extrabold">+ Nueva tarea</button>
           </div>
         </div>
+        {showQuickCreate ? (
+          <div className="mt-4">
+            <WorkspaceQuickCreate context={context} projects={projects} onClose={() => setShowQuickCreate(false)} />
+          </div>
+        ) : null}
+
         <div className="mt-5 grid gap-5 2xl:grid-cols-[minmax(0,1fr)_320px]">
           <main className="min-w-0">
             {activeView === "list" ? <ListView tasks={tasks} /> : null}

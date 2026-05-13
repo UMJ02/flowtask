@@ -5270,3 +5270,22 @@
    Canvas Workspace now reads real visual_boards summaries and links into the existing BoardPage editor. */
 .ft-ws-board-card { transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease; }
 .ft-ws-board-card:hover { transform: translateY(-2px); }
+
+/* v58.25.8.4 Workspace Board Preview + Inline Create Polish
+   Canvas cards now render richer board previews and quick create creates tasks inline in the active workspace context. */
+.ft-ws-board-preview-card {
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+}
+
+.ft-ws-board-preview-card:hover {
+  border-color: rgba(22, 199, 132, .28);
+  transform: translateY(-2px);
+}
+
+.ft-ws-quick-create {
+  border: 1px solid rgba(167, 243, 208, .9);
+  border-radius: 24px;
+  background: linear-gradient(135deg, rgba(236, 253, 245, .96), rgba(255, 255, 255, .92));
+  box-shadow: 0 16px 44px rgba(15, 23, 42, .06);
+  padding: 16px;
+}
