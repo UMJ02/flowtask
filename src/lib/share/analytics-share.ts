@@ -76,11 +76,22 @@ function normalizeFilename(value: string) {
   return value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'workspace';
 }
 
+function getReportModuleItems(payload: SharedAnalyticsPayload) {
+  return [
+    { label: 'Importantes', items: payload.reportModules.importantItems ?? [] },
+    { label: 'Semana actual', items: payload.reportModules.currentWeekItems ?? [] },
+    { label: 'Mes actual', items: payload.reportModules.currentMonthItems ?? [] },
+    { label: 'Próximas', items: payload.reportModules.upcomingItems ?? [] },
+    { label: 'Sin fecha', items: payload.reportModules.undatedItems ?? [] },
+    { label: 'En espera', items: payload.reportModules.waitingTasks ?? [] },
+  ];
+}
+
 export function getSharedReportTasks(payload: SharedAnalyticsPayload) {
-  const allItems = [...payload.reportModules.dayTasks, ...payload.reportModules.weeklyInProgress, ...payload.reportModules.waitingTasks];
+  const allItems = getReportModuleItems(payload).flatMap((module) => module.items.map((item) => ({ ...item, moduleLabel: module.label })));
   const seen = new Set<string>();
   return allItems.filter((item) => {
-    const key = item.id || `${item.title}-${item.deadlineLabel}`;
+    const key = `${item.moduleLabel}-${item.itemType}-${item.id || `${item.title}-${item.deadlineLabel}`}`;
     if (seen.has(key)) return false;
     seen.add(key);
     return true;
@@ -100,7 +111,7 @@ function priorityStyle(priority: string) {
 }
 
 function reportRows(section: string, items: SharedReportTaskItem[]): XlsxRow[] {
-  return items.map((item) => [section, item.title, item.createdAtLabel, item.deadlineLabel, { value: item.statusLabel, style: statusStyle(item.statusLabel) }, item.clientLabel, { value: item.priorityLabel, style: priorityStyle(item.priorityLabel) }, item.lastComment ?? 'Sin comentario registrado']);
+  return items.map((item) => [section, item.itemType, item.title, item.createdAtLabel, item.deadlineLabel, { value: item.statusLabel, style: statusStyle(item.statusLabel) }, item.clientLabel, { value: item.priorityLabel, style: priorityStyle(item.priorityLabel) }, item.lastComment ?? 'Sin comentario registrado']);
 }
 
 function safeText(value: unknown) {
@@ -148,11 +159,69 @@ function buildStylesXml() {
 
 function buildSheets(payload: SharedAnalyticsPayload): SheetConfig[] {
   const tasks = getSharedReportTasks(payload);
-  const reportRowsData: XlsxRow[] = [[{ value: 'FlowTask · Reporte inteligente', style: 1 }, '', '', '', '', '', '', ''], [{ value: 'Workspace', style: 4 }, payload.workspaceName, { value: 'Generado', style: 4 }, payload.generatedAtLabel, '', '', '', ''], [], [{ value: 'Métricas principales', style: 2 }, '', '', '', '', '', '', ''], [{ value: 'Indicador', style: 3 }, { value: 'Valor', style: 3 }, { value: 'Lectura', style: 3 }, '', { value: 'Indicador', style: 3 }, { value: 'Valor', style: 3 }, { value: 'Lectura', style: 3 }], ['Total de tareas', { value: tasks.length, style: 5 }, 'Incluidas en el reporte', '', 'Prioridad alta', { value: payload.shareDigest.priorityCount, style: 5 }, 'Requieren seguimiento'], ['En proceso', { value: payload.shareDigest.inProgressCount, style: 5 }, 'Operación activa', '', 'En espera', { value: payload.shareDigest.waitingCount, style: 5 }, 'Bloqueos actuales'], ['Concluidos', { value: payload.shareDigest.completedCount, style: 5 }, 'Histórico cerrado', '', 'Última actualización', payload.generatedAtLabel, 'Reporte compartible'], [], [{ value: 'Lectura inteligente', style: 2 }, '', '', '', '', '', '', ''], ...(payload.shareDigest.shareSummary.length ? payload.shareDigest.shareSummary.map((item, index) => [{ value: index + 1, style: 5 }, item]) : [[{ value: 1, style: 5 }, 'Sin resumen disponible']]), [], [{ value: 'Recomendaciones', style: 2 }, '', '', '', '', '', '', ''], ...(payload.recommendations.length ? payload.recommendations.map((item, index) => [{ value: index + 1, style: 5 }, item]) : [[{ value: 1, style: 5 }, 'Mantén el seguimiento semanal y actualiza comentarios en tareas bloqueadas.']])];
-  const tasksRows: XlsxRow[] = [[{ value: 'Módulo', style: 3 }, { value: 'Tarea', style: 3 }, { value: 'Fecha ingreso', style: 3 }, { value: 'Deadline', style: 3 }, { value: 'Estado', style: 3 }, { value: 'Cliente', style: 3 }, { value: 'Prioridad', style: 3 }, { value: 'Último comentario', style: 3 }], ...reportRows('Tareas del día', payload.reportModules.dayTasks), ...reportRows('Tareas en proceso semanal', payload.reportModules.weeklyInProgress), ...reportRows('Tareas en espera', payload.reportModules.waitingTasks)];
-  const summaryRows: XlsxRow[] = [[{ value: 'Resumen inteligente', style: 1 }, '', '', ''], [{ value: 'Workspace', style: 4 }, payload.workspaceName, { value: 'Generado', style: 4 }, payload.generatedAtLabel], [], [{ value: 'Lectura', style: 3 }, { value: 'Detalle', style: 3 }], ...(payload.shareDigest.shareSummary.length ? payload.shareDigest.shareSummary.map((item, index) => [`${index + 1}`, item]) : [['1', 'Sin resumen disponible']]), [], [{ value: 'Recomendación', style: 3 }, { value: 'Acción sugerida', style: 3 }], ...(payload.recommendations.length ? payload.recommendations.map((item, index) => [`${index + 1}`, item]) : [['1', 'Mantén el seguimiento semanal y actualiza comentarios en tareas bloqueadas.']])];
-  const dictionaryRows: XlsxRow[] = [[{ value: 'Diccionario del reporte', style: 1 }, ''], [{ value: 'Campo', style: 3 }, { value: 'Descripción', style: 3 }], ['Módulo', 'Agrupación del reporte: tareas del día, tareas en proceso semanal o tareas en espera.'], ['Deadline', 'Fecha límite registrada para la tarea.'], ['Estado', 'Estado operativo actual de la tarea.'], ['Prioridad', 'Nivel de atención requerido.'], ['Último comentario', 'Comentario más reciente disponible para seguimiento.']];
-  return [{ name: 'Reporte', rows: reportRowsData, widths: [24, 18, 38, 4, 24, 18, 38, 4], merges: ['A1:H1', 'A4:H4', 'A10:H10', 'A13:H13'] }, { name: 'Tareas exportadas', rows: tasksRows, widths: [25, 42, 18, 18, 18, 22, 16, 52], freezeHeader: true, autoFilter: `A1:H${Math.max(tasksRows.length, 1)}` }, { name: 'Resumen', rows: summaryRows, widths: [18, 80, 18, 25], merges: ['A1:D1'] }, { name: 'Diccionario', rows: dictionaryRows, widths: [24, 90], merges: ['A1:B1'] }];
+  const moduleRows = getReportModuleItems(payload).map((module) => [module.label, { value: module.items.length, style: 5 }, module.label === 'Importantes' ? 'Marcados con estrella / prioridad alta' : module.label === 'Semana actual' ? 'Sin estrella con fecha dentro de la semana actual' : module.label === 'Mes actual' ? 'Sin estrella con fecha en el mes actual fuera de la semana' : module.label === 'Próximas' ? 'Sin estrella con fecha posterior al mes actual' : module.label === 'Sin fecha' ? 'Sin fecha límite registrada' : 'En espera / bloqueadas']);
+  const reportRowsData: XlsxRow[] = [
+    [{ value: 'FlowTask · Reporte inteligente', style: 1 }, '', '', '', '', '', '', ''],
+    [{ value: 'Workspace', style: 4 }, payload.workspaceName, { value: 'Generado', style: 4 }, payload.generatedAtLabel, '', '', '', ''],
+    [],
+    [{ value: 'Métricas principales', style: 2 }, '', '', '', '', '', '', ''],
+    [{ value: 'Indicador', style: 3 }, { value: 'Valor', style: 3 }, { value: 'Lectura', style: 3 }, '', { value: 'Indicador', style: 3 }, { value: 'Valor', style: 3 }, { value: 'Lectura', style: 3 }],
+    ['Total operativo', { value: tasks.length, style: 5 }, 'Elementos incluidos en módulos operativos', '', 'Importantes', { value: payload.shareDigest.priorityCount, style: 5 }, 'Marcados con estrella'],
+    ['Semana actual', { value: payload.shareDigest.weekCount, style: 5 }, 'Sin estrella con fecha esta semana', '', 'Mes actual', { value: payload.shareDigest.monthCount, style: 5 }, 'Sin estrella dentro del mes'],
+    ['Próximas', { value: payload.shareDigest.upcomingCount, style: 5 }, 'Posteriores al mes actual', '', 'Sin fecha', { value: payload.shareDigest.undatedCount, style: 5 }, 'Backlog / sin deadline'],
+    ['En espera', { value: payload.shareDigest.waitingCount, style: 5 }, 'Bloqueos actuales', '', 'Concluidos', { value: payload.shareDigest.completedCount, style: 5 }, 'Histórico cerrado'],
+    [],
+    [{ value: 'Módulos del reporte', style: 2 }, '', '', '', '', '', '', ''],
+    [{ value: 'Módulo', style: 3 }, { value: 'Cantidad', style: 3 }, { value: 'Regla', style: 3 }],
+    ...moduleRows,
+    [],
+    [{ value: 'Lectura inteligente', style: 2 }, '', '', '', '', '', '', ''],
+    ...(payload.shareDigest.shareSummary.length ? payload.shareDigest.shareSummary.map((item, index) => [{ value: index + 1, style: 5 }, item]) : [[{ value: 1, style: 5 }, 'Sin resumen disponible']]),
+    [],
+    [{ value: 'Recomendaciones', style: 2 }, '', '', '', '', '', '', ''],
+    ...(payload.recommendations.length ? payload.recommendations.map((item, index) => [{ value: index + 1, style: 5 }, item]) : [[{ value: 1, style: 5 }, 'Mantén el seguimiento semanal y actualiza comentarios en tareas bloqueadas.']]),
+  ];
+
+  const tasksRows: XlsxRow[] = [
+    [{ value: 'Módulo', style: 3 }, { value: 'Tipo', style: 3 }, { value: 'Título', style: 3 }, { value: 'Fecha ingreso', style: 3 }, { value: 'Deadline', style: 3 }, { value: 'Estado', style: 3 }, { value: 'Cliente', style: 3 }, { value: 'Prioridad', style: 3 }, { value: 'Último comentario', style: 3 }],
+    ...reportRows('Importantes', payload.reportModules.importantItems ?? []),
+    ...reportRows('Semana actual', payload.reportModules.currentWeekItems ?? []),
+    ...reportRows('Mes actual', payload.reportModules.currentMonthItems ?? []),
+    ...reportRows('Próximas', payload.reportModules.upcomingItems ?? []),
+    ...reportRows('Sin fecha', payload.reportModules.undatedItems ?? []),
+    ...reportRows('En espera', payload.reportModules.waitingTasks ?? []),
+  ];
+
+  const summaryRows: XlsxRow[] = [
+    [{ value: 'Resumen inteligente', style: 1 }, '', '', ''],
+    [{ value: 'Workspace', style: 4 }, payload.workspaceName, { value: 'Generado', style: 4 }, payload.generatedAtLabel],
+    [],
+    [{ value: 'Lectura', style: 3 }, { value: 'Detalle', style: 3 }],
+    ...(payload.shareDigest.shareSummary.length ? payload.shareDigest.shareSummary.map((item, index) => [`${index + 1}`, item]) : [['1', 'Sin resumen disponible']]),
+    [],
+    [{ value: 'Recomendación', style: 3 }, { value: 'Acción sugerida', style: 3 }],
+    ...(payload.recommendations.length ? payload.recommendations.map((item, index) => [`${index + 1}`, item]) : [['1', 'Mantén el seguimiento semanal y actualiza comentarios en tareas bloqueadas.']]),
+  ];
+
+  const dictionaryRows: XlsxRow[] = [
+    [{ value: 'Diccionario del reporte', style: 1 }, ''],
+    [{ value: 'Campo', style: 3 }, { value: 'Descripción', style: 3 }],
+    ['Importantes', 'Tareas marcadas con estrella, guardadas como prioridad alta. Ganan prioridad sobre fecha semanal o mensual.'],
+    ['Semana actual', 'Elementos sin estrella con fecha límite dentro de la semana actual.'],
+    ['Mes actual', 'Elementos sin estrella con fecha límite dentro del mes actual y fuera de la semana actual.'],
+    ['Próximas', 'Elementos sin estrella con fecha posterior al mes actual.'],
+    ['Sin fecha', 'Elementos activos sin fecha límite.'],
+    ['En espera', 'Tareas bloqueadas o en espera; se separan para no contaminar vencidos/semana/mes.'],
+    ['Tipo', 'Indica si el registro exportado es una Tarea o un Proyecto.'],
+    ['Prioridad', 'Alta equivale a estrella/importante en la app.'],
+  ];
+
+  return [
+    { name: 'Reporte', rows: reportRowsData, widths: [24, 18, 42, 4, 24, 18, 42, 4], merges: ['A1:H1', 'A4:H4', 'A11:H11', 'A16:H16', 'A19:H19'] },
+    { name: 'Tareas exportadas', rows: tasksRows, widths: [22, 14, 42, 18, 18, 18, 22, 16, 52], freezeHeader: true, autoFilter: `A1:I${Math.max(tasksRows.length, 1)}` },
+    { name: 'Resumen', rows: summaryRows, widths: [18, 80, 18, 25], merges: ['A1:D1'] },
+    { name: 'Diccionario', rows: dictionaryRows, widths: [24, 100], merges: ['A1:B1'] },
+  ];
 }
 
 function dosTimeDate(date = new Date()) {

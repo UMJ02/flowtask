@@ -1,5 +1,5 @@
 import { cache } from 'react';
-import { differenceInCalendarDays, eachDayOfInterval, endOfWeek, format, isToday, isWithinInterval, parseISO, startOfWeek, subDays } from 'date-fns';
+import { differenceInCalendarDays, eachDayOfInterval, endOfMonth, endOfWeek, format, isAfter, isWithinInterval, parseISO, startOfMonth, startOfWeek, subDays } from 'date-fns';
 import { getRecentActivitySummary } from '@/lib/queries/activity';
 import { getDashboardData } from '@/lib/queries/dashboard';
 import { getOrganizationContext } from '@/lib/queries/organization';
@@ -25,6 +25,7 @@ export type AnalyticsFeedItem = {
 
 export type SharedReportTaskItem = {
   id: string;
+  itemType: 'Tarea' | 'Proyecto';
   title: string;
   createdAtLabel: string;
   deadlineLabel: string;
@@ -111,6 +112,10 @@ export type WorkspaceAnalyticsSummary = {
   projectPipeline: AnalyticsFeedItem[];
   shareDigest: {
     priorityCount: number;
+    weekCount: number;
+    monthCount: number;
+    upcomingCount: number;
+    undatedCount: number;
     inProgressCount: number;
     waitingCount: number;
     completedCount: number;
@@ -118,8 +123,11 @@ export type WorkspaceAnalyticsSummary = {
     shareSummary: string[];
   };
   reportModules: {
-    dayTasks: SharedReportTaskItem[];
-    weeklyInProgress: SharedReportTaskItem[];
+    importantItems: SharedReportTaskItem[];
+    currentWeekItems: SharedReportTaskItem[];
+    currentMonthItems: SharedReportTaskItem[];
+    upcomingItems: SharedReportTaskItem[];
+    undatedItems: SharedReportTaskItem[];
     waitingTasks: SharedReportTaskItem[];
   };
   recommendations: string[];
@@ -169,6 +177,7 @@ function isoDay(value: Date) {
 function buildReportTaskItem(task: Awaited<ReturnType<typeof getTasks>>[number], lastComment: string | null = null): SharedReportTaskItem {
   return {
     id: task.id,
+    itemType: 'Tarea',
     title: task.title,
     createdAtLabel: formatShortDate(task.created_at),
     deadlineLabel: formatShortDate(task.due_date),
@@ -177,6 +186,34 @@ function buildReportTaskItem(task: Awaited<ReturnType<typeof getTasks>>[number],
     priorityLabel: priorityLabel(task.priority),
     lastComment,
   };
+}
+
+
+function projectStatusLabel(value?: string | null) {
+  if (!value) return 'Sin estado';
+  return value.replaceAll('_', ' ').replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+function buildProjectReportItem(project: Awaited<ReturnType<typeof getProjects>>[number]): SharedReportTaskItem {
+  return {
+    id: project.id,
+    itemType: 'Proyecto',
+    title: project.title,
+    createdAtLabel: formatShortDate(project.created_at),
+    deadlineLabel: formatShortDate(project.due_date),
+    statusLabel: projectStatusLabel(project.status),
+    clientLabel: project.client_name || 'Sin cliente',
+    priorityLabel: 'Media',
+    lastComment: null,
+  };
+}
+
+function isImportantTask(task: Awaited<ReturnType<typeof getTasks>>[number]) {
+  return task.priority === 'alta';
+}
+
+function isCompletedProject(project: Awaited<ReturnType<typeof getProjects>>[number]) {
+  return project.status === 'completado';
 }
 
 function sortByDateWeight<T extends { due_date?: string | null; created_at?: string | null }>(items: T[]) {
@@ -310,46 +347,121 @@ export const getWorkspaceAnalyticsSummary = cache(async (): Promise<WorkspaceAna
     source: 'Projects',
   }));
 
-  const priorityCount = operationalTasks.filter((task) => task.priority === 'alta').length;
-  const deadlineItems = [...weeklyFocus, ...projectPipeline]
-    .filter((item) => !item.meta.includes('Sin fecha'))
-    .slice(0, 6)
-    .map(({ id, title, meta, statusLabel, tone, source }) => ({ id, title, meta, statusLabel, tone, source }));
+  const monthStart = startOfMonth(now);
+  const monthEnd = endOfMonth(now);
+  const activeProjects = allProjects.filter((project) => !isCompletedProject(project));
 
-  const recommendations: string[] = [];
-  if (overdueActiveTasks.length > 0) recommendations.push(`${overdueActiveTasks.length} tarea(s) activas están vencidas. Las concluidas y en espera no se cuentan como atraso.`);
-  if (waitingTasks.length > 0) recommendations.push(`${waitingTasks.length} tarea(s) están en espera. Conviene revisar bloqueos por cliente, jefatura o proveedor.`);
-  if (dueThisWeekActiveTasks.length > 0) recommendations.push(`${dueThisWeekActiveTasks.length} tarea(s) activas vencen esta semana. Priorízalas en calendario y timeline.`);
-  if (risk.kpis.pressuredClients > 0) recommendations.push(`${risk.kpis.pressuredClients} cliente(s) muestran presión operativa. Revisa seguimiento y capacidad.`);
-  if ((dashboard?.dueSoonTasks ?? 0) > 0) recommendations.push(`${dashboard?.dueSoonTasks ?? 0} tarea(s) vencen en los próximos 3 días y merecen revisión anticipada.`);
-  if (activityLast48h <= 2) recommendations.push('La actividad reciente está baja. Reactiva seguimiento con comentarios, adjuntos y cierres parciales.');
-  if (!recommendations.length) recommendations.push('El workspace viene estable. Mantén foco en tareas activas y destraba las que están en espera.');
+  const importantTasks = sortByDateWeight(operationalTasks.filter(isImportantTask));
 
-  const shareSummary: string[] = [
-    `${priorityCount} tarea(s) de prioridad alta activas para seguimiento ejecutivo.`,
-    `${operationalTasks.length} tarea(s) siguen en proceso operativo.`,
-    `${waitingTasks.length} tarea(s) están en espera y no cuentan como vencidas.`,
-    `${completedTasks.length} tarea(s) concluidas quedan fuera de operación por defecto.`,
-  ];
+  const nonImportantOperationalTasks = operationalTasks.filter((task) => !isImportantTask(task));
+  const nonWaitingActiveProjects = activeProjects;
 
-  const dayTaskBase = sortByDateWeight(
-    operationalTasks.filter((task) => {
-      const due = safeParse(task.due_date);
-      return due ? isToday(due) : false;
-    }),
-  );
-  const fallbackDayTasks = sortByDateWeight(operationalTasks).slice(0, 8);
-  const dayTasks = (dayTaskBase.length ? dayTaskBase : fallbackDayTasks).slice(0, 8).map((task) => buildReportTaskItem(task));
-
-  const weeklyInProgress = sortByDateWeight(
-    operationalTasks.filter((task) => {
-      if (task.status !== TASK_STATUS.IN_PROGRESS) return false;
+  const currentWeekTasks = sortByDateWeight(
+    nonImportantOperationalTasks.filter((task) => {
       const due = safeParse(task.due_date);
       return due ? isWithinInterval(due, { start: weekStart, end: weekEnd }) : false;
     }),
-  )
-    .slice(0, 10)
-    .map((task) => buildReportTaskItem(task));
+  );
+
+  const currentWeekProjects = sortByDateWeight(
+    nonWaitingActiveProjects.filter((project) => {
+      const due = safeParse(project.due_date);
+      return due ? isWithinInterval(due, { start: weekStart, end: weekEnd }) : false;
+    }),
+  );
+
+  const currentMonthTasks = sortByDateWeight(
+    nonImportantOperationalTasks.filter((task) => {
+      const due = safeParse(task.due_date);
+      return due ? isWithinInterval(due, { start: monthStart, end: monthEnd }) && !isWithinInterval(due, { start: weekStart, end: weekEnd }) : false;
+    }),
+  );
+
+  const currentMonthProjects = sortByDateWeight(
+    nonWaitingActiveProjects.filter((project) => {
+      const due = safeParse(project.due_date);
+      return due ? isWithinInterval(due, { start: monthStart, end: monthEnd }) && !isWithinInterval(due, { start: weekStart, end: weekEnd }) : false;
+    }),
+  );
+
+  const upcomingTasks = sortByDateWeight(
+    nonImportantOperationalTasks.filter((task) => {
+      const due = safeParse(task.due_date);
+      return due ? isAfter(due, monthEnd) : false;
+    }),
+  );
+
+  const upcomingProjects = sortByDateWeight(
+    nonWaitingActiveProjects.filter((project) => {
+      const due = safeParse(project.due_date);
+      return due ? isAfter(due, monthEnd) : false;
+    }),
+  );
+
+  const undatedTasks = sortByDateWeight(nonImportantOperationalTasks.filter((task) => !safeParse(task.due_date)));
+  const undatedProjects = sortByDateWeight(nonWaitingActiveProjects.filter((project) => !safeParse(project.due_date)));
+
+  const importantItems = importantTasks.slice(0, 16).map((task) => buildReportTaskItem(task));
+  const currentWeekItems = [
+    ...currentWeekTasks.map((task) => buildReportTaskItem(task)),
+    ...currentWeekProjects.map((project) => buildProjectReportItem(project)),
+  ].slice(0, 20);
+  const currentMonthItems = [
+    ...currentMonthTasks.map((task) => buildReportTaskItem(task)),
+    ...currentMonthProjects.map((project) => buildProjectReportItem(project)),
+  ].slice(0, 24);
+  const upcomingItems = [
+    ...upcomingTasks.map((task) => buildReportTaskItem(task)),
+    ...upcomingProjects.map((project) => buildProjectReportItem(project)),
+  ].slice(0, 24);
+  const undatedItems = [
+    ...undatedTasks.map((task) => buildReportTaskItem(task)),
+    ...undatedProjects.map((project) => buildProjectReportItem(project)),
+  ].slice(0, 24);
+
+  const priorityCount = importantItems.length;
+  const weekCount = currentWeekItems.length;
+  const monthCount = currentMonthItems.length;
+  const upcomingCount = upcomingItems.length;
+  const undatedCount = undatedItems.length;
+
+  const deadlineItems = [
+    ...importantItems.map((item) => ({
+      id: item.id,
+      title: item.title,
+      meta: `${item.itemType} · ${item.clientLabel} · ${item.deadlineLabel}`,
+      statusLabel: item.statusLabel,
+      tone: 'attention' as const,
+      source: item.itemType === 'Proyecto' ? 'Projects' as const : 'Tasks' as const,
+    })),
+    ...currentWeekItems.map((item) => ({
+      id: item.id,
+      title: item.title,
+      meta: `${item.itemType} · ${item.clientLabel} · ${item.deadlineLabel}`,
+      statusLabel: item.statusLabel,
+      tone: 'stable' as const,
+      source: item.itemType === 'Proyecto' ? 'Projects' as const : 'Tasks' as const,
+    })),
+  ]
+    .filter((item) => !item.meta.includes('Sin fecha'))
+    .slice(0, 6);
+
+  const recommendations: string[] = [];
+  if (importantItems.length > 0) recommendations.push(`${importantItems.length} elemento(s) marcados con estrella salen como Importantes en el reporte.`);
+  if (currentWeekItems.length > 0) recommendations.push(`${currentWeekItems.length} elemento(s) sin estrella están programados para la semana actual.`);
+  if (currentMonthItems.length > 0) recommendations.push(`${currentMonthItems.length} elemento(s) sin estrella quedan para el mes actual fuera de esta semana.`);
+  if (overdueActiveTasks.length > 0) recommendations.push(`${overdueActiveTasks.length} tarea(s) activas están vencidas. Las concluidas y en espera no se cuentan como atraso.`);
+  if (waitingTasks.length > 0) recommendations.push(`${waitingTasks.length} tarea(s) están en espera. Conviene revisar bloqueos por cliente, jefatura o proveedor.`);
+  if (risk.kpis.pressuredClients > 0) recommendations.push(`${risk.kpis.pressuredClients} cliente(s) muestran presión operativa. Revisa seguimiento y capacidad.`);
+  if (!recommendations.length) recommendations.push('El workspace viene estable. Mantén foco en importantes, semana actual y desbloqueos.');
+
+  const shareSummary: string[] = [
+    `${importantItems.length} elemento(s) marcados con estrella se reportan como Importantes.`,
+    `${currentWeekItems.length} elemento(s) sin estrella quedan en Semana actual.`,
+    `${currentMonthItems.length} elemento(s) sin estrella quedan en Mes actual.`,
+    `${waitingTasks.length} tarea(s) están en espera y se reportan separadas para no contaminar fechas.`,
+    `${completedTasks.length} tarea(s) concluidas quedan fuera de operación por defecto.`,
+  ];
 
   const waitingBase = sortByDateWeight(waitingTasks).slice(0, 12);
   const waitingReportTasks = await Promise.all(
@@ -409,6 +521,10 @@ export const getWorkspaceAnalyticsSummary = cache(async (): Promise<WorkspaceAna
     projectPipeline,
     shareDigest: {
       priorityCount,
+      weekCount,
+      monthCount,
+      upcomingCount,
+      undatedCount,
       inProgressCount: operationalTasks.length,
       waitingCount: waitingTasks.length,
       completedCount: completedTasks.length,
@@ -416,8 +532,11 @@ export const getWorkspaceAnalyticsSummary = cache(async (): Promise<WorkspaceAna
       shareSummary,
     },
     reportModules: {
-      dayTasks,
-      weeklyInProgress,
+      importantItems,
+      currentWeekItems,
+      currentMonthItems,
+      upcomingItems,
+      undatedItems,
       waitingTasks: waitingReportTasks,
     },
     recommendations: recommendations.slice(0, 5),

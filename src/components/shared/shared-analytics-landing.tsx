@@ -47,9 +47,9 @@ export function SharedAnalyticsLanding({ token, autoPrint = false }: { token: st
   const canShare = Boolean(nativeShare);
 
   const cards = [
-    { label: 'Total de tareas', value: tasks.length, helper: 'Incluidas en reporte', icon: ClipboardCheck, tone: 'emerald' },
-    { label: 'Prioridad alta', value: payload.shareDigest.priorityCount, helper: 'Seguimiento ejecutivo', icon: SlidersHorizontal, tone: 'amber' },
-    { label: 'En proceso', value: payload.shareDigest.inProgressCount, helper: 'Operación activa', icon: Clock3, tone: 'blue' },
+    { label: 'Importantes', value: payload.shareDigest.priorityCount, helper: 'Marcadas con estrella', icon: SlidersHorizontal, tone: 'amber' },
+    { label: 'Semana actual', value: payload.shareDigest.weekCount, helper: 'Sin estrella con fecha esta semana', icon: ClipboardCheck, tone: 'emerald' },
+    { label: 'Mes actual', value: payload.shareDigest.monthCount, helper: 'Sin estrella dentro del mes', icon: Clock3, tone: 'blue' },
     { label: 'En espera', value: payload.shareDigest.waitingCount, helper: 'Bloqueos actuales', icon: Clock3, tone: 'orange' },
     { label: 'Concluidos', value: payload.shareDigest.completedCount, helper: 'Histórico cerrado', icon: CheckCircle2, tone: 'green' },
   ];
@@ -115,7 +115,8 @@ export function SharedAnalyticsLanding({ token, autoPrint = false }: { token: st
                 <thead className="bg-[#F7F9FC] text-xs font-extrabold uppercase tracking-[0.08em] text-[#52617A]">
                   <tr>
                     <th className="px-4 py-3">Módulo</th>
-                    <th className="px-4 py-3">Tarea</th>
+                    <th className="px-4 py-3">Tipo</th>
+                    <th className="px-4 py-3">Título</th>
                     <th className="px-4 py-3">Fecha ingreso</th>
                     <th className="px-4 py-3">Deadline</th>
                     <th className="px-4 py-3">Estado</th>
@@ -127,6 +128,7 @@ export function SharedAnalyticsLanding({ token, autoPrint = false }: { token: st
                   {visibleTasks.length ? visibleTasks.map((task) => (
                     <tr key={task.id} className="transition hover:bg-[#F8FAFC]">
                       <td className="px-4 py-3 text-xs font-bold text-[#52617A]">{moduleLabel(payload, task.id)}</td>
+                      <td className="px-4 py-3 text-[#52617A]">{task.itemType}</td>
                       <td className="px-4 py-3 font-bold text-[#071333]">{task.title}</td>
                       <td className="px-4 py-3 text-[#52617A]">{task.createdAtLabel}</td>
                       <td className="px-4 py-3 text-[#52617A]">{task.deadlineLabel}</td>
@@ -135,7 +137,7 @@ export function SharedAnalyticsLanding({ token, autoPrint = false }: { token: st
                       <td className="max-w-[260px] px-4 py-3 text-[#52617A]">{task.lastComment || '—'}</td>
                     </tr>
                   )) : (
-                    <tr><td colSpan={7} className="px-4 py-5 text-center text-sm font-semibold ft-text-muted">No hay tareas para este filtro.</td></tr>
+                    <tr><td colSpan={8} className="px-4 py-5 text-center text-sm font-semibold ft-text-muted">No hay tareas para este filtro.</td></tr>
                   )}
                 </tbody>
               </table>
@@ -171,9 +173,12 @@ export function SharedAnalyticsLanding({ token, autoPrint = false }: { token: st
 }
 
 function moduleLabel(payload: NonNullable<ReturnType<typeof decodeAnalyticsShareToken>>, id: string) {
-  if (payload.reportModules.dayTasks.some((item) => item.id === id)) return 'Tareas del día';
-  if (payload.reportModules.weeklyInProgress.some((item) => item.id === id)) return 'Tareas en proceso semanal';
-  if (payload.reportModules.waitingTasks.some((item) => item.id === id)) return 'Tareas en espera';
+  if ((payload.reportModules.importantItems ?? []).some((item) => item.id === id)) return 'Importantes';
+  if ((payload.reportModules.currentWeekItems ?? []).some((item) => item.id === id)) return 'Semana actual';
+  if ((payload.reportModules.currentMonthItems ?? []).some((item) => item.id === id)) return 'Mes actual';
+  if ((payload.reportModules.upcomingItems ?? []).some((item) => item.id === id)) return 'Próximas';
+  if ((payload.reportModules.undatedItems ?? []).some((item) => item.id === id)) return 'Sin fecha';
+  if ((payload.reportModules.waitingTasks ?? []).some((item) => item.id === id)) return 'En espera';
   return 'Reporte';
 }
 

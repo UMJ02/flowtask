@@ -4,7 +4,7 @@ import path from "node:path";
 
 const root = process.cwd();
 const failures = [];
-const expectedVersion = "58.25.7.5-boards-create-card-red-accent-color-cover-previews";
+const expectedVersion = "58.25.7.6-report-metrics-buckets-priority-star-export-alignment";
 
 function exists(rel) { return fs.existsSync(path.join(root, rel)); }
 function read(rel) { return exists(rel) ? fs.readFileSync(path.join(root, rel), "utf8") : ""; }
@@ -23,18 +23,20 @@ for (const rel of [
   "scripts/validate-env.mjs",
   "scripts/design-doctor.mjs",
   "scripts/density-guard.mjs",
-  "scripts/verify-v58.25.7.5.mjs",
-  "docs/release/V58_25_7_5_BOARDS_CREATE_CARD_RED_ACCENT_COLOR_COVER_PREVIEWS.md",
-  "docs/qa/FLOWTASK_V58_25_7_5_BOARDS_CREATE_CARD_RED_ACCENT_COLOR_COVER_PREVIEWS_QA.md",
-  "src/components/boards/boards-home.tsx",
-  "src/app/globals.css"
+  "scripts/verify-v58.25.7.6.mjs",
+  "docs/release/V58_25_7_6_REPORT_METRICS_BUCKETS_PRIORITY_STAR_EXPORT_ALIGNMENT.md",
+  "docs/qa/FLOWTASK_V58_25_7_6_REPORT_METRICS_BUCKETS_PRIORITY_STAR_EXPORT_ALIGNMENT_QA.md",
+  "src/lib/queries/analytics.ts",
+  "src/lib/share/analytics-share.ts",
+  "src/components/shared/shared-analytics-landing.tsx",
+  "src/components/analytics/analytics-overview.tsx"
 ]) requireFile(rel);
 
 const pkg = JSON.parse(read("package.json"));
 const scripts = pkg.scripts ?? {};
 if (pkg.version !== expectedVersion) failures.push(`Unexpected package version: ${pkg.version}`);
-if (scripts["verify:current"] !== "npm run verify:v58.25.7.5") failures.push("verify:current must target verify:v58.25.7.5");
-if (scripts["verify:v58.25.7.5"] !== "node scripts/verify-v58.25.7.5.mjs") failures.push("verify:v58.25.7.5 must target scripts/verify-v58.25.7.5.mjs");
+if (scripts["verify:current"] !== "npm run verify:v58.25.7.6") failures.push("verify:current must target verify:v58.25.7.6");
+if (scripts["verify:v58.25.7.6"] !== "node scripts/verify-v58.25.7.6.mjs") failures.push("verify:v58.25.7.6 must target scripts/verify-v58.25.7.6.mjs");
 
 const vercel = JSON.parse(read("vercel.json"));
 if (vercel.framework !== "nextjs") failures.push("vercel.json framework must be nextjs");
@@ -42,11 +44,10 @@ if (vercel.buildCommand !== "npm run vercel:build") failures.push("vercel.json b
 
 requireIncludes("src/lib/release/version.ts", expectedVersion);
 requireIncludes("package-lock.json", expectedVersion);
-requireIncludes("src/components/boards/boards-home.tsx", "const BOARD_COVER_COLORS");
-requireIncludes("src/components/boards/boards-home.tsx", "board-home-create-card-red");
-requireIncludes("src/components/boards/boards-home.tsx", "board-home-color-cover");
-requireNotIncludes("src/components/boards/boards-home.tsx", "fallbackSrc");
-requireIncludes("src/app/globals.css", "v58.25.7.5 — Boards create red accent + color cover previews");
+requireIncludes("src/lib/queries/analytics.ts", "importantItems");
+requireIncludes("src/lib/share/analytics-share.ts", "Mes actual");
+requireIncludes("src/components/shared/shared-analytics-landing.tsx", "payload.shareDigest.weekCount");
+requireNotIncludes("src/lib/share/analytics-share.ts", "Tareas del día");
 
 if (failures.length) {
   console.error("[build-deploy-readiness] Failed checks:");
@@ -54,4 +55,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log("[build-deploy-readiness] OK — v58.25.7.5 boards create red accent and color cover previews readiness aligned.");
+console.log("[build-deploy-readiness] OK — v58.25.7.6 report metrics buckets readiness aligned.");

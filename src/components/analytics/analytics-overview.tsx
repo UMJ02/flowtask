@@ -453,10 +453,10 @@ export function AnalyticsOverview({ summary, compact = false }: { summary: Works
   const sharePayload = useMemo(() => buildSharedAnalyticsPayload(summary), [summary]);
   const shareHref = useMemo(() => `/share?data=${encodeAnalyticsShareToken(sharePayload)}`, [sharePayload]);
   const kpis: KpiItem[] = [
-    { label: 'Tareas operativas', value: String(real.operationalTasks), helper: 'En proceso; excluye concluidas y espera.', tone: 'blue', icon: ListChecks, points: sparkOperational },
+    { label: 'Importantes', value: String(summary.shareDigest.priorityCount), helper: 'Marcadas con estrella / prioridad alta.', tone: 'amber', icon: AlertTriangle, points: summary.timeSeries.map(() => summary.shareDigest.priorityCount) },
+    { label: 'Semana actual', value: String(summary.shareDigest.weekCount), helper: 'Sin estrella con fecha esta semana.', tone: 'blue', icon: ListChecks, points: sparkDue },
+    { label: 'Mes actual', value: String(summary.shareDigest.monthCount), helper: 'Sin estrella dentro del mes actual.', tone: 'green', icon: CheckCircle2, points: sparkOperational },
     { label: 'En espera', value: String(real.waitingTasks), helper: 'Standby; no cuenta como vencido.', tone: 'amber', icon: Clock3, points: summary.timeSeries.map(() => real.waitingTasks) },
-    { label: 'Concluidas', value: String(real.completedTasks), helper: 'Histórico; ocultas de operación diaria.', tone: 'green', icon: CheckCircle2, points: sparkCompleted },
-    { label: 'Vencidas reales', value: String(real.overdueActiveTasks), helper: 'Solo tareas en proceso vencidas.', tone: real.overdueActiveTasks > 0 ? 'rose' : 'green', icon: AlertTriangle, points: sparkDue },
     { label: 'Actividad documental', value: `${real.commentsCount}/${real.attachmentsCount}`, helper: 'Comentarios / adjuntos registrados.', tone: 'violet', icon: FolderKanban, points: sparkCreated },
   ];
 
