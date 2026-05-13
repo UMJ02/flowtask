@@ -1,4 +1,4 @@
-# FlowTask — v58.25.9 Workspace Persistence Foundation
+# FlowTask — v58.25.9.1 Workspace Persistence UI + Saved Views Manager
 
 Base: **v58.25.8.9 — Workspace Activity Timeline + Files Upload Entry Polish**
 
@@ -8,7 +8,8 @@ Agregar la base de persistencia del Workspace System para guardar espacios y vis
 
 ## Cambios principales
 
-- Nueva migración: `0056_v58_25_9_workspace_persistence_foundation.sql`.
+- Mantiene migración `0056_v58_25_9_workspace_persistence_foundation.sql`.
+- Agrega UI para guardar, renombrar, abrir, marcar default y eliminar `project_views`.
 - Nueva tabla opcional: `workspace_spaces`.
 - Nueva tabla opcional: `project_views`.
 - Helpers server-safe: `getWorkspacePersistedSpaces()` y `getWorkspaceProjectViews()`.

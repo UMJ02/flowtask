@@ -17,6 +17,7 @@ import { WorkspaceRightPanel } from "./workspace-right-panel";
 import { WorkspaceSidebarPro } from "./workspace-sidebar-pro";
 import { WorkspaceViewTabs } from "./workspace-view-tabs";
 import { WorkspaceQuickCreate } from "./workspace-quick-create";
+import { WorkspaceSavedViewsManager } from "./workspace-saved-views-manager";
 
 export function WorkspaceSystemPage({
   activeView,
@@ -47,6 +48,7 @@ export function WorkspaceSystemPage({
   const [showQuickCreate, setShowQuickCreate] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [rightPanelOpen, setRightPanelOpen] = useState(true);
+  const [savedViewsOpen, setSavedViewsOpen] = useState(false);
 
   function setStatusFilter(status: string) {
     const next = new URLSearchParams(searchParams.toString());
@@ -104,7 +106,7 @@ export function WorkspaceSystemPage({
               <option value="concluido">Concluido</option>
             </select>
             <button className="ft-ws-control h-11 px-4 text-sm font-bold">Agrupar: Estado</button>
-            <button className="ft-ws-control h-11 px-4 text-sm font-bold">Personalizar</button>
+            <button type="button" onClick={() => setSavedViewsOpen((value) => !value)} className="ft-ws-control h-11 px-4 text-sm font-bold">Vistas guardadas</button>
             <button type="button" onClick={() => setShowQuickCreate((value) => !value)} className="ft-ws-active h-11 rounded-[16px] px-5 text-sm font-extrabold">+ Nueva tarea</button>
             <button type="button" onClick={() => setRightPanelOpen((value) => !value)} className="ft-ws-control hidden h-11 px-4 text-sm font-bold 2xl:inline-flex">
               {rightPanelOpen ? <PanelRightClose className="h-4 w-4" /> : <PanelRightOpen className="h-4 w-4" />}
@@ -115,6 +117,12 @@ export function WorkspaceSystemPage({
         {showQuickCreate ? (
           <div className="mt-4">
             <WorkspaceQuickCreate context={context} projects={projects} onClose={() => setShowQuickCreate(false)} />
+          </div>
+        ) : null}
+
+        {savedViewsOpen ? (
+          <div className="mt-4">
+            <WorkspaceSavedViewsManager activeView={activeView} context={context} projectViews={projectViews} onClose={() => setSavedViewsOpen(false)} />
           </div>
         ) : null}
 
