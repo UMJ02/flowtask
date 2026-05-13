@@ -5259,3 +5259,9 @@
   color: #fff;
   transform: translateY(-1px);
 }
+
+/* v58.25.8.2 Project Detail Workspace Integration: project detail/list launchers now route into the Workspace-First context without creating new DB tables. */
+.ft-project-workspace-hint {
+  border: 1px solid rgba(16, 185, 129, .18);
+  background: rgba(236, 253, 245, .72);
+}

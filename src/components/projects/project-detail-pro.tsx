@@ -8,6 +8,8 @@ import {
   FileSpreadsheet,
   FileText,
   Flag,
+  LayoutGrid,
+  ListChecks,
   MoreVertical,
   Plus,
   Sparkles,
@@ -16,7 +18,7 @@ import {
   Users,
 } from "lucide-react";
 import { ActivityItem } from "@/lib/queries/activity";
-import { projectEditRoute } from "@/lib/navigation/routes";
+import { projectEditRoute, workspaceProjectRoute } from "@/lib/navigation/routes";
 import { formatDate } from "@/lib/utils/dates";
 import { CopyCurrentUrlButton } from "@/components/ui/copy-current-url-button";
 import { ProjectPlanningTimeline } from "@/components/projects/project-planning-timeline";
@@ -199,6 +201,43 @@ function ProjectStatsRow({ tasks }: { tasks: any[] }) {
   );
 }
 
+
+function ProjectWorkspaceLinks({ projectId, currentQuery }: { projectId: string; currentQuery: string }) {
+  const cleanQuery = currentQuery.replace(/(^|&)mode=edit(&|$)/, "$1").replace(/&$/, "");
+  const views = [
+    { label: "Lista", view: "list" },
+    { label: "Board", view: "board" },
+    { label: "Timeline", view: "timeline" },
+    { label: "Tabla", view: "table" },
+    { label: "Canvas", view: "canvas" },
+    { label: "Reportes", view: "reports" },
+  ];
+  return (
+    <div className="rounded-[18px] border border-emerald-100 bg-emerald-50/70 p-3">
+      <div className="flex items-start gap-3">
+        <span className="grid h-10 w-10 shrink-0 place-items-center rounded-[14px] bg-white text-[#16A36C] ring-1 ring-emerald-100">
+          <LayoutGrid className="h-5 w-5" />
+        </span>
+        <div className="min-w-0">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#087A4B]">Workspace integrado</p>
+          <h3 className="mt-1 text-base font-semibold ft-text-main">Abrir este proyecto en Workspace</h3>
+          <p className="mt-1 text-sm leading-6 ft-text-muted">Mantiene el detalle actual y permite ver las mismas tareas como Lista, Board, Timeline, Tabla, Canvas y Reportes.</p>
+        </div>
+      </div>
+      <div className="mt-3 flex flex-wrap gap-2">
+        <Link href={workspaceProjectRoute(projectId, "list", cleanQuery)} className="inline-flex h-10 items-center gap-2 rounded-[14px] bg-[#16C784] px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-[#0E9F6E]">
+          <ListChecks className="h-4 w-4" /> Abrir workspace
+        </Link>
+        {views.slice(1).map((item) => (
+          <Link key={item.view} href={workspaceProjectRoute(projectId, item.view, cleanQuery)} className="inline-flex h-10 items-center rounded-[14px] border ft-border bg-white px-3 text-xs font-semibold text-[#475569] transition hover:border-emerald-200 hover:bg-white hover:text-[#087A4B]">
+            {item.label}
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function ProjectHeroCard({ project, tasks, members, currentQuery }: { project: any; tasks: any[]; members: any[]; currentQuery: string }) {
   const progress = projectProgress(tasks, project.status);
   const department = Array.isArray(project.departments) ? project.departments[0] : project.departments;
@@ -229,7 +268,8 @@ function ProjectHeroCard({ project, tasks, members, currentQuery }: { project: a
         </div>
 
         <div className="flex flex-col justify-between gap-3">
-          <div className="flex justify-start gap-3 lg:justify-end">
+          <div className="flex flex-wrap justify-start gap-3 lg:justify-end">
+            <Link href={workspaceProjectRoute(project.id, "list", currentQuery)} className={projectUi.buttonDark}><LayoutGrid className="h-4 w-4" />Abrir workspace</Link>
             <CopyCurrentUrlButton label="Compartir" className={projectUi.buttonGhost} />
             <Link href={projectEditRoute(project.id, currentQuery)} className={projectUi.buttonDark}><MoreVertical className="h-4 w-4" />Editar proyecto</Link>
           </div>
@@ -343,6 +383,7 @@ export function ProjectDetailPro({ project, tasks, members, attachments, activit
       )}
       <ProjectStatsRow tasks={tasks} />
       <ProjectTabs />
+      <ProjectWorkspaceLinks projectId={project.id} currentQuery={currentQuery} />
       <ProjectPlanningTimeline project={project} tasks={tasks} currentQuery={currentQuery} />
       <div className="grid grid-cols-1 gap-3 xl:grid-cols-[minmax(0,1fr)_360px]">
         <section className="space-y-3"><ProjectInlineTasks project={project} initialTasks={tasks} members={members} canManage={canCreateTask} /><ProjectActivityCard activity={activity} /></section>
@@ -351,7 +392,7 @@ export function ProjectDetailPro({ project, tasks, members, attachments, activit
             <p className="text-xs font-semibold uppercase tracking-[0.20em] text-[#087A4B]">Acción rápida</p>
             <h3 className="mt-2 text-base font-semibold ft-text-main">Crear tarea interna</h3>
             <p className="mt-2 text-sm leading-6 ft-text-muted">Agrega tareas dentro de este proyecto sin salir de esta vista.</p>
-            <a href="#tareas" className={`mt-5 inline-flex h-10 w-full items-center justify-center gap-2 rounded-[16px] text-sm font-semibold ${canCreateTask ? "bg-[#16C784] text-white" : "pointer-events-none bg-white/70 text-slate-400"}`}><Plus className="h-4 w-4" />Ir a tareas del proyecto</a>
+            <Link href={workspaceProjectRoute(project.id, "list", currentQuery)} className={`mt-5 inline-flex h-10 w-full items-center justify-center gap-2 rounded-[16px] text-sm font-semibold ${canCreateTask ? "bg-[#16C784] text-white" : "pointer-events-none bg-white/70 text-slate-400"}`}><Plus className="h-4 w-4" />Abrir tareas en Workspace</Link>
           </section>
           <ProjectMembersCard members={members} />
           <RecentFilesCard attachments={attachments} />

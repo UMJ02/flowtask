@@ -12,6 +12,7 @@ import {
   Filter,
   Flag,
   FolderKanban,
+  LayoutGrid,
   MoreVertical,
   PauseCircle,
   Pencil,
@@ -22,7 +23,7 @@ import {
 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { EmptyState } from '@/components/ui/empty-state';
-import { projectDetailRoute, projectEditRoute, projectNewRoute } from '@/lib/navigation/routes';
+import { projectDetailRoute, projectEditRoute, projectNewRoute, workspaceProjectRoute } from '@/lib/navigation/routes';
 import { getProjects } from '@/lib/queries/projects';
 import { safeServerCall } from '@/lib/runtime/safe-server';
 import { formatDate } from '@/lib/utils/dates';
@@ -228,6 +229,9 @@ function ProjectRow({ project, index, queryString }: { project: ProjectSummary; 
       </td>
       <td className="px-3 py-4 align-middle">
         <div className="flex items-center justify-center gap-2">
+          <Link href={workspaceProjectRoute(project.id, "list", queryString)} aria-label={`Abrir workspace del proyecto ${project.title}`} className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-emerald-100 bg-emerald-50 text-emerald-700 transition hover:border-emerald-200 hover:bg-emerald-100">
+            <LayoutGrid className="h-4 w-4" />
+          </Link>
           <Link href={detailHref} aria-label={`Abrir proyecto ${project.title}`} className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border ft-border bg-white text-slate-600 transition hover:translate-y-0 hover:border-slate-300 hover:ft-text-main hover:">
             <Eye className="h-4 w-4" />
           </Link>
@@ -268,6 +272,10 @@ export default async function ProjectsPage({ searchParams }: { searchParams?: Pr
             <p className="ft-copy mt-2 max-w-3xl">Todos los proyectos de tu espacio de trabajo.</p>
           </div>
           <div className="flex flex-wrap gap-3">
+            <Link href={projects[0] ? workspaceProjectRoute(projects[0].id, "list", queryString) : "/app/workspace"} className="ft-project-action">
+              <LayoutGrid className="h-4 w-4" />
+              Vista Workspace
+            </Link>
             <a href="#project-filters" className="ft-project-action">
               <Filter className="h-4 w-4" />
               Filtros

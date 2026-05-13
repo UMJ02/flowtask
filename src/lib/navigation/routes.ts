@@ -68,3 +68,14 @@ export function projectNewRoute(query = ""): AppRoute {
 export function notificationsRoute(query = ""): AppRoute {
   return (query ? `/app/notifications?${query}` : "/app/notifications") as AppRoute;
 }
+
+export function workspaceRoute(query = ""): AppRoute {
+  return (query ? `/app/workspace?${query}` : "/app/workspace") as AppRoute;
+}
+
+export function workspaceProjectRoute(id: string, view = "list", extraQuery = ""): AppRoute {
+  const params = new URLSearchParams(extraQuery);
+  params.set("projectId", id);
+  params.set("view", view);
+  return `/app/workspace?${params.toString()}` as AppRoute;
+}
