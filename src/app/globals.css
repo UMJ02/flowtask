@@ -6560,3 +6560,23 @@
   background: #ecfdf5;
   color: #047857;
 }
+
+
+/* v58.26.1 — Workspace Production QA Fixes + Real Environment Hardening */
+.ft-ws-real-env-card {
+  border: 1px solid rgba(22, 199, 132, .22);
+  background: linear-gradient(135deg, rgba(236, 253, 245, .92), rgba(255, 255, 255, .96));
+  border-radius: 22px;
+}
+.ft-ws-real-env-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .02em;
+}
+.ft-ws-real-env-chip[data-ok="true"] { background: #ecfdf5; color: #047857; }
+.ft-ws-real-env-chip[data-ok="false"] { background: #fffbeb; color: #b45309; }

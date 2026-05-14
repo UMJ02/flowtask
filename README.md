@@ -113,3 +113,25 @@ Rutas clásicas que deben mantenerse operativas durante esta etapa:
 - `/app/projects`
 - `/app/boards`
 - `/app/reports`
+
+## v58.26.1 — Workspace Production QA Fixes + Real Environment Hardening
+
+Esta versión agrega un pase post-readiness para entorno real. Incluye migración 0059, idempotencia de triggers para Workspace persistence y el nuevo comando:
+
+```bash
+npm run workspace:real-env:ready
+```
+
+Validación recomendada:
+
+```bash
+nvm use 20
+npm install
+npm run workspace:doctor
+npm run workspace:production:ready
+npm run workspace:real-env:ready
+npm run verify:current
+npm run typecheck
+npm run build:preflight
+npm run build
+```

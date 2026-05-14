@@ -39,25 +39,28 @@ const requiredFiles = [
   "supabase/migrations/0056_v58_25_9_workspace_persistence_foundation.sql",
   "supabase/migrations/0057_v58_25_9_4_workspace_space_project_assignments.sql",
   "supabase/migrations/0058_v58_25_9_5_project_views_home_view_support.sql",
-  "docs/release/V58_26_0_WORKSPACE_PRODUCTION_READINESS.md",
-  "docs/qa/FLOWTASK_V58_26_0_WORKSPACE_PRODUCTION_READINESS_QA.md",
-  "docs/qa/FLOWTASK_V58_26_0_WORKSPACE_PRODUCTION_CHECKLIST.md",
+  "docs/release/V58_26_1_WORKSPACE_PRODUCTION_QA_FIXES_REAL_ENVIRONMENT_HARDENING.md",
+  "docs/qa/FLOWTASK_V58_26_1_WORKSPACE_REAL_ENVIRONMENT_QA.md",
+  "docs/qa/FLOWTASK_V58_26_1_SUPABASE_REAL_ENVIRONMENT_CHECKLIST.md",
   "docs/release/FLOWTASK_WORKSPACE_MASTER_CONTEXT_V58_26_0.md",
   "scripts/workspace-persistence-doctor.mjs",
-  "scripts/workspace-production-readiness-check.mjs"
+  "scripts/workspace-production-readiness-check.mjs",
+  "scripts/workspace-real-environment-hardening-check.mjs",
+  "supabase/migrations/0059_v58_26_1_workspace_real_environment_hardening.sql"
 ];
 for (const rel of requiredFiles) requireFile(rel);
 
 const pkg = JSON.parse(read("package.json"));
-if (pkg.version !== "58.26.0-workspace-production-readiness") failures.push(`Unexpected package version: ${pkg.version}`);
-if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.26.0") failures.push("verify:current must target verify:v58.26.0");
+if (pkg.version !== "58.26.1-workspace-production-qa-fixes-real-environment-hardening") failures.push(`Unexpected package version: ${pkg.version}`);
+if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.26.1") failures.push("verify:current must target verify:v58.26.1");
 if (pkg.scripts?.["workspace:doctor"] !== "node scripts/workspace-persistence-doctor.mjs") failures.push("workspace:doctor script missing");
 if (pkg.scripts?.["workspace:production:ready"] !== "node scripts/workspace-production-readiness-check.mjs") failures.push("workspace:production:ready script missing");
+if (pkg.scripts?.["workspace:real-env:ready"] !== "node scripts/workspace-real-environment-hardening-check.mjs") failures.push("workspace:real-env:ready script missing");
 
-requireIncludes("src/lib/release/version.ts", "58.26.0-workspace-production-readiness");
-requireIncludes("src/lib/release/version.ts", "v58.26.0 Workspace Production Readiness");
-requireIncludes("package-lock.json", "58.26.0-workspace-production-readiness");
-requireIncludes("src/app/globals.css", "v58.26.0 — Workspace Production Readiness");
+requireIncludes("src/lib/release/version.ts", "58.26.1-workspace-production-qa-fixes-real-environment-hardening");
+requireIncludes("src/lib/release/version.ts", "v58.26.1 Workspace Production QA Fixes + Real Environment Hardening");
+requireIncludes("package-lock.json", "58.26.1-workspace-production-qa-fixes-real-environment-hardening");
+requireIncludes("src/app/globals.css", "v58.26.1 — Workspace Production QA Fixes + Real Environment Hardening");
 requireIncludes("src/app/(app)/app/workspace/page.tsx", "getWorkspaceIdentity");
 requireIncludes("src/app/(app)/app/workspace/page.tsx", "getWorkspacePersistenceGuardStatus");
 requireIncludes("src/app/(app)/app/workspace/page.tsx", "getWorkspaceProjectSpaceAssignments");
@@ -78,7 +81,7 @@ requireIncludes("supabase/migrations/0057_v58_25_9_4_workspace_space_project_ass
 requireIncludes("supabase/migrations/0058_v58_25_9_5_project_views_home_view_support.sql", "'home'");
 
 for (const legacy of ["/app/tasks", "/app/projects", "/app/boards", "/app/reports"]) {
-  if (!read("docs/qa/FLOWTASK_V58_26_0_WORKSPACE_PRODUCTION_CHECKLIST.md").includes(legacy)) {
+  if (!read("docs/qa/FLOWTASK_V58_26_1_SUPABASE_REAL_ENVIRONMENT_CHECKLIST.md").includes(legacy)) {
     warnings.push(`Checklist should mention legacy route QA for ${legacy}`);
   }
 }
@@ -93,3 +96,4 @@ if (warnings.length) {
   console.log("[workspace:production:ready] Warnings:");
   for (const warning of warnings) console.log(`- ${warning}`);
 }
+

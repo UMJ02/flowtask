@@ -48,10 +48,12 @@ create unique index if not exists project_views_default_per_type_unique
   on public.project_views(project_id, view_type)
   where is_default = true;
 
+drop trigger if exists workspace_spaces_set_updated_at on public.workspace_spaces;
 create trigger workspace_spaces_set_updated_at
 before update on public.workspace_spaces
 for each row execute function public.set_updated_at();
 
+drop trigger if exists project_views_set_updated_at on public.project_views;
 create trigger project_views_set_updated_at
 before update on public.project_views
 for each row execute function public.set_updated_at();
