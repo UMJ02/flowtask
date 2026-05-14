@@ -114,6 +114,11 @@ Rutas clásicas que deben mantenerse operativas durante esta etapa:
 - `/app/boards`
 - `/app/reports`
 
+
+## v58.26.2 — Workspace Performance + Query Optimization
+
+Optimiza `/app/workspace` con carga progresiva por vista: reportes, pizarras, archivos y actividad ya no se cargan siempre. Agrega `src/lib/workspace-system/performance.ts`, `WORKSPACE_QUERY_LIMITS` y `npm run workspace:performance:ready`. No requiere migración nueva.
+
 ## v58.26.1 — Workspace Production QA Fixes + Real Environment Hardening
 
 Esta versión agrega un pase post-readiness para entorno real. Incluye migración 0059, idempotencia de triggers para Workspace persistence y el nuevo comando:

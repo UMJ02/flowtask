@@ -14,6 +14,7 @@ import {
   normalizeWorkspaceView,
   slugifyWorkspaceValue,
 } from "@/lib/workspace-system/adapters";
+import { buildWorkspaceLoadPlan } from "@/lib/workspace-system/performance";
 import {
   getWorkspaceActivity,
   getWorkspaceBoards,
@@ -108,8 +109,6 @@ export default async function WorkspacePage({
     workspaceIdentity,
     rawProjects,
     rawTasks,
-    reports,
-    workspaceBoards,
     persistenceGuard,
   ] = await Promise.all([
     safeServerCall("workspace:getIdentity", () => getWorkspaceIdentity(), null),
@@ -119,12 +118,6 @@ export default async function WorkspacePage({
       () => getTasks({ includeCompleted: true }),
       [],
     ),
-    safeServerCall(
-      "workspace:getReportsOverview",
-      () => getReportsOverview(),
-      null,
-    ),
-    safeServerCall("workspace:getBoards", () => getWorkspaceBoards(), []),
     safeServerCall(
       "workspace:persistenceGuard",
       () => getWorkspacePersistenceGuardStatus(),
@@ -279,22 +272,45 @@ export default async function WorkspacePage({
           : true,
       );
 
-  const [workspaceActivity, workspaceFiles] = await Promise.all([
-    safeServerCall(
-      "workspace:getActivity",
-      () => getWorkspaceActivity(activeProject?.id ?? null),
-      [],
-    ),
-    safeServerCall(
-      "workspace:getFiles",
-      () =>
-        getWorkspaceFiles({
-          projectId: activeProject?.id ?? null,
-          projectIds: projectsInSpace.map((project) => project.id),
-          taskIds: tasks.map((task) => task.id),
-        }),
-      [],
-    ),
+  const loadPlan = buildWorkspaceLoadPlan(activeView, {
+    hasActiveProject: Boolean(activeProject),
+    commandCenter: true,
+  });
+
+  const [reports, workspaceBoards, workspaceActivity, workspaceFiles] = await Promise.all([
+    loadPlan.reports
+      ? safeServerCall(
+          "workspace:getReportsOverview",
+          () => getReportsOverview(),
+          null,
+        )
+      : Promise.resolve(null),
+    loadPlan.boards
+      ? safeServerCall(
+          "workspace:getBoards",
+          () => getWorkspaceBoards(activeProject?.id ?? null),
+          [],
+        )
+      : Promise.resolve([]),
+    loadPlan.activity
+      ? safeServerCall(
+          "workspace:getActivity",
+          () => getWorkspaceActivity(activeProject?.id ?? null),
+          [],
+        )
+      : Promise.resolve([]),
+    loadPlan.files
+      ? safeServerCall(
+          "workspace:getFiles",
+          () =>
+            getWorkspaceFiles({
+              projectId: activeProject?.id ?? null,
+              projectIds: projectsInSpace.map((project) => project.id),
+              taskIds: tasks.map((task) => task.id),
+            }),
+          [],
+        )
+      : Promise.resolve([]),
   ]);
 
   const context: WorkspaceContext = {

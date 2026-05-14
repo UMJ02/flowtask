@@ -1,4 +1,5 @@
 import { applyWorkspaceScope, getWorkspaceContext } from "@/lib/queries/workspace";
+import { WORKSPACE_QUERY_LIMITS } from "@/lib/workspace-system/performance";
 import type { WorkspaceBoardSummary, WorkspaceMemberSummary, WorkspacePermissionSummary, WorkspacePersistenceGuardStatus, WorkspaceProjectSpaceAssignment, WorkspaceProjectViewPreference, WorkspaceSpaceSummary } from "@/lib/workspace-system/view-state";
 
 export async function getWorkspaceIdentity() {
@@ -150,7 +151,7 @@ export async function getWorkspaceBoards(projectId?: string | null): Promise<Wor
       .select("id,title,description,project_id,visibility,thumbnail_url,created_at,updated_at")
       .is("deleted_at", null)
       .order("updated_at", { ascending: false })
-      .limit(18),
+      .limit(WORKSPACE_QUERY_LIMITS.boards),
     user.id,
     activeOrganizationId,
   );
@@ -225,7 +226,7 @@ export async function getWorkspaceActivity(projectId?: string | null): Promise<W
     .from("activity_logs")
     .select("id,entity_type,entity_id,action,metadata,created_at,project_id,task_id,organization_id,user_id")
     .order("created_at", { ascending: false })
-    .limit(18);
+    .limit(WORKSPACE_QUERY_LIMITS.activity);
 
   if (projectId) query = query.or(`project_id.eq.${projectId},and(entity_type.eq.project,entity_id.eq.${projectId})`);
   else if (activeOrganizationId) query = query.eq("organization_id", activeOrganizationId);
@@ -258,7 +259,7 @@ export async function getWorkspaceFiles(options: { projectId?: string | null; pr
     .from("attachments")
     .select("id,file_name,mime_type,file_size,public_url,storage_path,project_id,task_id,created_at")
     .order("created_at", { ascending: false })
-    .limit(24);
+    .limit(WORKSPACE_QUERY_LIMITS.files);
 
   if (projectIds.length && taskIds.length) query = query.or(`project_id.in.(${projectIds.join(",")}),task_id.in.(${taskIds.slice(0, 80).join(",")})`);
   else if (projectIds.length) query = query.in("project_id", projectIds);
@@ -380,7 +381,7 @@ export async function getWorkspaceProjectSpaceAssignments(): Promise<WorkspacePr
     .select("id,space_id,project_id,sort_order")
     .order("sort_order", { ascending: true })
     .order("created_at", { ascending: true })
-    .limit(500);
+    .limit(WORKSPACE_QUERY_LIMITS.projectSpaceAssignments);
 
   if (error) return [];
 
