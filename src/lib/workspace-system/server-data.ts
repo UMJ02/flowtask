@@ -195,7 +195,7 @@ export async function getWorkspaceBoards(projectId?: string | null): Promise<Wor
   }));
 }
 
-import type { WorkspaceActivityItem, WorkspaceFileSummary } from "@/lib/workspace-system/view-state";
+import type { WorkspaceActivityItem, WorkspaceFileSummary, WorkspaceNotificationSummary } from "@/lib/workspace-system/view-state";
 
 function formatWorkspaceAction(action?: string | null) {
   const labels: Record<string, string> = {
@@ -313,6 +313,54 @@ export async function getWorkspaceFiles(options: { projectId?: string | null; pr
       createdAt: row.created_at ?? null,
     };
   });
+}
+
+
+export async function getWorkspaceNotificationDigest(projectId?: string | null): Promise<WorkspaceNotificationSummary> {
+  const { supabase, user } = await getWorkspaceContext();
+  const empty: WorkspaceNotificationSummary = { unread: 0, total: 0, task: 0, project: 0, reminder: 0, comment: 0, latest: [] };
+  if (!user) return empty;
+
+  let query = supabase
+    .from("notifications")
+    .select("id,title,body,entity_type,entity_id,is_read,created_at")
+    .eq("user_id", user.id)
+    .is("deleted_at", null)
+    .order("created_at", { ascending: false })
+    .limit(WORKSPACE_QUERY_LIMITS.notifications);
+
+  if (projectId) query = query.or(`entity_id.eq.${projectId},entity_type.eq.project`);
+
+  const { data, error } = await query;
+  if (error) return empty;
+
+  const rows = (data ?? []) as Array<{
+    id: string;
+    title?: string | null;
+    body?: string | null;
+    entity_type?: string | null;
+    entity_id?: string | null;
+    is_read?: boolean | null;
+    created_at?: string | null;
+  }>;
+
+  return {
+    unread: rows.filter((row) => !row.is_read).length,
+    total: rows.length,
+    task: rows.filter((row) => row.entity_type === "task").length,
+    project: rows.filter((row) => row.entity_type === "project").length,
+    reminder: rows.filter((row) => row.entity_type === "reminder").length,
+    comment: rows.filter((row) => row.entity_type === "comment").length,
+    latest: rows.slice(0, 5).map((row) => ({
+      id: String(row.id),
+      title: row.title ?? "Notificación",
+      body: row.body ?? null,
+      entityType: row.entity_type ?? null,
+      entityId: row.entity_id ?? null,
+      isRead: Boolean(row.is_read),
+      createdAt: row.created_at ?? null,
+    })),
+  };
 }
 
 

@@ -3,8 +3,9 @@ import { AlertTriangle, CalendarClock, CheckCircle2, CircleDot, FileArchive, Fla
 import { getTaskProgress } from "@/lib/workspace-system/adapters";
 import { WorkspaceActivityTimeline } from "./workspace-activity-timeline";
 import { WorkspaceMembersPermissionsCard } from "./workspace-members-permissions";
+import { WorkspaceNotificationsAutomationPanel } from "./workspace-notifications-automation";
 import { WorkspaceHealthPanel, WorkspaceEmptyState } from "./workspace-empty-state";
-import type { WorkspaceActivityItem, WorkspaceContext, WorkspaceFileSummary, WorkspaceMemberSummary, WorkspacePermissionSummary, WorkspacePersistenceGuardStatus, WorkspaceProjectSummary, WorkspaceProjectViewPreference, WorkspaceTaskItem } from "@/lib/workspace-system/view-state";
+import type { WorkspaceActivityItem, WorkspaceContext, WorkspaceFileSummary, WorkspaceMemberSummary, WorkspacePermissionSummary, WorkspaceNotificationSummary, WorkspacePersistenceGuardStatus, WorkspaceProjectSummary, WorkspaceProjectViewPreference, WorkspaceTaskItem } from "@/lib/workspace-system/view-state";
 
 function isOverdue(task: WorkspaceTaskItem) {
   if (task.isOverdue) return true;
@@ -32,6 +33,7 @@ export function WorkspaceRightPanel({
   members,
   permissions,
   persistenceStatus,
+  notifications,
   context,
 }: {
   tasks: WorkspaceTaskItem[];
@@ -42,6 +44,7 @@ export function WorkspaceRightPanel({
   members: WorkspaceMemberSummary[];
   permissions: WorkspacePermissionSummary;
   persistenceStatus: WorkspacePersistenceGuardStatus;
+  notifications: WorkspaceNotificationSummary;
   context: WorkspaceContext;
 }) {
   const progress = getTaskProgress(tasks);
@@ -112,6 +115,9 @@ export function WorkspaceRightPanel({
           <p className="mt-1">{context.activeSavedView ? `Vista activa: ${context.activeSavedView.title}` : "Sin vista guardada activa"} · {context.activeFilters?.defaultApplied ? "default aplicado" : "configuración manual"}</p>
         </div>
       </section>
+
+
+      <WorkspaceNotificationsAutomationPanel tasks={tasks} files={files} activity={activity} notifications={notifications} />
 
       <section className="ft-ws-card p-5">
         <div className="flex items-center justify-between gap-3">

@@ -11,7 +11,7 @@ const requireFile = (rel) => { if (!exists(rel)) failures.push(`Missing required
 const requireIncludes = (rel, text) => { if (!read(rel).includes(text)) failures.push(`Expected '${text}' in ${rel}`); };
 
 const pkg = JSON.parse(read("package.json") || "{}");
-if (pkg.version !== "58.26.2-workspace-performance-query-optimization") failures.push(`Unexpected package version: ${pkg.version}`);
+if (pkg.version !== "58.26.3-workspace-notifications-activity-automation-polish") failures.push(`Unexpected package version: ${pkg.version}`);
 if (pkg.scripts?.["workspace:real-env:ready"] !== "node scripts/workspace-real-environment-hardening-check.mjs") failures.push("workspace:real-env:ready script missing");
 if (!String(pkg.scripts?.["build:preflight"] ?? "").includes("workspace:real-env:ready")) failures.push("build:preflight must include workspace:real-env:ready");
 
@@ -35,10 +35,10 @@ requireIncludes("supabase/migrations/0059_v58_26_1_workspace_real_environment_ha
 requireIncludes("supabase/migrations/0059_v58_26_1_workspace_real_environment_hardening.sql", "drop trigger if exists project_views_set_updated_at");
 requireIncludes("supabase/migrations/0059_v58_26_1_workspace_real_environment_hardening.sql", "drop trigger if exists workspace_space_projects_set_updated_at");
 requireIncludes("supabase/migrations/0059_v58_26_1_workspace_real_environment_hardening.sql", "view_type in ('home','list','board','timeline','table','canvas','files','reports')");
-requireIncludes("src/lib/release/version.ts", "58.26.2-workspace-performance-query-optimization");
-requireIncludes("src/lib/release/version.ts", "v58.26.2 Workspace Performance + Query Optimization");
-requireIncludes("src/app/globals.css", "v58.26.2 — Workspace Performance + Query Optimization");
-requireIncludes("package-lock.json", "58.26.2-workspace-performance-query-optimization");
+requireIncludes("src/lib/release/version.ts", "58.26.3-workspace-notifications-activity-automation-polish");
+requireIncludes("src/lib/release/version.ts", "v58.26.3 Workspace Notifications + Activity Automation Polish");
+requireIncludes("src/app/globals.css", "v58.26.3 — Workspace Notifications + Activity Automation Polish");
+requireIncludes("package-lock.json", "58.26.3-workspace-notifications-activity-automation-polish");
 
 const nvmrc = read(".nvmrc").trim();
 if (nvmrc !== "20") warnings.push(`.nvmrc is '${nvmrc}', expected Node 20 for deploy parity.`);

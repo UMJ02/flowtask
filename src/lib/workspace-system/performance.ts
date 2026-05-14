@@ -5,6 +5,7 @@ export type WorkspaceLoadPlan = {
   boards: boolean;
   files: boolean;
   activity: boolean;
+  notifications: boolean;
   reason: string;
 };
 
@@ -13,6 +14,7 @@ const BOARD_VIEWS = new Set<WorkspaceViewId>(["home", "canvas", "files"]);
 const FILE_VIEWS = new Set<WorkspaceViewId>(["home", "files"]);
 const ACTIVITY_VIEWS = new Set<WorkspaceViewId>(["home", "files"]);
 const REPORT_VIEWS = new Set<WorkspaceViewId>(["home", "reports"]);
+const NOTIFICATION_VIEWS = new Set<WorkspaceViewId>(["home", "files"]);
 
 export function buildWorkspaceLoadPlan(
   view: WorkspaceViewId,
@@ -24,6 +26,7 @@ export function buildWorkspaceLoadPlan(
     boards: BOARD_VIEWS.has(view) || commandCenterHints,
     files: FILE_VIEWS.has(view),
     activity: ACTIVITY_VIEWS.has(view),
+    notifications: NOTIFICATION_VIEWS.has(view),
     reason: options.hasActiveProject
       ? `project-scoped:${view}`
       : `workspace-scoped:${view}`,
@@ -34,6 +37,7 @@ export const WORKSPACE_QUERY_LIMITS = {
   boards: 18,
   activity: 18,
   files: 24,
+  notifications: 12,
   projectViews: 80,
   projectSpaceAssignments: 500,
 } as const;

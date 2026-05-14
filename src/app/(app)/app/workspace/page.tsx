@@ -20,6 +20,7 @@ import {
   getWorkspaceBoards,
   getWorkspaceFiles,
   getWorkspaceIdentity,
+  getWorkspaceNotificationDigest,
   getWorkspacePersistedSpaces,
   getWorkspacePersistenceGuardStatus,
   getWorkspacePermissionSummary,
@@ -277,7 +278,7 @@ export default async function WorkspacePage({
     commandCenter: true,
   });
 
-  const [reports, workspaceBoards, workspaceActivity, workspaceFiles] = await Promise.all([
+  const [reports, workspaceBoards, workspaceActivity, workspaceFiles, workspaceNotifications] = await Promise.all([
     loadPlan.reports
       ? safeServerCall(
           "workspace:getReportsOverview",
@@ -311,6 +312,13 @@ export default async function WorkspacePage({
           [],
         )
       : Promise.resolve([]),
+    loadPlan.notifications
+      ? safeServerCall(
+          "workspace:getNotifications",
+          () => getWorkspaceNotificationDigest(activeProject?.id ?? null),
+          { unread: 0, total: 0, task: 0, project: 0, reminder: 0, comment: 0, latest: [] },
+        )
+      : Promise.resolve({ unread: 0, total: 0, task: 0, project: 0, reminder: 0, comment: 0, latest: [] }),
   ]);
 
   const context: WorkspaceContext = {
@@ -362,6 +370,7 @@ export default async function WorkspacePage({
       projectSpaceAssignments={projectSpaceAssignments}
       members={workspaceMembers}
       permissions={workspacePermissions}
+      notifications={workspaceNotifications}
       persistenceStatus={
         persistenceGuard ?? {
           enabled: false,

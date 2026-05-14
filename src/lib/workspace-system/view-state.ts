@@ -119,6 +119,34 @@ export type WorkspaceActivityItem = {
   createdAt: string;
 };
 
+
+export type WorkspaceNotificationSummary = {
+  unread: number;
+  total: number;
+  task: number;
+  project: number;
+  reminder: number;
+  comment: number;
+  latest: Array<{
+    id: string;
+    title: string;
+    body?: string | null;
+    entityType?: string | null;
+    entityId?: string | null;
+    isRead: boolean;
+    createdAt?: string | null;
+  }>;
+};
+
+export type WorkspaceAutomationSignal = {
+  id: string;
+  tone: "emerald" | "amber" | "rose" | "blue" | "violet" | "slate";
+  title: string;
+  description: string;
+  actionHref?: string | null;
+  actionLabel?: string | null;
+};
+
 export type WorkspaceFileSummary = {
   id: string;
   fileName: string;

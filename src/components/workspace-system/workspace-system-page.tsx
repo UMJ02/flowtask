@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AlertTriangle, Command, FolderKanban, Menu, PanelRightClose, PanelRightOpen, Search, SlidersHorizontal, X } from "lucide-react";
 import type { ReportsOverview } from "@/lib/queries/reports";
-import type { WorkspaceActivityItem, WorkspaceBoardSummary, WorkspaceContext, WorkspaceFileSummary, WorkspaceMemberSummary, WorkspacePermissionSummary, WorkspacePersistenceGuardStatus, WorkspaceProjectSpaceAssignment, WorkspaceProjectSummary, WorkspaceProjectViewPreference, WorkspaceSpaceSummary, WorkspaceTaskItem, WorkspaceViewId } from "@/lib/workspace-system/view-state";
+import type { WorkspaceActivityItem, WorkspaceBoardSummary, WorkspaceContext, WorkspaceFileSummary, WorkspaceMemberSummary, WorkspaceNotificationSummary, WorkspacePermissionSummary, WorkspacePersistenceGuardStatus, WorkspaceProjectSpaceAssignment, WorkspaceProjectSummary, WorkspaceProjectViewPreference, WorkspaceSpaceSummary, WorkspaceTaskItem, WorkspaceViewId } from "@/lib/workspace-system/view-state";
 import { BoardView } from "./views/board-view";
 import { CanvasView } from "./views/canvas-view";
 import { FilesView } from "./views/files-view";
@@ -38,6 +38,7 @@ export function WorkspaceSystemPage({
   members,
   permissions,
   persistenceStatus,
+  notifications,
   context,
 }: {
   activeView: WorkspaceViewId;
@@ -53,6 +54,7 @@ export function WorkspaceSystemPage({
   members: WorkspaceMemberSummary[];
   permissions: WorkspacePermissionSummary;
   persistenceStatus: WorkspacePersistenceGuardStatus;
+  notifications: WorkspaceNotificationSummary;
   context: WorkspaceContext;
 }) {
   const router = useRouter();
@@ -228,7 +230,7 @@ export function WorkspaceSystemPage({
                   <X className="h-4 w-4" /> Ocultar resumen
                 </button>
               </div>
-              <WorkspaceRightPanel tasks={tasks} projects={projects} files={files} activity={activity} projectViews={projectViews} members={members} permissions={permissions} persistenceStatus={persistenceStatus} context={context} />
+              <WorkspaceRightPanel tasks={tasks} projects={projects} files={files} activity={activity} projectViews={projectViews} members={members} permissions={permissions} persistenceStatus={persistenceStatus} notifications={notifications} context={context} />
             </div>
           ) : null}
         </div>

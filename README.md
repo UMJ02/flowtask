@@ -140,3 +140,13 @@ npm run typecheck
 npm run build:preflight
 npm run build
 ```
+
+## v58.26.3 — Workspace Notifications + Activity Automation Polish
+
+Esta versión conecta el Workspace contextual con señales reales de notificaciones y actividad. Agrega un panel de automatización contextual en el Right Panel, resume notificaciones visibles, sugiere acciones a partir de tareas vencidas/importantes/de hoy, archivos recientes y actividad reciente, y mantiene carga progresiva mediante `buildWorkspaceLoadPlan()`.
+
+Comando nuevo:
+
+```bash
+npm run workspace:automation:ready
+```
