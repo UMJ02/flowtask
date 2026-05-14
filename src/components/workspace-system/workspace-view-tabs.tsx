@@ -1,10 +1,11 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { BarChart3, CalendarRange, Columns3, FileArchive, LayoutGrid, List, Table2 } from "lucide-react";
+import { BarChart3, CalendarRange, Columns3, FileArchive, Home, LayoutGrid, List, Table2 } from "lucide-react";
 import type { WorkspaceProjectViewPreference, WorkspaceViewId } from "@/lib/workspace-system/view-state";
 
 const views: Array<{ id: WorkspaceViewId; label: string; icon: typeof List }> = [
+  { id: "home", label: "Home", icon: Home },
   { id: "list", label: "Lista", icon: List },
   { id: "board", label: "Board", icon: Columns3 },
   { id: "timeline", label: "Timeline", icon: CalendarRange },

@@ -8,6 +8,7 @@ import type { WorkspaceActivityItem, WorkspaceBoardSummary, WorkspaceContext, Wo
 import { BoardView } from "./views/board-view";
 import { CanvasView } from "./views/canvas-view";
 import { FilesView } from "./views/files-view";
+import { HomeView } from "./views/home-view";
 import { ListView } from "./views/list-view";
 import { ReportsView } from "./views/reports-view";
 import { TableView } from "./views/table-view";
@@ -163,6 +164,7 @@ export function WorkspaceSystemPage({
 
         <div className={rightPanelOpen ? "mt-5 grid gap-5 2xl:grid-cols-[minmax(0,1fr)_340px]" : "mt-5 grid gap-5"}>
           <main className="min-w-0">
+            {activeView === "home" ? <HomeView tasks={tasks} projects={projects} boards={boards} files={files} activity={activity} projectViews={projectViews} context={context} /> : null}
             {activeView === "list" ? <ListView tasks={tasks} /> : null}
             {activeView === "board" ? <BoardView tasks={tasks} /> : null}
             {activeView === "timeline" ? <TimelineView tasks={tasks} /> : null}

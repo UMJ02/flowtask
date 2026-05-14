@@ -66,3 +66,7 @@ La persistencia Workspace usa `workspace_spaces` y `project_views` cuando están
 - Agrega `workspace_space_projects` como capa opcional para asignar proyectos reales a espacios persistidos.
 - `/app/workspace` ahora puede crear, renombrar, archivar espacios y organizar proyectos sin reemplazar rutas clásicas.
 - Mantiene fallback con espacios generados si la migración 0057 no está disponible.
+
+## v58.25.9.5 — Workspace Project Home Dashboard
+
+Agrega la vista `Home` al Workspace System para que cada proyecto/espacio tenga una portada operativa con progreso, tareas importantes, próximos vencimientos, pizarras, archivos, actividad reciente, vistas guardadas y accesos rápidos. Requiere aplicar `0058_v58_25_9_5_project_views_home_view_support.sql` para permitir vistas guardadas de tipo `home`.

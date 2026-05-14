@@ -69,8 +69,8 @@ export function getTaskProgress(tasks: WorkspaceTaskItem[]) {
 
 export function normalizeWorkspaceView(value?: string | string[] | null) {
   const raw = Array.isArray(value) ? value[0] : value;
-  const allowed = new Set(["list", "board", "timeline", "table", "canvas", "files", "reports"]);
-  return allowed.has(raw ?? "") ? raw : "list";
+  const allowed = new Set(["home", "list", "board", "timeline", "table", "canvas", "files", "reports"]);
+  return allowed.has(raw ?? "") ? raw : "home";
 }
 
 export function getSpaceKeyFromTask(task: WorkspaceTaskItem) {

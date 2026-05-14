@@ -14,6 +14,7 @@ function workspaceHref(params: Record<string, string | null | undefined>) {
 }
 
 const viewNavigation: Array<{ view: WorkspaceViewId; label: string; icon: typeof Inbox }> = [
+  { view: "home", label: "Home del proyecto", icon: Home },
   { view: "list", label: "Mi trabajo", icon: Inbox },
   { view: "board", label: "Board", icon: Columns3 },
   { view: "timeline", label: "Timeline", icon: CalendarRange },
@@ -64,7 +65,7 @@ export function WorkspaceSidebarPro({
           </span>
           <span className="rounded-full bg-emerald-400/15 px-2 py-1 text-[10px] font-black uppercase tracking-[.14em] text-emerald-200">Live</span>
         </div>
-        <Link href={workspaceHref({ view: "list" })} onClick={onNavigate} className="mt-3 flex h-10 items-center justify-center rounded-[14px] bg-emerald-400/15 text-sm font-extrabold text-emerald-100 transition hover:bg-emerald-400/20">
+        <Link href={workspaceHref({ view: "home" })} onClick={onNavigate} className="mt-3 flex h-10 items-center justify-center rounded-[14px] bg-emerald-400/15 text-sm font-extrabold text-emerald-100 transition hover:bg-emerald-400/20">
           Todo el workspace
         </Link>
       </div>

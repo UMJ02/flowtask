@@ -215,7 +215,7 @@ export default async function WorkspacePage({
   const savedFilters = getSavedViewFilters(activeSavedView);
 
   const activeView = normalizeWorkspaceView(
-    requestedView ?? savedFilters.view ?? activeSavedView?.viewType ?? "list",
+    requestedView ?? savedFilters.view ?? activeSavedView?.viewType ?? "home",
   ) as WorkspaceViewId;
   const effectiveStatus = requestedStatus ?? savedFilters.status ?? null;
   const effectiveGroupBy = normalizeGroupBy(

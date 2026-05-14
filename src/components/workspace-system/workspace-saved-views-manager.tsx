@@ -23,6 +23,7 @@ import type {
 } from "@/lib/workspace-system/view-state";
 
 const viewLabels: Record<WorkspaceViewId, string> = {
+  home: "Home",
   list: "Lista",
   board: "Board",
   timeline: "Timeline",
@@ -308,7 +309,7 @@ export function WorkspaceSavedViewsManager({
             Saved Views Manager
           </h3>
           <p className="mt-1 max-w-3xl text-sm font-semibold text-slate-500">
-            Guarda configuraciones de Lista, Board, Timeline, Tabla, Canvas,
+            Guarda configuraciones de Home, Lista, Board, Timeline, Tabla, Canvas,
             Archivos o Reportes dentro del proyecto activo sin reemplazar las
             rutas actuales.
           </p>
