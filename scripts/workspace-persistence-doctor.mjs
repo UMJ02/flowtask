@@ -51,7 +51,7 @@ requireIncludes("src/components/workspace-system/workspace-saved-views-manager.t
 
 const pkg = JSON.parse(read("package.json"));
 if (pkg.scripts?.["workspace:doctor"] !== "node scripts/workspace-persistence-doctor.mjs") failures.push("package.json must expose workspace:doctor");
-if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.25.9.8") failures.push("verify:current must target v58.25.9.8");
+if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.26.0") failures.push("verify:current must target v58.25.9.8");
 
 const migration = read("supabase/migrations/0056_v58_25_9_workspace_persistence_foundation.sql");
 for (const fn of ["public.is_org_admin_or_manager", "public.is_project_member", "public.has_project_role", "public.set_updated_at"]) {
@@ -66,7 +66,7 @@ requireIncludes("src/lib/workspace-system/server-data.ts", "getWorkspaceProjectS
 requireIncludes("src/components/workspace-system/workspace-spaces-manager.tsx", "Workspace Spaces Manager + Project Organization");
 requireIncludes("src/components/workspace-system/workspace-system-page.tsx", "WorkspaceSpacesManager");
 requireIncludes("src/app/globals.css", "ft-ws-spaces-manager");
-requireIncludes("src/app/globals.css", "v58.25.9.8 — Workspace Navigation + Search Command Center");
+requireIncludes("src/app/globals.css", "v58.26.0 — Workspace Production Readiness");
 requireIncludes("src/components/workspace-system/views/home-view.tsx", "Home operativo");
 requireIncludes("src/components/workspace-system/workspace-system-page.tsx", "HomeView");
 requireIncludes("src/components/workspace-system/workspace-system-page.tsx", "permissions.canCreateTask");

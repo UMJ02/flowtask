@@ -6536,3 +6536,27 @@
     border-radius: 24px;
   }
 }
+
+/* v58.26.0 — Workspace Production Readiness */
+.ft-ws-production-readiness-note {
+  border: 1px solid var(--ft-workspace-border, #e5eaf1);
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(22, 199, 132, 0.08), rgba(255, 255, 255, 0.92));
+  box-shadow: var(--ft-workspace-shadow, 0 12px 40px rgba(15, 23, 42, .05));
+}
+.ft-ws-production-checklist-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+.ft-ws-production-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 800;
+  background: #ecfdf5;
+  color: #047857;
+}

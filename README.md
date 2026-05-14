@@ -83,3 +83,33 @@ Agrega la vista `Home` al Workspace System para que cada proyecto/espacio tenga 
 ## v58.25.9.7 — Workspace Empty States + Client QA Hardening
 
 Agrega estados vacíos profesionales y un panel `Workspace Health` para validar visualmente persistencia, espacios, vistas guardadas, permisos y disponibilidad de datos dentro de `/app/workspace`. No agrega migraciones nuevas.
+
+## v58.26.0 — Workspace Production Readiness
+
+La línea Workspace-First queda consolidada para validación de producción.
+
+Validación recomendada:
+
+```bash
+nvm use 20
+npm install
+npm run workspace:doctor
+npm run workspace:production:ready
+npm run verify:current
+npm run typecheck
+npm run build:preflight
+npm run build
+```
+
+Migraciones requeridas para la experiencia Workspace persistente:
+
+- `0056_v58_25_9_workspace_persistence_foundation.sql`
+- `0057_v58_25_9_4_workspace_space_project_assignments.sql`
+- `0058_v58_25_9_5_project_views_home_view_support.sql`
+
+Rutas clásicas que deben mantenerse operativas durante esta etapa:
+
+- `/app/tasks`
+- `/app/projects`
+- `/app/boards`
+- `/app/reports`

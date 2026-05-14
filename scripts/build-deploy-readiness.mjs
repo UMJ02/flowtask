@@ -4,7 +4,7 @@ import path from "node:path";
 
 const root = process.cwd();
 const failures = [];
-const expectedVersion = "58.25.9.8-workspace-navigation-search-command-center";
+const expectedVersion = "58.26.0-workspace-production-readiness";
 
 function exists(rel) { return fs.existsSync(path.join(root, rel)); }
 function read(rel) { return exists(rel) ? fs.readFileSync(path.join(root, rel), "utf8") : ""; }
@@ -23,10 +23,10 @@ for (const rel of [
   "scripts/validate-env.mjs",
   "scripts/design-doctor.mjs",
   "scripts/density-guard.mjs",
-  "scripts/verify-v58.25.9.8.mjs",
+  "scripts/verify-v58.26.0.mjs",
   "scripts/workspace-persistence-doctor.mjs",
-  "docs/release/V58_25_9_8_WORKSPACE_NAVIGATION_SEARCH_COMMAND_CENTER.md",
-  "docs/qa/FLOWTASK_V58_25_9_8_WORKSPACE_NAVIGATION_SEARCH_COMMAND_CENTER_QA.md",
+  "docs/release/V58_26_0_WORKSPACE_PRODUCTION_READINESS.md",
+  "docs/qa/FLOWTASK_V58_26_0_WORKSPACE_PRODUCTION_READINESS_QA.md",
   "src/components/boards/boards-home.tsx",
   "src/components/notifications/notifications-command-center.tsx",
   "src/app/(app)/app/workspace/page.tsx",
@@ -49,8 +49,8 @@ for (const rel of [
 const pkg = JSON.parse(read("package.json"));
 const scripts = pkg.scripts ?? {};
 if (pkg.version !== expectedVersion) failures.push(`Unexpected package version: ${pkg.version}`);
-if (scripts["verify:current"] !== "npm run verify:v58.25.9.8") failures.push("verify:current must target verify:v58.25.9.8");
-if (scripts["verify:v58.25.9.8"] !== "node scripts/verify-v58.25.9.8.mjs") failures.push("verify:v58.25.9.8 must target scripts/verify-v58.25.9.8.mjs");
+if (scripts["verify:current"] !== "npm run verify:v58.26.0") failures.push("verify:current must target verify:v58.26.0");
+if (scripts["verify:v58.26.0"] !== "node scripts/verify-v58.26.0.mjs") failures.push("verify:v58.26.0 must target scripts/verify-v58.26.0.mjs");
 
 const vercel = JSON.parse(read("vercel.json"));
 if (vercel.framework !== "nextjs") failures.push("vercel.json framework must be nextjs");
@@ -61,7 +61,7 @@ requireIncludes("package-lock.json", expectedVersion);
 requireIncludes("src/components/boards/boards-home.tsx", "board-home-hero-compact-actions");
 requireIncludes("src/components/boards/boards-home.tsx", "board-home-create-preview-red");
 requireIncludes("src/components/notifications/notifications-command-center.tsx", "ft-notifications-hero-balanced");
-requireIncludes("src/app/globals.css", "v58.25.9.8 — Workspace Navigation + Search Command Center");
+requireIncludes("src/app/globals.css", "v58.26.0 — Workspace Production Readiness");
 requireIncludes("src/app/(app)/app/workspace/page.tsx", "getTasks({ includeCompleted: true })");
 requireIncludes("src/app/(app)/app/workspace/page.tsx", "getWorkspaceIdentity()");
 requireIncludes("src/app/(app)/app/workspace/page.tsx", "invalidProjectId");
@@ -137,4 +137,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log("[build-deploy-readiness] OK — v58.25.9.8 workspace navigation search command center readiness aligned.");
+console.log("[build-deploy-readiness] OK — v58.26.0 workspace production readiness aligned.");
