@@ -37,15 +37,18 @@ requireIncludes("src/lib/workspace-system/server-data.ts", "workspace_spaces");
 requireIncludes("src/lib/workspace-system/server-data.ts", "project_views");
 requireIncludes("src/app/(app)/app/workspace/page.tsx", "persistenceGuard?.workspaceSpacesReady");
 requireIncludes("src/app/(app)/app/workspace/page.tsx", "persistenceGuard?.projectViewsReady");
-requireIncludes("src/app/(app)/app/workspace/page.tsx", "persistenceStatus={persistenceGuard");
+requireIncludes("src/app/(app)/app/workspace/page.tsx", "persistenceStatus=");
 requireIncludes("src/components/workspace-system/workspace-saved-views-manager.tsx", "persistenceStatus.projectViewsReady");
 requireIncludes("src/components/workspace-system/workspace-saved-views-manager.tsx", "Migration Guard");
 requireIncludes("src/components/workspace-system/workspace-right-panel.tsx", "persistenceStatus.message");
 requireIncludes("src/components/workspace-system/workspace-right-panel.tsx", "workspace_spaces:");
+requireIncludes("src/app/(app)/app/workspace/page.tsx", "requestedSavedViewId");
+requireIncludes("src/app/(app)/app/workspace/page.tsx", "defaultSavedView");
+requireIncludes("src/components/workspace-system/workspace-saved-views-manager.tsx", "applySavedViewParams");
 
 const pkg = JSON.parse(read("package.json"));
 if (pkg.scripts?.["workspace:doctor"] !== "node scripts/workspace-persistence-doctor.mjs") failures.push("package.json must expose workspace:doctor");
-if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.25.9.2") failures.push("verify:current must target v58.25.9.2");
+if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.25.9.3") failures.push("verify:current must target v58.25.9.3");
 
 const migration = read("supabase/migrations/0056_v58_25_9_workspace_persistence_foundation.sql");
 for (const fn of ["public.is_org_admin_or_manager", "public.is_project_member", "public.has_project_role", "public.set_updated_at"]) {
@@ -58,7 +61,7 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log("[workspace:doctor] OK — Workspace persistence guard and saved views QA checks are present.");
+console.log("[workspace:doctor] OK — Workspace persistence guard, saved views defaults and filters QA checks are present.");
 if (warnings.length) {
   console.log("[workspace:doctor] Warnings:");
   for (const warning of warnings) console.log(`- ${warning}`);

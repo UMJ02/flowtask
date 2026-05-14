@@ -5887,3 +5887,39 @@
   color: inherit;
   font-weight: 950;
 }
+
+/* v58.25.9.3 Workspace Saved Views Defaults + Filters Persistence */
+.ft-ws-view-default-dot {
+  box-shadow: 0 0 0 4px rgba(245, 158, 11, .15), 0 0 0 1px rgba(245, 158, 11, .65) inset;
+  background: #f59e0b;
+}
+
+.ft-ws-saved-view-card[data-active="true"] {
+  border-color: rgba(22, 199, 132, .38);
+  background: linear-gradient(135deg, rgba(236, 253, 245, .9), rgba(255, 255, 255, .94));
+}
+
+.ft-ws-saved-view-filter-summary {
+  margin-top: 8px;
+  border-radius: 14px;
+  background: rgba(248, 250, 252, .92);
+  padding: 8px 10px;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 850;
+  line-height: 1.45;
+}
+
+.ft-ws-saved-view-active-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  background: #ecfdf5;
+  padding: 5px 9px;
+  color: #047857;
+  font-size: 10px;
+  font-weight: 950;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}

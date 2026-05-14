@@ -14,6 +14,31 @@ export type WorkspaceSpaceSummary = {
   projectCount: number;
 };
 
+export type WorkspaceSavedViewConfig = {
+  source?: string;
+  filters?: {
+    view?: WorkspaceViewId;
+    space?: string | null;
+    projectId?: string | null;
+    status?: string | null;
+    groupBy?: WorkspaceGroupBy;
+    sort?: WorkspaceSortKey;
+    columns?: string[];
+  };
+  saved_at?: string;
+  [key: string]: unknown;
+};
+
+export type WorkspaceGroupBy = "status" | "priority" | "project" | "none";
+export type WorkspaceSortKey = "updated" | "due_date" | "priority" | "title";
+
+export type WorkspaceActiveSavedView = {
+  id: string;
+  title: string;
+  viewType: WorkspaceViewId;
+  isDefault: boolean;
+};
+
 export type WorkspaceContext = {
   workspaceId: string;
   workspaceName: string;
@@ -31,7 +56,13 @@ export type WorkspaceContext = {
     space?: string | null;
     projectId?: string | null;
     status?: string | null;
+    groupBy?: WorkspaceGroupBy;
+    sort?: WorkspaceSortKey;
+    columns?: string[];
+    savedViewId?: string | null;
+    defaultApplied?: boolean;
   };
+  activeSavedView?: WorkspaceActiveSavedView | null;
 };
 
 export type WorkspaceTaskItem = {
@@ -107,7 +138,7 @@ export type WorkspaceProjectViewPreference = {
   projectId: string;
   viewType: WorkspaceViewId;
   title: string;
-  config: Record<string, unknown>;
+  config: WorkspaceSavedViewConfig;
   isDefault: boolean;
   sortOrder: number;
 };

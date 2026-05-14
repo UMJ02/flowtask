@@ -18,10 +18,12 @@ export function WorkspaceViewTabs({ activeView, projectViews = [] }: { activeVie
   const router = useRouter();
   const params = useSearchParams();
   const persistedByType = new Map(projectViews.map((view) => [view.viewType, view]));
+  const defaultByType = new Map(projectViews.filter((view) => view.isDefault).map((view) => [view.viewType, view]));
 
   function setView(view: WorkspaceViewId) {
     const next = new URLSearchParams(params.toString());
     next.set("view", view);
+    next.delete("savedViewId");
     router.replace(`/app/workspace?${next.toString()}`, { scroll: false });
   }
 
@@ -34,7 +36,7 @@ export function WorkspaceViewTabs({ activeView, projectViews = [] }: { activeVie
           <button key={view.id} type="button" onClick={() => setView(view.id)} className={active ? "ft-ws-tab ft-ws-tab-active" : "ft-ws-tab"}>
             <Icon className="h-4 w-4" />
             {persistedByType.get(view.id)?.title ?? view.label}
-            {persistedByType.has(view.id) ? <span className="ft-ws-view-saved-dot" title="Vista persistida" /> : null}
+            {persistedByType.has(view.id) ? <span className={defaultByType.has(view.id) ? "ft-ws-view-saved-dot ft-ws-view-default-dot" : "ft-ws-view-saved-dot"} title={defaultByType.has(view.id) ? "Vista predeterminada" : "Vista persistida"} /> : null}
           </button>
         );
       })}

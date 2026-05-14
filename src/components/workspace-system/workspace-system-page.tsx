@@ -47,17 +47,24 @@ export function WorkspaceSystemPage({
   const router = useRouter();
   const searchParams = useSearchParams();
   const statusParam = context.activeFilters?.status ?? "todos";
+  const groupByParam = context.activeFilters?.groupBy ?? "status";
+  const sortParam = context.activeFilters?.sort ?? "updated";
   const [showQuickCreate, setShowQuickCreate] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [rightPanelOpen, setRightPanelOpen] = useState(true);
   const [savedViewsOpen, setSavedViewsOpen] = useState(false);
 
-  function setStatusFilter(status: string) {
+  function setWorkspaceParam(key: string, value: string, emptyValue = "") {
     const next = new URLSearchParams(searchParams.toString());
-    if (status === "todos") next.delete("status");
-    else next.set("status", status);
+    if (value === emptyValue) next.delete(key);
+    else next.set(key, value);
+    if (key !== "savedViewId") next.delete("savedViewId");
     router.replace(`/app/workspace?${next.toString()}`, { scroll: false });
     router.refresh();
+  }
+
+  function setStatusFilter(status: string) {
+    setWorkspaceParam("status", status, "todos");
   }
 
   return (
@@ -107,8 +114,21 @@ export function WorkspaceSystemPage({
               <option value="pendiente">Pendiente</option>
               <option value="concluido">Concluido</option>
             </select>
-            <button className="ft-ws-control h-11 px-4 text-sm font-bold">Agrupar: Estado</button>
-            <button type="button" onClick={() => setSavedViewsOpen((value) => !value)} className="ft-ws-control h-11 px-4 text-sm font-bold">Vistas guardadas</button>
+            <select className="ft-ws-control h-11 px-4 text-sm font-bold" value={groupByParam} onChange={(event) => setWorkspaceParam("groupBy", event.target.value, "status")}>
+              <option value="status">Agrupar: Estado</option>
+              <option value="priority">Agrupar: Prioridad</option>
+              <option value="project">Agrupar: Proyecto</option>
+              <option value="none">Sin agrupación</option>
+            </select>
+            <select className="ft-ws-control h-11 px-4 text-sm font-bold" value={sortParam} onChange={(event) => setWorkspaceParam("sort", event.target.value, "updated")}>
+              <option value="updated">Orden: reciente</option>
+              <option value="due_date">Orden: fecha</option>
+              <option value="priority">Orden: prioridad</option>
+              <option value="title">Orden: título</option>
+            </select>
+            <button type="button" onClick={() => setSavedViewsOpen((value) => !value)} className={context.activeSavedView ? "ft-ws-control h-11 border-emerald-200 bg-emerald-50 px-4 text-sm font-bold text-emerald-700" : "ft-ws-control h-11 px-4 text-sm font-bold"}>
+              {context.activeSavedView ? `Vista: ${context.activeSavedView.title}` : "Vistas guardadas"}
+            </button>
             <button type="button" onClick={() => setShowQuickCreate((value) => !value)} className="ft-ws-active h-11 rounded-[16px] px-5 text-sm font-extrabold">+ Nueva tarea</button>
             <button type="button" onClick={() => setRightPanelOpen((value) => !value)} className="ft-ws-control hidden h-11 px-4 text-sm font-bold 2xl:inline-flex">
               {rightPanelOpen ? <PanelRightClose className="h-4 w-4" /> : <PanelRightOpen className="h-4 w-4" />}

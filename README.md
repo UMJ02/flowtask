@@ -36,6 +36,14 @@ npm run dev
 
 Esta versión introduce la base DB opcional para persistencia. No reemplaza rutas existentes, no duplica BoardPage y no toca `safe_delete_visual_board`.
 
+
+## v58.25.9.3 — Workspace Saved Views Defaults + Filters Persistence
+
+- Saved views now persist the operational state of `/app/workspace`, including status filter, grouping, sort and visible columns metadata.
+- `savedViewId` can reopen a saved configuration without leaving the workspace.
+- Default project views can be applied automatically when opening a project without an explicit `view` query.
+- No new migration is required; this version uses `project_views.config` from migration `0056`.
+
 ## v58.25.9.2 — Workspace Persistence QA + Supabase Migration Guard
 
 Esta versión agrega guardas de persistencia para que `/app/workspace` siga funcionando aunque la migración `0056_v58_25_9_workspace_persistence_foundation.sql` no se haya aplicado todavía o esté parcialmente disponible.

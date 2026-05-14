@@ -90,11 +90,12 @@ export function WorkspaceRightPanel({
         </div>
         <div className="mt-4 grid grid-cols-2 gap-3">
           <div className="ft-ws-mini-metric"><b>{persistedViews}</b><span>Vistas guardadas</span></div>
-          <div className="ft-ws-mini-metric"><b>{context.hasProjectFilter ? "Proyecto" : "Workspace"}</b><span>Contexto</span></div>
+          <div className="ft-ws-mini-metric"><b>{context.activeSavedView ? "Activa" : context.hasProjectFilter ? "Proyecto" : "Workspace"}</b><span>Contexto</span></div>
         </div>
         <div className="ft-ws-migration-guard mt-3" data-ready={persistenceStatus.enabled ? "true" : "false"}>
           <p>{persistenceStatus.message}</p>
           <p className="mt-1">workspace_spaces: {persistenceStatus.workspaceSpacesReady ? "OK" : "fallback"} · project_views: {persistenceStatus.projectViewsReady ? "OK" : "guardado bloqueado"}</p>
+          <p className="mt-1">{context.activeSavedView ? `Vista activa: ${context.activeSavedView.title}` : "Sin vista guardada activa"} · {context.activeFilters?.defaultApplied ? "default aplicado" : "configuración manual"}</p>
         </div>
       </section>
 

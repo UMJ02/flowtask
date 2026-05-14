@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "58.25.9.2-workspace-persistence-qa-supabase-migration-guard",
+  "version": "58.25.9.3-workspace-saved-views-defaults-filters-persistence",
   "private": true,
   "scripts": {
     "dev": "node node_modules/next/dist/bin/next dev",
@@ -58,7 +58,7 @@
     "release:repo:current": "npm run release:repo:v58.21.0",
     "qa:current": "npm run validate:node && npm run validate:env && npm run verify:current && npm run runtime:check && npm run typecheck && npm run security:check && npm run performance:check && npm run hardening:final:check && npm run ops:check && npm run deploy:production:ready",
     "release:current": "npm run clean && npm run release:repo:v58.20 && npm run qa:current && npm run qa:functional && npm run qa:report && npm run ux:review && npm run preprod:validate && npm run production:gate",
-    "verify:current": "npm run verify:v58.25.9.2",
+    "verify:current": "npm run verify:v58.25.9.3",
     "release:repo:v54.3.3": "npm run verify:current && npm run runtime:check && npm run typecheck",
     "verify:v54.3.4": "node scripts/verify-v54.3.4.mjs",
     "release:repo:v54.3.4": "npm run verify:current && npm run runtime:check && npm run typecheck",
@@ -166,7 +166,8 @@
     "verify:v58.25.9": "node scripts/verify-v58.25.9.mjs",
     "verify:v58.25.9.1": "node scripts/verify-v58.25.9.1.mjs",
     "verify:v58.25.9.2": "node scripts/verify-v58.25.9.2.mjs",
-    "workspace:doctor": "node scripts/workspace-persistence-doctor.mjs"
+    "workspace:doctor": "node scripts/workspace-persistence-doctor.mjs",
+    "verify:v58.25.9.3": "node scripts/verify-v58.25.9.3.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
