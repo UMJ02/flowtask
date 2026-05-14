@@ -1,6 +1,6 @@
-# FlowTask — v58.25.9.8 Workspace Navigation + Search Command Center
+# FlowTask — v58.26.4 Workspace Collaboration + Share + Mobile Polish
 
-Base: **v58.25.9.7 — Workspace Empty States + Client QA Hardening**
+Base: **v58.26.3 — Workspace Notifications + Activity Automation Polish**
 
 ## Objetivo
 
@@ -149,4 +149,37 @@ Comando nuevo:
 
 ```bash
 npm run workspace:automation:ready
+```
+
+
+## v58.26.4 — Workspace Collaboration + Share + Mobile Polish
+
+Esta versión agrega una capa de colaboración controlada para el Workspace System sin tocar RLS ni agregar migraciones.
+
+Incluye:
+
+- Nuevo `WorkspaceSharePanel` para compartir contexto de workspace/proyecto.
+- Botón `Compartir` conectado desde el header contextual y mobile toolbar.
+- Copiar link de Home, proyecto activo, vista actual y vista guardada activa.
+- Lista de miembros y roles con mejor UX colaborativa.
+- Estados claros cuando el usuario no puede compartir o gestionar acceso.
+- Links internos protegidos por los permisos existentes del proyecto/workspace.
+- Pulido responsive del panel de compartir y action bar mobile.
+- Nuevo comando `npm run workspace:collaboration:ready`.
+
+Validación recomendada:
+
+```bash
+nvm use 20
+npm install
+npm run workspace:doctor
+npm run workspace:production:ready
+npm run workspace:real-env:ready
+npm run workspace:performance:ready
+npm run workspace:automation:ready
+npm run workspace:collaboration:ready
+npm run verify:current
+npm run typecheck
+npm run build:preflight
+npm run build
 ```

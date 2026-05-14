@@ -2,7 +2,7 @@ import { CalendarDays, CheckSquare, Command, Share2, Sparkles, Star, Users, Zap 
 import type { WorkspaceContext, WorkspaceTaskItem } from "@/lib/workspace-system/view-state";
 import { getTaskProgress } from "@/lib/workspace-system/adapters";
 
-export function WorkspaceContextHeader({ context, tasks, onOpenCommandCenter }: { context: WorkspaceContext; tasks: WorkspaceTaskItem[]; onOpenCommandCenter?: () => void }) {
+export function WorkspaceContextHeader({ context, tasks, onOpenCommandCenter, onOpenSharePanel }: { context: WorkspaceContext; tasks: WorkspaceTaskItem[]; onOpenCommandCenter?: () => void; onOpenSharePanel?: () => void }) {
   const progress = getTaskProgress(tasks);
   const active = tasks.filter((task) => !["concluido", "completado"].includes(task.status)).length;
   return (
@@ -32,7 +32,7 @@ export function WorkspaceContextHeader({ context, tasks, onOpenCommandCenter }: 
       <div className="flex flex-wrap items-center gap-2">
         <button type="button" onClick={onOpenCommandCenter} className="ft-ws-control h-11 px-4 text-sm font-bold"><Command className="h-4 w-4" /> Buscar</button>
         <button className="ft-ws-control h-11 px-4 text-sm font-bold"><Zap className="h-4 w-4" /> Automatizar</button>
-        <button className="ft-ws-control h-11 px-4 text-sm font-bold"><Share2 className="h-4 w-4" /> Compartir</button>
+        <button type="button" onClick={onOpenSharePanel} className="ft-ws-control h-11 px-4 text-sm font-bold"><Share2 className="h-4 w-4" /> Compartir</button>
         <button className="ft-ws-control h-11 px-4 text-sm font-bold"><Sparkles className="h-4 w-4" /> IA</button>
       </div>
     </header>

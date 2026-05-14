@@ -23,6 +23,7 @@ import { WorkspaceSpacesManager } from "./workspace-spaces-manager";
 import { WorkspacePermissionBanner } from "./workspace-members-permissions";
 import { WorkspaceEmptyState, WorkspaceMigrationEmptyState } from "./workspace-empty-state";
 import { WorkspaceCommandCenter } from "./workspace-command-center";
+import { WorkspaceSharePanel } from "./workspace-share-panel";
 
 export function WorkspaceSystemPage({
   activeView,
@@ -68,6 +69,7 @@ export function WorkspaceSystemPage({
   const [savedViewsOpen, setSavedViewsOpen] = useState(false);
   const [spacesManagerOpen, setSpacesManagerOpen] = useState(false);
   const [commandCenterOpen, setCommandCenterOpen] = useState(false);
+  const [sharePanelOpen, setSharePanelOpen] = useState(false);
 
   function setWorkspaceParam(key: string, value: string, emptyValue = "") {
     const next = new URLSearchParams(searchParams.toString());
@@ -87,6 +89,15 @@ export function WorkspaceSystemPage({
       <div className="hidden min-w-0 lg:block">
         <WorkspaceSidebarPro projects={projects} spaces={spaces} context={context} />
       </div>
+
+      <WorkspaceSharePanel
+        open={sharePanelOpen}
+        onOpenChange={setSharePanelOpen}
+        context={context}
+        members={members}
+        permissions={permissions}
+        projectViews={projectViews}
+      />
 
       <WorkspaceCommandCenter
         open={commandCenterOpen}
@@ -125,9 +136,12 @@ export function WorkspaceSystemPage({
           <button type="button" onClick={() => setCommandCenterOpen(true)} className="ft-ws-control h-11 px-4 text-sm font-black">
             <Search className="h-4 w-4" /> Buscar
           </button>
+          <button type="button" onClick={() => setSharePanelOpen(true)} className="ft-ws-control h-11 px-4 text-sm font-black">
+            Compartir
+          </button>
         </div>
 
-        <WorkspaceContextHeader context={context} tasks={tasks} onOpenCommandCenter={() => setCommandCenterOpen(true)} />
+        <WorkspaceContextHeader context={context} tasks={tasks} onOpenCommandCenter={() => setCommandCenterOpen(true)} onOpenSharePanel={() => setSharePanelOpen(true)} />
 
         {context.invalidProjectId ? (
           <div className="mt-4 flex items-start gap-3 rounded-[18px] border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-800">

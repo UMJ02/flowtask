@@ -51,16 +51,16 @@ const requiredFiles = [
 for (const rel of requiredFiles) requireFile(rel);
 
 const pkg = JSON.parse(read("package.json"));
-if (pkg.version !== "58.26.3-workspace-notifications-activity-automation-polish") failures.push(`Unexpected package version: ${pkg.version}`);
-if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.26.3") failures.push("verify:current must target verify:v58.26.3");
+if (pkg.version !== "58.26.4-workspace-collaboration-share-mobile-polish") failures.push(`Unexpected package version: ${pkg.version}`);
+if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.26.4") failures.push("verify:current must target verify:v58.26.4");
 if (pkg.scripts?.["workspace:doctor"] !== "node scripts/workspace-persistence-doctor.mjs") failures.push("workspace:doctor script missing");
 if (pkg.scripts?.["workspace:production:ready"] !== "node scripts/workspace-production-readiness-check.mjs") failures.push("workspace:production:ready script missing");
 if (pkg.scripts?.["workspace:real-env:ready"] !== "node scripts/workspace-real-environment-hardening-check.mjs") failures.push("workspace:real-env:ready script missing");
 
-requireIncludes("src/lib/release/version.ts", "58.26.3-workspace-notifications-activity-automation-polish");
-requireIncludes("src/lib/release/version.ts", "v58.26.3 Workspace Notifications + Activity Automation Polish");
-requireIncludes("package-lock.json", "58.26.3-workspace-notifications-activity-automation-polish");
-requireIncludes("src/app/globals.css", "v58.26.3 — Workspace Notifications + Activity Automation Polish");
+requireIncludes("src/lib/release/version.ts", "58.26.4-workspace-collaboration-share-mobile-polish");
+requireIncludes("src/lib/release/version.ts", "v58.26.4 Workspace Collaboration + Share + Mobile Polish");
+requireIncludes("package-lock.json", "58.26.4-workspace-collaboration-share-mobile-polish");
+requireIncludes("src/app/globals.css", "v58.26.4 — Workspace Collaboration + Share + Mobile Polish");
 requireIncludes("src/app/(app)/app/workspace/page.tsx", "getWorkspaceIdentity");
 requireIncludes("src/app/(app)/app/workspace/page.tsx", "getWorkspacePersistenceGuardStatus");
 requireIncludes("src/app/(app)/app/workspace/page.tsx", "getWorkspaceProjectSpaceAssignments");
