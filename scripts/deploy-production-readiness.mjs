@@ -4,7 +4,7 @@ import path from "node:path";
 
 const root = process.cwd();
 const failures = [];
-const expectedVersion = "58.25.9.3-workspace-saved-views-defaults-filters-persistence";
+const expectedVersion = "58.25.9.4-workspace-spaces-manager-project-organization";
 
 function exists(rel) { return fs.existsSync(path.join(root, rel)); }
 function read(rel) { return exists(rel) ? fs.readFileSync(path.join(root, rel), "utf8") : ""; }
@@ -23,10 +23,10 @@ for (const rel of [
   "scripts/validate-env.mjs",
   "scripts/design-doctor.mjs",
   "scripts/density-guard.mjs",
-  "scripts/verify-v58.25.9.3.mjs",
+  "scripts/verify-v58.25.9.4.mjs",
   "scripts/workspace-persistence-doctor.mjs",
-  "docs/release/V58_25_9_3_WORKSPACE_SAVED_VIEWS_DEFAULTS_FILTERS_PERSISTENCE.md",
-  "docs/qa/FLOWTASK_V58_25_9_3_WORKSPACE_SAVED_VIEWS_DEFAULTS_FILTERS_PERSISTENCE_QA.md",
+  "docs/release/V58_25_9_4_WORKSPACE_SPACES_MANAGER_PROJECT_ORGANIZATION.md",
+  "docs/qa/FLOWTASK_V58_25_9_4_WORKSPACE_SPACES_MANAGER_PROJECT_ORGANIZATION_QA.md",
   "src/components/boards/boards-home.tsx",
   "src/components/notifications/notifications-command-center.tsx",
   "src/app/(app)/app/workspace/page.tsx",
@@ -46,8 +46,8 @@ for (const rel of [
 const pkg = JSON.parse(read("package.json"));
 const scripts = pkg.scripts ?? {};
 if (pkg.version !== expectedVersion) failures.push(`Unexpected package version: ${pkg.version}`);
-if (scripts["verify:current"] !== "npm run verify:v58.25.9.3") failures.push("verify:current must target verify:v58.25.9.3");
-if (scripts["verify:v58.25.9.3"] !== "node scripts/verify-v58.25.9.3.mjs") failures.push("verify:v58.25.9.3 must target scripts/verify-v58.25.9.3.mjs");
+if (scripts["verify:current"] !== "npm run verify:v58.25.9.4") failures.push("verify:current must target verify:v58.25.9.4");
+if (scripts["verify:v58.25.9.4"] !== "node scripts/verify-v58.25.9.4.mjs") failures.push("verify:v58.25.9.4 must target scripts/verify-v58.25.9.4.mjs");
 
 const vercel = JSON.parse(read("vercel.json"));
 if (vercel.framework !== "nextjs") failures.push("vercel.json framework must be nextjs");
@@ -58,7 +58,7 @@ requireIncludes("package-lock.json", expectedVersion);
 requireIncludes("src/components/boards/boards-home.tsx", "board-home-hero-compact-actions");
 requireIncludes("src/components/boards/boards-home.tsx", "board-home-create-preview-red");
 requireIncludes("src/components/notifications/notifications-command-center.tsx", "ft-notifications-hero-balanced");
-requireIncludes("src/app/globals.css", "v58.25.9.3 Workspace Saved Views Defaults + Filters Persistence");
+requireIncludes("src/app/globals.css", "v58.25.9.4 Workspace Spaces Manager + Project Organization");
 requireIncludes("src/app/(app)/app/workspace/page.tsx", "getTasks({ includeCompleted: true })");
 requireIncludes("src/app/(app)/app/workspace/page.tsx", "getWorkspaceIdentity()");
 requireIncludes("src/app/(app)/app/workspace/page.tsx", "invalidProjectId");
@@ -93,10 +93,16 @@ requireIncludes("src/lib/workspace-system/server-data.ts", "getWorkspacePersiste
 requireIncludes("src/components/workspace-system/workspace-saved-views-manager.tsx", "Migration Guard");
 requireIncludes("src/components/workspace-system/workspace-right-panel.tsx", "persistenceStatus.message");
 
+requireFile("supabase/migrations/0057_v58_25_9_4_workspace_space_project_assignments.sql");
+requireIncludes("src/lib/workspace-system/server-data.ts", "getWorkspaceProjectSpaceAssignments");
+requireIncludes("src/components/workspace-system/workspace-spaces-manager.tsx", "Workspace Spaces Manager + Project Organization");
+requireIncludes("src/components/workspace-system/workspace-system-page.tsx", "WorkspaceSpacesManager");
+requireIncludes("src/app/globals.css", "ft-ws-spaces-manager");
+
 if (failures.length) {
   console.error("[deploy-production-readiness] Failed checks:");
   for (const failure of failures) console.error(`- ${failure}`);
   process.exit(1);
 }
 
-console.log("[deploy-production-readiness] OK — v58.25.9.3 workspace saved views defaults and filters persistence readiness aligned.");
+console.log("[deploy-production-readiness] OK — v58.25.9.4 workspace spaces manager and project organization readiness aligned.");

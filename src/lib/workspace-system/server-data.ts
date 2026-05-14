@@ -1,5 +1,5 @@
 import { applyWorkspaceScope, getWorkspaceContext } from "@/lib/queries/workspace";
-import type { WorkspaceBoardSummary, WorkspacePersistenceGuardStatus, WorkspaceProjectViewPreference, WorkspaceSpaceSummary } from "@/lib/workspace-system/view-state";
+import type { WorkspaceBoardSummary, WorkspacePersistenceGuardStatus, WorkspaceProjectSpaceAssignment, WorkspaceProjectViewPreference, WorkspaceSpaceSummary } from "@/lib/workspace-system/view-state";
 
 export async function getWorkspaceIdentity() {
   const { supabase, user, activeOrganizationId } = await getWorkspaceContext();
@@ -66,53 +66,61 @@ export async function getWorkspacePersistenceGuardStatus(): Promise<WorkspacePer
     };
   }
 
-  const [spacesProbe, viewsProbe] = await Promise.all([
+  const [spacesProbe, viewsProbe, spaceProjectsProbe] = await Promise.all([
     supabase.from("workspace_spaces").select("id", { count: "exact", head: true }).limit(1),
     supabase.from("project_views").select("id", { count: "exact", head: true }).limit(1),
+    supabase.from("workspace_space_projects").select("id", { count: "exact", head: true }).limit(1),
   ]);
 
   const spacesMissing = isMissingPersistenceRelation(spacesProbe.error);
   const viewsMissing = isMissingPersistenceRelation(viewsProbe.error);
+  const spaceProjectsMissing = isMissingPersistenceRelation(spaceProjectsProbe.error);
   const spacesBlocked = isBlockedPersistenceRelation(spacesProbe.error);
   const viewsBlocked = isBlockedPersistenceRelation(viewsProbe.error);
+  const spaceProjectsBlocked = isBlockedPersistenceRelation(spaceProjectsProbe.error);
   const workspaceSpacesReady = !spacesProbe.error;
   const projectViewsReady = !viewsProbe.error;
+  const projectSpaceLinksReady = !spaceProjectsProbe.error;
   const details = [
     workspaceSpacesReady ? "workspace_spaces: ready" : `workspace_spaces: ${spacesProbe.error?.code ?? "error"} ${spacesProbe.error?.message ?? "unavailable"}`,
     projectViewsReady ? "project_views: ready" : `project_views: ${viewsProbe.error?.code ?? "error"} ${viewsProbe.error?.message ?? "unavailable"}`,
+    projectSpaceLinksReady ? "workspace_space_projects: ready" : `workspace_space_projects: ${spaceProjectsProbe.error?.code ?? "error"} ${spaceProjectsProbe.error?.message ?? "unavailable"}`,
   ];
 
-  if (workspaceSpacesReady && projectViewsReady) {
+  if (workspaceSpacesReady && projectViewsReady && projectSpaceLinksReady) {
     return {
       enabled: true,
       status: "ready",
       workspaceSpacesReady,
       projectViewsReady,
-      message: "Workspace persistence tables are available. Saved spaces and saved views can be used safely.",
+      projectSpaceLinksReady,
+      message: "Workspace persistence tables are available. Saved spaces, project organization, and saved views can be used safely.",
       checkedAt: new Date().toISOString(),
       details,
     };
   }
 
-  if (spacesBlocked || viewsBlocked) {
+  if (spacesBlocked || viewsBlocked || spaceProjectsBlocked) {
     return {
       enabled: false,
       status: "blocked",
       workspaceSpacesReady,
       projectViewsReady,
+      projectSpaceLinksReady,
       message: "Workspace persistence tables exist but access is blocked by RLS or permissions. The workspace keeps generated fallbacks active.",
       checkedAt: new Date().toISOString(),
       details,
     };
   }
 
-  if (spacesMissing && viewsMissing) {
+  if (spacesMissing && viewsMissing && spaceProjectsMissing) {
     return {
       enabled: false,
       status: "missing_tables",
       workspaceSpacesReady: false,
       projectViewsReady: false,
-      message: "Migration 0056 has not been applied yet. FlowTask keeps generated spaces and disables saved views writes instead of breaking /app/workspace.",
+      projectSpaceLinksReady: false,
+      message: "Migrations 0056/0057 have not been applied yet. FlowTask keeps generated spaces and disables project organization writes instead of breaking /app/workspace.",
       checkedAt: new Date().toISOString(),
       details,
     };
@@ -123,7 +131,8 @@ export async function getWorkspacePersistenceGuardStatus(): Promise<WorkspacePer
     status: "partial",
     workspaceSpacesReady,
     projectViewsReady,
-    message: "Workspace persistence is partially available. Apply or repair migration 0056 before relying on saved spaces/views.",
+    projectSpaceLinksReady,
+    message: "Workspace persistence is partially available. Apply or repair migrations 0056 and 0057 before relying on saved spaces/project organization.",
     checkedAt: new Date().toISOString(),
     details,
   };
@@ -358,5 +367,27 @@ export async function getWorkspaceProjectViews(projectId?: string | null): Promi
     config: (view.config && typeof view.config === "object" ? view.config : {}) as Record<string, unknown>,
     isDefault: Boolean(view.is_default),
     sortOrder: Number(view.sort_order ?? 0),
+  }));
+}
+
+
+export async function getWorkspaceProjectSpaceAssignments(): Promise<WorkspaceProjectSpaceAssignment[]> {
+  const { supabase, user } = await getWorkspaceContext();
+  if (!user) return [];
+
+  const { data, error } = await supabase
+    .from("workspace_space_projects")
+    .select("id,space_id,project_id,sort_order")
+    .order("sort_order", { ascending: true })
+    .order("created_at", { ascending: true })
+    .limit(500);
+
+  if (error) return [];
+
+  return ((data ?? []) as any[]).map((row) => ({
+    id: String(row.id),
+    spaceId: String(row.space_id),
+    projectId: String(row.project_id),
+    sortOrder: Number(row.sort_order ?? 0),
   }));
 }

@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { AlertTriangle, Menu, PanelRightClose, PanelRightOpen, SlidersHorizontal, X } from "lucide-react";
+import { AlertTriangle, FolderKanban, Menu, PanelRightClose, PanelRightOpen, SlidersHorizontal, X } from "lucide-react";
 import type { ReportsOverview } from "@/lib/queries/reports";
-import type { WorkspaceActivityItem, WorkspaceBoardSummary, WorkspaceContext, WorkspaceFileSummary, WorkspacePersistenceGuardStatus, WorkspaceProjectSummary, WorkspaceProjectViewPreference, WorkspaceSpaceSummary, WorkspaceTaskItem, WorkspaceViewId } from "@/lib/workspace-system/view-state";
+import type { WorkspaceActivityItem, WorkspaceBoardSummary, WorkspaceContext, WorkspaceFileSummary, WorkspacePersistenceGuardStatus, WorkspaceProjectSpaceAssignment, WorkspaceProjectSummary, WorkspaceProjectViewPreference, WorkspaceSpaceSummary, WorkspaceTaskItem, WorkspaceViewId } from "@/lib/workspace-system/view-state";
 import { BoardView } from "./views/board-view";
 import { CanvasView } from "./views/canvas-view";
 import { FilesView } from "./views/files-view";
@@ -18,6 +18,7 @@ import { WorkspaceSidebarPro } from "./workspace-sidebar-pro";
 import { WorkspaceViewTabs } from "./workspace-view-tabs";
 import { WorkspaceQuickCreate } from "./workspace-quick-create";
 import { WorkspaceSavedViewsManager } from "./workspace-saved-views-manager";
+import { WorkspaceSpacesManager } from "./workspace-spaces-manager";
 
 export function WorkspaceSystemPage({
   activeView,
@@ -29,6 +30,7 @@ export function WorkspaceSystemPage({
   files,
   activity,
   projectViews,
+  projectSpaceAssignments,
   persistenceStatus,
   context,
 }: {
@@ -41,6 +43,7 @@ export function WorkspaceSystemPage({
   files: WorkspaceFileSummary[];
   activity: WorkspaceActivityItem[];
   projectViews: WorkspaceProjectViewPreference[];
+  projectSpaceAssignments: WorkspaceProjectSpaceAssignment[];
   persistenceStatus: WorkspacePersistenceGuardStatus;
   context: WorkspaceContext;
 }) {
@@ -53,6 +56,7 @@ export function WorkspaceSystemPage({
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [rightPanelOpen, setRightPanelOpen] = useState(true);
   const [savedViewsOpen, setSavedViewsOpen] = useState(false);
+  const [spacesManagerOpen, setSpacesManagerOpen] = useState(false);
 
   function setWorkspaceParam(key: string, value: string, emptyValue = "") {
     const next = new URLSearchParams(searchParams.toString());
@@ -126,6 +130,9 @@ export function WorkspaceSystemPage({
               <option value="priority">Orden: prioridad</option>
               <option value="title">Orden: título</option>
             </select>
+            <button type="button" onClick={() => setSpacesManagerOpen((value) => !value)} className={context.spaceId ? "ft-ws-control h-11 border-blue-200 bg-blue-50 px-4 text-sm font-bold text-blue-700" : "ft-ws-control h-11 px-4 text-sm font-bold"}>
+              <FolderKanban className="h-4 w-4" /> Espacios
+            </button>
             <button type="button" onClick={() => setSavedViewsOpen((value) => !value)} className={context.activeSavedView ? "ft-ws-control h-11 border-emerald-200 bg-emerald-50 px-4 text-sm font-bold text-emerald-700" : "ft-ws-control h-11 px-4 text-sm font-bold"}>
               {context.activeSavedView ? `Vista: ${context.activeSavedView.title}` : "Vistas guardadas"}
             </button>
@@ -139,6 +146,12 @@ export function WorkspaceSystemPage({
         {showQuickCreate ? (
           <div className="mt-4">
             <WorkspaceQuickCreate context={context} projects={projects} onClose={() => setShowQuickCreate(false)} />
+          </div>
+        ) : null}
+
+        {spacesManagerOpen ? (
+          <div className="mt-4">
+            <WorkspaceSpacesManager context={context} spaces={spaces} projects={projects} assignments={projectSpaceAssignments} persistenceStatus={persistenceStatus} onClose={() => setSpacesManagerOpen(false)} />
           </div>
         ) : null}
 

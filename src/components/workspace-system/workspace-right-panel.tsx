@@ -94,7 +94,7 @@ export function WorkspaceRightPanel({
         </div>
         <div className="ft-ws-migration-guard mt-3" data-ready={persistenceStatus.enabled ? "true" : "false"}>
           <p>{persistenceStatus.message}</p>
-          <p className="mt-1">workspace_spaces: {persistenceStatus.workspaceSpacesReady ? "OK" : "fallback"} · project_views: {persistenceStatus.projectViewsReady ? "OK" : "guardado bloqueado"}</p>
+          <p className="mt-1">workspace_spaces: {persistenceStatus.workspaceSpacesReady ? "OK" : "fallback"} · project_views: {persistenceStatus.projectViewsReady ? "OK" : "guardado bloqueado"} · workspace_space_projects: {persistenceStatus.projectSpaceLinksReady ? "OK" : "pendiente"}</p>
           <p className="mt-1">{context.activeSavedView ? `Vista activa: ${context.activeSavedView.title}` : "Sin vista guardada activa"} · {context.activeFilters?.defaultApplied ? "default aplicado" : "configuración manual"}</p>
         </div>
       </section>

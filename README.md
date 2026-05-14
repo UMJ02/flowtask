@@ -59,3 +59,10 @@ npm run build
 ```
 
 La persistencia Workspace usa `workspace_spaces` y `project_views` cuando están listas. Si no están listas, FlowTask mantiene fallback con espacios generados desde datos reales y bloquea escrituras de Saved Views con feedback profesional.
+
+
+## v58.25.9.4 — Workspace Spaces Manager + Project Organization
+
+- Agrega `workspace_space_projects` como capa opcional para asignar proyectos reales a espacios persistidos.
+- `/app/workspace` ahora puede crear, renombrar, archivar espacios y organizar proyectos sin reemplazar rutas clásicas.
+- Mantiene fallback con espacios generados si la migración 0057 no está disponible.

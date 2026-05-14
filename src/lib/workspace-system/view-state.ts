@@ -143,11 +143,19 @@ export type WorkspaceProjectViewPreference = {
   sortOrder: number;
 };
 
+export type WorkspaceProjectSpaceAssignment = {
+  id: string;
+  spaceId: string;
+  projectId: string;
+  sortOrder: number;
+};
+
 export type WorkspacePersistenceGuardStatus = {
   enabled: boolean;
   status: "ready" | "missing_tables" | "partial" | "blocked" | "unknown";
   workspaceSpacesReady: boolean;
   projectViewsReady: boolean;
+  projectSpaceLinksReady?: boolean;
   message: string;
   checkedAt?: string | null;
   details?: string[];

@@ -21,12 +21,14 @@ import {
   getWorkspaceIdentity,
   getWorkspacePersistedSpaces,
   getWorkspacePersistenceGuardStatus,
+  getWorkspaceProjectSpaceAssignments,
   getWorkspaceProjectViews,
 } from "@/lib/workspace-system/server-data";
 import type {
   WorkspaceContext,
   WorkspaceGroupBy,
   WorkspaceProjectViewPreference,
+  WorkspaceProjectSpaceAssignment,
   WorkspaceSortKey,
   WorkspaceViewId,
 } from "@/lib/workspace-system/view-state";
@@ -135,6 +137,13 @@ export default async function WorkspacePage({
         [],
       )
     : [];
+  const projectSpaceAssignments: WorkspaceProjectSpaceAssignment[] = persistenceGuard?.projectSpaceLinksReady
+    ? await safeServerCall(
+        "workspace:getProjectSpaceAssignments",
+        () => getWorkspaceProjectSpaceAssignments(),
+        [],
+      )
+    : [];
 
   const projectsAll = rawProjects.map(mapProjectToWorkspaceSummary);
   const projectTitleById = new Map(
@@ -145,14 +154,26 @@ export default async function WorkspacePage({
   );
 
   const generatedSpaces = buildWorkspaceSpaces(tasksAll, projectsAll);
-  const spaces = persistedSpaces.length
+  const assignedProjectIdsBySpace = new Map<string, Set<string>>();
+  for (const assignment of projectSpaceAssignments) {
+    const current = assignedProjectIdsBySpace.get(assignment.spaceId) ?? new Set<string>();
+    current.add(assignment.projectId);
+    assignedProjectIdsBySpace.set(assignment.spaceId, current);
+  }
+  const persistedSpacesWithCounts = persistedSpaces.map((space) => {
+    const projectIds = assignedProjectIdsBySpace.get(space.id) ?? new Set<string>();
+    const projectCount = projectIds.size;
+    const taskCount = tasksAll.filter((task) => task.projectId && projectIds.has(task.projectId)).length;
+    return { ...space, projectCount, taskCount };
+  });
+  const spaces = persistedSpacesWithCounts.length
     ? [
-        ...persistedSpaces,
+        ...persistedSpacesWithCounts,
         ...generatedSpaces.filter(
           (space) =>
-            !persistedSpaces.some((persisted) => persisted.slug === space.slug),
+            !persistedSpacesWithCounts.some((persisted) => persisted.slug === space.slug),
         ),
-      ].slice(0, 12)
+      ].slice(0, 16)
     : generatedSpaces;
   const spaceSlug = requestedSpace
     ? slugifyWorkspaceValue(requestedSpace)
@@ -160,9 +181,14 @@ export default async function WorkspacePage({
   const activeSpace = spaceSlug
     ? (spaces.find((space) => space.slug === spaceSlug) ?? null)
     : null;
-  const projectsInSpace = filterProjectsForWorkspace(projectsAll, {
-    spaceSlug: activeSpace?.slug ?? null,
-  });
+  const activePersistedProjectIds = activeSpace?.isPersisted
+    ? (assignedProjectIdsBySpace.get(activeSpace.id) ?? new Set<string>())
+    : null;
+  const projectsInSpace = activePersistedProjectIds
+    ? projectsAll.filter((project) => activePersistedProjectIds.has(project.id))
+    : filterProjectsForWorkspace(projectsAll, {
+        spaceSlug: activeSpace?.slug ?? null,
+      });
   const activeProject = requestedProjectId
     ? (projectsInSpace.find((project) => project.id === requestedProjectId) ??
       null)
@@ -210,10 +236,14 @@ export default async function WorkspacePage({
     : sortWorkspaceTasks(
         filterTasksForWorkspace(tasksAll, {
           projectId: activeProject?.id ?? null,
-          spaceSlug: activeSpace?.slug ?? null,
+          spaceSlug: activeSpace?.isPersisted ? null : activeSpace?.slug ?? null,
           status: effectiveStatus,
         }),
         effectiveSort,
+      ).filter((task) =>
+        activePersistedProjectIds && !activeProject
+          ? Boolean(task.projectId && activePersistedProjectIds.has(task.projectId))
+          : true,
       );
 
   const [workspaceActivity, workspaceFiles] = await Promise.all([
@@ -280,12 +310,14 @@ export default async function WorkspacePage({
       files={workspaceFiles}
       activity={workspaceActivity}
       projectViews={projectViews}
+      projectSpaceAssignments={projectSpaceAssignments}
       persistenceStatus={
         persistenceGuard ?? {
           enabled: false,
           status: "unknown",
           workspaceSpacesReady: false,
           projectViewsReady: false,
+          projectSpaceLinksReady: false,
           message: "Workspace persistence guard could not run.",
           checkedAt: null,
         }

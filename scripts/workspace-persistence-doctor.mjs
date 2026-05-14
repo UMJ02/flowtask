@@ -48,12 +48,18 @@ requireIncludes("src/components/workspace-system/workspace-saved-views-manager.t
 
 const pkg = JSON.parse(read("package.json"));
 if (pkg.scripts?.["workspace:doctor"] !== "node scripts/workspace-persistence-doctor.mjs") failures.push("package.json must expose workspace:doctor");
-if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.25.9.3") failures.push("verify:current must target v58.25.9.3");
+if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.25.9.4") failures.push("verify:current must target v58.25.9.4");
 
 const migration = read("supabase/migrations/0056_v58_25_9_workspace_persistence_foundation.sql");
 for (const fn of ["public.is_org_admin_or_manager", "public.is_project_member", "public.has_project_role", "public.set_updated_at"]) {
   if (!migration.includes(fn)) warnings.push(`Migration 0056 depends on existing ${fn}; validate it in Supabase before applying to a new project.`);
 }
+
+requireFile("supabase/migrations/0057_v58_25_9_4_workspace_space_project_assignments.sql");
+requireIncludes("src/lib/workspace-system/server-data.ts", "getWorkspaceProjectSpaceAssignments");
+requireIncludes("src/components/workspace-system/workspace-spaces-manager.tsx", "Workspace Spaces Manager + Project Organization");
+requireIncludes("src/components/workspace-system/workspace-system-page.tsx", "WorkspaceSpacesManager");
+requireIncludes("src/app/globals.css", "ft-ws-spaces-manager");
 
 if (failures.length) {
   console.error("[workspace:doctor] FAIL");
