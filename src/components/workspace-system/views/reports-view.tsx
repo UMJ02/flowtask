@@ -1,6 +1,7 @@
 import type { ReportsOverview } from "@/lib/queries/reports";
 import { getTaskProgress } from "@/lib/workspace-system/adapters";
 import type { WorkspaceTaskItem } from "@/lib/workspace-system/view-state";
+import { WorkspaceEmptyState } from "../workspace-empty-state";
 
 export function ReportsView({ reports, tasks }: { reports: ReportsOverview | null; tasks: WorkspaceTaskItem[] }) {
   const progress = getTaskProgress(tasks);
@@ -10,6 +11,7 @@ export function ReportsView({ reports, tasks }: { reports: ReportsOverview | nul
   return (
     <section className="rounded-[26px] border border-[var(--ft-workspace-border)] bg-white p-5 shadow-[var(--ft-workspace-shadow)] ft-ws-view">
       <div className="mb-5 flex flex-col gap-3 md:flex-row md:items-center md:justify-between"><h2 className="text-xl font-extrabold">Reportes del workspace</h2><select className="ft-ws-control h-10 px-3 text-sm font-bold"><option>Este mes</option></select></div>
+      {!tasks.length ? <div className="mb-5"><WorkspaceEmptyState icon="tasks" tone="blue" title="Reportes sin tareas visibles" description="Los reportes del workspace se activan cuando existan tareas dentro del proyecto o espacio seleccionado." actionHref="/app/workspace?view=list" actionLabel="Crear o revisar tareas" /></div> : null}
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <Metric label="Progreso general" value={`${progress}%`} helper="Según tareas visibles" />
         <Metric label="Tareas completadas" value={done} helper={`${reports?.kpis.completionRate ?? progress}% global`} />

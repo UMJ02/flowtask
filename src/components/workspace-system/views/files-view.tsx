@@ -2,6 +2,7 @@ import Link from "next/link";
 import { FileArchive, FileSpreadsheet, FileText, Image as ImageIcon, LayoutDashboard, Paperclip } from "lucide-react";
 import { boardRoute } from "@/lib/navigation/routes";
 import { WorkspaceFilesUploadEntry } from "@/components/workspace-system/workspace-files-upload-entry";
+import { WorkspaceEmptyState, WorkspacePermissionEmptyState } from "@/components/workspace-system/workspace-empty-state";
 import type { WorkspaceBoardSummary, WorkspaceContext, WorkspaceFileSummary, WorkspacePermissionSummary, WorkspaceProjectSummary } from "@/lib/workspace-system/view-state";
 
 function formatBytes(bytes?: number | null) {
@@ -55,6 +56,7 @@ export function FilesView({ boards, files, context, projects, permissions }: { b
       </div>
 
       <div className="mt-5">
+        <WorkspacePermissionEmptyState permissions={permissions} action="subir archivos" />
         <WorkspaceFilesUploadEntry context={context} projects={projects} canUpload={permissions.canUploadFiles} />
       </div>
 
@@ -75,7 +77,7 @@ export function FilesView({ boards, files, context, projects, permissions }: { b
                 <span className="shrink-0 text-[11px] font-black text-slate-400">{formatDate(file.createdAt)}</span>
               </a>
             ))}
-            {!files.length ? <p className="rounded-[18px] border border-dashed border-slate-300 bg-white p-5 text-sm font-bold text-slate-500 md:col-span-2">No hay adjuntos en este contexto todavía.</p> : null}
+            {!files.length ? <div className="md:col-span-2"><WorkspaceEmptyState compact icon="files" tone="blue" title="Sin adjuntos todavía" description="Subí el primer archivo para conectar recursos al proyecto o workspace." actionHref={permissions.canUploadFiles ? undefined : "/app/workspace?view=home"} actionLabel={permissions.canUploadFiles ? undefined : "Volver al Home"} /></div> : null}
           </div>
         </section>
 
@@ -92,7 +94,7 @@ export function FilesView({ boards, files, context, projects, permissions }: { b
                 <p className="mt-1 text-xs font-bold text-slate-500">{board.projectTitle ?? "Workspace"} · {formatDate(board.updatedAt)}</p>
               </Link>
             ))}
-            {!boards.length ? <p className="rounded-[18px] border border-dashed border-slate-300 bg-white p-5 text-sm font-bold text-slate-500">No hay pizarras conectadas todavía.</p> : null}
+            {!boards.length ? <WorkspaceEmptyState compact icon="boards" tone="violet" title="Sin pizarras conectadas" description="Las pizarras reales aparecerán aquí cuando existan en este contexto." actionHref="/app/boards" actionLabel="Abrir Pizarras" /> : null}
           </div>
         </section>
       </div>

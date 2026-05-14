@@ -1,4 +1,5 @@
 import type { WorkspaceTaskItem } from "@/lib/workspace-system/view-state";
+import { WorkspaceEmptyState } from "../workspace-empty-state";
 
 export function TimelineView({ tasks }: { tasks: WorkspaceTaskItem[] }) {
   const visible = tasks.filter((task) => task.dueDate).slice(0, 10);
@@ -15,7 +16,7 @@ export function TimelineView({ tasks }: { tasks: WorkspaceTaskItem[] }) {
             <div className="truncate p-3 text-sm font-bold">{task.title}</div>
             <div className="relative h-12 border-l border-[var(--ft-workspace-border)]"><span className="absolute top-3 h-6 rounded-full bg-emerald-50 ring-1 ring-emerald-200" style={{ left: `${(i % 6) * 9}%`, width: "28%" }} /></div>
           </div>
-        )) : <p className="p-5 text-sm font-semibold text-slate-500">No hay tareas con fecha para timeline.</p>}
+        )) : <div className="p-4"><WorkspaceEmptyState compact icon="tasks" title="Timeline sin fechas" description="Agregá fechas límite a las tareas para construir el timeline del proyecto." actionHref="/app/workspace?view=table" actionLabel="Editar fechas" /></div>}
       </div>
     </section>
   );

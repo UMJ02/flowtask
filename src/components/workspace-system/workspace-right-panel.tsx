@@ -3,6 +3,7 @@ import { AlertTriangle, CalendarClock, CheckCircle2, CircleDot, FileArchive, Fla
 import { getTaskProgress } from "@/lib/workspace-system/adapters";
 import { WorkspaceActivityTimeline } from "./workspace-activity-timeline";
 import { WorkspaceMembersPermissionsCard } from "./workspace-members-permissions";
+import { WorkspaceHealthPanel, WorkspaceEmptyState } from "./workspace-empty-state";
 import type { WorkspaceActivityItem, WorkspaceContext, WorkspaceFileSummary, WorkspaceMemberSummary, WorkspacePermissionSummary, WorkspacePersistenceGuardStatus, WorkspaceProjectSummary, WorkspaceProjectViewPreference, WorkspaceTaskItem } from "@/lib/workspace-system/view-state";
 
 function isOverdue(task: WorkspaceTaskItem) {
@@ -87,6 +88,12 @@ export function WorkspaceRightPanel({
         <div className="ft-ws-mini-metric"><Gauge className="h-4 w-4 text-violet-500" /><b>{projects.length}</b><span>Proyectos</span></div>
       </section>
 
+      <WorkspaceHealthPanel
+        persistenceStatus={persistenceStatus}
+        permissions={permissions}
+        counts={{ tasks: tasks.length, projects: projects.length, spaces: context.spaceId ? 1 : 0, boards: 0, files: files.length, views: projectViews.length, activity: activity.length }}
+      />
+
       <WorkspaceMembersPermissionsCard members={members} permissions={permissions} />
 
 
@@ -128,7 +135,7 @@ export function WorkspaceRightPanel({
               <span className="min-w-0 flex-1 truncate text-sm font-black text-slate-800">{file.fileName}</span>
               <span className="text-xs font-bold text-slate-500">{formatShortDate(file.createdAt)}</span>
             </a>
-          )) : <p className="text-sm font-semibold text-slate-500">No hay archivos recientes en este contexto.</p>}
+          )) : <WorkspaceEmptyState compact icon="files" title="Sin archivos recientes" description="Los adjuntos del proyecto aparecerán aquí cuando se suban desde Archivos." actionHref="/app/workspace?view=files" actionLabel="Abrir Archivos" />}
         </div>
       </section>
 
@@ -146,7 +153,7 @@ export function WorkspaceRightPanel({
               </div>
               <p className="mt-1 truncate text-xs font-semibold text-slate-500">{task.projectTitle ?? context.projectTitle ?? "Sin proyecto"}</p>
             </div>
-          )) : <p className="text-sm font-semibold text-slate-500">No hay fechas próximas en este contexto.</p>}
+          )) : <WorkspaceEmptyState compact icon="tasks" title="Sin vencimientos próximos" description="Agregá fechas a tareas para que aparezcan en este panel." actionHref="/app/workspace?view=timeline" actionLabel="Abrir Timeline" />}
         </div>
       </section>
 

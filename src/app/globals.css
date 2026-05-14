@@ -6448,3 +6448,40 @@
   font-weight: 950;
   box-shadow: inset 0 0 0 1px #e5eaf1;
 }
+
+/* v58.25.9.7 — Workspace Empty States + Client QA Hardening */
+.ft-ws-empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border: 1px dashed #cbd5e1;
+  background: rgba(255, 255, 255, 0.86);
+  border-radius: 22px;
+  padding: 1rem;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.035);
+}
+.ft-ws-empty-state.is-compact { border-radius: 18px; padding: .85rem; }
+.ft-ws-empty-state b { display: block; color: #0f172a; font-size: .9rem; font-weight: 950; }
+.ft-ws-empty-state small { display: block; margin-top: .15rem; color: #64748b; font-size: .78rem; font-weight: 700; line-height: 1.35; }
+.ft-ws-empty-icon { display: grid; place-items: center; width: 2.35rem; height: 2.35rem; flex-shrink: 0; border-radius: 16px; background: #f8fafc; color: #475569; }
+.ft-ws-empty-action { display: inline-flex; align-items: center; justify-content: center; gap: .35rem; flex-shrink: 0; border-radius: 14px; background: #16c784; color: white; padding: .65rem .85rem; font-size: .78rem; font-weight: 950; box-shadow: 0 12px 24px rgba(22,199,132,.18); }
+.ft-ws-empty-blue .ft-ws-empty-icon { background: #eff6ff; color: #2563eb; }
+.ft-ws-empty-violet .ft-ws-empty-icon { background: #f5f3ff; color: #7c3aed; }
+.ft-ws-empty-warning { border-color: rgba(245,158,11,.34); background: #fffbeb; }
+.ft-ws-empty-warning .ft-ws-empty-icon { background: #fef3c7; color: #b45309; }
+.ft-ws-empty-danger { border-color: rgba(239,68,68,.3); background: #fff1f2; }
+.ft-ws-empty-danger .ft-ws-empty-icon { background: #ffe4e6; color: #e11d48; }
+.ft-ws-empty-success .ft-ws-empty-icon { background: #ecfdf5; color: #047857; }
+.ft-ws-health-panel { border-color: rgba(59,130,246,.16); }
+.ft-ws-health-pill { border-radius: 999px; padding: .35rem .65rem; font-size: .68rem; font-weight: 950; }
+.ft-ws-health-pill.is-ok { background: #ecfdf5; color: #047857; }
+.ft-ws-health-pill.is-warn { background: #fffbeb; color: #b45309; }
+.ft-ws-health-row { display: grid; grid-template-columns: 1rem minmax(0, 1fr) auto; align-items: center; gap: .55rem; border: 1px solid #e5eaf1; border-radius: 14px; background: #fbfcfe; padding: .6rem .7rem; color: #64748b; }
+.ft-ws-health-row[data-ok="true"] { color: #047857; background: #ecfdf5; border-color: #bbf7d0; }
+.ft-ws-health-row b { color: inherit; font-size: .76rem; font-weight: 950; }
+.ft-ws-health-row span { font-size: .7rem; font-weight: 800; color: #64748b; }
+@media (max-width: 760px) {
+  .ft-ws-empty-state { align-items: stretch; flex-direction: column; }
+  .ft-ws-empty-action { width: 100%; }
+}

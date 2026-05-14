@@ -1,5 +1,6 @@
 import type { WorkspaceTaskItem } from "@/lib/workspace-system/view-state";
 import { WorkspaceTaskInlineEditor } from "../workspace-task-inline-actions";
+import { WorkspaceEmptyState } from "../workspace-empty-state";
 
 export function TableView({ tasks }: { tasks: WorkspaceTaskItem[] }) {
   return (
@@ -22,7 +23,7 @@ export function TableView({ tasks }: { tasks: WorkspaceTaskItem[] }) {
                 <td className="py-2 pr-3"><WorkspaceTaskInlineEditor task={task} /></td>
               </tr>
             )) : (
-              <tr><td colSpan={4} className="p-5 text-sm font-semibold text-slate-500">No hay tareas para editar en este contexto.</td></tr>
+              <tr><td colSpan={4} className="p-4"><WorkspaceEmptyState compact icon="tasks" title="Sin tareas editables" description="Este proyecto o espacio no tiene tareas visibles para mostrar en tabla." actionHref="/app/workspace?view=list" actionLabel="Abrir Lista" /></td></tr>
             )}
           </tbody>
         </table>

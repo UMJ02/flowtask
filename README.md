@@ -70,3 +70,7 @@ La persistencia Workspace usa `workspace_spaces` y `project_views` cuando están
 ## v58.25.9.5 — Workspace Project Home Dashboard
 
 Agrega la vista `Home` al Workspace System para que cada proyecto/espacio tenga una portada operativa con progreso, tareas importantes, próximos vencimientos, pizarras, archivos, actividad reciente, vistas guardadas y accesos rápidos. Requiere aplicar `0058_v58_25_9_5_project_views_home_view_support.sql` para permitir vistas guardadas de tipo `home`.
+
+## v58.25.9.7 — Workspace Empty States + Client QA Hardening
+
+Agrega estados vacíos profesionales y un panel `Workspace Health` para validar visualmente persistencia, espacios, vistas guardadas, permisos y disponibilidad de datos dentro de `/app/workspace`. No agrega migraciones nuevas.

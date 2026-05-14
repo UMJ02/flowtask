@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowUpRight, Clock3, ImageIcon, LayoutDashboard, Plus, Sparkles } from "lucide-react";
 import { boardRoute } from "@/lib/navigation/routes";
+import { WorkspaceEmptyState } from "../workspace-empty-state";
 import type { WorkspaceBoardSummary, WorkspaceContext, WorkspaceTaskItem } from "@/lib/workspace-system/view-state";
 
 function formatBoardDate(value?: string | null) {
@@ -115,11 +116,7 @@ export function CanvasView({ tasks, boards, context }: { tasks: WorkspaceTaskIte
           {connectedBoards.length ? connectedBoards.slice(0, 6).map((board, index) => (
             <WorkspaceBoardPreviewCard key={board.id} board={board} index={index} />
           )) : (
-            <div className="col-span-full rounded-[24px] border border-dashed border-emerald-200 bg-white/80 p-8 text-center">
-              <Sparkles className="mx-auto h-8 w-8 text-emerald-500" />
-              <h3 className="mt-3 text-lg font-black text-slate-950">Aún no hay pizarras conectadas</h3>
-              <p className="mx-auto mt-2 max-w-xl text-sm font-semibold text-slate-500">Crea una pizarra desde el módulo de Pizarras y vuelve al Workspace para verla como Canvas del proyecto.</p>
-            </div>
+            <WorkspaceEmptyState icon="boards" tone="violet" title="Aún no hay pizarras conectadas" description="Crea una pizarra desde el módulo de Pizarras y vuelve al Workspace para verla como Canvas del proyecto." actionHref="/app/boards" actionLabel="Abrir Pizarras" />
           )}
         </div>
       </div>

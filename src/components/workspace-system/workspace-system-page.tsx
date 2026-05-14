@@ -21,6 +21,7 @@ import { WorkspaceQuickCreate } from "./workspace-quick-create";
 import { WorkspaceSavedViewsManager } from "./workspace-saved-views-manager";
 import { WorkspaceSpacesManager } from "./workspace-spaces-manager";
 import { WorkspacePermissionBanner } from "./workspace-members-permissions";
+import { WorkspaceEmptyState, WorkspaceMigrationEmptyState } from "./workspace-empty-state";
 
 export function WorkspaceSystemPage({
   activeView,
@@ -115,6 +116,18 @@ export function WorkspaceSystemPage({
         {permissions.isReadOnly ? (
           <div className="mt-4">
             <WorkspacePermissionBanner permissions={permissions} />
+          </div>
+        ) : null}
+
+        {!persistenceStatus.enabled ? (
+          <div className="mt-4">
+            <WorkspaceMigrationEmptyState persistenceStatus={persistenceStatus} />
+          </div>
+        ) : null}
+
+        {!projects.length && !context.invalidProjectId ? (
+          <div className="mt-4">
+            <WorkspaceEmptyState icon="projects" tone="blue" title="Workspace sin proyectos visibles" description="Cuando exista un proyecto personal u organizacional aparecerá aquí con sus views, tareas, archivos y reportes." actionHref="/app/projects" actionLabel="Ir a Proyectos" />
           </div>
         ) : null}
 

@@ -2,6 +2,7 @@ import { groupTasksByStatus } from "@/lib/workspace-system/adapters";
 import type { WorkspaceTaskItem } from "@/lib/workspace-system/view-state";
 import { PriorityBadge } from "../workspace-badges";
 import { WorkspaceTaskQuickMove } from "../workspace-task-inline-actions";
+import { WorkspaceEmptyState } from "../workspace-empty-state";
 
 export function BoardView({ tasks }: { tasks: WorkspaceTaskItem[] }) {
   const grouped = groupTasksByStatus(tasks);
@@ -32,7 +33,7 @@ export function BoardView({ tasks }: { tasks: WorkspaceTaskItem[] }) {
                 <div className="mt-3 flex items-center justify-between"><PriorityBadge priority={task.priority} /><span className="text-xs font-bold text-slate-500">{task.dueDate ?? "Sin fecha"}</span></div>
                 <WorkspaceTaskQuickMove task={task} />
               </article>
-            )) : <p className="rounded-[18px] bg-slate-50 p-4 text-sm font-semibold text-slate-500">Sin tareas.</p>}
+            )) : <WorkspaceEmptyState compact icon="tasks" title={`Sin tareas en ${col.label}`} description="Cuando haya tareas en este estado aparecerán como cards operativas." actionHref="/app/workspace?view=list" actionLabel="Ir a Lista" />}
           </div>
         </section>
       ))}
