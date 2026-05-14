@@ -14,9 +14,11 @@ function safeFileName(name: string) {
 export function WorkspaceFilesUploadEntry({
   context,
   projects,
+  canUpload: canUploadPermission = true,
 }: {
   context: WorkspaceContext;
   projects: WorkspaceProjectSummary[];
+  canUpload?: boolean;
 }) {
   const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
@@ -27,7 +29,7 @@ export function WorkspaceFilesUploadEntry({
   const [error, setError] = useState<string | null>(null);
 
   const selectedProject = projects.find((project) => project.id === projectId) ?? null;
-  const canUpload = Boolean(projectId);
+  const canUpload = Boolean(projectId) && canUploadPermission;
 
   async function handleUpload(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
@@ -37,7 +39,7 @@ export function WorkspaceFilesUploadEntry({
     setError(null);
 
     if (!canUpload) {
-      setError("Selecciona un proyecto para guardar el archivo dentro del contexto correcto.");
+      setError("Selecciona un proyecto o valida permisos para guardar el archivo dentro del contexto correcto.");
       event.target.value = "";
       return;
     }
@@ -128,7 +130,7 @@ export function WorkspaceFilesUploadEntry({
       <label className={`ft-ws-upload-drop ${canUpload && !uploading ? "cursor-pointer" : "cursor-not-allowed opacity-70"}`}>
         {uploading ? <Loader2 className="h-6 w-6 animate-spin" /> : <UploadCloud className="h-6 w-6" />}
         <span>{uploading ? "Subiendo..." : "Elegir archivo"}</span>
-        <small>Se guarda en attachments y refresca la vista.</small>
+        <small>{canUploadPermission ? "Se guarda en attachments y refresca la vista." : "Tu rol actual no permite subir archivos."}</small>
         <input type="file" className="hidden" onChange={handleUpload} disabled={!canUpload || uploading} />
       </label>
     </section>

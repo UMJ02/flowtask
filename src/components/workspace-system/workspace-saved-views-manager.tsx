@@ -17,6 +17,7 @@ import {
 import { createClient } from "@/lib/supabase/client";
 import type {
   WorkspaceContext,
+  WorkspacePermissionSummary,
   WorkspacePersistenceGuardStatus,
   WorkspaceProjectViewPreference,
   WorkspaceViewId,
@@ -84,12 +85,14 @@ export function WorkspaceSavedViewsManager({
   context,
   projectViews,
   persistenceStatus,
+  permissions,
   onClose,
 }: {
   activeView: WorkspaceViewId;
   context: WorkspaceContext;
   projectViews: WorkspaceProjectViewPreference[];
   persistenceStatus: WorkspacePersistenceGuardStatus;
+  permissions: WorkspacePermissionSummary;
   onClose?: () => void;
 }) {
   const supabase = useMemo(() => createClient(), []);
@@ -104,7 +107,7 @@ export function WorkspaceSavedViewsManager({
   const [feedback, setFeedback] = useState<Feedback>(null);
 
   const canPersist =
-    Boolean(context.projectId) && persistenceStatus.projectViewsReady;
+    Boolean(context.projectId) && persistenceStatus.projectViewsReady && permissions.canSaveViews;
   const sortedViews = [...projectViews].sort(
     (a, b) => a.sortOrder - b.sortOrder || a.title.localeCompare(b.title),
   );
@@ -116,6 +119,14 @@ export function WorkspaceSavedViewsManager({
   }
 
   async function saveCurrentView() {
+    if (!permissions.canSaveViews) {
+      setFeedback({
+        tone: "error",
+        text: "Tu rol actual no permite guardar vistas en este proyecto.",
+      });
+      return;
+    }
+
     if (!persistenceStatus.projectViewsReady) {
       setFeedback({
         tone: "error",
@@ -199,6 +210,11 @@ export function WorkspaceSavedViewsManager({
   }
 
   async function renameView(viewId: string) {
+    if (!permissions.canSaveViews) {
+      setFeedback({ tone: "error", text: "Tu rol actual no permite renombrar vistas." });
+      return;
+    }
+
     const cleanTitle = editingTitle.trim();
     if (!cleanTitle) {
       setFeedback({
@@ -233,6 +249,11 @@ export function WorkspaceSavedViewsManager({
   }
 
   async function setDefaultView(view: WorkspaceProjectViewPreference) {
+    if (!permissions.canSaveViews) {
+      setFeedback({ tone: "error", text: "Tu rol actual no permite marcar vistas default." });
+      return;
+    }
+
     if (!context.projectId) return;
     setBusy(`default:${view.id}`);
     setFeedback(null);
@@ -278,6 +299,11 @@ export function WorkspaceSavedViewsManager({
   }
 
   async function deleteView(viewId: string) {
+    if (!permissions.canSaveViews) {
+      setFeedback({ tone: "error", text: "Tu rol actual no permite eliminar vistas." });
+      return;
+    }
+
     setBusy(`delete:${viewId}`);
     setFeedback(null);
     const { error } = await supabase

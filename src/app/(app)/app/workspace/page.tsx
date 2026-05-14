@@ -21,6 +21,8 @@ import {
   getWorkspaceIdentity,
   getWorkspacePersistedSpaces,
   getWorkspacePersistenceGuardStatus,
+  getWorkspacePermissionSummary,
+  getWorkspaceProjectMembers,
   getWorkspaceProjectSpaceAssignments,
   getWorkspaceProjectViews,
 } from "@/lib/workspace-system/server-data";
@@ -204,6 +206,37 @@ export default async function WorkspacePage({
       )
     : [];
 
+  const [workspaceMembers, workspacePermissions] = await Promise.all([
+    safeServerCall(
+      "workspace:getProjectMembers",
+      () => getWorkspaceProjectMembers(activeProject?.id ?? null),
+      [],
+    ),
+    safeServerCall(
+      "workspace:getPermissionSummary",
+      () => getWorkspacePermissionSummary(activeProject?.id ?? null),
+      {
+        role: null,
+        projectMemberRole: null,
+        organizationRole: null,
+        isProjectOwner: false,
+        isOrgManager: false,
+        canEdit: false,
+        canManageMembers: false,
+        canCreateTask: false,
+        canUploadFiles: false,
+        canSaveViews: false,
+        canManageSpaces: false,
+        canAssignProjectsToSpaces: false,
+        canEditTasks: false,
+        canShare: false,
+        canViewActivity: false,
+        isReadOnly: true,
+        message: "No se pudo validar permisos del workspace.",
+      },
+    ),
+  ]);
+
   const requestedSavedView = requestedSavedViewId
     ? (projectViews.find((view) => view.id === requestedSavedViewId) ?? null)
     : null;
@@ -311,6 +344,8 @@ export default async function WorkspacePage({
       activity={workspaceActivity}
       projectViews={projectViews}
       projectSpaceAssignments={projectSpaceAssignments}
+      members={workspaceMembers}
+      permissions={workspacePermissions}
       persistenceStatus={
         persistenceGuard ?? {
           enabled: false,

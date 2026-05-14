@@ -150,6 +150,37 @@ export type WorkspaceProjectSpaceAssignment = {
   sortOrder: number;
 };
 
+
+export type WorkspaceMemberSummary = {
+  id: string;
+  userId: string;
+  name: string;
+  email?: string | null;
+  role: string;
+  source: "project" | "organization" | "owner";
+  canManage?: boolean;
+};
+
+export type WorkspacePermissionSummary = {
+  role?: string | null;
+  projectMemberRole?: string | null;
+  organizationRole?: string | null;
+  isProjectOwner: boolean;
+  isOrgManager: boolean;
+  canEdit: boolean;
+  canManageMembers: boolean;
+  canCreateTask: boolean;
+  canUploadFiles: boolean;
+  canSaveViews: boolean;
+  canManageSpaces: boolean;
+  canAssignProjectsToSpaces: boolean;
+  canEditTasks: boolean;
+  canShare: boolean;
+  canViewActivity: boolean;
+  isReadOnly: boolean;
+  message: string;
+};
+
 export type WorkspacePersistenceGuardStatus = {
   enabled: boolean;
   status: "ready" | "missing_tables" | "partial" | "blocked" | "unknown";

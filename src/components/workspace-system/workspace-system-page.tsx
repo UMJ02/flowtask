@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AlertTriangle, FolderKanban, Menu, PanelRightClose, PanelRightOpen, SlidersHorizontal, X } from "lucide-react";
 import type { ReportsOverview } from "@/lib/queries/reports";
-import type { WorkspaceActivityItem, WorkspaceBoardSummary, WorkspaceContext, WorkspaceFileSummary, WorkspacePersistenceGuardStatus, WorkspaceProjectSpaceAssignment, WorkspaceProjectSummary, WorkspaceProjectViewPreference, WorkspaceSpaceSummary, WorkspaceTaskItem, WorkspaceViewId } from "@/lib/workspace-system/view-state";
+import type { WorkspaceActivityItem, WorkspaceBoardSummary, WorkspaceContext, WorkspaceFileSummary, WorkspaceMemberSummary, WorkspacePermissionSummary, WorkspacePersistenceGuardStatus, WorkspaceProjectSpaceAssignment, WorkspaceProjectSummary, WorkspaceProjectViewPreference, WorkspaceSpaceSummary, WorkspaceTaskItem, WorkspaceViewId } from "@/lib/workspace-system/view-state";
 import { BoardView } from "./views/board-view";
 import { CanvasView } from "./views/canvas-view";
 import { FilesView } from "./views/files-view";
@@ -20,6 +20,7 @@ import { WorkspaceViewTabs } from "./workspace-view-tabs";
 import { WorkspaceQuickCreate } from "./workspace-quick-create";
 import { WorkspaceSavedViewsManager } from "./workspace-saved-views-manager";
 import { WorkspaceSpacesManager } from "./workspace-spaces-manager";
+import { WorkspacePermissionBanner } from "./workspace-members-permissions";
 
 export function WorkspaceSystemPage({
   activeView,
@@ -32,6 +33,8 @@ export function WorkspaceSystemPage({
   activity,
   projectViews,
   projectSpaceAssignments,
+  members,
+  permissions,
   persistenceStatus,
   context,
 }: {
@@ -45,6 +48,8 @@ export function WorkspaceSystemPage({
   activity: WorkspaceActivityItem[];
   projectViews: WorkspaceProjectViewPreference[];
   projectSpaceAssignments: WorkspaceProjectSpaceAssignment[];
+  members: WorkspaceMemberSummary[];
+  permissions: WorkspacePermissionSummary;
   persistenceStatus: WorkspacePersistenceGuardStatus;
   context: WorkspaceContext;
 }) {
@@ -107,6 +112,12 @@ export function WorkspaceSystemPage({
           </div>
         ) : null}
 
+        {permissions.isReadOnly ? (
+          <div className="mt-4">
+            <WorkspacePermissionBanner permissions={permissions} />
+          </div>
+        ) : null}
+
         <div className="mt-5 flex flex-col gap-4 2xl:flex-row 2xl:items-center 2xl:justify-between">
           <WorkspaceViewTabs activeView={activeView} projectViews={projectViews} />
           <div className="ft-ws-action-bar flex flex-wrap items-center gap-2">
@@ -137,7 +148,7 @@ export function WorkspaceSystemPage({
             <button type="button" onClick={() => setSavedViewsOpen((value) => !value)} className={context.activeSavedView ? "ft-ws-control h-11 border-emerald-200 bg-emerald-50 px-4 text-sm font-bold text-emerald-700" : "ft-ws-control h-11 px-4 text-sm font-bold"}>
               {context.activeSavedView ? `Vista: ${context.activeSavedView.title}` : "Vistas guardadas"}
             </button>
-            <button type="button" onClick={() => setShowQuickCreate((value) => !value)} className="ft-ws-active h-11 rounded-[16px] px-5 text-sm font-extrabold">+ Nueva tarea</button>
+            <button type="button" onClick={() => permissions.canCreateTask && setShowQuickCreate((value) => !value)} disabled={!permissions.canCreateTask} title={permissions.canCreateTask ? "Crear tarea" : "No tenés permiso para crear tareas"} className="ft-ws-active h-11 rounded-[16px] px-5 text-sm font-extrabold disabled:cursor-not-allowed disabled:opacity-55">+ Nueva tarea</button>
             <button type="button" onClick={() => setRightPanelOpen((value) => !value)} className="ft-ws-control hidden h-11 px-4 text-sm font-bold 2xl:inline-flex">
               {rightPanelOpen ? <PanelRightClose className="h-4 w-4" /> : <PanelRightOpen className="h-4 w-4" />}
               Panel
@@ -152,25 +163,25 @@ export function WorkspaceSystemPage({
 
         {spacesManagerOpen ? (
           <div className="mt-4">
-            <WorkspaceSpacesManager context={context} spaces={spaces} projects={projects} assignments={projectSpaceAssignments} persistenceStatus={persistenceStatus} onClose={() => setSpacesManagerOpen(false)} />
+            <WorkspaceSpacesManager context={context} spaces={spaces} projects={projects} assignments={projectSpaceAssignments} persistenceStatus={persistenceStatus} permissions={permissions} onClose={() => setSpacesManagerOpen(false)} />
           </div>
         ) : null}
 
         {savedViewsOpen ? (
           <div className="mt-4">
-            <WorkspaceSavedViewsManager activeView={activeView} context={context} projectViews={projectViews} persistenceStatus={persistenceStatus} onClose={() => setSavedViewsOpen(false)} />
+            <WorkspaceSavedViewsManager activeView={activeView} context={context} projectViews={projectViews} persistenceStatus={persistenceStatus} permissions={permissions} onClose={() => setSavedViewsOpen(false)} />
           </div>
         ) : null}
 
         <div className={rightPanelOpen ? "mt-5 grid gap-5 2xl:grid-cols-[minmax(0,1fr)_340px]" : "mt-5 grid gap-5"}>
           <main className="min-w-0">
-            {activeView === "home" ? <HomeView tasks={tasks} projects={projects} boards={boards} files={files} activity={activity} projectViews={projectViews} context={context} /> : null}
+            {activeView === "home" ? <HomeView tasks={tasks} projects={projects} boards={boards} files={files} activity={activity} projectViews={projectViews} members={members} permissions={permissions} context={context} /> : null}
             {activeView === "list" ? <ListView tasks={tasks} /> : null}
             {activeView === "board" ? <BoardView tasks={tasks} /> : null}
             {activeView === "timeline" ? <TimelineView tasks={tasks} /> : null}
             {activeView === "table" ? <TableView tasks={tasks} /> : null}
             {activeView === "canvas" ? <CanvasView tasks={tasks} boards={boards} context={context} /> : null}
-            {activeView === "files" ? <FilesView boards={boards} files={files} context={context} projects={projects} /> : null}
+            {activeView === "files" ? <FilesView boards={boards} files={files} context={context} projects={projects} permissions={permissions} /> : null}
             {activeView === "reports" ? <ReportsView reports={reports} tasks={tasks} /> : null}
           </main>
           {rightPanelOpen ? (
@@ -180,7 +191,7 @@ export function WorkspaceSystemPage({
                   <X className="h-4 w-4" /> Ocultar resumen
                 </button>
               </div>
-              <WorkspaceRightPanel tasks={tasks} projects={projects} files={files} activity={activity} projectViews={projectViews} persistenceStatus={persistenceStatus} context={context} />
+              <WorkspaceRightPanel tasks={tasks} projects={projects} files={files} activity={activity} projectViews={projectViews} members={members} permissions={permissions} persistenceStatus={persistenceStatus} context={context} />
             </div>
           ) : null}
         </div>

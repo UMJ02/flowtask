@@ -1,8 +1,9 @@
 import type { CSSProperties } from "react";
 import Link from "next/link";
-import { BarChart3, CalendarClock, CheckCircle2, Columns3, FileArchive, FolderKanban, LayoutDashboard, ListChecks, PanelTop, Plus, Sparkles, Table2, TrendingUp } from "lucide-react";
+import { BarChart3, CalendarClock, CheckCircle2, Columns3, FileArchive, FolderKanban, LayoutDashboard, ListChecks, PanelTop, Plus, Sparkles, Table2, TrendingUp, UsersRound } from "lucide-react";
 import { getTaskProgress } from "@/lib/workspace-system/adapters";
-import type { WorkspaceActivityItem, WorkspaceBoardSummary, WorkspaceContext, WorkspaceFileSummary, WorkspaceProjectSummary, WorkspaceProjectViewPreference, WorkspaceTaskItem } from "@/lib/workspace-system/view-state";
+import { WorkspaceMembersPermissionsCard } from "../workspace-members-permissions";
+import type { WorkspaceActivityItem, WorkspaceBoardSummary, WorkspaceContext, WorkspaceFileSummary, WorkspaceMemberSummary, WorkspacePermissionSummary, WorkspaceProjectSummary, WorkspaceProjectViewPreference, WorkspaceTaskItem } from "@/lib/workspace-system/view-state";
 
 function workspaceHref(params: Record<string, string | null | undefined>) {
   const next = new URLSearchParams();
@@ -65,6 +66,8 @@ export function HomeView({
   files,
   activity,
   projectViews,
+  members,
+  permissions,
   context,
 }: {
   tasks: WorkspaceTaskItem[];
@@ -73,6 +76,8 @@ export function HomeView({
   files: WorkspaceFileSummary[];
   activity: WorkspaceActivityItem[];
   projectViews: WorkspaceProjectViewPreference[];
+  members: WorkspaceMemberSummary[];
+  permissions: WorkspacePermissionSummary;
   context: WorkspaceContext;
 }) {
   const activeProjectId = context.projectId ?? null;
@@ -170,6 +175,29 @@ export function HomeView({
             <Link className="ft-ws-home-action" href={workspaceHref({ projectId: activeProjectId, space: context.activeFilters?.space ?? null, view: "table" })}><Table2 className="h-4 w-4" /> Abrir tabla operativa</Link>
             <Link className="ft-ws-home-action" href={workspaceHref({ projectId: activeProjectId, space: context.activeFilters?.space ?? null, view: "canvas" })}><LayoutDashboard className="h-4 w-4" /> Abrir canvas</Link>
             <Link className="ft-ws-home-action" href={workspaceHref({ projectId: activeProjectId, space: context.activeFilters?.space ?? null, view: "reports" })}><BarChart3 className="h-4 w-4" /> Ver reportes</Link>
+          </div>
+        </section>
+      </div>
+
+      <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
+        <section className="ft-ws-card p-5">
+          <div className="ft-ws-home-section-head">
+            <div><p>Colaboración</p><h3>Miembros y permisos</h3></div>
+            <UsersRound className="h-4 w-4 text-emerald-500" />
+          </div>
+          <div className="mt-4">
+            <WorkspaceMembersPermissionsCard members={members} permissions={permissions} />
+          </div>
+        </section>
+        <section className="ft-ws-card p-5">
+          <div className="ft-ws-home-section-head">
+            <div><p>Permisos de trabajo</p><h3>Acciones disponibles</h3></div>
+          </div>
+          <div className="mt-4 grid gap-2">
+            <span className={permissions.canCreateTask ? "ft-ws-access-pill" : "ft-ws-access-pill is-muted"}>Crear tareas: {permissions.canCreateTask ? "Activo" : "Bloqueado"}</span>
+            <span className={permissions.canSaveViews ? "ft-ws-access-pill" : "ft-ws-access-pill is-muted"}>Guardar vistas: {permissions.canSaveViews ? "Activo" : "Bloqueado"}</span>
+            <span className={permissions.canUploadFiles ? "ft-ws-access-pill" : "ft-ws-access-pill is-muted"}>Subir archivos: {permissions.canUploadFiles ? "Activo" : "Bloqueado"}</span>
+            <span className={permissions.canManageSpaces ? "ft-ws-access-pill" : "ft-ws-access-pill is-muted"}>Gestionar espacios: {permissions.canManageSpaces ? "Activo" : "Bloqueado"}</span>
           </div>
         </section>
       </div>

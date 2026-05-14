@@ -2,7 +2,8 @@ import type { CSSProperties } from "react";
 import { AlertTriangle, CalendarClock, CheckCircle2, CircleDot, FileArchive, Flag, Gauge, Paperclip, Sparkles, TrendingUp } from "lucide-react";
 import { getTaskProgress } from "@/lib/workspace-system/adapters";
 import { WorkspaceActivityTimeline } from "./workspace-activity-timeline";
-import type { WorkspaceActivityItem, WorkspaceContext, WorkspaceFileSummary, WorkspacePersistenceGuardStatus, WorkspaceProjectSummary, WorkspaceProjectViewPreference, WorkspaceTaskItem } from "@/lib/workspace-system/view-state";
+import { WorkspaceMembersPermissionsCard } from "./workspace-members-permissions";
+import type { WorkspaceActivityItem, WorkspaceContext, WorkspaceFileSummary, WorkspaceMemberSummary, WorkspacePermissionSummary, WorkspacePersistenceGuardStatus, WorkspaceProjectSummary, WorkspaceProjectViewPreference, WorkspaceTaskItem } from "@/lib/workspace-system/view-state";
 
 function isOverdue(task: WorkspaceTaskItem) {
   if (task.isOverdue) return true;
@@ -27,6 +28,8 @@ export function WorkspaceRightPanel({
   files,
   activity,
   projectViews,
+  members,
+  permissions,
   persistenceStatus,
   context,
 }: {
@@ -35,6 +38,8 @@ export function WorkspaceRightPanel({
   files: WorkspaceFileSummary[];
   activity: WorkspaceActivityItem[];
   projectViews: WorkspaceProjectViewPreference[];
+  members: WorkspaceMemberSummary[];
+  permissions: WorkspacePermissionSummary;
   persistenceStatus: WorkspacePersistenceGuardStatus;
   context: WorkspaceContext;
 }) {
@@ -81,6 +86,8 @@ export function WorkspaceRightPanel({
         <div className="ft-ws-mini-metric"><Paperclip className="h-4 w-4 text-blue-500" /><b>{files.length}</b><span>Archivos</span></div>
         <div className="ft-ws-mini-metric"><Gauge className="h-4 w-4 text-violet-500" /><b>{projects.length}</b><span>Proyectos</span></div>
       </section>
+
+      <WorkspaceMembersPermissionsCard members={members} permissions={permissions} />
 
 
       <section className="ft-ws-card p-5">

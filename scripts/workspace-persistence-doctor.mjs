@@ -49,7 +49,7 @@ requireIncludes("src/components/workspace-system/workspace-saved-views-manager.t
 
 const pkg = JSON.parse(read("package.json"));
 if (pkg.scripts?.["workspace:doctor"] !== "node scripts/workspace-persistence-doctor.mjs") failures.push("package.json must expose workspace:doctor");
-if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.25.9.5") failures.push("verify:current must target v58.25.9.5");
+if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.25.9.6") failures.push("verify:current must target v58.25.9.6");
 
 const migration = read("supabase/migrations/0056_v58_25_9_workspace_persistence_foundation.sql");
 for (const fn of ["public.is_org_admin_or_manager", "public.is_project_member", "public.has_project_role", "public.set_updated_at"]) {
@@ -64,9 +64,12 @@ requireIncludes("src/lib/workspace-system/server-data.ts", "getWorkspaceProjectS
 requireIncludes("src/components/workspace-system/workspace-spaces-manager.tsx", "Workspace Spaces Manager + Project Organization");
 requireIncludes("src/components/workspace-system/workspace-system-page.tsx", "WorkspaceSpacesManager");
 requireIncludes("src/app/globals.css", "ft-ws-spaces-manager");
-requireIncludes("src/app/globals.css", "v58.25.9.5 Workspace Project Home Dashboard");
+requireIncludes("src/app/globals.css", "v58.25.9.6 — Workspace Members + Permissions UX Polish");
 requireIncludes("src/components/workspace-system/views/home-view.tsx", "Home operativo");
 requireIncludes("src/components/workspace-system/workspace-system-page.tsx", "HomeView");
+requireIncludes("src/components/workspace-system/workspace-system-page.tsx", "permissions.canCreateTask");
+requireFile("src/components/workspace-system/workspace-members-permissions.tsx");
+requireIncludes("src/lib/workspace-system/server-data.ts", "getWorkspacePermissionSummary");
 
 if (failures.length) {
   console.error("[workspace:doctor] FAIL");
@@ -74,7 +77,7 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log("[workspace:doctor] OK — Workspace persistence, spaces, saved views, and Home dashboard checks are present.");
+console.log("[workspace:doctor] OK — Workspace persistence, spaces, saved views, Home dashboard, and permission UX checks are present.");
 if (warnings.length) {
   console.log("[workspace:doctor] Warnings:");
   for (const warning of warnings) console.log(`- ${warning}`);

@@ -9,6 +9,7 @@ import { createClient } from "@/lib/supabase/client";
 import { slugifyWorkspaceValue } from "@/lib/workspace-system/adapters";
 import type {
   WorkspaceContext,
+  WorkspacePermissionSummary,
   WorkspacePersistenceGuardStatus,
   WorkspaceProjectSpaceAssignment,
   WorkspaceProjectSummary,
@@ -26,6 +27,7 @@ export function WorkspaceSpacesManager({
   projects,
   assignments,
   persistenceStatus,
+  permissions,
   onClose,
 }: {
   context: WorkspaceContext;
@@ -33,13 +35,14 @@ export function WorkspaceSpacesManager({
   projects: WorkspaceProjectSummary[];
   assignments: WorkspaceProjectSpaceAssignment[];
   persistenceStatus: WorkspacePersistenceGuardStatus;
+  permissions: WorkspacePermissionSummary;
   onClose?: () => void;
 }) {
   const supabase = useMemo(() => createClient(), []);
   const router = useRouter();
   const persistedSpaces = spaces.filter((space) => space.isPersisted);
-  const canWriteSpaces = persistenceStatus.workspaceSpacesReady;
-  const canLinkProjects = persistenceStatus.workspaceSpacesReady && Boolean(persistenceStatus.projectSpaceLinksReady);
+  const canWriteSpaces = persistenceStatus.workspaceSpacesReady && permissions.canManageSpaces;
+  const canLinkProjects = persistenceStatus.workspaceSpacesReady && Boolean(persistenceStatus.projectSpaceLinksReady) && permissions.canAssignProjectsToSpaces;
   const [name, setName] = useState("");
   const [color, setColor] = useState(spaceColors[0]);
   const [icon, setIcon] = useState(spaceIcons[0]);
@@ -62,7 +65,7 @@ export function WorkspaceSpacesManager({
   async function createSpace() {
     const cleanName = name.trim();
     if (!canWriteSpaces) {
-      setFeedback({ tone: "error", text: "Aplica las migraciones 0056/0057 antes de crear espacios reales." });
+      setFeedback({ tone: "error", text: permissions.canManageSpaces ? "Aplica las migraciones 0056/0057 antes de crear espacios reales." : "Tu rol actual no permite crear espacios." });
       return;
     }
     if (!cleanName) {
@@ -97,6 +100,11 @@ export function WorkspaceSpacesManager({
   }
 
   async function renameSpace(spaceId: string) {
+    if (!permissions.canManageSpaces) {
+      setFeedback({ tone: "error", text: "Tu rol actual no permite renombrar espacios." });
+      return;
+    }
+
     const cleanName = editingName.trim();
     if (!cleanName) {
       setFeedback({ tone: "error", text: "El nombre del espacio no puede quedar vacío." });
@@ -125,6 +133,11 @@ export function WorkspaceSpacesManager({
   }
 
   async function archiveSpace(spaceId: string) {
+    if (!permissions.canManageSpaces) {
+      setFeedback({ tone: "error", text: "Tu rol actual no permite archivar espacios." });
+      return;
+    }
+
     setBusy(`archive:${spaceId}`);
     setFeedback(null);
     const { error } = await supabase
@@ -146,6 +159,10 @@ export function WorkspaceSpacesManager({
 
   async function assignProject(spaceId: string, projectId: string) {
     if (!projectId) return;
+    if (!permissions.canAssignProjectsToSpaces) {
+      setFeedback({ tone: "error", text: "Tu rol actual no permite asignar proyectos a espacios." });
+      return;
+    }
     if (!canLinkProjects) {
       setFeedback({ tone: "error", text: "Aplica la migración 0057 para organizar proyectos dentro de espacios." });
       return;
@@ -171,6 +188,11 @@ export function WorkspaceSpacesManager({
   }
 
   async function removeProject(projectId: string) {
+    if (!permissions.canAssignProjectsToSpaces) {
+      setFeedback({ tone: "error", text: "Tu rol actual no permite quitar proyectos de espacios." });
+      return;
+    }
+
     setBusy(`remove:${projectId}`);
     setFeedback(null);
     const { error } = await supabase.from("workspace_space_projects").delete().eq("project_id", projectId);
@@ -194,6 +216,7 @@ export function WorkspaceSpacesManager({
           <p className="mt-1 max-w-3xl text-sm font-semibold text-slate-500">
             Crea espacios persistidos, organiza proyectos dentro de ellos y convierte la sidebar en un centro de control real tipo ClickUp/Notion.
           </p>
+          {!permissions.canManageSpaces ? <p className="mt-2 rounded-full bg-amber-50 px-3 py-1 text-xs font-black text-amber-700">Modo solo lectura: la gestión de espacios está bloqueada por tu rol.</p> : null}
         </div>
         {onClose ? (
           <button type="button" onClick={onClose} className="ft-ws-control h-10 px-3 text-xs font-black">

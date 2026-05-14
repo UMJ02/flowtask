@@ -1,5 +1,5 @@
 import { applyWorkspaceScope, getWorkspaceContext } from "@/lib/queries/workspace";
-import type { WorkspaceBoardSummary, WorkspacePersistenceGuardStatus, WorkspaceProjectSpaceAssignment, WorkspaceProjectViewPreference, WorkspaceSpaceSummary } from "@/lib/workspace-system/view-state";
+import type { WorkspaceBoardSummary, WorkspaceMemberSummary, WorkspacePermissionSummary, WorkspacePersistenceGuardStatus, WorkspaceProjectSpaceAssignment, WorkspaceProjectViewPreference, WorkspaceSpaceSummary } from "@/lib/workspace-system/view-state";
 
 export async function getWorkspaceIdentity() {
   const { supabase, user, activeOrganizationId } = await getWorkspaceContext();
@@ -390,4 +390,154 @@ export async function getWorkspaceProjectSpaceAssignments(): Promise<WorkspacePr
     projectId: String(row.project_id),
     sortOrder: Number(row.sort_order ?? 0),
   }));
+}
+
+
+const MANAGER_ROLES = new Set(["owner", "admin", "admin_global", "manager"]);
+const EDITOR_ROLES = new Set(["owner", "editor"]);
+
+function normalizeProfile(row: any) {
+  const profile = Array.isArray(row?.profiles) ? row.profiles[0] : row?.profiles;
+  return {
+    name: String(profile?.full_name || profile?.email || "Usuario"),
+    email: profile?.email ?? null,
+  };
+}
+
+export async function getWorkspaceProjectMembers(projectId?: string | null): Promise<WorkspaceMemberSummary[]> {
+  const { supabase, user, activeOrganizationId } = await getWorkspaceContext();
+  if (!user) return [];
+
+  if (projectId) {
+    const { data, error } = await supabase
+      .from("project_members")
+      .select("id,user_id,role,created_at,profiles(id,full_name,email)")
+      .eq("project_id", projectId)
+      .order("created_at", { ascending: true })
+      .limit(12);
+
+    if (error) return [];
+
+    return ((data ?? []) as any[]).map((row) => {
+      const profile = normalizeProfile(row);
+      return {
+        id: String(row.id),
+        userId: String(row.user_id),
+        name: profile.name,
+        email: profile.email,
+        role: String(row.role ?? "viewer"),
+        source: "project" as const,
+        canManage: String(row.role ?? "") === "owner",
+      };
+    });
+  }
+
+  if (activeOrganizationId) {
+    const { data, error } = await supabase
+      .from("organization_members")
+      .select("id,user_id,role,created_at,profiles(id,full_name,email)")
+      .eq("organization_id", activeOrganizationId)
+      .order("is_default", { ascending: false })
+      .order("created_at", { ascending: true })
+      .limit(12);
+
+    if (error) return [];
+
+    return ((data ?? []) as any[]).map((row) => {
+      const profile = normalizeProfile(row);
+      return {
+        id: String(row.id),
+        userId: String(row.user_id),
+        name: profile.name,
+        email: profile.email,
+        role: String(row.role ?? "member"),
+        source: "organization" as const,
+        canManage: MANAGER_ROLES.has(String(row.role ?? "").toLowerCase()),
+      };
+    });
+  }
+
+  return [{
+    id: user.id,
+    userId: user.id,
+    name: user.email ?? "Usuario actual",
+    email: user.email ?? null,
+    role: "owner",
+    source: "owner",
+    canManage: true,
+  }];
+}
+
+export async function getWorkspacePermissionSummary(projectId?: string | null): Promise<WorkspacePermissionSummary> {
+  const { supabase, user, activeOrganizationId } = await getWorkspaceContext();
+  if (!user) {
+    return {
+      role: null,
+      projectMemberRole: null,
+      organizationRole: null,
+      isProjectOwner: false,
+      isOrgManager: false,
+      canEdit: false,
+      canManageMembers: false,
+      canCreateTask: false,
+      canUploadFiles: false,
+      canSaveViews: false,
+      canManageSpaces: false,
+      canAssignProjectsToSpaces: false,
+      canEditTasks: false,
+      canShare: false,
+      canViewActivity: false,
+      isReadOnly: true,
+      message: "Inicia sesión para editar este workspace.",
+    };
+  }
+
+  let organizationRole: string | null = null;
+  if (activeOrganizationId) {
+    const { data } = await supabase
+      .from("organization_members")
+      .select("role")
+      .eq("organization_id", activeOrganizationId)
+      .eq("user_id", user.id)
+      .order("is_default", { ascending: false })
+      .limit(1);
+    organizationRole = String((data ?? [])[0]?.role ?? "member");
+  }
+
+  const isOrgManager = organizationRole ? MANAGER_ROLES.has(organizationRole.toLowerCase()) : false;
+  let projectMemberRole: string | null = null;
+  let isProjectOwner = false;
+
+  if (projectId) {
+    const [{ data: project }, { data: membership }] = await Promise.all([
+      supabase.from("projects").select("id,owner_id,organization_id").eq("id", projectId).maybeSingle(),
+      supabase.from("project_members").select("role").eq("project_id", projectId).eq("user_id", user.id).limit(1),
+    ]);
+    isProjectOwner = (project as any)?.owner_id === user.id;
+    projectMemberRole = String((membership ?? [])[0]?.role ?? (isProjectOwner ? "owner" : "viewer"));
+  }
+
+  const canEditProject = Boolean(isProjectOwner || isOrgManager || (projectMemberRole && EDITOR_ROLES.has(projectMemberRole.toLowerCase())));
+  const canManageWorkspace = activeOrganizationId ? isOrgManager : true;
+  const canEdit = projectId ? canEditProject : canManageWorkspace;
+
+  return {
+    role: projectMemberRole ?? organizationRole ?? "owner",
+    projectMemberRole,
+    organizationRole,
+    isProjectOwner,
+    isOrgManager,
+    canEdit,
+    canManageMembers: Boolean(isProjectOwner || isOrgManager || projectMemberRole === "owner"),
+    canCreateTask: canEdit,
+    canUploadFiles: canEdit,
+    canSaveViews: canEdit,
+    canManageSpaces: canManageWorkspace,
+    canAssignProjectsToSpaces: canManageWorkspace,
+    canEditTasks: canEdit,
+    canShare: canEdit,
+    canViewActivity: true,
+    isReadOnly: !canEdit,
+    message: canEdit ? "Tenés permisos para editar este contexto." : "Acceso de solo lectura: podés revisar el workspace, pero las acciones de escritura están bloqueadas.",
+  };
 }

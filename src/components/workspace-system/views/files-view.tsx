@@ -2,7 +2,7 @@ import Link from "next/link";
 import { FileArchive, FileSpreadsheet, FileText, Image as ImageIcon, LayoutDashboard, Paperclip } from "lucide-react";
 import { boardRoute } from "@/lib/navigation/routes";
 import { WorkspaceFilesUploadEntry } from "@/components/workspace-system/workspace-files-upload-entry";
-import type { WorkspaceBoardSummary, WorkspaceContext, WorkspaceFileSummary, WorkspaceProjectSummary } from "@/lib/workspace-system/view-state";
+import type { WorkspaceBoardSummary, WorkspaceContext, WorkspaceFileSummary, WorkspacePermissionSummary, WorkspaceProjectSummary } from "@/lib/workspace-system/view-state";
 
 function formatBytes(bytes?: number | null) {
   if (!bytes || bytes <= 0) return "0 KB";
@@ -31,7 +31,7 @@ function formatDate(value?: string | null) {
   return new Intl.DateTimeFormat("es", { day: "2-digit", month: "short", year: "numeric" }).format(date);
 }
 
-export function FilesView({ boards, files, context, projects }: { boards: WorkspaceBoardSummary[]; files: WorkspaceFileSummary[]; context: WorkspaceContext; projects: WorkspaceProjectSummary[] }) {
+export function FilesView({ boards, files, context, projects, permissions }: { boards: WorkspaceBoardSummary[]; files: WorkspaceFileSummary[]; context: WorkspaceContext; projects: WorkspaceProjectSummary[]; permissions: WorkspacePermissionSummary }) {
   const imageFiles = files.filter((file) => file.mimeType?.startsWith("image/")).length;
   const documentFiles = files.length - imageFiles;
   return (
@@ -55,7 +55,7 @@ export function FilesView({ boards, files, context, projects }: { boards: Worksp
       </div>
 
       <div className="mt-5">
-        <WorkspaceFilesUploadEntry context={context} projects={projects} />
+        <WorkspaceFilesUploadEntry context={context} projects={projects} canUpload={permissions.canUploadFiles} />
       </div>
 
       <div className="mt-6 grid gap-5 xl:grid-cols-[minmax(0,1.2fr)_minmax(320px,.8fr)]">
