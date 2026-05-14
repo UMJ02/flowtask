@@ -1,8 +1,8 @@
-import { CalendarDays, CheckSquare, Share2, Sparkles, Star, Users, Zap } from "lucide-react";
+import { CalendarDays, CheckSquare, Command, Share2, Sparkles, Star, Users, Zap } from "lucide-react";
 import type { WorkspaceContext, WorkspaceTaskItem } from "@/lib/workspace-system/view-state";
 import { getTaskProgress } from "@/lib/workspace-system/adapters";
 
-export function WorkspaceContextHeader({ context, tasks }: { context: WorkspaceContext; tasks: WorkspaceTaskItem[] }) {
+export function WorkspaceContextHeader({ context, tasks, onOpenCommandCenter }: { context: WorkspaceContext; tasks: WorkspaceTaskItem[]; onOpenCommandCenter?: () => void }) {
   const progress = getTaskProgress(tasks);
   const active = tasks.filter((task) => !["concluido", "completado"].includes(task.status)).length;
   return (
@@ -30,6 +30,7 @@ export function WorkspaceContextHeader({ context, tasks }: { context: WorkspaceC
         </div>
       </div>
       <div className="flex flex-wrap items-center gap-2">
+        <button type="button" onClick={onOpenCommandCenter} className="ft-ws-control h-11 px-4 text-sm font-bold"><Command className="h-4 w-4" /> Buscar</button>
         <button className="ft-ws-control h-11 px-4 text-sm font-bold"><Zap className="h-4 w-4" /> Automatizar</button>
         <button className="ft-ws-control h-11 px-4 text-sm font-bold"><Share2 className="h-4 w-4" /> Compartir</button>
         <button className="ft-ws-control h-11 px-4 text-sm font-bold"><Sparkles className="h-4 w-4" /> IA</button>

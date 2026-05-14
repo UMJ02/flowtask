@@ -1,6 +1,6 @@
-# FlowTask — v58.25.9.1 Workspace Persistence UI + Saved Views Manager
+# FlowTask — v58.25.9.8 Workspace Navigation + Search Command Center
 
-Base: **v58.25.8.9 — Workspace Activity Timeline + Files Upload Entry Polish**
+Base: **v58.25.9.7 — Workspace Empty States + Client QA Hardening**
 
 ## Objetivo
 
@@ -35,6 +35,15 @@ npm run dev
 ## Nota
 
 Esta versión introduce la base DB opcional para persistencia. No reemplaza rutas existentes, no duplica BoardPage y no toca `safe_delete_visual_board`.
+
+
+## v58.25.9.8 — Workspace Navigation + Search Command Center
+
+- Agrega `WorkspaceCommandCenter` para buscar y navegar tareas, proyectos, espacios, vistas guardadas, pizarras, archivos y acciones rápidas.
+- Entrada visible “Buscar o ejecutar” y atajo `⌘K` / `Ctrl+K`.
+- Resultados con navegación por teclado: ↑/↓, Enter y Esc.
+- Acción rápida “Crear tarea” respeta permisos del workspace.
+- No requiere migración nueva ni dependencias nuevas.
 
 
 ## v58.25.9.3 — Workspace Saved Views Defaults + Filters Persistence

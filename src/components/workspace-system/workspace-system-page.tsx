@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { AlertTriangle, FolderKanban, Menu, PanelRightClose, PanelRightOpen, SlidersHorizontal, X } from "lucide-react";
+import { AlertTriangle, Command, FolderKanban, Menu, PanelRightClose, PanelRightOpen, Search, SlidersHorizontal, X } from "lucide-react";
 import type { ReportsOverview } from "@/lib/queries/reports";
 import type { WorkspaceActivityItem, WorkspaceBoardSummary, WorkspaceContext, WorkspaceFileSummary, WorkspaceMemberSummary, WorkspacePermissionSummary, WorkspacePersistenceGuardStatus, WorkspaceProjectSpaceAssignment, WorkspaceProjectSummary, WorkspaceProjectViewPreference, WorkspaceSpaceSummary, WorkspaceTaskItem, WorkspaceViewId } from "@/lib/workspace-system/view-state";
 import { BoardView } from "./views/board-view";
@@ -22,6 +22,7 @@ import { WorkspaceSavedViewsManager } from "./workspace-saved-views-manager";
 import { WorkspaceSpacesManager } from "./workspace-spaces-manager";
 import { WorkspacePermissionBanner } from "./workspace-members-permissions";
 import { WorkspaceEmptyState, WorkspaceMigrationEmptyState } from "./workspace-empty-state";
+import { WorkspaceCommandCenter } from "./workspace-command-center";
 
 export function WorkspaceSystemPage({
   activeView,
@@ -64,6 +65,7 @@ export function WorkspaceSystemPage({
   const [rightPanelOpen, setRightPanelOpen] = useState(true);
   const [savedViewsOpen, setSavedViewsOpen] = useState(false);
   const [spacesManagerOpen, setSpacesManagerOpen] = useState(false);
+  const [commandCenterOpen, setCommandCenterOpen] = useState(false);
 
   function setWorkspaceParam(key: string, value: string, emptyValue = "") {
     const next = new URLSearchParams(searchParams.toString());
@@ -84,6 +86,22 @@ export function WorkspaceSystemPage({
         <WorkspaceSidebarPro projects={projects} spaces={spaces} context={context} />
       </div>
 
+      <WorkspaceCommandCenter
+        open={commandCenterOpen}
+        onOpenChange={setCommandCenterOpen}
+        context={context}
+        tasks={tasks}
+        projects={projects}
+        spaces={spaces}
+        boards={boards}
+        files={files}
+        projectViews={projectViews}
+        permissions={permissions}
+        onQuickCreate={() => {
+          if (permissions.canCreateTask) setShowQuickCreate(true);
+        }}
+      />
+
       {mobileSidebarOpen ? (
         <div className="fixed inset-0 z-50 lg:hidden">
           <button type="button" className="absolute inset-0 bg-slate-950/45 backdrop-blur-sm" aria-label="Cerrar menú workspace" onClick={() => setMobileSidebarOpen(false)} />
@@ -102,9 +120,12 @@ export function WorkspaceSystemPage({
             {rightPanelOpen ? <PanelRightClose className="h-4 w-4" /> : <PanelRightOpen className="h-4 w-4" />}
             Resumen
           </button>
+          <button type="button" onClick={() => setCommandCenterOpen(true)} className="ft-ws-control h-11 px-4 text-sm font-black">
+            <Search className="h-4 w-4" /> Buscar
+          </button>
         </div>
 
-        <WorkspaceContextHeader context={context} tasks={tasks} />
+        <WorkspaceContextHeader context={context} tasks={tasks} onOpenCommandCenter={() => setCommandCenterOpen(true)} />
 
         {context.invalidProjectId ? (
           <div className="mt-4 flex items-start gap-3 rounded-[18px] border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-800">
@@ -134,6 +155,9 @@ export function WorkspaceSystemPage({
         <div className="mt-5 flex flex-col gap-4 2xl:flex-row 2xl:items-center 2xl:justify-between">
           <WorkspaceViewTabs activeView={activeView} projectViews={projectViews} />
           <div className="ft-ws-action-bar flex flex-wrap items-center gap-2">
+            <button type="button" onClick={() => setCommandCenterOpen(true)} className="ft-ws-command-trigger h-11 rounded-[16px] px-4 text-sm font-black">
+              <Command className="h-4 w-4" /> Buscar o ejecutar <span className="ml-1 rounded-full bg-white/70 px-2 py-0.5 text-[10px] text-slate-500">⌘K</span>
+            </button>
             <button className="ft-ws-control h-11 px-4 text-sm font-bold"><SlidersHorizontal className="h-4 w-4" /> Filtros</button>
             <select className="ft-ws-control h-11 px-4 text-sm font-bold" value={statusParam} onChange={(event) => setStatusFilter(event.target.value)}>
               <option value="todos">Estado: todos</option>
