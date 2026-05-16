@@ -1,4 +1,4 @@
-# v58.27.0 — Client Final Release Candidate
+# v58.27.1 — Release Candidate Fixes
 
 ## Objetivo
 Consolidar la línea Workspace-First como release candidate para validación final de cliente sin agregar migraciones nuevas, sin cambiar RLS y sin reemplazar rutas clásicas.
@@ -20,7 +20,7 @@ Consolidar la línea Workspace-First como release candidate para validación fin
 ## Scripts nuevos
 ```bash
 npm run workspace:release-candidate:ready
-npm run verify:v58.27.0
+npm run verify:v58.27.1
 ```
 
 ## Validación recomendada

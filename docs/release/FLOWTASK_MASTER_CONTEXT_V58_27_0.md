@@ -1,4 +1,4 @@
-# FlowTask Master Context — v58.27.0
+# FlowTask Master Context — v58.27.1
 
 ## Estado
 FlowTask queda como Client Final Release Candidate de la línea Workspace-First.

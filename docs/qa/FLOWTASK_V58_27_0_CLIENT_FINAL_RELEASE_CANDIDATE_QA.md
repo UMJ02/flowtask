@@ -1,4 +1,4 @@
-# QA — FlowTask v58.27.0 Client Final Release Candidate
+# QA — FlowTask v58.27.1 Release Candidate Fixes
 
 ## Validación local
 ```bash

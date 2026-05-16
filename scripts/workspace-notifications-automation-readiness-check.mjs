@@ -10,7 +10,7 @@ const requireFile = (rel) => { if (!exists(rel)) failures.push(`Missing required
 const requireIncludes = (rel, text) => { if (!read(rel).includes(text)) failures.push(`Expected '${text}' in ${rel}`); };
 
 const pkg = JSON.parse(read("package.json") || "{}");
-if (pkg.version !== "58.27.0-client-final-release-candidate") failures.push(`Unexpected package version: ${pkg.version}`);
+if (pkg.version !== "58.27.1-release-candidate-fixes") failures.push(`Unexpected package version: ${pkg.version}`);
 if (pkg.scripts?.["workspace:automation:ready"] !== "node scripts/workspace-notifications-automation-readiness-check.mjs") failures.push("workspace:automation:ready script missing");
 if (!String(pkg.scripts?.["build:preflight"] ?? "").includes("workspace:automation:ready")) failures.push("build:preflight must include workspace:automation:ready");
 
@@ -32,9 +32,9 @@ requireIncludes("src/lib/workspace-system/performance.ts", "WORKSPACE_QUERY_LIMI
 requireIncludes("src/app/(app)/app/workspace/page.tsx", "loadPlan.notifications");
 requireIncludes("src/app/(app)/app/workspace/page.tsx", "getWorkspaceNotificationDigest");
 requireIncludes("src/components/workspace-system/workspace-right-panel.tsx", "WorkspaceNotificationsAutomationPanel");
-requireIncludes("src/app/globals.css", "v58.27.0 — Client Final Release Candidate");
-requireIncludes("src/lib/release/version.ts", "58.27.0-client-final-release-candidate");
-requireIncludes("README.md", "v58.27.0");
+requireIncludes("src/app/globals.css", "v58.27.1 — Release Candidate Fixes");
+requireIncludes("src/lib/release/version.ts", "58.27.1-release-candidate-fixes");
+requireIncludes("README.md", "v58.27.1");
 
 if (failures.length) {
   console.error("[workspace:automation:ready] FAIL");

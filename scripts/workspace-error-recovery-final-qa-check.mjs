@@ -10,7 +10,7 @@ const requireFile = (rel) => { if (!exists(rel)) failures.push(`Missing required
 const requireIncludes = (rel, text) => { if (!read(rel).includes(text)) failures.push(`Expected '${text}' in ${rel}`); };
 
 const pkg = JSON.parse(read("package.json") || "{}");
-if (pkg.version !== "58.27.0-client-final-release-candidate") failures.push(`Unexpected package version: ${pkg.version}`);
+if (pkg.version !== "58.27.1-release-candidate-fixes") failures.push(`Unexpected package version: ${pkg.version}`);
 if (pkg.scripts?.["workspace:error-recovery:ready"] !== "node scripts/workspace-error-recovery-final-qa-check.mjs") failures.push("workspace:error-recovery:ready script missing");
 if (!String(pkg.scripts?.["build:preflight"] ?? "").includes("workspace:error-recovery:ready")) failures.push("build:preflight must include workspace:error-recovery:ready");
 
@@ -31,10 +31,10 @@ requireIncludes("src/app/(app)/app/workspace/loading.tsx", "WorkspaceLoading");
 requireIncludes("src/components/workspace-system/workspace-system-page.tsx", "invalidSavedViewId");
 requireIncludes("src/components/workspace-system/workspace-system-page.tsx", "Persistencia bloqueada por Supabase/RLS");
 requireIncludes("src/lib/workspace-system/view-state.ts", "invalidSavedViewId");
-requireIncludes("src/app/globals.css", "v58.27.0 — Client Final Release Candidate");
+requireIncludes("src/app/globals.css", "v58.27.1 — Release Candidate Fixes");
 requireIncludes("src/app/globals.css", "ft-ws-recovery-panel");
-requireIncludes("src/lib/release/version.ts", "58.27.0-client-final-release-candidate");
-requireIncludes("README.md", "v58.27.0");
+requireIncludes("src/lib/release/version.ts", "58.27.1-release-candidate-fixes");
+requireIncludes("README.md", "v58.27.1");
 
 if (failures.length) {
   console.error("[workspace:error-recovery:ready] FAIL");

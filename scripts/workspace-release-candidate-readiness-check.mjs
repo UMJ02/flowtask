@@ -4,8 +4,8 @@ import path from "node:path";
 
 const root = process.cwd();
 const failures = [];
-const expectedVersion = "58.27.0-client-final-release-candidate";
-const expectedRelease = "v58.27.0 Client Final Release Candidate";
+const expectedVersion = "58.27.1-release-candidate-fixes";
+const expectedRelease = "v58.27.1 Release Candidate Fixes";
 
 const exists = (rel) => fs.existsSync(path.join(root, rel));
 const read = (rel) => exists(rel) ? fs.readFileSync(path.join(root, rel), "utf8") : "";
@@ -16,8 +16,8 @@ const pkg = JSON.parse(read("package.json") || "{}");
 const scripts = pkg.scripts ?? {};
 
 if (pkg.version !== expectedVersion) failures.push(`package version must be ${expectedVersion}`);
-if (scripts["verify:current"] !== "npm run verify:v58.27.0") failures.push("verify:current must target verify:v58.27.0");
-if (scripts["verify:v58.27.0"] !== "node scripts/verify-v58.27.0.mjs") failures.push("verify:v58.27.0 script missing");
+if (scripts["verify:current"] !== "npm run verify:v58.27.1") failures.push("verify:current must target verify:v58.27.1");
+if (scripts["verify:v58.27.1"] !== "node scripts/verify-v58.27.1.mjs") failures.push("verify:v58.27.1 script missing");
 if (scripts["workspace:release-candidate:ready"] !== "node scripts/workspace-release-candidate-readiness-check.mjs") failures.push("workspace:release-candidate:ready script missing");
 if (!String(scripts["build:preflight"] ?? "").includes("workspace:release-candidate:ready")) failures.push("build:preflight must include workspace:release-candidate:ready");
 
@@ -61,23 +61,23 @@ for (const rel of [
   "scripts/workspace-collaboration-share-readiness-check.mjs",
   "scripts/workspace-error-recovery-final-qa-check.mjs",
   "scripts/workspace-release-candidate-readiness-check.mjs",
-  "docs/release/V58_27_0_CLIENT_FINAL_RELEASE_CANDIDATE.md",
-  "docs/qa/FLOWTASK_V58_27_0_CLIENT_FINAL_RELEASE_CANDIDATE_QA.md",
-  "docs/qa/FLOWTASK_V58_27_0_CLIENT_FINAL_RELEASE_CHECKLIST.md",
-  "docs/release/FLOWTASK_MASTER_CONTEXT_V58_27_0.md",
+  "docs/release/V58_27_1_RELEASE_CANDIDATE_FIXES.md",
+  "docs/qa/FLOWTASK_V58_27_1_RELEASE_CANDIDATE_FIXES_QA.md",
+  "docs/qa/FLOWTASK_V58_27_1_RELEASE_CANDIDATE_FIXES_CHECKLIST.md",
+  "docs/release/FLOWTASK_MASTER_CONTEXT_V58_27_1.md",
 ]) requireFile(rel);
 
 requireIncludes("src/lib/release/version.ts", expectedVersion);
 requireIncludes("src/lib/release/version.ts", expectedRelease);
 requireIncludes("package-lock.json", expectedVersion);
-requireIncludes("README.md", "v58.27.0");
-requireIncludes("src/app/globals.css", "v58.27.0 — Client Final Release Candidate");
-requireIncludes("docs/qa/FLOWTASK_V58_27_0_CLIENT_FINAL_RELEASE_CHECKLIST.md", "/app/workspace");
-requireIncludes("docs/qa/FLOWTASK_V58_27_0_CLIENT_FINAL_RELEASE_CHECKLIST.md", "/app/tasks");
-requireIncludes("docs/qa/FLOWTASK_V58_27_0_CLIENT_FINAL_RELEASE_CHECKLIST.md", "workspace_spaces");
-requireIncludes("docs/qa/FLOWTASK_V58_27_0_CLIENT_FINAL_RELEASE_CHECKLIST.md", "safe_delete_visual_board");
-requireIncludes("docs/release/FLOWTASK_MASTER_CONTEXT_V58_27_0.md", "Workspace-First");
-requireIncludes("docs/release/FLOWTASK_MASTER_CONTEXT_V58_27_0.md", "v58.27.0");
+requireIncludes("README.md", "v58.27.1");
+requireIncludes("src/app/globals.css", "v58.27.1 — Release Candidate Fixes");
+requireIncludes("docs/qa/FLOWTASK_V58_27_1_RELEASE_CANDIDATE_FIXES_CHECKLIST.md", "/app/workspace");
+requireIncludes("docs/qa/FLOWTASK_V58_27_1_RELEASE_CANDIDATE_FIXES_CHECKLIST.md", "/app/tasks");
+requireIncludes("docs/qa/FLOWTASK_V58_27_1_RELEASE_CANDIDATE_FIXES_CHECKLIST.md", "workspace_spaces");
+requireIncludes("docs/qa/FLOWTASK_V58_27_1_RELEASE_CANDIDATE_FIXES_CHECKLIST.md", "safe_delete_visual_board");
+requireIncludes("docs/release/FLOWTASK_MASTER_CONTEXT_V58_27_1.md", "Workspace-First");
+requireIncludes("docs/release/FLOWTASK_MASTER_CONTEXT_V58_27_1.md", "v58.27.1");
 
 if (failures.length) {
   console.error("[workspace:release-candidate:ready] FAIL");
@@ -85,4 +85,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log("[workspace:release-candidate:ready] OK — Client Final Release Candidate aligned.");
+console.log("[workspace:release-candidate:ready] OK — Release Candidate Fixes aligned.");

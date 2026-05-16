@@ -51,16 +51,16 @@ const requiredFiles = [
 for (const rel of requiredFiles) requireFile(rel);
 
 const pkg = JSON.parse(read("package.json"));
-if (pkg.version !== "58.27.0-client-final-release-candidate") failures.push(`Unexpected package version: ${pkg.version}`);
-if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.27.0") failures.push("verify:current must target verify:v58.27.0");
+if (pkg.version !== "58.27.1-release-candidate-fixes") failures.push(`Unexpected package version: ${pkg.version}`);
+if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.27.1") failures.push("verify:current must target verify:v58.27.1");
 if (pkg.scripts?.["workspace:doctor"] !== "node scripts/workspace-persistence-doctor.mjs") failures.push("workspace:doctor script missing");
 if (pkg.scripts?.["workspace:production:ready"] !== "node scripts/workspace-production-readiness-check.mjs") failures.push("workspace:production:ready script missing");
 if (pkg.scripts?.["workspace:real-env:ready"] !== "node scripts/workspace-real-environment-hardening-check.mjs") failures.push("workspace:real-env:ready script missing");
 
-requireIncludes("src/lib/release/version.ts", "58.27.0-client-final-release-candidate");
-requireIncludes("src/lib/release/version.ts", "v58.27.0 Client Final Release Candidate");
-requireIncludes("package-lock.json", "58.27.0-client-final-release-candidate");
-requireIncludes("src/app/globals.css", "v58.27.0 — Client Final Release Candidate");
+requireIncludes("src/lib/release/version.ts", "58.27.1-release-candidate-fixes");
+requireIncludes("src/lib/release/version.ts", "v58.27.1 Release Candidate Fixes");
+requireIncludes("package-lock.json", "58.27.1-release-candidate-fixes");
+requireIncludes("src/app/globals.css", "v58.27.1 — Release Candidate Fixes");
 requireIncludes("src/app/(app)/app/workspace/page.tsx", "getWorkspaceIdentity");
 requireIncludes("src/app/(app)/app/workspace/page.tsx", "getWorkspacePersistenceGuardStatus");
 requireIncludes("src/app/(app)/app/workspace/page.tsx", "getWorkspaceProjectSpaceAssignments");

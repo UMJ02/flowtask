@@ -196,7 +196,7 @@ npm run workspace:error-recovery:ready
 npm run verify:current
 ```
 
-## v58.27.0 — Client Final Release Candidate
+## v58.27.1 — Release Candidate Fixes
 
 Esta versión consolida toda la línea Workspace-First como release candidate para validación final de cliente. No agrega migraciones nuevas ni cambia RLS; cierra documentación, verificadores, checklist final y readiness de Workspace.
 

@@ -4,8 +4,8 @@ import path from "node:path";
 
 const root = process.cwd();
 const failures = [];
-const expectedVersion = "58.27.0-client-final-release-candidate";
-const expectedRelease = "v58.27.0 Client Final Release Candidate";
+const expectedVersion = "58.27.1-release-candidate-fixes";
+const expectedRelease = "v58.27.1 Release Candidate Fixes";
 const exists = (rel) => fs.existsSync(path.join(root, rel));
 const read = (rel) => exists(rel) ? fs.readFileSync(path.join(root, rel), "utf8") : "";
 const requireFile = (rel) => { if (!exists(rel)) failures.push(`Missing required file: ${rel}`); };
@@ -13,12 +13,12 @@ const requireIncludes = (rel, text) => { if (!read(rel).includes(text)) failures
 
 const pkg = JSON.parse(read("package.json") || "{}");
 if (pkg.version !== expectedVersion) failures.push(`package version must be ${expectedVersion}`);
-if ((pkg.scripts ?? {})["verify:current"] !== "npm run verify:v58.27.0") failures.push("verify:current must target verify:v58.27.0");
-if ((pkg.scripts ?? {})["verify:v58.27.0"] !== "node scripts/verify-v58.27.0.mjs") failures.push("verify:v58.27.0 script missing");
+if ((pkg.scripts ?? {})["verify:current"] !== "npm run verify:v58.27.1") failures.push("verify:current must target verify:v58.27.1");
+if ((pkg.scripts ?? {})["verify:v58.27.1"] !== "node scripts/verify-v58.27.1.mjs") failures.push("verify:v58.27.1 script missing");
 if ((pkg.scripts ?? {})["workspace:error-recovery:ready"] !== "node scripts/workspace-error-recovery-final-qa-check.mjs") failures.push("workspace:error-recovery:ready script missing");
 
 for (const rel of [
-  "scripts/verify-v58.27.0.mjs",
+  "scripts/verify-v58.27.1.mjs",
   "scripts/workspace-error-recovery-final-qa-check.mjs",
   "src/components/workspace-system/workspace-recovery-panel.tsx",
   "src/app/(app)/app/workspace/error.tsx",
@@ -38,11 +38,11 @@ requireIncludes("src/app/(app)/app/workspace/loading.tsx", "WorkspaceLoading");
 requireIncludes("src/components/workspace-system/workspace-system-page.tsx", "WorkspaceRecoveryPanel");
 requireIncludes("src/components/workspace-system/workspace-system-page.tsx", "invalidSavedViewId");
 requireIncludes("src/app/globals.css", "ft-ws-recovery-action");
-requireIncludes("README.md", "v58.27.0");
+requireIncludes("README.md", "v58.27.1");
 
 if (failures.length) {
-  console.error("[verify:v58.27.0] FAIL");
+  console.error("[verify:v58.27.1] FAIL");
   for (const failure of failures) console.error(`- ${failure}`);
   process.exit(1);
 }
-console.log("[verify:v58.27.0] OK — Client Final Release Candidate aligned.");
+console.log("[verify:v58.27.1] OK — Client Final Release Candidate aligned.");

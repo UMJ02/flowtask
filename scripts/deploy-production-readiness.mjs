@@ -4,7 +4,7 @@ import path from "node:path";
 
 const root = process.cwd();
 const failures = [];
-const expectedVersion = "58.27.0-client-final-release-candidate";
+const expectedVersion = "58.27.1-release-candidate-fixes";
 
 function exists(rel) { return fs.existsSync(path.join(root, rel)); }
 function read(rel) { return exists(rel) ? fs.readFileSync(path.join(root, rel), "utf8") : ""; }
@@ -23,7 +23,7 @@ for (const rel of [
   "scripts/validate-env.mjs",
   "scripts/design-doctor.mjs",
   "scripts/density-guard.mjs",
-  "scripts/verify-v58.27.0.mjs",
+  "scripts/verify-v58.27.1.mjs",
   "scripts/workspace-persistence-doctor.mjs",
   "docs/release/V58_26_5_WORKSPACE_ERROR_RECOVERY_FINAL_QA_HARDENING.md",
   "docs/qa/FLOWTASK_V58_26_5_WORKSPACE_ERROR_RECOVERY_FINAL_QA.md",
@@ -49,8 +49,8 @@ for (const rel of [
 const pkg = JSON.parse(read("package.json"));
 const scripts = pkg.scripts ?? {};
 if (pkg.version !== expectedVersion) failures.push(`Unexpected package version: ${pkg.version}`);
-if (scripts["verify:current"] !== "npm run verify:v58.27.0") failures.push("verify:current must target verify:v58.27.0");
-if (scripts["verify:v58.27.0"] !== "node scripts/verify-v58.27.0.mjs") failures.push("verify:v58.27.0 must target scripts/verify-v58.27.0.mjs");
+if (scripts["verify:current"] !== "npm run verify:v58.27.1") failures.push("verify:current must target verify:v58.27.1");
+if (scripts["verify:v58.27.1"] !== "node scripts/verify-v58.27.1.mjs") failures.push("verify:v58.27.1 must target scripts/verify-v58.27.1.mjs");
 
 const vercel = JSON.parse(read("vercel.json"));
 if (vercel.framework !== "nextjs") failures.push("vercel.json framework must be nextjs");
@@ -61,7 +61,7 @@ requireIncludes("package-lock.json", expectedVersion);
 requireIncludes("src/components/boards/boards-home.tsx", "board-home-hero-compact-actions");
 requireIncludes("src/components/boards/boards-home.tsx", "board-home-create-preview-red");
 requireIncludes("src/components/notifications/notifications-command-center.tsx", "ft-notifications-hero-balanced");
-requireIncludes("src/app/globals.css", "v58.27.0 — Client Final Release Candidate");
+requireIncludes("src/app/globals.css", "v58.27.1 — Release Candidate Fixes");
 requireIncludes("src/app/(app)/app/workspace/page.tsx", "getTasks({ includeCompleted: true })");
 requireIncludes("src/app/(app)/app/workspace/page.tsx", "getWorkspaceIdentity()");
 requireIncludes("src/app/(app)/app/workspace/page.tsx", "invalidProjectId");
@@ -139,4 +139,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log("[deploy-production-readiness] OK — v58.27.0 client final release candidate aligned.");
+console.log("[deploy-production-readiness] OK — v58.27.1 client final release candidate aligned.");

@@ -1,4 +1,4 @@
-# Checklist final — FlowTask v58.27.0
+# Checklist final — FlowTask v58.27.1
 
 ## Supabase
 - `workspace_spaces` existe.
