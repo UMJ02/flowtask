@@ -10,8 +10,8 @@ const requireFile = (rel) => { if (!exists(rel)) failures.push(`Missing ${rel}`)
 const requireIncludes = (rel, text) => { if (!read(rel).includes(text)) failures.push(`Expected ${JSON.stringify(text)} in ${rel}`); };
 
 const pkg = JSON.parse(read("package.json") || "{}");
-if (!String(pkg.version ?? "").includes("58.27.2")) failures.push(`Unexpected package version: ${pkg.version}`);
-if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.27.2") failures.push("verify:current must target verify:v58.27.2");
+if (!String(pkg.version ?? "").includes("58.27.2.2")) failures.push(`Unexpected package version: ${pkg.version}`);
+if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.27.2.2") failures.push("verify:current must target verify:v58.27.2.2");
 
 for (const rel of [
   "src/app/(app)/app/workspace/page.tsx",
@@ -23,7 +23,7 @@ for (const rel of [
   "src/app/globals.css",
 ]) requireFile(rel);
 
-requireIncludes("src/lib/release/version.ts", "58.27.2-workspace-pro-design-reset-enterprise-ui-system");
+requireIncludes("src/lib/release/version.ts", "58.27.2.2-workspace-doctor-version-alignment-patch");
 requireIncludes("src/lib/release/version.ts", "APP_RELEASE_STAGE");
 requireIncludes("src/components/workspace-system/workspace-system-page.tsx", "WorkspaceProPage");
 requireIncludes("src/components/workspace-pro/workspace-pro-page.tsx", "ws-pro-shell");

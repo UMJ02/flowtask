@@ -224,3 +224,7 @@ Incluye checklist final de Workspace, Supabase, Vercel, rutas clásicas, permiso
 ## v58.27.2.1 — Workspace Pro Layout Simplification + Interaction Cleanup
 
 This patch tightens the Workspace Pro UI after the v58.27.2 design reset. It removes duplicated navigation, keeps views in the top tab bar, closes the inspector by default, moves heavy managers into overlay sheets, and makes Home/List/Board more compact and professional. No Supabase, RLS, migration, or dependency changes.
+
+## v58.27.2.2 — Workspace Doctor Version Alignment Patch
+
+Patch release that aligns Workspace readiness scripts after the v58.27.2.1 layout cleanup. It updates version expectations in the Workspace doctor/readiness chain so local and Vercel preflight no longer fail by expecting v58.27.2. No Supabase, RLS, migration, dependency, or UI feature changes.
