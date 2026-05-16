@@ -24,6 +24,7 @@ import { WorkspacePermissionBanner } from "./workspace-members-permissions";
 import { WorkspaceEmptyState, WorkspaceMigrationEmptyState } from "./workspace-empty-state";
 import { WorkspaceCommandCenter } from "./workspace-command-center";
 import { WorkspaceSharePanel } from "./workspace-share-panel";
+import { WorkspaceRecoveryPanel } from "./workspace-recovery-panel";
 
 export function WorkspaceSystemPage({
   activeView,
@@ -165,6 +166,37 @@ export function WorkspaceSystemPage({
         {!projects.length && !context.invalidProjectId ? (
           <div className="mt-4">
             <WorkspaceEmptyState icon="projects" tone="blue" title="Workspace sin proyectos visibles" description="Cuando exista un proyecto personal u organizacional aparecerá aquí con sus views, tareas, archivos y reportes." actionHref="/app/projects" actionLabel="Ir a Proyectos" />
+          </div>
+        ) : null}
+
+        {context.invalidSavedViewId ? (
+          <div className="mt-4">
+            <WorkspaceRecoveryPanel
+              reason="invalid-saved-view"
+              title="La vista guardada ya no está disponible"
+              description="La vista solicitada no existe para este proyecto o no tenés acceso. Volvimos a una vista segura para evitar mostrar datos cruzados."
+              context={context}
+              persistenceStatus={persistenceStatus}
+              permissions={permissions}
+              details={[
+                `savedViewId solicitado: ${context.invalidSavedViewId}`,
+                "Podés abrir el Home del workspace, revisar las vistas guardadas disponibles o volver a Proyectos.",
+              ]}
+            />
+          </div>
+        ) : null}
+
+        {persistenceStatus.status === "blocked" ? (
+          <div className="mt-4">
+            <WorkspaceRecoveryPanel
+              reason="migration"
+              title="Persistencia bloqueada por Supabase/RLS"
+              description="El Workspace sigue funcionando con fallback seguro, pero las acciones de espacios y vistas guardadas pueden estar bloqueadas hasta corregir Supabase."
+              context={context}
+              persistenceStatus={persistenceStatus}
+              permissions={permissions}
+              details={persistenceStatus.details ?? ["Validá migraciones 0056, 0057, 0058 y 0059 en Supabase."]}
+            />
           </div>
         ) : null}
 

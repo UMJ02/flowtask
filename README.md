@@ -183,3 +183,15 @@ npm run typecheck
 npm run build:preflight
 npm run build
 ```
+
+
+## v58.26.5 — Workspace Error Recovery + Final QA Hardening
+
+Esta versión agrega recuperación profesional para el Workspace: error boundary dedicado, loading skeleton, panel de recuperación para vistas guardadas inválidas, fallback cuando Supabase/RLS bloquea persistencia y acciones seguras para volver al Home del workspace, Proyectos o Dashboard clásico. No agrega migraciones ni cambia RLS.
+
+Validación nueva:
+
+```bash
+npm run workspace:error-recovery:ready
+npm run verify:current
+```

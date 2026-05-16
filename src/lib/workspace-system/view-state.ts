@@ -51,6 +51,7 @@ export type WorkspaceContext = {
   projectTitle?: string | null;
   hasProjectFilter?: boolean;
   invalidProjectId?: string | null;
+  invalidSavedViewId?: string | null;
   activeFilters?: {
     view: WorkspaceViewId;
     space?: string | null;

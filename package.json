@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "58.26.4-workspace-collaboration-share-mobile-polish",
+  "version": "58.26.5-workspace-error-recovery-final-qa-hardening",
   "private": true,
   "scripts": {
     "dev": "node node_modules/next/dist/bin/next dev",
@@ -58,7 +58,7 @@
     "release:repo:current": "npm run release:repo:v58.21.0",
     "qa:current": "npm run validate:node && npm run validate:env && npm run verify:current && npm run runtime:check && npm run typecheck && npm run security:check && npm run performance:check && npm run hardening:final:check && npm run ops:check && npm run deploy:production:ready",
     "release:current": "npm run clean && npm run release:repo:v58.20 && npm run qa:current && npm run qa:functional && npm run qa:report && npm run ux:review && npm run preprod:validate && npm run production:gate",
-    "verify:current": "npm run verify:v58.26.4",
+    "verify:current": "npm run verify:v58.26.5",
     "release:repo:v54.3.3": "npm run verify:current && npm run runtime:check && npm run typecheck",
     "verify:v54.3.4": "node scripts/verify-v54.3.4.mjs",
     "release:repo:v54.3.4": "npm run verify:current && npm run runtime:check && npm run typecheck",
@@ -71,7 +71,7 @@
     "release:repo:v58.5": "npm run verify:current && npm run runtime:check && npm run typecheck && npm run deploy:readiness && npm run board:stability",
     "deploy:readiness": "node scripts/build-deploy-readiness.mjs",
     "board:stability": "node scripts/board-stabilization-check.mjs",
-    "build:preflight": "npm run validate:node && npm run validate:env && npm run verify:current && npm run workspace:doctor && npm run workspace:production:ready && npm run workspace:real-env:ready && npm run workspace:performance:ready && npm run workspace:automation:ready && npm run workspace:collaboration:ready && npm run runtime:check && npm run typecheck && npm run deploy:readiness && npm run board:stability && npm run client:readiness:check && npm run deploy:production:ready",
+    "build:preflight": "npm run validate:node && npm run validate:env && npm run verify:current && npm run workspace:doctor && npm run workspace:production:ready && npm run workspace:real-env:ready && npm run workspace:performance:ready && npm run workspace:automation:ready && npm run workspace:collaboration:ready && npm run workspace:error-recovery:ready && npm run runtime:check && npm run typecheck && npm run deploy:readiness && npm run board:stability && npm run client:readiness:check && npm run deploy:production:ready",
     "verify:v58.6": "node scripts/verify-v58.6.mjs",
     "release:repo:v58.6": "npm run verify:current && npm run runtime:check && npm run typecheck && npm run deploy:readiness && npm run board:stability && npm run client:readiness:check",
     "client:readiness:check": "node scripts/client-readiness-check.mjs",
@@ -182,7 +182,9 @@
     "verify:v58.26.3": "node scripts/verify-v58.26.3.mjs",
     "workspace:automation:ready": "node scripts/workspace-notifications-automation-readiness-check.mjs",
     "verify:v58.26.4": "node scripts/verify-v58.26.4.mjs",
-    "workspace:collaboration:ready": "node scripts/workspace-collaboration-share-readiness-check.mjs"
+    "workspace:collaboration:ready": "node scripts/workspace-collaboration-share-readiness-check.mjs",
+    "verify:v58.26.5": "node scripts/verify-v58.26.5.mjs",
+    "workspace:error-recovery:ready": "node scripts/workspace-error-recovery-final-qa-check.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

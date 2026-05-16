@@ -234,6 +234,7 @@ export default async function WorkspacePage({
   const requestedSavedView = requestedSavedViewId
     ? (projectViews.find((view) => view.id === requestedSavedViewId) ?? null)
     : null;
+  const invalidSavedViewId = requestedSavedViewId && !requestedSavedView ? requestedSavedViewId : null;
   const defaultSavedView =
     !requestedView && !requestedSavedView
       ? (projectViews.find((view) => view.isDefault) ?? null)
@@ -335,6 +336,7 @@ export default async function WorkspacePage({
       (invalidProjectId ? "Proyecto no disponible" : "Todos los proyectos"),
     hasProjectFilter: Boolean(activeProject),
     invalidProjectId,
+    invalidSavedViewId,
     activeFilters: {
       view: activeView,
       space: activeSpace?.slug ?? null,

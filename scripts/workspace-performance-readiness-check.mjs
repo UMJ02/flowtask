@@ -10,7 +10,7 @@ const requireFile = (rel) => { if (!exists(rel)) failures.push(`Missing required
 const requireIncludes = (rel, text) => { if (!read(rel).includes(text)) failures.push(`Expected '${text}' in ${rel}`); };
 
 const pkg = JSON.parse(read("package.json") || "{}");
-if (pkg.version !== "58.26.4-workspace-collaboration-share-mobile-polish") failures.push(`Unexpected package version: ${pkg.version}`);
+if (pkg.version !== "58.26.5-workspace-error-recovery-final-qa-hardening") failures.push(`Unexpected package version: ${pkg.version}`);
 if (pkg.scripts?.["workspace:performance:ready"] !== "node scripts/workspace-performance-readiness-check.mjs") failures.push("workspace:performance:ready script missing");
 if (!String(pkg.scripts?.["build:preflight"] ?? "").includes("workspace:performance:ready")) failures.push("build:preflight must include workspace:performance:ready");
 
@@ -18,9 +18,9 @@ for (const rel of [
   "src/lib/workspace-system/performance.ts",
   "src/app/(app)/app/workspace/page.tsx",
   "src/lib/workspace-system/server-data.ts",
-  "docs/release/V58_26_4_WORKSPACE_COLLABORATION_SHARE_MOBILE_POLISH.md",
-  "docs/qa/FLOWTASK_V58_26_4_WORKSPACE_COLLABORATION_SHARE_MOBILE_QA.md",
-  "scripts/verify-v58.26.4.mjs",
+  "docs/release/V58_26_5_WORKSPACE_ERROR_RECOVERY_FINAL_QA_HARDENING.md",
+  "docs/qa/FLOWTASK_V58_26_5_WORKSPACE_ERROR_RECOVERY_FINAL_QA.md",
+  "scripts/verify-v58.26.5.mjs",
 ]) requireFile(rel);
 
 requireIncludes("src/lib/workspace-system/performance.ts", "buildWorkspaceLoadPlan");
@@ -35,10 +35,10 @@ requireIncludes("src/lib/workspace-system/server-data.ts", "WORKSPACE_QUERY_LIMI
 requireIncludes("src/lib/workspace-system/server-data.ts", "WORKSPACE_QUERY_LIMITS.activity");
 requireIncludes("src/lib/workspace-system/server-data.ts", "WORKSPACE_QUERY_LIMITS.files");
 requireIncludes("src/lib/workspace-system/server-data.ts", "WORKSPACE_QUERY_LIMITS.notifications");
-requireIncludes("src/lib/release/version.ts", "58.26.4-workspace-collaboration-share-mobile-polish");
-requireIncludes("src/lib/release/version.ts", "v58.26.4 Workspace Collaboration + Share + Mobile Polish");
-requireIncludes("src/app/globals.css", "v58.26.4 — Workspace Collaboration + Share + Mobile Polish");
-requireIncludes("README.md", "v58.26.4");
+requireIncludes("src/lib/release/version.ts", "58.26.5-workspace-error-recovery-final-qa-hardening");
+requireIncludes("src/lib/release/version.ts", "v58.26.5 Workspace Error Recovery + Final QA Hardening");
+requireIncludes("src/app/globals.css", "v58.26.5 — Workspace Error Recovery + Final QA Hardening");
+requireIncludes("README.md", "v58.26.5");
 
 if (failures.length) {
   console.error("[workspace:performance:ready] FAIL");
