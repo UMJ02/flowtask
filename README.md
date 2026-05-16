@@ -211,3 +211,11 @@ npm run build
 
 Incluye checklist final de Workspace, Supabase, Vercel, rutas clásicas, permisos, mobile, saved views, spaces, files, boards, command center, share panel y error recovery.
 
+## v58.27.2 — Workspace Pro Design Reset + Enterprise UI System
+
+- Reinicia la capa visual de `/app/workspace` con un sistema `ws-pro-*` más sobrio y profesional.
+- Compacta sidebar, header, tabs, Home y panel derecho.
+- Oculta ruido técnico del usuario final: health, migrations, RLS y debug quedan fuera del flujo normal.
+- Mantiene datos, rutas, permisos, spaces, saved views, archivos, pizarras y validaciones existentes.
+- Nuevo check: `npm run workspace:design-reset:ready`.
+

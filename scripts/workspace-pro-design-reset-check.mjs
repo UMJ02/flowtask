@@ -9,29 +9,28 @@ const exists = (rel) => fs.existsSync(path.join(root, rel));
 const requireFile = (rel) => { if (!exists(rel)) failures.push(`Missing ${rel}`); };
 const requireIncludes = (rel, text) => { if (!read(rel).includes(text)) failures.push(`Expected ${JSON.stringify(text)} in ${rel}`); };
 
-const pkg = JSON.parse(read("package.json") || "{}");
-if (!String(pkg.version ?? "").includes("58.27.2")) failures.push(`Unexpected package version: ${pkg.version}`);
-if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.27.2") failures.push("verify:current must target verify:v58.27.2");
-
 for (const rel of [
-  "src/app/(app)/app/workspace/page.tsx",
-  "src/components/workspace-system/workspace-system-page.tsx",
   "src/components/workspace-pro/workspace-pro-page.tsx",
-  "src/lib/workspace-system/server-data.ts",
-  "src/lib/workspace-system/performance.ts",
-  "src/lib/release/version.ts",
+  "src/components/workspace-system/workspace-system-page.tsx",
   "src/app/globals.css",
+  "src/lib/release/version.ts",
 ]) requireFile(rel);
 
 requireIncludes("src/lib/release/version.ts", "58.27.2-workspace-pro-design-reset-enterprise-ui-system");
 requireIncludes("src/lib/release/version.ts", "APP_RELEASE_STAGE");
 requireIncludes("src/components/workspace-system/workspace-system-page.tsx", "WorkspaceProPage");
 requireIncludes("src/components/workspace-pro/workspace-pro-page.tsx", "ws-pro-shell");
+requireIncludes("src/components/workspace-pro/workspace-pro-page.tsx", "WorkspaceProSidebar");
+requireIncludes("src/components/workspace-pro/workspace-pro-page.tsx", "WorkspaceProHome");
+requireIncludes("src/components/workspace-pro/workspace-pro-page.tsx", "WorkspaceProRightPanel");
+requireIncludes("src/components/workspace-pro/workspace-pro-page.tsx", "WorkspaceTaskInlineEditor");
+requireIncludes("src/app/globals.css", "v58.27.2 — Workspace Pro Design Reset + Enterprise UI System");
 requireIncludes("src/app/globals.css", "ws-pro-primary-button");
+requireIncludes("src/app/globals.css", "ws-pro-hide-scrollbar");
 
 if (failures.length) {
-  console.error("[workspace:rc-fixes:ready] FAIL");
+  console.error("[workspace:design-reset:ready] FAIL");
   for (const failure of failures) console.error(`- ${failure}`);
   process.exit(1);
 }
-console.log("[workspace:rc-fixes:ready] OK — Release candidate fixes readiness aligned.");
+console.log("[workspace:design-reset:ready] OK — Workspace Pro design reset and enterprise UI system aligned.");

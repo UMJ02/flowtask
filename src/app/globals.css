@@ -6872,3 +6872,101 @@
 .ft-ws-release-candidate-marker {
   --ft-ws-rc: 1;
 }
+
+/* v58.27.2 — Workspace Pro Design Reset + Enterprise UI System */
+.ws-pro-shell {
+  --ws-pro-bg: #f7f8fa;
+  --ws-pro-surface: #ffffff;
+  --ws-pro-border: #e5e7eb;
+  --ws-pro-text: #111827;
+  --ws-pro-muted: #6b7280;
+  --ws-pro-primary: #111827;
+  --ws-pro-blue: #2563eb;
+  background: var(--ws-pro-bg);
+  color: var(--ws-pro-text);
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+}
+.ws-pro-hide-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+.ws-pro-hide-scrollbar::-webkit-scrollbar { display: none; }
+.ws-pro-page-scroll { scrollbar-width: thin; scrollbar-color: rgba(148, 163, 184, .32) transparent; }
+.ws-pro-primary-button,
+.ws-pro-secondary-button,
+.ws-pro-icon-button,
+.ws-pro-search-trigger,
+.ws-pro-select {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  border-radius: .75rem;
+  font-size: .875rem;
+  font-weight: 600;
+  transition: background-color .16s ease, border-color .16s ease, color .16s ease, box-shadow .16s ease;
+  white-space: nowrap;
+}
+.ws-pro-primary-button { min-height: 2.5rem; border: 1px solid #111827; background: #111827; color: #fff; padding: 0 .875rem; }
+.ws-pro-primary-button:hover { background: #020617; border-color: #020617; }
+.ws-pro-secondary-button { min-height: 2.5rem; border: 1px solid #e5e7eb; background: #fff; color: #374151; padding: 0 .875rem; }
+.ws-pro-secondary-button:hover { border-color: #d1d5db; background: #f9fafb; color: #111827; }
+.ws-pro-icon-button { min-height: 2.5rem; min-width: 2.5rem; border: 1px solid #e5e7eb; background: #fff; color: #4b5563; }
+.ws-pro-icon-button:hover { border-color: #d1d5db; color: #111827; }
+.ws-pro-search-trigger { min-height: 2.5rem; border: 1px solid #e5e7eb; background: #f9fafb; color: #6b7280; padding: 0 .875rem; justify-content: flex-start; }
+.ws-pro-search-trigger:hover { background: #fff; color: #111827; }
+.ws-pro-select { min-height: 2.5rem; border: 1px solid #e5e7eb; background: #fff; color: #374151; padding: 0 .75rem; outline: none; }
+.ws-pro-tab,
+.ws-pro-tab-active {
+  display: inline-flex;
+  min-height: 2.25rem;
+  align-items: center;
+  gap: .4rem;
+  border-radius: .65rem;
+  padding: 0 .7rem;
+  font-size: .875rem;
+  font-weight: 600;
+  color: #64748b;
+  transition: background-color .16s ease, color .16s ease;
+  white-space: nowrap;
+}
+.ws-pro-tab:hover { background: #f1f5f9; color: #111827; }
+.ws-pro-tab-active { background: #111827; color: #fff; }
+.ws-pro-sidebar-row,
+.ws-pro-sidebar-row-active {
+  display: flex;
+  min-height: 2rem;
+  align-items: center;
+  gap: .55rem;
+  border-radius: .6rem;
+  padding: 0 .55rem;
+  text-align: left;
+  font-size: .875rem;
+  font-weight: 500;
+  color: #475569;
+  transition: background-color .16s ease, color .16s ease;
+}
+.ws-pro-sidebar-row:hover { background: #f8fafc; color: #0f172a; }
+.ws-pro-sidebar-row-active { background: #f1f5f9; color: #0f172a; }
+.ws-pro-status-dot,
+.ws-pro-muted-pill {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: .22rem .55rem;
+  font-size: .72rem;
+  font-weight: 700;
+}
+.ws-pro-status-dot { background: #ecfdf5; color: #047857; }
+.ws-pro-muted-pill { background: #f1f5f9; color: #64748b; }
+.ws-pro-hero {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.25rem;
+  border: 1px solid #e5e7eb;
+  background: linear-gradient(135deg, #fff 0%, #f8fafc 100%);
+  border-radius: 1.25rem;
+  padding: 1.25rem;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, .04);
+}
+@media (max-width: 768px) {
+  .ws-pro-hero { flex-direction: column; }
+}
