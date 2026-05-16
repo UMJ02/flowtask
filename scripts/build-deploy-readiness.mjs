@@ -9,11 +9,12 @@ const read = (rel) => exists(rel) ? fs.readFileSync(path.join(root, rel), "utf8"
 const requireFile = (rel) => { if (!exists(rel)) failures.push(`Missing ${rel}`); };
 const requireIncludes = (rel, text) => { if (!read(rel).includes(text)) failures.push(`Expected ${JSON.stringify(text)} in ${rel}`); };
 
-const expectedVersion = "58.27.2-workspace-pro-design-reset-enterprise-ui-system";
+const expectedVersion = "58.27.2.1-workspace-pro-layout-simplification-interaction-cleanup";
 const pkg = JSON.parse(read("package.json") || "{}");
 if (pkg.version !== expectedVersion) failures.push(`Unexpected package version: ${pkg.version}`);
-if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.27.2") failures.push("verify:current must target verify:v58.27.2");
+if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.27.2.1") failures.push("verify:current must target verify:v58.27.2.1");
 if (!String(pkg.scripts?.["build:preflight"] ?? "").includes("workspace:design-reset:ready")) failures.push("build:preflight must include workspace:design-reset:ready");
+if (!String(pkg.scripts?.["build:preflight"] ?? "").includes("workspace:layout-cleanup:ready")) failures.push("build:preflight must include workspace:layout-cleanup:ready");
 
 for (const rel of [
   "src/app/(app)/app/workspace/page.tsx",
@@ -23,22 +24,24 @@ for (const rel of [
   "src/lib/workspace-system/view-state.ts",
   "src/lib/release/version.ts",
   "src/app/globals.css",
-  "scripts/verify-v58.27.2.mjs",
+  "scripts/verify-v58.27.2.1.mjs",
   "scripts/workspace-pro-design-reset-check.mjs",
-  "docs/release/V58_27_2_WORKSPACE_PRO_DESIGN_RESET_ENTERPRISE_UI_SYSTEM.md",
-  "docs/qa/FLOWTASK_V58_27_2_WORKSPACE_PRO_DESIGN_RESET_QA.md",
+  "scripts/workspace-pro-layout-cleanup-check.mjs",
+  "docs/release/V58_27_2_1_WORKSPACE_PRO_LAYOUT_SIMPLIFICATION_INTERACTION_CLEANUP.md",
+  "docs/qa/FLOWTASK_V58_27_2_1_WORKSPACE_PRO_LAYOUT_SIMPLIFICATION_INTERACTION_CLEANUP_QA.md",
 ]) requireFile(rel);
 
 requireIncludes("src/lib/release/version.ts", expectedVersion);
 requireIncludes("src/lib/release/version.ts", "APP_RELEASE_STAGE");
 requireIncludes("src/components/workspace-system/workspace-system-page.tsx", "WorkspaceProPage");
-requireIncludes("src/components/workspace-pro/workspace-pro-page.tsx", "ws-pro-shell");
-requireIncludes("src/app/globals.css", "v58.27.2 — Workspace Pro Design Reset + Enterprise UI System");
-requireIncludes("README.md", "v58.27.2 — Workspace Pro Design Reset + Enterprise UI System");
+requireIncludes("src/components/workspace-pro/workspace-pro-page.tsx", "WorkspaceProSheet");
+requireIncludes("src/components/workspace-pro/workspace-pro-page.tsx", "WorkspaceProInspector");
+requireIncludes("src/app/globals.css", "v58.27.2.1 — Workspace Pro Layout Simplification + Interaction Cleanup");
+requireIncludes("README.md", "v58.27.2.1 — Workspace Pro Layout Simplification");
 
 if (failures.length) {
   console.error("[build-deploy-readiness] Failed checks:");
   for (const failure of failures) console.error(`- ${failure}`);
   process.exit(1);
 }
-console.log("[build-deploy-readiness] OK — v58.27.2 workspace pro design reset aligned.");
+console.log("[build-deploy-readiness] OK — v58.27.2.1 workspace pro layout cleanup aligned.");

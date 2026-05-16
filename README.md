@@ -219,3 +219,8 @@ Incluye checklist final de Workspace, Supabase, Vercel, rutas clásicas, permiso
 - Mantiene datos, rutas, permisos, spaces, saved views, archivos, pizarras y validaciones existentes.
 - Nuevo check: `npm run workspace:design-reset:ready`.
 
+
+
+## v58.27.2.1 — Workspace Pro Layout Simplification + Interaction Cleanup
+
+This patch tightens the Workspace Pro UI after the v58.27.2 design reset. It removes duplicated navigation, keeps views in the top tab bar, closes the inspector by default, moves heavy managers into overlay sheets, and makes Home/List/Board more compact and professional. No Supabase, RLS, migration, or dependency changes.

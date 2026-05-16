@@ -16,7 +16,7 @@ for (const rel of [
   "src/lib/release/version.ts",
 ]) requireFile(rel);
 
-requireIncludes("src/lib/release/version.ts", "58.27.2-workspace-pro-design-reset-enterprise-ui-system");
+if (!read("src/lib/release/version.ts").includes("58.27.2-workspace-pro-design-reset-enterprise-ui-system") && !read("src/lib/release/version.ts").includes("58.27.2.1-workspace-pro-layout-simplification-interaction-cleanup")) failures.push("Expected v58.27.2 or v58.27.2.1 in src/lib/release/version.ts");
 requireIncludes("src/lib/release/version.ts", "APP_RELEASE_STAGE");
 requireIncludes("src/components/workspace-system/workspace-system-page.tsx", "WorkspaceProPage");
 requireIncludes("src/components/workspace-pro/workspace-pro-page.tsx", "ws-pro-shell");
