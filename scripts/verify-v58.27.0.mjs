@@ -6,6 +6,7 @@ const root = process.cwd();
 const failures = [];
 const expectedVersion = "58.27.0-client-final-release-candidate";
 const expectedRelease = "v58.27.0 Client Final Release Candidate";
+
 const exists = (rel) => fs.existsSync(path.join(root, rel));
 const read = (rel) => exists(rel) ? fs.readFileSync(path.join(root, rel), "utf8") : "";
 const requireFile = (rel) => { if (!exists(rel)) failures.push(`Missing required file: ${rel}`); };
@@ -14,31 +15,30 @@ const requireIncludes = (rel, text) => { if (!read(rel).includes(text)) failures
 const pkg = JSON.parse(read("package.json") || "{}");
 if (pkg.version !== expectedVersion) failures.push(`package version must be ${expectedVersion}`);
 if ((pkg.scripts ?? {})["verify:current"] !== "npm run verify:v58.27.0") failures.push("verify:current must target verify:v58.27.0");
-if ((pkg.scripts ?? {})["verify:v58.27.0"] !== "node scripts/verify-v58.27.0.mjs") failures.push("verify:v58.27.0 script missing");
-if ((pkg.scripts ?? {})["workspace:error-recovery:ready"] !== "node scripts/workspace-error-recovery-final-qa-check.mjs") failures.push("workspace:error-recovery:ready script missing");
+if ((pkg.scripts ?? {})["workspace:release-candidate:ready"] !== "node scripts/workspace-release-candidate-readiness-check.mjs") failures.push("workspace:release-candidate:ready script missing");
 
 for (const rel of [
   "scripts/verify-v58.27.0.mjs",
-  "scripts/workspace-error-recovery-final-qa-check.mjs",
-  "src/components/workspace-system/workspace-recovery-panel.tsx",
-  "src/app/(app)/app/workspace/error.tsx",
-  "src/app/(app)/app/workspace/loading.tsx",
+  "scripts/workspace-release-candidate-readiness-check.mjs",
+  "docs/release/V58_27_0_CLIENT_FINAL_RELEASE_CANDIDATE.md",
+  "docs/qa/FLOWTASK_V58_27_0_CLIENT_FINAL_RELEASE_CANDIDATE_QA.md",
+  "docs/qa/FLOWTASK_V58_27_0_CLIENT_FINAL_RELEASE_CHECKLIST.md",
+  "docs/release/FLOWTASK_MASTER_CONTEXT_V58_27_0.md",
+  "src/app/(app)/app/workspace/page.tsx",
   "src/components/workspace-system/workspace-system-page.tsx",
-  "src/lib/workspace-system/view-state.ts",
-  "docs/release/V58_26_5_WORKSPACE_ERROR_RECOVERY_FINAL_QA_HARDENING.md",
-  "docs/qa/FLOWTASK_V58_26_5_WORKSPACE_ERROR_RECOVERY_FINAL_QA.md",
+  "src/components/workspace-system/workspace-command-center.tsx",
+  "src/components/workspace-system/workspace-share-panel.tsx",
+  "src/components/workspace-system/workspace-recovery-panel.tsx",
+  "src/components/workspace-system/views/home-view.tsx",
+  "src/lib/workspace-system/performance.ts",
 ]) requireFile(rel);
 
 requireIncludes("src/lib/release/version.ts", expectedVersion);
 requireIncludes("src/lib/release/version.ts", expectedRelease);
 requireIncludes("package-lock.json", expectedVersion);
-requireIncludes("src/components/workspace-system/workspace-recovery-panel.tsx", "WorkspaceRecoveryPanel");
-requireIncludes("src/app/(app)/app/workspace/error.tsx", "workspace:error-boundary");
-requireIncludes("src/app/(app)/app/workspace/loading.tsx", "WorkspaceLoading");
-requireIncludes("src/components/workspace-system/workspace-system-page.tsx", "WorkspaceRecoveryPanel");
-requireIncludes("src/components/workspace-system/workspace-system-page.tsx", "invalidSavedViewId");
-requireIncludes("src/app/globals.css", "ft-ws-recovery-action");
-requireIncludes("README.md", "v58.27.0");
+requireIncludes("README.md", "v58.27.0 — Client Final Release Candidate");
+requireIncludes("src/app/globals.css", "v58.27.0 — Client Final Release Candidate");
+requireIncludes("package.json", "workspace:release-candidate:ready");
 
 if (failures.length) {
   console.error("[verify:v58.27.0] FAIL");

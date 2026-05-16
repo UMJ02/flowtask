@@ -10,7 +10,7 @@ const requireFile = (rel) => { if (!exists(rel)) failures.push(`Missing required
 const requireIncludes = (rel, text) => { if (!read(rel).includes(text)) failures.push(`Expected '${text}' in ${rel}`); };
 
 const pkg = JSON.parse(read("package.json") || "{}");
-if (pkg.version !== "58.26.5-workspace-error-recovery-final-qa-hardening") failures.push(`Unexpected package version: ${pkg.version}`);
+if (pkg.version !== "58.27.0-client-final-release-candidate") failures.push(`Unexpected package version: ${pkg.version}`);
 if (pkg.scripts?.["workspace:collaboration:ready"] !== "node scripts/workspace-collaboration-share-readiness-check.mjs") failures.push("workspace:collaboration:ready script missing");
 if (!String(pkg.scripts?.["build:preflight"] ?? "").includes("workspace:collaboration:ready")) failures.push("build:preflight must include workspace:collaboration:ready");
 
@@ -31,8 +31,8 @@ requireIncludes("src/components/workspace-system/workspace-system-page.tsx", "se
 requireIncludes("src/components/workspace-system/workspace-context-header.tsx", "onOpenSharePanel");
 requireIncludes("src/app/globals.css", "ft-ws-share-link-row");
 requireIncludes("src/app/globals.css", "ft-ws-share-member-row");
-requireIncludes("src/lib/release/version.ts", "58.26.5-workspace-error-recovery-final-qa-hardening");
-requireIncludes("README.md", "v58.26.5");
+requireIncludes("src/lib/release/version.ts", "58.27.0-client-final-release-candidate");
+requireIncludes("README.md", "v58.27.0");
 
 if (failures.length) {
   console.error("[workspace:collaboration:ready] FAIL");

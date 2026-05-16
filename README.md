@@ -195,3 +195,19 @@ Validación nueva:
 npm run workspace:error-recovery:ready
 npm run verify:current
 ```
+
+## v58.27.0 — Client Final Release Candidate
+
+Esta versión consolida toda la línea Workspace-First como release candidate para validación final de cliente. No agrega migraciones nuevas ni cambia RLS; cierra documentación, verificadores, checklist final y readiness de Workspace.
+
+Validación nueva:
+
+```bash
+npm run workspace:release-candidate:ready
+npm run verify:current
+npm run build:preflight
+npm run build
+```
+
+Incluye checklist final de Workspace, Supabase, Vercel, rutas clásicas, permisos, mobile, saved views, spaces, files, boards, command center, share panel y error recovery.
+
