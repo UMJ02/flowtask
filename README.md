@@ -255,3 +255,8 @@ Pulido de Archivos y Reportes en Workspace Pro: upload integrado, acciones de ar
 - Render duplicado del panel derecho eliminado.
 - Home vuelve a renderizar su vista real.
 - Nuevo check: `npm run workspace:deep-cleanup:ready`.
+
+
+## v58.27.7 — Workspace Pro Render Diet + Dead UI Removal
+
+Render diet for Workspace Pro: central derived data helper, project task map, board column map, lighter Home/Inspector previews and new `workspace:render-diet:ready` check.

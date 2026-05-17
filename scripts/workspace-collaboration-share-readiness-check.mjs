@@ -10,8 +10,14 @@ const requireFile = (rel) => { if (!exists(rel)) failures.push(`Missing ${rel}`)
 const requireIncludes = (rel, text) => { if (!read(rel).includes(text)) failures.push(`Expected ${JSON.stringify(text)} in ${rel}`); };
 
 const pkg = JSON.parse(read("package.json") || "{}");
-if (!String(pkg.version ?? "").includes("58.27.6")) failures.push(`Unexpected package version: ${pkg.version}`);
-if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.27.6") failures.push("verify:current must target verify:v58.27.6");
+const allowedVersions = [
+  "58.27.6-workspace-pro-deep-cleanup-2026-ui-controls-system",
+  "58.27.7-workspace-pro-render-diet-dead-ui-removal",
+  "58.27.7.1-workspace-pro-render-diet-cli-hotfix",
+];
+const allowedVerifyTargets = ["npm run verify:v58.27.6", "npm run verify:v58.27.7", "npm run verify:v58.27.7.1"];
+if (!allowedVersions.includes(String(pkg.version ?? ""))) failures.push(`Unexpected package version: ${pkg.version}`);
+if (!allowedVerifyTargets.includes(pkg.scripts?.["verify:current"])) failures.push("verify:current must target the active v58.27.x verify script");
 
 for (const rel of [
   "src/app/(app)/app/workspace/page.tsx",
@@ -23,7 +29,9 @@ for (const rel of [
   "src/app/globals.css",
 ]) requireFile(rel);
 
-requireIncludes("src/lib/release/version.ts", "58.27.6-workspace-pro-deep-cleanup-2026-ui-controls-system");
+if (!allowedVersions.some((version) => read("src/lib/release/version.ts").includes(version))) {
+  failures.push("src/lib/release/version.ts must contain an allowed v58.27.x Workspace Pro version");
+}
 requireIncludes("src/lib/release/version.ts", "APP_RELEASE_STAGE");
 requireIncludes("src/components/workspace-system/workspace-system-page.tsx", "WorkspaceProPage");
 requireIncludes("src/components/workspace-pro/workspace-pro-page.tsx", "ws-pro-shell");

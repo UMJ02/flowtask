@@ -7238,3 +7238,19 @@
   }
   .ws-pro-filter-bar::-webkit-scrollbar { display: none; }
 }
+
+
+/* v58.27.7 — Workspace Pro Render Diet + Dead UI Removal */
+.ws-pro-page-scroll {
+  contain: layout paint;
+}
+.ws-pro-board-column,
+.ws-pro-home-summary,
+.ws-pro-file-action-row,
+.ws-pro-report-action-card {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 420px;
+}
+.ws-pro-shell .ws-pro-board-column {
+  will-change: auto;
+}

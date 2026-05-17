@@ -1,7 +1,7 @@
 "use client";
 
-// v58.27.6 — Workspace Pro Deep Cleanup + 2026 UI Controls System
-// Focus: archivos con acciones CRUD seguras y reportes configurables dentro del Workspace Pro.
+// v58.27.7 — Workspace Pro Render Diet + Dead UI Removal
+// Focus: derivar datos una sola vez, renderizar solo la vista activa y reducir UI oculta.
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
@@ -63,6 +63,7 @@ import { WorkspaceRecoveryPanel } from "@/components/workspace-system/workspace-
 import { WorkspaceEmptyState } from "@/components/workspace-system/workspace-empty-state";
 import { WorkspaceFilesUploadEntry } from "@/components/workspace-system/workspace-files-upload-entry";
 import { createClient } from "@/lib/supabase/client";
+import { getWorkspaceProDerivedData, type WorkspaceProDerivedData } from "@/lib/workspace-system/render-diet";
 
 type WorkspaceProPageProps = {
   activeView: WorkspaceViewId;
@@ -150,11 +151,11 @@ export function WorkspaceProPage(props: WorkspaceProPageProps) {
   const [sharePanelOpen, setSharePanelOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
 
-  const done = tasks.filter((task) => isDone(task.status)).length;
-  const important = tasks.filter((task) => String(task.priority ?? "").toLowerCase() === "alta").length;
-  const overdue = tasks.filter((task) => task.isOverdue).length;
-  const today = tasks.filter((task) => task.isDueToday).length;
-  const progress = tasks.length ? Math.round((done / tasks.length) * 100) : 0;
+  const derived = useMemo(
+    () => getWorkspaceProDerivedData({ tasks, projects, boards, files, activity, projectViews }),
+    [tasks, projects, boards, files, activity, projectViews],
+  );
+  const { important, overdue, today, progress } = derived.metrics;
   const activeProjectTitle = context.projectTitle ?? "Workspace";
   const statusParam = context.activeFilters?.status ?? "todos";
 
@@ -273,7 +274,7 @@ export function WorkspaceProPage(props: WorkspaceProPageProps) {
             <section className="h-full min-w-0 overflow-y-auto px-4 py-5 ws-pro-page-scroll md:px-6 lg:px-8">
               {context.invalidProjectId ? <WorkspaceRecoveryPanel reason="invalid-project" title="Proyecto no disponible" description="El proyecto solicitado no pertenece al espacio activo o ya no está disponible." context={context} persistenceStatus={persistenceStatus} permissions={permissions} /> : null}
               {context.invalidSavedViewId ? <div className="mb-4"><WorkspaceRecoveryPanel reason="invalid-saved-view" title="Vista guardada no disponible" description="La vista solicitada ya no existe para este proyecto." context={context} persistenceStatus={persistenceStatus} permissions={permissions} /></div> : null}
-              <WorkspaceProMainView activeView={activeView} tasks={tasks} projects={projects} boards={boards} files={files} activity={activity} projectViews={projectViews} reports={reports} context={context} permissions={permissions} important={important} overdue={overdue} today={today} progress={progress} />
+              <WorkspaceProMainView activeView={activeView} tasks={tasks} projects={projects} boards={boards} files={files} activity={activity} projectViews={projectViews} reports={reports} context={context} permissions={permissions} derived={derived} />
             </section>
           </div>
         </div>
@@ -281,7 +282,7 @@ export function WorkspaceProPage(props: WorkspaceProPageProps) {
 
       {rightPanelOpen ? (
         <WorkspaceProInspector onClose={() => setRightPanelOpen(false)}>
-          <WorkspaceProRightPanel tasks={tasks} projects={projects} files={files} activity={activity} boards={boards} members={members} notifications={notifications} progress={progress} important={important} overdue={overdue} today={today} />
+          <WorkspaceProRightPanel tasks={tasks} activity={activity} members={members} notifications={notifications} derived={derived} />
         </WorkspaceProInspector>
       ) : null}
     </div>
@@ -370,22 +371,21 @@ function WorkspaceProTabs({ activeView, projectViews, onOpenView }: { activeView
   );
 }
 
-function WorkspaceProMainView({ activeView, tasks, projects, boards, files, activity, projectViews, reports, context, permissions, important, overdue, today, progress }: { activeView: WorkspaceViewId; tasks: WorkspaceTaskItem[]; projects: WorkspaceProjectSummary[]; boards: WorkspaceBoardSummary[]; files: WorkspaceFileSummary[]; activity: WorkspaceActivityItem[]; projectViews: WorkspaceProjectViewPreference[]; reports: ReportsOverview | null; context: WorkspaceContext; permissions: WorkspacePermissionSummary; important: number; overdue: number; today: number; progress: number; }) {
-  if (activeView === "home") return <WorkspaceProHome tasks={tasks} projects={projects} boards={boards} files={files} activity={activity} projectViews={projectViews} important={important} overdue={overdue} today={today} progress={progress} context={context} />;
+function WorkspaceProMainView({ activeView, tasks, projects, boards, files, activity, projectViews, reports, context, permissions, derived }: { activeView: WorkspaceViewId; tasks: WorkspaceTaskItem[]; projects: WorkspaceProjectSummary[]; boards: WorkspaceBoardSummary[]; files: WorkspaceFileSummary[]; activity: WorkspaceActivityItem[]; projectViews: WorkspaceProjectViewPreference[]; reports: ReportsOverview | null; context: WorkspaceContext; permissions: WorkspacePermissionSummary; derived: WorkspaceProDerivedData; }) {
+  if (activeView === "home") return <WorkspaceProHome tasks={tasks} boards={boards} files={files} projectViews={projectViews} derived={derived} context={context} />;
   if (activeView === "list") return <WorkspaceProList tasks={tasks} />;
-  if (activeView === "projects") return <WorkspaceProProjects projects={projects} tasks={tasks} />;
-  if (activeView === "board") return <WorkspaceProBoard tasks={tasks} projects={projects} context={context} />;
+  if (activeView === "projects") return <WorkspaceProProjects projects={projects} projectTaskMap={derived.projectTaskMap} />;
+  if (activeView === "board") return <WorkspaceProBoard tasks={tasks} projects={projects} context={context} boardColumns={derived.boardColumns} />;
   if (activeView === "timeline") return <WorkspaceProTimeline tasks={tasks} projects={projects} />;
   if (activeView === "table") return <WorkspaceProTable tasks={tasks} />;
   if (activeView === "canvas") return <WorkspaceProCanvas boards={boards} />;
   if (activeView === "files") return <WorkspaceProFiles files={files} boards={boards} projects={projects} context={context} permissions={permissions} />;
-  return <WorkspaceProReports tasks={tasks} projects={projects} reports={reports} progress={progress} context={context} />;
+  return <WorkspaceProReports tasks={tasks} projects={projects} reports={reports} derived={derived} context={context} />;
 }
 
-function WorkspaceProHome({ tasks, projects, boards, files, activity, projectViews, important, overdue, today, progress, context }: { tasks: WorkspaceTaskItem[]; projects: WorkspaceProjectSummary[]; boards: WorkspaceBoardSummary[]; files: WorkspaceFileSummary[]; activity: WorkspaceActivityItem[]; projectViews: WorkspaceProjectViewPreference[]; important: number; overdue: number; today: number; progress: number; context: WorkspaceContext; }) {
-  const upcoming = tasks.filter((task) => task.dueDate && !isDone(task.status)).slice(0, 5);
-  const importantTasks = tasks.filter((task) => String(task.priority ?? "").toLowerCase() === "alta").slice(0, 5);
-  const activeProjects = projects.filter((project) => String(project.status ?? "").toLowerCase() !== "completado").slice(0, 5);
+function WorkspaceProHome({ tasks, boards, files, projectViews, derived, context }: { tasks: WorkspaceTaskItem[]; boards: WorkspaceBoardSummary[]; files: WorkspaceFileSummary[]; projectViews: WorkspaceProjectViewPreference[]; derived: WorkspaceProDerivedData; context: WorkspaceContext; }) {
+  const { important, overdue, today, progress } = derived.metrics;
+  const { importantTasks, upcomingTasks, activeProjects, activityPreview } = derived;
   return (
     <div className="mx-auto grid max-w-[1220px] gap-4 xl:grid-cols-[minmax(0,1fr)_300px]">
       <div className="space-y-4">
@@ -395,13 +395,13 @@ function WorkspaceProHome({ tasks, projects, boards, files, activity, projectVie
         </section>
         <div className="grid gap-4 xl:grid-cols-2">
           <CleanCard title="Tareas importantes" action={importantTasks.length ? `${importantTasks.length}` : undefined}>{importantTasks.length ? importantTasks.map((task) => <TaskLine key={task.id} task={task} href={`/app/tasks/${task.id}`} />) : <EmptyMicro icon={<ListChecks className="h-4 w-4" />} title="Sin tareas importantes" text="Marcá una tarea como prioridad alta para verla aquí." />}</CleanCard>
-          <CleanCard title="Próximos vencimientos" action={upcoming.length ? `${upcoming.length}` : undefined}>{upcoming.length ? upcoming.map((task) => <TaskLine key={task.id} task={task} href={`/app/tasks/${task.id}`} subtleDate />) : <EmptyMicro icon={<CalendarDays className="h-4 w-4" />} title="Sin fechas próximas" text="Las tareas con fecha límite aparecerán aquí." />}</CleanCard>
+          <CleanCard title="Próximos vencimientos" action={upcomingTasks.length ? `${upcomingTasks.length}` : undefined}>{upcomingTasks.length ? upcomingTasks.map((task) => <TaskLine key={task.id} task={task} href={`/app/tasks/${task.id}`} subtleDate />) : <EmptyMicro icon={<CalendarDays className="h-4 w-4" />} title="Sin fechas próximas" text="Las tareas con fecha límite aparecerán aquí." />}</CleanCard>
         </div>
         <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
           <CleanCard title="Proyectos activos">{activeProjects.length ? activeProjects.map((project) => <ProjectLine key={project.id} project={project} />) : <EmptyMicro icon={<Folder className="h-4 w-4" />} title="Sin proyectos activos" text="Creá un proyecto para organizar tareas anidadas sin saturar la vista Tareas." />}</CleanCard>
           <CleanCard title="Recursos"><ResourceLine label="Pizarras" value={boards.length} href="/app/workspace?view=canvas" /><ResourceLine label="Archivos" value={files.length} href="/app/workspace?view=files" /><ResourceLine label="Vistas guardadas" value={projectViews.length} href="/app/workspace?view=home" /></CleanCard>
         </div>
-        <CleanCard title="Actividad reciente">{activity.length ? activity.slice(0, 5).map((item) => <Link key={item.id} href={item.taskId ? `/app/tasks/${item.taskId}` : item.projectId ? `/app/workspace?projectId=${item.projectId}` : "/app/workspace"} className="flex items-start gap-3 border-b border-slate-100 py-2.5 transition hover:bg-slate-50 last:border-b-0"><span className="mt-1 h-2 w-2 rounded-full bg-slate-300" /><div className="min-w-0"><p className="truncate text-sm font-medium text-slate-800">{item.title}</p><p className="text-xs text-slate-400">{formatDate(item.createdAt)}</p></div></Link>) : <EmptyMicro icon={<Activity className="h-4 w-4" />} title="Sin actividad reciente" text="Los cambios del proyecto aparecerán en esta sección." />}</CleanCard>
+        <CleanCard title="Actividad reciente">{activityPreview.length ? activityPreview.map((item) => <Link key={item.id} href={item.taskId ? `/app/tasks/${item.taskId}` : item.projectId ? `/app/workspace?projectId=${item.projectId}` : "/app/workspace"} className="flex items-start gap-3 border-b border-slate-100 py-2.5 transition hover:bg-slate-50 last:border-b-0"><span className="mt-1 h-2 w-2 rounded-full bg-slate-300" /><div className="min-w-0"><p className="truncate text-sm font-medium text-slate-800">{item.title}</p><p className="text-xs text-slate-400">{formatDate(item.createdAt)}</p></div></Link>) : <EmptyMicro icon={<Activity className="h-4 w-4" />} title="Sin actividad reciente" text="Los cambios del proyecto aparecerán en esta sección." />}</CleanCard>
       </div>
       <WorkspaceProUtilityDock boards={boards} today={today} overdue={overdue} />
     </div>
@@ -433,13 +433,13 @@ function WorkspaceProList({ tasks }: { tasks: WorkspaceTaskItem[] }) {
   );
 }
 
-function WorkspaceProProjects({ projects, tasks }: { projects: WorkspaceProjectSummary[]; tasks: WorkspaceTaskItem[] }) {
+function WorkspaceProProjects({ projects, projectTaskMap }: { projects: WorkspaceProjectSummary[]; projectTaskMap: Record<string, WorkspaceTaskItem[]> }) {
   const [expandedProjectId, setExpandedProjectId] = useState<string | null>(projects[0]?.id ?? null);
   if (!projects.length) return <WorkspaceEmptyState icon="projects" title="No hay proyectos visibles" description="Creá un proyecto para agrupar tareas relacionadas sin mezclar subtareas con tareas individuales." tone="blue" />;
   return (
     <div className="mx-auto max-w-[1220px] space-y-3">
       {projects.map((project) => {
-        const projectTasks = tasks.filter((task) => task.projectId === project.id).slice(0, 8);
+        const projectTasks = (projectTaskMap[project.id] ?? []).slice(0, 8);
         const expanded = expandedProjectId === project.id;
         return (
           <section key={project.id} className="rounded-xl border border-slate-200 bg-white shadow-sm">
@@ -481,7 +481,7 @@ function normalizeBoardStatus(status?: string | null): BoardColumnId {
   return "en_proceso";
 }
 
-function WorkspaceProBoard({ tasks, projects, context }: { tasks: WorkspaceTaskItem[]; projects: WorkspaceProjectSummary[]; context: WorkspaceContext }) {
+function WorkspaceProBoard({ tasks, projects, context, boardColumns }: { tasks: WorkspaceTaskItem[]; projects: WorkspaceProjectSummary[]; context: WorkspaceContext; boardColumns: Record<string, WorkspaceTaskItem[]> }) {
   const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
   const [showDone, setShowDone] = useState(false);
@@ -537,7 +537,7 @@ function WorkspaceProBoard({ tasks, projects, context }: { tasks: WorkspaceTaskI
       </div>
       <div className="mx-auto grid max-w-[1440px] gap-4 xl:grid-cols-3 2xl:grid-cols-5">
         {columns.map((column) => {
-          const items = tasks.filter((task) => column.match(String(task.status ?? "").toLowerCase()));
+          const items = boardColumns[column.id] ?? [];
           const isOver = overColumn === column.id;
           return (
             <section
@@ -759,13 +759,11 @@ function WorkspaceProFileRow({ file, canManage }: { file: WorkspaceFileSummary; 
   );
 }
 
-function WorkspaceProReports({ tasks, projects, reports, progress, context }: { tasks: WorkspaceTaskItem[]; projects: WorkspaceProjectSummary[]; reports: ReportsOverview | null; progress: number; context: WorkspaceContext }) {
+function WorkspaceProReports({ tasks, projects, reports, derived, context }: { tasks: WorkspaceTaskItem[]; projects: WorkspaceProjectSummary[]; reports: ReportsOverview | null; derived: WorkspaceProDerivedData; context: WorkspaceContext }) {
   const [range, setRange] = useState("month");
   const [scope, setScope] = useState(context.projectId ?? "all");
-  const done = tasks.filter((task) => isDone(task.status)).length;
+  const { done, important, overdue, progress } = derived.metrics;
   const active = tasks.length - done;
-  const important = tasks.filter((task) => String(task.priority ?? "").toLowerCase() === "alta").length;
-  const overdue = tasks.filter((task) => task.isOverdue).length;
   const reportHref = `/app/reports?source=workspace&range=${range}&projectId=${scope}`;
   const printHref = `/app/reports/print?source=workspace&range=${range}&projectId=${scope}`;
   return (
@@ -818,8 +816,9 @@ function ReportAction({ title, text, href, icon }: { title: string; text: string
   return <Link href={href} className="rounded-xl border border-slate-200 bg-white p-4 transition hover:border-slate-300 hover:shadow-sm"><span className="mb-3 grid h-9 w-9 place-items-center rounded-lg bg-slate-100 text-slate-700">{icon}</span><b className="block text-sm text-slate-950">{title}</b><span className="mt-1 block text-xs leading-5 text-slate-500">{text}</span></Link>;
 }
 
-function WorkspaceProRightPanel({ tasks, activity, members, notifications, progress, important, overdue, today }: { tasks: WorkspaceTaskItem[]; projects: WorkspaceProjectSummary[]; files: WorkspaceFileSummary[]; activity: WorkspaceActivityItem[]; boards: WorkspaceBoardSummary[]; members: WorkspaceMemberSummary[]; notifications: WorkspaceNotificationSummary; progress: number; important: number; overdue: number; today: number; }) {
-  const upcoming = tasks.filter((task) => task.dueDate && !isDone(task.status)).slice(0, 4);
+function WorkspaceProRightPanel({ activity, members, notifications, derived }: { tasks: WorkspaceTaskItem[]; activity: WorkspaceActivityItem[]; members: WorkspaceMemberSummary[]; notifications: WorkspaceNotificationSummary; derived: WorkspaceProDerivedData; }) {
+  const { progress, important, overdue, today } = derived.metrics;
+  const upcoming = derived.upcomingTasks.slice(0, 4);
   return <div className="space-y-4"><CleanCard title="Resumen"><div className="flex items-center justify-between"><span className="text-sm text-slate-500">Avance</span><span className="text-sm font-semibold text-slate-950">{progress}%</span></div><div className="mt-3 h-2 rounded-full bg-slate-100"><div className="h-full rounded-full bg-slate-950" style={{ width: `${progress}%` }} /></div><div className="mt-4 grid grid-cols-3 gap-2 text-center"><MiniStat label="Alta" value={important} /><MiniStat label="Hoy" value={today} /><MiniStat label="Venc." value={overdue} /></div></CleanCard><CleanCard title="Próximos">{upcoming.length ? upcoming.map((task) => <TaskLine key={task.id} task={task} compact />) : <p className="text-sm text-slate-400">Sin vencimientos próximos</p>}</CleanCard><CleanCard title="Actividad">{activity.length ? activity.slice(0, 4).map((item) => <p key={item.id} className="border-b border-slate-100 py-2 text-sm leading-5 text-slate-500 last:border-b-0"><span className="font-medium text-slate-800">{item.title}</span><br /><span className="text-xs text-slate-400">{formatDate(item.createdAt)}</span></p>) : <p className="text-sm text-slate-400">Sin actividad reciente</p>}</CleanCard><CleanCard title="Equipo"><div className="flex -space-x-2">{members.slice(0, 6).map((member) => <span key={member.id} className="grid h-8 w-8 place-items-center rounded-full border-2 border-white bg-slate-100 text-[11px] font-semibold text-slate-600">{initials(member.name ?? member.email)}</span>)}</div><p className="mt-3 text-xs text-slate-500">{notifications.unread ? `${notifications.unread} notificaciones sin leer.` : "Sin alertas pendientes."}</p></CleanCard></div>;
 }
 

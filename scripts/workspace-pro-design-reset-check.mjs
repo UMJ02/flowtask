@@ -16,7 +16,8 @@ for (const rel of [
   "src/lib/release/version.ts",
 ]) requireFile(rel);
 
-if (!read("src/lib/release/version.ts").includes("58.27.6-workspace-pro-deep-cleanup-2026-ui-controls-system") && !read("src/lib/release/version.ts").includes("58.27.6-workspace-pro-deep-cleanup-2026-ui-controls-system")) failures.push("Expected v58.27.2 or v58.27.2.1 in src/lib/release/version.ts");
+const allowedVersions = ["58.27.6-workspace-pro-deep-cleanup-2026-ui-controls-system", "58.27.7-workspace-pro-render-diet-dead-ui-removal", "58.27.7.1-workspace-pro-render-diet-cli-hotfix"];
+if (!allowedVersions.some((version) => read("src/lib/release/version.ts").includes(version))) failures.push("Expected an allowed v58.27.x Workspace Pro version in src/lib/release/version.ts");
 requireIncludes("src/lib/release/version.ts", "APP_RELEASE_STAGE");
 requireIncludes("src/components/workspace-system/workspace-system-page.tsx", "WorkspaceProPage");
 requireIncludes("src/components/workspace-pro/workspace-pro-page.tsx", "ws-pro-shell");
