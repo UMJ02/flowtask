@@ -25,7 +25,8 @@ import type {
 
 const viewLabels: Record<WorkspaceViewId, string> = {
   home: "Home",
-  list: "Lista",
+  list: "Tareas",
+  projects: "Proyectos",
   board: "Board",
   timeline: "Timeline",
   table: "Tabla",

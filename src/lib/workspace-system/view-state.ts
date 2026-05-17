@@ -1,4 +1,4 @@
-export type WorkspaceViewId = "home" | "list" | "board" | "timeline" | "table" | "canvas" | "files" | "reports";
+export type WorkspaceViewId = "home" | "list" | "projects" | "board" | "timeline" | "table" | "canvas" | "files" | "reports";
 
 export type WorkspaceMode = "personal" | "organization";
 

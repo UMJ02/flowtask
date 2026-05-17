@@ -7031,3 +7031,66 @@
 }
 
 /* v58.27.2.2 — Workspace Doctor Version Alignment Patch */
+
+/* v58.27.3 — Workspace Pro Interaction Model + Task/Project UX */
+.ws-pro-mini-action {
+  display: inline-flex;
+  min-height: 1.875rem;
+  align-items: center;
+  justify-content: center;
+  gap: .35rem;
+  border: 1px solid #e5e7eb;
+  border-radius: .55rem;
+  background: #fff;
+  padding: 0 .65rem;
+  font-size: .75rem;
+  font-weight: 650;
+  color: #475569;
+  transition: background-color .16s ease, border-color .16s ease, color .16s ease;
+}
+.ws-pro-mini-action:hover,
+.ws-pro-mini-action.is-active {
+  border-color: #cbd5e1;
+  background: #f8fafc;
+  color: #0f172a;
+}
+.ws-pro-create-form {
+  border: 1px solid #e5e7eb;
+  border-radius: 1rem;
+  background: #fff;
+  padding: 1rem;
+}
+.ws-pro-form-input,
+.ws-pro-form-textarea {
+  width: 100%;
+  border: 1px solid #e5e7eb;
+  border-radius: .75rem;
+  background: #fff;
+  padding: .65rem .75rem;
+  font-size: .875rem;
+  font-weight: 500;
+  color: #0f172a;
+  outline: none;
+  transition: border-color .16s ease, box-shadow .16s ease, background-color .16s ease;
+}
+.ws-pro-form-input { min-height: 2.5rem; }
+.ws-pro-form-textarea { min-height: 5rem; resize: vertical; }
+.ws-pro-form-input:focus,
+.ws-pro-form-textarea:focus {
+  border-color: #94a3b8;
+  box-shadow: 0 0 0 4px rgba(148, 163, 184, .14);
+}
+.ws-pro-segment,
+.ws-pro-segment-active {
+  display: inline-flex;
+  height: 2rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: .55rem;
+  padding: 0 .85rem;
+  font-size: .8rem;
+  font-weight: 700;
+  transition: background-color .16s ease, color .16s ease;
+}
+.ws-pro-segment { color: #64748b; }
+.ws-pro-segment-active { background: #111827; color: #fff; }

@@ -49,6 +49,7 @@ type CommandItem = {
 const viewIcons: Record<WorkspaceViewId, typeof Search> = {
   home: Home,
   list: List,
+  projects: Folder,
   board: Columns3,
   timeline: CalendarRange,
   table: Table2,
@@ -59,7 +60,8 @@ const viewIcons: Record<WorkspaceViewId, typeof Search> = {
 
 const viewLabels: Record<WorkspaceViewId, string> = {
   home: "Home del proyecto",
-  list: "Lista de tareas",
+  list: "Tareas",
+  projects: "Proyectos",
   board: "Board Kanban",
   timeline: "Timeline",
   table: "Tabla operativa",

@@ -16,7 +16,7 @@ for (const rel of [
   "src/lib/release/version.ts",
 ]) requireFile(rel);
 
-if (!read("src/lib/release/version.ts").includes("58.27.2.2-workspace-doctor-version-alignment-patch") && !read("src/lib/release/version.ts").includes("58.27.2.2-workspace-doctor-version-alignment-patch")) failures.push("Expected v58.27.2 or v58.27.2.1 in src/lib/release/version.ts");
+if (!read("src/lib/release/version.ts").includes("58.27.3-workspace-pro-interaction-model-task-project-ux") && !read("src/lib/release/version.ts").includes("58.27.3-workspace-pro-interaction-model-task-project-ux")) failures.push("Expected v58.27.2 or v58.27.2.1 in src/lib/release/version.ts");
 requireIncludes("src/lib/release/version.ts", "APP_RELEASE_STAGE");
 requireIncludes("src/components/workspace-system/workspace-system-page.tsx", "WorkspaceProPage");
 requireIncludes("src/components/workspace-pro/workspace-pro-page.tsx", "ws-pro-shell");
@@ -24,7 +24,7 @@ requireIncludes("src/components/workspace-pro/workspace-pro-page.tsx", "Workspac
 requireIncludes("src/components/workspace-pro/workspace-pro-page.tsx", "WorkspaceProHome");
 requireIncludes("src/components/workspace-pro/workspace-pro-page.tsx", "WorkspaceProRightPanel");
 requireIncludes("src/components/workspace-pro/workspace-pro-page.tsx", "WorkspaceTaskInlineEditor");
-requireIncludes("src/app/globals.css", "v58.27.2.2 — Workspace Doctor Version Alignment Patch");
+requireIncludes("src/app/globals.css", "v58.27.3 — Workspace Pro Interaction Model + Task/Project UX");
 requireIncludes("src/app/globals.css", "ws-pro-primary-button");
 requireIncludes("src/app/globals.css", "ws-pro-hide-scrollbar");
 
