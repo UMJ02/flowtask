@@ -6,8 +6,8 @@ const failures = [];
 const read = (rel) => fs.existsSync(path.join(root, rel)) ? fs.readFileSync(path.join(root, rel), "utf8") : "";
 const exists = (rel) => fs.existsSync(path.join(root, rel));
 const pkg = JSON.parse(read("package.json") || "{}");
-if (pkg.version !== "58.27.3-workspace-pro-interaction-model-task-project-ux") failures.push(`Unexpected package version: ${pkg.version}`);
-if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.27.3") failures.push("verify:current must target verify:v58.27.3");
+if (pkg.version !== "58.27.4-workspace-pro-board-drag-drop-inline-editing") failures.push(`Unexpected package version: ${pkg.version}`);
+if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.27.4") failures.push("verify:current must target verify:v58.27.4");
 for (const rel of [
   "src/lib/release/version.ts",
   "scripts/workspace-persistence-doctor.mjs",
@@ -21,17 +21,17 @@ for (const rel of [
   "scripts/workspace-release-candidate-fixes-check.mjs",
   "scripts/workspace-pro-design-reset-check.mjs",
   "scripts/workspace-pro-layout-cleanup-check.mjs",
-  "docs/release/V58_27_3_WORKSPACE_PRO_INTERACTION_MODEL_TASK_PROJECT_UX.md",
-  "docs/qa/FLOWTASK_V58_27_3_WORKSPACE_PRO_INTERACTION_MODEL_TASK_PROJECT_UX_QA.md",
+  "docs/release/V58_27_4_WORKSPACE_PRO_BOARD_DRAG_DROP_INLINE_EDITING.md",
+  "docs/qa/FLOWTASK_V58_27_4_WORKSPACE_PRO_BOARD_DRAG_DROP_INLINE_EDITING_QA.md",
 ]) { if (!exists(rel)) failures.push(`Missing ${rel}`); }
-if (!read("src/lib/release/version.ts").includes("58.27.3-workspace-pro-interaction-model-task-project-ux")) failures.push("version.ts must include v58.27.3 slug");
+if (!read("src/lib/release/version.ts").includes("58.27.4-workspace-pro-board-drag-drop-inline-editing")) failures.push("version.ts must include v58.27.4 slug");
 if (!read("src/lib/release/version.ts").includes("APP_RELEASE_STAGE")) failures.push("version.ts must export APP_RELEASE_STAGE");
-if (!read("scripts/workspace-persistence-doctor.mjs").includes("verify:v58.27.3")) failures.push("workspace doctor must expect verify:v58.27.3");
-if (!read("package-lock.json").includes("58.27.3-workspace-pro-interaction-model-task-project-ux")) failures.push("package-lock must include v58.27.3 slug");
-if (!read("README.md").includes("v58.27.3 — Workspace Pro Interaction Model + Task/Project UX")) failures.push("README must include v58.27.3 section");
+if (!read("scripts/workspace-persistence-doctor.mjs").includes("verify:v58.27.4")) failures.push("workspace doctor must expect verify:v58.27.4");
+if (!read("package-lock.json").includes("58.27.4-workspace-pro-board-drag-drop-inline-editing")) failures.push("package-lock must include v58.27.4 slug");
+if (!read("README.md").includes("v58.27.4 — Workspace Pro Board Drag Drop + Inline Editing")) failures.push("README must include v58.27.4 section");
 if (failures.length) {
-  console.error("[verify:v58.27.3] FAIL");
+  console.error("[verify:v58.27.4] FAIL");
   for (const failure of failures) console.error(`- ${failure}`);
   process.exit(1);
 }
-console.log("[verify:v58.27.3] OK — Workspace doctor version alignment patch aligned.");
+console.log("[verify:v58.27.4] OK — Workspace doctor version alignment patch aligned.");

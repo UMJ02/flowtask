@@ -1,7 +1,7 @@
 "use client";
 
-// v58.27.2.1 — Workspace Pro Layout Simplification + Interaction Cleanup
-// Focus: one navigation source, one primary CTA, compact content, technical/debug UI hidden from the normal workspace.
+// v58.27.4 — Workspace Pro Board Drag Drop + Inline Editing
+// Focus: Kanban real de producción con drag/drop, columnas configurables y edición contextual.
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
@@ -10,14 +10,18 @@ import {
   Activity,
   BarChart3,
   CalendarDays,
+  CheckCircle2,
   Command,
+  Edit3,
   Files,
+  GripVertical,
   Folder,
   Home,
   LayoutGrid,
   ListChecks,
   Menu,
   MoreHorizontal,
+  Loader2,
   PanelRightOpen,
   Plus,
   Search,
@@ -328,7 +332,7 @@ function WorkspaceProMainView({ activeView, tasks, projects, boards, files, acti
   if (activeView === "home") return <WorkspaceProHome tasks={tasks} projects={projects} boards={boards} files={files} activity={activity} projectViews={projectViews} important={important} overdue={overdue} today={today} progress={progress} context={context} />;
   if (activeView === "list") return <WorkspaceProList tasks={tasks} />;
   if (activeView === "projects") return <WorkspaceProProjects projects={projects} tasks={tasks} />;
-  if (activeView === "board") return <WorkspaceProBoard tasks={tasks} />;
+  if (activeView === "board") return <WorkspaceProBoard tasks={tasks} projects={projects} context={context} />;
   if (activeView === "timeline") return <WorkspaceProTimeline tasks={tasks} projects={projects} />;
   if (activeView === "table") return <WorkspaceProTable tasks={tasks} />;
   if (activeView === "canvas") return <WorkspaceProCanvas boards={boards} />;
@@ -423,16 +427,31 @@ const BOARD_COLUMN_DEFS = [
   { id: "concluido", title: "Concluido", match: (status: string) => ["concluido", "completado", "done", "hecho"].includes(status) },
 ] as const;
 
-function WorkspaceProBoard({ tasks }: { tasks: WorkspaceTaskItem[] }) {
+type BoardColumnId = typeof BOARD_COLUMN_DEFS[number]["id"];
+
+function normalizeBoardStatus(status?: string | null): BoardColumnId {
+  const value = String(status ?? "").toLowerCase();
+  if (["pendiente"].includes(value)) return "pendiente";
+  if (["produccion"].includes(value)) return "produccion";
+  if (["en_espera", "waiting"].includes(value)) return "en_espera";
+  if (["revision"].includes(value)) return "revision";
+  if (["concluido", "completado", "done", "hecho"].includes(value)) return "concluido";
+  return "en_proceso";
+}
+
+function WorkspaceProBoard({ tasks, projects, context }: { tasks: WorkspaceTaskItem[]; projects: WorkspaceProjectSummary[]; context: WorkspaceContext }) {
   const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
   const [showDone, setShowDone] = useState(false);
-  const [visibleColumns, setVisibleColumns] = useState<Set<string>>(new Set(["pendiente", "en_proceso", "produccion", "en_espera", "revision"]));
-  const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
+  const [visibleColumns, setVisibleColumns] = useState<Set<BoardColumnId>>(new Set(["pendiente", "en_proceso", "produccion", "en_espera", "revision"]));
+  const [editingTask, setEditingTask] = useState<WorkspaceTaskItem | null>(null);
   const [draggingTaskId, setDraggingTaskId] = useState<string | null>(null);
+  const [overColumn, setOverColumn] = useState<BoardColumnId | null>(null);
+  const [busyMove, setBusyMove] = useState<string | null>(null);
+  const [compactCards, setCompactCards] = useState(false);
   const columns = BOARD_COLUMN_DEFS.filter((column) => (column.id !== "concluido" || showDone) && visibleColumns.has(column.id));
 
-  function toggleColumn(id: string) {
+  function toggleColumn(id: BoardColumnId) {
     setVisibleColumns((current) => {
       const next = new Set(current);
       if (next.has(id)) next.delete(id);
@@ -442,30 +461,145 @@ function WorkspaceProBoard({ tasks }: { tasks: WorkspaceTaskItem[] }) {
     });
   }
 
-  async function moveTask(taskId: string, status: string) {
+  async function moveTask(taskId: string, status: BoardColumnId) {
     setDraggingTaskId(null);
-    const { error } = await supabase.from("tasks").update({ status }).eq("id", taskId);
+    setOverColumn(null);
+    const current = tasks.find((task) => task.id === taskId);
+    if (current && normalizeBoardStatus(current.status) === status) return;
+    setBusyMove(taskId);
+    const { error } = await supabase.from("tasks").update({ status }).eq("id", taskId).select("id").single();
+    setBusyMove(null);
     if (!error) router.refresh();
+  }
+
+  if (!tasks.length) {
+    return <WorkspaceEmptyState icon="tasks" title="No hay tareas para el board" description="Creá una tarea o elegí otro proyecto para empezar a organizar trabajo por columnas." tone="blue" />;
   }
 
   return (
     <div className="space-y-3">
-      <div className="mx-auto flex max-w-[1360px] flex-wrap items-center gap-2 rounded-xl border border-slate-200 bg-white p-2 shadow-sm">
-        {BOARD_COLUMN_DEFS.filter((column) => column.id !== "concluido").map((column) => <button key={column.id} type="button" onClick={() => toggleColumn(column.id)} className={visibleColumns.has(column.id) ? "ws-pro-mini-action is-active" : "ws-pro-mini-action"}>{column.title}</button>)}
-        <label className="ml-auto inline-flex items-center gap-2 rounded-lg px-2 text-xs font-semibold text-slate-500"><input type="checkbox" checked={showDone} onChange={(event) => setShowDone(event.target.checked)} /> Mostrar concluidas</label>
+      {editingTask ? (
+        <WorkspaceProSheet title="Editar tarea" onClose={() => setEditingTask(null)}>
+          <WorkspaceProBoardTaskEditor task={editingTask} projects={projects} context={context} onClose={() => setEditingTask(null)} />
+        </WorkspaceProSheet>
+      ) : null}
+      <div className="mx-auto flex max-w-[1440px] flex-wrap items-center gap-2 rounded-xl border border-slate-200 bg-white p-2 shadow-sm">
+        <span className="px-2 text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">Columnas</span>
+        {BOARD_COLUMN_DEFS.filter((column) => column.id !== "concluido").map((column) => (
+          <button key={column.id} type="button" onClick={() => toggleColumn(column.id)} className={visibleColumns.has(column.id) ? "ws-pro-mini-action is-active" : "ws-pro-mini-action"}>{column.title}</button>
+        ))}
+        <div className="ml-auto flex flex-wrap items-center gap-2">
+          <button type="button" onClick={() => setCompactCards((value) => !value)} className={compactCards ? "ws-pro-mini-action is-active" : "ws-pro-mini-action"}>{compactCards ? "Compactas" : "Completas"}</button>
+          <label className="inline-flex items-center gap-2 rounded-lg px-2 text-xs font-semibold text-slate-500"><input type="checkbox" checked={showDone} onChange={(event) => setShowDone(event.target.checked)} /> Mostrar concluidas</label>
+        </div>
       </div>
-      <div className="grid gap-4 xl:grid-cols-3 2xl:grid-cols-5">
+      <div className="mx-auto grid max-w-[1440px] gap-4 xl:grid-cols-3 2xl:grid-cols-5">
         {columns.map((column) => {
           const items = tasks.filter((task) => column.match(String(task.status ?? "").toLowerCase()));
+          const isOver = overColumn === column.id;
           return (
-            <section key={column.id} onDragOver={(event) => event.preventDefault()} onDrop={(event) => { event.preventDefault(); const taskId = event.dataTransfer.getData("text/task-id") || draggingTaskId; if (taskId) void moveTask(taskId, column.id); }} className="min-h-[360px] rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
-              <header className="mb-3 flex items-center justify-between px-1"><h3 className="text-sm font-semibold text-slate-950">{column.title}</h3><span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-500">{items.length}</span></header>
+            <section
+              key={column.id}
+              onDragOver={(event) => { event.preventDefault(); setOverColumn(column.id); }}
+              onDragLeave={() => setOverColumn((value) => value === column.id ? null : value)}
+              onDrop={(event) => { event.preventDefault(); const taskId = event.dataTransfer.getData("text/task-id") || draggingTaskId; if (taskId) void moveTask(taskId, column.id); }}
+              className={isOver ? "ws-pro-board-column ws-pro-board-column-active" : "ws-pro-board-column"}
+            >
+              <header className="mb-3 flex items-center justify-between gap-3 px-1">
+                <div className="min-w-0"><h3 className="text-sm font-semibold text-slate-950">{column.title}</h3><p className="text-xs text-slate-400">Arrastrá para actualizar estado</p></div>
+                <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-500">{items.length}</span>
+              </header>
               <div className="space-y-2">
-                {items.length ? items.map((task) => <article key={task.id} draggable onDragStart={(event) => { setDraggingTaskId(task.id); event.dataTransfer.setData("text/task-id", task.id); }} className="rounded-xl border border-slate-200 bg-white p-3 transition hover:border-slate-300 hover:shadow-sm"><div className="flex items-start justify-between gap-2"><Link href={`/app/tasks/${task.id}`} className="text-sm font-medium text-slate-950 hover:underline">{task.title}</Link><button type="button" onClick={() => setEditingTaskId((value) => value === task.id ? null : task.id)} className="ws-pro-icon-button h-7 w-7"><MoreHorizontal className="h-3.5 w-3.5" /></button></div><div className="mt-3 flex items-center justify-between gap-2"><PriorityBadge priority={task.priority} /><span className="text-xs text-slate-500">{formatDate(task.dueDate)}</span></div>{editingTaskId === task.id ? <div className="mt-3 border-t border-slate-100 pt-3"><WorkspaceTaskInlineEditor task={task} compact /><Link href={`/app/tasks/${task.id}/edit`} className="mt-2 inline-flex text-xs font-semibold text-slate-500 hover:text-slate-950">Editar completa</Link></div> : null}</article>) : <p className="rounded-xl border border-dashed border-slate-200 p-4 text-sm text-slate-400">Arrastrá tareas aquí o creá una nueva en este estado.</p>}
+                {items.length ? items.map((task) => (
+                  <article
+                    key={task.id}
+                    draggable
+                    onDragStart={(event) => { setDraggingTaskId(task.id); event.dataTransfer.setData("text/task-id", task.id); event.dataTransfer.effectAllowed = "move"; }}
+                    onDragEnd={() => { setDraggingTaskId(null); setOverColumn(null); }}
+                    className={busyMove === task.id ? "ws-pro-board-card opacity-60" : "ws-pro-board-card"}
+                  >
+                    <div className="flex items-start gap-2">
+                      <GripVertical className="mt-0.5 h-4 w-4 shrink-0 cursor-grab text-slate-300" />
+                      <div className="min-w-0 flex-1">
+                        <Link href={`/app/tasks/${task.id}`} className="line-clamp-2 text-sm font-medium text-slate-950 hover:underline">{task.title}</Link>
+                        {!compactCards ? <p className="mt-1 truncate text-xs text-slate-400">{task.projectTitle ?? task.clientName ?? task.departmentName ?? "Tarea individual"}</p> : null}
+                      </div>
+                      <button type="button" onClick={() => setEditingTask(task)} className="ws-pro-icon-button h-7 w-7" aria-label="Editar tarea"><Edit3 className="h-3.5 w-3.5" /></button>
+                    </div>
+                    <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
+                      <PriorityBadge priority={task.priority} />
+                      <span className="text-xs text-slate-500">{formatDate(task.dueDate)}</span>
+                    </div>
+                    {!compactCards ? (
+                      <div className="mt-3 flex flex-wrap gap-1.5 border-t border-slate-100 pt-3">
+                        {BOARD_COLUMN_DEFS.filter((next) => next.id !== column.id && next.id !== "concluido").slice(0, 3).map((next) => (
+                          <button key={next.id} type="button" onClick={() => void moveTask(task.id, next.id)} className="ws-pro-board-move-chip">Mover a {next.title}</button>
+                        ))}
+                        <Link href={`/app/tasks/${task.id}/edit`} className="ws-pro-board-move-chip">Editar full</Link>
+                      </div>
+                    ) : null}
+                  </article>
+                )) : <p className="rounded-xl border border-dashed border-slate-200 p-4 text-sm text-slate-400">Soltá una tarea aquí para moverla a {column.title}.</p>}
               </div>
             </section>
           );
         })}
+      </div>
+    </div>
+  );
+}
+
+function WorkspaceProBoardTaskEditor({ task, projects, context, onClose }: { task: WorkspaceTaskItem; projects: WorkspaceProjectSummary[]; context: WorkspaceContext; onClose: () => void }) {
+  const supabase = useMemo(() => createClient(), []);
+  const router = useRouter();
+  const [title, setTitle] = useState(task.title);
+  const [status, setStatus] = useState(normalizeBoardStatus(task.status));
+  const [priority, setPriority] = useState((task.priority ?? "media").toLowerCase());
+  const [dueDate, setDueDate] = useState(task.dueDate ?? "");
+  const [projectId, setProjectId] = useState(task.projectId ?? context.projectId ?? "");
+  const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState<{ tone: "success" | "error"; text: string } | null>(null);
+
+  async function save() {
+    const nextTitle = title.trim();
+    if (!nextTitle || busy) return;
+    setBusy(true);
+    setMessage(null);
+    const { error } = await supabase.from("tasks").update({
+      title: nextTitle,
+      status,
+      priority,
+      due_date: dueDate || null,
+      project_id: projectId || null,
+    }).eq("id", task.id).select("id").single();
+    setBusy(false);
+    if (error) {
+      setMessage({ tone: "error", text: error.message || "No se pudo actualizar la tarea." });
+      return;
+    }
+    setMessage({ tone: "success", text: "Tarea actualizada." });
+    router.refresh();
+  }
+
+  return (
+    <div className="space-y-4">
+      <div>
+        <label className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">Nombre</label>
+        <input className="ws-pro-form-input mt-1" value={title} onChange={(event) => setTitle(event.target.value)} />
+      </div>
+      <div className="grid gap-3 md:grid-cols-2">
+        <label className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">Estado<select className="ws-pro-form-input mt-1" value={status} onChange={(event) => setStatus(event.target.value as BoardColumnId)}>{BOARD_COLUMN_DEFS.map((column) => <option key={column.id} value={column.id}>{column.title}</option>)}</select></label>
+        <label className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">Prioridad<select className="ws-pro-form-input mt-1" value={priority} onChange={(event) => setPriority(event.target.value)}><option value="alta">Alta</option><option value="media">Media</option><option value="baja">Baja</option></select></label>
+        <label className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">Fecha<input type="date" className="ws-pro-form-input mt-1" value={dueDate} onChange={(event) => setDueDate(event.target.value)} /></label>
+        <label className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">Proyecto<select className="ws-pro-form-input mt-1" value={projectId} onChange={(event) => setProjectId(event.target.value)}><option value="">Tarea individual</option>{projects.slice(0, 80).map((project) => <option key={project.id} value={project.id}>{project.title}</option>)}</select></label>
+      </div>
+      <WorkspaceTaskInlineEditor task={task} compact />
+      {message ? <p className={message.tone === "success" ? "flex items-center gap-2 text-sm font-semibold text-emerald-700" : "text-sm font-semibold text-rose-700"}>{message.tone === "success" ? <CheckCircle2 className="h-4 w-4" /> : null}{message.text}</p> : null}
+      <div className="flex flex-wrap justify-end gap-2">
+        <Link href={`/app/tasks/${task.id}`} className="ws-pro-secondary-button">Abrir detalle</Link>
+        <Link href={`/app/tasks/${task.id}/edit`} className="ws-pro-secondary-button">Editar completa</Link>
+        <button type="button" className="ws-pro-secondary-button" onClick={onClose}>Cerrar</button>
+        <button type="button" className="ws-pro-primary-button" disabled={busy || !title.trim()} onClick={() => void save()}>{busy ? <Loader2 className="h-4 w-4 animate-spin" /> : null}Guardar</button>
       </div>
     </div>
   );
