@@ -8,8 +8,8 @@ const page = read('src/components/workspace-pro/workspace-pro-page.tsx');
 const helper = read('src/lib/workspace-system/render-diet.ts');
 const css = read('src/app/globals.css');
 
-if (!['58.27.7-workspace-pro-render-diet-dead-ui-removal', '58.27.7.1-workspace-pro-render-diet-cli-hotfix'].includes(pkg.version)) failures.push(`Unexpected package version: ${pkg.version}`);
-if (!['npm run verify:v58.27.7', 'npm run verify:v58.27.7.1'].includes(pkg.scripts?.['verify:current'])) failures.push('verify:current must target verify:v58.27.7 or verify:v58.27.7.1');
+if (!['58.27.7-workspace-pro-render-diet-dead-ui-removal', '58.27.7.1-workspace-pro-render-diet-cli-hotfix', '58.27.8-workspace-pro-visual-density-final-ui-polish'].includes(pkg.version)) failures.push(`Unexpected package version: ${pkg.version}`);
+if (!['npm run verify:v58.27.7', 'npm run verify:v58.27.7.1', 'npm run verify:v58.27.8'].includes(pkg.scripts?.['verify:current'])) failures.push('verify:current must target verify:v58.27.7, verify:v58.27.7.1 or verify:v58.27.8');
 if (!pkg.scripts?.['build:preflight']?.includes('workspace:render-diet:ready')) failures.push('build:preflight must include workspace:render-diet:ready');
 if (!helper.includes('getWorkspaceProDerivedData')) failures.push('render-diet helper missing');
 if (!helper.includes('projectTaskMap')) failures.push('projectTaskMap must be derived outside project render');

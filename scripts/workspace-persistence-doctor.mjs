@@ -14,11 +14,13 @@ const allowedVersions = [
   "58.27.6-workspace-pro-deep-cleanup-2026-ui-controls-system",
   "58.27.7-workspace-pro-render-diet-dead-ui-removal",
   "58.27.7.1-workspace-pro-render-diet-cli-hotfix",
+  "58.27.8-workspace-pro-visual-density-final-ui-polish",
 ];
 const allowedVerifyTargets = [
   "npm run verify:v58.27.6",
   "npm run verify:v58.27.7",
   "npm run verify:v58.27.7.1",
+  "npm run verify:v58.27.8",
 ];
 
 if (!allowedVersions.includes(String(pkg.version ?? ""))) failures.push(`Unexpected package version: ${pkg.version}`);

@@ -260,3 +260,18 @@ Pulido de Archivos y Reportes en Workspace Pro: upload integrado, acciones de ar
 ## v58.27.7 — Workspace Pro Render Diet + Dead UI Removal
 
 Render diet for Workspace Pro: central derived data helper, project task map, board column map, lighter Home/Inspector previews and new `workspace:render-diet:ready` check.
+
+
+## v58.27.8 — Workspace Pro Visual Density + Final UI Polish
+
+Esta versión toma como base v58.27.7.1 y aplica el polish visual final del Workspace Pro: mayor ancho útil, cards menos centradas, tabs compactas, dock derecho sticky, frames de 1440px y jerarquía visual más limpia. No agrega migraciones, dependencias ni cambios de Supabase.
+
+Validación rápida:
+
+```bash
+npm run verify:current
+npm run workspace:visual-density:ready
+npm run workspace:render-diet:ready
+npm run typecheck
+npm run build:preflight
+```
