@@ -13,6 +13,8 @@ const expectedVersions = [
   "58.27.6-workspace-pro-deep-cleanup-2026-ui-controls-system",
   "58.27.7-workspace-pro-render-diet-dead-ui-removal",
   "58.27.7.1-workspace-pro-render-diet-cli-hotfix",
+  "58.27.8-workspace-pro-visual-density-final-ui-polish",
+  "58.27.8.1-workspace-pro-vercel-readiness-hotfix",
 ];
 const pkg = JSON.parse(read("package.json") || "{}");
 if (!expectedVersions.includes(pkg.version)) failures.push(`Unexpected package version: ${pkg.version}`);

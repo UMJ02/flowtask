@@ -1,3 +1,8 @@
+
+## v58.27.8.1 — Workspace Pro Vercel Readiness Hotfix
+
+Corrige los checks de readiness/producción que todavía bloqueaban Vercel al esperar versiones anteriores a v58.27.8. Mantiene el polish visual de v58.27.8 y solo actualiza alineación de scripts para `vercel:build`, `build:preflight`, `workspace:production:ready`, `deploy:readiness` y `deploy:production:ready`.
+
 # FlowTask — v58.26.4 Workspace Collaboration + Share + Mobile Polish
 
 Base: **v58.26.3 — Workspace Notifications + Activity Automation Polish**

@@ -1,3 +1,3 @@
-export const APP_VERSION = "58.27.8-workspace-pro-visual-density-final-ui-polish";
-export const APP_RELEASE_NAME = "v58.27.8 Workspace Pro Visual Density + Final UI Polish";
-export const APP_RELEASE_STAGE = "release-candidate";
+export const APP_VERSION = "58.27.8.1-workspace-pro-vercel-readiness-hotfix";
+export const APP_RELEASE_NAME = "v58.27.8.1 Workspace Pro Vercel Readiness Hotfix";
+export const APP_RELEASE_STAGE = "production-candidate";

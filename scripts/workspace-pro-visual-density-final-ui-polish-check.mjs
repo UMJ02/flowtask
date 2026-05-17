@@ -10,11 +10,16 @@ const requireIncludes = (rel, text) => {
 };
 
 const pkg = JSON.parse(read("package.json") || "{}");
-if (pkg.version !== "58.27.8-workspace-pro-visual-density-final-ui-polish") failures.push(`Unexpected package version: ${pkg.version}`);
-if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.27.8") failures.push("verify:current must target verify:v58.27.8");
+const allowedVersions = [
+  "58.27.8-workspace-pro-visual-density-final-ui-polish",
+  "58.27.8.1-workspace-pro-vercel-readiness-hotfix",
+];
+const allowedVerifyTargets = ["npm run verify:v58.27.8", "npm run verify:v58.27.8.1"];
+if (!allowedVersions.includes(pkg.version)) failures.push(`Unexpected package version: ${pkg.version}`);
+if (!allowedVerifyTargets.includes(pkg.scripts?.["verify:current"])) failures.push("verify:current must target verify:v58.27.8 or verify:v58.27.8.1");
 if (!String(pkg.scripts?.["build:preflight"] ?? "").includes("workspace:visual-density:ready")) failures.push("build:preflight must include workspace:visual-density:ready");
 
-requireIncludes("src/lib/release/version.ts", "58.27.8-workspace-pro-visual-density-final-ui-polish");
+if (!allowedVersions.some((version) => read("src/lib/release/version.ts").includes(version))) failures.push("version.ts must include v58.27.8 or v58.27.8.1 slug");
 requireIncludes("src/components/workspace-pro/workspace-pro-page.tsx", "v58.27.8");
 requireIncludes("src/components/workspace-pro/workspace-pro-page.tsx", "ws-pro-header");
 requireIncludes("src/components/workspace-pro/workspace-pro-page.tsx", "ws-pro-content");
