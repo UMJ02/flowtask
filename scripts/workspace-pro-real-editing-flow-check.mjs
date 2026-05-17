@@ -10,8 +10,10 @@ const css = read("src/app/globals.css");
 const allowedVersions = [
   "58.27.9-workspace-pro-interaction-hardening-real-editing-flow",
   "58.28.0-workspace-pro-production-ux-final",
+  "58.28.1-workspace-pro-user-final-ui-fixes",
+  "58.28.2-workspace-pro-action-model-progressive-disclosure",
 ];
-const allowedVerifyTargets = ["npm run verify:v58.27.9", "npm run verify:v58.28.0"];
+const allowedVerifyTargets = ["npm run verify:v58.27.9", "npm run verify:v58.28.0", "npm run verify:v58.28.1", "npm run verify:v58.28.2"];
 if (!allowedVersions.includes(pkg.version)) failures.push(`Unexpected package version: ${pkg.version}`);
 if (!allowedVerifyTargets.includes(pkg.scripts?.["verify:current"])) failures.push("verify:current must target verify:v58.27.9 or verify:v58.28.0");
 

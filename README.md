@@ -285,3 +285,22 @@ npm run build:preflight
 ## v58.28.0 — Workspace Pro Production UX Final
 
 Cierre de ciclo Workspace Pro: estados vacíos accionables, navegación endurecida, QA visual final y scripts de Vercel alineados.
+
+## v58.28.1 — Workspace Pro User Final UI Fixes
+
+Patch visual final sobre v58.28.0. Corrige chips del Board, toolbar de edición rápida de tareas y layout responsive de Spaces Manager para dejar la experiencia más lista para usuario final.
+
+Nuevo check:
+
+```bash
+npm run workspace:user-final-ui:ready
+```
+
+## v58.28.2 — Workspace Pro Action Model + Progressive Disclosure
+
+- Board cards limpias con menú contextual `⋯` en lugar de chips repetidos.
+- Acciones secundarias ocultas: cambiar estado, prioridad, editar rápido, abrir detalle y editar completa.
+- Lista con acción mínima `Gestionar` para edición rápida.
+- Espacios rediseñado para usuario final con diagnóstico técnico oculto.
+- Nuevo check: `npm run workspace:action-model:ready`.
+

@@ -7440,3 +7440,225 @@
     flex-direction: column;
   }
 }
+
+/* v58.28.1 — Workspace Pro User Final UI Fixes */
+.ws-pro-board-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: .375rem;
+}
+.ws-pro-task-editor-toolbar {
+  display: flex;
+  min-width: 0;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: .5rem;
+  overflow-x: auto;
+  border-top: 1px solid #eef2f7;
+  border-bottom: 1px solid #eef2f7;
+  padding: .65rem 0;
+  scrollbar-width: none;
+}
+.ws-pro-task-editor-toolbar::-webkit-scrollbar { display: none; }
+.ws-pro-task-editor-toolbar .ft-ws-inline-editor-compact {
+  flex-wrap: nowrap;
+  flex: 0 0 auto;
+}
+.ws-pro-editor-inline-action {
+  display: inline-flex;
+  flex: 0 0 auto;
+  min-height: 2rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #e2e8f0;
+  border-radius: .65rem;
+  background: #fff;
+  padding: 0 .7rem;
+  font-size: .75rem;
+  font-weight: 760;
+  color: #475569;
+  transition: border-color 160ms ease, background-color 160ms ease, color 160ms ease;
+}
+.ws-pro-editor-inline-action:hover {
+  border-color: #cbd5e1;
+  background: #f8fafc;
+  color: #0f172a;
+}
+.ft-ws-spaces-manager {
+  overflow: hidden;
+  padding: clamp(14px, 2vw, 22px);
+}
+.ft-ws-spaces-manager-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.ft-ws-spaces-setup-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 360px);
+  gap: 1rem;
+  margin-top: 1rem;
+}
+.ft-ws-spaces-create-card,
+.ft-ws-spaces-status-card {
+  border-radius: 22px;
+  padding: 1rem;
+}
+.ft-ws-spaces-create-card {
+  min-width: 0;
+  border: 1px solid rgba(226, 232, 240, .9);
+  background: rgba(255,255,255,.88);
+}
+.ft-ws-spaces-status-card {
+  border: 1px solid rgba(167, 243, 208, .9);
+  background: linear-gradient(135deg, rgba(236,253,245,.92), rgba(240,253,250,.76));
+}
+.ft-ws-space-create-grid {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) minmax(130px, .32fr) minmax(130px, .32fr) auto;
+  gap: .75rem;
+  align-items: center;
+}
+.ft-ws-space-create-grid .ft-ws-active {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .4rem;
+  white-space: nowrap;
+}
+.ft-ws-spaces-list-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+.ft-ws-spaces-empty {
+  grid-column: 1 / -1;
+  border: 1px dashed #cbd5e1;
+  border-radius: 22px;
+  background: rgba(255,255,255,.74);
+  padding: 1.25rem;
+  color: #64748b;
+  font-size: .9rem;
+  font-weight: 760;
+}
+@media (max-width: 980px) {
+  .ft-ws-spaces-manager-head,
+  .ft-ws-spaces-setup-grid {
+    grid-template-columns: 1fr;
+    flex-direction: column;
+  }
+  .ft-ws-space-create-grid,
+  .ft-ws-spaces-list-grid {
+    grid-template-columns: 1fr;
+  }
+  .ft-ws-spaces-status-card { order: -1; }
+}
+@media (max-width: 640px) {
+  .ws-pro-board-actions { grid-template-columns: 1fr; }
+  .ws-pro-task-editor-toolbar { flex-wrap: wrap; overflow-x: visible; }
+  .ws-pro-task-editor-toolbar .ft-ws-inline-editor-compact { flex-wrap: wrap; }
+}
+
+/* v58.28.2 — Workspace Pro Action Model + Progressive Disclosure */
+.ws-pro-board-card {
+  position: relative;
+  overflow: visible;
+}
+.ws-pro-action-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + .4rem);
+  z-index: 40;
+  width: min(17rem, calc(100vw - 2rem));
+  max-height: min(28rem, calc(100vh - 8rem));
+  overflow-y: auto;
+  border: 1px solid rgba(226, 232, 240, .95);
+  border-radius: 1rem;
+  background: rgba(255,255,255,.98);
+  padding: .45rem;
+  box-shadow: 0 24px 50px rgba(15, 23, 42, .16), 0 2px 8px rgba(15, 23, 42, .08);
+  backdrop-filter: blur(12px);
+}
+.ws-pro-action-menu-label {
+  padding: .45rem .55rem .25rem;
+  font-size: .66rem;
+  font-weight: 850;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: #94a3b8;
+}
+.ws-pro-action-menu-item {
+  display: flex;
+  width: 100%;
+  min-height: 2rem;
+  align-items: center;
+  justify-content: flex-start;
+  border-radius: .75rem;
+  padding: .45rem .6rem;
+  font-size: .78rem;
+  font-weight: 760;
+  color: #334155;
+  text-align: left;
+  transition: background-color 150ms ease, color 150ms ease, transform 150ms ease;
+}
+.ws-pro-action-menu-item:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+  transform: translateX(1px);
+}
+.ws-pro-action-menu-divider {
+  height: 1px;
+  margin: .35rem .35rem;
+  background: #e2e8f0;
+}
+.ws-pro-toolbar-label {
+  flex: 0 0 auto;
+  font-size: .68rem;
+  font-weight: 850;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: #94a3b8;
+}
+.ws-pro-table-action {
+  display: inline-flex;
+  min-height: 2rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #e2e8f0;
+  border-radius: .75rem;
+  background: #fff;
+  padding: 0 .65rem;
+  font-size: .74rem;
+  font-weight: 780;
+  color: #475569;
+  transition: border-color 160ms ease, background-color 160ms ease, color 160ms ease;
+}
+.ws-pro-table-action:hover {
+  border-color: #cbd5e1;
+  background: #f8fafc;
+  color: #0f172a;
+}
+.ft-ws-spaces-help-card {
+  border-color: rgba(226, 232, 240, .95);
+  background: linear-gradient(135deg, rgba(255,255,255,.96), rgba(248,250,252,.88));
+}
+.ft-ws-spaces-manager details summary {
+  list-style: none;
+}
+.ft-ws-spaces-manager details summary::-webkit-details-marker {
+  display: none;
+}
+@media (max-width: 640px) {
+  .ws-pro-action-menu {
+    position: fixed;
+    inset: auto .75rem .75rem .75rem;
+    width: auto;
+    max-height: 72vh;
+    border-radius: 1.25rem;
+  }
+  .ws-pro-task-editor-toolbar {
+    align-items: stretch;
+  }
+}

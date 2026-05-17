@@ -1,6 +1,6 @@
 "use client";
 
-// v58.25.9.4 Workspace Spaces Manager + Project Organization
+// v58.28.2 Workspace Spaces Progressive Disclosure
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -209,12 +209,12 @@ export function WorkspaceSpacesManager({
 
   return (
     <section className="ft-ws-spaces-manager ft-ws-enter">
-      <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
+      <div className="ft-ws-spaces-manager-head">
         <div className="min-w-0">
-          <p className="text-[11px] font-black uppercase tracking-[.18em] text-emerald-600">Espacios reales</p>
-          <h3 className="mt-1 text-lg font-black tracking-[-.03em] text-slate-950">Spaces Manager + Project Organization</h3>
+          <p className="text-[11px] font-black uppercase tracking-[.18em] text-emerald-600">Organización del workspace</p>
+          <h3 className="mt-1 text-lg font-black tracking-[-.03em] text-slate-950">Espacios</h3>
           <p className="mt-1 max-w-3xl text-sm font-semibold text-slate-500">
-            Crea espacios persistidos, organiza proyectos dentro de ellos y convierte la sidebar en un centro de control real tipo ClickUp/Notion.
+            Organizá tus proyectos por áreas de trabajo. Menos ruido en la sidebar, más contexto para cada equipo o cliente.
           </p>
           {!permissions.canManageSpaces ? <p className="mt-2 rounded-full bg-amber-50 px-3 py-1 text-xs font-black text-amber-700">Modo solo lectura: la gestión de espacios está bloqueada por tu rol.</p> : null}
         </div>
@@ -225,9 +225,9 @@ export function WorkspaceSpacesManager({
         ) : null}
       </div>
 
-      <div className="mt-4 grid gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
-        <div className="rounded-[22px] border border-slate-200/80 bg-white/85 p-4">
-          <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_150px_150px_auto] md:items-center">
+      <div className="ft-ws-spaces-setup-grid">
+        <div className="ft-ws-spaces-create-card">
+          <div className="ft-ws-space-create-grid">
             <input className="ft-ws-space-input" value={name} onChange={(event) => setName(event.target.value)} placeholder="Nuevo espacio: Campañas, Clientes, Producción..." disabled={!canWriteSpaces || busy === "create"} />
             <select className="ft-ws-space-input" value={color} onChange={(event) => setColor(event.target.value)} disabled={!canWriteSpaces || busy === "create"}>
               {spaceColors.map((item) => <option key={item} value={item}>{item}</option>)}
@@ -251,20 +251,23 @@ export function WorkspaceSpacesManager({
           ) : null}
         </div>
 
-        <div className="rounded-[22px] border border-emerald-100 bg-emerald-50/60 p-4">
-          <p className="text-sm font-black text-emerald-800">Estado de persistencia</p>
-          <p className="mt-2 rounded-[14px] bg-white/75 px-3 py-2 text-xs font-black text-emerald-700">
-            workspace_spaces: {persistenceStatus.workspaceSpacesReady ? "OK" : "fallback"} · workspace_space_projects: {persistenceStatus.projectSpaceLinksReady ? "OK" : "pendiente"}
-          </p>
-          <ul className="mt-2 space-y-1 text-xs font-bold text-emerald-700">
-            <li>• Los espacios guardados ordenan proyectos reales.</li>
-            <li>• Un proyecto puede pertenecer a un espacio principal.</li>
-            <li>• Si 0057 falta, la app conserva fallbacks sin romper.</li>
+        <div className="ft-ws-spaces-status-card ft-ws-spaces-help-card">
+          <p className="text-sm font-black text-slate-900">Cómo usar espacios</p>
+          <ul className="mt-2 space-y-1 text-xs font-bold text-slate-500">
+            <li>• Creá un espacio por cliente, área o flujo de trabajo.</li>
+            <li>• Asigná proyectos para limpiar la navegación principal.</li>
+            <li>• Archivá espacios cuando ya no estén activos.</li>
           </ul>
+          {!canWriteSpaces || !canLinkProjects ? (
+            <details className="mt-3 rounded-[14px] border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-bold text-amber-700">
+              <summary className="cursor-pointer">Diagnóstico técnico</summary>
+              <p className="mt-2">workspace_spaces: {persistenceStatus.workspaceSpacesReady ? "OK" : "fallback"} · workspace_space_projects: {persistenceStatus.projectSpaceLinksReady ? "OK" : "pendiente"}</p>
+            </details>
+          ) : null}
         </div>
       </div>
 
-      <div className="mt-4 grid gap-4 xl:grid-cols-2">
+      <div className="ft-ws-spaces-list-grid">
         {persistedSpaces.length ? persistedSpaces.map((space) => {
           const linked = projectsForSpace(space.id);
           const available = projects.filter((project) => !assignedProjectIds.has(project.id) || linked.some((item) => item.id === project.id));
@@ -279,7 +282,7 @@ export function WorkspaceSpacesManager({
                   ) : (
                     <h4 className="mt-2 truncate text-base font-black text-slate-950">{space.name}</h4>
                   )}
-                  <p className="mt-1 text-xs font-bold text-slate-500">{linked.length} proyectos organizados · slug {space.slug}</p>
+                  <p className="mt-1 text-xs font-bold text-slate-500">{linked.length} proyectos organizados</p>
                 </div>
                 <div className="flex shrink-0 flex-wrap justify-end gap-2">
                   {isEditing ? (
@@ -291,16 +294,15 @@ export function WorkspaceSpacesManager({
                 </div>
               </div>
 
-              <div className="mt-4 rounded-[18px] border border-slate-200 bg-slate-50/70 p-3">
-                <label className="text-xs font-black uppercase tracking-[.14em] text-slate-500">Asignar proyecto</label>
+              <details className="mt-4 rounded-[18px] border border-slate-200 bg-slate-50/70 p-3">
+                <summary className="cursor-pointer text-xs font-black uppercase tracking-[.14em] text-slate-500">Asignar proyecto</summary>
                 <div className="mt-2 flex flex-col gap-2 sm:flex-row">
                   <select className="ft-ws-space-input" defaultValue="" disabled={!canLinkProjects || busy === `assign:${space.id}`} onChange={(event) => { void assignProject(space.id, event.target.value); event.currentTarget.value = ""; }}>
                     <option value="">Selecciona proyecto...</option>
                     {available.map((project) => <option key={project.id} value={project.id}>{project.title}</option>)}
                   </select>
-                  <span className="inline-flex h-11 items-center justify-center rounded-[16px] bg-white px-3 text-xs font-black text-slate-500"><Plus className="h-3.5 w-3.5" /> Proyecto</span>
                 </div>
-              </div>
+              </details>
 
               <div className="mt-3 flex flex-wrap gap-2">
                 {linked.length ? linked.map((project) => (
@@ -312,8 +314,8 @@ export function WorkspaceSpacesManager({
             </article>
           );
         }) : (
-          <div className="rounded-[22px] border border-dashed border-slate-300 bg-white/70 p-5 text-sm font-bold text-slate-500 xl:col-span-2">
-            No hay espacios persistidos todavía. Crea el primero para organizar proyectos reales desde la sidebar.
+          <div className="ft-ws-spaces-empty">
+No hay espacios todavía. Creá el primero para organizar proyectos por cliente, área o producción.
           </div>
         )}
       </div>

@@ -5,10 +5,11 @@ const read = (file) => fs.existsSync(file) ? fs.readFileSync(file, "utf8") : "";
 const pkg = JSON.parse(read("package.json"));
 const page = read("src/components/workspace-pro/workspace-pro-page.tsx");
 const css = read("src/app/globals.css");
-const version = "58.28.0-workspace-pro-production-ux-final";
+const allowedVersions = ["58.28.0-workspace-pro-production-ux-final", "58.28.1-workspace-pro-user-final-ui-fixes",
+  "58.28.2-workspace-pro-action-model-progressive-disclosure"];
 
-if (pkg.version !== version) failures.push(`Unexpected package version: ${pkg.version}`);
-if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.28.0") failures.push("verify:current must target verify:v58.28.0");
+if (!allowedVersions.includes(pkg.version)) failures.push(`Unexpected package version: ${pkg.version}`);
+if (!["npm run verify:v58.28.0", "npm run verify:v58.28.1", "npm run verify:v58.28.2"].includes(pkg.scripts?.["verify:current"])) failures.push("verify:current must target the active v58.28.x verify script");
 if (!String(pkg.scripts?.["build:preflight"] ?? "").includes("workspace:production-ux:ready")) failures.push("build:preflight must include workspace:production-ux:ready");
 
 const markers = [

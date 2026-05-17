@@ -1,7 +1,7 @@
 "use client";
 
-// v58.28.0 — Workspace Pro Production UX Final
-// Focus: cierre de ciclo UX, estados vacíos accionables, navegación endurecida y shell listo para producción.
+// v58.28.2 — Workspace Pro Action Model + Progressive Disclosure
+// Focus: menos botones visibles, acciones contextuales por menú, lista editable y UI final-user.
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
@@ -460,8 +460,8 @@ function WorkspaceProList({ tasks, projects, context, permissions }: { tasks: Wo
               <StatusBadge status={task.status} />
               <PriorityBadge priority={task.priority} />
               <span className="text-sm text-slate-500">{formatDate(task.dueDate)}</span>
-              <Link href={`/app/tasks/${task.id}/edit`} className="text-xs font-semibold text-slate-500 transition hover:text-slate-950">Editar full</Link>
-              <button type="button" className="ws-pro-icon-button h-8 w-8" aria-label="Editar rápido" onClick={() => setExpandedTaskId((value) => value === task.id ? null : task.id)}><MoreHorizontal className="h-4 w-4" /></button>
+              <button type="button" className="ws-pro-table-action" onClick={() => setExpandedTaskId((value) => value === task.id ? null : task.id)}>Gestionar</button>
+              <Link href={`/app/tasks/${task.id}/edit`} className="ws-pro-icon-button h-8 w-8" aria-label="Editar completa"><Edit3 className="h-4 w-4" /></Link>
             </div>
             {expandedTaskId === task.id ? <WorkspaceProListTaskEditor task={task} projects={projects} context={context} permissions={permissions} /> : null}
           </article>
@@ -574,6 +574,21 @@ function normalizeBoardStatus(status?: string | null): BoardColumnId {
   return "en_proceso";
 }
 
+const TASK_PRIORITY_ACTIONS = [
+  { id: "alta", label: "Alta" },
+  { id: "media", label: "Media" },
+  { id: "baja", label: "Baja" },
+] as const;
+
+type TaskPriorityActionId = typeof TASK_PRIORITY_ACTIONS[number]["id"];
+
+function normalizePriority(value?: string | null): TaskPriorityActionId {
+  const priority = String(value ?? "media").toLowerCase();
+  if (priority === "alta") return "alta";
+  if (priority === "baja") return "baja";
+  return "media";
+}
+
 function WorkspaceProBoard({ tasks, projects, context, boardColumns }: { tasks: WorkspaceTaskItem[]; projects: WorkspaceProjectSummary[]; context: WorkspaceContext; boardColumns: Record<string, WorkspaceTaskItem[]> }) {
   const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
@@ -583,7 +598,8 @@ function WorkspaceProBoard({ tasks, projects, context, boardColumns }: { tasks: 
   const [draggingTaskId, setDraggingTaskId] = useState<string | null>(null);
   const [overColumn, setOverColumn] = useState<BoardColumnId | null>(null);
   const [busyMove, setBusyMove] = useState<string | null>(null);
-  const [compactCards, setCompactCards] = useState(false);
+  const [compactCards, setCompactCards] = useState(true);
+  const [openActionTaskId, setOpenActionTaskId] = useState<string | null>(null);
   const columns = BOARD_COLUMN_DEFS.filter((column) => (column.id !== "concluido" || showDone) && visibleColumns.has(column.id));
 
   function toggleColumn(id: BoardColumnId) {
@@ -599,10 +615,19 @@ function WorkspaceProBoard({ tasks, projects, context, boardColumns }: { tasks: 
   async function moveTask(taskId: string, status: BoardColumnId) {
     setDraggingTaskId(null);
     setOverColumn(null);
+    setOpenActionTaskId(null);
     const current = tasks.find((task) => task.id === taskId);
     if (current && normalizeBoardStatus(current.status) === status) return;
     setBusyMove(taskId);
     const { error } = await supabase.from("tasks").update({ status }).eq("id", taskId).select("id").single();
+    setBusyMove(null);
+    if (!error) router.refresh();
+  }
+
+  async function updateTaskPriority(taskId: string, priority: TaskPriorityActionId) {
+    setOpenActionTaskId(null);
+    setBusyMove(taskId);
+    const { error } = await supabase.from("tasks").update({ priority }).eq("id", taskId).select("id").single();
     setBusyMove(null);
     if (!error) router.refresh();
   }
@@ -624,7 +649,7 @@ function WorkspaceProBoard({ tasks, projects, context, boardColumns }: { tasks: 
           <button key={column.id} type="button" onClick={() => toggleColumn(column.id)} className={visibleColumns.has(column.id) ? "ws-pro-mini-action is-active" : "ws-pro-mini-action"}>{column.title}</button>
         ))}
         <div className="ml-auto flex flex-wrap items-center gap-2">
-          <button type="button" onClick={() => setCompactCards((value) => !value)} className={compactCards ? "ws-pro-mini-action is-active" : "ws-pro-mini-action"}>{compactCards ? "Compactas" : "Completas"}</button>
+          <button type="button" onClick={() => setCompactCards((value) => !value)} className={compactCards ? "ws-pro-mini-action is-active" : "ws-pro-mini-action"}>{compactCards ? "Vista limpia" : "Vista detallada"}</button>
           <label className="inline-flex items-center gap-2 rounded-lg px-2 text-xs font-semibold text-slate-500"><input type="checkbox" checked={showDone} onChange={(event) => setShowDone(event.target.checked)} /> Mostrar concluidas</label>
         </div>
       </div>
@@ -659,20 +684,31 @@ function WorkspaceProBoard({ tasks, projects, context, boardColumns }: { tasks: 
                         <Link href={`/app/tasks/${task.id}`} className="line-clamp-2 text-sm font-medium text-slate-950 hover:underline">{task.title}</Link>
                         {!compactCards ? <p className="mt-1 truncate text-xs text-slate-400">{task.projectTitle ?? task.clientName ?? task.departmentName ?? "Tarea individual"}</p> : null}
                       </div>
-                      <button type="button" onClick={() => setEditingTask(task)} className="ws-pro-icon-button h-7 w-7" aria-label="Editar tarea"><Edit3 className="h-3.5 w-3.5" /></button>
+                      <div className="relative shrink-0">
+                        <button type="button" onClick={() => setOpenActionTaskId((value) => value === task.id ? null : task.id)} className="ws-pro-icon-button h-7 w-7" aria-label="Abrir acciones de tarea"><MoreHorizontal className="h-3.5 w-3.5" /></button>
+                        {openActionTaskId === task.id ? (
+                          <div className="ws-pro-action-menu" role="menu" aria-label="Acciones de tarea">
+                            <p className="ws-pro-action-menu-label">Cambiar estado</p>
+                            {BOARD_COLUMN_DEFS.filter((next) => next.id !== column.id).map((next) => (
+                              <button key={next.id} type="button" onClick={() => void moveTask(task.id, next.id)} className="ws-pro-action-menu-item" role="menuitem">{next.title}</button>
+                            ))}
+                            <p className="ws-pro-action-menu-label">Prioridad</p>
+                            {TASK_PRIORITY_ACTIONS.map((item) => (
+                              <button key={item.id} type="button" onClick={() => void updateTaskPriority(task.id, item.id)} className="ws-pro-action-menu-item" role="menuitem">{item.label}</button>
+                            ))}
+                            <div className="ws-pro-action-menu-divider" />
+                            <button type="button" onClick={() => { setEditingTask(task); setOpenActionTaskId(null); }} className="ws-pro-action-menu-item" role="menuitem">Editar rápido</button>
+                            <Link href={`/app/tasks/${task.id}`} className="ws-pro-action-menu-item" role="menuitem">Abrir detalle</Link>
+                            <Link href={`/app/tasks/${task.id}/edit`} className="ws-pro-action-menu-item" role="menuitem">Editar completa</Link>
+                          </div>
+                        ) : null}
+                      </div>
                     </div>
                     <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
                       <PriorityBadge priority={task.priority} />
                       <span className="text-xs text-slate-500">{formatDate(task.dueDate)}</span>
                     </div>
-                    {!compactCards ? (
-                      <div className="mt-3 flex flex-wrap gap-1.5 border-t border-slate-100 pt-3">
-                        {BOARD_COLUMN_DEFS.filter((next) => next.id !== column.id && next.id !== "concluido").slice(0, 3).map((next) => (
-                          <button key={next.id} type="button" onClick={() => void moveTask(task.id, next.id)} className="ws-pro-board-move-chip">Mover a {next.title}</button>
-                        ))}
-                        <Link href={`/app/tasks/${task.id}/edit`} className="ws-pro-board-move-chip">Editar full</Link>
-                      </div>
-                    ) : null}
+                    {!compactCards ? <p className="mt-2 text-xs font-medium text-slate-400">Usá ⋯ para mover, priorizar o editar sin saturar la tarjeta.</p> : null}
                   </article>
                 )) : <p className="rounded-xl border border-dashed border-slate-200 p-4 text-sm text-slate-400">Soltá una tarea aquí para moverla a {column.title}.</p>}
               </div>
@@ -728,11 +764,14 @@ function WorkspaceProBoardTaskEditor({ task, projects, context, onClose }: { tas
         <label className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">Fecha<input type="date" className="ws-pro-form-input mt-1" value={dueDate} onChange={(event) => setDueDate(event.target.value)} /></label>
         <label className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">Proyecto<select className="ws-pro-form-input mt-1" value={projectId} onChange={(event) => setProjectId(event.target.value)}><option value="">Tarea individual</option>{projects.slice(0, 80).map((project) => <option key={project.id} value={project.id}>{project.title}</option>)}</select></label>
       </div>
-      <WorkspaceTaskInlineEditor task={task} compact />
+      <div className="ws-pro-task-editor-toolbar" aria-label="Acciones contextuales de tarea">
+        <span className="ws-pro-toolbar-label">Acciones</span>
+        <WorkspaceTaskInlineEditor task={task} compact />
+        <Link href={`/app/tasks/${task.id}`} className="ws-pro-editor-inline-action">Abrir detalle</Link>
+        <Link href={`/app/tasks/${task.id}/edit`} className="ws-pro-editor-inline-action">Editar completa</Link>
+      </div>
       {message ? <p className={message.tone === "success" ? "flex items-center gap-2 text-sm font-semibold text-emerald-700" : "text-sm font-semibold text-rose-700"}>{message.tone === "success" ? <CheckCircle2 className="h-4 w-4" /> : null}{message.text}</p> : null}
       <div className="flex flex-wrap justify-end gap-2">
-        <Link href={`/app/tasks/${task.id}`} className="ws-pro-secondary-button">Abrir detalle</Link>
-        <Link href={`/app/tasks/${task.id}/edit`} className="ws-pro-secondary-button">Editar completa</Link>
         <button type="button" className="ws-pro-secondary-button" onClick={onClose}>Cerrar</button>
         <button type="button" className="ws-pro-primary-button" disabled={busy || !title.trim()} onClick={() => void save()}>{busy ? <Loader2 className="h-4 w-4 animate-spin" /> : null}Guardar</button>
       </div>
@@ -915,7 +954,7 @@ function WorkspaceProRightPanel({ activity, members, notifications, derived }: {
   return <div className="space-y-4"><CleanCard title="Resumen"><div className="flex items-center justify-between"><span className="text-sm text-slate-500">Avance</span><span className="text-sm font-semibold text-slate-950">{progress}%</span></div><div className="mt-3 h-2 rounded-full bg-slate-100"><div className="h-full rounded-full bg-slate-950" style={{ width: `${progress}%` }} /></div><div className="mt-4 grid grid-cols-3 gap-2 text-center"><MiniStat label="Alta" value={important} /><MiniStat label="Hoy" value={today} /><MiniStat label="Venc." value={overdue} /></div></CleanCard><CleanCard title="Próximos">{upcoming.length ? upcoming.map((task) => <TaskLine key={task.id} task={task} compact />) : <p className="text-sm text-slate-400">Sin vencimientos próximos</p>}</CleanCard><CleanCard title="Actividad">{activity.length ? activity.slice(0, 4).map((item) => <p key={item.id} className="border-b border-slate-100 py-2 text-sm leading-5 text-slate-500 last:border-b-0"><span className="font-medium text-slate-800">{item.title}</span><br /><span className="text-xs text-slate-400">{formatDate(item.createdAt)}</span></p>) : <p className="text-sm text-slate-400">Sin actividad reciente</p>}</CleanCard><CleanCard title="Equipo"><div className="flex -space-x-2">{members.slice(0, 6).map((member) => <span key={member.id} className="grid h-8 w-8 place-items-center rounded-full border-2 border-white bg-slate-100 text-[11px] font-semibold text-slate-600">{initials(member.name ?? member.email)}</span>)}</div><p className="mt-3 text-xs text-slate-500">{notifications.unread ? `${notifications.unread} notificaciones sin leer.` : "Sin alertas pendientes."}</p></CleanCard></div>;
 }
 
-function WorkspaceProSheet({ title, onClose, wide, children }: { title: string; onClose: () => void; wide?: boolean; children: React.ReactNode }) { return <div className="fixed inset-0 z-40"><button type="button" aria-label="Cerrar panel" className="absolute inset-0 bg-slate-950/20 backdrop-blur-[2px]" onClick={onClose} /><section className={`absolute right-3 top-3 flex max-h-[calc(100vh-1.5rem)] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl ${wide ? "w-[min(760px,calc(100vw-1.5rem))]" : "w-[min(560px,calc(100vw-1.5rem))]"}`}><header className="shrink-0 flex items-center justify-between border-b border-slate-100 bg-white px-4 py-3"><h2 className="text-sm font-semibold text-slate-950">{title}</h2><button type="button" className="ws-pro-icon-button h-8 w-8" onClick={onClose}><X className="h-4 w-4" /></button></header><div className="min-h-0 overflow-y-auto p-4 ws-pro-hide-scrollbar">{children}</div></section></div>; }
+function WorkspaceProSheet({ title, onClose, wide, children }: { title: string; onClose: () => void; wide?: boolean; children: React.ReactNode }) { return <div className="fixed inset-0 z-40"><button type="button" aria-label="Cerrar panel" className="absolute inset-0 bg-slate-950/20 backdrop-blur-[2px]" onClick={onClose} /><section className={`absolute right-3 top-3 flex max-h-[calc(100vh-1.5rem)] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl ${wide ? "w-[min(1120px,calc(100vw-1.5rem))]" : "w-[min(560px,calc(100vw-1.5rem))]"}`}><header className="shrink-0 flex items-center justify-between border-b border-slate-100 bg-white px-4 py-3"><h2 className="text-sm font-semibold text-slate-950">{title}</h2><button type="button" className="ws-pro-icon-button h-8 w-8" onClick={onClose}><X className="h-4 w-4" /></button></header><div className="min-h-0 overflow-y-auto p-4 ws-pro-hide-scrollbar">{children}</div></section></div>; }
 
 function WorkspaceProInspector({ onClose, children }: { onClose: () => void; children: React.ReactNode }) { return <div className="fixed inset-0 z-40"><button type="button" aria-label="Cerrar inspector" className="absolute inset-0 bg-slate-950/20 backdrop-blur-[2px]" onClick={onClose} /><aside className="absolute right-3 top-3 h-[calc(100vh-1.5rem)] w-[min(360px,calc(100vw-1.5rem))] overflow-y-auto rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl ws-pro-hide-scrollbar"><div className="mb-3 flex items-center justify-between"><h2 className="text-sm font-semibold text-slate-950">Inspector</h2><button type="button" className="ws-pro-icon-button h-8 w-8" onClick={onClose}><X className="h-4 w-4" /></button></div>{children}</aside></div>; }
 function MetricChip({ label, value, tone = "slate" }: { label: string; value: string | number; tone?: "slate" | "rose" | "blue" }) { const cls = tone === "rose" ? "text-rose-600" : tone === "blue" ? "text-blue-600" : "text-slate-950"; return <span className="inline-flex h-8 items-center gap-2 rounded-full border border-slate-200 bg-white px-3 text-xs text-slate-500"><b className={`font-semibold ${cls}`}>{value}</b>{label}</span>; }
