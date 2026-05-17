@@ -7354,3 +7354,54 @@
     border-radius: 1rem;
   }
 }
+
+
+/* v58.27.9 — Workspace Pro Interaction Hardening + Real Editing Flow */
+.ws-pro-danger-button {
+  display: inline-flex;
+  min-height: 2.25rem;
+  align-items: center;
+  justify-content: center;
+  gap: .45rem;
+  border-radius: .75rem;
+  border: 1px solid rgba(254, 202, 202, .95);
+  background: #fff;
+  padding: .45rem .8rem;
+  font-size: .8125rem;
+  font-weight: 700;
+  color: #be123c;
+  transition: border-color .16s ease, background .16s ease, color .16s ease;
+}
+.ws-pro-danger-button:hover {
+  border-color: #fb7185;
+  background: #fff1f2;
+}
+.ws-pro-danger-button:disabled {
+  cursor: not-allowed;
+  opacity: .55;
+}
+.ws-pro-create-form {
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+}
+.ws-pro-create-form .ws-pro-form-textarea {
+  max-height: 12rem;
+}
+.ws-pro-view-frame .ft-ws-inline-editor-compact {
+  align-items: center;
+}
+.ws-pro-board-column-active {
+  border-color: rgba(22, 199, 132, .55) !important;
+  background: linear-gradient(180deg, rgba(236, 253, 245, .75), #fff) !important;
+}
+.ws-pro-list-editor-grid {
+  align-items: end;
+}
+@media (max-width: 640px) {
+  .ws-pro-danger-button,
+  .ws-pro-shell .ws-pro-primary-button,
+  .ws-pro-shell .ws-pro-secondary-button {
+    width: 100%;
+  }
+}

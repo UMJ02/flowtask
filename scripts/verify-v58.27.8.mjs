@@ -7,8 +7,10 @@ const failures = [];
 const read = (rel) => fs.existsSync(path.join(root, rel)) ? fs.readFileSync(path.join(root, rel), "utf8") : "";
 const pkg = JSON.parse(read("package.json") || "{}");
 
-if (pkg.version !== "58.27.8-workspace-pro-visual-density-final-ui-polish", "58.27.8.1-workspace-pro-vercel-readiness-hotfix") failures.push(`Unexpected package version: ${pkg.version}`);
-if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.27.8", "npm run verify:v58.27.8.1") failures.push("verify:current must target verify:v58.27.8");
+if (pkg.version !== "58.27.8-workspace-pro-visual-density-final-ui-polish", "58.27.8.1-workspace-pro-vercel-readiness-hotfix",
+  "58.27.9-workspace-pro-interaction-hardening-real-editing-flow") failures.push(`Unexpected package version: ${pkg.version}`);
+if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.27.8", "npm run verify:v58.27.8.1",
+  "npm run verify:v58.27.9") failures.push("verify:current must target verify:v58.27.8");
 if (pkg.scripts?.["workspace:visual-density:ready"] !== "node scripts/workspace-pro-visual-density-final-ui-polish-check.mjs") failures.push("Missing workspace:visual-density:ready script");
 
 const required = [

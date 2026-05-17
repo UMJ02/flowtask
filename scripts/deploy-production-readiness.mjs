@@ -15,6 +15,7 @@ const expectedVersions = [
   "58.27.7.1-workspace-pro-render-diet-cli-hotfix",
   "58.27.8-workspace-pro-visual-density-final-ui-polish",
   "58.27.8.1-workspace-pro-vercel-readiness-hotfix",
+  "58.27.9-workspace-pro-interaction-hardening-real-editing-flow",
 ];
 const pkg = JSON.parse(read("package.json") || "{}");
 if (!expectedVersions.includes(pkg.version)) failures.push(`Unexpected package version: ${pkg.version}`);

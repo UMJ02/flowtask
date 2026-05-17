@@ -15,13 +15,16 @@ const allowedVersions = [
   "58.27.7-workspace-pro-render-diet-dead-ui-removal",
   "58.27.7.1-workspace-pro-render-diet-cli-hotfix",
   "58.27.8-workspace-pro-visual-density-final-ui-polish", "58.27.8.1-workspace-pro-vercel-readiness-hotfix",
+  "58.27.9-workspace-pro-interaction-hardening-real-editing-flow",
   "58.27.8.1-workspace-pro-vercel-readiness-hotfix",
+  "58.27.9-workspace-pro-interaction-hardening-real-editing-flow",
 ];
 const allowedVerifyTargets = [
   "npm run verify:v58.27.6",
   "npm run verify:v58.27.7",
   "npm run verify:v58.27.7.1",
   "npm run verify:v58.27.8", "npm run verify:v58.27.8.1",
+  "npm run verify:v58.27.9",
 ];
 
 if (!allowedVersions.includes(String(pkg.version ?? ""))) failures.push(`Unexpected package version: ${pkg.version}`);

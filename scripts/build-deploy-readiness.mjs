@@ -15,10 +15,12 @@ const expectedVersions = [
   "58.27.7.1-workspace-pro-render-diet-cli-hotfix",
   "58.27.8-workspace-pro-visual-density-final-ui-polish",
   "58.27.8.1-workspace-pro-vercel-readiness-hotfix",
+  "58.27.9-workspace-pro-interaction-hardening-real-editing-flow",
 ];
 const pkg = JSON.parse(read("package.json") || "{}");
 if (!expectedVersions.includes(pkg.version)) failures.push(`Unexpected package version: ${pkg.version}`);
-if (!["npm run verify:v58.27.6", "npm run verify:v58.27.7", "npm run verify:v58.27.7.1", "npm run verify:v58.27.8", "npm run verify:v58.27.8.1"].includes(pkg.scripts?.["verify:current"])) failures.push("verify:current must target the active v58.27.x verify script");
+if (!["npm run verify:v58.27.6", "npm run verify:v58.27.7", "npm run verify:v58.27.7.1", "npm run verify:v58.27.8", "npm run verify:v58.27.8.1",
+  "npm run verify:v58.27.9"].includes(pkg.scripts?.["verify:current"])) failures.push("verify:current must target the active v58.27.x verify script");
 if (!String(pkg.scripts?.["build:preflight"] ?? "").includes("workspace:design-reset:ready")) failures.push("build:preflight must include workspace:design-reset:ready");
 if (!String(pkg.scripts?.["build:preflight"] ?? "").includes("workspace:layout-cleanup:ready")) failures.push("build:preflight must include workspace:layout-cleanup:ready");
 
