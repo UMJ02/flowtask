@@ -1,6 +1,6 @@
 "use client";
 
-// v58.27.5 — Workspace Pro Files + Reports CRUD Polish
+// v58.27.6 — Workspace Pro Deep Cleanup + 2026 UI Controls System
 // Focus: archivos con acciones CRUD seguras y reportes configurables dentro del Workspace Pro.
 
 import Link from "next/link";
@@ -173,20 +173,24 @@ export function WorkspaceProPage(props: WorkspaceProPageProps) {
 
   return (
     <div className="ws-pro-shell grid h-screen min-h-screen grid-cols-1 overflow-hidden lg:grid-cols-[248px_minmax(0,1fr)]">
-      <WorkspaceSharePanel open={sharePanelOpen} onOpenChange={setSharePanelOpen} context={context} members={members} permissions={permissions} projectViews={projectViews} />
-      <WorkspaceCommandCenter
-        open={commandCenterOpen}
-        onOpenChange={setCommandCenterOpen}
-        context={context}
-        tasks={tasks}
-        projects={projects}
-        spaces={spaces}
-        boards={boards}
-        files={files}
-        projectViews={projectViews}
-        permissions={permissions}
-        onQuickCreate={() => permissions.canCreateTask && setShowQuickCreate(true)}
-      />
+      {sharePanelOpen ? (
+        <WorkspaceSharePanel open={sharePanelOpen} onOpenChange={setSharePanelOpen} context={context} members={members} permissions={permissions} projectViews={projectViews} />
+      ) : null}
+      {commandCenterOpen ? (
+        <WorkspaceCommandCenter
+          open={commandCenterOpen}
+          onOpenChange={setCommandCenterOpen}
+          context={context}
+          tasks={tasks}
+          projects={projects}
+          spaces={spaces}
+          boards={boards}
+          files={files}
+          projectViews={projectViews}
+          permissions={permissions}
+          onQuickCreate={() => permissions.canCreateTask && setShowQuickCreate(true)}
+        />
+      ) : null}
 
       <aside className="hidden min-h-0 border-r border-slate-200 bg-white lg:block">
         <WorkspaceProSidebar context={context} spaces={spaces} projects={projects} onOpenCommand={() => setCommandCenterOpen(true)} onOpenSpaces={() => setSpacesManagerOpen(true)} />
@@ -257,11 +261,11 @@ export function WorkspaceProPage(props: WorkspaceProPageProps) {
 
             <div className="mt-3 flex flex-col gap-2 xl:flex-row xl:items-center xl:justify-between">
               <WorkspaceProTabs activeView={activeView} projectViews={projectViews} onOpenView={openView} />
-              <div className="flex items-center gap-2">
-                <select className="ws-pro-select" value={statusParam} onChange={(event) => setWorkspaceParam("status", event.target.value, "todos")}>
-                  <option value="todos">Todos</option><option value="en_proceso">En proceso</option><option value="produccion">Producción</option><option value="en_espera">En espera</option><option value="pendiente">Pendiente</option><option value="concluido">Concluido</option>
-                </select>
-              </div>
+              <WorkspaceProFilterBar
+                status={statusParam}
+                onStatusChange={(value) => setWorkspaceParam("status", value, "todos")}
+                onOpenSavedViews={() => setSavedViewsOpen(true)}
+              />
             </div>
           </header>
 
@@ -281,6 +285,38 @@ export function WorkspaceProPage(props: WorkspaceProPageProps) {
         </WorkspaceProInspector>
       ) : null}
     </div>
+  );
+}
+
+function WorkspaceProFilterBar({ status, onStatusChange, onOpenSavedViews }: { status: string; onStatusChange: (value: string) => void; onOpenSavedViews: () => void; }) {
+  return (
+    <div className="ws-pro-filter-bar" aria-label="Controles de vista">
+      <WorkspaceProControlSelect
+        label="Estado"
+        value={status}
+        onChange={onStatusChange}
+        options={[
+          { value: "todos", label: "Todos" },
+          { value: "en_proceso", label: "En proceso" },
+          { value: "produccion", label: "Producción" },
+          { value: "en_espera", label: "En espera" },
+          { value: "pendiente", label: "Pendiente" },
+          { value: "concluido", label: "Concluido" },
+        ]}
+      />
+      <button type="button" className="ws-pro-control-button" onClick={onOpenSavedViews}>Vistas</button>
+    </div>
+  );
+}
+
+function WorkspaceProControlSelect({ label, value, onChange, options }: { label: string; value: string; onChange: (value: string) => void; options: Array<{ value: string; label: string }>; }) {
+  return (
+    <label className="ws-pro-control-select">
+      <span>{label}</span>
+      <select value={value} onChange={(event) => onChange(event.target.value)}>
+        {options.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+      </select>
+    </label>
   );
 }
 

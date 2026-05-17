@@ -9,7 +9,7 @@ const read = (rel) => exists(rel) ? fs.readFileSync(path.join(root, rel), "utf8"
 const requireFile = (rel) => { if (!exists(rel)) failures.push(`Missing ${rel}`); };
 const requireIncludes = (rel, text) => { if (!read(rel).includes(text)) failures.push(`Expected ${JSON.stringify(text)} in ${rel}`); };
 
-const expectedVersion = "58.27.5-workspace-pro-files-reports-crud-polish";
+const expectedVersion = "58.27.6-workspace-pro-deep-cleanup-2026-ui-controls-system";
 const pkg = JSON.parse(read("package.json") || "{}");
 if (pkg.version !== expectedVersion) failures.push(`Unexpected package version: ${pkg.version}`);
 for (const rel of [
@@ -32,4 +32,4 @@ if (failures.length) {
   for (const failure of failures) console.error(`- ${failure}`);
   process.exit(1);
 }
-console.log("[deploy-production-readiness] OK — v58.27.5 workspace doctor version alignment aligned.");
+console.log("[deploy-production-readiness] OK — v58.27.6 workspace doctor version alignment aligned.");
