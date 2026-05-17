@@ -1,7 +1,7 @@
 "use client";
 
-// v58.27.9 — Workspace Pro Interaction Hardening + Real Editing Flow
-// Focus: Home accionable, edición real en lista/board, creación limpia y flujos operativos menos maqueta.
+// v58.28.0 — Workspace Pro Production UX Final
+// Focus: cierre de ciclo UX, estados vacíos accionables, navegación endurecida y shell listo para producción.
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
@@ -402,6 +402,7 @@ function WorkspaceProHome({ tasks, boards, files, projectViews, derived, context
           <div className="min-w-0"><p className="text-xs font-medium uppercase tracking-[0.12em] text-slate-400">{context.spaceName ?? "Workspace"}</p><h2 className="mt-1 truncate text-xl font-semibold tracking-[-0.03em] text-slate-950 md:text-2xl">{context.projectTitle ?? "Tu centro de trabajo"}</h2></div>
           <div className="flex flex-wrap gap-2"><MetricChip label="Avance" value={`${progress}%`} /><MetricChip label="Tareas" value={tasks.length} /><MetricChip label="Alta" value={important} tone="rose" /><MetricChip label="Hoy" value={today} tone="blue" /></div>
         </section>
+        <WorkspaceProProductionUXStrip tasks={tasks.length} projects={activeProjects.length} boards={boards.length} files={files.length} />
         <div className="grid gap-4 xl:grid-cols-2">
           <CleanCard title="Tareas importantes" action={importantTasks.length ? `${importantTasks.length}` : undefined}>{importantTasks.length ? importantTasks.map((task) => <TaskLine key={task.id} task={task} href={`/app/tasks/${task.id}`} />) : <EmptyMicro icon={<ListChecks className="h-4 w-4" />} title="Sin tareas importantes" text="Marcá una tarea como prioridad alta para verla aquí." />}</CleanCard>
           <CleanCard title="Próximos vencimientos" action={upcomingTasks.length ? `${upcomingTasks.length}` : undefined}>{upcomingTasks.length ? upcomingTasks.map((task) => <TaskLine key={task.id} task={task} href={`/app/tasks/${task.id}`} subtleDate />) : <EmptyMicro icon={<CalendarDays className="h-4 w-4" />} title="Sin fechas próximas" text="Las tareas con fecha límite aparecerán aquí." />}</CleanCard>
@@ -417,12 +418,30 @@ function WorkspaceProHome({ tasks, boards, files, projectViews, derived, context
   );
 }
 
+function WorkspaceProProductionUXStrip({ tasks, projects, boards, files }: { tasks: number; projects: number; boards: number; files: number }) {
+  const readyCount = [tasks > 0, projects > 0, boards > 0, files > 0].filter(Boolean).length;
+  return (
+    <section className="ws-pro-production-ux-strip" aria-label="Production UX readiness">
+      <div>
+        <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-emerald-700">Production UX Final</p>
+        <p className="mt-1 text-sm text-slate-600">Navegación, estados vacíos, edición rápida y vistas principales listas para QA final.</p>
+      </div>
+      <div className="flex flex-wrap gap-2">
+        <MetricChip label="checks" value={`${readyCount}/4`} tone="blue" />
+        <Link href="/app/workspace?view=list" className="ws-pro-mini-action">Lista</Link>
+        <Link href="/app/workspace?view=board" className="ws-pro-mini-action">Board</Link>
+        <Link href="/app/workspace?view=reports" className="ws-pro-mini-action">Reportes</Link>
+      </div>
+    </section>
+  );
+}
+
 function WorkspaceProList({ tasks, projects, context, permissions }: { tasks: WorkspaceTaskItem[]; projects: WorkspaceProjectSummary[]; context: WorkspaceContext; permissions: WorkspacePermissionSummary }) {
   const [expandedTaskId, setExpandedTaskId] = useState<string | null>(null);
   const individualTasks = tasks.filter((task) => !task.projectId);
   const nestedTaskRows = tasks.filter((task) => task.projectId);
   const visibleTasks = context.hasProjectFilter ? tasks : [...individualTasks, ...nestedTaskRows];
-  if (!visibleTasks.length) return <WorkspaceEmptyState icon="tasks" title="No hay tareas visibles" description="Creá una tarea o elegí otro proyecto/espacio." tone="blue" />;
+  if (!visibleTasks.length) return <WorkspaceEmptyState icon="tasks" title="No hay tareas visibles" description="Creá una tarea o elegí otro proyecto/espacio. El Home mantiene accesos rápidos para crear, revisar vencimientos y volver al contexto." actionHref="/app/workspace?view=home" actionLabel="Volver al Home" tone="blue" />;
   return (
     <div className="mx-auto max-w-[1440px] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm ws-pro-view-frame">
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 bg-slate-50 px-4 py-3">
@@ -509,7 +528,7 @@ function WorkspaceProListTaskEditor({ task, projects, context, permissions }: { 
 
 function WorkspaceProProjects({ projects, projectTaskMap }: { projects: WorkspaceProjectSummary[]; projectTaskMap: Record<string, WorkspaceTaskItem[]> }) {
   const [expandedProjectId, setExpandedProjectId] = useState<string | null>(projects[0]?.id ?? null);
-  if (!projects.length) return <WorkspaceEmptyState icon="projects" title="No hay proyectos visibles" description="Creá un proyecto para agrupar tareas relacionadas sin mezclar subtareas con tareas individuales." tone="blue" />;
+  if (!projects.length) return <WorkspaceEmptyState icon="projects" title="No hay proyectos visibles" description="Creá un proyecto para agrupar tareas relacionadas sin mezclar subtareas con tareas individuales. Desde Home podés iniciar el flujo sin perder el contexto." actionHref="/app/workspace?view=home" actionLabel="Ir al Home" tone="blue" />;
   return (
     <div className="mx-auto max-w-[1440px] space-y-3 ws-pro-view-frame">
       {projects.map((project) => {
@@ -589,7 +608,7 @@ function WorkspaceProBoard({ tasks, projects, context, boardColumns }: { tasks: 
   }
 
   if (!tasks.length) {
-    return <WorkspaceEmptyState icon="tasks" title="No hay tareas para el board" description="Creá una tarea o elegí otro proyecto para empezar a organizar trabajo por columnas." tone="blue" />;
+    return <WorkspaceEmptyState icon="tasks" title="No hay tareas para el board" description="Creá una tarea o elegí otro proyecto para empezar a organizar trabajo por columnas. La Lista permite edición rápida antes de moverlas al board." actionHref="/app/workspace?view=list" actionLabel="Abrir Lista" tone="blue" />;
   }
 
   return (
@@ -728,11 +747,11 @@ function WorkspaceProTimeline({ tasks, projects }: { tasks: WorkspaceTaskItem[];
     ...datedProjects.map((project) => ({ id: `p-${project.id}`, type: "Proyecto", title: project.title, href: `/app/workspace?projectId=${project.id}`, date: project.dueDate, progress: project.progress, status: project.status })),
     ...datedTasks.map((task) => ({ id: `t-${task.id}`, type: "Tarea", title: task.title, href: `/app/tasks/${task.id}`, date: task.dueDate, progress: taskCompletionPercent(task), status: task.status })),
   ].sort((a, b) => String(a.date ?? "9999").localeCompare(String(b.date ?? "9999"))).slice(0, 14);
-  if (!rows.length) return <WorkspaceEmptyState icon="tasks" title="Timeline sin fechas" description="Agregá fechas límite a tareas o proyectos para crear una línea de tiempo real." tone="blue" />;
+  if (!rows.length) return <WorkspaceEmptyState icon="tasks" title="Timeline sin fechas" description="Agregá fechas límite a tareas o proyectos para crear una línea de tiempo real con avance, estado y prioridad." actionHref="/app/workspace?view=list" actionLabel="Editar tareas" tone="blue" />;
   return <div className="mx-auto max-w-[1440px] rounded-2xl border border-slate-200 bg-white p-5 shadow-sm ws-pro-view-frame"><div className="flex items-center justify-between"><div><h3 className="text-base font-semibold text-slate-950">Timeline operativo</h3><p className="mt-1 text-sm text-slate-500">Fechas, estado y avance de tareas/proyectos visibles.</p></div><div className="flex gap-2"><MetricChip label="items" value={rows.length} /><MetricChip label="proyectos" value={datedProjects.length} /></div></div><div className="mt-5 space-y-3">{rows.map((row) => <Link key={row.id} href={row.href} className="grid gap-3 rounded-xl border border-slate-100 p-3 transition hover:border-slate-300 hover:bg-slate-50 md:grid-cols-[220px_minmax(0,1fr)_120px]"><div className="min-w-0"><p className="truncate text-sm font-medium text-slate-950">{row.title}</p><p className="text-xs text-slate-400">{row.type} · {row.status}</p></div><div className="h-8 rounded-full bg-slate-100 p-1"><div className="h-full rounded-full bg-slate-900" style={{ width: `${Math.max(8, Math.min(100, row.progress))}%` }} /></div><span className="text-sm font-medium text-slate-500">{formatDate(row.date)}</span></Link>)}</div></div>;
 }
 
-function WorkspaceProTable({ tasks }: { tasks: WorkspaceTaskItem[] }) { if (!tasks.length) return <WorkspaceEmptyState icon="tasks" title="Tabla sin registros" description="Las tareas del proyecto se mostrarán en formato tabla editable." tone="blue" />; return <div className="mx-auto max-w-[1440px] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm ws-pro-view-frame"><div className="overflow-x-auto ws-pro-hide-scrollbar"><table className="min-w-[900px] w-full text-left text-sm"><thead className="border-b border-slate-100 bg-slate-50 text-xs uppercase tracking-[0.08em] text-slate-400"><tr><th className="px-4 py-3">Tarea</th><th>Estado</th><th>Prioridad</th><th>Fecha</th><th>Proyecto</th><th>Acciones</th></tr></thead><tbody className="divide-y divide-slate-100">{tasks.map((task) => <tr key={task.id} className="hover:bg-slate-50"><td className="px-4 py-3 font-medium text-slate-950"><Link href={`/app/tasks/${task.id}`}>{task.title}</Link></td><td><StatusBadge status={task.status} /></td><td><PriorityBadge priority={task.priority} /></td><td className="text-slate-500">{formatDate(task.dueDate)}</td><td className="text-slate-500">{task.projectTitle ?? "Tarea individual"}</td><td><Link href={`/app/tasks/${task.id}/edit`} className="ws-pro-mini-action">Editar</Link></td></tr>)}</tbody></table></div></div>; }
+function WorkspaceProTable({ tasks }: { tasks: WorkspaceTaskItem[] }) { if (!tasks.length) return <WorkspaceEmptyState icon="tasks" title="Tabla sin registros" description="Las tareas del proyecto se mostrarán en formato tabla editable. Primero agregá tareas desde Lista o desde el flujo de creación." actionHref="/app/workspace?view=list" actionLabel="Abrir Lista" tone="blue" />; return <div className="mx-auto max-w-[1440px] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm ws-pro-view-frame"><div className="overflow-x-auto ws-pro-hide-scrollbar"><table className="min-w-[900px] w-full text-left text-sm"><thead className="border-b border-slate-100 bg-slate-50 text-xs uppercase tracking-[0.08em] text-slate-400"><tr><th className="px-4 py-3">Tarea</th><th>Estado</th><th>Prioridad</th><th>Fecha</th><th>Proyecto</th><th>Acciones</th></tr></thead><tbody className="divide-y divide-slate-100">{tasks.map((task) => <tr key={task.id} className="hover:bg-slate-50"><td className="px-4 py-3 font-medium text-slate-950"><Link href={`/app/tasks/${task.id}`}>{task.title}</Link></td><td><StatusBadge status={task.status} /></td><td><PriorityBadge priority={task.priority} /></td><td className="text-slate-500">{formatDate(task.dueDate)}</td><td className="text-slate-500">{task.projectTitle ?? "Tarea individual"}</td><td><Link href={`/app/tasks/${task.id}/edit`} className="ws-pro-mini-action">Editar</Link></td></tr>)}</tbody></table></div></div>; }
 
 function WorkspaceProCanvas({ boards }: { boards: WorkspaceBoardSummary[] }) { return <div className="mx-auto max-w-[1440px] rounded-2xl border border-slate-200 bg-white p-5 shadow-sm ws-pro-view-frame"><div className="flex items-center justify-between"><div><h3 className="text-base font-semibold text-slate-950">Canvas y pizarras</h3><p className="mt-1 text-sm text-slate-500">Abrí una pizarra real para trabajar visualmente.</p></div><Link className="ws-pro-secondary-button" href="/app/boards">Biblioteca</Link></div><div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3">{boards.length ? boards.map((board) => <Link key={board.id} href={`/app/boards/${board.id}`} className="rounded-xl border border-slate-200 bg-slate-50 p-4 transition hover:border-slate-300 hover:bg-white"><p className="font-medium text-slate-950">{board.title}</p><p className="mt-2 text-xs text-slate-500">{formatDate(board.updatedAt)}</p></Link>) : <EmptyMicro icon={<Sparkles className="h-4 w-4" />} title="Sin pizarras conectadas" text="Creá o vinculá una pizarra para verla aquí." />}</div></div>; }
 function formatFileSize(value?: number | null) {

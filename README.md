@@ -280,3 +280,8 @@ npm run workspace:render-diet:ready
 npm run typecheck
 npm run build:preflight
 ```
+
+
+## v58.28.0 — Workspace Pro Production UX Final
+
+Cierre de ciclo Workspace Pro: estados vacíos accionables, navegación endurecida, QA visual final y scripts de Vercel alineados.

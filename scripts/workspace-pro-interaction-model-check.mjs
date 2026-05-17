@@ -6,11 +6,13 @@ const failures = [];
 const read = (rel) => fs.existsSync(path.join(root, rel)) ? fs.readFileSync(path.join(root, rel), "utf8") : "";
 const pkg = JSON.parse(read("package.json") || "{}");
 const allowedVersions = ["58.27.6-workspace-pro-deep-cleanup-2026-ui-controls-system", "58.27.7-workspace-pro-render-diet-dead-ui-removal", "58.27.7.1-workspace-pro-render-diet-cli-hotfix", "58.27.8-workspace-pro-visual-density-final-ui-polish", "58.27.8.1-workspace-pro-vercel-readiness-hotfix",
-  "58.27.9-workspace-pro-interaction-hardening-real-editing-flow"];
+  "58.27.9-workspace-pro-interaction-hardening-real-editing-flow",
+  "58.28.0-workspace-pro-production-ux-final"];
 const allowedVerifyTargets = ["npm run verify:v58.27.6", "npm run verify:v58.27.7", "npm run verify:v58.27.7.1", "npm run verify:v58.27.8", "npm run verify:v58.27.8.1",
-  "npm run verify:v58.27.9"];
+  "npm run verify:v58.27.9",
+  "npm run verify:v58.28.0"];
 if (!allowedVersions.includes(pkg.version)) failures.push(`Unexpected package version: ${pkg.version}`);
-if (!allowedVerifyTargets.includes(pkg.scripts?.["verify:current"])) failures.push("verify:current must target the active v58.27.x verify script");
+if (!allowedVerifyTargets.includes(pkg.scripts?.["verify:current"])) failures.push("verify:current must target the active v58.27.x/v58.28.x verify script");
 const pro = read("src/components/workspace-pro/workspace-pro-page.tsx");
 const quick = read("src/components/workspace-system/workspace-quick-create.tsx");
 const viewState = read("src/lib/workspace-system/view-state.ts");

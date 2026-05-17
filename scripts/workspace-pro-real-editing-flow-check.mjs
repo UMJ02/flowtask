@@ -7,9 +7,13 @@ const page = read("src/components/workspace-pro/workspace-pro-page.tsx");
 const quickCreate = read("src/components/workspace-system/workspace-quick-create.tsx");
 const css = read("src/app/globals.css");
 
-const version = "58.27.9-workspace-pro-interaction-hardening-real-editing-flow";
-if (pkg.version !== version) failures.push(`Unexpected package version: ${pkg.version}`);
-if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.27.9") failures.push("verify:current must target verify:v58.27.9");
+const allowedVersions = [
+  "58.27.9-workspace-pro-interaction-hardening-real-editing-flow",
+  "58.28.0-workspace-pro-production-ux-final",
+];
+const allowedVerifyTargets = ["npm run verify:v58.27.9", "npm run verify:v58.28.0"];
+if (!allowedVersions.includes(pkg.version)) failures.push(`Unexpected package version: ${pkg.version}`);
+if (!allowedVerifyTargets.includes(pkg.scripts?.["verify:current"])) failures.push("verify:current must target verify:v58.27.9 or verify:v58.28.0");
 
 const requiredPageMarkers = [
   "WorkspaceProListTaskEditor",

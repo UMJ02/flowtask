@@ -16,8 +16,10 @@ const allowedVersions = [
   "58.27.7.1-workspace-pro-render-diet-cli-hotfix",
   "58.27.8-workspace-pro-visual-density-final-ui-polish", "58.27.8.1-workspace-pro-vercel-readiness-hotfix",
   "58.27.9-workspace-pro-interaction-hardening-real-editing-flow",
+  "58.28.0-workspace-pro-production-ux-final",
   "58.27.8.1-workspace-pro-vercel-readiness-hotfix",
   "58.27.9-workspace-pro-interaction-hardening-real-editing-flow",
+  "58.28.0-workspace-pro-production-ux-final",
 ];
 const allowedVerifyTargets = [
   "npm run verify:v58.27.6",
@@ -25,10 +27,11 @@ const allowedVerifyTargets = [
   "npm run verify:v58.27.7.1",
   "npm run verify:v58.27.8", "npm run verify:v58.27.8.1",
   "npm run verify:v58.27.9",
+  "npm run verify:v58.28.0",
 ];
 
 if (!allowedVersions.includes(String(pkg.version ?? ""))) failures.push(`Unexpected package version: ${pkg.version}`);
-if (!allowedVerifyTargets.includes(pkg.scripts?.["verify:current"])) failures.push("verify:current must target the active v58.27.x verify script");
+if (!allowedVerifyTargets.includes(pkg.scripts?.["verify:current"])) failures.push("verify:current must target the active v58.27.x/v58.28.x verify script");
 
 for (const rel of [
   "src/app/(app)/app/workspace/page.tsx",
@@ -42,7 +45,7 @@ for (const rel of [
 
 const versionText = read("src/lib/release/version.ts");
 if (!allowedVersions.some((version) => versionText.includes(version))) {
-  failures.push("src/lib/release/version.ts must contain an allowed v58.27.x Workspace Pro version");
+  failures.push("src/lib/release/version.ts must contain an allowed v58.27.x/v58.28.x Workspace Pro version");
 }
 requireIncludes("src/lib/release/version.ts", "APP_RELEASE_STAGE");
 requireIncludes("src/components/workspace-system/workspace-system-page.tsx", "WorkspaceProPage");

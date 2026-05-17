@@ -16,6 +16,7 @@ const expectedVersions = [
   "58.27.8-workspace-pro-visual-density-final-ui-polish",
   "58.27.8.1-workspace-pro-vercel-readiness-hotfix",
   "58.27.9-workspace-pro-interaction-hardening-real-editing-flow",
+  "58.28.0-workspace-pro-production-ux-final",
 ];
 const pkg = JSON.parse(read("package.json") || "{}");
 if (!expectedVersions.includes(pkg.version)) failures.push(`Unexpected package version: ${pkg.version}`);
@@ -29,7 +30,7 @@ for (const rel of [
   "scripts/workspace-pro-layout-cleanup-check.mjs",
 ]) requireFile(rel);
 if (!expectedVersions.some((version) => read("src/lib/release/version.ts").includes(version))) {
-  failures.push("src/lib/release/version.ts must contain an allowed v58.27.x Workspace Pro version");
+  failures.push("src/lib/release/version.ts must contain an allowed v58.27.x/v58.28.x Workspace Pro version");
 }
 requireIncludes("src/lib/release/version.ts", "APP_RELEASE_STAGE");
 requireIncludes("src/components/workspace-pro/workspace-pro-page.tsx", "WorkspaceProInspector");

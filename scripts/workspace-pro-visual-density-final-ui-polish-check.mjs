@@ -14,15 +14,17 @@ const allowedVersions = [
   "58.27.8-workspace-pro-visual-density-final-ui-polish",
   "58.27.8.1-workspace-pro-vercel-readiness-hotfix",
   "58.27.9-workspace-pro-interaction-hardening-real-editing-flow",
+  "58.28.0-workspace-pro-production-ux-final",
 ];
 const allowedVerifyTargets = ["npm run verify:v58.27.8", "npm run verify:v58.27.8.1",
-  "npm run verify:v58.27.9"];
+  "npm run verify:v58.27.9",
+  "npm run verify:v58.28.0"];
 if (!allowedVersions.includes(pkg.version)) failures.push(`Unexpected package version: ${pkg.version}`);
 if (!allowedVerifyTargets.includes(pkg.scripts?.["verify:current"])) failures.push("verify:current must target verify:v58.27.8 or verify:v58.27.8.1");
 if (!String(pkg.scripts?.["build:preflight"] ?? "").includes("workspace:visual-density:ready")) failures.push("build:preflight must include workspace:visual-density:ready");
 
 if (!allowedVersions.some((version) => read("src/lib/release/version.ts").includes(version))) failures.push("version.ts must include v58.27.8 or v58.27.8.1 slug");
-if (!read("src/components/workspace-pro/workspace-pro-page.tsx").includes("v58.27.8") && !read("src/components/workspace-pro/workspace-pro-page.tsx").includes("v58.27.9")) failures.push("Expected v58.27.8 or v58.27.9 marker in src/components/workspace-pro/workspace-pro-page.tsx");
+if (!read("src/components/workspace-pro/workspace-pro-page.tsx").includes("v58.27.8") && !read("src/components/workspace-pro/workspace-pro-page.tsx").includes("v58.27.9") && !read("src/components/workspace-pro/workspace-pro-page.tsx").includes("v58.28.0")) failures.push("Expected v58.27.8, v58.27.9 or v58.28.0 marker in src/components/workspace-pro/workspace-pro-page.tsx");
 requireIncludes("src/components/workspace-pro/workspace-pro-page.tsx", "ws-pro-header");
 requireIncludes("src/components/workspace-pro/workspace-pro-page.tsx", "ws-pro-content");
 requireIncludes("src/components/workspace-pro/workspace-pro-page.tsx", "ws-pro-tabs-strip");

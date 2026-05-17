@@ -7405,3 +7405,38 @@
     width: 100%;
   }
 }
+
+
+/* v58.28.0 — Workspace Pro Production UX Final */
+.ws-pro-production-ux-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border: 1px solid rgba(187, 247, 208, .92);
+  border-radius: 1rem;
+  background: linear-gradient(135deg, rgba(240, 253, 244, .9), rgba(255, 255, 255, .98));
+  padding: .85rem 1rem;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, .035);
+}
+.ws-pro-production-ux-strip .ws-pro-mini-action {
+  background: rgba(255,255,255,.92);
+}
+.ft-ws-empty-state .ft-ws-empty-action,
+.ws-pro-mini-action.is-active {
+  border-color: rgba(15, 23, 42, .16);
+  background: #fff;
+}
+.ws-pro-page-scroll {
+  scroll-padding: 1rem;
+}
+.ws-pro-shell :focus-visible {
+  outline: 2px solid rgba(37, 99, 235, .45);
+  outline-offset: 2px;
+}
+@media (max-width: 768px) {
+  .ws-pro-production-ux-strip {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
