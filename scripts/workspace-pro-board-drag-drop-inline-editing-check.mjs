@@ -22,7 +22,7 @@ for (const marker of [
   const source = marker === 'workspace:board-pro:ready' ? pkg : page;
   if (!source.includes(marker)) errors.push(`Missing marker: ${marker}`);
 }
-if (!pkg.includes('verify:v58.27.4')) errors.push('verify:current is not aligned to v58.27.4');
+if (!pkg.includes('verify:v58.27.5')) errors.push('verify:current is not aligned to v58.27.5');
 if (errors.length) {
   console.error('[workspace:board-pro:ready] FAIL');
   errors.forEach((error) => console.error(`- ${error}`));

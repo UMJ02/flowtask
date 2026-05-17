@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "58.27.4-workspace-pro-board-drag-drop-inline-editing",
+  "version": "58.27.5-workspace-pro-files-reports-crud-polish",
   "private": true,
   "scripts": {
     "dev": "node node_modules/next/dist/bin/next dev",
@@ -58,7 +58,7 @@
     "release:repo:current": "npm run release:repo:v58.21.0",
     "qa:current": "npm run validate:node && npm run validate:env && npm run verify:current && npm run runtime:check && npm run typecheck && npm run security:check && npm run performance:check && npm run hardening:final:check && npm run ops:check && npm run deploy:production:ready",
     "release:current": "npm run clean && npm run release:repo:v58.20 && npm run qa:current && npm run qa:functional && npm run qa:report && npm run ux:review && npm run preprod:validate && npm run production:gate",
-    "verify:current": "npm run verify:v58.27.4",
+    "verify:current": "npm run verify:v58.27.5",
     "release:repo:v54.3.3": "npm run verify:current && npm run runtime:check && npm run typecheck",
     "verify:v54.3.4": "node scripts/verify-v54.3.4.mjs",
     "release:repo:v54.3.4": "npm run verify:current && npm run runtime:check && npm run typecheck",
@@ -71,7 +71,7 @@
     "release:repo:v58.5": "npm run verify:current && npm run runtime:check && npm run typecheck && npm run deploy:readiness && npm run board:stability",
     "deploy:readiness": "node scripts/build-deploy-readiness.mjs",
     "board:stability": "node scripts/board-stabilization-check.mjs",
-    "build:preflight": "npm run validate:node && npm run validate:env && npm run verify:current && npm run workspace:doctor && npm run workspace:production:ready && npm run workspace:real-env:ready && npm run workspace:performance:ready && npm run workspace:automation:ready && npm run workspace:collaboration:ready && npm run workspace:error-recovery:ready && npm run workspace:release-candidate:ready && npm run workspace:rc-fixes:ready && npm run workspace:design-reset:ready && npm run workspace:layout-cleanup:ready && npm run workspace:interaction:ready && npm run runtime:check && npm run workspace:board-pro:ready && npm run typecheck && npm run deploy:readiness && npm run board:stability && npm run client:readiness:check && npm run deploy:production:ready",
+    "build:preflight": "npm run validate:node && npm run validate:env && npm run verify:current && npm run workspace:doctor && npm run workspace:production:ready && npm run workspace:real-env:ready && npm run workspace:performance:ready && npm run workspace:automation:ready && npm run workspace:collaboration:ready && npm run workspace:error-recovery:ready && npm run workspace:release-candidate:ready && npm run workspace:rc-fixes:ready && npm run workspace:design-reset:ready && npm run workspace:layout-cleanup:ready && npm run workspace:interaction:ready && npm run runtime:check && npm run workspace:board-pro:ready && npm run workspace:files-reports:ready && npm run typecheck && npm run deploy:readiness && npm run board:stability && npm run client:readiness:check && npm run deploy:production:ready",
     "verify:v58.6": "node scripts/verify-v58.6.mjs",
     "release:repo:v58.6": "npm run verify:current && npm run runtime:check && npm run typecheck && npm run deploy:readiness && npm run board:stability && npm run client:readiness:check",
     "client:readiness:check": "node scripts/client-readiness-check.mjs",
@@ -194,8 +194,9 @@
     "workspace:layout-cleanup:ready": "node scripts/workspace-pro-layout-cleanup-check.mjs",
     "verify:v58.27.3": "node scripts/verify-v58.27.3.mjs",
     "workspace:interaction:ready": "node scripts/workspace-pro-interaction-model-check.mjs",
-    "verify:v58.27.4": "node scripts/verify-v58.27.4.mjs",
-    "workspace:board-pro:ready": "node scripts/workspace-pro-board-drag-drop-inline-editing-check.mjs"
+    "verify:v58.27.5": "node scripts/verify-v58.27.5.mjs",
+    "workspace:board-pro:ready": "node scripts/workspace-pro-board-drag-drop-inline-editing-check.mjs",
+    "workspace:files-reports:ready": "node scripts/workspace-pro-files-reports-crud-polish-check.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

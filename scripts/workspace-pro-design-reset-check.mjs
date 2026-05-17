@@ -16,7 +16,7 @@ for (const rel of [
   "src/lib/release/version.ts",
 ]) requireFile(rel);
 
-if (!read("src/lib/release/version.ts").includes("58.27.4-workspace-pro-board-drag-drop-inline-editing") && !read("src/lib/release/version.ts").includes("58.27.4-workspace-pro-board-drag-drop-inline-editing")) failures.push("Expected v58.27.2 or v58.27.2.1 in src/lib/release/version.ts");
+if (!read("src/lib/release/version.ts").includes("58.27.5-workspace-pro-files-reports-crud-polish") && !read("src/lib/release/version.ts").includes("58.27.5-workspace-pro-files-reports-crud-polish")) failures.push("Expected v58.27.2 or v58.27.2.1 in src/lib/release/version.ts");
 requireIncludes("src/lib/release/version.ts", "APP_RELEASE_STAGE");
 requireIncludes("src/components/workspace-system/workspace-system-page.tsx", "WorkspaceProPage");
 requireIncludes("src/components/workspace-pro/workspace-pro-page.tsx", "ws-pro-shell");
@@ -24,7 +24,7 @@ requireIncludes("src/components/workspace-pro/workspace-pro-page.tsx", "Workspac
 requireIncludes("src/components/workspace-pro/workspace-pro-page.tsx", "WorkspaceProHome");
 requireIncludes("src/components/workspace-pro/workspace-pro-page.tsx", "WorkspaceProRightPanel");
 requireIncludes("src/components/workspace-pro/workspace-pro-page.tsx", "WorkspaceTaskInlineEditor");
-requireIncludes("src/app/globals.css", "v58.27.4 — Workspace Pro Board Drag Drop + Inline Editing");
+requireIncludes("src/app/globals.css", "v58.27.5 — Workspace Pro Files + Reports CRUD Polish");
 requireIncludes("src/app/globals.css", "ws-pro-primary-button");
 requireIncludes("src/app/globals.css", "ws-pro-hide-scrollbar");
 

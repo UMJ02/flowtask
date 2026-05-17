@@ -1,7 +1,7 @@
 "use client";
 
-// v58.27.4 — Workspace Pro Board Drag Drop + Inline Editing
-// Focus: Kanban real de producción con drag/drop, columnas configurables y edición contextual.
+// v58.27.5 — Workspace Pro Files + Reports CRUD Polish
+// Focus: archivos con acciones CRUD seguras y reportes configurables dentro del Workspace Pro.
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
@@ -29,6 +29,11 @@ import {
   Sparkles,
   Table2,
   X,
+  Download,
+  ExternalLink,
+  FileText,
+  Trash2,
+  UploadCloud,
 } from "lucide-react";
 import type { ReportsOverview } from "@/lib/queries/reports";
 import type {
@@ -56,6 +61,7 @@ import { WorkspaceCommandCenter } from "@/components/workspace-system/workspace-
 import { WorkspaceSharePanel } from "@/components/workspace-system/workspace-share-panel";
 import { WorkspaceRecoveryPanel } from "@/components/workspace-system/workspace-recovery-panel";
 import { WorkspaceEmptyState } from "@/components/workspace-system/workspace-empty-state";
+import { WorkspaceFilesUploadEntry } from "@/components/workspace-system/workspace-files-upload-entry";
 import { createClient } from "@/lib/supabase/client";
 
 type WorkspaceProPageProps = {
@@ -263,7 +269,7 @@ export function WorkspaceProPage(props: WorkspaceProPageProps) {
             <section className="h-full min-w-0 overflow-y-auto px-4 py-5 ws-pro-page-scroll md:px-6 lg:px-8">
               {context.invalidProjectId ? <WorkspaceRecoveryPanel reason="invalid-project" title="Proyecto no disponible" description="El proyecto solicitado no pertenece al espacio activo o ya no está disponible." context={context} persistenceStatus={persistenceStatus} permissions={permissions} /> : null}
               {context.invalidSavedViewId ? <div className="mb-4"><WorkspaceRecoveryPanel reason="invalid-saved-view" title="Vista guardada no disponible" description="La vista solicitada ya no existe para este proyecto." context={context} persistenceStatus={persistenceStatus} permissions={permissions} /></div> : null}
-              <WorkspaceProMainView activeView={activeView} tasks={tasks} projects={projects} boards={boards} files={files} activity={activity} projectViews={projectViews} reports={reports} context={context} important={important} overdue={overdue} today={today} progress={progress} />
+              <WorkspaceProMainView activeView={activeView} tasks={tasks} projects={projects} boards={boards} files={files} activity={activity} projectViews={projectViews} reports={reports} context={context} permissions={permissions} important={important} overdue={overdue} today={today} progress={progress} />
             </section>
           </div>
         </div>
@@ -328,7 +334,7 @@ function WorkspaceProTabs({ activeView, projectViews, onOpenView }: { activeView
   );
 }
 
-function WorkspaceProMainView({ activeView, tasks, projects, boards, files, activity, projectViews, reports, context, important, overdue, today, progress }: { activeView: WorkspaceViewId; tasks: WorkspaceTaskItem[]; projects: WorkspaceProjectSummary[]; boards: WorkspaceBoardSummary[]; files: WorkspaceFileSummary[]; activity: WorkspaceActivityItem[]; projectViews: WorkspaceProjectViewPreference[]; reports: ReportsOverview | null; context: WorkspaceContext; important: number; overdue: number; today: number; progress: number; }) {
+function WorkspaceProMainView({ activeView, tasks, projects, boards, files, activity, projectViews, reports, context, permissions, important, overdue, today, progress }: { activeView: WorkspaceViewId; tasks: WorkspaceTaskItem[]; projects: WorkspaceProjectSummary[]; boards: WorkspaceBoardSummary[]; files: WorkspaceFileSummary[]; activity: WorkspaceActivityItem[]; projectViews: WorkspaceProjectViewPreference[]; reports: ReportsOverview | null; context: WorkspaceContext; permissions: WorkspacePermissionSummary; important: number; overdue: number; today: number; progress: number; }) {
   if (activeView === "home") return <WorkspaceProHome tasks={tasks} projects={projects} boards={boards} files={files} activity={activity} projectViews={projectViews} important={important} overdue={overdue} today={today} progress={progress} context={context} />;
   if (activeView === "list") return <WorkspaceProList tasks={tasks} />;
   if (activeView === "projects") return <WorkspaceProProjects projects={projects} tasks={tasks} />;
@@ -336,8 +342,8 @@ function WorkspaceProMainView({ activeView, tasks, projects, boards, files, acti
   if (activeView === "timeline") return <WorkspaceProTimeline tasks={tasks} projects={projects} />;
   if (activeView === "table") return <WorkspaceProTable tasks={tasks} />;
   if (activeView === "canvas") return <WorkspaceProCanvas boards={boards} />;
-  if (activeView === "files") return <WorkspaceProFiles files={files} boards={boards} />;
-  return <WorkspaceProReports tasks={tasks} reports={reports} progress={progress} />;
+  if (activeView === "files") return <WorkspaceProFiles files={files} boards={boards} projects={projects} context={context} permissions={permissions} />;
+  return <WorkspaceProReports tasks={tasks} projects={projects} reports={reports} progress={progress} context={context} />;
 }
 
 function WorkspaceProHome({ tasks, projects, boards, files, activity, projectViews, important, overdue, today, progress, context }: { tasks: WorkspaceTaskItem[]; projects: WorkspaceProjectSummary[]; boards: WorkspaceBoardSummary[]; files: WorkspaceFileSummary[]; activity: WorkspaceActivityItem[]; projectViews: WorkspaceProjectViewPreference[]; important: number; overdue: number; today: number; progress: number; context: WorkspaceContext; }) {
@@ -619,8 +625,162 @@ function WorkspaceProTimeline({ tasks, projects }: { tasks: WorkspaceTaskItem[];
 function WorkspaceProTable({ tasks }: { tasks: WorkspaceTaskItem[] }) { if (!tasks.length) return <WorkspaceEmptyState icon="tasks" title="Tabla sin registros" description="Las tareas del proyecto se mostrarán en formato tabla editable." tone="blue" />; return <div className="mx-auto max-w-[1220px] overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm"><div className="overflow-x-auto ws-pro-hide-scrollbar"><table className="min-w-[900px] w-full text-left text-sm"><thead className="border-b border-slate-100 bg-slate-50 text-xs uppercase tracking-[0.08em] text-slate-400"><tr><th className="px-4 py-3">Tarea</th><th>Estado</th><th>Prioridad</th><th>Fecha</th><th>Proyecto</th><th>Acciones</th></tr></thead><tbody className="divide-y divide-slate-100">{tasks.map((task) => <tr key={task.id} className="hover:bg-slate-50"><td className="px-4 py-3 font-medium text-slate-950"><Link href={`/app/tasks/${task.id}`}>{task.title}</Link></td><td><StatusBadge status={task.status} /></td><td><PriorityBadge priority={task.priority} /></td><td className="text-slate-500">{formatDate(task.dueDate)}</td><td className="text-slate-500">{task.projectTitle ?? "Tarea individual"}</td><td><Link href={`/app/tasks/${task.id}/edit`} className="ws-pro-mini-action">Editar</Link></td></tr>)}</tbody></table></div></div>; }
 
 function WorkspaceProCanvas({ boards }: { boards: WorkspaceBoardSummary[] }) { return <div className="mx-auto max-w-[1120px] rounded-xl border border-slate-200 bg-white p-5 shadow-sm"><div className="flex items-center justify-between"><div><h3 className="text-base font-semibold text-slate-950">Canvas y pizarras</h3><p className="mt-1 text-sm text-slate-500">Abrí una pizarra real para trabajar visualmente.</p></div><Link className="ws-pro-secondary-button" href="/app/boards">Biblioteca</Link></div><div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3">{boards.length ? boards.map((board) => <Link key={board.id} href={`/app/boards/${board.id}`} className="rounded-xl border border-slate-200 bg-slate-50 p-4 transition hover:border-slate-300 hover:bg-white"><p className="font-medium text-slate-950">{board.title}</p><p className="mt-2 text-xs text-slate-500">{formatDate(board.updatedAt)}</p></Link>) : <EmptyMicro icon={<Sparkles className="h-4 w-4" />} title="Sin pizarras conectadas" text="Creá o vinculá una pizarra para verla aquí." />}</div></div>; }
-function WorkspaceProFiles({ files, boards }: { files: WorkspaceFileSummary[]; boards: WorkspaceBoardSummary[] }) { return <div className="mx-auto max-w-[1120px] grid gap-4 xl:grid-cols-[minmax(0,1fr)_300px]"><CleanCard title="Archivos recientes">{files.length ? files.slice(0, 12).map((file) => <ResourceLine key={file.id} label={file.fileName} value={file.mimeType ?? "archivo"} href={file.publicUrl ?? undefined} />) : <EmptyMicro icon={<Files className="h-4 w-4" />} title="Sin archivos" text="Subí archivos desde el proyecto para verlos aquí." />}</CleanCard><CleanCard title="Pizarras relacionadas">{boards.length ? boards.slice(0, 5).map((board) => <ResourceLine key={board.id} label={board.title} value="Abrir" href={`/app/boards/${board.id}`} />) : <p className="text-sm text-slate-400">Sin pizarras</p>}</CleanCard></div>; }
-function WorkspaceProReports({ tasks, reports, progress }: { tasks: WorkspaceTaskItem[]; reports: ReportsOverview | null; progress: number }) { const done = tasks.filter((task) => isDone(task.status)).length; return <div className="mx-auto max-w-[960px] space-y-4"><div className="flex flex-wrap gap-2"><MetricChip label="Progreso" value={`${progress}%`} /><MetricChip label="Completadas" value={done} /><MetricChip label="Activas" value={tasks.length - done} /><MetricChip label="Reportes" value={reports ? "OK" : "-"} /></div><CleanCard title="Reporte del workspace"><p className="text-sm leading-6 text-slate-500">Resumen compacto basado en tareas visibles. El reporte completo sigue disponible en el módulo Reportes.</p><Link href="/app/reports" className="mt-4 inline-flex text-sm font-semibold text-slate-950">Abrir reportes completos</Link></CleanCard></div>; }
+function formatFileSize(value?: number | null) {
+  if (!value) return "—";
+  if (value < 1024) return `${value} B`;
+  if (value < 1024 * 1024) return `${Math.round(value / 1024)} KB`;
+  return `${(value / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function fileKind(file: WorkspaceFileSummary) {
+  const mime = String(file.mimeType ?? "").toLowerCase();
+  if (mime.startsWith("image/")) return "Imagen";
+  if (mime.includes("pdf")) return "PDF";
+  if (mime.includes("spreadsheet") || mime.includes("excel")) return "Hoja";
+  if (mime.includes("word") || mime.includes("document")) return "Documento";
+  return "Archivo";
+}
+
+function WorkspaceProFiles({ files, boards, projects, context, permissions }: { files: WorkspaceFileSummary[]; boards: WorkspaceBoardSummary[]; projects: WorkspaceProjectSummary[]; context: WorkspaceContext; permissions: WorkspacePermissionSummary }) {
+  const imageCount = files.filter((file) => String(file.mimeType ?? "").startsWith("image/")).length;
+  const docCount = files.filter((file) => !String(file.mimeType ?? "").startsWith("image/")).length;
+  return (
+    <div className="mx-auto max-w-[1320px] space-y-4">
+      <div className="grid gap-3 md:grid-cols-4">
+        <MetricChip label="Archivos" value={files.length} />
+        <MetricChip label="Imágenes" value={imageCount} />
+        <MetricChip label="Documentos" value={docCount} />
+        <MetricChip label="Pizarras" value={boards.length} />
+      </div>
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
+        <CleanCard title="Archivos del workspace">
+          <div className="mb-4">
+            <WorkspaceFilesUploadEntry context={context} projects={projects} canUpload={permissions.canUploadFiles} />
+          </div>
+          {files.length ? (
+            <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
+              <div className="grid grid-cols-[minmax(0,1.4fr)_130px_110px_150px_120px] gap-3 border-b border-slate-100 bg-slate-50 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.12em] text-slate-400">
+                <span>Archivo</span><span>Tipo</span><span>Tamaño</span><span>Contexto</span><span className="text-right">Acciones</span>
+              </div>
+              {files.slice(0, 18).map((file) => <WorkspaceProFileRow key={file.id} file={file} canManage={permissions.canUploadFiles} />)}
+            </div>
+          ) : <EmptyMicro icon={<Files className="h-4 w-4" />} title="Sin archivos" text="Subí archivos desde el proyecto para verlos aquí." />}
+        </CleanCard>
+        <CleanCard title="Pizarras relacionadas">
+          {boards.length ? boards.slice(0, 8).map((board) => (
+            <div key={board.id} className="flex items-center justify-between gap-3 border-b border-slate-100 py-3 last:border-b-0">
+              <div className="min-w-0"><p className="truncate text-sm font-semibold text-slate-950">{board.title}</p><p className="text-xs text-slate-400">{formatDate(board.updatedAt ?? board.createdAt)}</p></div>
+              <Link href={`/app/boards/${board.id}`} className="ws-pro-mini-action">Abrir</Link>
+            </div>
+          )) : <p className="text-sm text-slate-400">Sin pizarras conectadas.</p>}
+          <Link href="/app/boards" className="mt-4 inline-flex text-sm font-semibold text-slate-950">Biblioteca de pizarras</Link>
+        </CleanCard>
+      </div>
+    </div>
+  );
+}
+
+function WorkspaceProFileRow({ file, canManage }: { file: WorkspaceFileSummary; canManage: boolean }) {
+  const router = useRouter();
+  const supabase = useMemo(() => createClient(), []);
+  const [renaming, setRenaming] = useState(false);
+  const [name, setName] = useState(file.fileName);
+  const [busy, setBusy] = useState(false);
+  const href = file.publicUrl ?? "#";
+  async function saveName() {
+    if (!canManage || !name.trim() || name.trim() === file.fileName) { setRenaming(false); return; }
+    setBusy(true);
+    const { error } = await supabase.from("attachments").update({ file_name: name.trim() }).eq("id", file.id).select("id").single();
+    setBusy(false);
+    if (!error) { setRenaming(false); router.refresh(); }
+  }
+  async function removeFile() {
+    if (!canManage) return;
+    const ok = window.confirm("¿Eliminar este archivo del workspace?");
+    if (!ok) return;
+    setBusy(true);
+    if (file.storagePath) await supabase.storage.from("attachments").remove([file.storagePath]);
+    const { error } = await supabase.from("attachments").delete().eq("id", file.id);
+    setBusy(false);
+    if (!error) router.refresh();
+  }
+  return (
+    <div className="grid grid-cols-[minmax(0,1.4fr)_130px_110px_150px_120px] items-center gap-3 border-b border-slate-100 px-4 py-3 text-sm last:border-b-0">
+      <div className="min-w-0">
+        {renaming ? <input className="ws-pro-form-input h-9 min-h-0 py-1" value={name} onChange={(event) => setName(event.target.value)} onBlur={saveName} onKeyDown={(event) => { if (event.key === "Enter") void saveName(); if (event.key === "Escape") { setName(file.fileName); setRenaming(false); } }} autoFocus /> : <p className="truncate font-semibold text-slate-950">{file.fileName}</p>}
+        <p className="truncate text-xs text-slate-400">{formatDate(file.createdAt)}</p>
+      </div>
+      <span className="text-slate-500">{fileKind(file)}</span>
+      <span className="text-slate-500">{formatFileSize(file.fileSize)}</span>
+      <span className="truncate text-slate-500">{file.projectTitle ?? file.taskTitle ?? "Workspace"}</span>
+      <div className="flex justify-end gap-1">
+        {href !== "#" ? <a href={href} target="_blank" rel="noreferrer" className="ws-pro-icon-button h-8 w-8 min-h-0 min-w-0" title="Abrir"><ExternalLink className="h-3.5 w-3.5" /></a> : null}
+        {href !== "#" ? <a href={href} download className="ws-pro-icon-button h-8 w-8 min-h-0 min-w-0" title="Descargar"><Download className="h-3.5 w-3.5" /></a> : null}
+        <button type="button" disabled={!canManage || busy} className="ws-pro-icon-button h-8 w-8 min-h-0 min-w-0 disabled:opacity-40" onClick={() => setRenaming((value) => !value)} title="Renombrar"><Edit3 className="h-3.5 w-3.5" /></button>
+        <button type="button" disabled={!canManage || busy} className="ws-pro-icon-button h-8 w-8 min-h-0 min-w-0 disabled:opacity-40" onClick={removeFile} title="Eliminar">{busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}</button>
+      </div>
+    </div>
+  );
+}
+
+function WorkspaceProReports({ tasks, projects, reports, progress, context }: { tasks: WorkspaceTaskItem[]; projects: WorkspaceProjectSummary[]; reports: ReportsOverview | null; progress: number; context: WorkspaceContext }) {
+  const [range, setRange] = useState("month");
+  const [scope, setScope] = useState(context.projectId ?? "all");
+  const done = tasks.filter((task) => isDone(task.status)).length;
+  const active = tasks.length - done;
+  const important = tasks.filter((task) => String(task.priority ?? "").toLowerCase() === "alta").length;
+  const overdue = tasks.filter((task) => task.isOverdue).length;
+  const reportHref = `/app/reports?source=workspace&range=${range}&projectId=${scope}`;
+  const printHref = `/app/reports/print?source=workspace&range=${range}&projectId=${scope}`;
+  return (
+    <div className="mx-auto max-w-[1180px] space-y-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
+        <div className="flex flex-wrap gap-2">
+          <MetricChip label="Progreso" value={`${progress}%`} />
+          <MetricChip label="Completadas" value={done} />
+          <MetricChip label="Activas" value={active} />
+          <MetricChip label="Importantes" value={important} />
+          <MetricChip label="Vencidas" value={overdue} />
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <select className="ws-pro-select" value={range} onChange={(event) => setRange(event.target.value)}>
+            <option value="week">Esta semana</option><option value="month">Este mes</option><option value="quarter">Trimestre</option><option value="all">Todo</option>
+          </select>
+          <select className="ws-pro-select" value={scope} onChange={(event) => setScope(event.target.value)}>
+            <option value="all">Todo el workspace</option>
+            {projects.map((project) => <option key={project.id} value={project.id}>{project.title}</option>)}
+          </select>
+        </div>
+      </div>
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
+        <CleanCard title="Generador de reportes">
+          <p className="text-sm leading-6 text-slate-500">Configura el alcance y genera reportes usando las métricas reales del workspace. El módulo completo de Reportes sigue disponible para exportaciones avanzadas.</p>
+          <div className="mt-4 grid gap-3 md:grid-cols-3">
+            <ReportAction title="Reporte completo" text="Abrí el módulo con el contexto elegido." href={reportHref} icon={<BarChart3 className="h-4 w-4" />} />
+            <ReportAction title="Vista imprimible" text="Prepará una versión para PDF." href={printHref} icon={<FileText className="h-4 w-4" />} />
+            <ReportAction title="Exportar Excel" text="Usá el exportador del módulo reportes." href="/app/reports" icon={<Download className="h-4 w-4" />} />
+          </div>
+          <div className="mt-5 rounded-xl border border-slate-200 bg-slate-50 p-4">
+            <h4 className="text-sm font-semibold text-slate-950">Métricas incluidas</h4>
+            <div className="mt-3 grid gap-2 text-sm text-slate-600 md:grid-cols-2">
+              <span>• Progreso y cumplimiento</span><span>• Tareas activas y completadas</span><span>• Prioridad alta / importantes</span><span>• Vencimientos y atrasos</span>
+            </div>
+          </div>
+        </CleanCard>
+        <CleanCard title="Resumen actual">
+          <ResourceLine label="Estado reportes" value={reports ? "Disponible" : "Básico"} href="/app/reports" />
+          <ResourceLine label="Proyecto" value={scope === "all" ? "Todo" : (projects.find((project) => project.id === scope)?.title ?? "Proyecto")} />
+          <ResourceLine label="Rango" value={range} />
+          <ResourceLine label="Base visible" value={`${tasks.length} tareas`} />
+        </CleanCard>
+      </div>
+    </div>
+  );
+}
+
+function ReportAction({ title, text, href, icon }: { title: string; text: string; href: string; icon: React.ReactNode }) {
+  return <Link href={href} className="rounded-xl border border-slate-200 bg-white p-4 transition hover:border-slate-300 hover:shadow-sm"><span className="mb-3 grid h-9 w-9 place-items-center rounded-lg bg-slate-100 text-slate-700">{icon}</span><b className="block text-sm text-slate-950">{title}</b><span className="mt-1 block text-xs leading-5 text-slate-500">{text}</span></Link>;
+}
 
 function WorkspaceProRightPanel({ tasks, activity, members, notifications, progress, important, overdue, today }: { tasks: WorkspaceTaskItem[]; projects: WorkspaceProjectSummary[]; files: WorkspaceFileSummary[]; activity: WorkspaceActivityItem[]; boards: WorkspaceBoardSummary[]; members: WorkspaceMemberSummary[]; notifications: WorkspaceNotificationSummary; progress: number; important: number; overdue: number; today: number; }) {
   const upcoming = tasks.filter((task) => task.dueDate && !isDone(task.status)).slice(0, 4);
@@ -628,6 +788,7 @@ function WorkspaceProRightPanel({ tasks, activity, members, notifications, progr
 }
 
 function WorkspaceProSheet({ title, onClose, wide, children }: { title: string; onClose: () => void; wide?: boolean; children: React.ReactNode }) { return <div className="fixed inset-0 z-40"><button type="button" aria-label="Cerrar panel" className="absolute inset-0 bg-slate-950/20 backdrop-blur-[2px]" onClick={onClose} /><section className={`absolute right-3 top-3 max-h-[calc(100vh-1.5rem)] overflow-y-auto rounded-2xl border border-slate-200 bg-white shadow-2xl ${wide ? "w-[min(760px,calc(100vw-1.5rem))]" : "w-[min(520px,calc(100vw-1.5rem))]"}`}><header className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-100 bg-white px-4 py-3"><h2 className="text-sm font-semibold text-slate-950">{title}</h2><button type="button" className="ws-pro-icon-button h-8 w-8" onClick={onClose}><X className="h-4 w-4" /></button></header><div className="p-4">{children}</div></section></div>; }
+
 function WorkspaceProInspector({ onClose, children }: { onClose: () => void; children: React.ReactNode }) { return <div className="fixed inset-0 z-40"><button type="button" aria-label="Cerrar inspector" className="absolute inset-0 bg-slate-950/20 backdrop-blur-[2px]" onClick={onClose} /><aside className="absolute right-3 top-3 h-[calc(100vh-1.5rem)] w-[min(360px,calc(100vw-1.5rem))] overflow-y-auto rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl ws-pro-hide-scrollbar"><div className="mb-3 flex items-center justify-between"><h2 className="text-sm font-semibold text-slate-950">Inspector</h2><button type="button" className="ws-pro-icon-button h-8 w-8" onClick={onClose}><X className="h-4 w-4" /></button></div>{children}</aside></div>; }
 function MetricChip({ label, value, tone = "slate" }: { label: string; value: string | number; tone?: "slate" | "rose" | "blue" }) { const cls = tone === "rose" ? "text-rose-600" : tone === "blue" ? "text-blue-600" : "text-slate-950"; return <span className="inline-flex h-8 items-center gap-2 rounded-full border border-slate-200 bg-white px-3 text-xs text-slate-500"><b className={`font-semibold ${cls}`}>{value}</b>{label}</span>; }
 function MiniStat({ label, value }: { label: string; value: number }) { return <div className="rounded-lg bg-slate-50 px-2 py-2"><p className="text-sm font-semibold text-slate-950">{value}</p><p className="text-[11px] text-slate-500">{label}</p></div>; }

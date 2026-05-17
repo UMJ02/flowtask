@@ -9,10 +9,10 @@ const read = (rel) => exists(rel) ? fs.readFileSync(path.join(root, rel), "utf8"
 const requireFile = (rel) => { if (!exists(rel)) failures.push(`Missing ${rel}`); };
 const requireIncludes = (rel, text) => { if (!read(rel).includes(text)) failures.push(`Expected ${JSON.stringify(text)} in ${rel}`); };
 
-const expectedVersion = "58.27.4-workspace-pro-board-drag-drop-inline-editing";
+const expectedVersion = "58.27.5-workspace-pro-files-reports-crud-polish";
 const pkg = JSON.parse(read("package.json") || "{}");
 if (pkg.version !== expectedVersion) failures.push(`Unexpected package version: ${pkg.version}`);
-if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.27.4") failures.push("verify:current must target verify:v58.27.4");
+if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.27.5") failures.push("verify:current must target verify:v58.27.5");
 if (!String(pkg.scripts?.["build:preflight"] ?? "").includes("workspace:design-reset:ready")) failures.push("build:preflight must include workspace:design-reset:ready");
 if (!String(pkg.scripts?.["build:preflight"] ?? "").includes("workspace:layout-cleanup:ready")) failures.push("build:preflight must include workspace:layout-cleanup:ready");
 
@@ -24,7 +24,7 @@ for (const rel of [
   "src/lib/workspace-system/view-state.ts",
   "src/lib/release/version.ts",
   "src/app/globals.css",
-  "scripts/verify-v58.27.4.mjs",
+  "scripts/verify-v58.27.5.mjs",
   "scripts/workspace-pro-design-reset-check.mjs",
   "scripts/workspace-pro-layout-cleanup-check.mjs",
   "docs/release/V58_27_4_WORKSPACE_PRO_BOARD_DRAG_DROP_INLINE_EDITING.md",
@@ -36,7 +36,7 @@ requireIncludes("src/lib/release/version.ts", "APP_RELEASE_STAGE");
 requireIncludes("src/components/workspace-system/workspace-system-page.tsx", "WorkspaceProPage");
 requireIncludes("src/components/workspace-pro/workspace-pro-page.tsx", "WorkspaceProSheet");
 requireIncludes("src/components/workspace-pro/workspace-pro-page.tsx", "WorkspaceProInspector");
-requireIncludes("src/app/globals.css", "v58.27.4 — Workspace Pro Board Drag Drop + Inline Editing");
+requireIncludes("src/app/globals.css", "v58.27.5 — Workspace Pro Files + Reports CRUD Polish");
 requireIncludes("README.md", "v58.27.2.1 — Workspace Pro Layout Simplification");
 
 if (failures.length) {
@@ -44,4 +44,4 @@ if (failures.length) {
   for (const failure of failures) console.error(`- ${failure}`);
   process.exit(1);
 }
-console.log("[build-deploy-readiness] OK — v58.27.4 workspace doctor version alignment aligned.");
+console.log("[build-deploy-readiness] OK — v58.27.5 workspace doctor version alignment aligned.");

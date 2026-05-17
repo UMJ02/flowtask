@@ -225,11 +225,11 @@ Incluye checklist final de Workspace, Supabase, Vercel, rutas clásicas, permiso
 
 This patch tightens the Workspace Pro UI after the v58.27.2 design reset. It removes duplicated navigation, keeps views in the top tab bar, closes the inspector by default, moves heavy managers into overlay sheets, and makes Home/List/Board more compact and professional. No Supabase, RLS, migration, or dependency changes.
 
-## v58.27.4 — Workspace Pro Board Drag Drop + Inline Editing
+## v58.27.5 — Workspace Pro Files + Reports CRUD Polish
 
 Patch release that aligns Workspace readiness scripts after the v58.27.2.1 layout cleanup. It updates version expectations in the Workspace doctor/readiness chain so local and Vercel preflight no longer fail by expecting v58.27.2. No Supabase, RLS, migration, dependency, or UI feature changes.
 
-## v58.27.4 — Workspace Pro Board Drag Drop + Inline Editing
+## v58.27.5 — Workspace Pro Files + Reports CRUD Polish
 
 Workspace Pro ahora prioriza interacción real: Home clicable, vista Tareas con edición rápida, nueva vista Proyectos, creador Tarea/Proyecto, checklist opcional, Board con Producción/columnas visibles/Concluido oculto y drag/drop básico de estado.
 
@@ -239,6 +239,10 @@ Migración opcional requerida si se quieren guardar vistas tipo Proyectos:
 0060_v58_27_3_project_views_projects_view_support.sql
 ```
 
-## v58.27.4 — Workspace Pro Board Drag Drop + Inline Editing
+## v58.27.5 — Workspace Pro Files + Reports CRUD Polish
 
 Board Pro mejora la operación diaria con drag/drop real, columnas configurables, concluidas ocultas por defecto y edición contextual de tareas sin tocar Supabase/RLS ni migraciones.
+
+## v58.27.5 — Workspace Pro Files + Reports CRUD Polish
+
+Pulido de Archivos y Reportes en Workspace Pro: upload integrado, acciones de archivo, renombrado/eliminación segura, reportes configurables por rango/proyecto y readiness `workspace:files-reports:ready`.
