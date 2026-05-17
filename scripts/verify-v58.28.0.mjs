@@ -5,7 +5,7 @@ const read = (file) => fs.existsSync(file) ? fs.readFileSync(file, "utf8") : "";
 const pkg = JSON.parse(read("package.json"));
 
 const version = "58.28.0-workspace-pro-production-ux-final";
-const verifyTarget = "npm run verify:v58.28.0", "npm run verify:v58.28.1", "npm run verify:v58.28.2";
+const verifyTarget = "npm run verify:v58.28.0", "npm run verify:v58.28.1", "npm run verify:v58.28.2", "npm run verify:v58.28.3";
 
 if (pkg.version !== version) failures.push(`Unexpected package version: ${pkg.version}`);
 if (pkg.scripts?.["verify:current"] !== verifyTarget) failures.push("verify:current must target verify:v58.28.0");

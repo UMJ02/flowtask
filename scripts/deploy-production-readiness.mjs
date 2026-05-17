@@ -19,6 +19,7 @@ const expectedVersions = [
   "58.28.0-workspace-pro-production-ux-final",
   "58.28.1-workspace-pro-user-final-ui-fixes",
   "58.28.2-workspace-pro-action-model-progressive-disclosure",
+  "58.28.3-workspace-pro-user-language-timeline-flow",
 ];
 const pkg = JSON.parse(read("package.json") || "{}");
 if (!expectedVersions.includes(pkg.version)) failures.push(`Unexpected package version: ${pkg.version}`);

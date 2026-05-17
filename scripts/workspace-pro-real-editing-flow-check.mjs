@@ -1,8 +1,9 @@
+#!/usr/bin/env node
 import fs from "node:fs";
 
 const failures = [];
 const read = (file) => fs.existsSync(file) ? fs.readFileSync(file, "utf8") : "";
-const pkg = JSON.parse(read("package.json"));
+const pkg = JSON.parse(read("package.json") || "{}");
 const page = read("src/components/workspace-pro/workspace-pro-page.tsx");
 const quickCreate = read("src/components/workspace-system/workspace-quick-create.tsx");
 const css = read("src/app/globals.css");
@@ -12,14 +13,14 @@ const allowedVersions = [
   "58.28.0-workspace-pro-production-ux-final",
   "58.28.1-workspace-pro-user-final-ui-fixes",
   "58.28.2-workspace-pro-action-model-progressive-disclosure",
+  "58.28.3-workspace-pro-user-language-timeline-flow",
 ];
-const allowedVerifyTargets = ["npm run verify:v58.27.9", "npm run verify:v58.28.0", "npm run verify:v58.28.1", "npm run verify:v58.28.2"];
+const allowedVerifyTargets = ["npm run verify:v58.27.9", "npm run verify:v58.28.0", "npm run verify:v58.28.1", "npm run verify:v58.28.2", "npm run verify:v58.28.3"];
 if (!allowedVersions.includes(pkg.version)) failures.push(`Unexpected package version: ${pkg.version}`);
-if (!allowedVerifyTargets.includes(pkg.scripts?.["verify:current"])) failures.push("verify:current must target verify:v58.27.9 or verify:v58.28.0");
+if (!allowedVerifyTargets.includes(pkg.scripts?.["verify:current"])) failures.push("verify:current must target an active Workspace Pro real editing verify script");
 
 const requiredPageMarkers = [
   "WorkspaceProListTaskEditor",
-  "supabase.from(\"tasks\").update({ title: nextTitle, project_id: projectId || null })",
   "supabase.from(\"tasks\").delete()",
   "WorkspaceProBoardTaskEditor",
   "moveTask(task.id, next.id)",
@@ -31,6 +32,8 @@ const requiredPageMarkers = [
 for (const marker of requiredPageMarkers) {
   if (!page.includes(marker)) failures.push(`workspace-pro-page.tsx missing marker: ${marker}`);
 }
+if (!page.includes("supabase.from(\"tasks\").update({ title: nextTitle")) failures.push("workspace-pro-page.tsx missing task core update marker");
+if (!page.includes("ws-pro-task-editor-inline-row")) failures.push("workspace-pro-page.tsx missing compact inline task editor row");
 
 const requiredQuickCreateMarkers = [
   "type DraftMode = \"task\" | \"project\"",

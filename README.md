@@ -304,3 +304,12 @@ npm run workspace:user-final-ui:ready
 - Espacios rediseñado para usuario final con diagnóstico técnico oculto.
 - Nuevo check: `npm run workspace:action-model:ready`.
 
+
+
+## v58.28.3 — Workspace Pro User Language + Timeline Flow
+
+- Board sin textos robotizados en cards.
+- Menú de acciones por card con mejor stacking.
+- Edición rápida en una sola línea responsive.
+- Espacios sin diagnósticos técnicos visibles.
+- Timeline operativo con fecha, avance, estado y prioridad.

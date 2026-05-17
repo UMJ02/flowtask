@@ -1,6 +1,6 @@
 "use client";
 
-// v58.28.2 Workspace Spaces Progressive Disclosure
+// v58.28.3 Workspace Spaces User-Facing Cleanup
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -65,7 +65,7 @@ export function WorkspaceSpacesManager({
   async function createSpace() {
     const cleanName = name.trim();
     if (!canWriteSpaces) {
-      setFeedback({ tone: "error", text: permissions.canManageSpaces ? "Aplica las migraciones 0056/0057 antes de crear espacios reales." : "Tu rol actual no permite crear espacios." });
+      setFeedback({ tone: "error", text: permissions.canManageSpaces ? "La organización de espacios todavía no está disponible en este entorno." : "Tu rol actual no permite crear espacios." });
       return;
     }
     if (!cleanName) {
@@ -164,7 +164,7 @@ export function WorkspaceSpacesManager({
       return;
     }
     if (!canLinkProjects) {
-      setFeedback({ tone: "error", text: "Aplica la migración 0057 para organizar proyectos dentro de espacios." });
+      setFeedback({ tone: "error", text: "La organización de proyectos por espacios todavía no está disponible en este entorno." });
       return;
     }
 
@@ -241,7 +241,7 @@ export function WorkspaceSpacesManager({
             </button>
           </div>
           {!canWriteSpaces ? (
-            <p className="mt-3 rounded-[16px] bg-amber-50 px-3 py-2 text-sm font-bold text-amber-700">Migration Guard: {persistenceStatus.message}</p>
+            <p className="mt-3 rounded-[16px] bg-amber-50 px-3 py-2 text-sm font-bold text-amber-700">La creación de espacios no está disponible por ahora.</p>
           ) : null}
           {feedback ? (
             <p className={feedback.tone === "success" ? "mt-3 inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-xs font-black text-emerald-700" : "mt-3 rounded-[14px] bg-rose-50 px-3 py-2 text-sm font-bold text-rose-700"}>
@@ -259,10 +259,7 @@ export function WorkspaceSpacesManager({
             <li>• Archivá espacios cuando ya no estén activos.</li>
           </ul>
           {!canWriteSpaces || !canLinkProjects ? (
-            <details className="mt-3 rounded-[14px] border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-bold text-amber-700">
-              <summary className="cursor-pointer">Diagnóstico técnico</summary>
-              <p className="mt-2">workspace_spaces: {persistenceStatus.workspaceSpacesReady ? "OK" : "fallback"} · workspace_space_projects: {persistenceStatus.projectSpaceLinksReady ? "OK" : "pendiente"}</p>
-            </details>
+            <p className="mt-3 rounded-[14px] border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-bold text-amber-700">Algunas acciones pueden estar limitadas según tu configuración actual.</p>
           ) : null}
         </div>
       </div>

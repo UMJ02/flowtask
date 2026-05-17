@@ -1,7 +1,7 @@
 "use client";
 
-// v58.28.2 — Workspace Pro Action Model + Progressive Disclosure
-// Focus: menos botones visibles, acciones contextuales por menú, lista editable y UI final-user.
+// v58.28.3 — Workspace Pro User Language + Timeline Flow
+// Focus: quitar texto técnico visible, compactar edición y convertir timeline en una vista útil.
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
@@ -53,7 +53,6 @@ import type {
   WorkspaceViewId,
 } from "@/lib/workspace-system/view-state";
 import { PriorityBadge, StatusBadge } from "@/components/workspace-system/workspace-badges";
-import { WorkspaceTaskInlineEditor } from "@/components/workspace-system/workspace-task-inline-actions";
 import { WorkspaceQuickCreate } from "@/components/workspace-system/workspace-quick-create";
 import { WorkspaceSavedViewsManager } from "@/components/workspace-system/workspace-saved-views-manager";
 import { WorkspaceSpacesManager } from "@/components/workspace-system/workspace-spaces-manager";
@@ -402,37 +401,18 @@ function WorkspaceProHome({ tasks, boards, files, projectViews, derived, context
           <div className="min-w-0"><p className="text-xs font-medium uppercase tracking-[0.12em] text-slate-400">{context.spaceName ?? "Workspace"}</p><h2 className="mt-1 truncate text-xl font-semibold tracking-[-0.03em] text-slate-950 md:text-2xl">{context.projectTitle ?? "Tu centro de trabajo"}</h2></div>
           <div className="flex flex-wrap gap-2"><MetricChip label="Avance" value={`${progress}%`} /><MetricChip label="Tareas" value={tasks.length} /><MetricChip label="Alta" value={important} tone="rose" /><MetricChip label="Hoy" value={today} tone="blue" /></div>
         </section>
-        <WorkspaceProProductionUXStrip tasks={tasks.length} projects={activeProjects.length} boards={boards.length} files={files.length} />
         <div className="grid gap-4 xl:grid-cols-2">
           <CleanCard title="Tareas importantes" action={importantTasks.length ? `${importantTasks.length}` : undefined}>{importantTasks.length ? importantTasks.map((task) => <TaskLine key={task.id} task={task} href={`/app/tasks/${task.id}`} />) : <EmptyMicro icon={<ListChecks className="h-4 w-4" />} title="Sin tareas importantes" text="Marcá una tarea como prioridad alta para verla aquí." />}</CleanCard>
           <CleanCard title="Próximos vencimientos" action={upcomingTasks.length ? `${upcomingTasks.length}` : undefined}>{upcomingTasks.length ? upcomingTasks.map((task) => <TaskLine key={task.id} task={task} href={`/app/tasks/${task.id}`} subtleDate />) : <EmptyMicro icon={<CalendarDays className="h-4 w-4" />} title="Sin fechas próximas" text="Las tareas con fecha límite aparecerán aquí." />}</CleanCard>
         </div>
         <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
-          <CleanCard title="Proyectos activos">{activeProjects.length ? activeProjects.map((project) => <ProjectLine key={project.id} project={project} />) : <EmptyMicro icon={<Folder className="h-4 w-4" />} title="Sin proyectos activos" text="Creá un proyecto para organizar tareas anidadas sin saturar la vista Tareas." />}</CleanCard>
+          <CleanCard title="Proyectos activos">{activeProjects.length ? activeProjects.map((project) => <ProjectLine key={project.id} project={project} />) : <EmptyMicro icon={<Folder className="h-4 w-4" />} title="Sin proyectos activos" text="Creá un proyecto para agrupar el trabajo por cliente, área o entrega." />}</CleanCard>
           <CleanCard title="Recursos"><ResourceLine label="Pizarras" value={boards.length} href="/app/workspace?view=canvas" /><ResourceLine label="Archivos" value={files.length} href="/app/workspace?view=files" /><ResourceLine label="Vistas guardadas" value={projectViews.length} href="/app/workspace?view=home" /></CleanCard>
         </div>
         <CleanCard title="Actividad reciente">{activityPreview.length ? activityPreview.map((item) => <Link key={item.id} href={item.taskId ? `/app/tasks/${item.taskId}` : item.projectId ? `/app/workspace?projectId=${item.projectId}` : "/app/workspace"} className="flex items-start gap-3 border-b border-slate-100 py-2.5 transition hover:bg-slate-50 last:border-b-0"><span className="mt-1 h-2 w-2 rounded-full bg-slate-300" /><div className="min-w-0"><p className="truncate text-sm font-medium text-slate-800">{item.title}</p><p className="text-xs text-slate-400">{formatDate(item.createdAt)}</p></div></Link>) : <EmptyMicro icon={<Activity className="h-4 w-4" />} title="Sin actividad reciente" text="Los cambios del proyecto aparecerán en esta sección." />}</CleanCard>
       </div>
       <WorkspaceProUtilityDock boards={boards} today={today} overdue={overdue} />
     </div>
-  );
-}
-
-function WorkspaceProProductionUXStrip({ tasks, projects, boards, files }: { tasks: number; projects: number; boards: number; files: number }) {
-  const readyCount = [tasks > 0, projects > 0, boards > 0, files > 0].filter(Boolean).length;
-  return (
-    <section className="ws-pro-production-ux-strip" aria-label="Production UX readiness">
-      <div>
-        <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-emerald-700">Production UX Final</p>
-        <p className="mt-1 text-sm text-slate-600">Navegación, estados vacíos, edición rápida y vistas principales listas para QA final.</p>
-      </div>
-      <div className="flex flex-wrap gap-2">
-        <MetricChip label="checks" value={`${readyCount}/4`} tone="blue" />
-        <Link href="/app/workspace?view=list" className="ws-pro-mini-action">Lista</Link>
-        <Link href="/app/workspace?view=board" className="ws-pro-mini-action">Board</Link>
-        <Link href="/app/workspace?view=reports" className="ws-pro-mini-action">Reportes</Link>
-      </div>
-    </section>
   );
 }
 
@@ -476,6 +456,9 @@ function WorkspaceProListTaskEditor({ task, projects, context, permissions }: { 
   const router = useRouter();
   const [title, setTitle] = useState(task.title);
   const [projectId, setProjectId] = useState(task.projectId ?? context.projectId ?? "");
+  const [status, setStatus] = useState(normalizeBoardStatus(task.status));
+  const [priority, setPriority] = useState((task.priority ?? "media").toLowerCase());
+  const [dueDate, setDueDate] = useState(task.dueDate ?? "");
   const [busy, setBusy] = useState<"save" | "delete" | null>(null);
   const [message, setMessage] = useState<{ tone: "success" | "error"; text: string } | null>(null);
 
@@ -484,7 +467,7 @@ function WorkspaceProListTaskEditor({ task, projects, context, permissions }: { 
     if (!nextTitle || busy || permissions.isReadOnly) return;
     setBusy("save");
     setMessage(null);
-    const { error } = await supabase.from("tasks").update({ title: nextTitle, project_id: projectId || null }).eq("id", task.id).select("id").single();
+    const { error } = await supabase.from("tasks").update({ title: nextTitle, project_id: projectId || null, status, priority, due_date: dueDate || null }).eq("id", task.id).select("id").single();
     setBusy(null);
     if (error) { setMessage({ tone: "error", text: error.message || "No se pudo actualizar la tarea." }); return; }
     setMessage({ tone: "success", text: "Tarea actualizada." });
@@ -519,8 +502,14 @@ function WorkspaceProListTaskEditor({ task, projects, context, permissions }: { 
           <button type="button" className="ws-pro-danger-button" disabled={permissions.isReadOnly || busy !== null} onClick={() => void deleteTask()}>{busy === "delete" ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}Borrar</button>
         </div>
       </div>
-      <div className="mt-3"><WorkspaceTaskInlineEditor task={task} compact /></div>
-      <div className="mt-3 flex flex-wrap gap-2 text-xs font-semibold"><Link href={`/app/tasks/${task.id}`} className="ws-pro-mini-action">Abrir detalle</Link><Link href={`/app/tasks/${task.id}/edit`} className="ws-pro-mini-action">Editar completa</Link>{task.projectId ? <Link href={`/app/workspace?projectId=${task.projectId}`} className="ws-pro-mini-action">Ver proyecto</Link> : null}</div>
+      <div className="ws-pro-task-editor-inline-row mt-3" aria-label="Edición rápida de tarea">
+        <select className="ws-pro-inline-select" value={status} disabled={permissions.isReadOnly} onChange={(event) => setStatus(event.target.value as BoardColumnId)} aria-label="Estado">{BOARD_COLUMN_DEFS.map((column) => <option key={column.id} value={column.id}>{column.title}</option>)}</select>
+        <select className="ws-pro-inline-select" value={priority} disabled={permissions.isReadOnly} onChange={(event) => setPriority(event.target.value)} aria-label="Prioridad"><option value="alta">Alta</option><option value="media">Media</option><option value="baja">Baja</option></select>
+        <input type="date" className="ws-pro-inline-date" value={dueDate} disabled={permissions.isReadOnly} onChange={(event) => setDueDate(event.target.value)} aria-label="Fecha límite" />
+        <Link href={`/app/tasks/${task.id}`} className="ws-pro-editor-inline-action">Abrir detalle</Link>
+        <Link href={`/app/tasks/${task.id}/edit`} className="ws-pro-editor-inline-action">Editar completa</Link>
+        {task.projectId ? <Link href={`/app/workspace?projectId=${task.projectId}`} className="ws-pro-editor-inline-action">Ver proyecto</Link> : null}
+      </div>
       {message ? <p className={message.tone === "success" ? "mt-3 flex items-center gap-2 text-sm font-semibold text-emerald-700" : "mt-3 text-sm font-semibold text-rose-700"}>{message.tone === "success" ? <CheckCircle2 className="h-4 w-4" /> : null}{message.text}</p> : null}
     </div>
   );
@@ -666,7 +655,7 @@ function WorkspaceProBoard({ tasks, projects, context, boardColumns }: { tasks: 
               className={isOver ? "ws-pro-board-column ws-pro-board-column-active" : "ws-pro-board-column"}
             >
               <header className="mb-3 flex items-center justify-between gap-3 px-1">
-                <div className="min-w-0"><h3 className="text-sm font-semibold text-slate-950">{column.title}</h3><p className="text-xs text-slate-400">Arrastrá para actualizar estado</p></div>
+                <div className="min-w-0"><h3 className="text-sm font-semibold text-slate-950">{column.title}</h3></div>
                 <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-500">{items.length}</span>
               </header>
               <div className="space-y-2">
@@ -676,7 +665,7 @@ function WorkspaceProBoard({ tasks, projects, context, boardColumns }: { tasks: 
                     draggable
                     onDragStart={(event) => { setDraggingTaskId(task.id); event.dataTransfer.setData("text/task-id", task.id); event.dataTransfer.effectAllowed = "move"; }}
                     onDragEnd={() => { setDraggingTaskId(null); setOverColumn(null); }}
-                    className={busyMove === task.id ? "ws-pro-board-card opacity-60" : "ws-pro-board-card"}
+                    className={`${busyMove === task.id ? "ws-pro-board-card opacity-60" : "ws-pro-board-card"}${openActionTaskId === task.id ? " is-menu-open" : ""}`}
                   >
                     <div className="flex items-start gap-2">
                       <GripVertical className="mt-0.5 h-4 w-4 shrink-0 cursor-grab text-slate-300" />
@@ -708,9 +697,8 @@ function WorkspaceProBoard({ tasks, projects, context, boardColumns }: { tasks: 
                       <PriorityBadge priority={task.priority} />
                       <span className="text-xs text-slate-500">{formatDate(task.dueDate)}</span>
                     </div>
-                    {!compactCards ? <p className="mt-2 text-xs font-medium text-slate-400">Usá ⋯ para mover, priorizar o editar sin saturar la tarjeta.</p> : null}
                   </article>
-                )) : <p className="rounded-xl border border-dashed border-slate-200 p-4 text-sm text-slate-400">Soltá una tarea aquí para moverla a {column.title}.</p>}
+                )) : <p className="rounded-xl border border-dashed border-slate-200 p-4 text-sm text-slate-400">Sin tareas</p>}
               </div>
             </section>
           );
@@ -758,15 +746,13 @@ function WorkspaceProBoardTaskEditor({ task, projects, context, onClose }: { tas
         <label className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">Nombre</label>
         <input className="ws-pro-form-input mt-1" value={title} onChange={(event) => setTitle(event.target.value)} />
       </div>
-      <div className="grid gap-3 md:grid-cols-2">
-        <label className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">Estado<select className="ws-pro-form-input mt-1" value={status} onChange={(event) => setStatus(event.target.value as BoardColumnId)}>{BOARD_COLUMN_DEFS.map((column) => <option key={column.id} value={column.id}>{column.title}</option>)}</select></label>
-        <label className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">Prioridad<select className="ws-pro-form-input mt-1" value={priority} onChange={(event) => setPriority(event.target.value)}><option value="alta">Alta</option><option value="media">Media</option><option value="baja">Baja</option></select></label>
-        <label className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">Fecha<input type="date" className="ws-pro-form-input mt-1" value={dueDate} onChange={(event) => setDueDate(event.target.value)} /></label>
+      <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_160px]">
         <label className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">Proyecto<select className="ws-pro-form-input mt-1" value={projectId} onChange={(event) => setProjectId(event.target.value)}><option value="">Tarea individual</option>{projects.slice(0, 80).map((project) => <option key={project.id} value={project.id}>{project.title}</option>)}</select></label>
+        <label className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">Fecha<input type="date" className="ws-pro-form-input mt-1" value={dueDate} onChange={(event) => setDueDate(event.target.value)} /></label>
       </div>
-      <div className="ws-pro-task-editor-toolbar" aria-label="Acciones contextuales de tarea">
-        <span className="ws-pro-toolbar-label">Acciones</span>
-        <WorkspaceTaskInlineEditor task={task} compact />
+      <div className="ws-pro-task-editor-inline-row" aria-label="Edición rápida de tarea">
+        <select className="ws-pro-inline-select" value={status} onChange={(event) => setStatus(event.target.value as BoardColumnId)} aria-label="Estado">{BOARD_COLUMN_DEFS.map((column) => <option key={column.id} value={column.id}>{column.title}</option>)}</select>
+        <select className="ws-pro-inline-select" value={priority} onChange={(event) => setPriority(event.target.value)} aria-label="Prioridad"><option value="alta">Alta</option><option value="media">Media</option><option value="baja">Baja</option></select>
         <Link href={`/app/tasks/${task.id}`} className="ws-pro-editor-inline-action">Abrir detalle</Link>
         <Link href={`/app/tasks/${task.id}/edit`} className="ws-pro-editor-inline-action">Editar completa</Link>
       </div>
@@ -780,14 +766,66 @@ function WorkspaceProBoardTaskEditor({ task, projects, context, onClose }: { tas
 }
 
 function WorkspaceProTimeline({ tasks, projects }: { tasks: WorkspaceTaskItem[]; projects: WorkspaceProjectSummary[] }) {
-  const datedTasks = tasks.filter((task) => task.dueDate).slice(0, 10);
-  const datedProjects = projects.filter((project) => project.dueDate).slice(0, 6);
-  const rows = [
-    ...datedProjects.map((project) => ({ id: `p-${project.id}`, type: "Proyecto", title: project.title, href: `/app/workspace?projectId=${project.id}`, date: project.dueDate, progress: project.progress, status: project.status })),
-    ...datedTasks.map((task) => ({ id: `t-${task.id}`, type: "Tarea", title: task.title, href: `/app/tasks/${task.id}`, date: task.dueDate, progress: taskCompletionPercent(task), status: task.status })),
-  ].sort((a, b) => String(a.date ?? "9999").localeCompare(String(b.date ?? "9999"))).slice(0, 14);
-  if (!rows.length) return <WorkspaceEmptyState icon="tasks" title="Timeline sin fechas" description="Agregá fechas límite a tareas o proyectos para crear una línea de tiempo real con avance, estado y prioridad." actionHref="/app/workspace?view=list" actionLabel="Editar tareas" tone="blue" />;
-  return <div className="mx-auto max-w-[1440px] rounded-2xl border border-slate-200 bg-white p-5 shadow-sm ws-pro-view-frame"><div className="flex items-center justify-between"><div><h3 className="text-base font-semibold text-slate-950">Timeline operativo</h3><p className="mt-1 text-sm text-slate-500">Fechas, estado y avance de tareas/proyectos visibles.</p></div><div className="flex gap-2"><MetricChip label="items" value={rows.length} /><MetricChip label="proyectos" value={datedProjects.length} /></div></div><div className="mt-5 space-y-3">{rows.map((row) => <Link key={row.id} href={row.href} className="grid gap-3 rounded-xl border border-slate-100 p-3 transition hover:border-slate-300 hover:bg-slate-50 md:grid-cols-[220px_minmax(0,1fr)_120px]"><div className="min-w-0"><p className="truncate text-sm font-medium text-slate-950">{row.title}</p><p className="text-xs text-slate-400">{row.type} · {row.status}</p></div><div className="h-8 rounded-full bg-slate-100 p-1"><div className="h-full rounded-full bg-slate-900" style={{ width: `${Math.max(8, Math.min(100, row.progress))}%` }} /></div><span className="text-sm font-medium text-slate-500">{formatDate(row.date)}</span></Link>)}</div></div>;
+  const taskRows = tasks
+    .filter((task) => task.dueDate)
+    .map((task) => ({
+      id: `t-${task.id}`,
+      type: "Tarea",
+      title: task.title,
+      subtitle: task.projectTitle ?? task.clientName ?? "Tarea individual",
+      href: `/app/tasks/${task.id}`,
+      date: task.dueDate,
+      progress: taskCompletionPercent(task),
+      status: task.status ?? "pendiente",
+      priority: normalizePriority(task.priority),
+    }));
+  const projectRows = projects
+    .filter((project) => project.dueDate)
+    .map((project) => ({
+      id: `p-${project.id}`,
+      type: "Proyecto",
+      title: project.title,
+      subtitle: `${project.taskTotal} tareas`,
+      href: `/app/workspace?projectId=${project.id}`,
+      date: project.dueDate,
+      progress: project.progress,
+      status: project.status ?? "activo",
+      priority: "media" as TaskPriorityActionId,
+    }));
+  const rows = [...projectRows, ...taskRows]
+    .sort((a, b) => String(a.date ?? "9999").localeCompare(String(b.date ?? "9999")))
+    .slice(0, 18);
+  const todayKey = new Date().toISOString().slice(0, 10);
+  const overdueCount = rows.filter((row) => String(row.date ?? "") < todayKey && row.progress < 100).length;
+  if (!rows.length) return <WorkspaceEmptyState icon="tasks" title="Timeline sin fechas" description="Agregá fechas límite desde Lista para ver el calendario de trabajo." actionHref="/app/workspace?view=list" actionLabel="Abrir Lista" tone="blue" />;
+  return (
+    <div className="mx-auto max-w-[1440px] rounded-2xl border border-slate-200 bg-white p-5 shadow-sm ws-pro-view-frame ws-pro-timeline-view">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h3 className="text-base font-semibold text-slate-950">Timeline</h3>
+          <p className="mt-1 text-sm text-slate-500">Fechas, avance y estado en una vista simple.</p>
+        </div>
+        <div className="flex gap-2"><MetricChip label="Items" value={rows.length} /><MetricChip label="Atrasos" value={overdueCount} tone="rose" /></div>
+      </div>
+      <div className="mt-5 space-y-3">
+        {rows.map((row) => {
+          const dateKey = String(row.date ?? "").slice(0, 10);
+          const isOverdue = dateKey < todayKey && row.progress < 100;
+          return (
+            <Link key={row.id} href={row.href} className={isOverdue ? "ws-pro-timeline-row is-late" : "ws-pro-timeline-row"}>
+              <div className="ws-pro-timeline-date"><span>{formatDate(row.date)}</span><small>{row.type}</small></div>
+              <div className="min-w-0">
+                <p className="truncate text-sm font-semibold text-slate-950">{row.title}</p>
+                <p className="mt-0.5 truncate text-xs text-slate-500">{row.subtitle}</p>
+              </div>
+              <div className="ws-pro-timeline-progress" aria-label={`Avance ${row.progress}%`}><span style={{ width: `${Math.max(6, Math.min(100, row.progress))}%` }} /></div>
+              <div className="flex flex-wrap justify-end gap-2"><StatusBadge status={row.status} /><PriorityBadge priority={row.priority} /></div>
+            </Link>
+          );
+        })}
+      </div>
+    </div>
+  );
 }
 
 function WorkspaceProTable({ tasks }: { tasks: WorkspaceTaskItem[] }) { if (!tasks.length) return <WorkspaceEmptyState icon="tasks" title="Tabla sin registros" description="Las tareas del proyecto se mostrarán en formato tabla editable. Primero agregá tareas desde Lista o desde el flujo de creación." actionHref="/app/workspace?view=list" actionLabel="Abrir Lista" tone="blue" />; return <div className="mx-auto max-w-[1440px] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm ws-pro-view-frame"><div className="overflow-x-auto ws-pro-hide-scrollbar"><table className="min-w-[900px] w-full text-left text-sm"><thead className="border-b border-slate-100 bg-slate-50 text-xs uppercase tracking-[0.08em] text-slate-400"><tr><th className="px-4 py-3">Tarea</th><th>Estado</th><th>Prioridad</th><th>Fecha</th><th>Proyecto</th><th>Acciones</th></tr></thead><tbody className="divide-y divide-slate-100">{tasks.map((task) => <tr key={task.id} className="hover:bg-slate-50"><td className="px-4 py-3 font-medium text-slate-950"><Link href={`/app/tasks/${task.id}`}>{task.title}</Link></td><td><StatusBadge status={task.status} /></td><td><PriorityBadge priority={task.priority} /></td><td className="text-slate-500">{formatDate(task.dueDate)}</td><td className="text-slate-500">{task.projectTitle ?? "Tarea individual"}</td><td><Link href={`/app/tasks/${task.id}/edit`} className="ws-pro-mini-action">Editar</Link></td></tr>)}</tbody></table></div></div>; }
@@ -920,11 +958,11 @@ function WorkspaceProReports({ tasks, projects, reports, derived, context }: { t
       </div>
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
         <CleanCard title="Generador de reportes">
-          <p className="text-sm leading-6 text-slate-500">Configura el alcance y genera reportes usando las métricas reales del workspace. El módulo completo de Reportes sigue disponible para exportaciones avanzadas.</p>
+          <p className="text-sm leading-6 text-slate-500">Generá reportes por estado, prioridad y avance del trabajo.</p>
           <div className="mt-4 grid gap-3 md:grid-cols-3">
             <ReportAction title="Reporte completo" text="Abrí el módulo con el contexto elegido." href={reportHref} icon={<BarChart3 className="h-4 w-4" />} />
             <ReportAction title="Vista imprimible" text="Prepará una versión para PDF." href={printHref} icon={<FileText className="h-4 w-4" />} />
-            <ReportAction title="Exportar Excel" text="Usá el exportador del módulo reportes." href="/app/reports" icon={<Download className="h-4 w-4" />} />
+            <ReportAction title="Exportar Excel" text="Abrí reportes para exportar el archivo." href="/app/reports" icon={<Download className="h-4 w-4" />} />
           </div>
           <div className="mt-5 rounded-xl border border-slate-200 bg-slate-50 p-4">
             <h4 className="text-sm font-semibold text-slate-950">Métricas incluidas</h4>

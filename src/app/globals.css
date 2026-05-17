@@ -7662,3 +7662,109 @@
     align-items: stretch;
   }
 }
+
+/* v58.28.3 — Workspace Pro User Language + Timeline Flow */
+.ws-pro-board-card.is-menu-open {
+  z-index: 70;
+  box-shadow: 0 20px 45px rgba(15, 23, 42, .14), 0 1px 0 rgba(255,255,255,.8) inset;
+}
+.ws-pro-task-editor-inline-row {
+  display: flex;
+  min-width: 0;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: .5rem;
+  overflow-x: auto;
+  border-top: 1px solid #eef2f7;
+  border-bottom: 1px solid #eef2f7;
+  padding: .65rem 0;
+  scrollbar-width: none;
+}
+.ws-pro-task-editor-inline-row::-webkit-scrollbar { display: none; }
+.ws-pro-inline-select,
+.ws-pro-inline-date {
+  flex: 0 0 auto;
+  height: 2.25rem;
+  min-width: 8.25rem;
+  border: 1px solid #e2e8f0;
+  border-radius: .8rem;
+  background: #fff;
+  padding: 0 .75rem;
+  color: #334155;
+  font-size: .78rem;
+  font-weight: 760;
+  outline: none;
+  transition: border-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
+}
+.ws-pro-inline-date { min-width: 9.25rem; }
+.ws-pro-inline-select:focus,
+.ws-pro-inline-date:focus {
+  border-color: rgba(22, 199, 132, .55);
+  box-shadow: 0 0 0 4px rgba(22, 199, 132, .12);
+}
+.ws-pro-timeline-view {
+  overflow: hidden;
+}
+.ws-pro-timeline-row {
+  display: grid;
+  grid-template-columns: 8.5rem minmax(0, 1fr) minmax(12rem, .55fr) minmax(12rem, auto);
+  align-items: center;
+  gap: 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  background: #fff;
+  padding: .85rem;
+  transition: border-color 160ms ease, background-color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+}
+.ws-pro-timeline-row:hover {
+  border-color: #cbd5e1;
+  background: #f8fafc;
+  transform: translateY(-1px);
+  box-shadow: 0 14px 30px rgba(15, 23, 42, .08);
+}
+.ws-pro-timeline-row.is-late {
+  border-color: rgba(244, 63, 94, .24);
+  background: linear-gradient(135deg, #fff, #fff7f8);
+}
+.ws-pro-timeline-date {
+  display: flex;
+  flex-direction: column;
+  gap: .15rem;
+  color: #334155;
+  font-size: .8rem;
+  font-weight: 820;
+}
+.ws-pro-timeline-date small {
+  color: #94a3b8;
+  font-size: .68rem;
+  font-weight: 760;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.ws-pro-timeline-progress {
+  height: .7rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e2e8f0;
+}
+.ws-pro-timeline-progress span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: #0f172a;
+}
+@media (max-width: 980px) {
+  .ws-pro-timeline-row {
+    grid-template-columns: 1fr;
+    gap: .65rem;
+  }
+  .ws-pro-task-editor-inline-row {
+    flex-wrap: wrap;
+    overflow-x: visible;
+  }
+  .ws-pro-inline-select,
+  .ws-pro-inline-date,
+  .ws-pro-editor-inline-action {
+    flex: 1 1 10rem;
+  }
+}
