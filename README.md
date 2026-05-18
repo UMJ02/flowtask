@@ -430,3 +430,12 @@ Workspace Pro ahora carga bajo demanda superficies ocultas como Quick Create, Sp
 ## v58.28.17.1 — Unified Data QA Inline Status Type Hotfix
 
 Corrige el typecheck del selector inline de estado en Workspace, manteniendo la sincronización Clásico + Pro de v58.28.17.
+
+## v58.28.18 — Dependency Security Audit + Safe Next Patch
+
+Security patch focused on clearing `npm audit` without `--force`.
+
+- Next.js pinned to `15.5.18`.
+- `npm audit --audit-level=moderate` expected to return 0 vulnerabilities.
+- Added `workspace:dependency-security:ready`.
+- No UI, Supabase, RLS, migration or data-sync changes.

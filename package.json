@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "58.28.17.1-unified-data-qa-inline-status-type-hotfix",
+  "version": "58.28.18.1-dependency-security-public-registry-lockfile-hotfix",
   "private": true,
   "scripts": {
     "dev": "node node_modules/next/dist/bin/next dev",
@@ -15,8 +15,8 @@
     "runtime:check": "node scripts/runtime-check.mjs",
     "prebuild": "npm run runtime:check",
     "vercel:build": "npm run clean && npm run build:preflight && node node_modules/next/dist/bin/next build",
-    "build:preflight": "npm run validate:node && npm run validate:env && npm run verify:current && npm run workspace:doctor && npm run workspace:production:ready && npm run workspace:real-env:ready && npm run workspace:performance:ready && npm run workspace:client-performance:ready && npm run workspace:design-reset:ready && npm run workspace:layout-cleanup:ready && npm run workspace:no-motion-board-portal:ready && npm run workspace:home-solid-cards:ready && npm run workspace:board-active-actions:ready && npm run workspace:board-pro:ready && npm run workspace:files-reports:ready && npm run runtime:check && npm run workspace:final-cleanup:ready && npm run workspace:component-split:ready && npm run workspace:deep-component:ready && npm run workspace:task-sync:ready && npm run workspace:unified-data-qa:ready && npm run typecheck && npm run deploy:readiness && npm run board:stability && npm run client:readiness:check && npm run deploy:production:ready",
-    "verify:current": "npm run verify:v58.28.17.1",
+    "build:preflight": "npm run validate:node && npm run validate:env && npm run verify:current && npm run workspace:doctor && npm run workspace:production:ready && npm run workspace:real-env:ready && npm run workspace:performance:ready && npm run workspace:client-performance:ready && npm run workspace:design-reset:ready && npm run workspace:layout-cleanup:ready && npm run workspace:no-motion-board-portal:ready && npm run workspace:home-solid-cards:ready && npm run workspace:board-active-actions:ready && npm run workspace:board-pro:ready && npm run workspace:files-reports:ready && npm run runtime:check && npm run workspace:final-cleanup:ready && npm run workspace:component-split:ready && npm run workspace:deep-component:ready && npm run workspace:task-sync:ready && npm run workspace:unified-data-qa:ready && npm run workspace:dependency-security:ready && npm run typecheck && npm run deploy:readiness && npm run board:stability && npm run client:readiness:check && npm run deploy:production:ready",
+    "verify:current": "npm run verify:v58.28.18.1",
     "workspace:doctor": "node scripts/workspace-persistence-doctor.mjs",
     "workspace:production:ready": "node scripts/workspace-production-readiness-check.mjs",
     "workspace:real-env:ready": "node scripts/workspace-real-environment-hardening-check.mjs",
@@ -74,7 +74,10 @@
     "verify:v58.28.16.2": "node scripts/verify-v58.28.16.2.mjs",
     "verify:v58.28.17": "node scripts/verify-v58.28.17.mjs",
     "workspace:unified-data-qa:ready": "node scripts/workspace-pro-unified-data-qa-final-user-flow-check.mjs",
-    "verify:v58.28.17.1": "node scripts/verify-v58.28.17.1.mjs"
+    "verify:v58.28.17.1": "node scripts/verify-v58.28.17.1.mjs",
+    "verify:v58.28.18": "node scripts/verify-v58.28.18.mjs",
+    "workspace:dependency-security:ready": "node scripts/workspace-pro-dependency-security-public-registry-lockfile-check.mjs",
+    "verify:v58.28.18.1": "node scripts/verify-v58.28.18.1.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
@@ -82,14 +85,14 @@
     "@supabase/supabase-js": "^2.56.0",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
+    "dotenv": "^16.4.7",
     "lucide-react": "^0.511.0",
-    "next": "^15.3.8",
+    "next": "15.5.18",
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "react-hook-form": "^7.54.2",
     "tailwind-merge": "^3.3.0",
-    "zod": "^3.24.1",
-    "dotenv": "^16.4.7"
+    "zod": "^3.24.1"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
@@ -98,12 +101,20 @@
     "autoprefixer": "^10.4.21",
     "eslint": "^9.24.0",
     "eslint-config-next": "^15.3.8",
-    "postcss": "^8.5.3",
+    "postcss": "8.5.14",
     "tailwindcss": "^3.4.17",
     "tsx": "^4.19.3",
     "typescript": "^5.8.2"
   },
   "engines": {
     "node": "20.x"
+  },
+  "overrides": {
+    "next@15.5.18": {
+      "postcss": "8.5.14"
+    },
+    "brace-expansion": "5.0.6",
+    "picomatch": "4.0.4",
+    "ws": "8.20.1"
   }
 }

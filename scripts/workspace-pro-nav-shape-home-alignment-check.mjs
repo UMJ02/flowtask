@@ -11,9 +11,11 @@ const allowed = ["58.28.11-workspace-pro-nav-shape-home-alignment", "58.28.12-wo
   "58.28.16.1-task-data-sync-cli-hotfix",
   "58.28.16.2-classic-pro-status-parity",
   "58.28.17-classic-pro-unified-data-qa-final-user-flow",
-  "58.28.17.1-unified-data-qa-inline-status-type-hotfix"];
+  "58.28.17.1-unified-data-qa-inline-status-type-hotfix",
+  "58.28.18.1-dependency-security-public-registry-lockfile-hotfix"];
 const allowedVerify = ["npm run verify:v58.28.11", "npm run verify:v58.28.12", "npm run verify:v58.28.15", "npm run verify:v58.28.16", "npm run verify:v58.28.16.1", "npm run verify:v58.28.16.2", "npm run verify:v58.28.17",
-  "npm run verify:v58.28.17.1"];
+  "npm run verify:v58.28.17.1",
+  "npm run verify:v58.28.18.1"];
 if (!allowed.includes(pkg.version)) failures.push("Unexpected package version");
 if (!allowedVerify.includes(pkg.scripts?.["verify:current"])) failures.push("verify:current must target verify:v58.28.11+");
 if (!allowed.some((item) => version.includes(item))) failures.push("version.ts must contain v58.28.11+ slug");

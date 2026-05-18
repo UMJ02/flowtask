@@ -19,9 +19,11 @@ if (!["58.28.15-workspace-pro-deep-component-extraction-lazy-view-loading", "58.
   "58.28.16.1-task-data-sync-cli-hotfix",
   "58.28.16.2-classic-pro-status-parity",
   "58.28.17-classic-pro-unified-data-qa-final-user-flow",
-  "58.28.17.1-unified-data-qa-inline-status-type-hotfix"].includes(pkg.version)) failures.push("package version is not an allowed v58.28 runtime version");
+  "58.28.17.1-unified-data-qa-inline-status-type-hotfix",
+  "58.28.18.1-dependency-security-public-registry-lockfile-hotfix"].includes(pkg.version)) failures.push("package version is not an allowed v58.28 runtime version");
 if (!["npm run verify:v58.28.15", "npm run verify:v58.28.16", "npm run verify:v58.28.16.1", "npm run verify:v58.28.16.2", "npm run verify:v58.28.17",
-  "npm run verify:v58.28.17.1"].includes(pkg.scripts?.["verify:current"])) failures.push("verify:current is not an allowed v58.28 runtime verify target");
+  "npm run verify:v58.28.17.1",
+  "npm run verify:v58.28.18.1"].includes(pkg.scripts?.["verify:current"])) failures.push("verify:current is not an allowed v58.28 runtime verify target");
 if (!pkg.scripts?.["build:preflight"]?.includes("workspace:component-split:ready")) failures.push("build:preflight does not include component split check");
 if (!source.includes("memo,")) failures.push("React memo import missing");
 if (!source.includes("useCallback")) failures.push("View callbacks must be stable with useCallback");

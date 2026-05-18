@@ -14,16 +14,19 @@ if (!["58.28.11-workspace-pro-nav-shape-home-alignment", "58.28.12-workspace-pro
   "58.28.16.1-task-data-sync-cli-hotfix",
   "58.28.16.2-classic-pro-status-parity",
   "58.28.17-classic-pro-unified-data-qa-final-user-flow",
-  "58.28.17.1-unified-data-qa-inline-status-type-hotfix"].includes(pkg.version)) failures.push("Unexpected package version");
+  "58.28.17.1-unified-data-qa-inline-status-type-hotfix",
+  "58.28.18.1-dependency-security-public-registry-lockfile-hotfix"].includes(pkg.version)) failures.push("Unexpected package version");
 if (!["npm run verify:v58.28.11", "npm run verify:v58.28.12", "npm run verify:v58.28.15", "npm run verify:v58.28.16", "npm run verify:v58.28.16.1", "npm run verify:v58.28.16.2", "npm run verify:v58.28.17",
-  "npm run verify:v58.28.17.1"].includes(pkg.scripts?.["verify:current"])) failures.push("verify:current must target verify:v58.28.11");
+  "npm run verify:v58.28.17.1",
+  "npm run verify:v58.28.18.1"].includes(pkg.scripts?.["verify:current"])) failures.push("verify:current must target verify:v58.28.11");
 if (!version.includes("58.28.11-workspace-pro-nav-shape-home-alignment") && !version.includes("58.28.12-workspace-pro-home-hero-solid-card-colors",
   "58.28.15-workspace-pro-deep-component-extraction-lazy-view-loading",
   "58.28.16-task-data-sync-status-source-of-truth",
   "58.28.16.1-task-data-sync-cli-hotfix",
   "58.28.16.2-classic-pro-status-parity",
   "58.28.17-classic-pro-unified-data-qa-final-user-flow",
-  "58.28.17.1-unified-data-qa-inline-status-type-hotfix")) failures.push("version.ts must contain v58.28.11 slug");
+  "58.28.17.1-unified-data-qa-inline-status-type-hotfix",
+  "58.28.18.1-dependency-security-public-registry-lockfile-hotfix")) failures.push("version.ts must contain v58.28.11 slug");
 if (!css.includes("v58.28.11 — Workspace Pro Nav Shape + Home Alignment")) failures.push("v58.28.11 CSS block missing");
 if (!css.includes(".ws-pro-home-summary") || !css.includes("grid-template-columns: minmax(0, 1fr) auto")) failures.push("Home alignment override missing");
 if (!css.includes(".ws-pro-tabs-strip .ws-pro-tab-active") || !css.includes("border-radius: 999px")) failures.push("Nav pill shape override missing");
