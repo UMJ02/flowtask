@@ -15,12 +15,14 @@ const allowedVersions = [
   "58.28.5-workspace-pro-brand-accent-pro-navigation-identity",
   "58.28.6-workspace-pro-completed-filter-anchored-actions",
   "58.28.7-workspace-pro-performance-pass-fast-view-switching",
+  "58.28.8-workspace-pro-client-performance-anchored-popovers",
 ];
 
 if (!allowedVersions.includes(pkg.version)) failures.push(`Unexpected package version: ${pkg.version}`);
 if (!["npm run verify:v58.28.0", "npm run verify:v58.28.1", "npm run verify:v58.28.2", "npm run verify:v58.28.3", "npm run verify:v58.28.4", "npm run verify:v58.28.5",
   "npm run verify:v58.28.6",
-  "npm run verify:v58.28.7"].includes(pkg.scripts?.["verify:current"])) failures.push("verify:current must target the active v58.28.x verify script");
+  "npm run verify:v58.28.7",
+  "npm run verify:v58.28.8"].includes(pkg.scripts?.["verify:current"])) failures.push("verify:current must target the active v58.28.x verify script");
 if (!String(pkg.scripts?.["build:preflight"] ?? "").includes("workspace:production-ux:ready")) failures.push("build:preflight must include workspace:production-ux:ready");
 
 const baseMarkers = [
@@ -29,7 +31,7 @@ const baseMarkers = [
   "actionLabel=\"Abrir Lista\"",
 ];
 for (const marker of baseMarkers) if (!page.includes(marker)) failures.push(`workspace-pro-page.tsx missing marker: ${marker}`);
-if (!page.includes("WorkspaceProProductionUXStrip") && !page.includes("WorkspaceProUser Language") && !page.includes("v58.28.3") && !page.includes("v58.28.4")) failures.push("workspace-pro-page.tsx missing production/user-language marker");
+if (!page.includes("WorkspaceProProductionUXStrip") && !page.includes("WorkspaceProUser Language") && !page.includes("v58.28.3") && !page.includes("v58.28.4") && !page.includes("v58.28.8")) failures.push("workspace-pro-page.tsx missing production/user-language marker");
 if (page.includes("Production UX Final") && pkg.version.includes("58.28.3")) failures.push("v58.28.3 must not expose Production UX Final banner text");
 
 for (const marker of ["v58.28.0 — Workspace Pro Production UX Final", ":focus-visible", "scroll-padding"]) {

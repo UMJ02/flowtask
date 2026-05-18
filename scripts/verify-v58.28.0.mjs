@@ -7,7 +7,8 @@ const pkg = JSON.parse(read("package.json"));
 const version = "58.28.0-workspace-pro-production-ux-final";
 const verifyTarget = "npm run verify:v58.28.0", "npm run verify:v58.28.1", "npm run verify:v58.28.2", "npm run verify:v58.28.3", "npm run verify:v58.28.4", "npm run verify:v58.28.5",
   "npm run verify:v58.28.6",
-  "npm run verify:v58.28.7";
+  "npm run verify:v58.28.7",
+  "npm run verify:v58.28.8";
 
 if (pkg.version !== version) failures.push(`Unexpected package version: ${pkg.version}`);
 if (pkg.scripts?.["verify:current"] !== verifyTarget) failures.push("verify:current must target verify:v58.28.0");

@@ -339,3 +339,12 @@ Oculta tareas concluidas por defecto en todas las vistas activas y ancla el pane
 - Removed forced `router.refresh()` from view changes.
 - Added hover/pressed feedback and render-cost CSS containment.
 - Added `workspace:performance-pass:ready`.
+
+
+## v58.28.8 — Workspace Pro Client Performance + Anchored Popovers
+
+- Cambio de vistas client-side para reducir sensación de lentitud.
+- Board con actualizaciones optimistas para estado/prioridad.
+- Popover de acciones anclado a la tarjeta.
+- Cintillo animado de actualización de vista.
+- `build:preflight` incluye `workspace:client-performance:ready`.
