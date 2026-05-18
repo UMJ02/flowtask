@@ -1,10 +1,11 @@
 "use client";
 
-// v58.28.8 — Workspace Pro Client Performance + Anchored Board Popovers
-// Focus: depurar render costoso, eliminar refresh innecesario y anclar acciones al item real.
+// v58.28.10 — Workspace Pro No Motion + Board Portal + Home Board Colors
+// Focus: eliminar animaciones/skeletons del workspace, portal real para acciones del board y colores Home alineados al Board.
 
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, type CSSProperties, type MouseEvent } from "react";
+import { createPortal } from "react-dom";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   Activity,
@@ -185,19 +186,10 @@ export function WorkspaceProPage(props: WorkspaceProPageProps) {
   const [sharePanelOpen, setSharePanelOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
   const [displayedView, setDisplayedView] = useState(activeView);
-  const [isViewPending, startViewTransition] = useTransition();
-  const [viewFlash, setViewFlash] = useState(false);
-  const viewFlashTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     setDisplayedView(activeView);
   }, [activeView]);
-
-  useEffect(() => {
-    return () => {
-      if (viewFlashTimer.current) clearTimeout(viewFlashTimer.current);
-    };
-  }, []);
 
   const activeTasks = useMemo(
     () => tasks.filter((task) => !isDone(task.status)),
@@ -231,20 +223,15 @@ export function WorkspaceProPage(props: WorkspaceProPageProps) {
   function openView(view: WorkspaceViewId) {
     if (view === displayedView) return;
     setMoreOpen(false);
-    setViewFlash(true);
-    if (viewFlashTimer.current) clearTimeout(viewFlashTimer.current);
-    viewFlashTimer.current = setTimeout(() => setViewFlash(false), 420);
-    startViewTransition(() => {
-      setDisplayedView(view);
-      if (typeof window === "undefined") return;
-      const next = new URLSearchParams(window.location.search);
-      if (view === "home") next.delete("view");
-      else next.set("view", view);
-      next.delete("savedViewId");
-      const query = next.toString();
-      const href = query ? `/app/workspace?${query}` : "/app/workspace";
-      window.history.replaceState(null, "", href);
-    });
+    setDisplayedView(view);
+    if (typeof window === "undefined") return;
+    const next = new URLSearchParams(window.location.search);
+    if (view === "home") next.delete("view");
+    else next.set("view", view);
+    next.delete("savedViewId");
+    const query = next.toString();
+    const href = query ? `/app/workspace?${query}` : "/app/workspace";
+    window.history.replaceState(null, "", href);
   }
 
   return (
@@ -485,7 +472,6 @@ export function WorkspaceProPage(props: WorkspaceProPageProps) {
                 activeView={displayedView}
                 projectViews={projectViews}
                 onOpenView={openView}
-                isPending={isViewPending}
               />
               <WorkspaceProFilterBar
                 status={statusParam}
@@ -508,12 +494,6 @@ export function WorkspaceProPage(props: WorkspaceProPageProps) {
                   persistenceStatus={persistenceStatus}
                   permissions={permissions}
                 />
-              ) : null}
-              {viewFlash || isViewPending ? (
-                <div className="ws-pro-view-switching" aria-live="polite">
-                  <span />
-                  Actualizando vista
-                </div>
               ) : null}
               {context.invalidSavedViewId ? (
                 <div className="mb-4">
@@ -784,12 +764,10 @@ function WorkspaceProTabs({
   activeView,
   projectViews,
   onOpenView,
-  isPending = false,
 }: {
   activeView: WorkspaceViewId;
   projectViews: WorkspaceProjectViewPreference[];
   onOpenView: (view: WorkspaceViewId) => void;
-  isPending?: boolean;
 }) {
   const persistedTypes = new Set(projectViews.map((view) => view.viewType));
   return (
@@ -802,7 +780,6 @@ function WorkspaceProTabs({
             key={view.id}
             type="button"
             aria-pressed={active}
-            disabled={isPending && !active}
             onClick={() => onOpenView(view.id)}
             className={active ? "ws-pro-tab-active" : "ws-pro-tab"}
           >
@@ -1535,6 +1512,31 @@ function normalizePriority(value?: string | null): TaskPriorityActionId {
   return "media";
 }
 
+type BoardActionAnchor = {
+  top: number;
+  left: number;
+  right: number;
+  bottom: number;
+  width: number;
+  height: number;
+};
+
+function getBoardActionPanelVars(anchor: BoardActionAnchor): CSSProperties {
+  if (typeof window === "undefined") return {};
+  const panelWidth = Math.min(352, Math.max(300, window.innerWidth - 32));
+  const gutter = 12;
+  const rightSpace = window.innerWidth - anchor.right;
+  const preferredLeft = rightSpace >= panelWidth + gutter
+    ? anchor.right + gutter
+    : anchor.left - panelWidth - gutter;
+  const left = Math.max(16, Math.min(preferredLeft, window.innerWidth - panelWidth - 16));
+  const top = Math.max(16, Math.min(anchor.top - 8, window.innerHeight - 456));
+  return {
+    "--board-action-left": `${left}px`,
+    "--board-action-top": `${top}px`,
+  } as CSSProperties;
+}
+
 function WorkspaceProBoard({
   tasks,
   projects,
@@ -1564,6 +1566,7 @@ function WorkspaceProBoard({
     text: string;
   } | null>(null);
   const [openActionTaskId, setOpenActionTaskId] = useState<string | null>(null);
+  const [openActionAnchor, setOpenActionAnchor] = useState<BoardActionAnchor | null>(null);
   const [localTasks, setLocalTasks] = useState(tasks);
   useEffect(() => {
     setLocalTasks(tasks);
@@ -1601,6 +1604,7 @@ function WorkspaceProBoard({
     setDraggingTaskId(null);
     setOverColumn(null);
     setOpenActionTaskId(null);
+    setOpenActionAnchor(null);
     setBoardMessage(null);
     const current = localTasks.find((task) => task.id === taskId);
     if (current && normalizeBoardStatus(current.status) === status) return;
@@ -1632,6 +1636,7 @@ function WorkspaceProBoard({
     priority: TaskPriorityActionId,
   ) {
     setOpenActionTaskId(null);
+    setOpenActionAnchor(null);
     setBoardMessage(null);
     const previousTasks = localTasks;
     setLocalTasks((items) =>
@@ -1656,8 +1661,23 @@ function WorkspaceProBoard({
     setBoardMessage({ tone: "success", text: "Prioridad actualizada." });
   }
 
-  function openTaskActions(taskId: string) {
-    setOpenActionTaskId((value) => (value === taskId ? null : taskId));
+  function openTaskActions(taskId: string, event: MouseEvent<HTMLButtonElement>) {
+    const rect = event.currentTarget.getBoundingClientRect();
+    setOpenActionTaskId((value) => {
+      if (value === taskId) {
+        setOpenActionAnchor(null);
+        return null;
+      }
+      setOpenActionAnchor({
+        top: rect.top,
+        left: rect.left,
+        right: rect.right,
+        bottom: rect.bottom,
+        width: rect.width,
+        height: rect.height,
+      });
+      return taskId;
+    });
   }
 
   if (!boardTasks.length) {
@@ -1820,30 +1840,38 @@ function WorkspaceProBoard({
                         <div className="relative shrink-0">
                           <button
                             type="button"
-                            onClick={() => openTaskActions(task.id)}
+                            onClick={(event) => openTaskActions(task.id, event)}
                             className="ws-pro-icon-button h-7 w-7"
                             aria-label="Abrir acciones de tarea"
                           >
                             <MoreHorizontal className="h-3.5 w-3.5" />
                           </button>
-                          {openActionTaskId === task.id ? (
-                            <WorkspaceProBoardActionPanel
-                              task={task}
-                              currentStatus={normalizeBoardStatus(task.status)}
-                              busy={busyMove === task.id}
-                              onClose={() => setOpenActionTaskId(null)}
-                              onMove={(status) =>
-                                void moveTask(task.id, status)
-                              }
-                              onPriority={(priority) =>
-                                void updateTaskPriority(task.id, priority)
-                              }
-                              onQuickEdit={() => {
-                                setEditingTask(task);
-                                setOpenActionTaskId(null);
-                              }}
-                            />
-                          ) : null}
+                          {openActionTaskId === task.id && openActionAnchor && typeof document !== "undefined"
+                            ? createPortal(
+                                <WorkspaceProBoardActionPanel
+                                  task={task}
+                                  currentStatus={normalizeBoardStatus(task.status)}
+                                  busy={busyMove === task.id}
+                                  anchor={openActionAnchor}
+                                  onClose={() => {
+                                    setOpenActionTaskId(null);
+                                    setOpenActionAnchor(null);
+                                  }}
+                                  onMove={(status) =>
+                                    void moveTask(task.id, status)
+                                  }
+                                  onPriority={(priority) =>
+                                    void updateTaskPriority(task.id, priority)
+                                  }
+                                  onQuickEdit={() => {
+                                    setEditingTask(task);
+                                    setOpenActionTaskId(null);
+                                    setOpenActionAnchor(null);
+                                  }}
+                                />,
+                                document.body,
+                              )
+                            : null}
                         </div>
                       </div>
                       <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
@@ -1872,6 +1900,7 @@ function WorkspaceProBoardActionPanel({
   task,
   currentStatus,
   busy,
+  anchor,
   onClose,
   onMove,
   onPriority,
@@ -1880,6 +1909,7 @@ function WorkspaceProBoardActionPanel({
   task: WorkspaceTaskItem;
   currentStatus: BoardColumnId;
   busy: boolean;
+  anchor: BoardActionAnchor;
   onClose: () => void;
   onMove: (status: BoardColumnId) => void;
   onPriority: (priority: TaskPriorityActionId) => void;
@@ -1888,6 +1918,7 @@ function WorkspaceProBoardActionPanel({
   return (
     <aside
       className="ws-pro-board-action-panel ws-pro-board-action-popover"
+      style={getBoardActionPanelVars(anchor)}
       role="dialog"
       aria-modal="false"
       aria-label="Acciones de tarea"

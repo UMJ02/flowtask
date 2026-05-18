@@ -8,7 +8,8 @@ const failures = [];
 if (pkg.version !== "58.28.7-workspace-pro-performance-pass-fast-view-switching") failures.push("package.json version must be v58.28.7 performance pass slug");
 if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.28.7",
   "npm run verify:v58.28.8",
-  "npm run verify:v58.28.9") failures.push("verify:current must target verify:v58.28.7");
+  "npm run verify:v58.28.9",
+  "npm run verify:v58.28.10") failures.push("verify:current must target verify:v58.28.7");
 if (!String(pkg.scripts?.["build:preflight"] ?? "").includes("workspace:performance-pass:ready")) failures.push("build:preflight must include workspace:performance-pass:ready");
 if (!version.includes("58.28.7-workspace-pro-performance-pass-fast-view-switching")) failures.push("release version must be v58.28.7");
 if (!page.includes("displayedView") || !page.includes("window.history.replaceState") || page.includes('router.refresh();\n  }\n\n  function openView')) failures.push("Workspace view changes must be optimistic and must not force router.refresh");

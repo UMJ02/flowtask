@@ -5,10 +5,13 @@ const version = fs.readFileSync("src/lib/release/version.ts", "utf8");
 const css = fs.readFileSync("src/app/globals.css", "utf8");
 const failures = [];
 
-if (pkg.version !== "58.28.9-workspace-pro-brand-pastel-loading-system") failures.push("package.json version must be v58.28.9 brand pastel loading slug");
-if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.28.9") failures.push("verify:current must target verify:v58.28.9");
+if (pkg.version !== "58.28.9-workspace-pro-brand-pastel-loading-system",
+  "58.28.10-workspace-pro-no-motion-board-portal-home-colors") failures.push("package.json version must be v58.28.9 brand pastel loading slug");
+if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.28.9",
+  "npm run verify:v58.28.10") failures.push("verify:current must target verify:v58.28.9");
 if (!String(pkg.scripts?.["build:preflight"] ?? "").includes("workspace:brand-pastel:ready")) failures.push("build:preflight must include workspace:brand-pastel:ready");
-if (!version.includes("58.28.9-workspace-pro-brand-pastel-loading-system")) failures.push("release version must be v58.28.9");
+if (!version.includes("58.28.9-workspace-pro-brand-pastel-loading-system",
+  "58.28.10-workspace-pro-no-motion-board-portal-home-colors")) failures.push("release version must be v58.28.9");
 if (!css.includes("v58.28.9 — Workspace Pro Brand Pastel Loading System")) failures.push("globals.css must include v58.28.9 pastel loading marker");
 if (!css.includes("ws-pro-view-switching::before")) failures.push("view switching must use full-width pastel ribbon animation");
 

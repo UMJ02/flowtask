@@ -10,7 +10,8 @@ if (pkg.version !== "58.28.6-workspace-pro-completed-filter-anchored-actions",
 if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.28.6",
   "npm run verify:v58.28.7",
   "npm run verify:v58.28.8",
-  "npm run verify:v58.28.9") failures.push("verify:current must target verify:v58.28.6");
+  "npm run verify:v58.28.9",
+  "npm run verify:v58.28.10") failures.push("verify:current must target verify:v58.28.6");
 if (!String(pkg.scripts?.["build:preflight"] ?? "").includes("workspace:board-active-actions:ready")) failures.push("build:preflight must include workspace:board-active-actions:ready");
 if (!version.includes("58.28.6-workspace-pro-completed-filter-anchored-actions",
   "58.28.7-workspace-pro-performance-pass-fast-view-switching")) failures.push("release version must be v58.28.6");

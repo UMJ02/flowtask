@@ -8310,3 +8310,70 @@
     margin-inline: -1rem !important;
   }
 }
+
+
+/* v58.28.10 — Workspace Pro No Motion + Board Portal + Home Board Colors */
+.ws-pro-view-switching {
+  display: none !important;
+}
+.ws-pro-shell *,
+.ws-pro-shell *::before,
+.ws-pro-shell *::after {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+}
+.ws-pro-shell .ft-skeleton,
+.ws-pro-shell .ft-skeleton-card,
+.ws-pro-shell .ft-skeleton-line,
+.ws-pro-shell .skeleton,
+.ws-pro-shell [class*="skeleton"] {
+  animation: none !important;
+  background: #f8fafc !important;
+}
+.ws-pro-shell [class*="skeleton"]::before,
+.ws-pro-shell [class*="skeleton"]::after,
+.ws-pro-shell .ft-skeleton::after,
+.ws-pro-shell .ft-skeleton-card::after,
+.ws-pro-shell .ft-skeleton-line::after {
+  display: none !important;
+}
+.ws-pro-home-summary,
+.ws-pro-hero-card {
+  border-color: rgba(203, 213, 225, .86) !important;
+  background:
+    linear-gradient(135deg, rgba(14, 165, 233, .055), rgba(37, 99, 235, .045) 28%, rgba(124, 58, 237, .04) 55%, rgba(245, 158, 11, .055) 78%, rgba(16, 185, 129, .065)),
+    #fff !important;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, .045) !important;
+}
+.ws-pro-clean-card::before,
+.ws-pro-hero-card::before {
+  background: linear-gradient(90deg, #0ea5e9, #2563eb, #7c3aed, #f59e0b, #10b981) !important;
+  opacity: .72 !important;
+}
+.ws-pro-board-action-popover {
+  position: fixed !important;
+  top: var(--board-action-top) !important;
+  left: var(--board-action-left) !important;
+  right: auto !important;
+  bottom: auto !important;
+  z-index: 9999 !important;
+  width: min(22rem, calc(100vw - 2rem)) !important;
+  max-height: min(34rem, calc(100vh - 2rem)) !important;
+  overflow-y: auto !important;
+  transform: none !important;
+}
+.ws-pro-board-card.is-menu-open {
+  z-index: auto !important;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, .08) !important;
+}
+@media (max-width: 860px) {
+  .ws-pro-board-action-popover {
+    top: auto !important;
+    right: .75rem !important;
+    bottom: .75rem !important;
+    left: .75rem !important;
+    width: auto !important;
+    max-height: min(78vh, 34rem) !important;
+  }
+}

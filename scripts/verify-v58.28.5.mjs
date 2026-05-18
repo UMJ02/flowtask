@@ -16,7 +16,8 @@ if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.28.5",
   "npm run verify:v58.28.6",
   "npm run verify:v58.28.7",
   "npm run verify:v58.28.8",
-  "npm run verify:v58.28.9") failures.push("verify:current must target verify:v58.28.5");
+  "npm run verify:v58.28.9",
+  "npm run verify:v58.28.10") failures.push("verify:current must target verify:v58.28.5");
 if (!version.includes("58.28.5-workspace-pro-brand-accent-pro-navigation-identity",
   "58.28.6-workspace-pro-completed-filter-anchored-actions",
   "58.28.7-workspace-pro-performance-pass-fast-view-switching")) failures.push("release version must be v58.28.5");

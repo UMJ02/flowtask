@@ -26,6 +26,8 @@ const allowedVersions = [
   "58.28.7-workspace-pro-performance-pass-fast-view-switching",
   "58.28.8-workspace-pro-client-performance-anchored-popovers",
   "58.28.9-workspace-pro-brand-pastel-loading-system",
+  "58.28.10-workspace-pro-no-motion-board-portal-home-colors",
+  "58.28.10-workspace-pro-no-motion-board-portal-home-colors",
   "58.27.8.1-workspace-pro-vercel-readiness-hotfix",
   "58.27.9-workspace-pro-interaction-hardening-real-editing-flow",
   "58.28.0-workspace-pro-production-ux-final",
@@ -38,6 +40,8 @@ const allowedVersions = [
   "58.28.7-workspace-pro-performance-pass-fast-view-switching",
   "58.28.8-workspace-pro-client-performance-anchored-popovers",
   "58.28.9-workspace-pro-brand-pastel-loading-system",
+  "58.28.10-workspace-pro-no-motion-board-portal-home-colors",
+  "58.28.10-workspace-pro-no-motion-board-portal-home-colors",
 ];
 const allowedVerifyTargets = [
   "npm run verify:v58.27.6",
@@ -50,6 +54,7 @@ const allowedVerifyTargets = [
   "npm run verify:v58.28.7",
   "npm run verify:v58.28.8",
   "npm run verify:v58.28.9",
+  "npm run verify:v58.28.10",
 ];
 
 if (!allowedVersions.includes(String(pkg.version ?? ""))) failures.push(`Unexpected package version: ${pkg.version}`);

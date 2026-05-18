@@ -353,3 +353,10 @@ Oculta tareas concluidas por defecto en todas las vistas activas y ancla el pane
 ## v58.28.9 — Workspace Pro Brand Pastel Loading System
 
 Ajusta el cintillo de actualización a una franja completa con verdes FlowTask/pastel y suaviza los acentos de Home/Workspace Pro sin tocar lógica ni datos.
+
+
+## v58.28.10 — Workspace Pro No Motion + Board Portal + Home Colors
+
+- Removed view loading ribbon and workspace skeleton/motion effects.
+- Board action menu now uses a fixed portal anchored to the clicked task button.
+- Home color accents now follow the Board palette.

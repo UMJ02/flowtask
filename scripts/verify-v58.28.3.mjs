@@ -10,7 +10,8 @@ const verifyTarget = "npm run verify:v58.28.3", "npm run verify:v58.28.4", "npm 
   "npm run verify:v58.28.6",
   "npm run verify:v58.28.7",
   "npm run verify:v58.28.8",
-  "npm run verify:v58.28.9";
+  "npm run verify:v58.28.9",
+  "npm run verify:v58.28.10";
 const failures = [];
 if (pkg.version !== version) failures.push(`Unexpected package version: ${pkg.version}`);
 if (pkg.scripts?.["verify:current"] !== verifyTarget) failures.push("verify:current must target verify:v58.28.3");
