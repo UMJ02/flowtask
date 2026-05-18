@@ -7,11 +7,14 @@ const workspaceHome = fs.readFileSync("src/components/workspace/workspace-home.t
 const classicBoard = fs.readFileSync("src/components/tasks/task-kanban-board.tsx", "utf8");
 const taskWorkspace = fs.readFileSync("src/components/tasks/task-workspace-inline.tsx", "utf8");
 const failures = [];
-const slug = "58.28.16.2-classic-pro-status-parity";
+const slug = "58.28.16.2-classic-pro-status-parity",
+  "58.28.17-classic-pro-unified-data-qa-final-user-flow",
+  "58.28.17.1-unified-data-qa-inline-status-type-hotfix";
 const statuses = ["pendiente", "en_proceso", "produccion", "en_espera", "revision", "concluido"];
 
 if (pkg.version !== slug) failures.push("Unexpected package version");
-if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.28.16.2") failures.push("verify:current must target verify:v58.28.16.2");
+if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.28.16.2", "npm run verify:v58.28.17",
+  "npm run verify:v58.28.17.1") failures.push("verify:current must target verify:v58.28.16.2");
 if (!version.includes(slug)) failures.push("version.ts must contain v58.28.16.2 slug");
 for (const status of statuses) {
   if (!statusConstants.includes(status)) failures.push(`TASK_STATUSES missing ${status}`);

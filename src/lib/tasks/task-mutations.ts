@@ -22,8 +22,20 @@ export function subscribeTaskUpdated(handler: (detail: FlowtaskTaskUpdatedDetail
   return () => window.removeEventListener(FLOWTASK_TASK_UPDATED_EVENT, listener);
 }
 
+export function normalizeTaskUpdatePatch(patch: Record<string, unknown> & { id: string }) {
+  const normalized: Record<string, unknown> & { id: string } = { ...patch };
+  if ("due_date" in patch && !("dueDate" in normalized)) normalized.dueDate = patch.due_date;
+  if ("dueDate" in patch && !("due_date" in normalized)) normalized.due_date = patch.dueDate;
+  if ("project_id" in patch && !("projectId" in normalized)) normalized.projectId = patch.project_id;
+  if ("projectId" in patch && !("project_id" in normalized)) normalized.project_id = patch.projectId;
+  if ("client_name" in patch && !("clientName" in normalized)) normalized.clientName = patch.client_name;
+  if ("clientName" in patch && !("client_name" in normalized)) normalized.client_name = patch.clientName;
+  return normalized;
+}
+
 export function mergeTaskUpdate<T extends { id: string }>(items: T[], patch: Record<string, unknown> & { id: string }) {
-  return items.map((item) => (item.id === patch.id ? ({ ...item, ...patch } as T) : item));
+  const normalizedPatch = normalizeTaskUpdatePatch(patch);
+  return items.map((item) => (item.id === patch.id ? ({ ...item, ...normalizedPatch } as T) : item));
 }
 
 export async function updateTaskStatusCore(

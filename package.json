@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "58.28.16.2-classic-pro-status-parity",
+  "version": "58.28.17.1-unified-data-qa-inline-status-type-hotfix",
   "private": true,
   "scripts": {
     "dev": "node node_modules/next/dist/bin/next dev",
@@ -15,8 +15,8 @@
     "runtime:check": "node scripts/runtime-check.mjs",
     "prebuild": "npm run runtime:check",
     "vercel:build": "npm run clean && npm run build:preflight && node node_modules/next/dist/bin/next build",
-    "build:preflight": "npm run validate:node && npm run validate:env && npm run verify:current && npm run workspace:doctor && npm run workspace:production:ready && npm run workspace:real-env:ready && npm run workspace:performance:ready && npm run workspace:client-performance:ready && npm run workspace:design-reset:ready && npm run workspace:layout-cleanup:ready && npm run workspace:no-motion-board-portal:ready && npm run workspace:home-solid-cards:ready && npm run workspace:board-active-actions:ready && npm run workspace:board-pro:ready && npm run workspace:files-reports:ready && npm run runtime:check && npm run workspace:final-cleanup:ready && npm run workspace:component-split:ready && npm run workspace:deep-component:ready && npm run workspace:task-sync:ready && npm run typecheck && npm run deploy:readiness && npm run board:stability && npm run client:readiness:check && npm run deploy:production:ready",
-    "verify:current": "npm run verify:v58.28.16.2",
+    "build:preflight": "npm run validate:node && npm run validate:env && npm run verify:current && npm run workspace:doctor && npm run workspace:production:ready && npm run workspace:real-env:ready && npm run workspace:performance:ready && npm run workspace:client-performance:ready && npm run workspace:design-reset:ready && npm run workspace:layout-cleanup:ready && npm run workspace:no-motion-board-portal:ready && npm run workspace:home-solid-cards:ready && npm run workspace:board-active-actions:ready && npm run workspace:board-pro:ready && npm run workspace:files-reports:ready && npm run runtime:check && npm run workspace:final-cleanup:ready && npm run workspace:component-split:ready && npm run workspace:deep-component:ready && npm run workspace:task-sync:ready && npm run workspace:unified-data-qa:ready && npm run typecheck && npm run deploy:readiness && npm run board:stability && npm run client:readiness:check && npm run deploy:production:ready",
+    "verify:current": "npm run verify:v58.28.17.1",
     "workspace:doctor": "node scripts/workspace-persistence-doctor.mjs",
     "workspace:production:ready": "node scripts/workspace-production-readiness-check.mjs",
     "workspace:real-env:ready": "node scripts/workspace-real-environment-hardening-check.mjs",
@@ -71,7 +71,10 @@
     "workspace:deep-component:ready": "node scripts/workspace-pro-deep-component-extraction-lazy-view-loading-check.mjs",
     "verify:v58.28.16.1": "node scripts/verify-v58.28.16.1.mjs",
     "workspace:task-sync:ready": "node scripts/workspace-pro-task-data-sync-status-source-check.mjs",
-    "verify:v58.28.16.2": "node scripts/verify-v58.28.16.2.mjs"
+    "verify:v58.28.16.2": "node scripts/verify-v58.28.16.2.mjs",
+    "verify:v58.28.17": "node scripts/verify-v58.28.17.mjs",
+    "workspace:unified-data-qa:ready": "node scripts/workspace-pro-unified-data-qa-final-user-flow-check.mjs",
+    "verify:v58.28.17.1": "node scripts/verify-v58.28.17.1.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

@@ -14,7 +14,7 @@ const OPTIONS = [
   { value: 'produccion', label: 'Producción', icon: Flag },
   { value: 'en_espera', label: 'En espera', icon: PauseCircle },
   { value: 'revision', label: 'Revisión', icon: AlertTriangle },
-  { value: 'concluido', label: 'Concluida', icon: CheckCircle2 },
+  { value: 'concluido', label: 'Concluido', icon: CheckCircle2 },
 ] as const;
 
 function getMessageForStatus(status: string) {

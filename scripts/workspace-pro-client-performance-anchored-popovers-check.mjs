@@ -14,6 +14,8 @@ const allowedVersions = [
   "58.28.16-task-data-sync-status-source-of-truth",
   "58.28.16.1-task-data-sync-cli-hotfix",
   "58.28.16.2-classic-pro-status-parity",
+  "58.28.17-classic-pro-unified-data-qa-final-user-flow",
+  "58.28.17.1-unified-data-qa-inline-status-type-hotfix",
   "58.28.10-workspace-pro-no-motion-board-portal-home-colors",
   "58.28.11-workspace-pro-nav-shape-home-alignment",
   "58.28.12-workspace-pro-home-hero-solid-card-colors",
@@ -21,9 +23,12 @@ const allowedVersions = [
   "58.28.16-task-data-sync-status-source-of-truth",
   "58.28.16.1-task-data-sync-cli-hotfix",
   "58.28.16.2-classic-pro-status-parity",
+  "58.28.17-classic-pro-unified-data-qa-final-user-flow",
+  "58.28.17.1-unified-data-qa-inline-status-type-hotfix",
 ];
 const allowedVerifyTargets = ["npm run verify:v58.28.8", "npm run verify:v58.28.9",
-  "npm run verify:v58.28.10", "npm run verify:v58.28.11", "npm run verify:v58.28.12", "npm run verify:v58.28.15", "npm run verify:v58.28.16", "npm run verify:v58.28.16.1", "npm run verify:v58.28.16.2"];
+  "npm run verify:v58.28.10", "npm run verify:v58.28.11", "npm run verify:v58.28.12", "npm run verify:v58.28.15", "npm run verify:v58.28.16", "npm run verify:v58.28.16.1", "npm run verify:v58.28.16.2", "npm run verify:v58.28.17",
+  "npm run verify:v58.28.17.1"];
 if (!allowedVersions.includes(pkg.version)) failures.push(`Unexpected package version: ${pkg.version}`);
 if (!allowedVerifyTargets.includes(pkg.scripts?.["verify:current"])) failures.push("verify:current must target verify:v58.28.8 or verify:v58.28.9");
 if (!page.includes("window.history.replaceState") || page.includes("SERVER_SYNC_VIEWS.has(view)") || page.includes("setViewFlash(true)")) failures.push("View changes must be instant client-side without loading flash or server-sync branches");

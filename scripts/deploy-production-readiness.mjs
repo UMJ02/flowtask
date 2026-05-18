@@ -33,6 +33,8 @@ const expectedVersions = [
   "58.28.16-task-data-sync-status-source-of-truth",
   "58.28.16.1-task-data-sync-cli-hotfix",
   "58.28.16.2-classic-pro-status-parity",
+  "58.28.17-classic-pro-unified-data-qa-final-user-flow",
+  "58.28.17.1-unified-data-qa-inline-status-type-hotfix",
   "58.28.10-workspace-pro-no-motion-board-portal-home-colors",
   "58.28.11-workspace-pro-nav-shape-home-alignment",
   "58.28.12-workspace-pro-home-hero-solid-card-colors",
@@ -40,6 +42,8 @@ const expectedVersions = [
   "58.28.16-task-data-sync-status-source-of-truth",
   "58.28.16.1-task-data-sync-cli-hotfix",
   "58.28.16.2-classic-pro-status-parity",
+  "58.28.17-classic-pro-unified-data-qa-final-user-flow",
+  "58.28.17.1-unified-data-qa-inline-status-type-hotfix",
 ];
 const pkg = JSON.parse(read("package.json") || "{}");
 if (!expectedVersions.includes(pkg.version)) failures.push(`Unexpected package version: ${pkg.version}`);

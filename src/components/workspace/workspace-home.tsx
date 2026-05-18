@@ -28,6 +28,7 @@ import { TaskKanbanBoard, type TaskItem } from '@/components/tasks/task-kanban-b
 import { applyClientWorkspaceScope, getClientWorkspaceContext } from '@/lib/supabase/workspace-client';
 import { cn } from '@/lib/utils/classnames';
 import { projectListRoute, taskNewRoute } from '@/lib/navigation/routes';
+import { mergeTaskUpdate, subscribeTaskUpdated } from '@/lib/tasks/task-mutations';
 
 const NOTE_STORAGE_KEY = 'flowtask.workspace.quick-notes.v58.13.1';
 const WORKSPACE_VISIBLE_COLUMNS_KEY = 'flowtask.workspace.visible-status-columns.v58.22.3';
@@ -37,7 +38,7 @@ const WORKSPACE_STATUS_COLUMNS = [
   { value: 'produccion', label: 'Producción' },
   { value: 'en_espera', label: 'En espera' },
   { value: 'revision', label: 'Revisión' },
-  { value: 'concluido', label: 'Hecho' },
+  { value: 'concluido', label: 'Concluido' },
 ] as const;
 const DEFAULT_WORKSPACE_VISIBLE_COLUMNS = WORKSPACE_STATUS_COLUMNS.map((column) => column.value);
 type WorkspaceStatusColumnValue = (typeof WORKSPACE_STATUS_COLUMNS)[number]['value'];
@@ -202,7 +203,7 @@ export function WorkspaceHome() {
   const [demoError, setDemoError] = useState<string | null>(null);
   const [flowFiltersOpen, setFlowFiltersOpen] = useState(false);
   const [flowSearch, setFlowSearch] = useState('');
-  const [flowStatusFilter, setFlowStatusFilter] = useState<'all' | 'en_proceso' | 'produccion' | 'en_espera' | 'concluido'>('all');
+  const [flowStatusFilter, setFlowStatusFilter] = useState<'all' | WorkspaceStatusColumnValue>('all');
   const [flowPriorityFilter, setFlowPriorityFilter] = useState<'all' | 'alta' | 'media' | 'baja'>('all');
   const [flowGroupBy, setFlowGroupBy] = useState<'status' | 'priority' | 'client'>('status');
   const [columnsMenuOpen, setColumnsMenuOpen] = useState(false);
@@ -288,7 +289,7 @@ export function WorkspaceHome() {
         if (taskError || projectError) {
           setError(taskError?.message ?? projectError?.message ?? 'No fue posible cargar el workspace.');
         }
-        setTasks(((taskRows ?? []) as WorkspaceTask[]).map((task) => ({ ...task, status: task.status ?? 'en_espera' })));
+        setTasks(((taskRows ?? []) as WorkspaceTask[]).map((task) => ({ ...task, status: task.status ?? 'pendiente' }))); 
         setProjects((projectRows ?? []) as WorkspaceProject[]);
         setLoading(false);
       }
@@ -310,6 +311,12 @@ export function WorkspaceHome() {
   const handleTaskPriorityChange = (taskId: string, priority: string) => {
     setTasks((current) => current.map((task) => (task.id === taskId ? { ...task, priority } : task)));
   };
+
+  useEffect(() => {
+    return subscribeTaskUpdated(({ task }) => {
+      setTasks((current) => mergeTaskUpdate(current, task as WorkspaceTask));
+    });
+  }, []);
 
 
   const radarTitle = overdueTasks.length
@@ -577,7 +584,7 @@ export function WorkspaceHome() {
               <option value="produccion">Producción</option>
               <option value="en_espera">En espera</option>
               <option value="revision">Revisión</option>
-              <option value="concluido">Hecho</option>
+              <option value="concluido">Concluido</option>
             </select>
             <select value={flowPriorityFilter} onChange={(event) => setFlowPriorityFilter(event.target.value as typeof flowPriorityFilter)} className="h-11 rounded-xl border ft-border bg-white px-3 text-sm font-semibold text-slate-700 outline-none">
               <option value="all">Todas las prioridades</option>

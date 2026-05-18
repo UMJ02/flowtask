@@ -417,3 +417,16 @@ Ajusta el cintillo de actualización a una franja completa con verdes FlowTask/p
 ## v58.28.15 — Workspace Pro Deep Component Extraction + Lazy View Loading
 
 Workspace Pro ahora carga bajo demanda superficies ocultas como Quick Create, Spaces Manager, Saved Views, Command Center, Share Panel, Recovery Panel y Files Upload Entry. Esta versión mantiene la UI estable de v58.28.14, pero reduce el costo inicial del runtime.
+
+## v58.28.17 — Classic + Pro Unified Data QA + Final User Flow
+
+- Refuerza la convivencia de datos entre experiencia clásica y Workspace Pro.
+- Mantiene `tasks.status` como fuente de verdad y sincroniza eventos locales `flowtask:task-updated`.
+- Normaliza aliases de actualización (`due_date/dueDate`, `project_id/projectId`, `client_name/clientName`) para evitar vistas desactualizadas.
+- Alinea labels finales de estados: Pendiente, En curso, Producción, En espera, Revisión y Concluido.
+- Agrega QA checklist para validar flujos Clásico ↔ Pro con datos reales.
+
+
+## v58.28.17.1 — Unified Data QA Inline Status Type Hotfix
+
+Corrige el typecheck del selector inline de estado en Workspace, manteniendo la sincronización Clásico + Pro de v58.28.17.

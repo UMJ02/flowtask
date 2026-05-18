@@ -188,16 +188,27 @@ export function WorkspaceProPage(props: WorkspaceProPageProps) {
   const [sharePanelOpen, setSharePanelOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
   const [displayedView, setDisplayedView] = useState(activeView);
+  const [syncedTasks, setSyncedTasks] = useState(tasks);
+
+  useEffect(() => {
+    setSyncedTasks(tasks);
+  }, [tasks]);
+
+  useEffect(() => {
+    return subscribeTaskUpdated(({ task }) => {
+      setSyncedTasks((items) => mergeTaskUpdate(items, task as WorkspaceTaskItem));
+    });
+  }, []);
 
   useEffect(() => {
     setDisplayedView(activeView);
   }, [activeView]);
 
   const activeTasks = useMemo(
-    () => tasks.filter((task) => !isDone(task.status)),
-    [tasks],
+    () => syncedTasks.filter((task) => !isDone(task.status)),
+    [syncedTasks],
   );
-  const hiddenDoneCount = tasks.length - activeTasks.length;
+  const hiddenDoneCount = syncedTasks.length - activeTasks.length;
   const derived = useMemo(
     () =>
       getWorkspaceProDerivedData({
@@ -279,7 +290,7 @@ export function WorkspaceProPage(props: WorkspaceProPageProps) {
           open={commandCenterOpen}
           onOpenChange={setCommandCenterOpen}
           context={context}
-          tasks={tasks}
+          tasks={syncedTasks}
           projects={projects}
           spaces={spaces}
           boards={boards}
@@ -544,7 +555,7 @@ export function WorkspaceProPage(props: WorkspaceProPageProps) {
       {rightPanelOpen ? (
         <WorkspaceProInspector onClose={() => setRightPanelOpen(false)}>
           <WorkspaceProRightPanel
-            tasks={tasks}
+            tasks={syncedTasks}
             activity={activity}
             members={members}
             notifications={notifications}
@@ -573,10 +584,11 @@ function WorkspaceProFilterBar({
         onChange={onStatusChange}
         options={[
           { value: "todos", label: "Todos" },
-          { value: "en_proceso", label: "En proceso" },
+          { value: "pendiente", label: "Pendiente" },
+          { value: "en_proceso", label: "En curso" },
           { value: "produccion", label: "Producción" },
           { value: "en_espera", label: "En espera" },
-          { value: "pendiente", label: "Pendiente" },
+          { value: "revision", label: "Revisión" },
           { value: "concluido", label: "Concluido" },
         ]}
       />

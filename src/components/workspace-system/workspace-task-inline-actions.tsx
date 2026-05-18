@@ -5,6 +5,10 @@ import { useRouter } from "next/navigation";
 import { CheckCircle2, Loader2, MoveRight } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import type { WorkspaceTaskItem } from "@/lib/workspace-system/view-state";
+import type { TaskStatus } from "@/types/task";
+import { TASK_STATUSES } from "@/lib/constants/task-status";
+import { normalizeTaskStatus } from "@/lib/tasks/status";
+import { updateTaskCore } from "@/lib/tasks/task-mutations";
 
 type FieldName = "status" | "priority" | "due_date";
 
@@ -13,14 +17,7 @@ type UpdateMessage = {
   text: string;
 };
 
-const statusOptions = [
-  { value: "en_proceso", label: "En proceso" },
-  { value: "produccion", label: "Producción" },
-  { value: "revision", label: "Revisión" },
-  { value: "en_espera", label: "En espera" },
-  { value: "pendiente", label: "Pendiente" },
-  { value: "concluido", label: "Concluido" },
-];
+const statusOptions = TASK_STATUSES;
 
 const priorityOptions = [
   { value: "alta", label: "Alta" },
@@ -28,8 +25,12 @@ const priorityOptions = [
   { value: "baja", label: "Baja" },
 ];
 
-function normalizeStatus(value?: string | null) {
-  return statusOptions.some((option) => option.value === value) ? value! : "pendiente";
+function normalizeStatus(value?: string | null): TaskStatus {
+  return normalizeTaskStatus(value);
+}
+
+function isTaskStatus(value: string): value is TaskStatus {
+  return statusOptions.some((option) => option.value === value);
 }
 
 function normalizePriority(value?: string | null) {
@@ -51,10 +52,11 @@ export function WorkspaceTaskInlineEditor({ task, compact = false }: { task: Wor
     setMessage(null);
 
     const payload = field === "due_date" ? { due_date: value || null } : { [field]: value };
-    const { error } = await supabase.from("tasks").update(payload).eq("id", task.id).select("id").single();
 
-    if (error) {
-      setMessage({ tone: "error", text: error.message || "No se pudo actualizar la tarea." });
+    try {
+      await updateTaskCore(supabase, task.id, payload, "pro");
+    } catch (error) {
+      setMessage({ tone: "error", text: error instanceof Error ? error.message : "No se pudo actualizar la tarea." });
       if (field === "status") setStatus(normalizeStatus(task.status));
       if (field === "priority") setPriority(normalizePriority(task.priority));
       if (field === "due_date") setDueDate(task.dueDate ?? "");
@@ -79,6 +81,7 @@ export function WorkspaceTaskInlineEditor({ task, compact = false }: { task: Wor
         disabled={busyField === "status"}
         onChange={(event) => {
           const value = event.target.value;
+          if (!isTaskStatus(value)) return;
           setStatus(value);
           void updateTask("status", value);
         }}
@@ -137,11 +140,14 @@ export function WorkspaceTaskQuickMove({ task }: { task: WorkspaceTaskItem }) {
   const current = normalizeStatus(task.status);
   const nextStatuses = statusOptions.filter((option) => option.value !== current).slice(0, 3);
 
-  async function moveTo(status: string) {
+  async function moveTo(status: TaskStatus) {
     setBusy(status);
-    const { error } = await supabase.from("tasks").update({ status }).eq("id", task.id).select("id").single();
-    setBusy(null);
-    if (!error) router.refresh();
+    try {
+      await updateTaskCore(supabase, task.id, { status }, "pro");
+      router.refresh();
+    } finally {
+      setBusy(null);
+    }
   }
 
   return (

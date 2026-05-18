@@ -13,6 +13,8 @@ const allowedVersions = [
   "58.28.16-task-data-sync-status-source-of-truth",
   "58.28.16.1-task-data-sync-cli-hotfix",
   "58.28.16.2-classic-pro-status-parity",
+  "58.28.17-classic-pro-unified-data-qa-final-user-flow",
+  "58.28.17.1-unified-data-qa-inline-status-type-hotfix",
 ];
 
 if (!allowedVersions.includes(pkg.version)) failures.push(`Unexpected package version: ${pkg.version}`);

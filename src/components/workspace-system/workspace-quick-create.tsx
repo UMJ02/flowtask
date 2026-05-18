@@ -183,7 +183,7 @@ export function WorkspaceQuickCreate({
           {draft.mode === "task" ? (
             <select className="ws-pro-form-input" value={draft.status} onChange={(event) => setDraft((current) => ({ ...current, status: event.target.value }))}>
               <option value="pendiente">Pendiente</option>
-              <option value="en_proceso">En proceso</option>
+              <option value="en_proceso">En curso</option>
               <option value="produccion">Producción</option>
               <option value="en_espera">En espera</option>
               <option value="revision">Revisión</option>
