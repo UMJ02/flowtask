@@ -25,6 +25,7 @@ const expectedVersions = [
   "58.28.6-workspace-pro-completed-filter-anchored-actions",
   "58.28.7-workspace-pro-performance-pass-fast-view-switching",
   "58.28.8-workspace-pro-client-performance-anchored-popovers",
+  "58.28.9-workspace-pro-brand-pastel-loading-system",
 ];
 const pkg = JSON.parse(read("package.json") || "{}");
 if (!expectedVersions.includes(pkg.version)) failures.push(`Unexpected package version: ${pkg.version}`);

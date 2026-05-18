@@ -23,13 +23,15 @@ const allowedVersions = [
   "58.28.6-workspace-pro-completed-filter-anchored-actions",
   "58.28.7-workspace-pro-performance-pass-fast-view-switching",
   "58.28.8-workspace-pro-client-performance-anchored-popovers",
+  "58.28.9-workspace-pro-brand-pastel-loading-system",
 ];
 const allowedVerifyTargets = ["npm run verify:v58.27.8", "npm run verify:v58.27.8.1",
   "npm run verify:v58.27.9",
   "npm run verify:v58.28.0", "npm run verify:v58.28.1", "npm run verify:v58.28.2", "npm run verify:v58.28.3", "npm run verify:v58.28.4", "npm run verify:v58.28.5",
   "npm run verify:v58.28.6",
   "npm run verify:v58.28.7",
-  "npm run verify:v58.28.8"];
+  "npm run verify:v58.28.8",
+  "npm run verify:v58.28.9"];
 if (!allowedVersions.includes(pkg.version)) failures.push(`Unexpected package version: ${pkg.version}`);
 if (!allowedVerifyTargets.includes(pkg.scripts?.["verify:current"])) failures.push("verify:current must target verify:v58.27.8 or verify:v58.27.8.1");
 if (!String(pkg.scripts?.["build:preflight"] ?? "").includes("workspace:visual-density:ready")) failures.push("build:preflight must include workspace:visual-density:ready");

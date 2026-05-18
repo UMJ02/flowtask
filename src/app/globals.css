@@ -8209,3 +8209,104 @@
     animation: none !important;
   }
 }
+
+/* v58.28.9 — Workspace Pro Brand Pastel Loading System */
+.ws-pro-shell {
+  --ws-pro-brand: #16C784;
+  --ws-pro-brand-strong: #0F9F6E;
+  --ws-pro-brand-deep: #047857;
+  --ws-pro-mint-pastel: #ECFDF5;
+  --ws-pro-mint-pastel-2: #DFFBEA;
+  --ws-pro-mint-pastel-3: #CFF7DF;
+  --ws-pro-soft-sky: #F0F9FF;
+  --ws-pro-soft-cream: #FFFBEB;
+  background:
+    radial-gradient(circle at 12% 6%, rgba(22, 199, 132, .09), transparent 28rem),
+    radial-gradient(circle at 92% 4%, rgba(187, 247, 208, .35), transparent 30rem),
+    linear-gradient(180deg, #F8FCFA 0%, #F7FAF8 100%);
+}
+.ws-pro-header {
+  background:
+    linear-gradient(90deg, rgba(236, 253, 245, .92), rgba(255,255,255,.98) 46%, rgba(240, 253, 244, .74)),
+    #fff !important;
+}
+.ws-pro-tabs-strip {
+  background:
+    linear-gradient(90deg, rgba(236, 253, 245, .82), rgba(255,255,255,.96)),
+    rgba(255,255,255,.94) !important;
+}
+.ws-pro-tabs-strip .ws-pro-tab-active {
+  background: linear-gradient(135deg, #0F9F6E, #047857) !important;
+  color: #fff !important;
+  box-shadow: 0 8px 18px rgba(16, 185, 129, .18) !important;
+}
+.ws-pro-primary-button {
+  border-color: var(--ws-pro-brand-strong) !important;
+  background: linear-gradient(135deg, var(--ws-pro-brand), var(--ws-pro-brand-strong)) !important;
+  box-shadow: 0 10px 20px rgba(22, 199, 132, .16) !important;
+}
+.ws-pro-home-summary,
+.ws-pro-hero-card {
+  border-color: rgba(167, 243, 208, .86) !important;
+  background:
+    radial-gradient(circle at 12% 18%, rgba(187, 247, 208, .46), transparent 32%),
+    linear-gradient(135deg, rgba(236, 253, 245, .96), rgba(255,255,255,.98) 62%, rgba(240, 253, 244, .72)) !important;
+  box-shadow: 0 16px 34px rgba(15, 23, 42, .045) !important;
+}
+.ws-pro-clean-card {
+  border-color: rgba(203, 213, 225, .76) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.98), rgba(248,252,250,.92)) !important;
+}
+.ws-pro-production-ux-strip {
+  border-color: rgba(167, 243, 208, .92) !important;
+  background: linear-gradient(135deg, rgba(236, 253, 245, .94), rgba(255,255,255,.98)) !important;
+}
+.ws-pro-view-switching {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 35 !important;
+  width: calc(100% + 4rem) !important;
+  max-width: none !important;
+  min-height: 1.72rem !important;
+  margin: -1rem -2rem 1rem !important;
+  display: flex !important;
+  justify-content: center !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  overflow: hidden !important;
+  background: linear-gradient(90deg, #D1FAE5, #16C784, #A7F3D0, #0F9F6E, #D1FAE5) !important;
+  background-size: 280% 100% !important;
+  color: #064E3B !important;
+  font-size: .72rem !important;
+  font-weight: 850 !important;
+  letter-spacing: .012em !important;
+  text-shadow: none !important;
+  box-shadow: inset 0 -1px 0 rgba(4, 120, 87, .10), 0 1px 0 rgba(255,255,255,.72) !important;
+  animation: ws-pro-brand-ribbon 1.45s linear infinite !important;
+}
+.ws-pro-view-switching::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.42), transparent);
+  transform: translateX(-100%);
+  animation: ws-pro-brand-ribbon-sheen 1.15s ease-in-out infinite;
+}
+.ws-pro-view-switching span {
+  display: none !important;
+}
+@keyframes ws-pro-brand-ribbon {
+  from { background-position: 0% 50%; }
+  to { background-position: 280% 50%; }
+}
+@keyframes ws-pro-brand-ribbon-sheen {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(100%); }
+}
+@media (max-width: 768px) {
+  .ws-pro-view-switching {
+    width: calc(100% + 2rem) !important;
+    margin-inline: -1rem !important;
+  }
+}

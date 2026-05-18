@@ -6,6 +6,7 @@ const css = fs.readFileSync("src/app/globals.css", "utf8");
 const allowedVersions = [
   "58.28.7-workspace-pro-performance-pass-fast-view-switching",
   "58.28.8-workspace-pro-client-performance-anchored-popovers",
+  "58.28.9-workspace-pro-brand-pastel-loading-system",
 ];
 const failures = [];
 if (!allowedVersions.includes(pkg.version)) failures.push(`Unexpected package version: ${pkg.version}`);

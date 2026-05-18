@@ -348,3 +348,8 @@ Oculta tareas concluidas por defecto en todas las vistas activas y ancla el pane
 - Popover de acciones anclado a la tarjeta.
 - Cintillo animado de actualización de vista.
 - `build:preflight` incluye `workspace:client-performance:ready`.
+
+
+## v58.28.9 — Workspace Pro Brand Pastel Loading System
+
+Ajusta el cintillo de actualización a una franja completa con verdes FlowTask/pastel y suaviza los acentos de Home/Workspace Pro sin tocar lógica ni datos.
