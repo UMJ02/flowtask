@@ -7,7 +7,7 @@ import { AlertCircle, CheckCircle2, ChevronDown, ChevronUp, Clock3, Flag, Folder
 import { createClient } from "@/lib/supabase/client";
 import { Card } from "@/components/ui/card";
 import { taskDetailRoute } from "@/lib/navigation/routes";
-import { getTaskStatusUpdatePayload } from "@/lib/tasks/status";
+import { mergeTaskUpdate, subscribeTaskUpdated, updateTaskPriorityCore, updateTaskStatusCore } from "@/lib/tasks/task-mutations";
 import { cn } from "@/lib/utils/classnames";
 
 export type TaskItem = {
@@ -20,7 +20,6 @@ export type TaskItem = {
 };
 
 type LayoutConfigShape = {
-  kanbanStatusOverrides?: Record<string, string>;
   kanbanOrderOverrides?: Record<string, string[]>;
   [key: string]: unknown;
 };
@@ -39,10 +38,12 @@ function getScopedLayoutKey(base: keyof LayoutConfigShape, workspaceKey: string)
 }
 
 const columns = [
-  { value: "en_proceso", label: "En progreso", icon: Clock3 },
+  { value: "pendiente", label: "Pendiente", icon: Clock3 },
+  { value: "en_proceso", label: "En proceso", icon: Clock3 },
   { value: "produccion", label: "Producción", icon: Flag },
   { value: "en_espera", label: "En espera", icon: AlertCircle },
-  { value: "concluido", label: "Hecho", icon: CheckCircle2 },
+  { value: "revision", label: "Revisión", icon: Star },
+  { value: "concluido", label: "Concluido", icon: CheckCircle2 },
 ] as const;
 
 const STATUS_OVERRIDES_KEY = "flowtask.board.kanban.status-overrides.v1";
@@ -53,23 +54,13 @@ function getScopedKey(base: string, workspaceKey: string) {
 }
 const DEFAULT_VISIBLE_COUNT = 5;
 
-function readStatusOverrides(workspaceKey: string) {
-  if (typeof window === "undefined") return {} as Record<string, string>;
-  try {
-    const raw = window.localStorage.getItem(getScopedKey(STATUS_OVERRIDES_KEY, workspaceKey));
-    if (!raw) return {} as Record<string, string>;
-    const parsed = JSON.parse(raw);
-    if (!parsed || typeof parsed !== "object") return {} as Record<string, string>;
-    return parsed as Record<string, string>;
-  } catch {
-    return {} as Record<string, string>;
-  }
-}
-
-function writeStatusOverrides(workspaceKey: string, value: Record<string, string>) {
+function clearLegacyStatusOverrides(workspaceKey: string) {
   if (typeof window === "undefined") return;
   try {
-    window.localStorage.setItem(getScopedKey(STATUS_OVERRIDES_KEY, workspaceKey), JSON.stringify(value));
+    window.localStorage.removeItem(STATUS_OVERRIDES_KEY);
+    window.localStorage.removeItem(getScopedKey(STATUS_OVERRIDES_KEY, workspaceKey));
+    window.localStorage.removeItem(`${STATUS_OVERRIDES_KEY}:personal`);
+    window.localStorage.removeItem(`${STATUS_OVERRIDES_KEY}:organization`);
   } catch {}
 }
 
@@ -91,13 +82,6 @@ function writeOrderOverrides(workspaceKey: string, value: Record<string, string[
   try {
     window.localStorage.setItem(getScopedKey(ORDER_OVERRIDES_KEY, workspaceKey), JSON.stringify(value));
   } catch {}
-}
-
-function applyStatusOverrides(items: TaskItem[], overrides: Record<string, string>) {
-  return items.map((task) => {
-    const override = overrides[task.id];
-    return override ? { ...task, status: override } : task;
-  });
 }
 
 function sortItems(items: TaskItem[], orderedIds: string[] = []) {
@@ -132,15 +116,6 @@ function normalizeOrderValue(value: unknown): Record<string, string[]> {
   for (const column of columns) {
     const current = (value as Record<string, unknown>)[column.value];
     next[column.value] = Array.isArray(current) ? current.filter((item): item is string => typeof item === "string") : [];
-  }
-  return next;
-}
-
-function normalizeStatusValue(value: unknown): Record<string, string> {
-  if (!value || typeof value !== "object") return {};
-  const next: Record<string, string> = {};
-  for (const [taskId, status] of Object.entries(value as Record<string, unknown>)) {
-    if (typeof taskId === "string" && typeof status === "string") next[taskId] = status;
   }
   return next;
 }
@@ -204,7 +179,6 @@ async function readBoardLayoutConfig(supabase: ReturnType<typeof createClient>) 
 async function persistBoardLayoutConfig(
   supabase: ReturnType<typeof createClient>,
   workspaceKey: string,
-  statusOverrides: Record<string, string>,
   orderOverrides: Record<string, string[]>,
 ) {
   const board = await readBoardLayoutConfig(supabase);
@@ -212,7 +186,6 @@ async function persistBoardLayoutConfig(
 
   const nextLayoutConfig: LayoutConfigShape = {
     ...board.layoutConfig,
-    [getScopedLayoutKey("kanbanStatusOverrides", workspaceKey)]: statusOverrides,
     [getScopedLayoutKey("kanbanOrderOverrides", workspaceKey)]: orderOverrides,
   };
 
@@ -223,7 +196,6 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery, work
   const supabase = useMemo(() => createClient(), []);
   const serverSignature = useMemo(() => tasks.map((task) => `${task.id}:${task.status}:${task.priority ?? ''}:${task.due_date ?? ''}:${task.title}`).join('|'), [tasks]);
   const [hydrated, setHydrated] = useState(false);
-  const [statusOverrides, setStatusOverrides] = useState<Record<string, string>>({});
   const [orderOverrides, setOrderOverrides] = useState<Record<string, string[]>>({});
   const [boardTasks, setBoardTasks] = useState<TaskItem[]>(tasks);
   const [lastServerSignature, setLastServerSignature] = useState(serverSignature);
@@ -248,12 +220,11 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery, work
 
   useEffect(() => {
     if (!hydrated) return;
-    const localStatusOverrides = readStatusOverrides(workspaceKey);
+    clearLegacyStatusOverrides(workspaceKey);
     const localOrderOverrides = readOrderOverrides(workspaceKey);
 
-    setStatusOverrides(localStatusOverrides);
     setOrderOverrides(localOrderOverrides);
-    setBoardTasks(applyStatusOverrides(tasks, localStatusOverrides));
+    setBoardTasks(tasks);
     setLastServerSignature(serverSignature);
   }, [hydrated, serverSignature, tasks, workspaceKey]);
 
@@ -266,18 +237,13 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery, work
         const board = await readBoardLayoutConfig(supabase);
         if (!active || !board) return;
 
-        const dbStatusOverrides = normalizeStatusValue(board.layoutConfig[getScopedLayoutKey("kanbanStatusOverrides", workspaceKey)] ?? board.layoutConfig.kanbanStatusOverrides);
         const dbOrderOverrides = normalizeOrderValue(board.layoutConfig[getScopedLayoutKey("kanbanOrderOverrides", workspaceKey)] ?? board.layoutConfig.kanbanOrderOverrides);
-        const localStatusOverrides = readStatusOverrides(workspaceKey);
         const localOrderOverrides = readOrderOverrides(workspaceKey);
 
-        const mergedStatusOverrides = { ...dbStatusOverrides, ...localStatusOverrides };
         const mergedOrderOverrides = mergeOrderOverrides(dbOrderOverrides, localOrderOverrides);
 
-        setStatusOverrides(mergedStatusOverrides);
         setOrderOverrides(mergedOrderOverrides);
-        setBoardTasks(applyStatusOverrides(tasks, mergedStatusOverrides));
-        writeStatusOverrides(workspaceKey, mergedStatusOverrides);
+        setBoardTasks(tasks);
         writeOrderOverrides(workspaceKey, mergedOrderOverrides);
       };
 
@@ -299,10 +265,18 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery, work
   useEffect(() => {
     if (!hydrated) return;
     if (serverSignature !== lastServerSignature) {
-      setBoardTasks(applyStatusOverrides(tasks, statusOverrides));
+      setBoardTasks(tasks);
       setLastServerSignature(serverSignature);
     }
-  }, [hydrated, lastServerSignature, serverSignature, statusOverrides, tasks]);
+  }, [hydrated, lastServerSignature, serverSignature, tasks]);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    return subscribeTaskUpdated(({ task }) => {
+      setBoardTasks((items) => mergeTaskUpdate(items, task as TaskItem));
+      setLastServerSignature((current) => `${current}|sync:${task.id}:${String(task.updated_at ?? Date.now())}`);
+    });
+  }, [hydrated]);
 
   const normalizedTasks = useMemo(() => {
     // Keep each task in its real persisted status.
@@ -345,10 +319,9 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery, work
     );
   }
 
-  const persistLayout = async (nextStatusOverrides: Record<string, string>, nextOrderOverrides: Record<string, string[]>) => {
-    writeStatusOverrides(workspaceKey, nextStatusOverrides);
+  const persistLayout = async (nextOrderOverrides: Record<string, string[]>) => {
     writeOrderOverrides(workspaceKey, nextOrderOverrides);
-    await persistBoardLayoutConfig(supabase, workspaceKey, nextStatusOverrides, nextOrderOverrides);
+    await persistBoardLayoutConfig(supabase, workspaceKey, nextOrderOverrides);
   };
 
   const moveTask = async (taskId: string, nextStatus: string, beforeTaskId?: string | null) => {
@@ -361,32 +334,26 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery, work
     }
 
     const previousTasks = boardTasks;
-    const previousStatusOverrides = statusOverrides;
     const previousOrderOverrides = orderOverrides;
     const nextTasks = normalizedTasks.map((item) => (item.id === taskId ? { ...item, status: nextStatus } : item));
-    const nextStatusOverrides = { ...statusOverrides, [taskId]: nextStatus };
     const nextOrderOverrides = buildNextOrderOverrides(orderOverrides, taskId, nextStatus, beforeTaskId);
 
     setError(null);
     setBoardTasks(nextTasks);
-    setStatusOverrides(nextStatusOverrides);
     setOrderOverrides(nextOrderOverrides);
     setBusyStatus(`${taskId}:${nextStatus}`);
     setRecentDropColumn(nextStatus);
 
     try {
       if (currentTask.status !== nextStatus) {
-        const { data: confirmedTask, error: updateError } = await supabase.from("tasks").update(getTaskStatusUpdatePayload(nextStatus, currentTask.due_date ?? null)).eq("id", taskId).select("id,status,due_date,updated_at").maybeSingle();
-        if (updateError || !confirmedTask) throw updateError ?? new Error("No pudimos confirmar el movimiento de la tarea en Supabase.");
+        await updateTaskStatusCore(supabase, taskId, nextStatus, { currentDueDate: currentTask.due_date ?? null, source: "classic" });
       }
 
-      await persistLayout(nextStatusOverrides, nextOrderOverrides);
+      await persistLayout(nextOrderOverrides);
       setLastServerSignature(nextTasks.map((task) => `${task.id}:${task.status}:${task.priority ?? ""}:${task.due_date ?? ""}:${task.title}`).join("|"));
     } catch {
       setBoardTasks(previousTasks);
-      setStatusOverrides(previousStatusOverrides);
       setOrderOverrides(previousOrderOverrides);
-      writeStatusOverrides(workspaceKey, previousStatusOverrides);
       writeOrderOverrides(workspaceKey, previousOrderOverrides);
       setError("No pudimos guardar el movimiento u orden de la tarea. Revisa permisos o intenta de nuevo.");
     }
@@ -410,16 +377,9 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery, work
     setBoardTasks(nextTasks);
 
     try {
-      const { data: confirmedTask, error: updateError } = await supabase
-        .from("tasks")
-        .update({ priority: nextPriority })
-        .eq("id", taskId)
-        .select("id,priority,updated_at")
-        .maybeSingle();
+      const confirmedTask = await updateTaskPriorityCore(supabase, taskId, nextPriority, "classic");
 
-      if (updateError || !confirmedTask) throw updateError ?? new Error("No pudimos confirmar la prioridad de la tarea en Supabase.");
-
-      const confirmedPriority = confirmedTask.priority ?? nextPriority;
+      const confirmedPriority = String(confirmedTask.priority ?? nextPriority);
       const confirmedTasks = boardTasks.map((item) => (item.id === taskId ? { ...item, priority: confirmedPriority } : item));
       setBoardTasks(confirmedTasks);
       onTaskPriorityChange?.(taskId, confirmedPriority);
@@ -470,9 +430,11 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery, work
               className={cn(
                 "ft-kanban-column",
                 isActiveDropzone || isRecentDrop ? "ft-kanban-column-active" : "",
+                column.value === "pendiente" ? "border-sky-200 bg-[linear-gradient(180deg,#F0F9FF,#FFFFFF)]" : "",
                 column.value === "en_proceso" ? "border-[#BFDBFE] bg-[linear-gradient(180deg,#F8FBFF,#FFFFFF)]" : "",
                 column.value === "produccion" ? "border-violet-200 bg-[linear-gradient(180deg,#FBF8FF,#FFFFFF)]" : "",
                 column.value === "en_espera" ? "border-[#FDE68A] bg-[linear-gradient(180deg,#FFFDF5,#FFFFFF)]" : "",
+                column.value === "revision" ? "border-fuchsia-200 bg-[linear-gradient(180deg,#FDF4FF,#FFFFFF)]" : "",
                 column.value === "concluido" ? "border-[#BBF7D0] bg-[linear-gradient(180deg,#F7FFFB,#FFFFFF)]" : "",
               )}
               onDragOver={(event) => {
@@ -489,7 +451,7 @@ function TaskKanbanBoardComponent({ tasks, showHeader = true, currentQuery, work
             >
               <div className="ft-kanban-column-head">
                 <div className="flex min-w-0 items-center gap-3">
-                  <span className={`inline-flex h-2.5 w-2.5 rounded-full ${column.value === "en_proceso" ? "bg-[#2F80ED]" : column.value === "produccion" ? "bg-violet-500" : column.value === "en_espera" ? "bg-[#F59E0B]" : "bg-[#16C784]"}`} />
+                  <span className={`inline-flex h-2.5 w-2.5 rounded-full ${column.value === "pendiente" ? "bg-sky-400" : column.value === "en_proceso" ? "bg-[#2F80ED]" : column.value === "produccion" ? "bg-violet-500" : column.value === "en_espera" ? "bg-[#F59E0B]" : column.value === "revision" ? "bg-fuchsia-500" : "bg-[#16C784]"}`} />
                   <p className="text-sm font-extrabold tracking-tight text-slate-900">{column.label}</p>
                 </div>
                 <span className="inline-flex h-8 min-w-8 items-center justify-center rounded-[12px] bg-white px-2.5 text-xs font-extrabold text-slate-700 ring-1 ring-slate-200">

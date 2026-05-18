@@ -15,6 +15,7 @@ import { taskDetailRoute, taskListRoute, type AppRoute } from "@/lib/navigation/
 import { taskSchema } from "@/lib/validations/task";
 import { getWorkspaceDepartmentIdByCode } from "@/lib/queries/departments";
 import { logActivity } from "@/lib/activity/log-client";
+import { emitTaskUpdated } from "@/lib/tasks/task-mutations";
 import { trackEvent } from "@/lib/telemetry/track-event";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -306,11 +307,16 @@ export function TaskForm({
           .single();
 
     const error = result.error;
+    const confirmedTask = (result as { data?: Record<string, unknown> | null }).data ?? null;
 
-    if (error || (isEdit && !(result as { data?: unknown | null }).data)) {
+    if (error || (isEdit && !confirmedTask)) {
       setServerError(error?.message ?? "No pudimos confirmar los cambios de la tarea.");
       setMessage(null);
       return;
+    }
+
+    if (isEdit && confirmedTask?.id && typeof confirmedTask.id === "string") {
+      emitTaskUpdated(confirmedTask as Record<string, unknown> & { id: string }, "form");
     }
 
     const createdTaskId = !isEdit ? ((result as { data?: { id?: string | null } | null }).data?.id ?? null) : null;

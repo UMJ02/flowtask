@@ -1,3 +1,8 @@
+
+## v58.28.16.1 — Task Data Sync CLI Hotfix
+
+Alinea Clásico + Workspace Pro para que `tasks.status`, `priority` y `due_date` se sincronicen desde una misma superficie. El board clásico ya no usa status overrides como fuente de verdad y ahora soporta `pendiente` y `revision` como columnas reales.
+
 # FlowTask v58.28.14 — Workspace Pro Component Split + Runtime Slimdown
 
 Esta versión toma como base v58.28.13 y reduce el runtime del Workspace Pro con callbacks estables, navegación client-side aislada, helper de runtime y boundaries memoizados por vista. Mantiene la UI estable, no toca Supabase/RLS/migraciones y prepara una futura división física de vistas.

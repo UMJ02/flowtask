@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { generateShareToken } from "@/lib/utils/tokens";
 import { getTaskStatusUpdatePayload } from "@/lib/tasks/status";
+import { emitTaskUpdated } from "@/lib/tasks/task-mutations";
 
 interface TaskStatusFormProps {
   taskId: string;
@@ -66,7 +67,7 @@ export function TaskStatusForm({ taskId, status, dueDate, shareEnabled, shareTok
         share_token: nextShareToken,
       })
       .eq("id", taskId)
-      .select("id,status,due_date,share_enabled,share_token,updated_at")
+      .select("id,title,status,priority,due_date,project_id,share_enabled,share_token,updated_at")
       .maybeSingle();
 
     if (updateError || !confirmedTask) {
@@ -92,6 +93,8 @@ export function TaskStatusForm({ taskId, status, dueDate, shareEnabled, shareTok
         entityId: taskId,
       });
     }
+
+    emitTaskUpdated(confirmedTask as Record<string, unknown> & { id: string }, "form");
 
     setCurrentStatus(confirmedTask.status ?? currentStatus);
     setCurrentDate(confirmedTask.due_date ?? "");

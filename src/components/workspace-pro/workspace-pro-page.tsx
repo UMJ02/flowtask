@@ -74,6 +74,7 @@ import {
   type WorkspaceProDerivedData,
 } from "@/lib/workspace-system/render-diet";
 import { buildWorkspaceProViewHref } from "./workspace-pro-runtime";
+import { mergeTaskUpdate, subscribeTaskUpdated, updateTaskPriorityCore, updateTaskStatusCore } from "@/lib/tasks/task-mutations";
 
 type WorkspaceProPageProps = {
   activeView: WorkspaceViewId;
@@ -1588,6 +1589,12 @@ function WorkspaceProBoard({
   useEffect(() => {
     setLocalTasks(tasks);
   }, [tasks]);
+
+  useEffect(() => {
+    return subscribeTaskUpdated(({ task }) => {
+      setLocalTasks((items) => mergeTaskUpdate(items, task as WorkspaceTaskItem));
+    });
+  }, []);
   const boardTasks = useMemo(
     () =>
       showDone ? localTasks : localTasks.filter((task) => !isDone(task.status)),
@@ -1630,22 +1637,22 @@ function WorkspaceProBoard({
       items.map((task) => (task.id === taskId ? { ...task, status } : task)),
     );
     setBusyMove(taskId);
-    const { error } = await supabase
-      .from("tasks")
-      .update({ status })
-      .eq("id", taskId)
-      .select("id")
-      .single();
-    setBusyMove(null);
-    if (error) {
+    try {
+      const confirmedTask = await updateTaskStatusCore(supabase, taskId, status, {
+        currentDueDate: current?.dueDate ?? null,
+        source: "pro",
+      });
+      setLocalTasks((items) => mergeTaskUpdate(items, confirmedTask as WorkspaceTaskItem));
+      setBoardMessage({ tone: "success", text: "Tarea actualizada." });
+    } catch {
       setLocalTasks(previousTasks);
       setBoardMessage({
         tone: "error",
         text: "No se pudo mover. Revisá que la base acepte ese estado.",
       });
-      return;
+    } finally {
+      setBusyMove(null);
     }
-    setBoardMessage({ tone: "success", text: "Tarea actualizada." });
   }
 
   async function updateTaskPriority(
@@ -1660,22 +1667,19 @@ function WorkspaceProBoard({
       items.map((task) => (task.id === taskId ? { ...task, priority } : task)),
     );
     setBusyMove(taskId);
-    const { error } = await supabase
-      .from("tasks")
-      .update({ priority })
-      .eq("id", taskId)
-      .select("id")
-      .single();
-    setBusyMove(null);
-    if (error) {
+    try {
+      const confirmedTask = await updateTaskPriorityCore(supabase, taskId, priority, "pro");
+      setLocalTasks((items) => mergeTaskUpdate(items, confirmedTask as WorkspaceTaskItem));
+      setBoardMessage({ tone: "success", text: "Prioridad actualizada." });
+    } catch {
       setLocalTasks(previousTasks);
       setBoardMessage({
         tone: "error",
         text: "No se pudo cambiar la prioridad.",
       });
-      return;
+    } finally {
+      setBusyMove(null);
     }
-    setBoardMessage({ tone: "success", text: "Prioridad actualizada." });
   }
 
   function openTaskActions(taskId: string, event: MouseEvent<HTMLButtonElement>) {

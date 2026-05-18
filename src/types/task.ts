@@ -1,4 +1,4 @@
-export type TaskStatus = "en_proceso" | "produccion" | "en_espera" | "concluido";
+export type TaskStatus = "pendiente" | "en_proceso" | "produccion" | "en_espera" | "revision" | "concluido";
 
 export interface TaskBase {
   id: string;

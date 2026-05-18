@@ -6,12 +6,14 @@ import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils/classnames';
-import { getTaskStatusUpdatePayload } from '@/lib/tasks/status';
+import { updateTaskStatusCore } from '@/lib/tasks/task-mutations';
 
 const OPTIONS = [
+  { value: 'pendiente', label: 'Pendiente', icon: CircleDot },
   { value: 'en_proceso', label: 'En proceso', icon: CircleDot },
   { value: 'produccion', label: 'Producción', icon: Flag },
   { value: 'en_espera', label: 'En espera', icon: PauseCircle },
+  { value: 'revision', label: 'Revisión', icon: AlertTriangle },
   { value: 'concluido', label: 'Concluida', icon: CheckCircle2 },
 ] as const;
 
@@ -42,20 +44,21 @@ export function TaskInlineActions({ taskId, status }: { taskId: string; status: 
     setCurrentStatus(nextStatus);
 
     const supabase = createClient();
-    const { data: confirmedTask, error } = await supabase.from('tasks').update(getTaskStatusUpdatePayload(nextStatus)).eq('id', taskId).select('id,status,updated_at').maybeSingle();
-
-    if (error || !confirmedTask) {
+    let confirmedTask: Record<string, unknown> & { id: string };
+    try {
+      confirmedTask = await updateTaskStatusCore(supabase, taskId, nextStatus, { source: 'classic' }) as Record<string, unknown> & { id: string };
+    } catch (error) {
       setCurrentStatus(previousStatus);
       setFeedback({
         tone: 'error',
-        message: error?.message ?? 'No pudimos confirmar el cambio de estado. Inténtalo de nuevo.',
+        message: error instanceof Error ? error.message : 'No pudimos confirmar el cambio de estado. Inténtalo de nuevo.',
       });
       return;
     }
 
     setFeedback({
       tone: 'success',
-      message: getMessageForStatus(confirmedTask?.status ?? nextStatus),
+      message: getMessageForStatus(String(confirmedTask.status ?? nextStatus)),
     });
 
     startTransition(() => router.refresh());

@@ -1,0 +1,46 @@
+import fs from "node:fs";
+import path from "node:path";
+
+const root = process.cwd();
+const pkg = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
+const files = {
+  taskTypes: "src/types/task.ts",
+  mutations: "src/lib/tasks/task-mutations.ts",
+  classicBoard: "src/components/tasks/task-kanban-board.tsx",
+  proPage: "src/components/workspace-pro/workspace-pro-page.tsx",
+  taskForm: "src/components/tasks/task-form.tsx",
+  statusForm: "src/components/tasks/task-status-form.tsx",
+  inlineActions: "src/components/tasks/task-inline-actions.tsx",
+};
+const source = Object.fromEntries(Object.entries(files).map(([key, file]) => [key, fs.readFileSync(path.join(root, file), "utf8")]));
+const failures = [];
+const statuses = ["pendiente", "en_proceso", "produccion", "en_espera", "revision", "concluido"];
+
+if (pkg.version !== "58.28.16.1-task-data-sync-cli-hotfix") failures.push("package version is not v58.28.16");
+if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.28.16.1") failures.push("verify:current is not v58.28.16");
+for (const status of statuses) {
+  if (!source.taskTypes.includes(status)) failures.push(`src/types/task.ts does not allow ${status}`);
+  if (!source.classicBoard.includes(`value: "${status}"`)) failures.push(`classic kanban does not expose ${status}`);
+}
+const forbiddenClassic = ["applyStatusOverrides", "setStatusOverrides", "readStatusOverrides", "writeStatusOverrides", "mergedStatusOverrides"];
+for (const token of forbiddenClassic) {
+  if (source.classicBoard.includes(token)) failures.push(`classic kanban still contains ${token}`);
+}
+if (!source.classicBoard.includes("kanbanOrderOverrides")) failures.push("classic kanban should keep only order overrides");
+if (!source.classicBoard.includes("clearLegacyStatusOverrides")) failures.push("legacy status overrides are not cleared");
+if (!source.mutations.includes("flowtask:task-updated")) failures.push("task updated event is missing");
+for (const file of ["classicBoard", "proPage"]) {
+  if (!source[file].includes("subscribeTaskUpdated")) failures.push(`${files[file]} is not subscribed to task updates`);
+}
+for (const file of ["taskForm", "statusForm"]) {
+  if (!source[file].includes("emitTaskUpdated")) failures.push(`${files[file]} does not emit task updates`);
+}
+if (!source.inlineActions.includes("updateTaskStatusCore")) failures.push("task inline actions do not use unified status mutation");
+if (!source.proPage.includes("updateTaskStatusCore") || !source.proPage.includes("updateTaskPriorityCore")) failures.push("Workspace Pro does not use unified mutations");
+
+if (failures.length) {
+  console.error("[workspace:task-sync:ready] FAIL");
+  for (const failure of failures) console.error(`- ${failure}`);
+  process.exit(1);
+}
+console.log("[workspace:task-sync:ready] OK — tasks status, priority and dates share a single sync surface between Classic and Pro.");

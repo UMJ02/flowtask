@@ -6,8 +6,10 @@ const failures = [];
 const pkg = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
 const css = fs.readFileSync(path.join(root, "src/app/globals.css"), "utf8");
 const version = fs.readFileSync(path.join(root, "src/lib/release/version.ts"), "utf8");
-const allowed = ["58.28.11-workspace-pro-nav-shape-home-alignment", "58.28.12-workspace-pro-home-hero-solid-card-colors", "58.28.15-workspace-pro-deep-component-extraction-lazy-view-loading"];
-const allowedVerify = ["npm run verify:v58.28.11", "npm run verify:v58.28.12", "npm run verify:v58.28.15"];
+const allowed = ["58.28.11-workspace-pro-nav-shape-home-alignment", "58.28.12-workspace-pro-home-hero-solid-card-colors", "58.28.15-workspace-pro-deep-component-extraction-lazy-view-loading",
+  "58.28.16-task-data-sync-status-source-of-truth",
+  "58.28.16.1-task-data-sync-cli-hotfix"];
+const allowedVerify = ["npm run verify:v58.28.11", "npm run verify:v58.28.12", "npm run verify:v58.28.15", "npm run verify:v58.28.16", "npm run verify:v58.28.16.1"];
 if (!allowed.includes(pkg.version)) failures.push("Unexpected package version");
 if (!allowedVerify.includes(pkg.scripts?.["verify:current"])) failures.push("verify:current must target verify:v58.28.11+");
 if (!allowed.some((item) => version.includes(item))) failures.push("version.ts must contain v58.28.11+ slug");
