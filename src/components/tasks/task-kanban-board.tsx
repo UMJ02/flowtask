@@ -39,7 +39,7 @@ function getScopedLayoutKey(base: keyof LayoutConfigShape, workspaceKey: string)
 
 const columns = [
   { value: "pendiente", label: "Pendiente", icon: Clock3 },
-  { value: "en_proceso", label: "En proceso", icon: Clock3 },
+  { value: "en_proceso", label: "En curso", icon: Clock3 },
   { value: "produccion", label: "Producción", icon: Flag },
   { value: "en_espera", label: "En espera", icon: AlertCircle },
   { value: "revision", label: "Revisión", icon: Star },

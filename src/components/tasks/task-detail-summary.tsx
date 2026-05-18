@@ -9,14 +9,18 @@ function statusLabel(status?: string | null) {
   if (status === "concluido") return "Concluido";
   if (status === "en_espera") return "En espera";
   if (status === "pendiente") return "Pendiente";
-  return "En progreso";
+  if (status === "produccion") return "Producción";
+  if (status === "revision") return "Revisión";
+  return "En curso";
 }
 
 function statusTone(status?: string | null) {
   if (status === "concluido") return "border-emerald-100 bg-emerald-50 text-emerald-700";
   if (status === "en_espera") return "border-amber-100 bg-amber-50 text-amber-700";
-  if (status === "pendiente") return "border-violet-100 bg-violet-50 text-violet-700";
-  return "border-emerald-100 bg-emerald-50 text-emerald-700";
+  if (status === "pendiente") return "border-sky-100 bg-sky-50 text-sky-700";
+  if (status === "produccion") return "border-violet-100 bg-violet-50 text-violet-700";
+  if (status === "revision") return "border-fuchsia-100 bg-fuchsia-50 text-fuchsia-700";
+  return "border-blue-100 bg-blue-50 text-blue-700";
 }
 
 export function TaskDetailSummary({ task, currentQuery = "" }: { task: any; currentQuery?: string }) {

@@ -8,11 +8,13 @@ const failures = [];
 
 if (pkg.version !== "58.28.15-workspace-pro-deep-component-extraction-lazy-view-loading",
   "58.28.16-task-data-sync-status-source-of-truth",
-  "58.28.16.1-task-data-sync-cli-hotfix") failures.push("Unexpected package version");
-if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.28.15", "npm run verify:v58.28.16", "npm run verify:v58.28.16.1") failures.push("verify:current must target verify:v58.28.13");
+  "58.28.16.1-task-data-sync-cli-hotfix",
+  "58.28.16.2-classic-pro-status-parity") failures.push("Unexpected package version");
+if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.28.15", "npm run verify:v58.28.16", "npm run verify:v58.28.16.1", "npm run verify:v58.28.16.2") failures.push("verify:current must target verify:v58.28.13");
 if (!version.includes("58.28.15-workspace-pro-deep-component-extraction-lazy-view-loading",
   "58.28.16-task-data-sync-status-source-of-truth",
-  "58.28.16.1-task-data-sync-cli-hotfix")) failures.push("version.ts must contain v58.28.13 slug");
+  "58.28.16.1-task-data-sync-cli-hotfix",
+  "58.28.16.2-classic-pro-status-parity")) failures.push("version.ts must contain v58.28.13 slug");
 if (!pkg.scripts?.["workspace:final-cleanup:ready"]) failures.push("workspace:final-cleanup:ready script missing");
 if (!pkg.scripts?.["build:preflight"]?.includes("workspace:final-cleanup:ready")) failures.push("build:preflight must include workspace:final-cleanup:ready");
 if (Object.keys(pkg.scripts || {}).length > 80) failures.push("package.json still exposes too many active scripts for client-final build");

@@ -9,8 +9,9 @@ const page = fs.readFileSync(path.join(root, "src/components/workspace-pro/works
 const version = fs.readFileSync(path.join(root, "src/lib/release/version.ts"), "utf8");
 const allowed = ["58.28.12-workspace-pro-home-hero-solid-card-colors", "58.28.15-workspace-pro-deep-component-extraction-lazy-view-loading",
   "58.28.16-task-data-sync-status-source-of-truth",
-  "58.28.16.1-task-data-sync-cli-hotfix"];
-const allowedVerify = ["npm run verify:v58.28.12", "npm run verify:v58.28.15", "npm run verify:v58.28.16", "npm run verify:v58.28.16.1"];
+  "58.28.16.1-task-data-sync-cli-hotfix",
+  "58.28.16.2-classic-pro-status-parity"];
+const allowedVerify = ["npm run verify:v58.28.12", "npm run verify:v58.28.15", "npm run verify:v58.28.16", "npm run verify:v58.28.16.1", "npm run verify:v58.28.16.2"];
 if (!allowed.includes(pkg.version)) failures.push(`Unexpected package version: ${pkg.version}`);
 if (!allowedVerify.includes(pkg.scripts?.["verify:current"])) failures.push("verify:current must target verify:v58.28.12+");
 if (!allowed.some((item) => version.includes(item))) failures.push("release version marker missing");

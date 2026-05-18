@@ -10,7 +10,7 @@ import { updateTaskStatusCore } from '@/lib/tasks/task-mutations';
 
 const OPTIONS = [
   { value: 'pendiente', label: 'Pendiente', icon: CircleDot },
-  { value: 'en_proceso', label: 'En proceso', icon: CircleDot },
+  { value: 'en_proceso', label: 'En curso', icon: CircleDot },
   { value: 'produccion', label: 'Producción', icon: Flag },
   { value: 'en_espera', label: 'En espera', icon: PauseCircle },
   { value: 'revision', label: 'Revisión', icon: AlertTriangle },

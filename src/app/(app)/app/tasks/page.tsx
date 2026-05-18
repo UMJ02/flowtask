@@ -101,7 +101,7 @@ export default async function TasksPage({ searchParams }: { searchParams?: Promi
 
         <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
           <StatCard label="Tareas visibles" value={stats.total} helper="Sin concluidas por defecto" tone="violet" icon={ClipboardList} />
-          <StatCard label="En progreso" value={stats.inProgress} helper="Trabajo activo" tone="sky" icon={PlayCircle} />
+          <StatCard label="En curso" value={stats.inProgress} helper="Trabajo activo" tone="sky" icon={PlayCircle} />
           <StatCard label="En espera" value={stats.waiting} helper="Standby sin vencimiento" tone="amber" icon={Hourglass} />
           <StatCard label="Concluidas ocultas" value={stats.hiddenDone} helper="No impactan atraso" tone="emerald" icon={CheckCircle2} />
           <StatCard label="Prioridad alta" value={stats.highPriority} helper="Foco inmediato" tone="rose" icon={Flag} />

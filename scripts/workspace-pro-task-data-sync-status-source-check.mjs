@@ -16,8 +16,8 @@ const source = Object.fromEntries(Object.entries(files).map(([key, file]) => [ke
 const failures = [];
 const statuses = ["pendiente", "en_proceso", "produccion", "en_espera", "revision", "concluido"];
 
-if (pkg.version !== "58.28.16.1-task-data-sync-cli-hotfix") failures.push("package version is not v58.28.16");
-if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.28.16.1") failures.push("verify:current is not v58.28.16");
+if (!["58.28.16.1-task-data-sync-cli-hotfix", "58.28.16.2-classic-pro-status-parity"].includes(pkg.version)) failures.push("package version is not an allowed v58.28.16 task sync release");
+if (!["npm run verify:v58.28.16.1", "npm run verify:v58.28.16.2"].includes(pkg.scripts?.["verify:current"])) failures.push("verify:current is not an allowed v58.28.16 task sync target");
 for (const status of statuses) {
   if (!source.taskTypes.includes(status)) failures.push(`src/types/task.ts does not allow ${status}`);
   if (!source.classicBoard.includes(`value: "${status}"`)) failures.push(`classic kanban does not expose ${status}`);
@@ -37,6 +37,10 @@ for (const file of ["taskForm", "statusForm"]) {
 }
 if (!source.inlineActions.includes("updateTaskStatusCore")) failures.push("task inline actions do not use unified status mutation");
 if (!source.proPage.includes("updateTaskStatusCore") || !source.proPage.includes("updateTaskPriorityCore")) failures.push("Workspace Pro does not use unified mutations");
+if (!fs.readFileSync(path.join(root, "src/components/workspace/workspace-home.tsx"), "utf8").includes("value: 'revision'")) failures.push("classic workspace board does not expose revision column");
+if (!fs.readFileSync(path.join(root, "src/components/workspace/workspace-home.tsx"), "utf8").includes("value: 'pendiente'")) failures.push("classic workspace board does not expose pendiente column");
+if (!source.classicBoard.includes('label: "En curso"')) failures.push("classic kanban should label en_proceso as En curso");
+
 
 if (failures.length) {
   console.error("[workspace:task-sync:ready] FAIL");

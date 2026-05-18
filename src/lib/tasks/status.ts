@@ -65,7 +65,7 @@ export function getTaskStatusLabel(status?: string | null) {
   if (normalized === TASK_STATUS.REVIEW) return "Revisión";
   if (normalized === TASK_STATUS.PENDING) return "Pendiente";
   if (normalized === TASK_STATUS.WAITING) return "En espera";
-  return "En proceso";
+  return "En curso";
 }
 
 export function getTaskStatusColor(status?: string | null) {

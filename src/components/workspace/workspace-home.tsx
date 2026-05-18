@@ -32,9 +32,11 @@ import { projectListRoute, taskNewRoute } from '@/lib/navigation/routes';
 const NOTE_STORAGE_KEY = 'flowtask.workspace.quick-notes.v58.13.1';
 const WORKSPACE_VISIBLE_COLUMNS_KEY = 'flowtask.workspace.visible-status-columns.v58.22.3';
 const WORKSPACE_STATUS_COLUMNS = [
-  { value: 'en_proceso', label: 'En progreso' },
+  { value: 'pendiente', label: 'Pendiente' },
+  { value: 'en_proceso', label: 'En curso' },
   { value: 'produccion', label: 'Producción' },
   { value: 'en_espera', label: 'En espera' },
+  { value: 'revision', label: 'Revisión' },
   { value: 'concluido', label: 'Hecho' },
 ] as const;
 const DEFAULT_WORKSPACE_VISIBLE_COLUMNS = WORKSPACE_STATUS_COLUMNS.map((column) => column.value);
@@ -357,11 +359,13 @@ export function WorkspaceHome() {
       acc[column.value] = filteredFlowTasks.filter((task) => task.status === column.value).length;
       return acc;
     }, {
+      pendiente: 0,
       en_proceso: 0,
       produccion: 0,
       en_espera: 0,
+      revision: 0,
       concluido: 0,
-    });
+    } satisfies Record<WorkspaceStatusColumnValue, number>);
   }, [filteredFlowTasks]);
 
   function toggleVisibleColumn(status: WorkspaceStatusColumnValue) {
@@ -568,9 +572,11 @@ export function WorkspaceHome() {
             </label>
             <select value={flowStatusFilter} onChange={(event) => setFlowStatusFilter(event.target.value as typeof flowStatusFilter)} className="h-11 rounded-xl border ft-border bg-white px-3 text-sm font-semibold text-slate-700 outline-none">
               <option value="all">Todos los estados</option>
-              <option value="en_proceso">En progreso</option>
+              <option value="pendiente">Pendiente</option>
+              <option value="en_proceso">En curso</option>
               <option value="produccion">Producción</option>
               <option value="en_espera">En espera</option>
+              <option value="revision">Revisión</option>
               <option value="concluido">Hecho</option>
             </select>
             <select value={flowPriorityFilter} onChange={(event) => setFlowPriorityFilter(event.target.value as typeof flowPriorityFilter)} className="h-11 rounded-xl border ft-border bg-white px-3 text-sm font-semibold text-slate-700 outline-none">

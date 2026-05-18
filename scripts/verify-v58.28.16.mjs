@@ -9,10 +9,12 @@ const mutations = fs.readFileSync("src/lib/tasks/task-mutations.ts", "utf8");
 const failures = [];
 
 if (pkg.version !== "58.28.16-task-data-sync-status-source-of-truth",
-  "58.28.16.1-task-data-sync-cli-hotfix") failures.push("Unexpected package version");
-if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.28.16", "npm run verify:v58.28.16.1") failures.push("verify:current must target verify:v58.28.16");
+  "58.28.16.1-task-data-sync-cli-hotfix",
+  "58.28.16.2-classic-pro-status-parity") failures.push("Unexpected package version");
+if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.28.16", "npm run verify:v58.28.16.1", "npm run verify:v58.28.16.2") failures.push("verify:current must target verify:v58.28.16");
 if (!version.includes("58.28.16-task-data-sync-status-source-of-truth",
-  "58.28.16.1-task-data-sync-cli-hotfix")) failures.push("version.ts must contain v58.28.16 slug");
+  "58.28.16.1-task-data-sync-cli-hotfix",
+  "58.28.16.2-classic-pro-status-parity")) failures.push("version.ts must contain v58.28.16 slug");
 if (!pkg.scripts?.["workspace:task-sync:ready"]) failures.push("workspace:task-sync:ready script missing");
 if (!pkg.scripts?.["build:preflight"]?.includes("workspace:task-sync:ready")) failures.push("build:preflight must include workspace:task-sync:ready");
 for (const status of ["pendiente", "en_proceso", "produccion", "en_espera", "revision", "concluido"]) {

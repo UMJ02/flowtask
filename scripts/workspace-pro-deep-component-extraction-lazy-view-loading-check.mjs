@@ -20,8 +20,9 @@ for (const file of requiredFiles) {
 }
 
 if (!["58.28.15-workspace-pro-deep-component-extraction-lazy-view-loading", "58.28.16-task-data-sync-status-source-of-truth",
-  "58.28.16.1-task-data-sync-cli-hotfix"].includes(pkg.version)) failures.push("package version is not an allowed v58.28 runtime version");
-if (!["npm run verify:v58.28.15", "npm run verify:v58.28.16", "npm run verify:v58.28.16.1"].includes(pkg.scripts?.["verify:current"])) failures.push("verify:current is not an allowed v58.28 runtime verify target");
+  "58.28.16.1-task-data-sync-cli-hotfix",
+  "58.28.16.2-classic-pro-status-parity"].includes(pkg.version)) failures.push("package version is not an allowed v58.28 runtime version");
+if (!["npm run verify:v58.28.15", "npm run verify:v58.28.16", "npm run verify:v58.28.16.1", "npm run verify:v58.28.16.2"].includes(pkg.scripts?.["verify:current"])) failures.push("verify:current is not an allowed v58.28 runtime verify target");
 if (!pkg.scripts?.["build:preflight"]?.includes("workspace:deep-component:ready")) failures.push("build:preflight does not include deep component check");
 if (!lazy.includes("next/dynamic")) failures.push("lazy surfaces must use next/dynamic");
 const lazyNames = [

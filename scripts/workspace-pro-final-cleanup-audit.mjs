@@ -16,8 +16,9 @@ for (const file of requiredFiles) {
 }
 const scripts = Object.keys(pkg.scripts || {});
 if (!["58.28.13-workspace-pro-final-cleanup-audit-safe-dead-surface-removal", "58.28.15-workspace-pro-deep-component-extraction-lazy-view-loading", "58.28.16-task-data-sync-status-source-of-truth",
-  "58.28.16.1-task-data-sync-cli-hotfix"].includes(pkg.version)) failures.push("package version is not an allowed v58.28 cleanup/runtime version");
-if (!["npm run verify:v58.28.13", "npm run verify:v58.28.15", "npm run verify:v58.28.16", "npm run verify:v58.28.16.1"].includes(pkg.scripts?.["verify:current"])) failures.push("verify:current is not an allowed v58.28 cleanup/runtime verify target");
+  "58.28.16.1-task-data-sync-cli-hotfix",
+  "58.28.16.2-classic-pro-status-parity"].includes(pkg.version)) failures.push("package version is not an allowed v58.28 cleanup/runtime version");
+if (!["npm run verify:v58.28.13", "npm run verify:v58.28.15", "npm run verify:v58.28.16", "npm run verify:v58.28.16.1", "npm run verify:v58.28.16.2"].includes(pkg.scripts?.["verify:current"])) failures.push("verify:current is not an allowed v58.28 cleanup/runtime verify target");
 if (!pkg.scripts?.["build:preflight"]?.includes("workspace:final-cleanup:ready")) failures.push("build:preflight does not include final cleanup check");
 if (scripts.length > 80) failures.push(`Too many active scripts remain: ${scripts.length}`);
 const legacyVerifyScripts = scripts.filter((name) => /^verify:v(54|58\.(0|1|2[0-7]))/.test(name));

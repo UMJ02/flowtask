@@ -17,11 +17,11 @@ type Props = { task: any; queryString?: string; comments: any[]; assignableUsers
 type DepartmentOption = { id: string; code?: string | null; name: string };
 type FormState = { title: string; description: string; status: string; priority: string; dueDate: string; clientName: string; departmentId: string; };
 
-const statusOptions = ["en_proceso", "produccion", "en_espera", "concluido"] as const;
+const statusOptions = ["pendiente", "en_proceso", "produccion", "en_espera", "revision", "concluido"] as const;
 const priorityOptions = ["alta", "media", "baja"] as const;
 
-function buildInitialForm(task: any): FormState { return { title: task.title ?? "", description: task.description ?? "", status: statusOptions.includes(task.status) ? task.status : "en_proceso", priority: priorityOptions.includes(task.priority) ? task.priority : "media", dueDate: task.due_date ?? "", clientName: task.client_name ?? "", departmentId: task.department_id ? String(task.department_id) : "" }; }
-function humanStatus(value?: string | null) { return ({ en_espera: "En espera", en_proceso: "En proceso", produccion: "Producción", concluido: "Concluida" } as Record<string,string>)[value || ""] || (value ? value.replaceAll("_", " ") : "Sin estado"); }
+function buildInitialForm(task: any): FormState { return { title: task.title ?? "", description: task.description ?? "", status: statusOptions.includes(task.status) ? task.status : "pendiente", priority: priorityOptions.includes(task.priority) ? task.priority : "media", dueDate: task.due_date ?? "", clientName: task.client_name ?? "", departmentId: task.department_id ? String(task.department_id) : "" }; }
+function humanStatus(value?: string | null) { return ({ pendiente: "Pendiente", en_espera: "En espera", en_proceso: "En curso", produccion: "Producción", revision: "Revisión", concluido: "Concluida" } as Record<string,string>)[value || ""] || (value ? value.replaceAll("_", " ") : "Sin estado"); }
 function priorityLabel(value?: string | null) { return value === "alta" ? "Alta" : value === "baja" ? "Baja" : "Media"; }
 function initials(name?: string | null) { return (name || "FT").split(" ").filter(Boolean).slice(0, 2).map((part) => part[0]).join("").toUpperCase(); }
 function actorName(item: any) { const raw = item?.actor_name || item?.actor?.full_name || item?.actor?.email || ""; return !raw || raw === "FlowTask" ? "Sistema" : raw; }
