@@ -321,3 +321,8 @@ Corrige el Board para usuario final: el panel de acciones ya no queda atrapado d
 
 Migración requerida si la base actual todavía rechaza esos estados:
 `supabase/migrations/0055_v58_28_4_task_status_pending_review.sql`
+
+
+## v58.28.5 — Workspace Pro Brand Accent + Pro Navigation Identity
+
+Workspace Pro ahora tiene icono Crown, badge PRO, acentos premium y color system en la experiencia Pro, manteniendo la sidebar interna blanca.

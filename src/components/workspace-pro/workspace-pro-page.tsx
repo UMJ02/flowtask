@@ -1,7 +1,7 @@
 "use client";
 
-// v58.28.4 — Workspace Pro Board Overlay + Status Schema Alignment
-// Focus: panel de acciones fuera del stack del board, columnas flexibles y estados soportados por Supabase.
+// v58.28.5 — Workspace Pro Brand Accent + Pro Navigation Identity
+// Focus: identidad visual Pro con icono semántico, color system y sidebar blanca sin sobrecargar la UI.
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
@@ -11,6 +11,7 @@ import {
   BarChart3,
   CalendarDays,
   CheckCircle2,
+  Crown,
   Command,
   Edit3,
   Files,
@@ -246,7 +247,7 @@ export function WorkspaceProPage(props: WorkspaceProPageProps) {
                 </div>
                 <div className="mt-1 flex min-w-0 items-center gap-2">
                   <h1 className="truncate text-[20px] font-semibold tracking-[-0.03em] text-slate-950 md:text-[24px]">{activeProjectTitle}</h1>
-                  <span className="ws-pro-status-dot">Activa</span>
+                  <span className="ws-pro-status-dot ws-pro-status-dot-pro"><Crown className="h-3 w-3" /> Pro</span>
                   {permissions.isReadOnly ? <span className="ws-pro-muted-pill">Solo lectura</span> : null}
                 </div>
                 <p className="mt-1 text-sm text-slate-500">{tasks.length} tareas · {progress}% avance</p>
@@ -335,8 +336,8 @@ function WorkspaceProSidebar({ context, spaces, projects, onOpenCommand, onOpenS
     <div className="flex h-full min-h-0 flex-col bg-white">
       <div className="border-b border-slate-200 px-4 py-4">
         <div className="flex items-center gap-3">
-          <div className="grid h-8 w-8 place-items-center rounded-lg bg-slate-950 text-xs font-semibold text-white">FT</div>
-          <div className="min-w-0"><p className="truncate text-sm font-semibold text-slate-950">FlowTask</p><p className="truncate text-xs text-slate-500">{context.mode === "organization" ? "Organización" : "Personal"}</p></div>
+          <div className="ws-pro-brand-mark"><Crown className="h-4 w-4" /></div>
+          <div className="min-w-0"><p className="truncate text-sm font-semibold text-slate-950">FlowTask Pro</p><p className="truncate text-xs text-slate-500">{context.mode === "organization" ? "Organización" : "Personal"}</p></div>
         </div>
         <button type="button" onClick={onOpenCommand} className="mt-4 flex h-9 w-full items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 text-left text-sm text-slate-500 transition hover:border-slate-300 hover:bg-white"><Search className="h-4 w-4" /> Buscar<span className="ml-auto text-[11px] text-slate-400">⌘K</span></button>
       </div>

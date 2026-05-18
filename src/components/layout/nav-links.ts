@@ -4,6 +4,7 @@ import {
   ClipboardList,
   FolderKanban,
   LayoutGrid,
+  Crown,
   Settings,
   Users,
   Bell,
@@ -20,11 +21,12 @@ export type AppNavLink = {
   hint: string;
   icon: LucideIcon;
   isNotifications?: boolean;
+  isPro?: boolean;
 };
 
 export const appNavLinks: AppNavLink[] = [
   { href: '/app/dashboard', label: 'Inicio', hint: 'Tu tablero', icon: LayoutGrid },
-  { href: '/app/workspace', label: 'Workspace Pro', hint: 'Vista centralizada', icon: LayoutGrid },
+  { href: '/app/workspace', label: 'Workspace Pro', hint: 'Centro pro', icon: Crown, isPro: true },
   { href: '/app/projects', label: 'Proyectos', hint: 'Fechas y avance', icon: FolderKanban },
   { href: '/app/tasks', label: 'Tareas', hint: 'Pendientes al día', icon: ClipboardList },
   { href: '/app/boards', label: 'Pizarras', hint: 'Diagramas y notas', icon: PenTool },

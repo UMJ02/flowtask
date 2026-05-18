@@ -89,11 +89,11 @@ export function MobileNav() {
                   onClick={() => setOpen(false)}
                 >
                   <div className="flex min-w-0 items-center gap-3">
-                    <span className={`inline-flex h-10 w-10 items-center justify-center rounded-2xl ${active ? 'bg-emerald-500 text-white' : 'bg-white/10 text-emerald-300'}`}>
+                    <span className={`inline-flex h-10 w-10 items-center justify-center rounded-2xl ${link.isPro ? 'bg-amber-300/15 text-amber-200 ring-1 ring-amber-300/30' : active ? 'bg-emerald-500 text-white' : 'bg-white/10 text-emerald-300'}`}>
                       <Icon className="h-5 w-5" />
                     </span>
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-semibold text-white">{link.label}</p>
+                      <p className="truncate text-sm font-semibold text-white">{link.label}{link.isPro ? <span className="ml-2 rounded-full border border-amber-300/30 bg-amber-300/10 px-1.5 py-0.5 text-[9px] font-black uppercase tracking-[0.16em] text-amber-200">Pro</span> : null}</p>
                       <p className="truncate text-xs text-slate-300">{link.hint}</p>
                     </div>
                   </div>

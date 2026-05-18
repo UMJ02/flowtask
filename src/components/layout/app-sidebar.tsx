@@ -46,9 +46,10 @@ export function AppSidebar({ organizations = [], activeOrganization = null, user
             const Icon = link.icon;
             const active = pathname === link.href || pathname?.startsWith(`${link.href}/`) || (link.href === '/app/dashboard' && pathname === '/app/board');
             return (
-              <Link key={link.href} className={`group relative flex h-11 items-center rounded-[12px] border transition-colors duration-[150ms] ${collapsed ? 'justify-center px-0' : 'gap-3 px-3'} ${active ? 'border-[#16C784]/35 bg-white/[0.06] text-white shadow-[inset_4px_0_0_#16C784,0_12px_24px_rgba(22,199,132,0.10)]' : 'border-transparent text-slate-300 hover:bg-white/[0.04] hover:text-white'}`} href={link.href} title={collapsed ? link.label : undefined}>
-                <Icon className={`h-[18px] w-[18px] shrink-0 transition ${active ? 'text-[#16C784]' : 'text-slate-300 group-hover:text-white'}`} />
+              <Link key={link.href} className={`group relative flex h-11 items-center rounded-[12px] border transition-colors duration-[150ms] ${collapsed ? 'justify-center px-0' : 'gap-3 px-3'} ${link.isPro ? 'ft-app-nav-pro' : ''} ${active ? (link.isPro ? 'ft-app-nav-pro-active' : 'border-[#16C784]/35 bg-white/[0.06] text-white shadow-[inset_4px_0_0_#16C784,0_12px_24px_rgba(22,199,132,0.10)]') : 'border-transparent text-slate-300 hover:bg-white/[0.04] hover:text-white'}`} href={link.href} title={collapsed ? link.label : undefined}>
+                <Icon className={`h-[18px] w-[18px] shrink-0 transition ${link.isPro ? 'text-amber-300 drop-shadow-[0_0_10px_rgba(251,191,36,.32)]' : active ? 'text-[#16C784]' : 'text-slate-300 group-hover:text-white'}`} />
                 {!collapsed ? <span className="truncate text-[14px] font-semibold">{link.label}</span> : null}
+                {!collapsed && link.isPro ? <span className="ml-auto rounded-full border border-amber-300/35 bg-amber-300/12 px-1.5 py-0.5 text-[9px] font-black uppercase tracking-[0.16em] text-amber-200">Pro</span> : null}
                 {collapsed ? <span className="pointer-events-none absolute left-[calc(100%+10px)] top-1/2 z-50 hidden -translate-y-1/2 whitespace-nowrap rounded-[10px] bg-slate-950 px-3 py-1.5 text-xs font-semibold text-white shadow-xl group-hover:block">{link.label}</span> : null}
               </Link>
             );
