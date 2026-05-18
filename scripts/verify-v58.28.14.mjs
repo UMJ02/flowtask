@@ -1,0 +1,27 @@
+import fs from "node:fs";
+
+const pkg = JSON.parse(fs.readFileSync("package.json", "utf8"));
+const version = fs.readFileSync("src/lib/release/version.ts", "utf8");
+const source = fs.readFileSync("src/components/workspace-pro/workspace-pro-page.tsx", "utf8");
+const runtime = fs.existsSync("src/components/workspace-pro/workspace-pro-runtime.ts");
+const audit = fs.existsSync("docs/audits/V58_28_14_COMPONENT_SPLIT_RUNTIME_SLIMDOWN_AUDIT.md");
+const failures = [];
+
+if (pkg.version !== "58.28.14-workspace-pro-component-split-runtime-slimdown") failures.push("Unexpected package version");
+if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.28.14") failures.push("verify:current must target verify:v58.28.14");
+if (!version.includes("58.28.14-workspace-pro-component-split-runtime-slimdown")) failures.push("version.ts must contain v58.28.14 slug");
+if (!pkg.scripts?.["workspace:component-split:ready"]) failures.push("workspace:component-split:ready script missing");
+if (!pkg.scripts?.["build:preflight"]?.includes("workspace:component-split:ready")) failures.push("build:preflight must include workspace:component-split:ready");
+if (!runtime) failures.push("workspace-pro-runtime.ts split module missing");
+if (!source.includes("mainViewNode = useMemo")) failures.push("Workspace main view is not memoized");
+if (!source.includes("MemoWorkspaceProBoard") || !source.includes("MemoWorkspaceProFiles") || !source.includes("MemoWorkspaceProReports")) failures.push("Heavy Workspace Pro views must use memoized view boundaries");
+if (!source.includes("buildWorkspaceProViewHref")) failures.push("client-side view href builder must be split from page component");
+if (!audit) failures.push("component split audit doc missing");
+
+if (failures.length) {
+  console.error("[verify:v58.28.14] FAIL");
+  for (const failure of failures) console.error(`- ${failure}`);
+  process.exit(1);
+}
+
+console.log("[verify:v58.28.14] OK — Workspace Pro component split and runtime slimdown aligned.");

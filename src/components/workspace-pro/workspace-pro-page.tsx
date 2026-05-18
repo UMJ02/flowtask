@@ -4,7 +4,7 @@
 // Focus: eliminar animaciones/skeletons del workspace, portal real para acciones del board y colores Home alineados al Board.
 
 import Link from "next/link";
-import { useEffect, useMemo, useState, type CSSProperties, type MouseEvent } from "react";
+import { memo, useCallback, useEffect, useMemo, useState, type CSSProperties, type MouseEvent } from "react";
 import { createPortal } from "react-dom";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
@@ -71,6 +71,7 @@ import {
   getWorkspaceProDerivedData,
   type WorkspaceProDerivedData,
 } from "@/lib/workspace-system/render-diet";
+import { buildWorkspaceProViewHref } from "./workspace-pro-runtime";
 
 type WorkspaceProPageProps = {
   activeView: WorkspaceViewId;
@@ -89,8 +90,6 @@ type WorkspaceProPageProps = {
   notifications: WorkspaceNotificationSummary;
   context: WorkspaceContext;
 };
-
-const SERVER_SYNC_VIEWS = new Set<WorkspaceViewId>([]);
 
 const viewItems: Array<{
   id: WorkspaceViewId;
@@ -212,27 +211,53 @@ export function WorkspaceProPage(props: WorkspaceProPageProps) {
   const activeProjectTitle = context.projectTitle ?? "Workspace";
   const statusParam = context.activeFilters?.status ?? "todos";
 
-  function setWorkspaceParam(key: string, value: string, emptyValue = "") {
+  const setWorkspaceParam = useCallback((key: string, value: string, emptyValue = "") => {
     const next = new URLSearchParams(searchParams.toString());
     if (value === emptyValue) next.delete(key);
     else next.set(key, value);
     if (key !== "savedViewId") next.delete("savedViewId");
     router.replace(`/app/workspace?${next.toString()}`, { scroll: false });
-  }
+  }, [router, searchParams]);
 
-  function openView(view: WorkspaceViewId) {
+  const openView = useCallback((view: WorkspaceViewId) => {
     if (view === displayedView) return;
     setMoreOpen(false);
     setDisplayedView(view);
     if (typeof window === "undefined") return;
-    const next = new URLSearchParams(window.location.search);
-    if (view === "home") next.delete("view");
-    else next.set("view", view);
-    next.delete("savedViewId");
-    const query = next.toString();
-    const href = query ? `/app/workspace?${query}` : "/app/workspace";
+    const href = buildWorkspaceProViewHref(view, window.location.search);
     window.history.replaceState(null, "", href);
-  }
+  }, [displayedView]);
+
+  const mainViewNode = useMemo(
+    () => (
+      <WorkspaceProMainView
+        activeView={displayedView}
+        tasks={activeTasks}
+        projects={projects}
+        boards={boards}
+        files={files}
+        activity={activity}
+        projectViews={projectViews}
+        reports={reports}
+        context={context}
+        permissions={permissions}
+        derived={derived}
+      />
+    ),
+    [
+      displayedView,
+      activeTasks,
+      projects,
+      boards,
+      files,
+      activity,
+      projectViews,
+      reports,
+      context,
+      permissions,
+      derived,
+    ],
+  );
 
   return (
     <div className="ws-pro-shell grid h-screen min-h-screen grid-cols-1 overflow-hidden lg:grid-cols-[264px_minmax(0,1fr)]">
@@ -507,19 +532,7 @@ export function WorkspaceProPage(props: WorkspaceProPageProps) {
                   />
                 </div>
               ) : null}
-              <WorkspaceProMainView
-                activeView={displayedView}
-                tasks={activeTasks}
-                projects={projects}
-                boards={boards}
-                files={files}
-                activity={activity}
-                projectViews={projectViews}
-                reports={reports}
-                context={context}
-                permissions={permissions}
-                derived={derived}
-              />
+              {mainViewNode}
             </section>
           </div>
         </div>
@@ -822,7 +835,7 @@ function WorkspaceProMainView({
 }) {
   if (activeView === "home")
     return (
-      <WorkspaceProHome
+      <MemoWorkspaceProHome
         tasks={tasks}
         boards={boards}
         files={files}
@@ -833,7 +846,7 @@ function WorkspaceProMainView({
     );
   if (activeView === "list")
     return (
-      <WorkspaceProList
+      <MemoWorkspaceProList
         tasks={tasks}
         projects={projects}
         context={context}
@@ -842,14 +855,14 @@ function WorkspaceProMainView({
     );
   if (activeView === "projects")
     return (
-      <WorkspaceProProjects
+      <MemoWorkspaceProProjects
         projects={projects}
         projectTaskMap={derived.projectTaskMap}
       />
     );
   if (activeView === "board")
     return (
-      <WorkspaceProBoard
+      <MemoWorkspaceProBoard
         tasks={tasks}
         projects={projects}
         context={context}
@@ -857,12 +870,12 @@ function WorkspaceProMainView({
       />
     );
   if (activeView === "timeline")
-    return <WorkspaceProTimeline tasks={tasks} projects={projects} />;
-  if (activeView === "table") return <WorkspaceProTable tasks={tasks} />;
-  if (activeView === "canvas") return <WorkspaceProCanvas boards={boards} />;
+    return <MemoWorkspaceProTimeline tasks={tasks} projects={projects} />;
+  if (activeView === "table") return <MemoWorkspaceProTable tasks={tasks} />;
+  if (activeView === "canvas") return <MemoWorkspaceProCanvas boards={boards} />;
   if (activeView === "files")
     return (
-      <WorkspaceProFiles
+      <MemoWorkspaceProFiles
         files={files}
         boards={boards}
         projects={projects}
@@ -871,7 +884,7 @@ function WorkspaceProMainView({
       />
     );
   return (
-    <WorkspaceProReports
+    <MemoWorkspaceProReports
       tasks={tasks}
       projects={projects}
       reports={reports}
@@ -2746,6 +2759,17 @@ function WorkspaceProReports({
     </div>
   );
 }
+
+
+const MemoWorkspaceProHome = memo(WorkspaceProHome);
+const MemoWorkspaceProList = memo(WorkspaceProList);
+const MemoWorkspaceProProjects = memo(WorkspaceProProjects);
+const MemoWorkspaceProBoard = memo(WorkspaceProBoard);
+const MemoWorkspaceProTimeline = memo(WorkspaceProTimeline);
+const MemoWorkspaceProTable = memo(WorkspaceProTable);
+const MemoWorkspaceProCanvas = memo(WorkspaceProCanvas);
+const MemoWorkspaceProFiles = memo(WorkspaceProFiles);
+const MemoWorkspaceProReports = memo(WorkspaceProReports);
 
 function ReportAction({
   title,

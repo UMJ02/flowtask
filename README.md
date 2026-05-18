@@ -1,3 +1,20 @@
+# FlowTask v58.28.14 — Workspace Pro Component Split + Runtime Slimdown
+
+Esta versión toma como base v58.28.13 y reduce el runtime del Workspace Pro con callbacks estables, navegación client-side aislada, helper de runtime y boundaries memoizados por vista. Mantiene la UI estable, no toca Supabase/RLS/migraciones y prepara una futura división física de vistas.
+
+Validación recomendada:
+
+```bash
+npm install
+npm run verify:current
+npm run workspace:component-split:ready
+npm run build:preflight
+npm run vercel:build
+npm run dev
+```
+
+---
+
 # FlowTask v58.28.13 — Workspace Pro Final Cleanup Audit + Safe Dead Surface Removal
 
 Esta versión toma como base v58.28.12 y reduce la superficie activa del proyecto para cliente final. Mantiene la UI estable, no toca Supabase/RLS/migraciones y agrega auditoría de limpieza final.
