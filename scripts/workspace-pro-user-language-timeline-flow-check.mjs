@@ -9,13 +9,14 @@ if (!["58.28.3-workspace-pro-user-language-timeline-flow", "58.28.4-workspace-pr
   "58.28.8-workspace-pro-client-performance-anchored-popovers",
   "58.28.9-workspace-pro-brand-pastel-loading-system",
   "58.28.10-workspace-pro-no-motion-board-portal-home-colors",
-  "58.28.11-workspace-pro-nav-shape-home-alignment"].includes(pkg.version)) failures.push(`Unexpected package version: ${pkg.version}`);
+  "58.28.11-workspace-pro-nav-shape-home-alignment",
+  "58.28.12-workspace-pro-home-hero-solid-card-colors"].includes(pkg.version)) failures.push(`Unexpected package version: ${pkg.version}`);
 if (!["npm run verify:v58.28.3", "npm run verify:v58.28.4", "npm run verify:v58.28.5",
   "npm run verify:v58.28.6",
   "npm run verify:v58.28.7",
   "npm run verify:v58.28.8",
   "npm run verify:v58.28.9",
-  "npm run verify:v58.28.10", "npm run verify:v58.28.11"].includes(pkg.scripts?.["verify:current"])) failures.push("verify:current must target the active v58.28.x verify script");
+  "npm run verify:v58.28.10", "npm run verify:v58.28.11", "npm run verify:v58.28.12"].includes(pkg.scripts?.["verify:current"])) failures.push("verify:current must target the active v58.28.x verify script");
 const page = fs.readFileSync("src/components/workspace-pro/workspace-pro-page.tsx", "utf8");
 const spaces = fs.readFileSync("src/components/workspace-system/workspace-spaces-manager.tsx", "utf8");
 const css = fs.readFileSync("src/app/globals.css", "utf8");

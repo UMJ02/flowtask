@@ -367,3 +367,10 @@ Ajusta el cintillo de actualización a una franja completa con verdes FlowTask/p
 - Tabs del Workspace Pro con active/hover en pill redondeada consistente.
 - Card principal de Home alineada a la izquierda en desktop.
 - Sin cambios a Supabase, RLS, migraciones o rutas clásicas.
+
+## v58.28.12 — Workspace Pro Home Hero + Solid Card Colors
+
+- Ajusta el hero del Home para que `TODO EL WORKSPACE / Todos los proyectos` quede alineado a la izquierda con métricas a la derecha.
+- Cambia los acentos de cards del Home a colores sólidos distribuidos por bloque.
+- Mantiene la navegación redondeada y el sistema sin animaciones/skeletons de la línea Pro.
+- Agrega `workspace:home-solid-cards:ready` al preflight.

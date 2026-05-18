@@ -8433,3 +8433,86 @@
     justify-self: start !important;
   }
 }
+
+/* v58.28.12 — Workspace Pro Home Hero + Solid Card Colors */
+.ws-pro-home-summary {
+  min-height: 10.75rem !important;
+  padding: clamp(1.65rem, 3.2vw, 3rem) clamp(1.55rem, 4.8vw, 5.25rem) !important;
+  display: grid !important;
+  grid-template-columns: minmax(22rem, 1fr) auto !important;
+  align-items: center !important;
+  justify-content: stretch !important;
+  column-gap: clamp(1.5rem, 5vw, 7rem) !important;
+  text-align: left !important;
+}
+.ws-pro-home-summary > .min-w-0 {
+  justify-self: start !important;
+  align-self: center !important;
+  max-width: 38rem !important;
+  width: auto !important;
+  padding-left: clamp(.25rem, 1.4vw, 1.25rem) !important;
+  text-align: left !important;
+}
+.ws-pro-home-summary > .flex {
+  justify-self: end !important;
+  align-self: center !important;
+  padding-right: clamp(.15rem, 1.2vw, 1rem) !important;
+}
+.ws-pro-home-summary p,
+.ws-pro-home-summary h1,
+.ws-pro-home-summary h2 {
+  text-align: left !important;
+}
+.ws-pro-home-summary h2 {
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+}
+.ws-pro-clean-card {
+  position: relative !important;
+  overflow: hidden !important;
+  border-top-width: 4px !important;
+  background: #fff !important;
+}
+.ws-pro-clean-card::before,
+.ws-pro-hero-card::before {
+  display: none !important;
+}
+.ws-pro-card-tone-blue {
+  border-top-color: #2563eb !important;
+  box-shadow: 0 10px 24px rgba(37, 99, 235, .075) !important;
+}
+.ws-pro-card-tone-sky {
+  border-top-color: #0ea5e9 !important;
+  box-shadow: 0 10px 24px rgba(14, 165, 233, .075) !important;
+}
+.ws-pro-card-tone-violet {
+  border-top-color: #7c3aed !important;
+  box-shadow: 0 10px 24px rgba(124, 58, 237, .075) !important;
+}
+.ws-pro-card-tone-amber {
+  border-top-color: #f59e0b !important;
+  box-shadow: 0 10px 24px rgba(245, 158, 11, .08) !important;
+}
+.ws-pro-card-tone-emerald {
+  border-top-color: #10b981 !important;
+  box-shadow: 0 10px 24px rgba(16, 185, 129, .075) !important;
+}
+.ws-pro-card-tone-rose {
+  border-top-color: #e11d48 !important;
+  box-shadow: 0 10px 24px rgba(225, 29, 72, .075) !important;
+}
+@media (max-width: 960px) {
+  .ws-pro-home-summary {
+    min-height: auto !important;
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+    padding: 1.25rem !important;
+  }
+  .ws-pro-home-summary > .min-w-0,
+  .ws-pro-home-summary > .flex {
+    justify-self: start !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+}

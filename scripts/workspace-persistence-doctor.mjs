@@ -28,8 +28,10 @@ const allowedVersions = [
   "58.28.9-workspace-pro-brand-pastel-loading-system",
   "58.28.10-workspace-pro-no-motion-board-portal-home-colors",
   "58.28.11-workspace-pro-nav-shape-home-alignment",
+  "58.28.12-workspace-pro-home-hero-solid-card-colors",
   "58.28.10-workspace-pro-no-motion-board-portal-home-colors",
   "58.28.11-workspace-pro-nav-shape-home-alignment",
+  "58.28.12-workspace-pro-home-hero-solid-card-colors",
   "58.27.8.1-workspace-pro-vercel-readiness-hotfix",
   "58.27.9-workspace-pro-interaction-hardening-real-editing-flow",
   "58.28.0-workspace-pro-production-ux-final",
@@ -44,8 +46,10 @@ const allowedVersions = [
   "58.28.9-workspace-pro-brand-pastel-loading-system",
   "58.28.10-workspace-pro-no-motion-board-portal-home-colors",
   "58.28.11-workspace-pro-nav-shape-home-alignment",
+  "58.28.12-workspace-pro-home-hero-solid-card-colors",
   "58.28.10-workspace-pro-no-motion-board-portal-home-colors",
   "58.28.11-workspace-pro-nav-shape-home-alignment",
+  "58.28.12-workspace-pro-home-hero-solid-card-colors",
 ];
 const allowedVerifyTargets = [
   "npm run verify:v58.27.6",
@@ -59,7 +63,7 @@ const allowedVerifyTargets = [
   "npm run verify:v58.28.8",
   "npm run verify:v58.28.9",
   "npm run verify:v58.28.10",
-  "npm run verify:v58.28.11",
+  "npm run verify:v58.28.11", "npm run verify:v58.28.12",
 ];
 
 if (!allowedVersions.includes(String(pkg.version ?? ""))) failures.push(`Unexpected package version: ${pkg.version}`);

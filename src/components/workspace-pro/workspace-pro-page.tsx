@@ -921,6 +921,7 @@ function WorkspaceProHome({
         <div className="grid gap-4 xl:grid-cols-2">
           <CleanCard
             title="Tareas importantes"
+            className="ws-pro-card-tone-blue"
             action={
               importantTasks.length ? `${importantTasks.length}` : undefined
             }
@@ -943,6 +944,7 @@ function WorkspaceProHome({
           </CleanCard>
           <CleanCard
             title="Próximos vencimientos"
+            className="ws-pro-card-tone-amber"
             action={
               upcomingTasks.length ? `${upcomingTasks.length}` : undefined
             }
@@ -966,7 +968,7 @@ function WorkspaceProHome({
           </CleanCard>
         </div>
         <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
-          <CleanCard title="Proyectos activos">
+          <CleanCard title="Proyectos activos" className="ws-pro-card-tone-violet">
             {activeProjects.length ? (
               activeProjects.map((project) => (
                 <ProjectLine key={project.id} project={project} />
@@ -979,7 +981,7 @@ function WorkspaceProHome({
               />
             )}
           </CleanCard>
-          <CleanCard title="Recursos">
+          <CleanCard title="Recursos" className="ws-pro-card-tone-emerald">
             <ResourceLine
               label="Pizarras"
               value={boards.length}
@@ -997,7 +999,7 @@ function WorkspaceProHome({
             />
           </CleanCard>
         </div>
-        <CleanCard title="Actividad reciente">
+        <CleanCard title="Actividad reciente" className="ws-pro-card-tone-sky">
           {activityPreview.length ? (
             activityPreview.map((item) => (
               <Link
@@ -3064,7 +3066,7 @@ function WorkspaceProUtilityDock({
   const current = new Date();
   return (
     <aside className="ws-pro-utility-dock space-y-4">
-      <CleanCard title="Hoy">
+      <CleanCard title="Hoy" className="ws-pro-card-tone-blue">
         <p className="text-2xl font-semibold tracking-[-0.04em] text-slate-950">
           {current.toLocaleDateString("es-CR", { day: "2-digit" })}
         </p>
@@ -3079,13 +3081,13 @@ function WorkspaceProUtilityDock({
           <MiniStat label="Venc." value={overdue} />
         </div>
       </CleanCard>
-      <CleanCard title="Nota rápida">
+      <CleanCard title="Nota rápida" className="ws-pro-card-tone-violet">
         <textarea
           className="min-h-[96px] w-full resize-none rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700 outline-none transition focus:border-slate-300 focus:bg-white"
           placeholder="Escribí un recordatorio temporal..."
         />
       </CleanCard>
-      <CleanCard title="Acciones rápidas">
+      <CleanCard title="Acciones rápidas" className="ws-pro-card-tone-emerald">
         <div className="grid gap-2">
           <Link href="/app/boards" className="ws-pro-mini-action">
             Crear / abrir pizarra
