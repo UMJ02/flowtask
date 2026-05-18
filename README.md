@@ -1,3 +1,20 @@
+# FlowTask v58.28.13 — Workspace Pro Final Cleanup Audit + Safe Dead Surface Removal
+
+Esta versión toma como base v58.28.12 y reduce la superficie activa del proyecto para cliente final. Mantiene la UI estable, no toca Supabase/RLS/migraciones y agrega auditoría de limpieza final.
+
+Validación recomendada:
+
+```bash
+npm install
+npm run verify:current
+npm run workspace:final-cleanup:ready
+npm run build:preflight
+npm run vercel:build
+npm run dev
+```
+
+---
+
 
 ## v58.27.8.1 — Workspace Pro Vercel Readiness Hotfix
 
