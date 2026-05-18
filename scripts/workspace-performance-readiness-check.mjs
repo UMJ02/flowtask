@@ -28,7 +28,9 @@ const allowedVersions = [
   "58.28.8-workspace-pro-client-performance-anchored-popovers",
   "58.28.9-workspace-pro-brand-pastel-loading-system",
   "58.28.10-workspace-pro-no-motion-board-portal-home-colors",
+  "58.28.11-workspace-pro-nav-shape-home-alignment",
   "58.28.10-workspace-pro-no-motion-board-portal-home-colors",
+  "58.28.11-workspace-pro-nav-shape-home-alignment",
 ];
 const allowedVerifyTargets = ["npm run verify:v58.27.6", "npm run verify:v58.27.7", "npm run verify:v58.27.7.1", "npm run verify:v58.27.8", "npm run verify:v58.27.8.1",
   "npm run verify:v58.27.9",
@@ -37,7 +39,7 @@ const allowedVerifyTargets = ["npm run verify:v58.27.6", "npm run verify:v58.27.
   "npm run verify:v58.28.7",
   "npm run verify:v58.28.8",
   "npm run verify:v58.28.9",
-  "npm run verify:v58.28.10"];
+  "npm run verify:v58.28.10", "npm run verify:v58.28.11"];
 if (!allowedVersions.includes(String(pkg.version ?? ""))) failures.push(`Unexpected package version: ${pkg.version}`);
 if (!allowedVerifyTargets.includes(pkg.scripts?.["verify:current"])) failures.push("verify:current must target the active v58.27.x/v58.28.x verify script");
 

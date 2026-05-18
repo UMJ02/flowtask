@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "58.28.10-workspace-pro-no-motion-board-portal-home-colors",
+  "version": "58.28.11-workspace-pro-nav-shape-home-alignment",
   "private": true,
   "scripts": {
     "dev": "node node_modules/next/dist/bin/next dev",
@@ -58,7 +58,7 @@
     "release:repo:current": "npm run release:repo:v58.21.0",
     "qa:current": "npm run validate:node && npm run validate:env && npm run verify:current && npm run runtime:check && npm run typecheck && npm run security:check && npm run performance:check && npm run hardening:final:check && npm run ops:check && npm run deploy:production:ready",
     "release:current": "npm run clean && npm run release:repo:v58.20 && npm run qa:current && npm run qa:functional && npm run qa:report && npm run ux:review && npm run preprod:validate && npm run production:gate",
-    "verify:current": "npm run verify:v58.28.10",
+    "verify:current": "npm run verify:v58.28.11",
     "release:repo:v54.3.3": "npm run verify:current && npm run runtime:check && npm run typecheck",
     "verify:v54.3.4": "node scripts/verify-v54.3.4.mjs",
     "release:repo:v54.3.4": "npm run verify:current && npm run runtime:check && npm run typecheck",
@@ -71,7 +71,7 @@
     "release:repo:v58.5": "npm run verify:current && npm run runtime:check && npm run typecheck && npm run deploy:readiness && npm run board:stability",
     "deploy:readiness": "node scripts/build-deploy-readiness.mjs",
     "board:stability": "node scripts/board-stabilization-check.mjs",
-    "build:preflight": "npm run validate:node && npm run validate:env && npm run verify:current && npm run workspace:doctor && npm run workspace:production:ready && npm run workspace:real-env:ready && npm run workspace:performance:ready && npm run workspace:automation:ready && npm run workspace:collaboration:ready && npm run workspace:error-recovery:ready && npm run workspace:release-candidate:ready && npm run workspace:rc-fixes:ready && npm run workspace:design-reset:ready && npm run workspace:layout-cleanup:ready && npm run workspace:interaction:ready && npm run runtime:check && npm run workspace:board-pro:ready && npm run workspace:files-reports:ready && npm run workspace:deep-cleanup:ready && npm run workspace:render-diet:ready && npm run workspace:visual-density:ready && npm run workspace:real-editing:ready && npm run workspace:production-ux:ready && npm run workspace:user-final-ui:ready && npm run workspace:action-model:ready && npm run workspace:user-language:ready && npm run workspace:board-overlay:ready && npm run workspace:pro-brand:ready && npm run workspace:board-active-actions:ready && npm run workspace:performance-pass:ready && npm run workspace:client-performance:ready && npm run workspace:brand-pastel:ready && npm run workspace:no-motion-board-portal:ready && npm run typecheck && npm run deploy:readiness && npm run board:stability && npm run client:readiness:check && npm run deploy:production:ready",
+    "build:preflight": "npm run validate:node && npm run validate:env && npm run verify:current && npm run workspace:doctor && npm run workspace:production:ready && npm run workspace:real-env:ready && npm run workspace:performance:ready && npm run workspace:automation:ready && npm run workspace:collaboration:ready && npm run workspace:error-recovery:ready && npm run workspace:release-candidate:ready && npm run workspace:rc-fixes:ready && npm run workspace:design-reset:ready && npm run workspace:layout-cleanup:ready && npm run workspace:interaction:ready && npm run runtime:check && npm run workspace:board-pro:ready && npm run workspace:files-reports:ready && npm run workspace:deep-cleanup:ready && npm run workspace:render-diet:ready && npm run workspace:visual-density:ready && npm run workspace:real-editing:ready && npm run workspace:production-ux:ready && npm run workspace:user-final-ui:ready && npm run workspace:action-model:ready && npm run workspace:user-language:ready && npm run workspace:board-overlay:ready && npm run workspace:pro-brand:ready && npm run workspace:board-active-actions:ready && npm run workspace:performance-pass:ready && npm run workspace:client-performance:ready && npm run workspace:brand-pastel:ready && npm run workspace:no-motion-board-portal:ready && npm run workspace:nav-shape-home-align:ready && npm run typecheck && npm run deploy:readiness && npm run board:stability && npm run client:readiness:check && npm run deploy:production:ready",
     "verify:v58.6": "node scripts/verify-v58.6.mjs",
     "release:repo:v58.6": "npm run verify:current && npm run runtime:check && npm run typecheck && npm run deploy:readiness && npm run board:stability && npm run client:readiness:check",
     "client:readiness:check": "node scripts/client-readiness-check.mjs",
@@ -227,7 +227,9 @@
     "verify:v58.28.9": "node scripts/verify-v58.28.9.mjs",
     "workspace:brand-pastel:ready": "node scripts/workspace-pro-brand-pastel-loading-system-check.mjs",
     "verify:v58.28.10": "node scripts/verify-v58.28.10.mjs",
-    "workspace:no-motion-board-portal:ready": "node scripts/workspace-pro-no-motion-board-portal-home-colors-check.mjs"
+    "workspace:no-motion-board-portal:ready": "node scripts/workspace-pro-no-motion-board-portal-home-colors-check.mjs",
+    "verify:v58.28.11": "node scripts/verify-v58.28.11.mjs",
+    "workspace:nav-shape-home-align:ready": "node scripts/workspace-pro-nav-shape-home-alignment-check.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

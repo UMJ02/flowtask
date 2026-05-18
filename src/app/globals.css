@@ -8377,3 +8377,59 @@
     max-height: min(78vh, 34rem) !important;
   }
 }
+
+
+/* v58.28.11 — Workspace Pro Nav Shape + Home Alignment */
+.ws-pro-tabs-strip {
+  border-radius: 999px !important;
+  padding: .25rem !important;
+  align-items: center !important;
+}
+.ws-pro-tabs-strip .ws-pro-tab,
+.ws-pro-tabs-strip .ws-pro-tab-active {
+  border-radius: 999px !important;
+  min-height: 2.05rem !important;
+  padding: 0 .72rem !important;
+}
+.ws-pro-tabs-strip .ws-pro-tab:hover,
+.ws-pro-tabs-strip .ws-pro-tab-active:hover {
+  border-radius: 999px !important;
+}
+.ws-pro-tabs-strip .ws-pro-tab-active {
+  background: linear-gradient(135deg, #059669, #047857) !important;
+  color: #fff !important;
+  box-shadow: 0 8px 18px rgba(4, 120, 87, .18) !important;
+}
+.ws-pro-tabs-strip .ws-pro-tab:hover {
+  background: rgba(236, 253, 245, .92) !important;
+  border-color: rgba(16, 185, 129, .32) !important;
+}
+.ws-pro-home-summary {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  align-items: center !important;
+  justify-items: start !important;
+  text-align: left !important;
+}
+.ws-pro-home-summary > .min-w-0 {
+  justify-self: start !important;
+  text-align: left !important;
+  width: 100% !important;
+}
+.ws-pro-home-summary > .flex {
+  justify-self: end !important;
+}
+.ws-pro-home-summary p,
+.ws-pro-home-summary h1,
+.ws-pro-home-summary h2 {
+  text-align: left !important;
+}
+@media (max-width: 860px) {
+  .ws-pro-home-summary {
+    grid-template-columns: 1fr !important;
+    gap: .9rem !important;
+  }
+  .ws-pro-home-summary > .flex {
+    justify-self: start !important;
+  }
+}

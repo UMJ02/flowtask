@@ -10,13 +10,14 @@ if (!["58.28.4-workspace-pro-board-overlay-status-alignment", "58.28.5-workspace
   "58.28.7-workspace-pro-performance-pass-fast-view-switching",
   "58.28.8-workspace-pro-client-performance-anchored-popovers",
   "58.28.9-workspace-pro-brand-pastel-loading-system",
-  "58.28.10-workspace-pro-no-motion-board-portal-home-colors"].includes(pkg.version)) failures.push(`Unexpected package version: ${pkg.version}`);
+  "58.28.10-workspace-pro-no-motion-board-portal-home-colors",
+  "58.28.11-workspace-pro-nav-shape-home-alignment"].includes(pkg.version)) failures.push(`Unexpected package version: ${pkg.version}`);
 if (!["npm run verify:v58.28.4", "npm run verify:v58.28.5",
   "npm run verify:v58.28.6",
   "npm run verify:v58.28.7",
   "npm run verify:v58.28.8",
   "npm run verify:v58.28.9",
-  "npm run verify:v58.28.10"].includes(pkg.scripts?.["verify:current"])) failures.push("verify:current must target verify:v58.28.4");
+  "npm run verify:v58.28.10", "npm run verify:v58.28.11"].includes(pkg.scripts?.["verify:current"])) failures.push("verify:current must target verify:v58.28.4");
 for (const marker of ["WorkspaceProBoardActionPanel", "gridTemplateColumns", "setBoardMessage"]) {
   if (!page.includes(marker)) failures.push(`Missing board overlay marker: ${marker}`);
 }

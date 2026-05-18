@@ -360,3 +360,10 @@ Ajusta el cintillo de actualización a una franja completa con verdes FlowTask/p
 - Removed view loading ribbon and workspace skeleton/motion effects.
 - Board action menu now uses a fixed portal anchored to the clicked task button.
 - Home color accents now follow the Board palette.
+
+
+## v58.28.11 — Workspace Pro Nav Shape + Home Alignment
+
+- Tabs del Workspace Pro con active/hover en pill redondeada consistente.
+- Card principal de Home alineada a la izquierda en desktop.
+- Sin cambios a Supabase, RLS, migraciones o rutas clásicas.

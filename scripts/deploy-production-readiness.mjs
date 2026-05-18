@@ -27,7 +27,9 @@ const expectedVersions = [
   "58.28.8-workspace-pro-client-performance-anchored-popovers",
   "58.28.9-workspace-pro-brand-pastel-loading-system",
   "58.28.10-workspace-pro-no-motion-board-portal-home-colors",
+  "58.28.11-workspace-pro-nav-shape-home-alignment",
   "58.28.10-workspace-pro-no-motion-board-portal-home-colors",
+  "58.28.11-workspace-pro-nav-shape-home-alignment",
 ];
 const pkg = JSON.parse(read("package.json") || "{}");
 if (!expectedVersions.includes(pkg.version)) failures.push(`Unexpected package version: ${pkg.version}`);
