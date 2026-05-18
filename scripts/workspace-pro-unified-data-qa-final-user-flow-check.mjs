@@ -16,12 +16,12 @@ const mutations = read('src/lib/tasks/task-mutations.ts');
 const failures = [];
 const allowedSlugs = [
   '58.28.17.1-unified-data-qa-inline-status-type-hotfix',
-  '58.28.18.1-dependency-security-public-registry-lockfile-hotfix',
+  '58.28.18.2-dependency-security-next-root-lockfile-guard',
 ];
 const statuses = ['pendiente', 'en_proceso', 'produccion', 'en_espera', 'revision', 'concluido'];
 
 if (!allowedSlugs.includes(pkg.version)) failures.push('package.json must use an allowed v58.28.17+ slug');
-if (!['npm run verify:v58.28.17.1', 'npm run verify:v58.28.18.1'].includes(pkg.scripts?.['verify:current'])) failures.push('verify:current must target the active v58.28.17+ verify script');
+if (!['npm run verify:v58.28.17.1', 'npm run verify:v58.28.18.2'].includes(pkg.scripts?.['verify:current'])) failures.push('verify:current must target the active v58.28.17+ verify script');
 if (!allowedSlugs.some((slug) => version.includes(slug))) failures.push('release version must contain an allowed v58.28.17+ slug');
 for (const status of statuses) {
   for (const [name, source] of Object.entries({ taskStatus, statusHelpers, taskTypes, workspaceHome, classicBoard, workspacePro, projectInline })) {

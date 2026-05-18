@@ -16,10 +16,10 @@ if (pkg.version !== "58.28.12-workspace-pro-home-hero-solid-card-colors",
   "58.28.16.2-classic-pro-status-parity",
   "58.28.17-classic-pro-unified-data-qa-final-user-flow",
   "58.28.17.1-unified-data-qa-inline-status-type-hotfix",
-  "58.28.18.1-dependency-security-public-registry-lockfile-hotfix") failures.push("Unexpected package version");
+  "58.28.18.2-dependency-security-next-root-lockfile-guard") failures.push("Unexpected package version");
 if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.28.12", "npm run verify:v58.28.15", "npm run verify:v58.28.16", "npm run verify:v58.28.16.1", "npm run verify:v58.28.16.2", "npm run verify:v58.28.17",
   "npm run verify:v58.28.17.1",
-  "npm run verify:v58.28.18.1") failures.push("verify:current must target verify:v58.28.12");
+  "npm run verify:v58.28.18.2") failures.push("verify:current must target verify:v58.28.12");
 if (!version.includes("58.28.12-workspace-pro-home-hero-solid-card-colors",
   "58.28.15-workspace-pro-deep-component-extraction-lazy-view-loading",
   "58.28.16-task-data-sync-status-source-of-truth",
@@ -27,7 +27,7 @@ if (!version.includes("58.28.12-workspace-pro-home-hero-solid-card-colors",
   "58.28.16.2-classic-pro-status-parity",
   "58.28.17-classic-pro-unified-data-qa-final-user-flow",
   "58.28.17.1-unified-data-qa-inline-status-type-hotfix",
-  "58.28.18.1-dependency-security-public-registry-lockfile-hotfix")) failures.push("version.ts must contain v58.28.12 slug");
+  "58.28.18.2-dependency-security-next-root-lockfile-guard")) failures.push("version.ts must contain v58.28.12 slug");
 if (!css.includes("v58.28.12 — Workspace Pro Home Hero + Solid Card Colors")) failures.push("v58.28.12 CSS block missing");
 if (!css.includes("grid-template-columns: minmax(22rem, 1fr) auto")) failures.push("Home hero desktop alignment missing");
 if (!css.includes(".ws-pro-card-tone-blue") || !css.includes(".ws-pro-card-tone-amber") || !css.includes(".ws-pro-card-tone-violet") || !css.includes(".ws-pro-card-tone-emerald")) failures.push("Solid card tone classes missing");

@@ -17,10 +17,10 @@ if (!['58.27.7-workspace-pro-render-diet-dead-ui-removal', '58.27.7.1-workspace-
   "58.28.16.2-classic-pro-status-parity",
   "58.28.17-classic-pro-unified-data-qa-final-user-flow",
   "58.28.17.1-unified-data-qa-inline-status-type-hotfix",
-  "58.28.18.1-dependency-security-public-registry-lockfile-hotfix"].includes(pkg.version)) failures.push(`Unexpected package version: ${pkg.version}`);
+  "58.28.18.2-dependency-security-next-root-lockfile-guard"].includes(pkg.version)) failures.push(`Unexpected package version: ${pkg.version}`);
 if (!['npm run verify:v58.27.7', 'npm run verify:v58.27.7.1', 'npm run verify:v58.27.8', 'npm run verify:v58.27.8.1', 'npm run verify:v58.27.9', 'npm run verify:v58.28.0', 'npm run verify:v58.28.1', 'npm run verify:v58.28.2', 'npm run verify:v58.28.3', 'npm run verify:v58.28.4', 'npm run verify:v58.28.5', 'npm run verify:v58.28.6', 'npm run verify:v58.28.7', 'npm run verify:v58.28.8', 'npm run verify:v58.28.9', 'npm run verify:v58.28.10', "npm run verify:v58.28.11", "npm run verify:v58.28.12", "npm run verify:v58.28.15", "npm run verify:v58.28.16", "npm run verify:v58.28.16.1", "npm run verify:v58.28.16.2", "npm run verify:v58.28.17",
   "npm run verify:v58.28.17.1",
-  "npm run verify:v58.28.18.1"].includes(pkg.scripts?.['verify:current'])) failures.push('verify:current must target verify:v58.27.7, verify:v58.27.7.1 or verify:v58.27.8');
+  "npm run verify:v58.28.18.2"].includes(pkg.scripts?.['verify:current'])) failures.push('verify:current must target verify:v58.27.7, verify:v58.27.7.1 or verify:v58.27.8');
 if (!pkg.scripts?.['build:preflight']?.includes('workspace:render-diet:ready')) failures.push('build:preflight must include workspace:render-diet:ready');
 if (!helper.includes('getWorkspaceProDerivedData')) failures.push('render-diet helper missing');
 if (!helper.includes('projectTaskMap')) failures.push('projectTaskMap must be derived outside project render');

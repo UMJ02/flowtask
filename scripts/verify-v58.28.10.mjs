@@ -16,10 +16,10 @@ if (!["58.28.10-workspace-pro-no-motion-board-portal-home-colors", "58.28.11-wor
   "58.28.16.2-classic-pro-status-parity",
   "58.28.17-classic-pro-unified-data-qa-final-user-flow",
   "58.28.17.1-unified-data-qa-inline-status-type-hotfix",
-  "58.28.18.1-dependency-security-public-registry-lockfile-hotfix"].includes(pkg.version)) failures.push("Unexpected package version");
+  "58.28.18.2-dependency-security-next-root-lockfile-guard"].includes(pkg.version)) failures.push("Unexpected package version");
 if (!["npm run verify:v58.28.10", "npm run verify:v58.28.11", "npm run verify:v58.28.12", "npm run verify:v58.28.15", "npm run verify:v58.28.16", "npm run verify:v58.28.16.1", "npm run verify:v58.28.16.2", "npm run verify:v58.28.17",
   "npm run verify:v58.28.17.1",
-  "npm run verify:v58.28.18.1"].includes(pkg.scripts?.["verify:current"])) failures.push("verify:current must target verify:v58.28.10");
+  "npm run verify:v58.28.18.2"].includes(pkg.scripts?.["verify:current"])) failures.push("verify:current must target verify:v58.28.10");
 if (!version.includes("58.28.10-workspace-pro-no-motion-board-portal-home-colors") && !version.includes("58.28.11-workspace-pro-nav-shape-home-alignment") && !version.includes("58.28.12-workspace-pro-home-hero-solid-card-colors",
   "58.28.15-workspace-pro-deep-component-extraction-lazy-view-loading",
   "58.28.16-task-data-sync-status-source-of-truth",
@@ -27,7 +27,7 @@ if (!version.includes("58.28.10-workspace-pro-no-motion-board-portal-home-colors
   "58.28.16.2-classic-pro-status-parity",
   "58.28.17-classic-pro-unified-data-qa-final-user-flow",
   "58.28.17.1-unified-data-qa-inline-status-type-hotfix",
-  "58.28.18.1-dependency-security-public-registry-lockfile-hotfix")) failures.push("version.ts must contain a v58.28.10+ compatible slug");
+  "58.28.18.2-dependency-security-next-root-lockfile-guard")) failures.push("version.ts must contain a v58.28.10+ compatible slug");
 if (!page.includes("createPortal")) failures.push("Board action panel must render through createPortal");
 if (!page.includes("openActionAnchor")) failures.push("Board action anchor state is missing");
 if (page.includes("Actualizando vista")) failures.push("Actualizando vista UI must be removed");

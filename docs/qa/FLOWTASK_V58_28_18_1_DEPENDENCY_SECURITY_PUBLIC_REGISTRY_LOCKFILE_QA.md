@@ -1,4 +1,4 @@
-# QA — v58.28.18.1 Public Registry Lockfile Hotfix
+# QA — v58.28.18.2 Public Registry Lockfile Hotfix
 
 Run:
 

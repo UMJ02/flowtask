@@ -35,7 +35,7 @@ const allowedVersions = [
   "58.28.16.2-classic-pro-status-parity",
   "58.28.17-classic-pro-unified-data-qa-final-user-flow",
   "58.28.17.1-unified-data-qa-inline-status-type-hotfix",
-  "58.28.18.1-dependency-security-public-registry-lockfile-hotfix",
+  "58.28.18.2-dependency-security-next-root-lockfile-guard",
   "58.28.10-workspace-pro-no-motion-board-portal-home-colors",
   "58.28.11-workspace-pro-nav-shape-home-alignment",
   "58.28.12-workspace-pro-home-hero-solid-card-colors",
@@ -45,7 +45,7 @@ const allowedVersions = [
   "58.28.16.2-classic-pro-status-parity",
   "58.28.17-classic-pro-unified-data-qa-final-user-flow",
   "58.28.17.1-unified-data-qa-inline-status-type-hotfix",
-  "58.28.18.1-dependency-security-public-registry-lockfile-hotfix",
+  "58.28.18.2-dependency-security-next-root-lockfile-guard",
   "58.27.8.1-workspace-pro-vercel-readiness-hotfix",
   "58.27.9-workspace-pro-interaction-hardening-real-editing-flow",
   "58.28.0-workspace-pro-production-ux-final",
@@ -67,7 +67,7 @@ const allowedVersions = [
   "58.28.16.2-classic-pro-status-parity",
   "58.28.17-classic-pro-unified-data-qa-final-user-flow",
   "58.28.17.1-unified-data-qa-inline-status-type-hotfix",
-  "58.28.18.1-dependency-security-public-registry-lockfile-hotfix",
+  "58.28.18.2-dependency-security-next-root-lockfile-guard",
   "58.28.10-workspace-pro-no-motion-board-portal-home-colors",
   "58.28.11-workspace-pro-nav-shape-home-alignment",
   "58.28.12-workspace-pro-home-hero-solid-card-colors",
@@ -77,7 +77,7 @@ const allowedVersions = [
   "58.28.16.2-classic-pro-status-parity",
   "58.28.17-classic-pro-unified-data-qa-final-user-flow",
   "58.28.17.1-unified-data-qa-inline-status-type-hotfix",
-  "58.28.18.1-dependency-security-public-registry-lockfile-hotfix",
+  "58.28.18.2-dependency-security-next-root-lockfile-guard",
 ];
 const allowedVerifyTargets = [
   "npm run verify:v58.27.6",
@@ -93,7 +93,7 @@ const allowedVerifyTargets = [
   "npm run verify:v58.28.10",
   "npm run verify:v58.28.11", "npm run verify:v58.28.12", "npm run verify:v58.28.15", "npm run verify:v58.28.16", "npm run verify:v58.28.16.1", "npm run verify:v58.28.16.2", "npm run verify:v58.28.17",
   "npm run verify:v58.28.17.1",
-  "npm run verify:v58.28.18.1",
+  "npm run verify:v58.28.18.2",
 ];
 
 if (!allowedVersions.includes(String(pkg.version ?? ""))) failures.push(`Unexpected package version: ${pkg.version}`);
