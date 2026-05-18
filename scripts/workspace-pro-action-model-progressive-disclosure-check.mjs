@@ -12,9 +12,11 @@ const allowedVersions = [
   "58.28.4-workspace-pro-board-overlay-status-alignment",
   "58.28.5-workspace-pro-brand-accent-pro-navigation-identity",
   "58.28.6-workspace-pro-completed-filter-anchored-actions",
+  "58.28.7-workspace-pro-performance-pass-fast-view-switching",
 ];
 const allowedVerifyTargets = ["npm run verify:v58.28.2", "npm run verify:v58.28.3", "npm run verify:v58.28.4", "npm run verify:v58.28.5",
-  "npm run verify:v58.28.6"];
+  "npm run verify:v58.28.6",
+  "npm run verify:v58.28.7"];
 if (!allowedVersions.includes(pkg.version)) failures.push(`Unexpected package version: ${pkg.version}`);
 if (!allowedVerifyTargets.includes(pkg.scripts?.["verify:current"])) failures.push("verify:current must target the active v58.28 action model verify script");
 if (!String(pkg.scripts?.["build:preflight"] ?? "").includes("workspace:action-model:ready")) failures.push("build:preflight must include workspace:action-model:ready");

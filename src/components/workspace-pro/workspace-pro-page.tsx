@@ -1,10 +1,10 @@
 "use client";
 
-// v58.28.6 — Workspace Pro Active Views + Anchored Board Actions
-// Focus: ocultar concluidas por defecto en todas las vistas y anclar acciones del board al item seleccionado.
+// v58.28.7 — Workspace Pro Performance Pass + Fast View Switching
+// Focus: cambiar vistas sin refrescar servidor, reducir repaints y hacer controles más responsivos.
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   Activity,
@@ -83,6 +83,8 @@ type WorkspaceProPageProps = {
   context: WorkspaceContext;
 };
 
+const SERVER_SYNC_VIEWS = new Set<WorkspaceViewId>(["home", "canvas", "files", "reports"]);
+
 const viewItems: Array<{ id: WorkspaceViewId; label: string; icon: React.ComponentType<{ className?: string }> }> = [
   { id: "home", label: "Home", icon: Home },
   { id: "list", label: "Tareas", icon: ListChecks },
@@ -159,6 +161,12 @@ export function WorkspaceProPage(props: WorkspaceProPageProps) {
   const [commandCenterOpen, setCommandCenterOpen] = useState(false);
   const [sharePanelOpen, setSharePanelOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
+  const [displayedView, setDisplayedView] = useState(activeView);
+  const [isViewPending, startViewTransition] = useTransition();
+
+  useEffect(() => {
+    setDisplayedView(activeView);
+  }, [activeView]);
 
   const activeTasks = useMemo(() => tasks.filter((task) => !isDone(task.status)), [tasks]);
   const hiddenDoneCount = tasks.length - activeTasks.length;
@@ -176,11 +184,26 @@ export function WorkspaceProPage(props: WorkspaceProPageProps) {
     else next.set(key, value);
     if (key !== "savedViewId") next.delete("savedViewId");
     router.replace(`/app/workspace?${next.toString()}`, { scroll: false });
-    router.refresh();
   }
 
   function openView(view: WorkspaceViewId) {
-    setWorkspaceParam("view", view, "home");
+    if (view === displayedView) return;
+    setMoreOpen(false);
+    startViewTransition(() => {
+      setDisplayedView(view);
+      if (typeof window === "undefined") return;
+      const next = new URLSearchParams(window.location.search);
+      if (view === "home") next.delete("view");
+      else next.set("view", view);
+      next.delete("savedViewId");
+      const query = next.toString();
+      const href = query ? `/app/workspace?${query}` : "/app/workspace";
+      if (SERVER_SYNC_VIEWS.has(view)) {
+        router.replace(href, { scroll: false });
+        return;
+      }
+      window.history.replaceState(null, "", href);
+    });
   }
 
   return (
@@ -229,7 +252,7 @@ export function WorkspaceProPage(props: WorkspaceProPageProps) {
       ) : null}
       {savedViewsOpen ? (
         <WorkspaceProSheet title="Vistas guardadas" onClose={() => setSavedViewsOpen(false)} wide>
-          <WorkspaceSavedViewsManager activeView={activeView} context={context} projectViews={projectViews} persistenceStatus={persistenceStatus} permissions={permissions} onClose={() => setSavedViewsOpen(false)} />
+          <WorkspaceSavedViewsManager activeView={displayedView} context={context} projectViews={projectViews} persistenceStatus={persistenceStatus} permissions={permissions} onClose={() => setSavedViewsOpen(false)} />
         </WorkspaceProSheet>
       ) : null}
 
@@ -272,7 +295,7 @@ export function WorkspaceProPage(props: WorkspaceProPageProps) {
             </div>
 
             <div className="mt-3 flex flex-col gap-2 xl:flex-row xl:items-center xl:justify-between">
-              <WorkspaceProTabs activeView={activeView} projectViews={projectViews} onOpenView={openView} />
+              <WorkspaceProTabs activeView={displayedView} projectViews={projectViews} onOpenView={openView} isPending={isViewPending} />
               <WorkspaceProFilterBar
                 status={statusParam}
                 onStatusChange={(value) => setWorkspaceParam("status", value, "todos")}
@@ -284,8 +307,9 @@ export function WorkspaceProPage(props: WorkspaceProPageProps) {
           <div className="min-h-0 flex-1 overflow-hidden">
             <section className="h-full min-w-0 overflow-y-auto px-4 py-5 ws-pro-page-scroll ws-pro-content md:px-6 lg:px-8">
               {context.invalidProjectId ? <WorkspaceRecoveryPanel reason="invalid-project" title="Proyecto no disponible" description="El proyecto solicitado no pertenece al espacio activo o ya no está disponible." context={context} persistenceStatus={persistenceStatus} permissions={permissions} /> : null}
+              {isViewPending ? <div className="ws-pro-view-switching" aria-live="polite"><span />Actualizando vista…</div> : null}
               {context.invalidSavedViewId ? <div className="mb-4"><WorkspaceRecoveryPanel reason="invalid-saved-view" title="Vista guardada no disponible" description="La vista solicitada ya no existe para este proyecto." context={context} persistenceStatus={persistenceStatus} permissions={permissions} /></div> : null}
-              <WorkspaceProMainView activeView={activeView} tasks={activeTasks} projects={projects} boards={boards} files={files} activity={activity} projectViews={projectViews} reports={reports} context={context} permissions={permissions} derived={derived} />
+              <WorkspaceProMainView activeView={displayedView} tasks={activeTasks} projects={projects} boards={boards} files={files} activity={activity} projectViews={projectViews} reports={reports} context={context} permissions={permissions} derived={derived} />
             </section>
           </div>
         </div>
@@ -373,11 +397,11 @@ function SidebarSection({ title, action, children }: { title: string; action?: R
   return <div className="mb-5"><div className="mb-1.5 flex items-center justify-between px-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-400"><span>{title}</span>{action}</div><div className="space-y-0.5">{children}</div></div>;
 }
 
-function WorkspaceProTabs({ activeView, projectViews, onOpenView }: { activeView: WorkspaceViewId; projectViews: WorkspaceProjectViewPreference[]; onOpenView: (view: WorkspaceViewId) => void }) {
+function WorkspaceProTabs({ activeView, projectViews, onOpenView, isPending = false }: { activeView: WorkspaceViewId; projectViews: WorkspaceProjectViewPreference[]; onOpenView: (view: WorkspaceViewId) => void; isPending?: boolean }) {
   const persistedTypes = new Set(projectViews.map((view) => view.viewType));
   return (
     <div className="ws-pro-tabs-strip flex items-center gap-1 overflow-x-auto ws-pro-hide-scrollbar">
-      {viewItems.map((view) => { const Icon = view.icon; const active = activeView === view.id; return <button key={view.id} type="button" onClick={() => onOpenView(view.id)} className={active ? "ws-pro-tab-active" : "ws-pro-tab"}><Icon className="h-3.5 w-3.5" />{view.label}{persistedTypes.has(view.id) ? <span className="h-1.5 w-1.5 rounded-full bg-blue-500" /> : null}</button>; })}
+      {viewItems.map((view) => { const Icon = view.icon; const active = activeView === view.id; return <button key={view.id} type="button" aria-pressed={active} disabled={isPending && !active} onClick={() => onOpenView(view.id)} className={active ? "ws-pro-tab-active" : "ws-pro-tab"}><Icon className="h-3.5 w-3.5" />{view.label}{persistedTypes.has(view.id) ? <span className="h-1.5 w-1.5 rounded-full bg-blue-500" /> : null}</button>; })}
     </div>
   );
 }

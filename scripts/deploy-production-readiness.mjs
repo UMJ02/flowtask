@@ -23,6 +23,7 @@ const expectedVersions = [
   "58.28.4-workspace-pro-board-overlay-status-alignment",
   "58.28.5-workspace-pro-brand-accent-pro-navigation-identity",
   "58.28.6-workspace-pro-completed-filter-anchored-actions",
+  "58.28.7-workspace-pro-performance-pass-fast-view-switching",
 ];
 const pkg = JSON.parse(read("package.json") || "{}");
 if (!expectedVersions.includes(pkg.version)) failures.push(`Unexpected package version: ${pkg.version}`);

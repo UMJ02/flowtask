@@ -331,3 +331,11 @@ Workspace Pro ahora tiene icono Crown, badge PRO, acentos premium y color system
 ## v58.28.6 — Workspace Pro Completed Filter + Anchored Actions
 
 Oculta tareas concluidas por defecto en todas las vistas activas y ancla el panel de acciones del Board a la tarjeta seleccionada.
+
+
+## v58.28.7 — Workspace Pro Performance Pass + Fast View Switching
+
+- Fast client switching for lightweight Workspace Pro views.
+- Removed forced `router.refresh()` from view changes.
+- Added hover/pressed feedback and render-cost CSS containment.
+- Added `workspace:performance-pass:ready`.

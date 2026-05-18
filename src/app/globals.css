@@ -8006,3 +8006,104 @@
 @media (max-width: 860px) {
   .ws-pro-board-action-panel { top: auto !important; right: .75rem !important; bottom: .75rem !important; left: .75rem !important; width: auto; max-height: min(78vh, 34rem); }
 }
+
+/* v58.28.7 — Workspace Pro Performance Pass + Fast View Switching */
+.ws-pro-shell {
+  background: linear-gradient(180deg, #f8fafc 0%, #f6f8fb 100%);
+}
+.ws-pro-header,
+.ws-pro-tabs-strip,
+.ws-pro-filter-bar,
+.ws-pro-board-column,
+.ws-pro-clean-card,
+.ws-pro-view-frame {
+  contain: layout paint;
+}
+.ws-pro-tabs-strip .ws-pro-tab,
+.ws-pro-tabs-strip .ws-pro-tab-active,
+.ws-pro-control-button,
+.ws-pro-column-toggle,
+.ws-pro-icon-button,
+.ws-pro-primary-button,
+.ws-pro-secondary-button,
+.ws-pro-action-pill,
+.ws-pro-action-panel-button {
+  cursor: pointer;
+  transition-duration: 90ms !important;
+  transition-timing-function: ease-out;
+}
+.ws-pro-tabs-strip .ws-pro-tab:hover,
+.ws-pro-control-button:hover,
+.ws-pro-column-toggle:hover,
+.ws-pro-icon-button:hover,
+.ws-pro-secondary-button:hover,
+.ws-pro-board-card:hover {
+  border-color: rgba(22, 199, 132, .32) !important;
+  background: rgba(255, 255, 255, .96) !important;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, .055);
+}
+.ws-pro-tabs-strip .ws-pro-tab:active,
+.ws-pro-control-button:active,
+.ws-pro-column-toggle:active,
+.ws-pro-icon-button:active,
+.ws-pro-primary-button:active,
+.ws-pro-secondary-button:active {
+  transform: translateY(1px) scale(.99);
+}
+.ws-pro-tabs-strip button:disabled {
+  cursor: wait;
+  opacity: .62;
+}
+.ws-pro-view-switching {
+  position: sticky;
+  top: .25rem;
+  z-index: 20;
+  margin: 0 auto .75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  border: 1px solid rgba(22, 199, 132, .18);
+  border-radius: 999px;
+  background: rgba(255,255,255,.92);
+  padding: .45rem .7rem;
+  color: #047857;
+  font-size: .78rem;
+  font-weight: 750;
+  box-shadow: 0 8px 18px rgba(15,23,42,.06);
+}
+.ws-pro-view-switching span {
+  height: .42rem;
+  width: .42rem;
+  border-radius: 999px;
+  background: #16C784;
+  box-shadow: 0 0 0 .24rem rgba(22,199,132,.12);
+}
+.ws-pro-board-card,
+.ws-pro-timeline-row,
+.ws-pro-clean-card,
+.ws-pro-board-column {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 180px;
+}
+.ws-pro-board-action-backdrop,
+.ws-pro-shell .absolute.inset-0.bg-slate-950\/20,
+.ws-pro-shell .absolute.inset-0.bg-slate-950\/30,
+.ws-pro-shell .absolute.inset-0.bg-slate-950\/45 {
+  backdrop-filter: none !important;
+}
+.ws-pro-board-action-panel,
+.ws-pro-menu,
+.ws-pro-shell section.shadow-2xl,
+.ws-pro-shell aside.shadow-2xl {
+  box-shadow: 0 18px 40px rgba(15, 23, 42, .16) !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ws-pro-shell *,
+  .ws-pro-shell *::before,
+  .ws-pro-shell *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+  }
+}
