@@ -20,7 +20,8 @@ const allowedVersions = ["58.27.6-workspace-pro-deep-cleanup-2026-ui-controls-sy
   "58.27.9-workspace-pro-interaction-hardening-real-editing-flow",
   "58.28.0-workspace-pro-production-ux-final", "58.28.1-workspace-pro-user-final-ui-fixes",
   "58.28.2-workspace-pro-action-model-progressive-disclosure",
-  "58.28.3-workspace-pro-user-language-timeline-flow"];
+  "58.28.3-workspace-pro-user-language-timeline-flow",
+  "58.28.4-workspace-pro-board-overlay-status-alignment"];
 if (!allowedVersions.some((version) => read("src/lib/release/version.ts").includes(version))) failures.push("Expected an allowed v58.27.x/v58.28.x Workspace Pro version in src/lib/release/version.ts");
 requireIncludes("src/lib/release/version.ts", "APP_RELEASE_STAGE");
 requireIncludes("src/components/workspace-system/workspace-system-page.tsx", "WorkspaceProPage");

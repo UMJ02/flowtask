@@ -20,6 +20,7 @@ const expectedVersions = [
   "58.28.1-workspace-pro-user-final-ui-fixes",
   "58.28.2-workspace-pro-action-model-progressive-disclosure",
   "58.28.3-workspace-pro-user-language-timeline-flow",
+  "58.28.4-workspace-pro-board-overlay-status-alignment",
 ];
 const pkg = JSON.parse(read("package.json") || "{}");
 if (!expectedVersions.includes(pkg.version)) failures.push(`Unexpected package version: ${pkg.version}`);

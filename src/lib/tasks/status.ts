@@ -1,7 +1,9 @@
 export const TASK_STATUS = {
+  PENDING: "pendiente",
   IN_PROGRESS: "en_proceso",
   PRODUCTION: "produccion",
   WAITING: "en_espera",
+  REVIEW: "revision",
   DONE: "concluido",
 } as const;
 
@@ -16,6 +18,8 @@ export function normalizeTaskStatus(status?: string | null) {
   if (status === TASK_STATUS.DONE) return TASK_STATUS.DONE;
   if (status === TASK_STATUS.WAITING) return TASK_STATUS.WAITING;
   if (status === TASK_STATUS.PRODUCTION) return TASK_STATUS.PRODUCTION;
+  if (status === TASK_STATUS.REVIEW) return TASK_STATUS.REVIEW;
+  if (status === TASK_STATUS.PENDING) return TASK_STATUS.PENDING;
   return TASK_STATUS.IN_PROGRESS;
 }
 
@@ -29,7 +33,7 @@ export function isTaskWaiting(status?: string | null) {
 
 export function isTaskOperationallyActive(status?: string | null) {
   const normalized = normalizeTaskStatus(status);
-  return normalized === TASK_STATUS.IN_PROGRESS || normalized === TASK_STATUS.PRODUCTION;
+  return normalized === TASK_STATUS.IN_PROGRESS || normalized === TASK_STATUS.PRODUCTION || normalized === TASK_STATUS.REVIEW || normalized === TASK_STATUS.PENDING;
 }
 
 export function shouldHideTaskByDefault(status?: string | null) {
@@ -58,6 +62,8 @@ export function getTaskStatusLabel(status?: string | null) {
   const normalized = normalizeTaskStatus(status);
   if (normalized === TASK_STATUS.DONE) return "Concluido";
   if (normalized === TASK_STATUS.PRODUCTION) return "Producción";
+  if (normalized === TASK_STATUS.REVIEW) return "Revisión";
+  if (normalized === TASK_STATUS.PENDING) return "Pendiente";
   if (normalized === TASK_STATUS.WAITING) return "En espera";
   return "En proceso";
 }
@@ -66,6 +72,8 @@ export function getTaskStatusColor(status?: string | null) {
   const normalized = normalizeTaskStatus(status);
   if (normalized === TASK_STATUS.DONE) return "emerald";
   if (normalized === TASK_STATUS.PRODUCTION) return "violet";
+  if (normalized === TASK_STATUS.REVIEW) return "fuchsia";
+  if (normalized === TASK_STATUS.PENDING) return "sky";
   if (normalized === TASK_STATUS.WAITING) return "amber";
   return "blue";
 }

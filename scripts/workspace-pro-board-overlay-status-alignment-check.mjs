@@ -1,0 +1,25 @@
+#!/usr/bin/env node
+import fs from "node:fs";
+const pkg = JSON.parse(fs.readFileSync("package.json", "utf8"));
+const page = fs.readFileSync("src/components/workspace-pro/workspace-pro-page.tsx", "utf8");
+const css = fs.readFileSync("src/app/globals.css", "utf8");
+const validation = fs.readFileSync("src/lib/validations/task.ts", "utf8");
+const failures = [];
+if (pkg.version !== "58.28.4-workspace-pro-board-overlay-status-alignment") failures.push(`Unexpected package version: ${pkg.version}`);
+if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.28.4") failures.push("verify:current must target verify:v58.28.4");
+for (const marker of ["WorkspaceProBoardActionPanel", "ws-pro-board-action-layer", "gridTemplateColumns", "setBoardMessage"]) {
+  if (!page.includes(marker)) failures.push(`Missing board overlay marker: ${marker}`);
+}
+for (const status of ["pendiente", "revision"]) {
+  if (!validation.includes(status)) failures.push(`Task validation must allow ${status}`);
+}
+if (!fs.existsSync("supabase/migrations/0055_v58_28_4_task_status_pending_review.sql")) failures.push("Missing status alignment migration");
+for (const marker of ["ws-pro-column-toggle-pendiente", "ws-pro-action-pill-revision", "ws-pro-board-column-revision"]) {
+  if (!css.includes(marker)) failures.push(`Missing board color/progressive CSS marker: ${marker}`);
+}
+if (failures.length) {
+  console.error("[workspace:board-overlay:ready] FAIL");
+  for (const item of failures) console.error(`- ${item}`);
+  process.exit(1);
+}
+console.log("[workspace:board-overlay:ready] OK — board overlay, flexible columns and status schema alignment ready.");

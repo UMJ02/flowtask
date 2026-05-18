@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 import fs from "node:fs";
 const pkg = JSON.parse(fs.readFileSync("package.json", "utf8"));
-const version = "58.28.3-workspace-pro-user-language-timeline-flow";
-const verifyTarget = "npm run verify:v58.28.3";
+const version = "58.28.3-workspace-pro-user-language-timeline-flow",
+  "58.28.4-workspace-pro-board-overlay-status-alignment";
+const verifyTarget = "npm run verify:v58.28.3", "npm run verify:v58.28.4";
 const failures = [];
 if (pkg.version !== version) failures.push(`Unexpected package version: ${pkg.version}`);
 if (pkg.scripts?.["verify:current"] !== verifyTarget) failures.push("verify:current must target verify:v58.28.3");

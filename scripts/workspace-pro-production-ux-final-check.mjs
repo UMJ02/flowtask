@@ -11,10 +11,11 @@ const allowedVersions = [
   "58.28.1-workspace-pro-user-final-ui-fixes",
   "58.28.2-workspace-pro-action-model-progressive-disclosure",
   "58.28.3-workspace-pro-user-language-timeline-flow",
+  "58.28.4-workspace-pro-board-overlay-status-alignment",
 ];
 
 if (!allowedVersions.includes(pkg.version)) failures.push(`Unexpected package version: ${pkg.version}`);
-if (!["npm run verify:v58.28.0", "npm run verify:v58.28.1", "npm run verify:v58.28.2", "npm run verify:v58.28.3"].includes(pkg.scripts?.["verify:current"])) failures.push("verify:current must target the active v58.28.x verify script");
+if (!["npm run verify:v58.28.0", "npm run verify:v58.28.1", "npm run verify:v58.28.2", "npm run verify:v58.28.3", "npm run verify:v58.28.4"].includes(pkg.scripts?.["verify:current"])) failures.push("verify:current must target the active v58.28.x verify script");
 if (!String(pkg.scripts?.["build:preflight"] ?? "").includes("workspace:production-ux:ready")) failures.push("build:preflight must include workspace:production-ux:ready");
 
 const baseMarkers = [
@@ -23,7 +24,7 @@ const baseMarkers = [
   "actionLabel=\"Abrir Lista\"",
 ];
 for (const marker of baseMarkers) if (!page.includes(marker)) failures.push(`workspace-pro-page.tsx missing marker: ${marker}`);
-if (!page.includes("WorkspaceProProductionUXStrip") && !page.includes("WorkspaceProUser Language") && !page.includes("v58.28.3")) failures.push("workspace-pro-page.tsx missing production/user-language marker");
+if (!page.includes("WorkspaceProProductionUXStrip") && !page.includes("WorkspaceProUser Language") && !page.includes("v58.28.3") && !page.includes("v58.28.4")) failures.push("workspace-pro-page.tsx missing production/user-language marker");
 if (page.includes("Production UX Final") && pkg.version.includes("58.28.3")) failures.push("v58.28.3 must not expose Production UX Final banner text");
 
 for (const marker of ["v58.28.0 — Workspace Pro Production UX Final", ":focus-visible", "scroll-padding"]) {

@@ -1,3 +1,3 @@
-export const APP_VERSION = "58.28.3-workspace-pro-user-language-timeline-flow";
-export const APP_RELEASE_NAME = "v58.28.3 Workspace Pro User Language + Timeline Flow";
-export const APP_RELEASE_STAGE = "production-ready";
+export const APP_VERSION = "58.28.4-workspace-pro-board-overlay-status-alignment";
+export const APP_RELEASE_NAME = "v58.28.4 Workspace Pro Board Overlay + Status Schema Alignment";
+export const APP_RELEASE_STAGE = "production";

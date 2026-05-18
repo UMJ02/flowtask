@@ -18,16 +18,17 @@ const allowedVersions = [
   "58.28.1-workspace-pro-user-final-ui-fixes",
   "58.28.2-workspace-pro-action-model-progressive-disclosure",
   "58.28.3-workspace-pro-user-language-timeline-flow",
+  "58.28.4-workspace-pro-board-overlay-status-alignment",
 ];
 const allowedVerifyTargets = ["npm run verify:v58.27.8", "npm run verify:v58.27.8.1",
   "npm run verify:v58.27.9",
-  "npm run verify:v58.28.0", "npm run verify:v58.28.1", "npm run verify:v58.28.2", "npm run verify:v58.28.3"];
+  "npm run verify:v58.28.0", "npm run verify:v58.28.1", "npm run verify:v58.28.2", "npm run verify:v58.28.3", "npm run verify:v58.28.4"];
 if (!allowedVersions.includes(pkg.version)) failures.push(`Unexpected package version: ${pkg.version}`);
 if (!allowedVerifyTargets.includes(pkg.scripts?.["verify:current"])) failures.push("verify:current must target verify:v58.27.8 or verify:v58.27.8.1");
 if (!String(pkg.scripts?.["build:preflight"] ?? "").includes("workspace:visual-density:ready")) failures.push("build:preflight must include workspace:visual-density:ready");
 
 if (!allowedVersions.some((version) => read("src/lib/release/version.ts").includes(version))) failures.push("version.ts must include v58.27.8 or v58.27.8.1 slug");
-if (!read("src/components/workspace-pro/workspace-pro-page.tsx").includes("v58.27.8") && !read("src/components/workspace-pro/workspace-pro-page.tsx").includes("v58.27.9") && !read("src/components/workspace-pro/workspace-pro-page.tsx").includes("v58.28.0") && !read("src/components/workspace-pro/workspace-pro-page.tsx").includes("v58.28.1") && !read("src/components/workspace-pro/workspace-pro-page.tsx").includes("v58.28.2") && !read("src/components/workspace-pro/workspace-pro-page.tsx").includes("v58.28.3")) failures.push("Expected active Workspace Pro marker in src/components/workspace-pro/workspace-pro-page.tsx");
+if (!read("src/components/workspace-pro/workspace-pro-page.tsx").includes("v58.27.8") && !read("src/components/workspace-pro/workspace-pro-page.tsx").includes("v58.27.9") && !read("src/components/workspace-pro/workspace-pro-page.tsx").includes("v58.28.0") && !read("src/components/workspace-pro/workspace-pro-page.tsx").includes("v58.28.1") && !read("src/components/workspace-pro/workspace-pro-page.tsx").includes("v58.28.2") && !read("src/components/workspace-pro/workspace-pro-page.tsx").includes("v58.28.3") && !read("src/components/workspace-pro/workspace-pro-page.tsx").includes("v58.28.4")) failures.push("Expected active Workspace Pro marker in src/components/workspace-pro/workspace-pro-page.tsx");
 requireIncludes("src/components/workspace-pro/workspace-pro-page.tsx", "ws-pro-header");
 requireIncludes("src/components/workspace-pro/workspace-pro-page.tsx", "ws-pro-content");
 requireIncludes("src/components/workspace-pro/workspace-pro-page.tsx", "ws-pro-tabs-strip");

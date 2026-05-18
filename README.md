@@ -313,3 +313,11 @@ npm run workspace:user-final-ui:ready
 - Edición rápida en una sola línea responsive.
 - Espacios sin diagnósticos técnicos visibles.
 - Timeline operativo con fecha, avance, estado y prioridad.
+
+
+## v58.28.4 — Workspace Pro Board Overlay + Status Schema Alignment
+
+Corrige el Board para usuario final: el panel de acciones ya no queda atrapado detrás de tarjetas/columnas, las columnas visibles se expanden proporcionalmente, los toggles activos usan color por estado y Pendiente/Revisión quedan alineados con app + validación + migración Supabase.
+
+Migración requerida si la base actual todavía rechaza esos estados:
+`supabase/migrations/0055_v58_28_4_task_status_pending_review.sql`

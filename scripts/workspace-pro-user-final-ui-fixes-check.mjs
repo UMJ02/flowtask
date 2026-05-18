@@ -10,8 +10,9 @@ const allowedVersions = [
   "58.28.1-workspace-pro-user-final-ui-fixes",
   "58.28.2-workspace-pro-action-model-progressive-disclosure",
   "58.28.3-workspace-pro-user-language-timeline-flow",
+  "58.28.4-workspace-pro-board-overlay-status-alignment",
 ];
-const allowedVerifyTargets = ["npm run verify:v58.28.1", "npm run verify:v58.28.2", "npm run verify:v58.28.3"];
+const allowedVerifyTargets = ["npm run verify:v58.28.1", "npm run verify:v58.28.2", "npm run verify:v58.28.3", "npm run verify:v58.28.4"];
 
 if (!allowedVersions.includes(pkg.version)) failures.push(`Unexpected package version: ${pkg.version}`);
 if (!allowedVerifyTargets.includes(pkg.scripts?.["verify:current"])) failures.push("verify:current must target an active v58.28.x verify script");

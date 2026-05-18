@@ -1,7 +1,7 @@
 "use client";
 
-// v58.28.3 — Workspace Pro User Language + Timeline Flow
-// Focus: quitar texto técnico visible, compactar edición y convertir timeline en una vista útil.
+// v58.28.4 — Workspace Pro Board Overlay + Status Schema Alignment
+// Focus: panel de acciones fuera del stack del board, columnas flexibles y estados soportados por Supabase.
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
@@ -487,7 +487,7 @@ function WorkspaceProListTaskEditor({ task, projects, context, permissions }: { 
 
   return (
     <div className="border-t border-slate-100 bg-slate-50 px-4 py-4">
-      <div className="grid gap-3 xl:grid-cols-[minmax(0,1.4fr)_minmax(220px,0.8fr)_auto] xl:items-end">
+      <div className="grid gap-3 xl:grid-cols-[minmax(0,1.4fr)_minmax(220px,0.8fr)] xl:items-end">
         <label className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">Nombre
           <input className="ws-pro-form-input mt-1 bg-white" value={title} disabled={permissions.isReadOnly} onChange={(event) => setTitle(event.target.value)} />
         </label>
@@ -497,10 +497,6 @@ function WorkspaceProListTaskEditor({ task, projects, context, permissions }: { 
             {projects.slice(0, 100).map((project) => <option key={project.id} value={project.id}>{project.title}</option>)}
           </select>
         </label>
-        <div className="flex flex-wrap gap-2">
-          <button type="button" className="ws-pro-primary-button" disabled={permissions.isReadOnly || busy !== null || !title.trim()} onClick={() => void saveCore()}>{busy === "save" ? <Loader2 className="h-4 w-4 animate-spin" /> : null}Guardar</button>
-          <button type="button" className="ws-pro-danger-button" disabled={permissions.isReadOnly || busy !== null} onClick={() => void deleteTask()}>{busy === "delete" ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}Borrar</button>
-        </div>
       </div>
       <div className="ws-pro-task-editor-inline-row mt-3" aria-label="Edición rápida de tarea">
         <select className="ws-pro-inline-select" value={status} disabled={permissions.isReadOnly} onChange={(event) => setStatus(event.target.value as BoardColumnId)} aria-label="Estado">{BOARD_COLUMN_DEFS.map((column) => <option key={column.id} value={column.id}>{column.title}</option>)}</select>
@@ -509,6 +505,8 @@ function WorkspaceProListTaskEditor({ task, projects, context, permissions }: { 
         <Link href={`/app/tasks/${task.id}`} className="ws-pro-editor-inline-action">Abrir detalle</Link>
         <Link href={`/app/tasks/${task.id}/edit`} className="ws-pro-editor-inline-action">Editar completa</Link>
         {task.projectId ? <Link href={`/app/workspace?projectId=${task.projectId}`} className="ws-pro-editor-inline-action">Ver proyecto</Link> : null}
+        <button type="button" className="ws-pro-editor-inline-action ws-pro-editor-inline-save" disabled={permissions.isReadOnly || busy !== null || !title.trim()} onClick={() => void saveCore()}>{busy === "save" ? "Guardando…" : "Guardar"}</button>
+        <button type="button" className="ws-pro-editor-inline-action ws-pro-editor-inline-delete" disabled={permissions.isReadOnly || busy !== null} onClick={() => void deleteTask()}>{busy === "delete" ? "Borrando…" : "Borrar"}</button>
       </div>
       {message ? <p className={message.tone === "success" ? "mt-3 flex items-center gap-2 text-sm font-semibold text-emerald-700" : "mt-3 text-sm font-semibold text-rose-700"}>{message.tone === "success" ? <CheckCircle2 className="h-4 w-4" /> : null}{message.text}</p> : null}
     </div>
@@ -543,12 +541,12 @@ function WorkspaceProProjects({ projects, projectTaskMap }: { projects: Workspac
 }
 
 const BOARD_COLUMN_DEFS = [
-  { id: "pendiente", title: "Pendiente", match: (status: string) => ["pendiente"].includes(status) },
-  { id: "en_proceso", title: "En curso", match: (status: string) => ["en_proceso", "activo"].includes(status) },
-  { id: "produccion", title: "Producción", match: (status: string) => ["produccion"].includes(status) },
-  { id: "en_espera", title: "En espera", match: (status: string) => ["en_espera", "waiting"].includes(status) },
-  { id: "revision", title: "Revisión", match: (status: string) => ["revision"].includes(status) },
-  { id: "concluido", title: "Concluido", match: (status: string) => ["concluido", "completado", "done", "hecho"].includes(status) },
+  { id: "pendiente", title: "Pendiente", tone: "sky", match: (status: string) => ["pendiente"].includes(status) },
+  { id: "en_proceso", title: "En curso", tone: "blue", match: (status: string) => ["en_proceso", "activo"].includes(status) },
+  { id: "produccion", title: "Producción", tone: "violet", match: (status: string) => ["produccion"].includes(status) },
+  { id: "en_espera", title: "En espera", tone: "amber", match: (status: string) => ["en_espera", "waiting"].includes(status) },
+  { id: "revision", title: "Revisión", tone: "fuchsia", match: (status: string) => ["revision"].includes(status) },
+  { id: "concluido", title: "Concluido", tone: "emerald", match: (status: string) => ["concluido", "completado", "done", "hecho"].includes(status) },
 ] as const;
 
 type BoardColumnId = typeof BOARD_COLUMN_DEFS[number]["id"];
@@ -588,6 +586,7 @@ function WorkspaceProBoard({ tasks, projects, context, boardColumns }: { tasks: 
   const [overColumn, setOverColumn] = useState<BoardColumnId | null>(null);
   const [busyMove, setBusyMove] = useState<string | null>(null);
   const [compactCards, setCompactCards] = useState(true);
+  const [boardMessage, setBoardMessage] = useState<{ tone: "success" | "error"; text: string } | null>(null);
   const [openActionTaskId, setOpenActionTaskId] = useState<string | null>(null);
   const columns = BOARD_COLUMN_DEFS.filter((column) => (column.id !== "concluido" || showDone) && visibleColumns.has(column.id));
 
@@ -605,25 +604,39 @@ function WorkspaceProBoard({ tasks, projects, context, boardColumns }: { tasks: 
     setDraggingTaskId(null);
     setOverColumn(null);
     setOpenActionTaskId(null);
+    setBoardMessage(null);
     const current = tasks.find((task) => task.id === taskId);
     if (current && normalizeBoardStatus(current.status) === status) return;
     setBusyMove(taskId);
     const { error } = await supabase.from("tasks").update({ status }).eq("id", taskId).select("id").single();
     setBusyMove(null);
-    if (!error) router.refresh();
+    if (error) {
+      setBoardMessage({ tone: "error", text: "No se pudo mover. Aplicá la migración v58.28.4 si la base todavía no acepta Pendiente o Revisión." });
+      return;
+    }
+    setBoardMessage({ tone: "success", text: "Tarea actualizada." });
+    router.refresh();
   }
 
   async function updateTaskPriority(taskId: string, priority: TaskPriorityActionId) {
     setOpenActionTaskId(null);
+    setBoardMessage(null);
     setBusyMove(taskId);
     const { error } = await supabase.from("tasks").update({ priority }).eq("id", taskId).select("id").single();
     setBusyMove(null);
-    if (!error) router.refresh();
+    if (error) {
+      setBoardMessage({ tone: "error", text: "No se pudo cambiar la prioridad." });
+      return;
+    }
+    setBoardMessage({ tone: "success", text: "Prioridad actualizada." });
+    router.refresh();
   }
 
   if (!tasks.length) {
     return <WorkspaceEmptyState icon="tasks" title="No hay tareas para el board" description="Creá una tarea o elegí otro proyecto para empezar a organizar trabajo por columnas. La Lista permite edición rápida antes de moverlas al board." actionHref="/app/workspace?view=list" actionLabel="Abrir Lista" tone="blue" />;
   }
+
+  const selectedActionTask = openActionTaskId ? tasks.find((task) => task.id === openActionTaskId) ?? null : null;
 
   return (
     <div className="space-y-3">
@@ -635,14 +648,15 @@ function WorkspaceProBoard({ tasks, projects, context, boardColumns }: { tasks: 
       <div className="mx-auto flex max-w-[1440px] flex-wrap items-center gap-2 rounded-2xl border border-slate-200 bg-white p-2 shadow-sm ws-pro-view-frame">
         <span className="px-2 text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">Columnas</span>
         {BOARD_COLUMN_DEFS.filter((column) => column.id !== "concluido").map((column) => (
-          <button key={column.id} type="button" onClick={() => toggleColumn(column.id)} className={visibleColumns.has(column.id) ? "ws-pro-mini-action is-active" : "ws-pro-mini-action"}>{column.title}</button>
+          <button key={column.id} type="button" onClick={() => toggleColumn(column.id)} className={visibleColumns.has(column.id) ? `ws-pro-column-toggle ws-pro-column-toggle-${column.id} is-active` : `ws-pro-column-toggle ws-pro-column-toggle-${column.id}`}>{column.title}</button>
         ))}
         <div className="ml-auto flex flex-wrap items-center gap-2">
           <button type="button" onClick={() => setCompactCards((value) => !value)} className={compactCards ? "ws-pro-mini-action is-active" : "ws-pro-mini-action"}>{compactCards ? "Vista limpia" : "Vista detallada"}</button>
           <label className="inline-flex items-center gap-2 rounded-lg px-2 text-xs font-semibold text-slate-500"><input type="checkbox" checked={showDone} onChange={(event) => setShowDone(event.target.checked)} /> Mostrar concluidas</label>
         </div>
       </div>
-      <div className="mx-auto grid max-w-[1440px] gap-4 xl:grid-cols-3 2xl:grid-cols-5 ws-pro-board-grid">
+      {boardMessage ? <p className={boardMessage.tone === "success" ? "mx-auto max-w-[1440px] rounded-xl border border-emerald-100 bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-700" : "mx-auto max-w-[1440px] rounded-xl border border-rose-100 bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-700"}>{boardMessage.text}</p> : null}
+      <div className="mx-auto grid max-w-[1440px] gap-4 ws-pro-board-grid" style={{ gridTemplateColumns: `repeat(${Math.max(columns.length, 1)}, minmax(260px, 1fr))` }}>
         {columns.map((column) => {
           const items = boardColumns[column.id] ?? [];
           const isOver = overColumn === column.id;
@@ -652,7 +666,7 @@ function WorkspaceProBoard({ tasks, projects, context, boardColumns }: { tasks: 
               onDragOver={(event) => { event.preventDefault(); setOverColumn(column.id); }}
               onDragLeave={() => setOverColumn((value) => value === column.id ? null : value)}
               onDrop={(event) => { event.preventDefault(); const taskId = event.dataTransfer.getData("text/task-id") || draggingTaskId; if (taskId) void moveTask(taskId, column.id); }}
-              className={isOver ? "ws-pro-board-column ws-pro-board-column-active" : "ws-pro-board-column"}
+              className={isOver ? `ws-pro-board-column ws-pro-board-column-${column.id} ws-pro-board-column-active` : `ws-pro-board-column ws-pro-board-column-${column.id}`}
             >
               <header className="mb-3 flex items-center justify-between gap-3 px-1">
                 <div className="min-w-0"><h3 className="text-sm font-semibold text-slate-950">{column.title}</h3></div>
@@ -675,22 +689,7 @@ function WorkspaceProBoard({ tasks, projects, context, boardColumns }: { tasks: 
                       </div>
                       <div className="relative shrink-0">
                         <button type="button" onClick={() => setOpenActionTaskId((value) => value === task.id ? null : task.id)} className="ws-pro-icon-button h-7 w-7" aria-label="Abrir acciones de tarea"><MoreHorizontal className="h-3.5 w-3.5" /></button>
-                        {openActionTaskId === task.id ? (
-                          <div className="ws-pro-action-menu" role="menu" aria-label="Acciones de tarea">
-                            <p className="ws-pro-action-menu-label">Cambiar estado</p>
-                            {BOARD_COLUMN_DEFS.filter((next) => next.id !== column.id).map((next) => (
-                              <button key={next.id} type="button" onClick={() => void moveTask(task.id, next.id)} className="ws-pro-action-menu-item" role="menuitem">{next.title}</button>
-                            ))}
-                            <p className="ws-pro-action-menu-label">Prioridad</p>
-                            {TASK_PRIORITY_ACTIONS.map((item) => (
-                              <button key={item.id} type="button" onClick={() => void updateTaskPriority(task.id, item.id)} className="ws-pro-action-menu-item" role="menuitem">{item.label}</button>
-                            ))}
-                            <div className="ws-pro-action-menu-divider" />
-                            <button type="button" onClick={() => { setEditingTask(task); setOpenActionTaskId(null); }} className="ws-pro-action-menu-item" role="menuitem">Editar rápido</button>
-                            <Link href={`/app/tasks/${task.id}`} className="ws-pro-action-menu-item" role="menuitem">Abrir detalle</Link>
-                            <Link href={`/app/tasks/${task.id}/edit`} className="ws-pro-action-menu-item" role="menuitem">Editar completa</Link>
-                          </div>
-                        ) : null}
+
                       </div>
                     </div>
                     <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
@@ -704,6 +703,59 @@ function WorkspaceProBoard({ tasks, projects, context, boardColumns }: { tasks: 
           );
         })}
       </div>
+      {selectedActionTask ? (
+        <WorkspaceProBoardActionPanel
+          task={selectedActionTask}
+          currentStatus={normalizeBoardStatus(selectedActionTask.status)}
+          busy={busyMove === selectedActionTask.id}
+          onClose={() => setOpenActionTaskId(null)}
+          onMove={(status) => void moveTask(selectedActionTask.id, status)}
+          onPriority={(priority) => void updateTaskPriority(selectedActionTask.id, priority)}
+          onQuickEdit={() => { setEditingTask(selectedActionTask); setOpenActionTaskId(null); }}
+        />
+      ) : null}
+    </div>
+  );
+}
+
+function WorkspaceProBoardActionPanel({ task, currentStatus, busy, onClose, onMove, onPriority, onQuickEdit }: { task: WorkspaceTaskItem; currentStatus: BoardColumnId; busy: boolean; onClose: () => void; onMove: (status: BoardColumnId) => void; onPriority: (priority: TaskPriorityActionId) => void; onQuickEdit: () => void }) {
+  return (
+    <div className="ws-pro-board-action-layer" role="dialog" aria-modal="false" aria-label="Acciones de tarea">
+      <div className="ws-pro-board-action-backdrop" onClick={onClose} />
+      <aside className="ws-pro-board-action-panel">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">Acciones</p>
+            <h3 className="mt-1 line-clamp-2 text-base font-semibold text-slate-950">{task.title}</h3>
+          </div>
+          <button type="button" onClick={onClose} className="ws-pro-icon-button h-9 w-9" aria-label="Cerrar acciones"><X className="h-4 w-4" /></button>
+        </div>
+        {busy ? <p className="mt-3 rounded-xl bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-500">Actualizando…</p> : null}
+        <div className="mt-4 space-y-4">
+          <section>
+            <p className="ws-pro-action-menu-label">Estado</p>
+            <div className="ws-pro-action-grid">
+              {BOARD_COLUMN_DEFS.map((next) => (
+                <button key={next.id} type="button" disabled={next.id === currentStatus || busy} onClick={() => onMove(next.id)} className={next.id === currentStatus ? `ws-pro-action-pill ws-pro-action-pill-${next.id} is-selected` : `ws-pro-action-pill ws-pro-action-pill-${next.id}`}>{next.title}</button>
+              ))}
+            </div>
+          </section>
+          <section>
+            <p className="ws-pro-action-menu-label">Prioridad</p>
+            <div className="ws-pro-action-grid ws-pro-action-grid-compact">
+              {TASK_PRIORITY_ACTIONS.map((item) => (
+                <button key={item.id} type="button" disabled={busy} onClick={() => onPriority(item.id)} className={`ws-pro-action-pill ws-pro-priority-pill-${item.id}`}>{item.label}</button>
+              ))}
+            </div>
+          </section>
+          <div className="ws-pro-action-menu-divider" />
+          <div className="grid gap-2 sm:grid-cols-3">
+            <button type="button" onClick={onQuickEdit} className="ws-pro-action-panel-button">Editar rápido</button>
+            <Link href={`/app/tasks/${task.id}`} className="ws-pro-action-panel-button">Abrir detalle</Link>
+            <Link href={`/app/tasks/${task.id}/edit`} className="ws-pro-action-panel-button">Editar completa</Link>
+          </div>
+        </div>
+      </aside>
     </div>
   );
 }
@@ -746,21 +798,19 @@ function WorkspaceProBoardTaskEditor({ task, projects, context, onClose }: { tas
         <label className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">Nombre</label>
         <input className="ws-pro-form-input mt-1" value={title} onChange={(event) => setTitle(event.target.value)} />
       </div>
-      <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_160px]">
+      <div>
         <label className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">Proyecto<select className="ws-pro-form-input mt-1" value={projectId} onChange={(event) => setProjectId(event.target.value)}><option value="">Tarea individual</option>{projects.slice(0, 80).map((project) => <option key={project.id} value={project.id}>{project.title}</option>)}</select></label>
-        <label className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">Fecha<input type="date" className="ws-pro-form-input mt-1" value={dueDate} onChange={(event) => setDueDate(event.target.value)} /></label>
       </div>
       <div className="ws-pro-task-editor-inline-row" aria-label="Edición rápida de tarea">
         <select className="ws-pro-inline-select" value={status} onChange={(event) => setStatus(event.target.value as BoardColumnId)} aria-label="Estado">{BOARD_COLUMN_DEFS.map((column) => <option key={column.id} value={column.id}>{column.title}</option>)}</select>
         <select className="ws-pro-inline-select" value={priority} onChange={(event) => setPriority(event.target.value)} aria-label="Prioridad"><option value="alta">Alta</option><option value="media">Media</option><option value="baja">Baja</option></select>
+        <input type="date" className="ws-pro-inline-date" value={dueDate} onChange={(event) => setDueDate(event.target.value)} aria-label="Fecha límite" />
         <Link href={`/app/tasks/${task.id}`} className="ws-pro-editor-inline-action">Abrir detalle</Link>
         <Link href={`/app/tasks/${task.id}/edit`} className="ws-pro-editor-inline-action">Editar completa</Link>
+        <button type="button" className="ws-pro-editor-inline-action" onClick={onClose}>Cerrar</button>
+        <button type="button" className="ws-pro-editor-inline-action ws-pro-editor-inline-save" disabled={busy || !title.trim()} onClick={() => void save()}>{busy ? "Guardando…" : "Guardar"}</button>
       </div>
       {message ? <p className={message.tone === "success" ? "flex items-center gap-2 text-sm font-semibold text-emerald-700" : "text-sm font-semibold text-rose-700"}>{message.tone === "success" ? <CheckCircle2 className="h-4 w-4" /> : null}{message.text}</p> : null}
-      <div className="flex flex-wrap justify-end gap-2">
-        <button type="button" className="ws-pro-secondary-button" onClick={onClose}>Cerrar</button>
-        <button type="button" className="ws-pro-primary-button" disabled={busy || !title.trim()} onClick={() => void save()}>{busy ? <Loader2 className="h-4 w-4 animate-spin" /> : null}Guardar</button>
-      </div>
     </div>
   );
 }
