@@ -7988,3 +7988,21 @@
   color: #0f172a !important;
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--status-color, #16C784) 18%, transparent);
 }
+
+
+/* v58.28.6 — Workspace Pro Active Views + Anchored Board Actions */
+.ws-pro-board-grid { width: 100%; }
+.ws-pro-column-toggle { border-color: rgba(148, 163, 184, .28); background: rgba(255,255,255,.9); }
+.ws-pro-column-toggle.is-active { transform: translateY(-1px); box-shadow: 0 10px 22px rgba(15, 23, 42, .06); }
+.ws-pro-column-toggle-pendiente.is-active { border-color: rgba(14,165,233,.55); background: linear-gradient(135deg, rgba(14,165,233,.16), rgba(255,255,255,.92)); color: #0369a1; }
+.ws-pro-column-toggle-en_proceso.is-active { border-color: rgba(37,99,235,.55); background: linear-gradient(135deg, rgba(37,99,235,.14), rgba(255,255,255,.92)); color: #1d4ed8; }
+.ws-pro-column-toggle-produccion.is-active { border-color: rgba(124,58,237,.58); background: linear-gradient(135deg, rgba(124,58,237,.16), rgba(255,255,255,.92)); color: #6d28d9; }
+.ws-pro-column-toggle-en_espera.is-active { border-color: rgba(245,158,11,.6); background: linear-gradient(135deg, rgba(245,158,11,.16), rgba(255,255,255,.92)); color: #b45309; }
+.ws-pro-column-toggle-revision.is-active { border-color: rgba(192,38,211,.55); background: linear-gradient(135deg, rgba(192,38,211,.15), rgba(255,255,255,.92)); color: #a21caf; }
+.ws-pro-column-toggle-concluido.is-active { border-color: rgba(16,185,129,.55); background: linear-gradient(135deg, rgba(16,185,129,.15), rgba(255,255,255,.92)); color: #047857; }
+.ws-pro-board-action-layer { z-index: 180; }
+.ws-pro-board-action-panel { right: auto; width: min(22rem, calc(100vw - 2rem)); max-height: min(34rem, calc(100vh - 2rem)); }
+.ws-pro-board-column { min-width: 0; }
+@media (max-width: 860px) {
+  .ws-pro-board-action-panel { top: auto !important; right: .75rem !important; bottom: .75rem !important; left: .75rem !important; width: auto; max-height: min(78vh, 34rem); }
+}

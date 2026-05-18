@@ -3,8 +3,10 @@ import fs from "node:fs";
 const pkg = JSON.parse(fs.readFileSync("package.json", "utf8"));
 const version = "58.28.3-workspace-pro-user-language-timeline-flow",
   "58.28.4-workspace-pro-board-overlay-status-alignment",
-  "58.28.5-workspace-pro-brand-accent-pro-navigation-identity";
-const verifyTarget = "npm run verify:v58.28.3", "npm run verify:v58.28.4", "npm run verify:v58.28.5";
+  "58.28.5-workspace-pro-brand-accent-pro-navigation-identity",
+  "58.28.6-workspace-pro-completed-filter-anchored-actions";
+const verifyTarget = "npm run verify:v58.28.3", "npm run verify:v58.28.4", "npm run verify:v58.28.5",
+  "npm run verify:v58.28.6";
 const failures = [];
 if (pkg.version !== version) failures.push(`Unexpected package version: ${pkg.version}`);
 if (pkg.scripts?.["verify:current"] !== verifyTarget) failures.push("verify:current must target verify:v58.28.3");

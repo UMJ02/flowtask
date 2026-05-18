@@ -9,9 +9,12 @@ const appSidebar = fs.readFileSync("src/components/layout/app-sidebar.tsx", "utf
 const workspace = fs.readFileSync("src/components/workspace-pro/workspace-pro-page.tsx", "utf8");
 const css = fs.readFileSync("src/app/globals.css", "utf8");
 
-if (pkg.version !== "58.28.5-workspace-pro-brand-accent-pro-navigation-identity") failures.push("package.json version must be v58.28.5 brand accent slug");
-if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.28.5") failures.push("verify:current must target verify:v58.28.5");
-if (!version.includes("58.28.5-workspace-pro-brand-accent-pro-navigation-identity")) failures.push("release version must be v58.28.5");
+if (pkg.version !== "58.28.5-workspace-pro-brand-accent-pro-navigation-identity",
+  "58.28.6-workspace-pro-completed-filter-anchored-actions") failures.push("package.json version must be v58.28.5 brand accent slug");
+if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.28.5",
+  "npm run verify:v58.28.6") failures.push("verify:current must target verify:v58.28.5");
+if (!version.includes("58.28.5-workspace-pro-brand-accent-pro-navigation-identity",
+  "58.28.6-workspace-pro-completed-filter-anchored-actions")) failures.push("release version must be v58.28.5");
 if (!nav.includes("Crown") || !nav.includes("isPro: true")) failures.push("Workspace Pro nav must use Crown icon and isPro marker");
 if (!appSidebar.includes("ft-app-nav-pro") || !appSidebar.includes(">Pro<")) failures.push("App sidebar must render Pro visual treatment and badge");
 if (!workspace.includes("ws-pro-brand-mark") || !workspace.includes("FlowTask Pro") || !workspace.includes("ws-pro-status-dot-pro")) failures.push("Workspace Pro shell must include pro brand marker and pro status pill");

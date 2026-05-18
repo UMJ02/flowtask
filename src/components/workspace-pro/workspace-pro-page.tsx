@@ -1,7 +1,7 @@
 "use client";
 
-// v58.28.5 — Workspace Pro Brand Accent + Pro Navigation Identity
-// Focus: identidad visual Pro con icono semántico, color system y sidebar blanca sin sobrecargar la UI.
+// v58.28.6 — Workspace Pro Active Views + Anchored Board Actions
+// Focus: ocultar concluidas por defecto en todas las vistas y anclar acciones del board al item seleccionado.
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
@@ -160,9 +160,11 @@ export function WorkspaceProPage(props: WorkspaceProPageProps) {
   const [sharePanelOpen, setSharePanelOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
 
+  const activeTasks = useMemo(() => tasks.filter((task) => !isDone(task.status)), [tasks]);
+  const hiddenDoneCount = tasks.length - activeTasks.length;
   const derived = useMemo(
-    () => getWorkspaceProDerivedData({ tasks, projects, boards, files, activity, projectViews }),
-    [tasks, projects, boards, files, activity, projectViews],
+    () => getWorkspaceProDerivedData({ tasks: activeTasks, projects, boards, files, activity, projectViews }),
+    [activeTasks, projects, boards, files, activity, projectViews],
   );
   const { important, overdue, today, progress } = derived.metrics;
   const activeProjectTitle = context.projectTitle ?? "Workspace";
@@ -250,7 +252,7 @@ export function WorkspaceProPage(props: WorkspaceProPageProps) {
                   <span className="ws-pro-status-dot ws-pro-status-dot-pro"><Crown className="h-3 w-3" /> Pro</span>
                   {permissions.isReadOnly ? <span className="ws-pro-muted-pill">Solo lectura</span> : null}
                 </div>
-                <p className="mt-1 text-sm text-slate-500">{tasks.length} tareas · {progress}% avance</p>
+                <p className="mt-1 text-sm text-slate-500">{activeTasks.length} tareas activas · {progress}% avance{hiddenDoneCount ? ` · ${hiddenDoneCount} concluidas ocultas` : ""}</p>
               </div>
 
               <div className="relative flex shrink-0 flex-wrap items-center gap-2">
@@ -283,7 +285,7 @@ export function WorkspaceProPage(props: WorkspaceProPageProps) {
             <section className="h-full min-w-0 overflow-y-auto px-4 py-5 ws-pro-page-scroll ws-pro-content md:px-6 lg:px-8">
               {context.invalidProjectId ? <WorkspaceRecoveryPanel reason="invalid-project" title="Proyecto no disponible" description="El proyecto solicitado no pertenece al espacio activo o ya no está disponible." context={context} persistenceStatus={persistenceStatus} permissions={permissions} /> : null}
               {context.invalidSavedViewId ? <div className="mb-4"><WorkspaceRecoveryPanel reason="invalid-saved-view" title="Vista guardada no disponible" description="La vista solicitada ya no existe para este proyecto." context={context} persistenceStatus={persistenceStatus} permissions={permissions} /></div> : null}
-              <WorkspaceProMainView activeView={activeView} tasks={tasks} projects={projects} boards={boards} files={files} activity={activity} projectViews={projectViews} reports={reports} context={context} permissions={permissions} derived={derived} />
+              <WorkspaceProMainView activeView={activeView} tasks={activeTasks} projects={projects} boards={boards} files={files} activity={activity} projectViews={projectViews} reports={reports} context={context} permissions={permissions} derived={derived} />
             </section>
           </div>
         </div>
@@ -520,7 +522,7 @@ function WorkspaceProProjects({ projects, projectTaskMap }: { projects: Workspac
   return (
     <div className="mx-auto max-w-[1440px] space-y-3 ws-pro-view-frame">
       {projects.map((project) => {
-        const projectTasks = projectTaskMap[project.id] ?? [];
+        const projectTasks = (projectTaskMap[project.id] ?? []).filter((task) => !isDone(task.status));
         const expanded = expandedProjectId === project.id;
         return (
           <section key={project.id} className="rounded-xl border border-slate-200 bg-white shadow-sm">
@@ -569,6 +571,7 @@ const TASK_PRIORITY_ACTIONS = [
 ] as const;
 
 type TaskPriorityActionId = typeof TASK_PRIORITY_ACTIONS[number]["id"];
+type BoardActionAnchor = { top: number; left: number };
 
 function normalizePriority(value?: string | null): TaskPriorityActionId {
   const priority = String(value ?? "media").toLowerCase();
@@ -589,6 +592,13 @@ function WorkspaceProBoard({ tasks, projects, context, boardColumns }: { tasks: 
   const [compactCards, setCompactCards] = useState(true);
   const [boardMessage, setBoardMessage] = useState<{ tone: "success" | "error"; text: string } | null>(null);
   const [openActionTaskId, setOpenActionTaskId] = useState<string | null>(null);
+  const [actionAnchor, setActionAnchor] = useState<BoardActionAnchor | null>(null);
+  const boardTasks = useMemo(() => showDone ? tasks : tasks.filter((task) => !isDone(task.status)), [showDone, tasks]);
+  const activeBoardColumns = useMemo(() => {
+    const next: Record<string, WorkspaceTaskItem[]> = {};
+    for (const column of BOARD_COLUMN_DEFS) next[column.id] = (boardColumns[column.id] ?? []).filter((task) => showDone || !isDone(task.status));
+    return next;
+  }, [boardColumns, showDone]);
   const columns = BOARD_COLUMN_DEFS.filter((column) => (column.id !== "concluido" || showDone) && visibleColumns.has(column.id));
 
   function toggleColumn(id: BoardColumnId) {
@@ -605,6 +615,7 @@ function WorkspaceProBoard({ tasks, projects, context, boardColumns }: { tasks: 
     setDraggingTaskId(null);
     setOverColumn(null);
     setOpenActionTaskId(null);
+    setActionAnchor(null);
     setBoardMessage(null);
     const current = tasks.find((task) => task.id === taskId);
     if (current && normalizeBoardStatus(current.status) === status) return;
@@ -621,6 +632,7 @@ function WorkspaceProBoard({ tasks, projects, context, boardColumns }: { tasks: 
 
   async function updateTaskPriority(taskId: string, priority: TaskPriorityActionId) {
     setOpenActionTaskId(null);
+    setActionAnchor(null);
     setBoardMessage(null);
     setBusyMove(taskId);
     const { error } = await supabase.from("tasks").update({ priority }).eq("id", taskId).select("id").single();
@@ -633,7 +645,20 @@ function WorkspaceProBoard({ tasks, projects, context, boardColumns }: { tasks: 
     router.refresh();
   }
 
-  if (!tasks.length) {
+  function openTaskActions(taskId: string, event: React.MouseEvent<HTMLButtonElement>) {
+    const rect = event.currentTarget.getBoundingClientRect();
+    const panelWidth = 360;
+    const gap = 12;
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    const leftCandidate = rect.right + gap;
+    const left = leftCandidate + panelWidth <= viewportWidth - 16 ? leftCandidate : Math.max(16, rect.left - panelWidth - gap);
+    const top = Math.min(Math.max(16, rect.top - 8), Math.max(16, viewportHeight - 520));
+    setActionAnchor({ top, left });
+    setOpenActionTaskId((value) => value === taskId ? null : taskId);
+  }
+
+  if (!boardTasks.length) {
     return <WorkspaceEmptyState icon="tasks" title="No hay tareas para el board" description="Creá una tarea o elegí otro proyecto para empezar a organizar trabajo por columnas. La Lista permite edición rápida antes de moverlas al board." actionHref="/app/workspace?view=list" actionLabel="Abrir Lista" tone="blue" />;
   }
 
@@ -659,7 +684,7 @@ function WorkspaceProBoard({ tasks, projects, context, boardColumns }: { tasks: 
       {boardMessage ? <p className={boardMessage.tone === "success" ? "mx-auto max-w-[1440px] rounded-xl border border-emerald-100 bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-700" : "mx-auto max-w-[1440px] rounded-xl border border-rose-100 bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-700"}>{boardMessage.text}</p> : null}
       <div className="mx-auto grid max-w-[1440px] gap-4 ws-pro-board-grid" style={{ gridTemplateColumns: `repeat(${Math.max(columns.length, 1)}, minmax(260px, 1fr))` }}>
         {columns.map((column) => {
-          const items = boardColumns[column.id] ?? [];
+          const items = activeBoardColumns[column.id] ?? [];
           const isOver = overColumn === column.id;
           return (
             <section
@@ -689,7 +714,7 @@ function WorkspaceProBoard({ tasks, projects, context, boardColumns }: { tasks: 
                         {!compactCards ? <p className="mt-1 truncate text-xs text-slate-400">{task.projectTitle ?? task.clientName ?? task.departmentName ?? "Tarea individual"}</p> : null}
                       </div>
                       <div className="relative shrink-0">
-                        <button type="button" onClick={() => setOpenActionTaskId((value) => value === task.id ? null : task.id)} className="ws-pro-icon-button h-7 w-7" aria-label="Abrir acciones de tarea"><MoreHorizontal className="h-3.5 w-3.5" /></button>
+                        <button type="button" onClick={(event) => openTaskActions(task.id, event)} className="ws-pro-icon-button h-7 w-7" aria-label="Abrir acciones de tarea"><MoreHorizontal className="h-3.5 w-3.5" /></button>
 
                       </div>
                     </div>
@@ -704,26 +729,27 @@ function WorkspaceProBoard({ tasks, projects, context, boardColumns }: { tasks: 
           );
         })}
       </div>
-      {selectedActionTask ? (
+      {selectedActionTask && actionAnchor ? (
         <WorkspaceProBoardActionPanel
           task={selectedActionTask}
+          anchor={actionAnchor}
           currentStatus={normalizeBoardStatus(selectedActionTask.status)}
           busy={busyMove === selectedActionTask.id}
-          onClose={() => setOpenActionTaskId(null)}
+          onClose={() => { setOpenActionTaskId(null); setActionAnchor(null); }}
           onMove={(status) => void moveTask(selectedActionTask.id, status)}
           onPriority={(priority) => void updateTaskPriority(selectedActionTask.id, priority)}
-          onQuickEdit={() => { setEditingTask(selectedActionTask); setOpenActionTaskId(null); }}
+          onQuickEdit={() => { setEditingTask(selectedActionTask); setOpenActionTaskId(null); setActionAnchor(null); }}
         />
       ) : null}
     </div>
   );
 }
 
-function WorkspaceProBoardActionPanel({ task, currentStatus, busy, onClose, onMove, onPriority, onQuickEdit }: { task: WorkspaceTaskItem; currentStatus: BoardColumnId; busy: boolean; onClose: () => void; onMove: (status: BoardColumnId) => void; onPriority: (priority: TaskPriorityActionId) => void; onQuickEdit: () => void }) {
+function WorkspaceProBoardActionPanel({ task, anchor, currentStatus, busy, onClose, onMove, onPriority, onQuickEdit }: { task: WorkspaceTaskItem; anchor: BoardActionAnchor; currentStatus: BoardColumnId; busy: boolean; onClose: () => void; onMove: (status: BoardColumnId) => void; onPriority: (priority: TaskPriorityActionId) => void; onQuickEdit: () => void }) {
   return (
     <div className="ws-pro-board-action-layer" role="dialog" aria-modal="false" aria-label="Acciones de tarea">
       <div className="ws-pro-board-action-backdrop" onClick={onClose} />
-      <aside className="ws-pro-board-action-panel">
+      <aside className="ws-pro-board-action-panel" style={{ top: anchor.top, left: anchor.left }}>
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <p className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">Acciones</p>

@@ -3,8 +3,10 @@ import fs from "node:fs";
 const pkg = JSON.parse(fs.readFileSync("package.json", "utf8"));
 const failures = [];
 if (!["58.28.3-workspace-pro-user-language-timeline-flow", "58.28.4-workspace-pro-board-overlay-status-alignment",
-  "58.28.5-workspace-pro-brand-accent-pro-navigation-identity"].includes(pkg.version)) failures.push(`Unexpected package version: ${pkg.version}`);
-if (!["npm run verify:v58.28.3", "npm run verify:v58.28.4", "npm run verify:v58.28.5"].includes(pkg.scripts?.["verify:current"])) failures.push("verify:current must target the active v58.28.x verify script");
+  "58.28.5-workspace-pro-brand-accent-pro-navigation-identity",
+  "58.28.6-workspace-pro-completed-filter-anchored-actions"].includes(pkg.version)) failures.push(`Unexpected package version: ${pkg.version}`);
+if (!["npm run verify:v58.28.3", "npm run verify:v58.28.4", "npm run verify:v58.28.5",
+  "npm run verify:v58.28.6"].includes(pkg.scripts?.["verify:current"])) failures.push("verify:current must target the active v58.28.x verify script");
 const page = fs.readFileSync("src/components/workspace-pro/workspace-pro-page.tsx", "utf8");
 const spaces = fs.readFileSync("src/components/workspace-system/workspace-spaces-manager.tsx", "utf8");
 const css = fs.readFileSync("src/app/globals.css", "utf8");

@@ -326,3 +326,8 @@ Migración requerida si la base actual todavía rechaza esos estados:
 ## v58.28.5 — Workspace Pro Brand Accent + Pro Navigation Identity
 
 Workspace Pro ahora tiene icono Crown, badge PRO, acentos premium y color system en la experiencia Pro, manteniendo la sidebar interna blanca.
+
+
+## v58.28.6 — Workspace Pro Completed Filter + Anchored Actions
+
+Oculta tareas concluidas por defecto en todas las vistas activas y ancla el panel de acciones del Board a la tarjeta seleccionada.
