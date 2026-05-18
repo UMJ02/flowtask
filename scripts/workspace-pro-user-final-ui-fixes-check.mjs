@@ -19,18 +19,18 @@ const allowedVersions = [
   "58.28.10-workspace-pro-no-motion-board-portal-home-colors",
   "58.28.11-workspace-pro-nav-shape-home-alignment",
   "58.28.12-workspace-pro-home-hero-solid-card-colors",
-  "58.28.14-workspace-pro-component-split-runtime-slimdown",
+  "58.28.15-workspace-pro-deep-component-extraction-lazy-view-loading",
   "58.28.10-workspace-pro-no-motion-board-portal-home-colors",
   "58.28.11-workspace-pro-nav-shape-home-alignment",
   "58.28.12-workspace-pro-home-hero-solid-card-colors",
-  "58.28.14-workspace-pro-component-split-runtime-slimdown",
+  "58.28.15-workspace-pro-deep-component-extraction-lazy-view-loading",
 ];
 const allowedVerifyTargets = ["npm run verify:v58.28.1", "npm run verify:v58.28.2", "npm run verify:v58.28.3", "npm run verify:v58.28.4", "npm run verify:v58.28.5",
   "npm run verify:v58.28.6",
   "npm run verify:v58.28.7",
   "npm run verify:v58.28.8",
   "npm run verify:v58.28.9",
-  "npm run verify:v58.28.10", "npm run verify:v58.28.11", "npm run verify:v58.28.12", "npm run verify:v58.28.14"];
+  "npm run verify:v58.28.10", "npm run verify:v58.28.11", "npm run verify:v58.28.12", "npm run verify:v58.28.15"];
 
 if (!allowedVersions.includes(pkg.version)) failures.push(`Unexpected package version: ${pkg.version}`);
 if (!allowedVerifyTargets.includes(pkg.scripts?.["verify:current"])) failures.push("verify:current must target an active v58.28.x verify script");

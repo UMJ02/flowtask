@@ -29,11 +29,11 @@ const expectedVersions = [
   "58.28.10-workspace-pro-no-motion-board-portal-home-colors",
   "58.28.11-workspace-pro-nav-shape-home-alignment",
   "58.28.12-workspace-pro-home-hero-solid-card-colors",
-  "58.28.14-workspace-pro-component-split-runtime-slimdown",
+  "58.28.15-workspace-pro-deep-component-extraction-lazy-view-loading",
   "58.28.10-workspace-pro-no-motion-board-portal-home-colors",
   "58.28.11-workspace-pro-nav-shape-home-alignment",
   "58.28.12-workspace-pro-home-hero-solid-card-colors",
-  "58.28.14-workspace-pro-component-split-runtime-slimdown",
+  "58.28.15-workspace-pro-deep-component-extraction-lazy-view-loading",
 ];
 const pkg = JSON.parse(read("package.json") || "{}");
 if (!expectedVersions.includes(pkg.version)) failures.push(`Unexpected package version: ${pkg.version}`);

@@ -15,8 +15,8 @@ for (const file of requiredFiles) {
   if (!fs.existsSync(path.join(root, file))) failures.push(`Missing required file: ${file}`);
 }
 const scripts = Object.keys(pkg.scripts || {});
-if (pkg.version !== "58.28.14-workspace-pro-component-split-runtime-slimdown") failures.push("package version is not v58.28.13");
-if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.28.14") failures.push("verify:current is not v58.28.13");
+if (pkg.version !== "58.28.15-workspace-pro-deep-component-extraction-lazy-view-loading") failures.push("package version is not v58.28.13");
+if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.28.15") failures.push("verify:current is not v58.28.13");
 if (!pkg.scripts?.["build:preflight"]?.includes("workspace:final-cleanup:ready")) failures.push("build:preflight does not include final cleanup check");
 if (scripts.length > 80) failures.push(`Too many active scripts remain: ${scripts.length}`);
 const legacyVerifyScripts = scripts.filter((name) => /^verify:v(54|58\.(0|1|2[0-7]))/.test(name));

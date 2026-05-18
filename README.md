@@ -408,3 +408,7 @@ Ajusta el cintillo de actualización a una franja completa con verdes FlowTask/p
 - Cambia los acentos de cards del Home a colores sólidos distribuidos por bloque.
 - Mantiene la navegación redondeada y el sistema sin animaciones/skeletons de la línea Pro.
 - Agrega `workspace:home-solid-cards:ready` al preflight.
+
+## v58.28.15 — Workspace Pro Deep Component Extraction + Lazy View Loading
+
+Workspace Pro ahora carga bajo demanda superficies ocultas como Quick Create, Spaces Manager, Saved Views, Command Center, Share Panel, Recovery Panel y Files Upload Entry. Esta versión mantiene la UI estable de v58.28.14, pero reduce el costo inicial del runtime.

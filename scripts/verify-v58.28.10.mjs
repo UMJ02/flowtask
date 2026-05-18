@@ -10,10 +10,10 @@ const css = fs.readFileSync(path.join(root, "src/app/globals.css"), "utf8");
 const version = fs.readFileSync(path.join(root, "src/lib/release/version.ts"), "utf8");
 
 if (!["58.28.10-workspace-pro-no-motion-board-portal-home-colors", "58.28.11-workspace-pro-nav-shape-home-alignment", "58.28.12-workspace-pro-home-hero-solid-card-colors",
-  "58.28.14-workspace-pro-component-split-runtime-slimdown"].includes(pkg.version)) failures.push("Unexpected package version");
-if (!["npm run verify:v58.28.10", "npm run verify:v58.28.11", "npm run verify:v58.28.12", "npm run verify:v58.28.14"].includes(pkg.scripts?.["verify:current"])) failures.push("verify:current must target verify:v58.28.10");
+  "58.28.15-workspace-pro-deep-component-extraction-lazy-view-loading"].includes(pkg.version)) failures.push("Unexpected package version");
+if (!["npm run verify:v58.28.10", "npm run verify:v58.28.11", "npm run verify:v58.28.12", "npm run verify:v58.28.15"].includes(pkg.scripts?.["verify:current"])) failures.push("verify:current must target verify:v58.28.10");
 if (!version.includes("58.28.10-workspace-pro-no-motion-board-portal-home-colors") && !version.includes("58.28.11-workspace-pro-nav-shape-home-alignment") && !version.includes("58.28.12-workspace-pro-home-hero-solid-card-colors",
-  "58.28.14-workspace-pro-component-split-runtime-slimdown")) failures.push("version.ts must contain a v58.28.10+ compatible slug");
+  "58.28.15-workspace-pro-deep-component-extraction-lazy-view-loading")) failures.push("version.ts must contain a v58.28.10+ compatible slug");
 if (!page.includes("createPortal")) failures.push("Board action panel must render through createPortal");
 if (!page.includes("openActionAnchor")) failures.push("Board action anchor state is missing");
 if (page.includes("Actualizando vista")) failures.push("Actualizando vista UI must be removed");

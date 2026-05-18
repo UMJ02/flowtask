@@ -3,20 +3,27 @@ import fs from "node:fs";
 const pkg = JSON.parse(fs.readFileSync("package.json", "utf8"));
 const version = fs.readFileSync("src/lib/release/version.ts", "utf8");
 const source = fs.readFileSync("src/components/workspace-pro/workspace-pro-page.tsx", "utf8");
+const lazy = fs.existsSync("src/components/workspace-pro/workspace-pro-lazy-surfaces.tsx")
+  ? fs.readFileSync("src/components/workspace-pro/workspace-pro-lazy-surfaces.tsx", "utf8")
+  : "";
 const runtime = fs.existsSync("src/components/workspace-pro/workspace-pro-runtime.ts");
-const audit = fs.existsSync("docs/audits/V58_28_14_COMPONENT_SPLIT_RUNTIME_SLIMDOWN_AUDIT.md");
+const audit = fs.existsSync("docs/audits/V58_28_15_DEEP_COMPONENT_EXTRACTION_LAZY_VIEW_LOADING_AUDIT.md");
 const failures = [];
 
 if (pkg.version !== "58.28.15-workspace-pro-deep-component-extraction-lazy-view-loading") failures.push("Unexpected package version");
 if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.28.15") failures.push("verify:current must target verify:v58.28.15");
 if (!version.includes("58.28.15-workspace-pro-deep-component-extraction-lazy-view-loading")) failures.push("version.ts must contain v58.28.15 slug");
 if (!pkg.scripts?.["workspace:component-split:ready"]) failures.push("workspace:component-split:ready script missing");
-if (!pkg.scripts?.["build:preflight"]?.includes("workspace:component-split:ready")) failures.push("build:preflight must include workspace:component-split:ready");
+if (!pkg.scripts?.["workspace:deep-component:ready"]) failures.push("workspace:deep-component:ready script missing");
+if (!pkg.scripts?.["build:preflight"]?.includes("workspace:deep-component:ready")) failures.push("build:preflight must include workspace:deep-component:ready");
 if (!runtime) failures.push("workspace-pro-runtime.ts split module missing");
+if (!lazy.includes("dynamic(")) failures.push("lazy surfaces module must use next/dynamic");
+if (!lazy.includes("LazyWorkspaceQuickCreate") || !lazy.includes("LazyWorkspaceSharePanel") || !lazy.includes("LazyWorkspaceFilesUploadEntry")) failures.push("hidden workspace surfaces must be lazily exported");
+if (source.includes("@/components/workspace-system/workspace-quick-create") || source.includes("@/components/workspace-system/workspace-share-panel")) failures.push("Workspace Pro page must not statically import hidden surfaces");
 if (!source.includes("mainViewNode = useMemo")) failures.push("Workspace main view is not memoized");
 if (!source.includes("MemoWorkspaceProBoard") || !source.includes("MemoWorkspaceProFiles") || !source.includes("MemoWorkspaceProReports")) failures.push("Heavy Workspace Pro views must use memoized view boundaries");
 if (!source.includes("buildWorkspaceProViewHref")) failures.push("client-side view href builder must be split from page component");
-if (!audit) failures.push("component split audit doc missing");
+if (!audit) failures.push("deep component extraction audit doc missing");
 
 if (failures.length) {
   console.error("[verify:v58.28.15] FAIL");
@@ -24,4 +31,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log("[verify:v58.28.15] OK — Workspace Pro component split and runtime slimdown aligned.");
+console.log("[verify:v58.28.15] OK — Workspace Pro deep component extraction and lazy view loading aligned.");

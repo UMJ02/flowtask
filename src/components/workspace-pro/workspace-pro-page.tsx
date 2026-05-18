@@ -58,14 +58,16 @@ import {
   PriorityBadge,
   StatusBadge,
 } from "@/components/workspace-system/workspace-badges";
-import { WorkspaceQuickCreate } from "@/components/workspace-system/workspace-quick-create";
-import { WorkspaceSavedViewsManager } from "@/components/workspace-system/workspace-saved-views-manager";
-import { WorkspaceSpacesManager } from "@/components/workspace-system/workspace-spaces-manager";
-import { WorkspaceCommandCenter } from "@/components/workspace-system/workspace-command-center";
-import { WorkspaceSharePanel } from "@/components/workspace-system/workspace-share-panel";
-import { WorkspaceRecoveryPanel } from "@/components/workspace-system/workspace-recovery-panel";
+import {
+  LazyWorkspaceCommandCenter,
+  LazyWorkspaceFilesUploadEntry,
+  LazyWorkspaceQuickCreate,
+  LazyWorkspaceRecoveryPanel,
+  LazyWorkspaceSavedViewsManager,
+  LazyWorkspaceSharePanel,
+  LazyWorkspaceSpacesManager,
+} from "./workspace-pro-lazy-surfaces";
 import { WorkspaceEmptyState } from "@/components/workspace-system/workspace-empty-state";
-import { WorkspaceFilesUploadEntry } from "@/components/workspace-system/workspace-files-upload-entry";
 import { createClient } from "@/lib/supabase/client";
 import {
   getWorkspaceProDerivedData,
@@ -262,7 +264,7 @@ export function WorkspaceProPage(props: WorkspaceProPageProps) {
   return (
     <div className="ws-pro-shell grid h-screen min-h-screen grid-cols-1 overflow-hidden lg:grid-cols-[264px_minmax(0,1fr)]">
       {sharePanelOpen ? (
-        <WorkspaceSharePanel
+        <LazyWorkspaceSharePanel
           open={sharePanelOpen}
           onOpenChange={setSharePanelOpen}
           context={context}
@@ -272,7 +274,7 @@ export function WorkspaceProPage(props: WorkspaceProPageProps) {
         />
       ) : null}
       {commandCenterOpen ? (
-        <WorkspaceCommandCenter
+        <LazyWorkspaceCommandCenter
           open={commandCenterOpen}
           onOpenChange={setCommandCenterOpen}
           context={context}
@@ -327,7 +329,7 @@ export function WorkspaceProPage(props: WorkspaceProPageProps) {
           title="Nueva tarea"
           onClose={() => setShowQuickCreate(false)}
         >
-          <WorkspaceQuickCreate
+          <LazyWorkspaceQuickCreate
             context={context}
             projects={projects}
             onClose={() => setShowQuickCreate(false)}
@@ -340,7 +342,7 @@ export function WorkspaceProPage(props: WorkspaceProPageProps) {
           onClose={() => setSpacesManagerOpen(false)}
           wide
         >
-          <WorkspaceSpacesManager
+          <LazyWorkspaceSpacesManager
             context={context}
             spaces={spaces}
             projects={projects}
@@ -357,7 +359,7 @@ export function WorkspaceProPage(props: WorkspaceProPageProps) {
           onClose={() => setSavedViewsOpen(false)}
           wide
         >
-          <WorkspaceSavedViewsManager
+          <LazyWorkspaceSavedViewsManager
             activeView={displayedView}
             context={context}
             projectViews={projectViews}
@@ -511,7 +513,7 @@ export function WorkspaceProPage(props: WorkspaceProPageProps) {
           <div className="min-h-0 flex-1 overflow-hidden">
             <section className="h-full min-w-0 overflow-y-auto px-4 py-5 ws-pro-page-scroll ws-pro-content md:px-6 lg:px-8">
               {context.invalidProjectId ? (
-                <WorkspaceRecoveryPanel
+                <LazyWorkspaceRecoveryPanel
                   reason="invalid-project"
                   title="Proyecto no disponible"
                   description="El proyecto solicitado no pertenece al espacio activo o ya no está disponible."
@@ -522,7 +524,7 @@ export function WorkspaceProPage(props: WorkspaceProPageProps) {
               ) : null}
               {context.invalidSavedViewId ? (
                 <div className="mb-4">
-                  <WorkspaceRecoveryPanel
+                  <LazyWorkspaceRecoveryPanel
                     reason="invalid-saved-view"
                     title="Vista guardada no disponible"
                     description="La vista solicitada ya no existe para este proyecto."
@@ -2451,7 +2453,7 @@ function WorkspaceProFiles({
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
         <CleanCard title="Archivos del workspace">
           <div className="mb-4">
-            <WorkspaceFilesUploadEntry
+            <LazyWorkspaceFilesUploadEntry
               context={context}
               projects={projects}
               canUpload={permissions.canUploadFiles}

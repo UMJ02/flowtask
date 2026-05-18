@@ -15,8 +15,8 @@ const requiredFiles = [
 for (const file of requiredFiles) {
   if (!fs.existsSync(path.join(root, file))) failures.push(`Missing required file: ${file}`);
 }
-if (pkg.version !== "58.28.14-workspace-pro-component-split-runtime-slimdown") failures.push("package version is not v58.28.14");
-if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.28.14") failures.push("verify:current is not v58.28.14");
+if (pkg.version !== "58.28.15-workspace-pro-deep-component-extraction-lazy-view-loading") failures.push("package version is not v58.28.15");
+if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.28.15") failures.push("verify:current is not v58.28.15");
 if (!pkg.scripts?.["build:preflight"]?.includes("workspace:component-split:ready")) failures.push("build:preflight does not include component split check");
 if (!source.includes("memo,")) failures.push("React memo import missing");
 if (!source.includes("useCallback")) failures.push("View callbacks must be stable with useCallback");
