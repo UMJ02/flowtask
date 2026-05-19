@@ -8779,3 +8779,15 @@
     min-width: 9.25rem;
   }
 }
+
+/* v58.28.21.1 — Classic Project Detail UX Polish */
+@media (min-width: 1024px) {
+  .ft-project-editor-main-grid { grid-template-columns: 230px minmax(0, 1fr); }
+  .ft-project-editor-meta-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .ft-project-detail-upper-grid { grid-template-columns: minmax(0, 1.35fr) minmax(260px, 0.85fr) minmax(260px, 0.85fr); }
+}
+@media (min-width: 1280px) {
+  .ft-project-inline-create-grid { grid-template-columns: minmax(220px, 1.25fr) 160px 140px minmax(180px, 0.9fr) minmax(140px, auto); }
+  .ft-project-inline-edit-grid { grid-template-columns: minmax(220px, 1.35fr) 150px 150px minmax(180px, 0.85fr) 96px; }
+  .ft-project-inline-view-grid { grid-template-columns: 32px minmax(220px, 1.45fr) 120px 150px 130px 118px; }
+}
