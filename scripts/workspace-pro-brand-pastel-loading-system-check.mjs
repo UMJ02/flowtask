@@ -19,6 +19,7 @@ const allowedVersions = [
   "58.28.20-mobile-responsive-final-pass",
   "58.28.21-supabase-rls-client-readiness-final",
   "58.28.21.3-classic-reports-data-integrity-checklist-progress-export",
+  "58.28.21.4-share-landing-short-link-stored-report-tokens",
 ];
 
 if (!allowedVersions.includes(pkg.version)) failures.push(`Unexpected package version: ${pkg.version}`);

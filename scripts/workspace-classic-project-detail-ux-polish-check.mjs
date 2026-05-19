@@ -7,10 +7,10 @@ const detail = read("src/components/projects/project-detail-pro.tsx");
 const editor = read("src/components/projects/project-hero-inline-editor.tsx");
 const tasks = read("src/components/projects/project-inline-tasks.tsx");
 const failures = [];
-const expectedVersion = "58.28.21.3-classic-reports-data-integrity-checklist-progress-export";
+const expectedVersions = ["58.28.21.3-classic-reports-data-integrity-checklist-progress-export", "58.28.21.4-share-landing-short-link-stored-report-tokens"];
 
-if (pkg.version !== expectedVersion) failures.push(`Unexpected package version: ${pkg.version}`);
-if (!versionText.includes(expectedVersion)) failures.push("release version not aligned");
+if (!expectedVersions.includes(pkg.version)) failures.push(`Unexpected package version: ${pkg.version}`);
+if (!expectedVersions.some((version) => versionText.includes(version))) failures.push("release version not aligned");
 if (!pkg.scripts?.["build:preflight"]?.includes("workspace:classic-project-ux:ready")) failures.push("build:preflight must include workspace:classic-project-ux:ready");
 for (const marker of ["Cambiar imagen", "Quitar", "image_url", "projects/${organizationId ?? user.id}/${project.id}"]) {
   if (!editor.includes(marker)) failures.push(`inline editor missing marker: ${marker}`);

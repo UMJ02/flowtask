@@ -11,6 +11,7 @@ const allowedVersions = [
   "58.28.20-mobile-responsive-final-pass",
   "58.28.21-supabase-rls-client-readiness-final",
   "58.28.21.3-classic-reports-data-integrity-checklist-progress-export",
+  "58.28.21.4-share-landing-short-link-stored-report-tokens",
 ];
 const allowedVerifyTargets = [
   "npm run verify:v58.28.18.2",
@@ -18,6 +19,7 @@ const allowedVerifyTargets = [
   "npm run verify:v58.28.20",
   "npm run verify:v58.28.21",
   "npm run verify:v58.28.21.3",
+  "npm run verify:v58.28.21.4",
 ];
 
 if (!allowedVersions.includes(pkg.version)) failures.push(`Unexpected package version: ${pkg.version}`);

@@ -4,13 +4,13 @@ import Link from 'next/link';
 import { useEffect, useMemo, useState, type ComponentType } from 'react';
 import { CheckCircle2, ClipboardCheck, Clock3, Download, Home, Printer, Share2, SlidersHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { decodeAnalyticsShareToken, downloadAnalyticsCsv, getSharedReportTasks } from '@/lib/share/analytics-share';
+import { decodeAnalyticsShareToken, downloadAnalyticsCsv, getSharedReportTasks, type SharedAnalyticsPayload } from '@/lib/share/analytics-share';
 
 type StatusFilter = 'all' | 'Pendiente' | 'En curso' | 'Producción' | 'En espera' | 'Revisión' | 'Concluido';
 const PAGE_SIZE = 15;
 
-export function SharedAnalyticsLanding({ token, autoPrint = false }: { token: string; autoPrint?: boolean }) {
-  const payload = useMemo(() => decodeAnalyticsShareToken(token), [token]);
+export function SharedAnalyticsLanding({ token, payload: storedPayload = null, autoPrint = false }: { token: string; payload?: SharedAnalyticsPayload | null; autoPrint?: boolean }) {
+  const payload = useMemo(() => storedPayload ?? decodeAnalyticsShareToken(token), [storedPayload, token]);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
   const [page, setPage] = useState(1);
 
@@ -176,7 +176,7 @@ export function SharedAnalyticsLanding({ token, autoPrint = false }: { token: st
   );
 }
 
-function moduleLabel(payload: NonNullable<ReturnType<typeof decodeAnalyticsShareToken>>, id: string) {
+function moduleLabel(payload: SharedAnalyticsPayload, id: string) {
   if ((payload.reportModules.importantItems ?? []).some((item) => item.id === id)) return 'Importantes';
   if ((payload.reportModules.currentWeekItems ?? []).some((item) => item.id === id)) return 'Semana actual';
   if ((payload.reportModules.currentMonthItems ?? []).some((item) => item.id === id)) return 'Mes actual';

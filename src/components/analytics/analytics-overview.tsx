@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import { useMemo, useState, type ComponentType, type ReactNode } from 'react';
 import { Card } from '@/components/ui/card';
-import { buildSharedAnalyticsPayload, downloadAnalyticsCsv, encodeAnalyticsShareToken } from '@/lib/share/analytics-share';
+import { buildLegacyAnalyticsShareUrl, buildSharedAnalyticsPayload, createStoredAnalyticsShare, downloadAnalyticsCsv } from '@/lib/share/analytics-share';
 import type { AnalyticsTimeSeriesPoint, WorkspaceAnalyticsSummary } from '@/lib/queries/analytics';
 
 type IconType = ComponentType<{ className?: string }>;
@@ -451,7 +451,21 @@ export function AnalyticsOverview({ summary, compact = false }: { summary: Works
   const sparkDue = summary.timeSeries.map((item) => item.activeDue);
   const sparkOperational = summary.timeSeries.map((_, index) => Math.max(0, real.operationalTasks - (summary.timeSeries.length - index - 1)));
   const sharePayload = useMemo(() => buildSharedAnalyticsPayload(summary), [summary]);
-  const shareHref = useMemo(() => `/share?data=${encodeAnalyticsShareToken(sharePayload)}`, [sharePayload]);
+  const legacyShareHref = useMemo(() => buildLegacyAnalyticsShareUrl(sharePayload), [sharePayload]);
+  const [creatingShareLink, setCreatingShareLink] = useState(false);
+
+  const openShareLanding = async () => {
+    setCreatingShareLink(true);
+    try {
+      const stored = await createStoredAnalyticsShare(sharePayload);
+      window.open(stored.path, '_blank', 'noopener,noreferrer');
+    } catch {
+      window.open(legacyShareHref, '_blank', 'noopener,noreferrer');
+    } finally {
+      setCreatingShareLink(false);
+    }
+  };
+
   const kpis: KpiItem[] = [
     { label: 'Importantes', value: String(summary.shareDigest.priorityCount), helper: 'Marcadas con estrella / prioridad alta.', tone: 'amber', icon: AlertTriangle, points: summary.timeSeries.map(() => summary.shareDigest.priorityCount) },
     { label: 'Semana actual', value: String(summary.shareDigest.weekCount), helper: 'Sin estrella con fecha esta semana.', tone: 'blue', icon: ListChecks, points: sparkDue },
@@ -496,9 +510,9 @@ export function AnalyticsOverview({ summary, compact = false }: { summary: Works
           <ActionIconButton title="Exportar datos reales" onClick={() => downloadAnalyticsCsv(sharePayload)}>
             <Download className="h-4 w-4" />
           </ActionIconButton>
-          <ActionIconLink href={shareHref} title="Landing pública">
+          <ActionIconButton title={creatingShareLink ? 'Generando link corto' : 'Landing pública'} onClick={openShareLanding}>
             <ExternalLink className="h-4 w-4" />
-          </ActionIconLink>
+          </ActionIconButton>
           <ActionIconLink href="/app/tasks?includeCompleted=true" title="Ver concluidas" dark>
             <CalendarDays className="h-4 w-4" />
           </ActionIconLink>

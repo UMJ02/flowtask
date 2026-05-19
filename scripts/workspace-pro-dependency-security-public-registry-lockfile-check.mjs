@@ -8,8 +8,10 @@ const expectedVersion = "58.28.19-ux-copy-empty-states-final";
 
 if (pkg.version !== expectedVersion) failures.push(`Unexpected package version: ${pkg.version}`);
 if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.28.19", "npm run verify:v58.28.20", "npm run verify:v58.28.21",
-  "npm run verify:v58.28.21.3", "npm run verify:v58.28.21",
-  "npm run verify:v58.28.21.3") failures.push("verify:current must target verify:v58.28.18.2");
+  "npm run verify:v58.28.21.3",
+  "npm run verify:v58.28.21.4", "npm run verify:v58.28.21",
+  "npm run verify:v58.28.21.3",
+  "npm run verify:v58.28.21.4") failures.push("verify:current must target verify:v58.28.18.2");
 if (!versionText.includes(expectedVersion)) failures.push("version.ts must contain the v58.28.18.2 slug");
 if (lockText.includes("packages.applied-caas") || lockText.includes("internal.api.openai.org")) {
   failures.push("package-lock.json still contains internal registry URLs");

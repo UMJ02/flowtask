@@ -63,6 +63,28 @@ export function decodeAnalyticsShareToken(token: string): SharedAnalyticsPayload
   }
 }
 
+
+export function buildLegacyAnalyticsShareUrl(payload: SharedAnalyticsPayload) {
+  const token = encodeAnalyticsShareToken(payload);
+  return typeof window === 'undefined' ? `/share?data=${token}` : `${window.location.origin}/share?data=${token}`;
+}
+
+export async function createStoredAnalyticsShare(payload: SharedAnalyticsPayload): Promise<{ url: string; path: string; token: string; expiresAt?: string }> {
+  const response = await fetch('/api/share/reports', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ payload }),
+  });
+
+  if (!response.ok) {
+    throw new Error('No se pudo crear el enlace corto del reporte.');
+  }
+
+  const data = await response.json() as { url?: string; path?: string; token?: string; expiresAt?: string };
+  if (!data.url || !data.path || !data.token) throw new Error('La respuesta del enlace corto está incompleta.');
+  return { url: data.url, path: data.path, token: data.token, expiresAt: data.expiresAt };
+}
+
 function downloadBlob(filename: string, blob: Blob) {
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement('a');
