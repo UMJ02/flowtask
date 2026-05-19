@@ -17,6 +17,7 @@ const allowedVersions = [
   "58.28.17.1-unified-data-qa-inline-status-type-hotfix",
   "58.28.19-ux-copy-empty-states-final",
   "58.28.20-mobile-responsive-final-pass",
+  "58.28.21-supabase-rls-client-readiness-final",
 ];
 
 if (!allowedVersions.includes(pkg.version)) failures.push(`Unexpected package version: ${pkg.version}`);

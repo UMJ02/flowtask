@@ -443,3 +443,13 @@ Security patch focused on clearing `npm audit` without `--force`.
 ## v58.28.19 Stage Hotfix
 
 Restores `APP_RELEASE_STAGE = "production"` in `src/lib/release/version.ts` so Workspace doctor and Vercel readiness checks remain aligned.
+
+## v58.28.21 — Supabase / RLS / Client Readiness Final
+
+Esta versión agrega el checklist final de cliente para Supabase y RLS antes de la release candidate:
+
+- `npm run workspace:supabase-client-readiness:ready`
+- `docs/sql/V58_28_21_SUPABASE_RLS_CLIENT_READINESS.sql`
+- `docs/qa/FLOWTASK_V58_28_21_SUPABASE_RLS_CLIENT_READINESS_QA.md`
+
+Ejecutar el SQL en Supabase antes de aprobar `v58.29.0`.

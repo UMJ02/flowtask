@@ -16,10 +16,12 @@ const text = files.map((file) => fs.readFileSync(file, "utf8")).join("\n");
 const allowedVersions = [
   "58.28.19-ux-copy-empty-states-final",
   "58.28.20-mobile-responsive-final-pass",
+  "58.28.21-supabase-rls-client-readiness-final",
 ];
 const allowedVerifyTargets = [
   "npm run verify:v58.28.19",
   "npm run verify:v58.28.20",
+  "npm run verify:v58.28.21",
 ];
 
 if (!allowedVersions.includes(pkg.version)) failures.push(`Unexpected package version: ${pkg.version}`);

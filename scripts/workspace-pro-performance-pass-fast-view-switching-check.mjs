@@ -18,6 +18,7 @@ const allowedVersions = [
   "58.28.17.1-unified-data-qa-inline-status-type-hotfix",
   "58.28.19-ux-copy-empty-states-final",
   "58.28.20-mobile-responsive-final-pass",
+  "58.28.21-supabase-rls-client-readiness-final",
   "58.28.10-workspace-pro-no-motion-board-portal-home-colors",
   "58.28.11-workspace-pro-nav-shape-home-alignment",
   "58.28.12-workspace-pro-home-hero-solid-card-colors",
@@ -29,6 +30,7 @@ const allowedVersions = [
   "58.28.17.1-unified-data-qa-inline-status-type-hotfix",
   "58.28.19-ux-copy-empty-states-final",
   "58.28.20-mobile-responsive-final-pass",
+  "58.28.21-supabase-rls-client-readiness-final",
 ];
 const failures = [];
 if (!allowedVersions.includes(pkg.version)) failures.push(`Unexpected package version: ${pkg.version}`);
