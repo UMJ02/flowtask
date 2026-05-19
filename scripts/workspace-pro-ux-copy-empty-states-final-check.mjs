@@ -13,10 +13,17 @@ const files = [
   "src/components/workspace-system/views/timeline-view.tsx"
 ];
 const text = files.map((file) => fs.readFileSync(file, "utf8")).join("\n");
-const expectedVersion = "58.28.19-ux-copy-empty-states-final";
+const allowedVersions = [
+  "58.28.19-ux-copy-empty-states-final",
+  "58.28.20-mobile-responsive-final-pass",
+];
+const allowedVerifyTargets = [
+  "npm run verify:v58.28.19",
+  "npm run verify:v58.28.20",
+];
 
-if (pkg.version !== expectedVersion) failures.push(`Unexpected package version: ${pkg.version}`);
-if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.28.19") failures.push("verify:current must target verify:v58.28.19");
+if (!allowedVersions.includes(pkg.version)) failures.push(`Unexpected package version: ${pkg.version}`);
+if (!allowedVerifyTargets.includes(pkg.scripts?.["verify:current"])) failures.push("verify:current must target an active v58.28.19+ verify script");
 if (!pkg.scripts?.["build:preflight"]?.includes("workspace:final-copy:ready")) failures.push("build:preflight must include workspace:final-copy:ready");
 const versionText = fs.readFileSync("src/lib/release/version.ts", "utf8");
 if (!versionText.includes("APP_RELEASE_STAGE")) failures.push("version.ts must export APP_RELEASE_STAGE");

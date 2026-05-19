@@ -8516,3 +8516,266 @@
     padding-right: 0 !important;
   }
 }
+
+
+/* v58.28.20 — Mobile / Responsive Final Pass */
+.ws-pro-mobile-safe-area {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.ws-pro-shell {
+  min-width: 0;
+}
+.ws-pro-content {
+  -webkit-overflow-scrolling: touch;
+  scroll-padding-bottom: 5.5rem;
+}
+.ws-pro-header {
+  position: relative;
+  z-index: 25;
+}
+.ws-pro-tabs-strip,
+.ws-pro-filter-bar {
+  max-width: 100%;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+.ws-pro-tabs-strip .ws-pro-tab,
+.ws-pro-tabs-strip .ws-pro-tab-active,
+.ws-pro-control-button,
+.ws-pro-primary-button,
+.ws-pro-secondary-button,
+.ws-pro-icon-button,
+.ws-pro-editor-inline-action,
+.ws-pro-mini-action,
+.ws-pro-table-action {
+  touch-action: manipulation;
+}
+.ws-pro-table-action,
+.ws-pro-editor-inline-action,
+.ws-pro-mini-action,
+.ws-pro-action-panel-button,
+.ws-pro-action-pill {
+  min-height: 2.5rem;
+}
+.ws-pro-table-action,
+.ws-pro-editor-inline-action,
+.ws-pro-mini-action {
+  white-space: nowrap;
+}
+.ws-pro-task-editor-inline-row {
+  align-items: center;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: .15rem;
+}
+.ws-pro-inline-select,
+.ws-pro-inline-date {
+  min-height: 2.5rem;
+}
+.ws-pro-board-grid {
+  align-items: start;
+  overscroll-behavior-x: contain;
+}
+.ws-pro-board-column {
+  min-height: min(60vh, 44rem);
+}
+.ws-pro-board-card {
+  overflow: visible;
+}
+.ws-pro-board-action-popover {
+  overscroll-behavior: contain;
+}
+.ws-pro-sheet,
+.ws-pro-inspector,
+.ws-pro-mobile-sidebar-panel {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.ws-pro-sheet .ws-pro-form-input,
+.ws-pro-sheet input,
+.ws-pro-sheet select,
+.ws-pro-sheet textarea {
+  font-size: 16px;
+}
+@media (max-width: 1180px) {
+  .ws-pro-header > div:nth-of-type(2) {
+    gap: .85rem;
+  }
+  .ws-pro-header .ws-pro-primary-button,
+  .ws-pro-header .ws-pro-secondary-button {
+    min-height: 2.45rem;
+  }
+  .ws-pro-filter-bar {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+  }
+  .ws-pro-view-frame {
+    max-width: 100% !important;
+  }
+}
+@media (max-width: 960px) {
+  .ws-pro-shell {
+    height: 100dvh;
+    min-height: 100dvh;
+  }
+  .ws-pro-header {
+    padding: .75rem 1rem !important;
+  }
+  .ws-pro-content {
+    padding: 1rem !important;
+  }
+  .ws-pro-tabs-strip {
+    display: flex !important;
+    width: 100%;
+    overflow-x: auto;
+    border-radius: 1.15rem !important;
+    padding: .28rem !important;
+  }
+  .ws-pro-tabs-strip .ws-pro-tab,
+  .ws-pro-tabs-strip .ws-pro-tab-active {
+    flex: 0 0 auto;
+    min-height: 2.25rem !important;
+    padding-inline: .82rem !important;
+  }
+  .ws-pro-filter-bar {
+    width: 100%;
+    gap: .45rem;
+    padding: .4rem;
+    border-radius: 1rem;
+  }
+  .ws-pro-control-select,
+  .ws-pro-control-button {
+    flex: 0 0 auto;
+  }
+  .ws-pro-home-summary {
+    border-radius: 1.25rem !important;
+  }
+  .ws-pro-clean-card {
+    border-radius: 1.15rem !important;
+    padding: .95rem !important;
+  }
+  .ws-pro-board-grid {
+    display: grid !important;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(18rem, 82vw);
+    grid-template-columns: none !important;
+    overflow-x: auto;
+    padding-bottom: .75rem;
+    scroll-snap-type: x proximity;
+  }
+  .ws-pro-board-column {
+    min-width: 0;
+    scroll-snap-align: start;
+    max-height: none;
+  }
+  .ws-pro-task-editor-inline-row {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+  }
+}
+@media (max-width: 720px) {
+  .ws-pro-header h1 {
+    font-size: 1.1rem !important;
+    line-height: 1.2 !important;
+  }
+  .ws-pro-header p {
+    font-size: .78rem !important;
+  }
+  .ws-pro-header .relative.flex.shrink-0 {
+    width: 100%;
+  }
+  .ws-pro-header .ws-pro-primary-button,
+  .ws-pro-header .ws-pro-secondary-button {
+    flex: 1 1 calc(50% - .25rem);
+    justify-content: center;
+  }
+  .ws-pro-header .ws-pro-icon-button {
+    flex: 0 0 auto;
+  }
+  .ws-pro-search-trigger {
+    min-width: 0;
+  }
+  .ws-pro-sheet {
+    inset: auto .5rem .5rem .5rem !important;
+    top: auto !important;
+    right: .5rem !important;
+    left: .5rem !important;
+    width: auto !important;
+    max-height: min(88dvh, 42rem) !important;
+    border-radius: 1.25rem 1.25rem 1rem 1rem !important;
+  }
+  .ws-pro-inspector {
+    inset: auto .5rem .5rem .5rem !important;
+    top: auto !important;
+    right: .5rem !important;
+    left: .5rem !important;
+    width: auto !important;
+    height: auto !important;
+    max-height: min(86dvh, 40rem) !important;
+    border-radius: 1.25rem 1.25rem 1rem 1rem !important;
+  }
+  .ws-pro-mobile-sidebar-panel {
+    width: min(88vw, 20rem) !important;
+  }
+  .ws-pro-board-action-popover {
+    top: auto !important;
+    right: .5rem !important;
+    bottom: .5rem !important;
+    left: .5rem !important;
+    width: auto !important;
+    max-height: min(82dvh, 38rem) !important;
+    border-radius: 1.25rem !important;
+  }
+  .ws-pro-action-grid,
+  .ws-pro-action-grid-compact {
+    grid-template-columns: 1fr 1fr !important;
+  }
+  .ws-pro-board-column {
+    min-height: min(70dvh, 42rem);
+  }
+  .ws-pro-clean-card header {
+    gap: .7rem;
+    align-items: flex-start;
+  }
+  .ws-pro-clean-card header .rounded-full {
+    flex-shrink: 0;
+  }
+}
+@media (max-width: 520px) {
+  .ws-pro-content {
+    padding: .75rem !important;
+  }
+  .ws-pro-home-summary {
+    padding: 1rem !important;
+  }
+  .ws-pro-home-summary h2 {
+    font-size: 1.55rem !important;
+    line-height: 1.05 !important;
+  }
+  .ws-pro-home-summary > .flex {
+    width: 100%;
+    gap: .45rem !important;
+  }
+  .ws-pro-home-summary > .flex > * {
+    flex: 1 1 calc(50% - .35rem);
+    justify-content: center;
+  }
+  .ws-pro-board-grid {
+    grid-auto-columns: minmax(17rem, 88vw);
+  }
+  .ws-pro-column-toggle {
+    min-height: 2.25rem;
+  }
+  .ws-pro-action-grid,
+  .ws-pro-action-grid-compact {
+    grid-template-columns: 1fr !important;
+  }
+  .ws-pro-task-editor-inline-row > * {
+    flex: 0 0 auto;
+  }
+  .ws-pro-inline-select {
+    min-width: 9.5rem;
+  }
+  .ws-pro-inline-date {
+    min-width: 9.25rem;
+  }
+}

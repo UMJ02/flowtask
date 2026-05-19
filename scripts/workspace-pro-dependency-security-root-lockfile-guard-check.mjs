@@ -5,11 +5,20 @@ const pkg = JSON.parse(fs.readFileSync("package.json", "utf8"));
 const lockText = fs.readFileSync("package-lock.json", "utf8");
 const versionText = fs.readFileSync("src/lib/release/version.ts", "utf8");
 const nextConfig = fs.readFileSync("next.config.ts", "utf8");
-const expectedVersion = "58.28.19-ux-copy-empty-states-final";
+const allowedVersions = [
+  "58.28.18.2-dependency-security-next-root-lockfile-guard",
+  "58.28.19-ux-copy-empty-states-final",
+  "58.28.20-mobile-responsive-final-pass",
+];
+const allowedVerifyTargets = [
+  "npm run verify:v58.28.18.2",
+  "npm run verify:v58.28.19",
+  "npm run verify:v58.28.20",
+];
 
-if (pkg.version !== expectedVersion) failures.push(`Unexpected package version: ${pkg.version}`);
-if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.28.19") failures.push("verify:current must target verify:v58.28.18.2");
-if (!versionText.includes(expectedVersion)) failures.push("version.ts must contain the v58.28.18.2 slug");
+if (!allowedVersions.includes(pkg.version)) failures.push(`Unexpected package version: ${pkg.version}`);
+if (!allowedVerifyTargets.includes(pkg.scripts?.["verify:current"])) failures.push("verify:current must target an active v58.28.18.2+ verify script");
+if (!allowedVersions.some((version) => versionText.includes(version))) failures.push("version.ts must contain an allowed dependency security compatible slug");
 if (lockText.includes("packages.applied-caas") || lockText.includes("internal.api.openai.org")) failures.push("package-lock.json still contains internal registry URLs");
 if (!lockText.includes("https://registry.npmjs.org/next/-/next-15.5.18.tgz")) failures.push("package-lock.json must resolve next 15.5.18 from registry.npmjs.org");
 if (!lockText.includes("https://registry.npmjs.org/ws/-/ws-8.20.1.tgz")) failures.push("package-lock.json must resolve ws 8.20.1 from registry.npmjs.org");

@@ -318,10 +318,10 @@ export function WorkspaceProPage(props: WorkspaceProPageProps) {
           <button
             type="button"
             aria-label="Cerrar navegación"
-            className="absolute inset-0 bg-slate-950/30 backdrop-blur-sm"
+            className="ws-pro-mobile-sidebar-backdrop absolute inset-0 bg-slate-950/30 backdrop-blur-sm"
             onClick={() => setMobileSidebarOpen(false)}
           />
-          <div className="absolute inset-y-0 left-0 w-[min(88vw,304px)] border-r border-slate-200 bg-white shadow-2xl">
+          <div className="ws-pro-mobile-sidebar-panel absolute inset-y-0 left-0 w-[min(88vw,304px)] border-r border-slate-200 bg-white shadow-2xl">
             <WorkspaceProSidebar
               context={context}
               spaces={spaces}
@@ -2912,11 +2912,11 @@ function WorkspaceProSheet({
       <button
         type="button"
         aria-label="Cerrar panel"
-        className="absolute inset-0 bg-slate-950/20 backdrop-blur-[2px]"
+        className="ws-pro-sheet-backdrop absolute inset-0 bg-slate-950/20 backdrop-blur-[2px]"
         onClick={onClose}
       />
       <section
-        className={`absolute right-3 top-3 flex max-h-[calc(100vh-1.5rem)] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl ${wide ? "w-[min(1120px,calc(100vw-1.5rem))]" : "w-[min(560px,calc(100vw-1.5rem))]"}`}
+        className={`ws-pro-sheet absolute right-3 top-3 flex max-h-[calc(100vh-1.5rem)] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl ${wide ? "w-[min(1120px,calc(100vw-1.5rem))]" : "w-[min(560px,calc(100vw-1.5rem))]"}`}
       >
         <header className="shrink-0 flex items-center justify-between border-b border-slate-100 bg-white px-4 py-3">
           <h2 className="text-sm font-semibold text-slate-950">{title}</h2>
@@ -2948,10 +2948,10 @@ function WorkspaceProInspector({
       <button
         type="button"
         aria-label="Cerrar inspector"
-        className="absolute inset-0 bg-slate-950/20 backdrop-blur-[2px]"
+        className="ws-pro-inspector-backdrop absolute inset-0 bg-slate-950/20 backdrop-blur-[2px]"
         onClick={onClose}
       />
-      <aside className="absolute right-3 top-3 h-[calc(100vh-1.5rem)] w-[min(360px,calc(100vw-1.5rem))] overflow-y-auto rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl ws-pro-hide-scrollbar">
+      <aside className="ws-pro-inspector absolute right-3 top-3 h-[calc(100vh-1.5rem)] w-[min(360px,calc(100vw-1.5rem))] overflow-y-auto rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl ws-pro-hide-scrollbar">
         <div className="mb-3 flex items-center justify-between">
           <h2 className="text-sm font-semibold text-slate-950">Inspector</h2>
           <button
