@@ -7,7 +7,7 @@ const detail = read("src/components/projects/project-detail-pro.tsx");
 const editor = read("src/components/projects/project-hero-inline-editor.tsx");
 const tasks = read("src/components/projects/project-inline-tasks.tsx");
 const failures = [];
-const expectedVersion = "58.28.21.1-classic-project-detail-ux-polish";
+const expectedVersion = "58.28.21.2-classic-project-edit-form-alignment";
 
 if (pkg.version !== expectedVersion) failures.push(`Unexpected package version: ${pkg.version}`);
 if (!versionText.includes(expectedVersion)) failures.push("release version not aligned");
@@ -15,7 +15,7 @@ if (!pkg.scripts?.["build:preflight"]?.includes("workspace:classic-project-ux:re
 for (const marker of ["Cambiar imagen", "Quitar", "image_url", "projects/${organizationId ?? user.id}/${project.id}"]) {
   if (!editor.includes(marker)) failures.push(`inline editor missing marker: ${marker}`);
 }
-for (const marker of ["ft-project-editor-main-grid", "ft-project-editor-meta-grid", "Proyecto colaborativo"]) {
+for (const marker of ["ft-project-edit-shell", "ft-project-edit-hero-grid", "ft-project-edit-meta-grid", "Proyecto colaborativo"]) {
   if (!editor.includes(marker)) failures.push(`inline editor layout missing marker: ${marker}`);
 }
 if (detail.includes("Acción rápida")) failures.push("old quick action copy should be removed from classic project detail");
@@ -27,4 +27,4 @@ if (failures.length) {
   for (const failure of failures) console.error(`- ${failure}`);
   process.exit(1);
 }
-console.log("[workspace:classic-project-ux:ready] OK — classic project view/edit layout, image controls and task row UX aligned.");
+console.log("[workspace:classic-project-ux:ready] OK — classic project edit form alignment, image controls and task row UX aligned.");

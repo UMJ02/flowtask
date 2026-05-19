@@ -38,7 +38,7 @@ const expectedVersions = [
   "58.28.19-ux-copy-empty-states-final",
   "58.28.20-mobile-responsive-final-pass",
   "58.28.21-supabase-rls-client-readiness-final",
-  "58.28.21.1-classic-project-detail-ux-polish",
+  "58.28.21.2-classic-project-edit-form-alignment",
   "58.28.10-workspace-pro-no-motion-board-portal-home-colors",
   "58.28.11-workspace-pro-nav-shape-home-alignment",
   "58.28.12-workspace-pro-home-hero-solid-card-colors",
@@ -51,7 +51,7 @@ const expectedVersions = [
   "58.28.19-ux-copy-empty-states-final",
   "58.28.20-mobile-responsive-final-pass",
   "58.28.21-supabase-rls-client-readiness-final",
-  "58.28.21.1-classic-project-detail-ux-polish",
+  "58.28.21.2-classic-project-edit-form-alignment",
 ];
 const pkg = JSON.parse(read("package.json") || "{}");
 if (!expectedVersions.includes(pkg.version)) failures.push(`Unexpected package version: ${pkg.version}`);

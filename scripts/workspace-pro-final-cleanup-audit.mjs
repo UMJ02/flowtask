@@ -21,12 +21,12 @@ if (!["58.28.13-workspace-pro-final-cleanup-audit-safe-dead-surface-removal", "5
   "58.28.17-classic-pro-unified-data-qa-final-user-flow",
   "58.28.17.1-unified-data-qa-inline-status-type-hotfix",
   "58.28.19-ux-copy-empty-states-final", "58.28.20-mobile-responsive-final-pass", "58.28.21-supabase-rls-client-readiness-final",
-  "58.28.21.1-classic-project-detail-ux-polish"].includes(pkg.version)) failures.push("package version is not an allowed v58.28 cleanup/runtime version");
+  "58.28.21.2-classic-project-edit-form-alignment"].includes(pkg.version)) failures.push("package version is not an allowed v58.28 cleanup/runtime version");
 if (!["npm run verify:v58.28.13", "npm run verify:v58.28.15", "npm run verify:v58.28.16", "npm run verify:v58.28.16.1", "npm run verify:v58.28.16.2", "npm run verify:v58.28.17",
   "npm run verify:v58.28.17.1",
   "npm run verify:v58.28.19", "npm run verify:v58.28.20", "npm run verify:v58.28.21",
-  "npm run verify:v58.28.21.1", "npm run verify:v58.28.21",
-  "npm run verify:v58.28.21.1"].includes(pkg.scripts?.["verify:current"])) failures.push("verify:current is not an allowed v58.28 cleanup/runtime verify target");
+  "npm run verify:v58.28.21.2", "npm run verify:v58.28.21",
+  "npm run verify:v58.28.21.2"].includes(pkg.scripts?.["verify:current"])) failures.push("verify:current is not an allowed v58.28 cleanup/runtime verify target");
 if (!pkg.scripts?.["build:preflight"]?.includes("workspace:final-cleanup:ready")) failures.push("build:preflight does not include final cleanup check");
 if (scripts.length > 84) failures.push(`Too many active scripts remain: ${scripts.length}`);
 const legacyVerifyScripts = scripts.filter((name) => /^verify:v(54|58\.(0|1|2[0-7]))/.test(name));

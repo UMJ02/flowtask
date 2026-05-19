@@ -13,12 +13,12 @@ if (pkg.version !== "58.28.15-workspace-pro-deep-component-extraction-lazy-view-
   "58.28.17-classic-pro-unified-data-qa-final-user-flow",
   "58.28.17.1-unified-data-qa-inline-status-type-hotfix",
   "58.28.19-ux-copy-empty-states-final", "58.28.20-mobile-responsive-final-pass", "58.28.21-supabase-rls-client-readiness-final",
-  "58.28.21.1-classic-project-detail-ux-polish") failures.push("Unexpected package version");
+  "58.28.21.2-classic-project-edit-form-alignment") failures.push("Unexpected package version");
 if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.28.15", "npm run verify:v58.28.16", "npm run verify:v58.28.16.1", "npm run verify:v58.28.16.2", "npm run verify:v58.28.17",
   "npm run verify:v58.28.17.1",
   "npm run verify:v58.28.19", "npm run verify:v58.28.20", "npm run verify:v58.28.21",
-  "npm run verify:v58.28.21.1", "npm run verify:v58.28.21",
-  "npm run verify:v58.28.21.1") failures.push("verify:current must target verify:v58.28.13");
+  "npm run verify:v58.28.21.2", "npm run verify:v58.28.21",
+  "npm run verify:v58.28.21.2") failures.push("verify:current must target verify:v58.28.13");
 if (!version.includes("58.28.15-workspace-pro-deep-component-extraction-lazy-view-loading",
   "58.28.16-task-data-sync-status-source-of-truth",
   "58.28.16.1-task-data-sync-cli-hotfix",
@@ -26,7 +26,7 @@ if (!version.includes("58.28.15-workspace-pro-deep-component-extraction-lazy-vie
   "58.28.17-classic-pro-unified-data-qa-final-user-flow",
   "58.28.17.1-unified-data-qa-inline-status-type-hotfix",
   "58.28.19-ux-copy-empty-states-final", "58.28.20-mobile-responsive-final-pass", "58.28.21-supabase-rls-client-readiness-final",
-  "58.28.21.1-classic-project-detail-ux-polish")) failures.push("version.ts must contain v58.28.13 slug");
+  "58.28.21.2-classic-project-edit-form-alignment")) failures.push("version.ts must contain v58.28.13 slug");
 if (!pkg.scripts?.["workspace:final-cleanup:ready"]) failures.push("workspace:final-cleanup:ready script missing");
 if (!pkg.scripts?.["build:preflight"]?.includes("workspace:final-cleanup:ready")) failures.push("build:preflight must include workspace:final-cleanup:ready");
 if (Object.keys(pkg.scripts || {}).length > 80) failures.push("package.json still exposes too many active scripts for client-final build");

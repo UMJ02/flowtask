@@ -405,10 +405,10 @@ export function ProjectHeroInlineEditor({
   const cover = imagePreview || "/imagenes/organization-team-hero.png";
 
   return (
-    <section className="relative overflow-hidden rounded-[24px] border border-[#BBF7D0] bg-white p-4 sm:p-5">
+    <section className="ft-project-edit-shell">
       <div className="pointer-events-none absolute right-0 top-0 h-full w-1/2 bg-gradient-to-l from-[#ECFDF5] via-[#EFF6FF]/40 to-transparent" />
-      <div className="relative space-y-5">
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+      <div className="relative space-y-4">
+        <div className="ft-project-edit-topbar">
           <div className="flex flex-wrap gap-2">
             <span className="rounded-full bg-[#ECFDF5] px-3 py-1 text-xs font-semibold text-[#087A4B] ring-1 ring-[#BBF7D0]">
               Editando proyecto
@@ -417,7 +417,7 @@ export function ProjectHeroInlineEditor({
               Sin salir de esta vista
             </span>
           </div>
-          <div className="flex flex-wrap gap-3">
+          <div className="ft-project-edit-actions">
             <Button
               type="button"
               variant="secondary"
@@ -440,8 +440,8 @@ export function ProjectHeroInlineEditor({
           </div>
         </div>
 
-        <div className="grid gap-5 lg:ft-project-editor-main-grid lg:items-start">
-          <div className="relative h-[190px] overflow-hidden rounded-[20px] bg-slate-100">
+        <div className="ft-project-edit-hero-grid">
+          <div className="ft-project-edit-cover">
             <Image
               src={cover}
               alt={project.title || "Proyecto FlowTask"}
@@ -452,7 +452,7 @@ export function ProjectHeroInlineEditor({
               unoptimized={Boolean(imagePreview)}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950/35 via-slate-950/5 to-transparent" />
-            <div className="absolute inset-x-3 bottom-3 flex flex-wrap gap-2">
+            <div className="ft-project-image-controls">
               <label className="inline-flex h-9 cursor-pointer items-center gap-2 rounded-[14px] bg-white/95 px-3 text-xs font-bold text-[#0F172A] shadow-sm ring-1 ring-white/80">
                 <ImagePlus className="h-4 w-4" /> Cambiar imagen
                 <input
@@ -474,11 +474,11 @@ export function ProjectHeroInlineEditor({
             </div>
           </div>
 
-          <div className="min-w-0 space-y-4">
+          <div className="ft-project-edit-copy">
             <Input
               value={form.title}
               onChange={(event) => setField("title", event.target.value)}
-              className="min-h-[54px] rounded-[18px] ft-border bg-white px-4 text-[22px] font-semibold tracking-[-0.035em] ft-text-main focus:border-[#16C784] focus:ring-4 focus:ring-emerald-500/10 sm:text-[26px]"
+              className="ft-project-edit-title"
               placeholder="Nombre del proyecto"
             />
             <p className="text-sm font-semibold ft-text-muted">
@@ -488,14 +488,14 @@ export function ProjectHeroInlineEditor({
             <Textarea
               value={form.description}
               onChange={(event) => setField("description", event.target.value)}
-              className="min-h-[124px] rounded-[18px] ft-border bg-white text-base leading-7 ft-text-muted focus:border-[#16C784] focus:ring-4 focus:ring-emerald-500/10"
+              className="ft-project-edit-description"
               placeholder="Descripción del proyecto"
             />
           </div>
         </div>
 
-        <div className="grid gap-3 lg:ft-project-editor-meta-grid">
-          <label className="space-y-2 text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
+        <div className="ft-project-edit-meta-grid">
+          <label className="ft-project-edit-field">
             <span className="flex items-center gap-2">
               <CheckCircle2 className="h-4 w-4" />
               Estado
@@ -512,7 +512,7 @@ export function ProjectHeroInlineEditor({
               ))}
             </Select>
           </label>
-          <label className="space-y-2 text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
+          <label className="ft-project-edit-field">
             <span className="flex items-center gap-2">
               <FolderKanban className="h-4 w-4" />
               Departamento
@@ -530,7 +530,7 @@ export function ProjectHeroInlineEditor({
               ))}
             </Select>
           </label>
-          <label className="space-y-2 text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
+          <label className="ft-project-edit-field">
             <span className="flex items-center gap-2">
               <Tag className="h-4 w-4" />
               Registro
@@ -547,7 +547,7 @@ export function ProjectHeroInlineEditor({
               ))}
             </datalist>
           </label>
-          <label className="space-y-2 text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
+          <label className="ft-project-edit-field">
             <span className="flex items-center gap-2">
               <Globe2 className="h-4 w-4" />
               País
@@ -565,7 +565,7 @@ export function ProjectHeroInlineEditor({
               ))}
             </Select>
           </label>
-          <label className="space-y-2 text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
+          <label className="ft-project-edit-field">
             <span className="flex items-center gap-2">
               <CalendarDays className="h-4 w-4" />
               Fecha límite
@@ -577,7 +577,7 @@ export function ProjectHeroInlineEditor({
               className="h-11 rounded-2xl ft-border bg-white font-semibold"
             />
           </label>
-          <label className="flex min-h-[44px] items-center justify-between rounded-2xl border border-[#BBF7D0] bg-[#ECFDF5] px-4 py-3 text-sm font-semibold ft-text-main">
+          <label className="ft-project-edit-toggle">
             <span className="flex items-center gap-2">
               <Link2 className="h-4 w-4" />
               Proyecto colaborativo
@@ -593,7 +593,7 @@ export function ProjectHeroInlineEditor({
           </label>
         </div>
 
-        <div className="rounded-[18px] bg-white/70 p-3 ring-1 ring-emerald-100">
+        <div className="ft-project-edit-progress">
           <div className="mb-2 flex items-center justify-between text-sm">
             <span className="font-semibold ft-text-muted">
               Progreso general

@@ -20,11 +20,11 @@ if (!["58.28.16.1-task-data-sync-cli-hotfix", "58.28.16.2-classic-pro-status-par
   "58.28.17-classic-pro-unified-data-qa-final-user-flow",
   "58.28.17.1-unified-data-qa-inline-status-type-hotfix",
   "58.28.19-ux-copy-empty-states-final", "58.28.20-mobile-responsive-final-pass", "58.28.21-supabase-rls-client-readiness-final",
-  "58.28.21.1-classic-project-detail-ux-polish"].includes(pkg.version)) failures.push("package version is not an allowed v58.28.x task sync release");
+  "58.28.21.2-classic-project-edit-form-alignment"].includes(pkg.version)) failures.push("package version is not an allowed v58.28.x task sync release");
 if (!["npm run verify:v58.28.16.1", "npm run verify:v58.28.16.2", "npm run verify:v58.28.17", "npm run verify:v58.28.17.1",
   "npm run verify:v58.28.19", "npm run verify:v58.28.20", "npm run verify:v58.28.21",
-  "npm run verify:v58.28.21.1", "npm run verify:v58.28.21",
-  "npm run verify:v58.28.21.1"].includes(pkg.scripts?.["verify:current"])) failures.push("verify:current is not an allowed v58.28.x task sync target");
+  "npm run verify:v58.28.21.2", "npm run verify:v58.28.21",
+  "npm run verify:v58.28.21.2"].includes(pkg.scripts?.["verify:current"])) failures.push("verify:current is not an allowed v58.28.x task sync target");
 for (const status of statuses) {
   if (!source.taskTypes.includes(status)) failures.push(`src/types/task.ts does not allow ${status}`);
   if (!source.classicBoard.includes(`value: "${status}"`)) failures.push(`classic kanban does not expose ${status}`);

@@ -8791,3 +8791,197 @@
   .ft-project-inline-edit-grid { grid-template-columns: minmax(220px, 1.35fr) 150px 150px minmax(180px, 0.85fr) 96px; }
   .ft-project-inline-view-grid { grid-template-columns: 32px minmax(220px, 1.45fr) 120px 150px 130px 118px; }
 }
+
+/* v58.28.21.2 — Classic Project Edit Form Alignment */
+.ft-project-edit-shell {
+  position: relative;
+  overflow: hidden;
+  border-radius: 28px;
+  border: 1px solid rgba(187, 247, 208, 0.95);
+  background: linear-gradient(115deg, #ffffff 0%, #ffffff 58%, #ecfdf5 100%);
+  padding: 1.25rem;
+  box-shadow: 0 18px 55px rgba(15, 23, 42, 0.06);
+}
+.ft-project-edit-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.ft-project-edit-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: .75rem;
+}
+.ft-project-edit-hero-grid {
+  display: grid;
+  grid-template-columns: minmax(260px, 380px) minmax(0, 1fr);
+  gap: 2rem;
+  align-items: stretch;
+}
+.ft-project-edit-cover {
+  position: relative;
+  min-height: 260px;
+  overflow: hidden;
+  border-radius: 22px;
+  background: #f1f5f9;
+  box-shadow: inset 0 0 0 1px rgba(226, 232, 240, 0.8);
+}
+.ft-project-image-controls {
+  position: absolute;
+  left: 1rem;
+  right: 1rem;
+  bottom: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: .65rem;
+}
+.ft-project-edit-copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1rem;
+}
+.ft-project-edit-title {
+  min-height: 56px;
+  border-radius: 18px;
+  border: 1px solid #e2e8f0;
+  background: rgba(255, 255, 255, 0.92);
+  padding: 0 1rem;
+  color: #0f172a;
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  box-shadow: none;
+}
+.ft-project-edit-description {
+  min-height: 136px;
+  border-radius: 18px;
+  border: 1px solid #e2e8f0;
+  background: rgba(255, 255, 255, 0.92);
+  color: #334155;
+  font-size: 1rem;
+  font-weight: 650;
+  line-height: 1.7;
+}
+.ft-project-edit-title:focus,
+.ft-project-edit-description:focus {
+  border-color: #16c784;
+  box-shadow: 0 0 0 4px rgba(22, 199, 132, 0.12);
+}
+.ft-project-edit-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.035);
+}
+.ft-project-edit-field,
+.ft-project-edit-toggle {
+  min-width: 0;
+  padding: 1rem 1.15rem;
+  border-right: 1px solid #e2e8f0;
+  border-bottom: 1px solid #e2e8f0;
+  color: #64748b;
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+.ft-project-edit-field:nth-child(3n),
+.ft-project-edit-toggle:nth-child(3n) {
+  border-right: 0;
+}
+.ft-project-edit-field:nth-last-child(-n+3),
+.ft-project-edit-toggle:nth-last-child(-n+3) {
+  border-bottom: 0;
+}
+.ft-project-edit-field > span,
+.ft-project-edit-toggle > span {
+  margin-bottom: .55rem;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+.ft-project-edit-field select,
+.ft-project-edit-field input {
+  height: 44px;
+  width: 100%;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  padding-left: 0 !important;
+  padding-right: .25rem !important;
+  color: #0f172a !important;
+  font-size: .97rem !important;
+  font-weight: 800 !important;
+  letter-spacing: normal !important;
+  box-shadow: none !important;
+}
+.ft-project-edit-toggle {
+  display: flex;
+  min-height: 76px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border-radius: 0;
+  background: rgba(236, 253, 245, 0.72);
+  color: #0f172a;
+  font-size: .98rem;
+  letter-spacing: normal;
+  text-transform: none;
+}
+.ft-project-edit-toggle > span {
+  margin-bottom: 0;
+}
+.ft-project-edit-progress {
+  border-radius: 20px;
+  border: 1px solid #e2e8f0;
+  background: rgba(255, 255, 255, 0.78);
+  padding: 1rem;
+}
+@media (max-width: 1023px) {
+  .ft-project-edit-topbar,
+  .ft-project-edit-actions {
+    align-items: stretch;
+    justify-content: flex-start;
+  }
+  .ft-project-edit-hero-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+  .ft-project-edit-cover {
+    min-height: 220px;
+  }
+  .ft-project-edit-meta-grid {
+    grid-template-columns: 1fr;
+  }
+  .ft-project-edit-field,
+  .ft-project-edit-toggle,
+  .ft-project-edit-field:nth-child(3n),
+  .ft-project-edit-toggle:nth-child(3n),
+  .ft-project-edit-field:nth-last-child(-n+3),
+  .ft-project-edit-toggle:nth-last-child(-n+3) {
+    border-right: 0;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  .ft-project-edit-meta-grid > :last-child {
+    border-bottom: 0 !important;
+  }
+}
+@media (max-width: 560px) {
+  .ft-project-edit-shell {
+    padding: .9rem;
+    border-radius: 22px;
+  }
+  .ft-project-edit-actions > * {
+    flex: 1 1 100%;
+  }
+  .ft-project-edit-title {
+    font-size: 1.05rem;
+  }
+}
