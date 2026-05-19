@@ -439,3 +439,7 @@ Security patch focused on clearing `npm audit` without `--force`.
 - `npm audit --audit-level=moderate` expected to return 0 vulnerabilities.
 - Added `workspace:dependency-security:ready`.
 - No UI, Supabase, RLS, migration or data-sync changes.
+
+## v58.28.19 Stage Hotfix
+
+Restores `APP_RELEASE_STAGE = "production"` in `src/lib/release/version.ts` so Workspace doctor and Vercel readiness checks remain aligned.

@@ -11,6 +11,7 @@ if (pkg.version !== expectedVersion) failures.push(`Unexpected package version: 
 if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.28.19") failures.push("verify:current must target verify:v58.28.19");
 if (!pkg.scripts?.["build:preflight"]?.includes("workspace:final-copy:ready")) failures.push("build:preflight must include workspace:final-copy:ready");
 if (!versionText.includes(expectedVersion)) failures.push("version.ts must contain v58.28.19 slug");
+if (!versionText.includes("APP_RELEASE_STAGE")) failures.push("version.ts must export APP_RELEASE_STAGE");
 if (!pageText.includes("Todavía no hay tareas")) failures.push("Workspace Pro tasks empty state must use final user copy");
 if (!pageText.includes("El board está vacío")) failures.push("Workspace Pro board empty state must use final user copy");
 if (!pageText.includes("Todo el trabajo")) failures.push("Reports scope copy must use Todo el trabajo");

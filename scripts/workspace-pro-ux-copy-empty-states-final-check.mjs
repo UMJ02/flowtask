@@ -18,6 +18,8 @@ const expectedVersion = "58.28.19-ux-copy-empty-states-final";
 if (pkg.version !== expectedVersion) failures.push(`Unexpected package version: ${pkg.version}`);
 if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.28.19") failures.push("verify:current must target verify:v58.28.19");
 if (!pkg.scripts?.["build:preflight"]?.includes("workspace:final-copy:ready")) failures.push("build:preflight must include workspace:final-copy:ready");
+const versionText = fs.readFileSync("src/lib/release/version.ts", "utf8");
+if (!versionText.includes("APP_RELEASE_STAGE")) failures.push("version.ts must export APP_RELEASE_STAGE");
 
 const requiredCopy = [
   "Todavía no hay tareas",
