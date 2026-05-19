@@ -6,10 +6,10 @@ const detail = readFileSync("src/components/projects/project-detail-pro.tsx", "u
 const editor = readFileSync("src/components/projects/project-hero-inline-editor.tsx", "utf8");
 const tasks = readFileSync("src/components/projects/project-inline-tasks.tsx", "utf8");
 const failures = [];
-const expectedVersion = "58.28.21.2-classic-project-edit-form-alignment";
+const expectedVersion = "58.28.21.3-classic-reports-data-integrity-checklist-progress-export";
 
 if (pkg.version !== expectedVersion) failures.push(`Unexpected package version: ${pkg.version}`);
-if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.28.21.2") failures.push("verify:current must target verify:v58.28.21.2");
+if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.28.21.3") failures.push("verify:current must target verify:v58.28.21.2");
 if (!pkg.scripts?.["build:preflight"]?.includes("workspace:classic-project-ux:ready")) failures.push("build:preflight must include workspace:classic-project-ux:ready");
 if (!versionText.includes(expectedVersion)) failures.push("version.ts must contain v58.28.21.1 slug");
 if (!versionText.includes("APP_RELEASE_STAGE")) failures.push("version.ts must export APP_RELEASE_STAGE");

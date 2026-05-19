@@ -17,13 +17,13 @@ const allowedVersions = [
   "58.28.19-ux-copy-empty-states-final",
   "58.28.20-mobile-responsive-final-pass",
   "58.28.21-supabase-rls-client-readiness-final",
-  "58.28.21.2-classic-project-edit-form-alignment",
+  "58.28.21.3-classic-reports-data-integrity-checklist-progress-export",
 ];
 const allowedVerifyTargets = [
   "npm run verify:v58.28.19",
   "npm run verify:v58.28.20",
   "npm run verify:v58.28.21",
-  "npm run verify:v58.28.21.2",
+  "npm run verify:v58.28.21.3",
 ];
 
 if (!allowedVersions.includes(pkg.version)) failures.push(`Unexpected package version: ${pkg.version}`);

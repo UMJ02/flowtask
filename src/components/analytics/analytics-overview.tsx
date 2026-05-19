@@ -435,7 +435,7 @@ function RecommendationsCard({ summary }: { summary: WorkspaceAnalyticsSummary }
         </div>
         <span className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-700"><Zap className="h-3.5 w-3.5" /> Datos reales</span>
       </div>
-      <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-5">
+      <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-6">
         {summary.recommendations.map((item) => (
           <div key={item} className="rounded-2xl border ft-border bg-[#F8FAFC] p-4 text-sm font-semibold leading-6 text-[#334155]">{item}</div>
         ))}
@@ -457,6 +457,7 @@ export function AnalyticsOverview({ summary, compact = false }: { summary: Works
     { label: 'Semana actual', value: String(summary.shareDigest.weekCount), helper: 'Sin estrella con fecha esta semana.', tone: 'blue', icon: ListChecks, points: sparkDue },
     { label: 'Mes actual', value: String(summary.shareDigest.monthCount), helper: 'Sin estrella dentro del mes actual.', tone: 'green', icon: CheckCircle2, points: sparkOperational },
     { label: 'En espera', value: String(real.waitingTasks), helper: 'Standby; no cuenta como vencido.', tone: 'amber', icon: Clock3, points: summary.timeSeries.map(() => real.waitingTasks) },
+    { label: 'Avance tareas', value: `${real.averageTaskProgress}%`, helper: `${real.tasksWithChecklist} con checklist real.`, tone: 'green', icon: CheckCircle2, points: summary.timeSeries.map(() => real.averageTaskProgress) },
     { label: 'Actividad documental', value: `${real.commentsCount}/${real.attachmentsCount}`, helper: 'Comentarios / adjuntos registrados.', tone: 'violet', icon: FolderKanban, points: sparkCreated },
   ];
 
@@ -465,7 +466,7 @@ export function AnalyticsOverview({ summary, compact = false }: { summary: Works
       <Card className="ft-analytics-panel">
         <h2 className="text-xl font-bold ft-text-main">Analytics</h2>
         <p className="mt-2 text-sm ft-text-muted">Lectura rápida del workspace con datos reales.</p>
-        <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+        <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-6">
           {kpis.map((item) => <KpiCard key={item.label} item={item} />)}
         </div>
       </Card>
@@ -504,7 +505,7 @@ export function AnalyticsOverview({ summary, compact = false }: { summary: Works
         </div>
       </section>
 
-      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-6">
         {kpis.map((item) => <KpiCard key={item.label} item={item} />)}
       </section>
 

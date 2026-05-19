@@ -29,7 +29,7 @@ const allowedVersions = [
   "58.28.19-ux-copy-empty-states-final",
   "58.28.20-mobile-responsive-final-pass",
   "58.28.21-supabase-rls-client-readiness-final",
-  "58.28.21.2-classic-project-edit-form-alignment",
+  "58.28.21.3-classic-reports-data-integrity-checklist-progress-export",
   "58.28.10-workspace-pro-no-motion-board-portal-home-colors",
   "58.28.11-workspace-pro-nav-shape-home-alignment",
   "58.28.12-workspace-pro-home-hero-solid-card-colors",
@@ -42,7 +42,7 @@ const allowedVersions = [
   "58.28.19-ux-copy-empty-states-final",
   "58.28.20-mobile-responsive-final-pass",
   "58.28.21-supabase-rls-client-readiness-final",
-  "58.28.21.2-classic-project-edit-form-alignment",
+  "58.28.21.3-classic-reports-data-integrity-checklist-progress-export",
 ];
 
 if (!allowedVersions.includes(pkg.version)) failures.push(`Unexpected package version: ${pkg.version}`);
@@ -54,8 +54,8 @@ if (!["npm run verify:v58.28.0", "npm run verify:v58.28.1", "npm run verify:v58.
   "npm run verify:v58.28.10", "npm run verify:v58.28.11", "npm run verify:v58.28.12", "npm run verify:v58.28.15", "npm run verify:v58.28.16", "npm run verify:v58.28.16.1", "npm run verify:v58.28.16.2", "npm run verify:v58.28.17",
   "npm run verify:v58.28.17.1",
   "npm run verify:v58.28.19", "npm run verify:v58.28.20", "npm run verify:v58.28.21",
-  "npm run verify:v58.28.21.2", "npm run verify:v58.28.21",
-  "npm run verify:v58.28.21.2"].includes(pkg.scripts?.["verify:current"])) failures.push("verify:current must target the active v58.28.x verify script");
+  "npm run verify:v58.28.21.3", "npm run verify:v58.28.21",
+  "npm run verify:v58.28.21.3"].includes(pkg.scripts?.["verify:current"])) failures.push("verify:current must target the active v58.28.x verify script");
 if (!String(pkg.scripts?.["build:preflight"] ?? "").includes("workspace:production-ux:ready")) failures.push("build:preflight must include workspace:production-ux:ready");
 
 const baseMarkers = [

@@ -7,7 +7,7 @@ const detail = read("src/components/projects/project-detail-pro.tsx");
 const editor = read("src/components/projects/project-hero-inline-editor.tsx");
 const tasks = read("src/components/projects/project-inline-tasks.tsx");
 const failures = [];
-const expectedVersion = "58.28.21.2-classic-project-edit-form-alignment";
+const expectedVersion = "58.28.21.3-classic-reports-data-integrity-checklist-progress-export";
 
 if (pkg.version !== expectedVersion) failures.push(`Unexpected package version: ${pkg.version}`);
 if (!versionText.includes(expectedVersion)) failures.push("release version not aligned");

@@ -1,6 +1,6 @@
 {
   "name": "flowtask",
-  "version": "58.28.21.2-classic-project-edit-form-alignment",
+  "version": "58.28.21.3-classic-reports-data-integrity-checklist-progress-export",
   "private": true,
   "scripts": {
     "dev": "node node_modules/next/dist/bin/next dev",
@@ -15,8 +15,8 @@
     "runtime:check": "node scripts/runtime-check.mjs",
     "prebuild": "npm run runtime:check",
     "vercel:build": "npm run clean && npm run build:preflight && node node_modules/next/dist/bin/next build",
-    "build:preflight": "npm run validate:node && npm run validate:env && npm run verify:current && npm run workspace:doctor && npm run workspace:production:ready && npm run workspace:real-env:ready && npm run workspace:performance:ready && npm run workspace:client-performance:ready && npm run workspace:design-reset:ready && npm run workspace:layout-cleanup:ready && npm run workspace:no-motion-board-portal:ready && npm run workspace:home-solid-cards:ready && npm run workspace:board-active-actions:ready && npm run workspace:board-pro:ready && npm run workspace:files-reports:ready && npm run runtime:check && npm run workspace:final-cleanup:ready && npm run workspace:component-split:ready && npm run workspace:deep-component:ready && npm run workspace:task-sync:ready && npm run workspace:unified-data-qa:ready && npm run workspace:dependency-security:ready && npm run workspace:final-copy:ready && npm run workspace:mobile-responsive:ready && npm run workspace:supabase-client-readiness:ready && npm run workspace:classic-project-ux:ready && npm run typecheck && npm run deploy:readiness && npm run board:stability && npm run client:readiness:check && npm run deploy:production:ready",
-    "verify:current": "npm run verify:v58.28.21.2",
+    "build:preflight": "npm run validate:node && npm run validate:env && npm run verify:current && npm run workspace:doctor && npm run workspace:production:ready && npm run workspace:real-env:ready && npm run workspace:performance:ready && npm run workspace:client-performance:ready && npm run workspace:design-reset:ready && npm run workspace:layout-cleanup:ready && npm run workspace:no-motion-board-portal:ready && npm run workspace:home-solid-cards:ready && npm run workspace:board-active-actions:ready && npm run workspace:board-pro:ready && npm run workspace:files-reports:ready && npm run runtime:check && npm run workspace:final-cleanup:ready && npm run workspace:component-split:ready && npm run workspace:deep-component:ready && npm run workspace:task-sync:ready && npm run workspace:unified-data-qa:ready && npm run workspace:dependency-security:ready && npm run workspace:final-copy:ready && npm run workspace:mobile-responsive:ready && npm run workspace:supabase-client-readiness:ready && npm run workspace:classic-project-ux:ready && npm run workspace:reports-data-integrity:ready && npm run typecheck && npm run deploy:readiness && npm run board:stability && npm run client:readiness:check && npm run deploy:production:ready",
+    "verify:current": "npm run verify:v58.28.21.3",
     "workspace:doctor": "node scripts/workspace-persistence-doctor.mjs",
     "workspace:production:ready": "node scripts/workspace-production-readiness-check.mjs",
     "workspace:real-env:ready": "node scripts/workspace-real-environment-hardening-check.mjs",
@@ -86,7 +86,9 @@
     "verify:v58.28.21": "node scripts/verify-v58.28.21.mjs",
     "workspace:supabase-client-readiness:ready": "node scripts/workspace-pro-supabase-rls-client-readiness-final-check.mjs",
     "verify:v58.28.21.2": "node scripts/verify-v58.28.21.2.mjs",
-    "workspace:classic-project-ux:ready": "node scripts/workspace-classic-project-detail-ux-polish-check.mjs"
+    "workspace:classic-project-ux:ready": "node scripts/workspace-classic-project-detail-ux-polish-check.mjs",
+    "verify:v58.28.21.3": "node scripts/verify-v58.28.21.3.mjs",
+    "workspace:reports-data-integrity:ready": "node scripts/workspace-classic-reports-data-integrity-check.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

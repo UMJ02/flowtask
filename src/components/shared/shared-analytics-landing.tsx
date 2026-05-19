@@ -6,7 +6,7 @@ import { CheckCircle2, ClipboardCheck, Clock3, Download, Home, Printer, Share2, 
 import { Button } from '@/components/ui/button';
 import { decodeAnalyticsShareToken, downloadAnalyticsCsv, getSharedReportTasks } from '@/lib/share/analytics-share';
 
-type StatusFilter = 'all' | 'En proceso' | 'En espera' | 'Concluido';
+type StatusFilter = 'all' | 'Pendiente' | 'En curso' | 'Producción' | 'En espera' | 'Revisión' | 'Concluido';
 const PAGE_SIZE = 15;
 
 export function SharedAnalyticsLanding({ token, autoPrint = false }: { token: string; autoPrint?: boolean }) {
@@ -94,10 +94,10 @@ export function SharedAnalyticsLanding({ token, autoPrint = false }: { token: st
             <div className="flex flex-col gap-4 border-b ft-border px-5 py-4 md:flex-row md:items-center md:justify-between">
               <div>
                 <h2 className="text-[1.25rem] font-extrabold tracking-[-0.03em]">Todas las tareas</h2>
-                <p className="mt-1 text-sm ft-text-muted">Reporte público de solo lectura con estado, prioridad, deadline y último comentario.</p>
+                <p className="mt-1 text-sm ft-text-muted">Reporte público de solo lectura con estado, prioridad, avance, checklist y último comentario real.</p>
               </div>
               <div className="flex flex-wrap items-center gap-2 print:hidden">
-                {(['all', 'En proceso', 'En espera', 'Concluido'] as StatusFilter[]).map((status) => (
+                {(['all', 'Pendiente', 'En curso', 'Producción', 'En espera', 'Revisión', 'Concluido'] as StatusFilter[]).map((status) => (
                   <button
                     key={status}
                     type="button"
@@ -111,7 +111,7 @@ export function SharedAnalyticsLanding({ token, autoPrint = false }: { token: st
             </div>
 
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[880px] border-collapse text-left text-sm">
+              <table className="w-full min-w-[1040px] border-collapse text-left text-sm">
                 <thead className="bg-[#F7F9FC] text-xs font-extrabold uppercase tracking-[0.08em] text-[#52617A]">
                   <tr>
                     <th className="px-4 py-3">Módulo</th>
@@ -121,6 +121,8 @@ export function SharedAnalyticsLanding({ token, autoPrint = false }: { token: st
                     <th className="px-4 py-3">Deadline</th>
                     <th className="px-4 py-3">Estado</th>
                     <th className="px-4 py-3">Prioridad</th>
+                    <th className="px-4 py-3">Avance</th>
+                    <th className="px-4 py-3">Checklist</th>
                     <th className="px-4 py-3">Último comentario</th>
                   </tr>
                 </thead>
@@ -134,10 +136,12 @@ export function SharedAnalyticsLanding({ token, autoPrint = false }: { token: st
                       <td className="px-4 py-3 text-[#52617A]">{task.deadlineLabel}</td>
                       <td className="px-4 py-3"><StatusBadge status={task.statusLabel} /></td>
                       <td className="px-4 py-3"><PriorityDot priority={task.priorityLabel} /></td>
+                      <td className="px-4 py-3"><ProgressPill percent={task.progressPercent} /></td>
+                      <td className="px-4 py-3 text-xs font-bold text-[#52617A]">{task.checklistTotal > 0 ? `${task.checklistDone}/${task.checklistTotal}` : 'Sin checklist'}</td>
                       <td className="max-w-[260px] px-4 py-3 text-[#52617A]">{task.lastComment || '—'}</td>
                     </tr>
                   )) : (
-                    <tr><td colSpan={8} className="px-4 py-5 text-center text-sm font-semibold ft-text-muted">No hay tareas para este filtro.</td></tr>
+                    <tr><td colSpan={10} className="px-4 py-5 text-center text-sm font-semibold ft-text-muted">No hay tareas para este filtro.</td></tr>
                   )}
                 </tbody>
               </table>
@@ -195,11 +199,21 @@ function MetricCard({ label, value, helper, icon: Icon, tone }: { label: string;
 }
 
 function StatusBadge({ status }: { status: string }) {
-  const cls = status === 'En espera' ? 'bg-amber-50 text-amber-700' : status === 'Concluido' ? 'bg-emerald-50 text-emerald-700' : 'bg-blue-50 text-blue-700';
+  const cls = status === 'En espera' ? 'bg-amber-50 text-amber-700' : status === 'Concluido' ? 'bg-emerald-50 text-emerald-700' : status === 'Producción' || status === 'Revisión' ? 'bg-violet-50 text-violet-700' : status === 'Pendiente' ? 'bg-sky-50 text-sky-700' : 'bg-blue-50 text-blue-700';
   return <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-extrabold ${cls}`}>{status}</span>;
 }
 
 function PriorityDot({ priority }: { priority: string }) {
   const cls = priority === 'Alta' ? 'bg-red-500' : priority === 'Baja' ? 'bg-blue-400' : 'bg-amber-500';
   return <span className="inline-flex items-center gap-2 text-sm font-bold text-[#52617A]"><span className={`h-2.5 w-2.5 rounded-full ${cls}`} />{priority}</span>;
+}
+
+
+function ProgressPill({ percent }: { percent: number }) {
+  const safePercent = Math.max(0, Math.min(100, Number.isFinite(percent) ? percent : 0));
+  return (
+    <span className="inline-flex min-w-[64px] items-center justify-center rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-extrabold text-emerald-700">
+      {safePercent}%
+    </span>
+  );
 }

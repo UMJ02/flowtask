@@ -38,7 +38,7 @@ const allowedVersions = [
   "58.28.19-ux-copy-empty-states-final",
   "58.28.20-mobile-responsive-final-pass",
   "58.28.21-supabase-rls-client-readiness-final",
-  "58.28.21.2-classic-project-edit-form-alignment",
+  "58.28.21.3-classic-reports-data-integrity-checklist-progress-export",
   "58.28.10-workspace-pro-no-motion-board-portal-home-colors",
   "58.28.11-workspace-pro-nav-shape-home-alignment",
   "58.28.12-workspace-pro-home-hero-solid-card-colors",
@@ -51,7 +51,7 @@ const allowedVersions = [
   "58.28.19-ux-copy-empty-states-final",
   "58.28.20-mobile-responsive-final-pass",
   "58.28.21-supabase-rls-client-readiness-final",
-  "58.28.21.2-classic-project-edit-form-alignment",
+  "58.28.21.3-classic-reports-data-integrity-checklist-progress-export",
   "58.27.8.1-workspace-pro-vercel-readiness-hotfix",
   "58.27.9-workspace-pro-interaction-hardening-real-editing-flow",
   "58.28.0-workspace-pro-production-ux-final",
@@ -76,7 +76,7 @@ const allowedVersions = [
   "58.28.19-ux-copy-empty-states-final",
   "58.28.20-mobile-responsive-final-pass",
   "58.28.21-supabase-rls-client-readiness-final",
-  "58.28.21.2-classic-project-edit-form-alignment",
+  "58.28.21.3-classic-reports-data-integrity-checklist-progress-export",
   "58.28.10-workspace-pro-no-motion-board-portal-home-colors",
   "58.28.11-workspace-pro-nav-shape-home-alignment",
   "58.28.12-workspace-pro-home-hero-solid-card-colors",
@@ -89,7 +89,7 @@ const allowedVersions = [
   "58.28.19-ux-copy-empty-states-final",
   "58.28.20-mobile-responsive-final-pass",
   "58.28.21-supabase-rls-client-readiness-final",
-  "58.28.21.2-classic-project-edit-form-alignment",
+  "58.28.21.3-classic-reports-data-integrity-checklist-progress-export",
 ];
 const allowedVerifyTargets = [
   "npm run verify:v58.27.6",
@@ -108,7 +108,7 @@ const allowedVerifyTargets = [
   "npm run verify:v58.28.19",
   "npm run verify:v58.28.20",
   "npm run verify:v58.28.21",
-  "npm run verify:v58.28.21.2",
+  "npm run verify:v58.28.21.3",
 ];
 
 if (!allowedVersions.includes(String(pkg.version ?? ""))) failures.push(`Unexpected package version: ${pkg.version}`);

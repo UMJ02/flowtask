@@ -101,6 +101,8 @@ export function getSharedReportTasks(payload: SharedAnalyticsPayload) {
 function statusStyle(status: string) {
   if (status === 'En espera') return 7;
   if (status === 'Concluido') return 8;
+  if (status === 'Producción' || status === 'Revisión') return 10;
+  if (status === 'Pendiente') return 11;
   return 6;
 }
 
@@ -110,8 +112,24 @@ function priorityStyle(priority: string) {
   return 10;
 }
 
+function checklistLabel(item: SharedReportTaskItem) {
+  return item.checklistTotal > 0 ? `${item.checklistDone}/${item.checklistTotal}` : 'Sin checklist';
+}
+
 function reportRows(section: string, items: SharedReportTaskItem[]): XlsxRow[] {
-  return items.map((item) => [section, item.itemType, item.title, item.createdAtLabel, item.deadlineLabel, { value: item.statusLabel, style: statusStyle(item.statusLabel) }, item.clientLabel, { value: item.priorityLabel, style: priorityStyle(item.priorityLabel) }, item.lastComment ?? 'Sin comentario registrado']);
+  return items.map((item) => [
+    section,
+    item.itemType,
+    item.title,
+    item.createdAtLabel,
+    item.deadlineLabel,
+    { value: item.statusLabel, style: statusStyle(item.statusLabel) },
+    item.clientLabel,
+    { value: item.priorityLabel, style: priorityStyle(item.priorityLabel) },
+    { value: `${item.progressPercent}%`, style: item.progressPercent >= 100 ? 8 : item.progressPercent > 0 ? 7 : 0 },
+    checklistLabel(item),
+    item.lastComment ?? 'Sin comentario registrado',
+  ]);
 }
 
 function safeText(value: unknown) {
@@ -183,7 +201,7 @@ function buildSheets(payload: SharedAnalyticsPayload): SheetConfig[] {
   ];
 
   const tasksRows: XlsxRow[] = [
-    [{ value: 'Módulo', style: 3 }, { value: 'Tipo', style: 3 }, { value: 'Título', style: 3 }, { value: 'Fecha ingreso', style: 3 }, { value: 'Deadline', style: 3 }, { value: 'Estado', style: 3 }, { value: 'Cliente', style: 3 }, { value: 'Prioridad', style: 3 }, { value: 'Último comentario', style: 3 }],
+    [{ value: 'Módulo', style: 3 }, { value: 'Tipo', style: 3 }, { value: 'Título', style: 3 }, { value: 'Fecha ingreso', style: 3 }, { value: 'Deadline', style: 3 }, { value: 'Estado', style: 3 }, { value: 'Cliente', style: 3 }, { value: 'Prioridad', style: 3 }, { value: 'Avance %', style: 3 }, { value: 'Checklist', style: 3 }, { value: 'Último comentario', style: 3 }],
     ...reportRows('Importantes', payload.reportModules.importantItems ?? []),
     ...reportRows('Semana actual', payload.reportModules.currentWeekItems ?? []),
     ...reportRows('Mes actual', payload.reportModules.currentMonthItems ?? []),
@@ -214,11 +232,13 @@ function buildSheets(payload: SharedAnalyticsPayload): SheetConfig[] {
     ['En espera', 'Tareas bloqueadas o en espera; se separan para no contaminar vencidos/semana/mes.'],
     ['Tipo', 'Indica si el registro exportado es una Tarea o un Proyecto.'],
     ['Prioridad', 'Alta equivale a estrella/importante en la app.'],
+    ['Avance %', 'Porcentaje calculado desde el checklist de la tarea. Si una tarea está concluida sin checklist se muestra 100%.'],
+    ['Checklist', 'Cantidad de puntos completados contra el total del checklist.'],
   ];
 
   return [
     { name: 'Reporte', rows: reportRowsData, widths: [24, 18, 42, 4, 24, 18, 42, 4], merges: ['A1:H1', 'A4:H4', 'A11:H11', 'A16:H16', 'A19:H19'] },
-    { name: 'Tareas exportadas', rows: tasksRows, widths: [22, 14, 42, 18, 18, 18, 22, 16, 52], freezeHeader: true, autoFilter: `A1:I${Math.max(tasksRows.length, 1)}` },
+    { name: 'Tareas exportadas', rows: tasksRows, widths: [22, 14, 42, 18, 18, 18, 22, 16, 14, 16, 52], freezeHeader: true, autoFilter: `A1:K${Math.max(tasksRows.length, 1)}` },
     { name: 'Resumen', rows: summaryRows, widths: [18, 80, 18, 25], merges: ['A1:D1'] },
     { name: 'Diccionario', rows: dictionaryRows, widths: [24, 100], merges: ['A1:B1'] },
   ];
