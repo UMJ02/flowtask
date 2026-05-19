@@ -417,7 +417,7 @@ export function WorkspaceProPage(props: WorkspaceProPageProps) {
                   <span className="truncate">{context.workspaceName}</span>
                   <span>/</span>
                   <span className="truncate">
-                    {context.spaceName ?? "Sin espacio"}
+                    {context.spaceName ?? "Sin área"}
                   </span>
                 </div>
                 <div className="mt-1 flex min-w-0 items-center gap-2">
@@ -670,7 +670,7 @@ function WorkspaceProSidebar({
       <div className="min-h-0 flex-1 overflow-y-auto px-3 py-3 ws-pro-hide-scrollbar">
         <SidebarSection title="Principal">
           <Link href="/app/workspace" className="ws-pro-sidebar-row">
-            <Home className="h-3.5 w-3.5 text-slate-400" /> Workspace
+            <Home className="h-3.5 w-3.5 text-slate-400" /> Inicio
           </Link>
           <Link href="/app/tasks" className="ws-pro-sidebar-row">
             <ListChecks className="h-3.5 w-3.5 text-slate-400" /> Mi trabajo
@@ -746,7 +746,7 @@ function WorkspaceProSidebar({
             ))
           ) : (
             <p className="px-2 py-2 text-xs text-slate-400">
-              Sin proyectos visibles
+              No hay proyectos todavía
             </p>
           )}
         </SidebarSection>
@@ -965,8 +965,8 @@ function WorkspaceProHome({
             ) : (
               <EmptyMicro
                 icon={<ListChecks className="h-4 w-4" />}
-                title="Sin tareas importantes"
-                text="Marcá una tarea como prioridad alta para verla aquí."
+                title="No tenés tareas prioritarias"
+                text="Marcá como alta cualquier tarea que querás seguir de cerca."
               />
             )}
           </CleanCard>
@@ -989,8 +989,8 @@ function WorkspaceProHome({
             ) : (
               <EmptyMicro
                 icon={<CalendarDays className="h-4 w-4" />}
-                title="Sin fechas próximas"
-                text="Las tareas con fecha límite aparecerán aquí."
+                title="Todo al día"
+                text="Cuando una tarea tenga fecha límite, la vas a ver en esta sección."
               />
             )}
           </CleanCard>
@@ -1004,8 +1004,8 @@ function WorkspaceProHome({
             ) : (
               <EmptyMicro
                 icon={<Folder className="h-4 w-4" />}
-                title="Sin proyectos activos"
-                text="Creá un proyecto para agrupar el trabajo por cliente, área o entrega."
+                title="Aún no hay proyectos"
+                text="Creá un proyecto para ordenar tareas por cliente, área o entrega."
               />
             )}
           </CleanCard>
@@ -1055,8 +1055,8 @@ function WorkspaceProHome({
           ) : (
             <EmptyMicro
               icon={<Activity className="h-4 w-4" />}
-              title="Sin actividad reciente"
-              text="Los cambios del proyecto aparecerán en esta sección."
+              title="Sin movimientos recientes"
+              text="Cuando edites tareas, proyectos o archivos, los cambios aparecerán aquí."
             />
           )}
         </CleanCard>
@@ -1091,10 +1091,10 @@ function WorkspaceProList({
     return (
       <WorkspaceEmptyState
         icon="tasks"
-        title="No hay tareas visibles"
-        description="Creá una tarea o elegí otro proyecto/espacio. El Home mantiene accesos rápidos para crear, revisar vencimientos y volver al contexto."
-        actionHref="/app/workspace?view=home"
-        actionLabel="Volver al Home"
+        title="Todavía no hay tareas"
+        description="Creá una tarea para empezar o cambiá de proyecto si estás buscando trabajo de otra área."
+        actionHref="/app/tasks/new"
+        actionLabel="Crear tarea"
         tone="blue"
       />
     );
@@ -1106,8 +1106,7 @@ function WorkspaceProList({
             Lista editable
           </h3>
           <p className="text-xs text-slate-500">
-            Edición rápida de nombre, estado, prioridad, fecha y proyecto sin
-            salir del Workspace.
+            Editá nombre, estado, prioridad, fecha y proyecto sin salir de esta vista.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -1387,10 +1386,10 @@ function WorkspaceProProjects({
     return (
       <WorkspaceEmptyState
         icon="projects"
-        title="No hay proyectos visibles"
-        description="Creá un proyecto para agrupar tareas relacionadas sin mezclar subtareas con tareas individuales. Desde Home podés iniciar el flujo sin perder el contexto."
-        actionHref="/app/workspace?view=home"
-        actionLabel="Ir al Home"
+        title="Aún no hay proyectos"
+        description="Creá un proyecto para agrupar tareas por cliente, campaña o entrega."
+        actionHref="/app/projects/new"
+        actionLabel="Crear proyecto"
         tone="blue"
       />
     );
@@ -1717,8 +1716,8 @@ function WorkspaceProBoard({
     return (
       <WorkspaceEmptyState
         icon="tasks"
-        title="No hay tareas para el board"
-        description="Creá una tarea o elegí otro proyecto para empezar a organizar trabajo por columnas. La Lista permite edición rápida antes de moverlas al board."
+        title="El board está vacío"
+        description="Agregá tareas para verlas organizadas por estado. También podés abrir Lista para cargarlas más rápido."
         actionHref="/app/workspace?view=list"
         actionLabel="Abrir Lista"
         tone="blue"
@@ -1917,7 +1916,7 @@ function WorkspaceProBoard({
                   ))
                 ) : (
                   <p className="rounded-xl border border-dashed border-slate-200 p-4 text-sm text-slate-400">
-                    Sin tareas
+                    Sin tareas por ahora
                   </p>
                 )}
               </div>
@@ -2254,8 +2253,8 @@ function WorkspaceProTimeline({
     return (
       <WorkspaceEmptyState
         icon="tasks"
-        title="Timeline sin fechas"
-        description="Agregá fechas límite desde Lista para ver el calendario de trabajo."
+        title="Sin fechas para mostrar"
+        description="Agregá fechas límite a tus tareas para armar el calendario de trabajo."
         actionHref="/app/workspace?view=list"
         actionLabel="Abrir Lista"
         tone="blue"
@@ -2328,8 +2327,8 @@ function WorkspaceProTable({ tasks }: { tasks: WorkspaceTaskItem[] }) {
     return (
       <WorkspaceEmptyState
         icon="tasks"
-        title="Tabla sin registros"
-        description="Las tareas del proyecto se mostrarán en formato tabla editable. Primero agregá tareas desde Lista o desde el flujo de creación."
+        title="La tabla está vacía"
+        description="Cuando agregués tareas, se mostrarán aquí en formato de tabla para revisar y editar más rápido."
         actionHref="/app/workspace?view=list"
         actionLabel="Abrir Lista"
         tone="blue"
@@ -2388,10 +2387,10 @@ function WorkspaceProCanvas({ boards }: { boards: WorkspaceBoardSummary[] }) {
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-base font-semibold text-slate-950">
-            Canvas y pizarras
+            Pizarras
           </h3>
           <p className="mt-1 text-sm text-slate-500">
-            Abrí una pizarra real para trabajar visualmente.
+            Abrí una pizarra para ordenar ideas, flujos o entregables visuales.
           </p>
         </div>
         <Link className="ws-pro-secondary-button" href="/app/boards">
@@ -2415,8 +2414,8 @@ function WorkspaceProCanvas({ boards }: { boards: WorkspaceBoardSummary[] }) {
         ) : (
           <EmptyMicro
             icon={<Sparkles className="h-4 w-4" />}
-            title="Sin pizarras conectadas"
-            text="Creá o vinculá una pizarra para verla aquí."
+            title="Aún no hay pizarras"
+            text="Creá una pizarra para organizar ideas, procesos o entregables."
           />
         )}
       </div>
@@ -2467,7 +2466,7 @@ function WorkspaceProFiles({
         <MetricChip label="Pizarras" value={boards.length} />
       </div>
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
-        <CleanCard title="Archivos del workspace">
+        <CleanCard title="Archivos del proyecto">
           <div className="mb-4">
             <LazyWorkspaceFilesUploadEntry
               context={context}
@@ -2495,8 +2494,8 @@ function WorkspaceProFiles({
           ) : (
             <EmptyMicro
               icon={<Files className="h-4 w-4" />}
-              title="Sin archivos"
-              text="Subí archivos desde el proyecto para verlos aquí."
+              title="Aún no hay archivos"
+              text="Subí documentos, imágenes o recursos para tenerlos a mano."
             />
           )}
         </CleanCard>
@@ -2524,7 +2523,7 @@ function WorkspaceProFiles({
               </div>
             ))
           ) : (
-            <p className="text-sm text-slate-400">Sin pizarras conectadas.</p>
+            <p className="text-sm text-slate-400">Aún no hay pizarras vinculadas.</p>
           )}
           <Link
             href="/app/boards"
@@ -2571,7 +2570,7 @@ function WorkspaceProFileRow({
   }
   async function removeFile() {
     if (!canManage) return;
-    const ok = window.confirm("¿Eliminar este archivo del workspace?");
+    const ok = window.confirm("¿Eliminar este archivo?");
     if (!ok) return;
     setBusy(true);
     if (file.storagePath)
@@ -2709,7 +2708,7 @@ function WorkspaceProReports({
             value={scope}
             onChange={(event) => setScope(event.target.value)}
           >
-            <option value="all">Todo el workspace</option>
+            <option value="all">Todo el trabajo</option>
             {projects.map((project) => (
               <option key={project.id} value={project.id}>
                 {project.title}
@@ -2721,24 +2720,24 @@ function WorkspaceProReports({
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
         <CleanCard title="Generador de reportes">
           <p className="text-sm leading-6 text-slate-500">
-            Generá reportes por estado, prioridad y avance del trabajo.
+            Generá reportes claros por estado, prioridad, avance y vencimientos.
           </p>
           <div className="mt-4 grid gap-3 md:grid-cols-3">
             <ReportAction
               title="Reporte completo"
-              text="Abrí el módulo con el contexto elegido."
+              text="Abrí el reporte con la selección actual."
               href={reportHref}
               icon={<BarChart3 className="h-4 w-4" />}
             />
             <ReportAction
               title="Vista imprimible"
-              text="Prepará una versión para PDF."
+              text="Prepará una versión lista para imprimir o guardar en PDF."
               href={printHref}
               icon={<FileText className="h-4 w-4" />}
             />
             <ReportAction
               title="Exportar Excel"
-              text="Abrí reportes para exportar el archivo."
+              text="Abrí reportes para descargar el archivo."
               href="/app/reports"
               icon={<Download className="h-4 w-4" />}
             />
@@ -2757,7 +2756,7 @@ function WorkspaceProReports({
         </CleanCard>
         <CleanCard title="Resumen actual">
           <ResourceLine
-            label="Estado reportes"
+            label="Reportes"
             value={reports ? "Disponible" : "Básico"}
             href="/app/reports"
           />
@@ -2771,7 +2770,7 @@ function WorkspaceProReports({
             }
           />
           <ResourceLine label="Rango" value={range} />
-          <ResourceLine label="Base visible" value={`${tasks.length} tareas`} />
+          <ResourceLine label="Tareas consideradas" value={`${tasks.length} tareas`} />
         </CleanCard>
       </div>
     </div>
@@ -2855,7 +2854,7 @@ function WorkspaceProRightPanel({
         {upcoming.length ? (
           upcoming.map((task) => <TaskLine key={task.id} task={task} compact />)
         ) : (
-          <p className="text-sm text-slate-400">Sin vencimientos próximos</p>
+          <p className="text-sm text-slate-400">No hay vencimientos próximos</p>
         )}
       </CleanCard>
       <CleanCard title="Actividad">
@@ -2873,7 +2872,7 @@ function WorkspaceProRightPanel({
             </p>
           ))
         ) : (
-          <p className="text-sm text-slate-400">Sin actividad reciente</p>
+          <p className="text-sm text-slate-400">No hay actividad reciente</p>
         )}
       </CleanCard>
       <CleanCard title="Equipo">

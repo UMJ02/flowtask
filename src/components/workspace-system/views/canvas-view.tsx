@@ -85,7 +85,7 @@ export function CanvasView({ tasks, boards, context }: { tasks: WorkspaceTaskIte
               Usa las pizarras reales de FlowTask dentro del contexto {context.projectTitle ?? "activo"}. No duplica BoardPage: enlaza el canvas completo existente.
             </p>
             <div className="mt-5 grid gap-4 md:grid-cols-3">
-              <div className="rounded-[18px] border border-blue-200 bg-blue-50 p-4"><b>Proyecto</b><p className="mt-1 text-sm text-slate-500">{context.projectTitle ?? "Todo el workspace"}</p></div>
+              <div className="rounded-[18px] border border-blue-200 bg-blue-50 p-4"><b>Proyecto</b><p className="mt-1 text-sm text-slate-500">{context.projectTitle ?? "Todo el trabajo"}</p></div>
               <div className="rounded-[18px] border border-emerald-200 bg-emerald-50 p-4"><b>Tareas conectadas</b><p className="mt-1 text-sm text-slate-500">{tasks.length} elementos operativos</p></div>
               <div className="rounded-[18px] border border-amber-200 bg-amber-50 p-4"><b>Pizarras reales</b><p className="mt-1 text-sm text-slate-500">{connectedBoards.length} disponibles</p></div>
             </div>

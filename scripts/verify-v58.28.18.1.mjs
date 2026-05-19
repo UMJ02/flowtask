@@ -5,10 +5,10 @@ const versionText = readFileSync("src/lib/release/version.ts", "utf8");
 const lockText = readFileSync("package-lock.json", "utf8");
 const failures = [];
 
-const expectedVersion = "58.28.18.2-dependency-security-next-root-lockfile-guard";
+const expectedVersion = "58.28.19-ux-copy-empty-states-final";
 
 if (pkg.version !== expectedVersion) failures.push(`Unexpected package version: ${pkg.version}`);
-if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.28.18.2") failures.push("verify:current must target verify:v58.28.18.2");
+if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.28.19") failures.push("verify:current must target verify:v58.28.18.2");
 if (pkg.dependencies?.next !== "15.5.18") failures.push("next dependency must be pinned to 15.5.18");
 if (!pkg.overrides?.["next@15.5.18"]?.postcss || pkg.overrides["next@15.5.18"].postcss !== "8.5.14") failures.push("next postcss override must pin postcss 8.5.14");
 if (pkg.overrides?.["brace-expansion"] !== "5.0.6") failures.push("brace-expansion override must pin 5.0.6");

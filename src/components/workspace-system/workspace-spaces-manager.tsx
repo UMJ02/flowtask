@@ -153,7 +153,7 @@ export function WorkspaceSpacesManager({
       return;
     }
 
-    setFeedback({ tone: "success", text: "Espacio archivado. Sus proyectos vuelven al workspace general." });
+    setFeedback({ tone: "success", text: "Espacio archivado. Sus proyectos vuelven al inicio." });
     router.refresh();
   }
 
@@ -211,7 +211,7 @@ export function WorkspaceSpacesManager({
     <section className="ft-ws-spaces-manager ft-ws-enter">
       <div className="ft-ws-spaces-manager-head">
         <div className="min-w-0">
-          <p className="text-[11px] font-black uppercase tracking-[.18em] text-emerald-600">Organización del workspace</p>
+          <p className="text-[11px] font-black uppercase tracking-[.18em] text-emerald-600">Organización del trabajo</p>
           <h3 className="mt-1 text-lg font-black tracking-[-.03em] text-slate-950">Espacios</h3>
           <p className="mt-1 max-w-3xl text-sm font-semibold text-slate-500">
             Organizá tus proyectos por áreas de trabajo. Menos ruido en la sidebar, más contexto para cada equipo o cliente.
@@ -306,13 +306,13 @@ export function WorkspaceSpacesManager({
                   <button key={project.id} type="button" onClick={() => void removeProject(project.id)} className="ft-ws-space-project-pill" title="Quitar del espacio">
                     {project.title} <X className="h-3.5 w-3.5" />
                   </button>
-                )) : <p className="rounded-[14px] bg-white px-3 py-2 text-xs font-bold text-slate-500">Sin proyectos asignados todavía.</p>}
+                )) : <p className="rounded-[14px] bg-white px-3 py-2 text-xs font-bold text-slate-500">Todavía no hay proyectos asignados.</p>}
               </div>
             </article>
           );
         }) : (
           <div className="ft-ws-spaces-empty">
-No hay espacios todavía. Creá el primero para organizar proyectos por cliente, área o producción.
+Aún no hay espacios. Creá el primero para organizar proyectos por cliente, área o producción.
           </div>
         )}
       </div>

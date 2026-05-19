@@ -77,7 +77,7 @@ export function WorkspacePermissionEmptyState({ permissions, action = "editar es
       icon="permissions"
       tone="warning"
       title="Modo solo lectura"
-      description={`Tu rol actual no permite ${action}. Podés revisar el workspace sin modificar datos.`}
+      description={`Tu rol actual no permite ${action}. Podés revisar la información sin modificar datos.`}
       compact
     />
   );
@@ -89,8 +89,8 @@ export function WorkspaceMigrationEmptyState({ persistenceStatus }: { persistenc
     <WorkspaceEmptyState
       icon="migration"
       tone={persistenceStatus.status === "blocked" ? "danger" : "warning"}
-      title="Persistencia workspace en modo seguro"
-      description={persistenceStatus.message}
+      title="Configuración pendiente"
+      description="Algunas funciones avanzadas todavía no están disponibles para este espacio."
       compact
     />
   );
@@ -106,20 +106,20 @@ export function WorkspaceHealthPanel({
   counts: { tasks: number; projects: number; spaces: number; boards: number; files: number; views: number; activity: number };
 }) {
   const checks = [
-    { label: "Persistence", ok: persistenceStatus.enabled, helper: persistenceStatus.status },
-    { label: "Spaces", ok: persistenceStatus.workspaceSpacesReady, helper: `${counts.spaces} espacios` },
-    { label: "Saved views", ok: persistenceStatus.projectViewsReady, helper: `${counts.views} vistas` },
-    { label: "Assignments", ok: Boolean(persistenceStatus.projectSpaceLinksReady), helper: "space links" },
-    { label: "Permissions", ok: !permissions.isReadOnly, helper: permissions.role ?? "rol" },
-    { label: "Data", ok: counts.tasks > 0 || counts.projects > 0 || counts.boards > 0 || counts.files > 0, helper: `${counts.tasks} tareas` },
+    { label: "Configuración", ok: persistenceStatus.enabled, helper: persistenceStatus.enabled ? "Lista" : "Pendiente" },
+    { label: "Espacios", ok: persistenceStatus.workspaceSpacesReady, helper: `${counts.spaces} creados` },
+    { label: "Vistas", ok: persistenceStatus.projectViewsReady, helper: `${counts.views} guardadas` },
+    { label: "Proyectos", ok: Boolean(persistenceStatus.projectSpaceLinksReady), helper: "Asignación lista" },
+    { label: "Permisos", ok: !permissions.isReadOnly, helper: permissions.role ?? "rol" },
+    { label: "Contenido", ok: counts.tasks > 0 || counts.projects > 0 || counts.boards > 0 || counts.files > 0, helper: `${counts.tasks} tareas` },
   ];
 
   return (
     <section className="ft-ws-card ft-ws-health-panel p-5">
       <div className="flex items-center justify-between gap-3">
         <div>
-          <p className="text-[11px] font-black uppercase tracking-[.18em] text-emerald-600">Client QA</p>
-          <h3 className="mt-1 font-extrabold text-slate-950">Workspace Health</h3>
+          <p className="text-[11px] font-black uppercase tracking-[.18em] text-emerald-600">Revisión final</p>
+          <h3 className="mt-1 font-extrabold text-slate-950">Estado del espacio</h3>
         </div>
         <span className={checks.every((check) => check.ok) ? "ft-ws-health-pill is-ok" : "ft-ws-health-pill is-warn"}>
           {checks.every((check) => check.ok) ? "OK" : "Revisar"}

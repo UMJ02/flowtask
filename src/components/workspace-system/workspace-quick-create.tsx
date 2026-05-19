@@ -161,7 +161,7 @@ export function WorkspaceQuickCreate({
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">Crear en workspace</p>
           <h3 className="mt-1 text-base font-semibold text-slate-950">{draft.mode === "task" ? "Nueva tarea" : "Nuevo proyecto"}</h3>
-          <p className="mt-1 text-xs text-slate-500">{context.projectTitle ?? "Todos los proyectos"} · {context.spaceName ?? "Todo el workspace"}</p>
+          <p className="mt-1 text-xs text-slate-500">{context.projectTitle ?? "Todos los proyectos"} · {context.spaceName ?? "Todo el trabajo"}</p>
         </div>
         {onClose ? <button type="button" onClick={onClose} className="ws-pro-icon-button h-8 w-8" aria-label="Cerrar"><X className="h-4 w-4" /></button> : null}
       </div>

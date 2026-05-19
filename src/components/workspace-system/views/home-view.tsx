@@ -102,7 +102,7 @@ export function HomeView({
           <p className="ft-ws-home-hero-copy">Resumen vivo de tareas, vistas, archivos, pizarras y actividad del contexto actual.</p>
           <div className="mt-4 flex flex-wrap items-center gap-2">
             <span className="ft-ws-pill bg-emerald-50 text-emerald-700">{projectLabel}</span>
-            <span className="ft-ws-pill bg-blue-50 text-blue-700">{context.spaceName ?? "Todo el workspace"}</span>
+            <span className="ft-ws-pill bg-blue-50 text-blue-700">{context.spaceName ?? "Todo el trabajo"}</span>
             <span className="ft-ws-pill bg-slate-100 text-slate-600">{context.mode === "organization" ? "Organización" : "Personal"}</span>
           </div>
         </div>

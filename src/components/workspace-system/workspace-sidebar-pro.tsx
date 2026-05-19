@@ -66,7 +66,7 @@ export function WorkspaceSidebarPro({
           <span className="rounded-full bg-emerald-400/15 px-2 py-1 text-[10px] font-black uppercase tracking-[.14em] text-emerald-200">Live</span>
         </div>
         <Link href={workspaceHref({ view: "home" })} onClick={onNavigate} className="mt-3 flex h-10 items-center justify-center rounded-[14px] bg-emerald-400/15 text-sm font-extrabold text-emerald-100 transition hover:bg-emerald-400/20">
-          Todo el workspace
+          Todo el trabajo
         </Link>
       </div>
 
@@ -118,7 +118,7 @@ export function WorkspaceSidebarPro({
             <span className="truncate">{project.title}</span>
             <Star className="h-3.5 w-3.5 text-amber-300" />
           </Link>
-        )) : <p className="rounded-[14px] bg-white/[.04] px-3 py-3 text-xs font-semibold text-slate-400">No hay proyectos visibles en este filtro.</p>}
+        )) : <p className="rounded-[14px] bg-white/[.04] px-3 py-3 text-xs font-semibold text-slate-400">No hay proyectos para mostrar con este filtro.</p>}
       </div>
     </aside>
   );

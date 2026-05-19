@@ -5,10 +5,10 @@ const pkg = JSON.parse(fs.readFileSync("package.json", "utf8"));
 const lockText = fs.readFileSync("package-lock.json", "utf8");
 const versionText = fs.readFileSync("src/lib/release/version.ts", "utf8");
 const nextConfig = fs.readFileSync("next.config.ts", "utf8");
-const expectedVersion = "58.28.18.2-dependency-security-next-root-lockfile-guard";
+const expectedVersion = "58.28.19-ux-copy-empty-states-final";
 
 if (pkg.version !== expectedVersion) failures.push(`Unexpected package version: ${pkg.version}`);
-if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.28.18.2") failures.push("verify:current must target verify:v58.28.18.2");
+if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.28.19") failures.push("verify:current must target verify:v58.28.18.2");
 if (!versionText.includes(expectedVersion)) failures.push("version.ts must contain the v58.28.18.2 slug");
 if (lockText.includes("packages.applied-caas") || lockText.includes("internal.api.openai.org")) failures.push("package-lock.json still contains internal registry URLs");
 if (!lockText.includes("https://registry.npmjs.org/next/-/next-15.5.18.tgz")) failures.push("package-lock.json must resolve next 15.5.18 from registry.npmjs.org");

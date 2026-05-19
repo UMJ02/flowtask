@@ -35,7 +35,7 @@ const expectedVersions = [
   "58.28.16.2-classic-pro-status-parity",
   "58.28.17-classic-pro-unified-data-qa-final-user-flow",
   "58.28.17.1-unified-data-qa-inline-status-type-hotfix",
-  "58.28.18.2-dependency-security-next-root-lockfile-guard",
+  "58.28.19-ux-copy-empty-states-final",
   "58.28.10-workspace-pro-no-motion-board-portal-home-colors",
   "58.28.11-workspace-pro-nav-shape-home-alignment",
   "58.28.12-workspace-pro-home-hero-solid-card-colors",
@@ -45,7 +45,7 @@ const expectedVersions = [
   "58.28.16.2-classic-pro-status-parity",
   "58.28.17-classic-pro-unified-data-qa-final-user-flow",
   "58.28.17.1-unified-data-qa-inline-status-type-hotfix",
-  "58.28.18.2-dependency-security-next-root-lockfile-guard",
+  "58.28.19-ux-copy-empty-states-final",
 ];
 const pkg = JSON.parse(read("package.json") || "{}");
 if (!expectedVersions.includes(pkg.version)) failures.push(`Unexpected package version: ${pkg.version}`);
@@ -58,7 +58,7 @@ if (!["npm run verify:v58.27.6", "npm run verify:v58.27.7", "npm run verify:v58.
   "npm run verify:v58.28.9",
   "npm run verify:v58.28.10", "npm run verify:v58.28.11", "npm run verify:v58.28.12", "npm run verify:v58.28.15", "npm run verify:v58.28.16", "npm run verify:v58.28.16.1", "npm run verify:v58.28.16.2", "npm run verify:v58.28.17",
   "npm run verify:v58.28.17.1",
-  "npm run verify:v58.28.18.2"].includes(pkg.scripts?.["verify:current"])) failures.push("verify:current must target the active v58.27.x/v58.28.x verify script");
+  "npm run verify:v58.28.19"].includes(pkg.scripts?.["verify:current"])) failures.push("verify:current must target the active v58.27.x/v58.28.x verify script");
 if (!String(pkg.scripts?.["build:preflight"] ?? "").includes("workspace:design-reset:ready")) failures.push("build:preflight must include workspace:design-reset:ready");
 if (!String(pkg.scripts?.["build:preflight"] ?? "").includes("workspace:layout-cleanup:ready")) failures.push("build:preflight must include workspace:layout-cleanup:ready");
 
