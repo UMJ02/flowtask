@@ -21,7 +21,8 @@ if (!["58.28.4-workspace-pro-board-overlay-status-alignment", "58.28.5-workspace
   "58.28.17.1-unified-data-qa-inline-status-type-hotfix",
   "58.28.19-ux-copy-empty-states-final", "58.28.20-mobile-responsive-final-pass", "58.28.21-supabase-rls-client-readiness-final",
   "58.28.21.3-classic-reports-data-integrity-checklist-progress-export",
-  "58.28.21.4-share-landing-short-link-stored-report-tokens"].includes(pkg.version)) failures.push(`Unexpected package version: ${pkg.version}`);
+  "58.28.21.4-share-landing-short-link-stored-report-tokens",
+  "58.28.21.5-radar-analytics-due-state-integrity"].includes(pkg.version)) failures.push(`Unexpected package version: ${pkg.version}`);
 if (!["npm run verify:v58.28.4", "npm run verify:v58.28.5",
   "npm run verify:v58.28.6",
   "npm run verify:v58.28.7",
@@ -31,9 +32,9 @@ if (!["npm run verify:v58.28.4", "npm run verify:v58.28.5",
   "npm run verify:v58.28.17.1",
   "npm run verify:v58.28.19", "npm run verify:v58.28.20", "npm run verify:v58.28.21",
   "npm run verify:v58.28.21.3",
-  "npm run verify:v58.28.21.4", "npm run verify:v58.28.21",
+  "npm run verify:v58.28.21.4", "npm run verify:v58.28.21.5", "npm run verify:v58.28.21",
   "npm run verify:v58.28.21.3",
-  "npm run verify:v58.28.21.4"].includes(pkg.scripts?.["verify:current"])) failures.push("verify:current must target verify:v58.28.4");
+  "npm run verify:v58.28.21.4", "npm run verify:v58.28.21.5"].includes(pkg.scripts?.["verify:current"])) failures.push("verify:current must target verify:v58.28.4");
 for (const marker of ["WorkspaceProBoardActionPanel", "gridTemplateColumns", "setBoardMessage"]) {
   if (!page.includes(marker)) failures.push(`Missing board overlay marker: ${marker}`);
 }

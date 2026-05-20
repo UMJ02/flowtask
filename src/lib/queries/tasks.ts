@@ -1,4 +1,4 @@
-import { isTaskOverdue } from "@/lib/tasks/status";
+import { isTaskDueToday, isTaskOverdue } from "@/lib/tasks/status";
 import { cache } from "react";
 import { getWorkspaceContext, applyWorkspaceScope } from "@/lib/queries/workspace";
 import { filterRowsByClientAccess, getClientAccessSummary, hasClientAccess } from "@/lib/security/client-access";
@@ -64,7 +64,7 @@ function normalizeTaskRow(row: any): TaskSummary {
     departments: row.departments ?? null,
     country: (row.country as string | null | undefined) ?? null,
     isOverdue: isTaskOverdue(dueDate, row.status as string | null | undefined),
-    isDueToday: Boolean(dueDate && dueDate === new Date().toISOString().slice(0, 10) && row.status !== "concluido" && row.status !== "en_espera"),
+    isDueToday: isTaskDueToday(dueDate, row.status as string | null | undefined),
   };
 }
 
@@ -114,9 +114,9 @@ export async function getTasks(filters: TaskFiltersInput = {}): Promise<TaskSumm
   }
 
   const today = new Date().toISOString().slice(0, 10);
-  if (filters.due === "overdue") query = query.lt("due_date", today).not("status", "in", '(concluido,en_espera)');
-  if (filters.due === "today") query = query.eq("due_date", today).not("status", "in", '(concluido,en_espera)');
-  if (filters.due === "soon") query = query.gte("due_date", today).not("status", "in", '(concluido,en_espera)');
+  if (filters.due === "overdue") query = query.lt("due_date", today).not("status", "in", '(concluido,en_espera,revision)');
+  if (filters.due === "today") query = query.eq("due_date", today).not("status", "in", '(concluido,en_espera,revision)');
+  if (filters.due === "soon") query = query.gte("due_date", today).not("status", "in", '(concluido,en_espera,revision)');
   if (filters.due === "none") query = query.is("due_date", null);
 
   const { data, error } = await query;

@@ -15,14 +15,15 @@ if (pkg.version !== "58.28.16-task-data-sync-status-source-of-truth",
   "58.28.17.1-unified-data-qa-inline-status-type-hotfix",
   "58.28.19-ux-copy-empty-states-final", "58.28.20-mobile-responsive-final-pass", "58.28.21-supabase-rls-client-readiness-final",
   "58.28.21.3-classic-reports-data-integrity-checklist-progress-export",
-  "58.28.21.4-share-landing-short-link-stored-report-tokens") failures.push("Unexpected package version");
+  "58.28.21.4-share-landing-short-link-stored-report-tokens",
+  "58.28.21.5-radar-analytics-due-state-integrity") failures.push("Unexpected package version");
 if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.28.16", "npm run verify:v58.28.16.1", "npm run verify:v58.28.16.2", "npm run verify:v58.28.17",
   "npm run verify:v58.28.17.1",
   "npm run verify:v58.28.19", "npm run verify:v58.28.20", "npm run verify:v58.28.21",
   "npm run verify:v58.28.21.3",
-  "npm run verify:v58.28.21.4", "npm run verify:v58.28.21",
+  "npm run verify:v58.28.21.4", "npm run verify:v58.28.21.5", "npm run verify:v58.28.21",
   "npm run verify:v58.28.21.3",
-  "npm run verify:v58.28.21.4") failures.push("verify:current must target verify:v58.28.16");
+  "npm run verify:v58.28.21.4", "npm run verify:v58.28.21.5") failures.push("verify:current must target verify:v58.28.16");
 if (!version.includes("58.28.16-task-data-sync-status-source-of-truth",
   "58.28.16.1-task-data-sync-cli-hotfix",
   "58.28.16.2-classic-pro-status-parity",
@@ -30,7 +31,8 @@ if (!version.includes("58.28.16-task-data-sync-status-source-of-truth",
   "58.28.17.1-unified-data-qa-inline-status-type-hotfix",
   "58.28.19-ux-copy-empty-states-final", "58.28.20-mobile-responsive-final-pass", "58.28.21-supabase-rls-client-readiness-final",
   "58.28.21.3-classic-reports-data-integrity-checklist-progress-export",
-  "58.28.21.4-share-landing-short-link-stored-report-tokens")) failures.push("version.ts must contain v58.28.16 slug");
+  "58.28.21.4-share-landing-short-link-stored-report-tokens",
+  "58.28.21.5-radar-analytics-due-state-integrity")) failures.push("version.ts must contain v58.28.16 slug");
 if (!pkg.scripts?.["workspace:task-sync:ready"]) failures.push("workspace:task-sync:ready script missing");
 if (!pkg.scripts?.["build:preflight"]?.includes("workspace:task-sync:ready")) failures.push("build:preflight must include workspace:task-sync:ready");
 for (const status of ["pendiente", "en_proceso", "produccion", "en_espera", "revision", "concluido"]) {

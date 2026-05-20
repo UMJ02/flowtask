@@ -1,4 +1,4 @@
-import { isTaskOverdue } from "@/lib/tasks/status";
+import { getTaskStandbyDays, isTaskDueEligible, isTaskOverdue, isTaskStandby } from "@/lib/tasks/status";
 import { endOfWeek, format, isWithinInterval, parseISO, startOfToday, addDays } from 'date-fns';
 import { getClients } from '@/lib/queries/clients';
 import { getProjects } from '@/lib/queries/projects';
@@ -29,10 +29,10 @@ function getDepartmentName(reference: DepartmentReference) {
 }
 
 function getTaskUrgency(task: TaskRow, today: Date, nextWeekEnd: Date): 'critical' | 'attention' | 'stable' {
-  if (!task.due_date) return 'stable';
+  if (!task.due_date || !isTaskDueEligible(task.status)) return 'stable';
   try {
     const dueDate = parseISO(task.due_date);
-    if (dueDate < today) return 'critical';
+    if (isTaskOverdue(task.due_date, task.status)) return 'critical';
     if (isWithinInterval(dueDate, { start: today, end: nextWeekEnd })) return 'attention';
   } catch {
     return 'stable';
@@ -108,7 +108,8 @@ export async function getRiskRadarSummary(): Promise<RiskRadarSummary> {
 
   const overdueTasks = activeTasks.filter((task) => getTaskUrgency(task, today, nextWeekEnd) === 'critical');
   const attentionTasks = activeTasks.filter((task) => getTaskUrgency(task, today, nextWeekEnd) === 'attention');
-  const waitingTasks = activeTasks.filter((task) => task.status === 'en_espera');
+  const waitingTasks = activeTasks.filter((task) => isTaskStandby(task.status));
+  const standbyFollowupTasks = waitingTasks.filter((task) => getTaskStandbyDays(task) >= 5);
   const overdueProjects = activeProjects.filter((project) => getProjectUrgency(project, today, nextWeekEnd) === 'critical');
   const attentionProjects = activeProjects.filter((project) => getProjectUrgency(project, today, nextWeekEnd) === 'attention');
 
@@ -169,13 +170,13 @@ export async function getRiskRadarSummary(): Promise<RiskRadarSummary> {
     })
     .slice(0, 6);
 
-  const riskScoreBase = overdueTasks.length * 8 + overdueProjects.length * 10 + waitingTasks.length * 4 + clientRisks.filter((item) => item.tone !== 'stable').length * 6;
+  const riskScoreBase = overdueTasks.length * 8 + overdueProjects.length * 10 + standbyFollowupTasks.length * 4 + clientRisks.filter((item) => item.tone !== 'stable').length * 6;
   const riskScore = Math.max(0, Math.min(100, riskScoreBase));
 
   const recommendations: string[] = [];
   if (overdueTasks.length > 0) recommendations.push(`Resolver ${overdueTasks.length} tarea(s) vencida(s) para bajar presión operativa inmediata.`);
   if (overdueProjects.length > 0) recommendations.push(`Revisar ${overdueProjects.length} proyecto(s) vencido(s) con cliente o responsable principal.`);
-  if (waitingTasks.length > 0) recommendations.push(`Mover ${waitingTasks.length} tarea(s) en espera para evitar bloqueo acumulado.`);
+  if (standbyFollowupTasks.length > 0) recommendations.push(`Dar seguimiento a ${standbyFollowupTasks.length} tarea(s) en espera o revisión con 5+ días sin movimiento.`);
   if (hotspots[0]?.tone === 'critical') recommendations.push(`El departamento ${hotspots[0].name} concentra la mayor señal de riesgo y merece revisión hoy.`);
   if (!recommendations.length) recommendations.push('La operación está controlada. Aprovecha para limpiar backlog y cerrar pendientes de bajo riesgo.');
 
@@ -189,7 +190,7 @@ export async function getRiskRadarSummary(): Promise<RiskRadarSummary> {
     },
     riskBuckets: [
       { label: 'Crítico', count: overdueTasks.length + overdueProjects.length, tone: 'critical' },
-      { label: 'Atención', count: attentionTasks.length + attentionProjects.length + waitingTasks.length, tone: 'attention' },
+      { label: 'Atención', count: attentionTasks.length + attentionProjects.length + standbyFollowupTasks.length, tone: 'attention' },
       { label: 'Estable', count: Math.max(0, activeTasks.length + activeProjects.length - (overdueTasks.length + overdueProjects.length + attentionTasks.length + attentionProjects.length)), tone: 'stable' },
     ],
     hotspots,

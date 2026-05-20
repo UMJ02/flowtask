@@ -21,11 +21,12 @@ const allowedSlugs = [
   '58.28.21-supabase-rls-client-readiness-final',
   '58.28.21.3-classic-reports-data-integrity-checklist-progress-export',
   '58.28.21.4-share-landing-short-link-stored-report-tokens',
+  '58.28.21.5-radar-analytics-due-state-integrity',
 ];
 const statuses = ['pendiente', 'en_proceso', 'produccion', 'en_espera', 'revision', 'concluido'];
 
 if (!allowedSlugs.includes(pkg.version)) failures.push('package.json must use an allowed v58.28.17+ slug');
-if (!['npm run verify:v58.28.17.1', 'npm run verify:v58.28.19', 'npm run verify:v58.28.20', 'npm run verify:v58.28.21', 'npm run verify:v58.28.21.3', 'npm run verify:v58.28.21.4'].includes(pkg.scripts?.['verify:current'])) failures.push('verify:current must target the active v58.28.17+ verify script');
+if (!['npm run verify:v58.28.17.1', 'npm run verify:v58.28.19', 'npm run verify:v58.28.20', 'npm run verify:v58.28.21', 'npm run verify:v58.28.21.3', 'npm run verify:v58.28.21.4', 'npm run verify:v58.28.21.5'].includes(pkg.scripts?.['verify:current'])) failures.push('verify:current must target the active v58.28.17+ verify script');
 if (!allowedSlugs.some((slug) => version.includes(slug))) failures.push('release version must contain an allowed v58.28.17+ slug');
 for (const status of statuses) {
   for (const [name, source] of Object.entries({ taskStatus, statusHelpers, taskTypes, workspaceHome, classicBoard, workspacePro, projectInline })) {

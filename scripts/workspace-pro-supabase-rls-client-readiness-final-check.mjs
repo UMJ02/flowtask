@@ -13,9 +13,10 @@ const projectViews = read("supabase/migrations/0058_v58_25_9_5_project_views_hom
 const readinessSql = read("docs/sql/V58_28_21_SUPABASE_RLS_CLIENT_READINESS.sql");
 const qaDoc = read("docs/qa/FLOWTASK_V58_28_21_SUPABASE_RLS_CLIENT_READINESS_QA.md");
 const allowedVersions = ["58.28.21-supabase-rls-client-readiness-final", "58.28.21.3-classic-reports-data-integrity-checklist-progress-export",
-  "58.28.21.4-share-landing-short-link-stored-report-tokens"];
+  "58.28.21.4-share-landing-short-link-stored-report-tokens",
+  "58.28.21.5-radar-analytics-due-state-integrity"];
 const allowedVerifyTargets = ["npm run verify:v58.28.21", "npm run verify:v58.28.21.3",
-  "npm run verify:v58.28.21.4"];
+  "npm run verify:v58.28.21.4", "npm run verify:v58.28.21.5"];
 
 if (!allowedVersions.includes(pkg.version)) failures.push(`Unexpected package version: ${pkg.version}`);
 if (!allowedVerifyTargets.includes(pkg.scripts?.["verify:current"])) failures.push("verify:current must target an active v58.28.21 verify script");

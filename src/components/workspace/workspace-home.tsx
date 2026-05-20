@@ -29,6 +29,7 @@ import { applyClientWorkspaceScope, getClientWorkspaceContext } from '@/lib/supa
 import { cn } from '@/lib/utils/classnames';
 import { projectListRoute, taskNewRoute } from '@/lib/navigation/routes';
 import { mergeTaskUpdate, subscribeTaskUpdated } from '@/lib/tasks/task-mutations';
+import { getTaskStandbyDays, isTaskDueToday, isTaskOverdue, isTaskStandby } from '@/lib/tasks/status';
 
 const NOTE_STORAGE_KEY = 'flowtask.workspace.quick-notes.v58.13.1';
 const WORKSPACE_VISIBLE_COLUMNS_KEY = 'flowtask.workspace.visible-status-columns.v58.22.3';
@@ -303,9 +304,10 @@ export function WorkspaceHome() {
 
   const today = todayIso();
   const openTasks = useMemo(() => tasks.filter((task) => task.status !== 'concluido'), [tasks]);
-  const overdueTasks = useMemo(() => openTasks.filter((task) => task.due_date && task.due_date < today), [openTasks, today]);
-  const dueToday = useMemo(() => openTasks.filter((task) => task.due_date === today), [openTasks, today]);
-  const waiting = useMemo(() => openTasks.filter((task) => task.status === 'en_espera'), [openTasks]);
+  const overdueTasks = useMemo(() => openTasks.filter((task) => isTaskOverdue(task.due_date, task.status)), [openTasks]);
+  const dueToday = useMemo(() => openTasks.filter((task) => isTaskDueToday(task.due_date, task.status)), [openTasks]);
+  const waiting = useMemo(() => openTasks.filter((task) => isTaskStandby(task.status)), [openTasks]);
+  const standbyFollowupTasks = useMemo(() => waiting.filter((task) => getTaskStandbyDays(task) >= 5), [waiting]);
   const activeProjects = useMemo(() => projects.filter((project) => project.status !== 'completado'), [projects]);
   const importantCount = useMemo(() => tasks.filter((task) => task.priority === 'alta').length, [tasks]);
   const handleTaskPriorityChange = (taskId: string, priority: string) => {
@@ -321,17 +323,21 @@ export function WorkspaceHome() {
 
   const radarTitle = overdueTasks.length
     ? `Hay ${overdueTasks.length} tarea${overdueTasks.length === 1 ? '' : 's'} vencida${overdueTasks.length === 1 ? '' : 's'} empujando el día`
-    : dueToday.length
-      ? `Hay ${dueToday.length} tarea${dueToday.length === 1 ? '' : 's'} para mover hoy`
-      : 'Tu workspace está estable para avanzar con foco';
+    : standbyFollowupTasks.length
+      ? `Hay ${standbyFollowupTasks.length} tarea${standbyFollowupTasks.length === 1 ? '' : 's'} en espera o revisión con 5+ días`
+      : dueToday.length
+        ? `Hay ${dueToday.length} tarea${dueToday.length === 1 ? '' : 's'} para mover hoy`
+        : 'Tu workspace está estable para avanzar con foco';
 
   const radarCopy = overdueTasks.length
     ? 'Lo vencido está contaminando tu foco.'
-    : dueToday.length
-      ? 'Ordená prioridades y cerrá los entregables visibles de hoy.'
-      : 'Sin urgencias críticas. Aprovechá para planear, documentar y avanzar proyectos activos.';
+    : standbyFollowupTasks.length
+      ? 'No están vencidas; llevan varios días detenidas. Dales seguimiento para destrabar el flujo.'
+      : dueToday.length
+        ? 'Ordená prioridades y cerrá los entregables visibles de hoy.'
+        : 'Sin urgencias críticas. Aprovechá para planear, documentar y avanzar proyectos activos.';
 
-  const radarScore = Math.max(60, 200 - overdueTasks.length * 25 - waiting.length * 4);
+  const radarScore = Math.max(60, 200 - overdueTasks.length * 25 - standbyFollowupTasks.length * 8 - Math.max(0, waiting.length - standbyFollowupTasks.length) * 2);
 
   const filteredFlowTasks = useMemo(() => {
     const query = deferredFlowSearch.trim().toLowerCase();

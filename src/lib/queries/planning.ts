@@ -1,4 +1,4 @@
-import { isTaskOverdue } from "@/lib/tasks/status";
+import { isTaskDueEligible, isTaskOverdue } from "@/lib/tasks/status";
 import { addDays, differenceInCalendarDays, format, parseISO, startOfDay } from 'date-fns';
 import { getProjects } from '@/lib/queries/projects';
 import { getTasks } from '@/lib/queries/tasks';
@@ -94,6 +94,7 @@ function formatDueLabel(value?: string | null) {
 }
 
 function getTaskUrgency(task: TaskRow, today: Date, nextWeekEnd: Date): PlanningOverview['weeklyFocus'][number]['urgency'] {
+  if (!isTaskDueEligible(task.status)) return 'planned';
   const dueDate = parseDate(task.due_date);
   if (!dueDate) return 'planned';
   const diff = differenceInCalendarDays(dueDate, today);
@@ -128,20 +129,19 @@ export async function getPlanningOverview(): Promise<PlanningOverview> {
   const openTasks = typedTasks.filter(isOpenTask);
   const activeProjects = typedProjects.filter(isActiveProject);
 
-  const dueThisWeek = openTasks.filter((task) => {
+  const dueManagedTasks = openTasks.filter((task) => isTaskDueEligible(task.status));
+
+  const dueThisWeek = dueManagedTasks.filter((task) => {
     const dueDate = parseDate(task.due_date);
     return dueDate ? dueDate <= weekEnd && dueDate >= today : false;
   }).length;
 
-  const dueNextWeek = openTasks.filter((task) => {
+  const dueNextWeek = dueManagedTasks.filter((task) => {
     const dueDate = parseDate(task.due_date);
     return dueDate ? dueDate > weekEnd && dueDate <= nextWeekEnd : false;
   }).length;
 
-  const overdueOpenTasks = openTasks.filter((task) => {
-    const dueDate = parseDate(task.due_date);
-    return dueDate ? dueDate < today : false;
-  }).length;
+  const overdueOpenTasks = dueManagedTasks.filter((task) => isTaskOverdue(task.due_date, task.status)).length;
 
   const dueBuckets: PlanningOverview['dueBuckets'] = [
     { label: 'Vencido', count: overdueOpenTasks, tone: 'critical' },
@@ -157,7 +157,7 @@ export async function getPlanningOverview(): Promise<PlanningOverview> {
     const current = departmentMap.get(departmentName) ?? { name: departmentName, nearTermItems: 0, activeProjects: 0, openTasks: 0, score: 0, state: 'stable' as const };
     current.openTasks += 1;
     const dueDate = parseDate(task.due_date);
-    if (dueDate && dueDate <= nextWeekEnd) current.nearTermItems += 1;
+    if (isTaskDueEligible(task.status) && dueDate && dueDate <= nextWeekEnd) current.nearTermItems += 1;
     departmentMap.set(departmentName, current);
   }
 
@@ -179,7 +179,7 @@ export async function getPlanningOverview(): Promise<PlanningOverview> {
     .sort((a, b) => b.score - a.score)
     .slice(0, 6);
 
-  const weeklyFocus = [...openTasks]
+  const weeklyFocus = [...dueManagedTasks]
     .sort((a, b) => {
       const aDate = parseDate(a.due_date);
       const bDate = parseDate(b.due_date);

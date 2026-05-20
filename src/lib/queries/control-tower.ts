@@ -1,4 +1,4 @@
-import { isTaskOverdue } from "@/lib/tasks/status";
+import { isTaskDueEligible, isTaskOverdue } from "@/lib/tasks/status";
 import { format, parseISO, startOfDay, differenceInCalendarDays } from 'date-fns';
 import { getClients } from '@/lib/queries/clients';
 import { getPlanningOverview } from '@/lib/queries/planning';
@@ -63,6 +63,10 @@ function isOpenTask(task: TaskRow) {
   return task.status !== 'concluido';
 }
 
+function isDueManagedTask(task: TaskRow) {
+  return isTaskDueEligible(task.status);
+}
+
 function isActiveProject(project: ProjectRow) {
   return project.status !== 'completado';
 }
@@ -84,10 +88,9 @@ export async function getControlTowerSummary(): Promise<ControlTowerSummary> {
   const openTasks = typedTasks.filter(isOpenTask);
   const activeProjects = typedProjects.filter(isActiveProject);
 
-  const overdueTasks = openTasks.filter((task) => {
-    const dueDate = parseDate(task.due_date);
-    return dueDate ? dueDate < today : false;
-  });
+  const dueManagedTasks = openTasks.filter(isDueManagedTask);
+
+  const overdueTasks = dueManagedTasks.filter((task) => isTaskOverdue(task.due_date, task.status));
 
   const atRiskProjects = activeProjects.filter((project) => {
     const dueDate = parseDate(project.due_date);
@@ -121,7 +124,7 @@ export async function getControlTowerSummary(): Promise<ControlTowerSummary> {
     .map((client) => {
       const openTasksForClient = openTasks.filter((task) => task.client_name === client.name).length;
       const activeProjectsForClient = activeProjects.filter((project) => project.client_name === client.name).length;
-      const nearTermItems = openTasks.filter((task) => task.client_name === client.name).filter((task) => {
+      const nearTermItems = dueManagedTasks.filter((task) => task.client_name === client.name).filter((task) => {
         const dueDate = parseDate(task.due_date);
         return dueDate ? differenceInCalendarDays(dueDate, today) <= 7 : false;
       }).length;

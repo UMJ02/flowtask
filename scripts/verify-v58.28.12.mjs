@@ -18,14 +18,15 @@ if (pkg.version !== "58.28.12-workspace-pro-home-hero-solid-card-colors",
   "58.28.17.1-unified-data-qa-inline-status-type-hotfix",
   "58.28.19-ux-copy-empty-states-final", "58.28.20-mobile-responsive-final-pass", "58.28.21-supabase-rls-client-readiness-final",
   "58.28.21.3-classic-reports-data-integrity-checklist-progress-export",
-  "58.28.21.4-share-landing-short-link-stored-report-tokens") failures.push("Unexpected package version");
+  "58.28.21.4-share-landing-short-link-stored-report-tokens",
+  "58.28.21.5-radar-analytics-due-state-integrity") failures.push("Unexpected package version");
 if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.28.12", "npm run verify:v58.28.15", "npm run verify:v58.28.16", "npm run verify:v58.28.16.1", "npm run verify:v58.28.16.2", "npm run verify:v58.28.17",
   "npm run verify:v58.28.17.1",
   "npm run verify:v58.28.19", "npm run verify:v58.28.20", "npm run verify:v58.28.21",
   "npm run verify:v58.28.21.3",
-  "npm run verify:v58.28.21.4", "npm run verify:v58.28.21",
+  "npm run verify:v58.28.21.4", "npm run verify:v58.28.21.5", "npm run verify:v58.28.21",
   "npm run verify:v58.28.21.3",
-  "npm run verify:v58.28.21.4") failures.push("verify:current must target verify:v58.28.12");
+  "npm run verify:v58.28.21.4", "npm run verify:v58.28.21.5") failures.push("verify:current must target verify:v58.28.12");
 if (!version.includes("58.28.12-workspace-pro-home-hero-solid-card-colors",
   "58.28.15-workspace-pro-deep-component-extraction-lazy-view-loading",
   "58.28.16-task-data-sync-status-source-of-truth",
@@ -35,7 +36,8 @@ if (!version.includes("58.28.12-workspace-pro-home-hero-solid-card-colors",
   "58.28.17.1-unified-data-qa-inline-status-type-hotfix",
   "58.28.19-ux-copy-empty-states-final", "58.28.20-mobile-responsive-final-pass", "58.28.21-supabase-rls-client-readiness-final",
   "58.28.21.3-classic-reports-data-integrity-checklist-progress-export",
-  "58.28.21.4-share-landing-short-link-stored-report-tokens")) failures.push("version.ts must contain v58.28.12 slug");
+  "58.28.21.4-share-landing-short-link-stored-report-tokens",
+  "58.28.21.5-radar-analytics-due-state-integrity")) failures.push("version.ts must contain v58.28.12 slug");
 if (!css.includes("v58.28.12 — Workspace Pro Home Hero + Solid Card Colors")) failures.push("v58.28.12 CSS block missing");
 if (!css.includes("grid-template-columns: minmax(22rem, 1fr) auto")) failures.push("Home hero desktop alignment missing");
 if (!css.includes(".ws-pro-card-tone-blue") || !css.includes(".ws-pro-card-tone-amber") || !css.includes(".ws-pro-card-tone-violet") || !css.includes(".ws-pro-card-tone-emerald")) failures.push("Solid card tone classes missing");

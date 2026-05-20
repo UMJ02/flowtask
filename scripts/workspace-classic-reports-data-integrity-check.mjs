@@ -7,7 +7,8 @@ const share = read("src/lib/share/analytics-share.ts");
 const landing = read("src/components/shared/shared-analytics-landing.tsx");
 const failures = [];
 
-if (!["58.28.21.3-classic-reports-data-integrity-checklist-progress-export", "58.28.21.4-share-landing-short-link-stored-report-tokens"].includes(pkg.version)) failures.push("unexpected package version");
+if (!["58.28.21.3-classic-reports-data-integrity-checklist-progress-export", "58.28.21.4-share-landing-short-link-stored-report-tokens",
+  "58.28.21.5-radar-analytics-due-state-integrity"].includes(pkg.version)) failures.push("unexpected package version");
 if (!pkg.scripts?.["build:preflight"]?.includes("workspace:reports-data-integrity:ready")) failures.push("preflight must run reports data integrity check");
 for (const marker of ["getLatestCommentsByTaskIds", "getChecklistProgressByTaskIds", "latestCommentsByTaskId", "checklistProgressByTaskId", "reportItemForTask"]) {
   if (!analytics.includes(marker)) failures.push(`analytics must enrich reports with ${marker}`);
