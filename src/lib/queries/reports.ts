@@ -1,4 +1,4 @@
-import { isTaskOverdue } from "@/lib/tasks/status";
+import { isTaskOverdue, isTaskStandby, isTaskDueEligible } from "@/lib/tasks/status";
 import { endOfWeek, format, isToday, isWithinInterval, parseISO, startOfToday } from "date-fns";
 import { getRecentActivitySummary } from "@/lib/queries/activity";
 import { getClients } from "@/lib/queries/clients";
@@ -122,7 +122,8 @@ export async function getReportsOverview(): Promise<ReportsOverview> {
   const today = startOfToday();
   const weekEnd = endOfWeek(today, { weekStartsOn: 1 });
   const activeTasks = typedTasks.filter((task) => task.status !== "concluido");
-  const operationalTasks = activeTasks.filter((task) => task.status !== "en_espera");
+  const operationalTasks = activeTasks.filter((task) => isTaskDueEligible(task.status));
+  const standbyTasks = activeTasks.filter((task) => isTaskStandby(task.status));
   const overdueTasks = activeTasks.filter((task) => isTaskOverdue(task.due_date, task.status));
   const dueToday = operationalTasks.filter((task) => {
     if (!task.due_date) return false;
@@ -140,7 +141,7 @@ export async function getReportsOverview(): Promise<ReportsOverview> {
       return false;
     }
   });
-  const waitingTasks = activeTasks.filter((task) => task.status === "en_espera");
+  const waitingTasks = standbyTasks;
   const overdueProjects = typedProjects.filter((project) => {
     if (project.status === "completado" || !project.due_date) return false;
     try {

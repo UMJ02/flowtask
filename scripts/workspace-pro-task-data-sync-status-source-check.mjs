@@ -22,13 +22,16 @@ if (!["58.28.16.1-task-data-sync-cli-hotfix", "58.28.16.2-classic-pro-status-par
   "58.28.19-ux-copy-empty-states-final", "58.28.20-mobile-responsive-final-pass", "58.28.21-supabase-rls-client-readiness-final",
   "58.28.21.3-classic-reports-data-integrity-checklist-progress-export",
   "58.28.21.4-share-landing-short-link-stored-report-tokens",
-  "58.28.21.5-radar-analytics-due-state-integrity"].includes(pkg.version)) failures.push("package version is not an allowed v58.28.x task sync release");
+  "58.28.21.5-radar-analytics-due-state-integrity",
+  "58.28.21.6-data-integrity-live-sync-audit", "58.28.21.6-data-integrity-live-sync-audit"].includes(pkg.version)) failures.push("package version is not an allowed v58.28.x task sync release");
 if (!["npm run verify:v58.28.16.1", "npm run verify:v58.28.16.2", "npm run verify:v58.28.17", "npm run verify:v58.28.17.1",
   "npm run verify:v58.28.19", "npm run verify:v58.28.20", "npm run verify:v58.28.21",
   "npm run verify:v58.28.21.3",
-  "npm run verify:v58.28.21.4", "npm run verify:v58.28.21.5", "npm run verify:v58.28.21",
+  "npm run verify:v58.28.21.4", "npm run verify:v58.28.21.5",
+  "npm run verify:v58.28.21.6", "npm run verify:v58.28.21.6", "npm run verify:v58.28.21",
   "npm run verify:v58.28.21.3",
-  "npm run verify:v58.28.21.4", "npm run verify:v58.28.21.5"].includes(pkg.scripts?.["verify:current"])) failures.push("verify:current is not an allowed v58.28.x task sync target");
+  "npm run verify:v58.28.21.4", "npm run verify:v58.28.21.5",
+  "npm run verify:v58.28.21.6", "npm run verify:v58.28.21.6"].includes(pkg.scripts?.["verify:current"])) failures.push("verify:current is not an allowed v58.28.x task sync target");
 for (const status of statuses) {
   if (!source.taskTypes.includes(status)) failures.push(`src/types/task.ts does not allow ${status}`);
   if (!source.classicBoard.includes(`value: "${status}"`)) failures.push(`classic kanban does not expose ${status}`);

@@ -8,12 +8,14 @@ const cssText = fs.readFileSync("src/app/globals.css", "utf8");
 const allowedVersions = ["58.28.20-mobile-responsive-final-pass", "58.28.21-supabase-rls-client-readiness-final",
   "58.28.21.3-classic-reports-data-integrity-checklist-progress-export",
   "58.28.21.4-share-landing-short-link-stored-report-tokens",
-  "58.28.21.5-radar-analytics-due-state-integrity"];
+  "58.28.21.5-radar-analytics-due-state-integrity",
+  "58.28.21.6-data-integrity-live-sync-audit", "58.28.21.6-data-integrity-live-sync-audit"];
 
 if (!allowedVersions.includes(pkg.version)) failures.push(`Unexpected package version: ${pkg.version}`);
 if (!["npm run verify:v58.28.20", "npm run verify:v58.28.21",
   "npm run verify:v58.28.21.3",
-  "npm run verify:v58.28.21.4", "npm run verify:v58.28.21.5"].includes(pkg.scripts?.["verify:current"])) failures.push("verify:current must target verify:v58.28.20 or verify:v58.28.21");
+  "npm run verify:v58.28.21.4", "npm run verify:v58.28.21.5",
+  "npm run verify:v58.28.21.6", "npm run verify:v58.28.21.6"].includes(pkg.scripts?.["verify:current"])) failures.push("verify:current must target verify:v58.28.20 or verify:v58.28.21");
 if (!pkg.scripts?.["build:preflight"]?.includes("workspace:mobile-responsive:ready")) failures.push("build:preflight must include workspace:mobile-responsive:ready");
 if (!allowedVersions.some((version) => versionText.includes(version))) failures.push("version.ts must contain v58.28.20 or v58.28.21 slug");
 if (!versionText.includes("APP_RELEASE_STAGE")) failures.push("version.ts must export APP_RELEASE_STAGE");

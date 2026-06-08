@@ -10,10 +10,12 @@ const apiRoute = readFileSync('src/app/api/share/reports/route.ts', 'utf8');
 const migration = readFileSync('supabase/migrations/0061_v58_28_21_4_shared_report_tokens.sql', 'utf8');
 const failures = [];
 const expectedVersion = '58.28.21.4-share-landing-short-link-stored-report-tokens',
-  '58.28.21.5-radar-analytics-due-state-integrity';
+  '58.28.21.5-radar-analytics-due-state-integrity',
+  '58.28.21.6-data-integrity-live-sync-audit';
 
 if (pkg.version !== expectedVersion) failures.push(`Unexpected package version: ${pkg.version}`);
-if (pkg.scripts?.['verify:current'] !== 'npm run verify:v58.28.21.4', 'npm run verify:v58.28.21.5') failures.push('verify:current must target verify:v58.28.21.4');
+if (pkg.scripts?.['verify:current'] !== 'npm run verify:v58.28.21.4', 'npm run verify:v58.28.21.5',
+  'npm run verify:v58.28.21.6') failures.push('verify:current must target verify:v58.28.21.4');
 if (!pkg.scripts?.['build:preflight']?.includes('workspace:share-shortlink:ready')) failures.push('build:preflight must include workspace:share-shortlink:ready');
 if (!versionText.includes(expectedVersion)) failures.push('version.ts must contain v58.28.21.4 slug');
 if (!versionText.includes('APP_RELEASE_STAGE')) failures.push('version.ts must export APP_RELEASE_STAGE');

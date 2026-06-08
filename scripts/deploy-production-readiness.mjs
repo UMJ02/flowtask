@@ -41,6 +41,7 @@ const expectedVersions = [
   "58.28.21.3-classic-reports-data-integrity-checklist-progress-export",
   "58.28.21.4-share-landing-short-link-stored-report-tokens",
   "58.28.21.5-radar-analytics-due-state-integrity",
+  "58.28.21.6-data-integrity-live-sync-audit",
   "58.28.10-workspace-pro-no-motion-board-portal-home-colors",
   "58.28.11-workspace-pro-nav-shape-home-alignment",
   "58.28.12-workspace-pro-home-hero-solid-card-colors",
@@ -56,6 +57,7 @@ const expectedVersions = [
   "58.28.21.3-classic-reports-data-integrity-checklist-progress-export",
   "58.28.21.4-share-landing-short-link-stored-report-tokens",
   "58.28.21.5-radar-analytics-due-state-integrity",
+  "58.28.21.6-data-integrity-live-sync-audit",
 ];
 const pkg = JSON.parse(read("package.json") || "{}");
 if (!expectedVersions.includes(pkg.version)) failures.push(`Unexpected package version: ${pkg.version}`);

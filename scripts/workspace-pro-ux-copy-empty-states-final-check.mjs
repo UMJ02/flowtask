@@ -20,6 +20,7 @@ const allowedVersions = [
   "58.28.21.3-classic-reports-data-integrity-checklist-progress-export",
   "58.28.21.4-share-landing-short-link-stored-report-tokens",
   "58.28.21.5-radar-analytics-due-state-integrity",
+  "58.28.21.6-data-integrity-live-sync-audit",
 ];
 const allowedVerifyTargets = [
   "npm run verify:v58.28.19",
@@ -27,6 +28,7 @@ const allowedVerifyTargets = [
   "npm run verify:v58.28.21",
   "npm run verify:v58.28.21.3",
   "npm run verify:v58.28.21.4", "npm run verify:v58.28.21.5",
+  "npm run verify:v58.28.21.6", "npm run verify:v58.28.21.6",
 ];
 
 if (!allowedVersions.includes(pkg.version)) failures.push(`Unexpected package version: ${pkg.version}`);

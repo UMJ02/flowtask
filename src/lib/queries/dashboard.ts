@@ -35,12 +35,12 @@ export async function getDashboardData() {
     assignmentRowsRes,
     collaboratorRowsRes,
   ] = await Promise.all([
-    applyWorkspaceScope(supabase.from("tasks").select("id", { count: "exact", head: true }).neq("status", "concluido"), user.id, activeOrganizationId),
+    applyWorkspaceScope(supabase.from("tasks").select("id", { count: "exact", head: true }).is("deleted_at", null).neq("status", "concluido"), user.id, activeOrganizationId),
     applyWorkspaceScope(supabase.from("projects").select("id", { count: "exact", head: true }).neq("status", "completado"), user.id, activeOrganizationId),
-    applyWorkspaceScope(supabase.from("tasks").select("id", { count: "exact", head: true }).eq("status", "concluido"), user.id, activeOrganizationId),
-    applyWorkspaceScope(supabase.from("tasks").select("id", { count: "exact", head: true }).eq("status", "en_espera"), user.id, activeOrganizationId),
+    applyWorkspaceScope(supabase.from("tasks").select("id", { count: "exact", head: true }).is("deleted_at", null).eq("status", "concluido"), user.id, activeOrganizationId),
+    applyWorkspaceScope(supabase.from("tasks").select("id", { count: "exact", head: true }).is("deleted_at", null).in("status", ["en_espera", "revision"]), user.id, activeOrganizationId),
     applyWorkspaceScope(
-      supabase.from("tasks").select("id", { count: "exact", head: true }).not("status", "in", '(concluido,en_espera,revision)').lt("due_date", today.toISOString().slice(0, 10)),
+      supabase.from("tasks").select("id", { count: "exact", head: true }).is("deleted_at", null).not("status", "in", '(concluido,en_espera,revision)').lt("due_date", today.toISOString().slice(0, 10)),
       user.id,
       activeOrganizationId,
     ),
@@ -48,6 +48,7 @@ export async function getDashboardData() {
       supabase
         .from("tasks")
         .select("id", { count: "exact", head: true })
+        .is("deleted_at", null)
         .not("status", "in", '(concluido,en_espera,revision)')
         .gte("due_date", today.toISOString().slice(0, 10))
         .lte("due_date", in3Days.toISOString().slice(0, 10)),
@@ -57,7 +58,7 @@ export async function getDashboardData() {
     applyWorkspaceScope(supabase.from("projects").select("id", { count: "exact", head: true }).eq("status", "completado"), user.id, activeOrganizationId),
     applyWorkspaceScope(supabase.from("projects").select("id", { count: "exact", head: true }).eq("is_collaborative", true), user.id, activeOrganizationId),
     applyWorkspaceScope(
-      supabase.from("tasks").select("id,title,status,due_date,client_name").order("created_at", { ascending: false }).limit(8),
+      supabase.from("tasks").select("id,title,status,due_date,client_name").is("deleted_at", null).order("created_at", { ascending: false }).limit(8),
       user.id,
       activeOrganizationId,
     ),
@@ -74,8 +75,8 @@ export async function getDashboardData() {
       .lte("remind_at", endOfDay(in7Days).toISOString())
       .order("remind_at", { ascending: true })
       .limit(6),
-    applyWorkspaceScope(supabase.from("tasks").select("department_id, departments ( code, name )").neq("status", "concluido"), user.id, activeOrganizationId),
-    applyWorkspaceScope(supabase.from("tasks").select("client_name,status").not("client_name", "is", null), user.id, activeOrganizationId),
+    applyWorkspaceScope(supabase.from("tasks").select("department_id, departments ( code, name )").is("deleted_at", null).neq("status", "concluido"), user.id, activeOrganizationId),
+    applyWorkspaceScope(supabase.from("tasks").select("client_name,status").is("deleted_at", null).not("client_name", "is", null), user.id, activeOrganizationId),
     applyWorkspaceScope(supabase.from("projects").select("client_name,status").not("client_name", "is", null), user.id, activeOrganizationId),
     applyWorkspaceScope(
       supabase
@@ -94,6 +95,7 @@ export async function getDashboardData() {
       supabase
         .from("tasks")
         .select("id,title,status,due_date,client_name,project_id")
+        .is("deleted_at", null)
         .not("status", "in", '(concluido,en_espera,revision)')
         .lt("due_date", today.toISOString().slice(0, 10))
         .order("due_date", { ascending: true })
@@ -105,6 +107,7 @@ export async function getDashboardData() {
       supabase
         .from("tasks")
         .select("id,title,status,due_date,client_name,project_id")
+        .is("deleted_at", null)
         .not("status", "in", '(concluido,en_espera,revision)')
         .eq("due_date", today.toISOString().slice(0, 10))
         .order("due_date", { ascending: true })
@@ -116,6 +119,7 @@ export async function getDashboardData() {
       supabase
         .from("tasks")
         .select("id,title,status,due_date,client_name,project_id")
+        .is("deleted_at", null)
         .not("status", "in", '(concluido,en_espera,revision)')
         .gt("due_date", today.toISOString().slice(0, 10))
         .lte("due_date", in3Days.toISOString().slice(0, 10))
@@ -128,7 +132,8 @@ export async function getDashboardData() {
       supabase
         .from("tasks")
         .select("id,title,status,due_date,client_name,project_id")
-        .eq("status", "en_espera")
+        .is("deleted_at", null)
+        .in("status", ["en_espera", "revision"])
         .order("updated_at", { ascending: true })
         .limit(4),
       user.id,

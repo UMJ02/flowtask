@@ -10,7 +10,8 @@ const expectedVersion = "58.28.19-ux-copy-empty-states-final";
 if (pkg.version !== expectedVersion) failures.push(`Unexpected package version: ${pkg.version}`);
 if (pkg.scripts?.["verify:current"] !== "npm run verify:v58.28.19", "npm run verify:v58.28.20", "npm run verify:v58.28.21",
   "npm run verify:v58.28.21.3",
-  "npm run verify:v58.28.21.4", "npm run verify:v58.28.21.5", "npm run verify:v58.28.21",
+  "npm run verify:v58.28.21.4", "npm run verify:v58.28.21.5",
+  "npm run verify:v58.28.21.6", "npm run verify:v58.28.21.6", "npm run verify:v58.28.21",
   "npm run verify:v58.28.21.3",
   "npm run verify:v58.28.21.4", "npm run verify:v58.28.21.5") failures.push("verify:current must target verify:v58.28.19");
 if (!pkg.scripts?.["build:preflight"]?.includes("workspace:final-copy:ready")) failures.push("build:preflight must include workspace:final-copy:ready");

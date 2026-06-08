@@ -39,7 +39,8 @@ const allowedVersions = ["58.27.6-workspace-pro-deep-cleanup-2026-ui-controls-sy
   "58.28.19-ux-copy-empty-states-final", "58.28.20-mobile-responsive-final-pass", "58.28.21-supabase-rls-client-readiness-final",
   "58.28.21.3-classic-reports-data-integrity-checklist-progress-export",
   "58.28.21.4-share-landing-short-link-stored-report-tokens",
-  "58.28.21.5-radar-analytics-due-state-integrity"];
+  "58.28.21.5-radar-analytics-due-state-integrity",
+  "58.28.21.6-data-integrity-live-sync-audit", "58.28.21.6-data-integrity-live-sync-audit"];
 if (!allowedVersions.some((version) => read("src/lib/release/version.ts").includes(version))) failures.push("Expected an allowed v58.27.x/v58.28.x Workspace Pro version in src/lib/release/version.ts");
 requireIncludes("src/lib/release/version.ts", "APP_RELEASE_STAGE");
 requireIncludes("src/components/workspace-system/workspace-system-page.tsx", "WorkspaceProPage");

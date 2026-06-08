@@ -25,6 +25,8 @@ import { createClient } from "@/lib/supabase/server";
 import {
   getTaskStatusLabel,
   isTaskOverdue,
+  isTaskDueEligible,
+  isTaskStandby,
   normalizeTaskStatus,
   TASK_STATUS,
 } from "@/lib/tasks/status";
@@ -314,8 +316,7 @@ function buildTimeSeries(
     ).length;
     const activeDue = tasks.filter(
       (task) =>
-        task.status !== TASK_STATUS.DONE &&
-        task.status !== TASK_STATUS.WAITING &&
+        isTaskDueEligible(task.status) &&
         task.due_date?.slice(0, 10) === iso,
     ).length;
     return { label: format(day, "dd MMM"), iso, created, completed, activeDue };
@@ -514,12 +515,8 @@ export const getWorkspaceAnalyticsSummary = cache(
     const activeTasks = allTasks.filter(
       (task) => task.status !== TASK_STATUS.DONE,
     );
-    const operationalTasks = activeTasks.filter(
-      (task) => task.status !== TASK_STATUS.WAITING,
-    );
-    const waitingTasks = activeTasks.filter(
-      (task) => task.status === TASK_STATUS.WAITING,
-    );
+    const operationalTasks = activeTasks.filter((task) => isTaskDueEligible(task.status));
+    const waitingTasks = activeTasks.filter((task) => isTaskStandby(task.status));
     const completedTasks = allTasks.filter(
       (task) => task.status === TASK_STATUS.DONE,
     );
@@ -787,11 +784,11 @@ export const getWorkspaceAnalyticsSummary = cache(
       );
     if (overdueActiveTasks.length > 0)
       recommendations.push(
-        `${overdueActiveTasks.length} tarea(s) activas están vencidas. Las concluidas y en espera no se cuentan como atraso.`,
+        `${overdueActiveTasks.length} tarea(s) activas están vencidas. Las concluidas, en espera y en revisión no se cuentan como atraso.`,
       );
     if (waitingTasks.length > 0)
       recommendations.push(
-        `${waitingTasks.length} tarea(s) están en espera. Conviene revisar bloqueos por cliente, jefatura o proveedor.`,
+        `${waitingTasks.length} tarea(s) están en espera o revisión. Conviene revisar bloqueos por cliente, jefatura o proveedor.`,
       );
     if (risk.kpis.pressuredClients > 0)
       recommendations.push(
@@ -806,7 +803,7 @@ export const getWorkspaceAnalyticsSummary = cache(
       `${importantItems.length} elemento(s) marcados con estrella se reportan como Importantes.`,
       `${currentWeekItems.length} elemento(s) sin estrella quedan en Semana actual.`,
       `${currentMonthItems.length} elemento(s) sin estrella quedan en Mes actual.`,
-      `${waitingTasks.length} tarea(s) están en espera y se reportan separadas para no contaminar fechas.`,
+      `${waitingTasks.length} tarea(s) están en espera o revisión y se reportan separadas para no contaminar fechas.`,
       `${completedTasks.length} tarea(s) concluidas quedan fuera de operación por defecto.`,
     ];
 
